@@ -111,6 +111,10 @@ export interface EthereumLog {
   readonly topics: ReadonlyArray<string>;
 }
 
+interface EthereumLogWithPrefix extends EthereumLog {
+  readonly prefix: SwapIdPrefix;
+}
+
 export interface EthereumConnectionOptions {
   readonly wsUrl?: string;
   /** URL to an Etherscan compatible scraper API */
@@ -151,7 +155,11 @@ export class EthereumConnection implements AtomicSwapConnection {
     return new EthereumConnection(baseUrl, chainId, options);
   }
 
-  private static parseOpenedEventBytes(bytes: Uint8Array): OpenSwap {
+  private static parseOpenedEventBytes(
+    bytes: Uint8Array,
+    prefix: SwapIdPrefix,
+    erc20Tokens: Erc20TokensMap,
+  ): OpenSwap | null {
     const swapIdBegin = 0;
     const swapIdEnd = swapIdBegin + 32;
     const senderBegin = swapIdEnd;
@@ -164,24 +172,44 @@ export class EthereumConnection implements AtomicSwapConnection {
     const amountEnd = amountBegin + 32;
     const timeoutBegin = amountEnd;
     const timeoutEnd = timeoutBegin + 32;
+    const erc20ContractAddressBegin = timeoutEnd;
+    const erc20ContractAddressEnd = erc20ContractAddressBegin + 32;
+
+    const erc20Token =
+      prefix === SwapIdPrefix.Ether
+        ? null
+        : [...erc20Tokens.values()].find(
+            token =>
+              token.contractAddress.toLowerCase() ===
+              Abi.decodeAddress(
+                bytes.slice(erc20ContractAddressBegin, erc20ContractAddressEnd),
+              ).toLowerCase(),
+          );
+
+    if (prefix === SwapIdPrefix.Erc20 && !erc20Token) {
+      // Found swap for a token we’re not tracking
+      return null;
+    }
+
+    const fractionalDigits = erc20Token ? erc20Token.decimals : constants.primaryTokenFractionalDigits;
+    const tokenTicker = erc20Token ? (erc20Token.symbol as TokenTicker) : constants.primaryTokenTicker;
+    const amount = {
+      quantity: new BN(bytes.slice(amountBegin, amountEnd)).toString(),
+      fractionalDigits: fractionalDigits,
+      tokenTicker: tokenTicker,
+    };
 
     return {
       kind: SwapProcessState.Open,
       data: {
         id: {
-          prefix: SwapIdPrefix.Ether,
+          prefix: prefix,
           data: bytes.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
         },
         sender: toChecksummedAddress(Abi.decodeAddress(bytes.slice(senderBegin, senderEnd))),
         recipient: toChecksummedAddress(Abi.decodeAddress(bytes.slice(recipientBegin, recipientEnd))),
         hash: bytes.slice(hashBegin, hashEnd) as Hash,
-        amounts: [
-          {
-            quantity: new BN(bytes.slice(amountBegin, amountEnd)).toString(),
-            fractionalDigits: constants.primaryTokenFractionalDigits,
-            tokenTicker: constants.primaryTokenTicker,
-          },
-        ],
+        amounts: [amount],
         timeout: {
           height: new BN(bytes.slice(timeoutBegin, timeoutEnd)).toNumber(),
         },
@@ -228,9 +256,10 @@ export class EthereumConnection implements AtomicSwapConnection {
     update: AtomicSwapUpdate,
   ): ReadonlyArray<AtomicSwap> {
     const { kind, swapIdBytes } = update;
-    const swapIndex = swaps.findIndex(s =>
-      swapIdEquals(s.data.id, { prefix: SwapIdPrefix.Ether, data: swapIdBytes }),
-    );
+    const swapIndex = swaps.findIndex(s => {
+      const bytes = s.data.id.data;
+      return bytes.length === swapIdBytes.length && bytes.every((b, i) => b === swapIdBytes[i]);
+    });
     if (swapIndex === -1) {
       throw new Error(
         `Found ${kind === SwapProcessState.Claimed ? "Claimed" : "Aborted"} event for non-existent swap`,
@@ -1227,18 +1256,32 @@ export class EthereumConnection implements AtomicSwapConnection {
     minHeight: number,
     maxHeight: number,
   ): Promise<ReadonlyArray<AtomicSwap>> {
-    if (!this.atomicSwapEtherContractAddress) {
+    if (!this.atomicSwapEtherContractAddress && !this.atomicSwapErc20ContractAddress) {
       throw new Error("Ethereum connection was not initialized with any atomic swap contract addresses");
     }
-    const etherSwaps = await this.getSwapLogs(this.atomicSwapEtherContractAddress, minHeight, maxHeight);
 
-    return etherSwaps
-      .reduce((accumulator: ReadonlyArray<AtomicSwap>, log: EthereumLog): ReadonlyArray<AtomicSwap> => {
+    const [etherLogs, erc20Logs] = await Promise.all([
+      this.atomicSwapEtherContractAddress
+        ? await this.getSwapLogs(this.atomicSwapEtherContractAddress, minHeight, maxHeight)
+        : [],
+      this.atomicSwapErc20ContractAddress
+        ? await this.getSwapLogs(this.atomicSwapErc20ContractAddress, minHeight, maxHeight)
+        : [],
+    ]);
+
+    return [
+      ...etherLogs.map(log => ({ ...log, prefix: SwapIdPrefix.Ether })),
+      ...erc20Logs.map(log => ({ ...log, prefix: SwapIdPrefix.Erc20 })),
+    ]
+      .reduce((accumulator: ReadonlyArray<AtomicSwap>, log: EthereumLogWithPrefix): ReadonlyArray<
+        AtomicSwap
+      > => {
         const dataArray = Encoding.fromHex(normalizeHex(log.data));
         const kind = Abi.decodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
         switch (kind) {
           case SwapContractEvent.Opened:
-            return [...accumulator, EthereumConnection.parseOpenedEventBytes(dataArray)];
+            const parsed = EthereumConnection.parseOpenedEventBytes(dataArray, log.prefix, this.erc20Tokens);
+            return parsed ? [...accumulator, parsed] : accumulator;
           case SwapContractEvent.Claimed: {
             const update = EthereumConnection.parseClaimedEventBytes(dataArray);
             return EthereumConnection.updateSwapInList(accumulator, update);
