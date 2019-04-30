@@ -1,5 +1,6 @@
-import { ChainId, PublicIdentity, TransactionId, UnsignedTransaction } from "@iov/bcp";
+import { ChainId, PostTxResponse, PublicIdentity, TransactionId, UnsignedTransaction } from "@iov/bcp";
 import { UserProfile } from "@iov/keycontrol";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
 import { MultiChainSigner } from "./multichainsigner";
 
@@ -35,11 +36,19 @@ export interface SignAndPostAuthorization {
   (reason: string, transaction: UnsignedTransaction): Promise<boolean>;
 }
 
+export interface SignedAndPosted {
+  readonly transaction: UnsignedTransaction;
+  readonly postResponse: PostTxResponse;
+}
+
 export class SigningServerCore {
+  public readonly signedAndPosted: ValueAndUpdates<ReadonlyArray<SignedAndPosted>>;
+
   private readonly signer: MultiChainSigner;
   private readonly profile: UserProfile;
   private readonly authorizeGetIdentities: GetIdentitiesAuthorization;
   private readonly authorizeSignAndPost: SignAndPostAuthorization;
+  private readonly signedAndPostedProducer = new DefaultValueProducer<ReadonlyArray<SignedAndPosted>>([]);
 
   constructor(
     profile: UserProfile,
@@ -51,6 +60,8 @@ export class SigningServerCore {
     this.profile = profile;
     this.authorizeGetIdentities = authorizeGetIdentities;
     this.authorizeSignAndPost = authorizeSignAndPost;
+
+    this.signedAndPosted = new ValueAndUpdates(this.signedAndPostedProducer);
   }
 
   /**
@@ -99,6 +110,11 @@ export class SigningServerCore {
 
     if (authorized) {
       const response = await this.signer.signAndPost(transaction);
+      const signedAndPosted: SignedAndPosted = {
+        transaction: transaction,
+        postResponse: response,
+      };
+      this.signedAndPostedProducer.update([...this.signedAndPostedProducer.value, signedAndPosted]);
       return response.transactionId;
     } else {
       return undefined;

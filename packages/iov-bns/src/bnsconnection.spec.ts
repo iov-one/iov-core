@@ -104,10 +104,20 @@ describe("BnsConnection", () => {
     tokenTicker: cash,
   };
 
-  // The first simple address key (m/4804438'/0') generated from this mnemonic produces the address
-  // tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f (bech32) / b1ca7e78f74423ae01da3b51e676934d9105f282 (hex).
-  // This account has money in the genesis file (setup in docker).
+  // Generated using https://github.com/nym-zone/bech32
+  // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
+  const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
+
+  const unusedPubkey: PublicKeyBundle = {
+    algo: Algorithm.Ed25519,
+    data: fromHex("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") as PublicKeyBytes,
+  };
+
+  // The first IOV key (m/44'/234'/0') generated from this mnemonic produces the address
+  // tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea (bech32) / a4f97447e7df55b6ef0d6209ebef2a7b22625376 (hex).
+  // This account has money in the genesis file (see scripts/bnsd/README.md).
   const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+  const faucetPath = HdPaths.iov(0);
 
   const bnsdTendermintUrl = "ws://localhost:23456";
 
@@ -120,7 +130,7 @@ describe("BnsConnection", () => {
   }> {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
-    const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
+    const faucet = await profile.createIdentity(wallet.id, chainId, faucetPath);
     return { profile: profile, walletId: wallet.id, faucet: faucet };
   }
 
@@ -294,11 +304,15 @@ describe("BnsConnection", () => {
     it("returns empty list when getting an unused account", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      // unusedAddress generated using https://github.com/nym-zone/bech32
-      // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
-      const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
-      const response = await connection.getAccount({ address: unusedAddress });
-      expect(response).toBeUndefined();
+
+      // by address
+      const response1 = await connection.getAccount({ address: unusedAddress });
+      expect(response1).toBeUndefined();
+
+      // by pubkey
+      const response2 = await connection.getAccount({ pubkey: unusedPubkey });
+      expect(response2).toBeUndefined();
+
       connection.disconnect();
     });
   });
@@ -309,17 +323,10 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
       // by address
-      const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
       const nonce1 = await connection.getNonce({ address: unusedAddress });
       expect(nonce1).toEqual(0 as Nonce);
 
       // by pubkey
-      const unusedPubkey: PublicKeyBundle = {
-        algo: Algorithm.Ed25519,
-        data: Encoding.fromHex(
-          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-        ) as PublicKeyBytes,
-      };
       const nonce2 = await connection.getNonce({ pubkey: unusedPubkey });
       expect(nonce2).toEqual(0 as Nonce);
 
@@ -644,7 +651,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
 
       // we need funds to pay the fees
       const address = identityToAddress(identity);
@@ -687,7 +694,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       // we need funds to pay the fees
       const myAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, myAddress, registerAmount);
@@ -949,16 +956,15 @@ describe("BnsConnection", () => {
       const chainId = connection.chainId();
       const initialHeight = await connection.height();
 
-      const { profile, walletId, faucet } = await userProfileWithFaucet(chainId);
-      const rcpt = await profile.createIdentity(walletId, defaultChain, HdPaths.simpleAddress(68));
-      const rcptAddress = identityToAddress(rcpt);
+      const { profile, faucet } = await userProfileWithFaucet(chainId);
+      const recipientAddress = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
       const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         creator: faucet,
-        recipient: rcptAddress,
+        recipient: recipientAddress,
         memo: memo,
         amount: defaultAmount,
       });
@@ -972,7 +978,7 @@ describe("BnsConnection", () => {
 
       {
         // finds transaction using sentFromOrTo and minHeight = 1
-        const results = (await connection.searchTx({ sentFromOrTo: rcptAddress, minHeight: 1 })).filter(
+        const results = (await connection.searchTx({ sentFromOrTo: recipientAddress, minHeight: 1 })).filter(
           isConfirmedTransaction,
         );
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -986,7 +992,7 @@ describe("BnsConnection", () => {
       {
         // finds transaction using sentFromOrTo and minHeight = initialHeight
         const results = (await connection.searchTx({
-          sentFromOrTo: rcptAddress,
+          sentFromOrTo: recipientAddress,
           minHeight: initialHeight,
         })).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -1000,7 +1006,7 @@ describe("BnsConnection", () => {
       {
         // finds transaction using sentFromOrTo and maxHeight = 500 million
         const results = (await connection.searchTx({
-          sentFromOrTo: rcptAddress,
+          sentFromOrTo: recipientAddress,
           maxHeight: 500_000_000,
         })).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -1014,7 +1020,7 @@ describe("BnsConnection", () => {
       {
         // finds transaction using sentFromOrTo and maxHeight = initialHeight + 10
         const results = (await connection.searchTx({
-          sentFromOrTo: rcptAddress,
+          sentFromOrTo: recipientAddress,
           maxHeight: initialHeight + 10,
         })).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
@@ -1036,7 +1042,7 @@ describe("BnsConnection", () => {
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
-      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.simpleAddress(1234));
+      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.iov(1234));
 
       const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
@@ -1207,7 +1213,7 @@ describe("BnsConnection", () => {
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
-      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.simpleAddress(1234));
+      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.iov(1234));
 
       const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
@@ -1248,7 +1254,7 @@ describe("BnsConnection", () => {
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
-      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.simpleAddress(1234));
+      const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.iov(1234));
 
       // Sending tokens from an empty account will trigger a failure in DeliverTx
       const sendTx = await connection.withDefaultFee<SendTransaction>({
@@ -1288,7 +1294,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       const identityAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, identityAddress, registerAmount);
 
@@ -1346,7 +1352,7 @@ describe("BnsConnection", () => {
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.simpleAddress(0));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       const identityAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, identityAddress, registerAmount);
 

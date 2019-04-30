@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcError, parseJsonRpcResponse } from "@iov/jsonrpc";
+import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jsonrpc";
 
 export class HttpJsonRpcClient {
   private readonly baseUrl: string;
@@ -11,14 +11,6 @@ export class HttpJsonRpcClient {
 
   public async run(request: JsonRpcRequest): Promise<JsonRpcResponse> {
     const result = await axios.post(this.baseUrl, request);
-    const responseBody = result.data;
-
-    const errorResponse = parseJsonRpcError(responseBody);
-    if (errorResponse) {
-      return errorResponse;
-    }
-
-    const successResponse = parseJsonRpcResponse(responseBody);
-    return successResponse;
+    return parseJsonRpcResponse2(result.data);
   }
 }
