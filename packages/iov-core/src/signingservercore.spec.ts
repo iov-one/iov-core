@@ -42,8 +42,8 @@ describe("SigningServerCore", () => {
   const bnsdUrl = "ws://localhost:23456";
 
   // unused in the sense that there are no balances on the derives accounts
-  const unusedMnemonicA = "culture speed parent picture lock inquiry around pizza bleak leaf fish hand";
-  const unusedMnemonicB = "muffin width month typical depth boost beauty surface orphan cage youth rack";
+  const untouchedMnemonicA = "culture speed parent picture lock inquiry around pizza bleak leaf fish hand";
+  const untouchedMnemonicB = "muffin width month typical depth boost beauty surface orphan cage youth rack";
 
   // The first IOV key (m/44'/234'/0') generated from this mnemonic produces the address
   // tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea (bech32) / a4f97447e7df55b6ef0d6209ebef2a7b22625376 (hex).
@@ -102,7 +102,7 @@ describe("SigningServerCore", () => {
   describe("getIdentities", () => {
     it("can get identities", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
       const identity0 = await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
       const identity1 = await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
 
@@ -122,7 +122,7 @@ describe("SigningServerCore", () => {
 
     it("can get some selected identities", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
 
       const identities: ReadonlyArray<PublicIdentity> = [
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0)),
@@ -155,7 +155,7 @@ describe("SigningServerCore", () => {
 
     it("can get no identities", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
 
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
@@ -188,11 +188,11 @@ describe("SigningServerCore", () => {
       const ynet = "ynet" as ChainId;
 
       const profile = new UserProfile();
-      const walletA = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
+      const walletA = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
       const idA0 = await profile.createIdentity(walletA.id, ynet, HdPaths.iov(0));
       const idA1 = await profile.createIdentity(walletA.id, xnet, HdPaths.iov(1));
 
-      const walletB = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicB));
+      const walletB = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicB));
       const idB0 = await profile.createIdentity(walletB.id, xnet, HdPaths.iov(0));
       const idB1 = await profile.createIdentity(walletB.id, ynet, HdPaths.iov(1));
       const idB2 = await profile.createIdentity(walletB.id, xnet, HdPaths.iov(2));
@@ -219,7 +219,7 @@ describe("SigningServerCore", () => {
 
     it("handles exceptions in callback", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
 
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
@@ -291,7 +291,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
         await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
       }
 
@@ -329,7 +329,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(unusedMnemonicA));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
         await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
       }
 
