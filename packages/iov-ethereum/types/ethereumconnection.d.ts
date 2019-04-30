@@ -68,4 +68,6 @@ export declare class EthereumConnection implements AtomicSwapConnection {
      * The return values of this helper function are unsorted.
      */
     private searchErc20Transfers;
+    private getSwapsById;
+    private getSwapsWithFilter;
 }
