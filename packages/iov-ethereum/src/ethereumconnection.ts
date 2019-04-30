@@ -1127,6 +1127,10 @@ export class EthereumConnection implements AtomicSwapConnection {
         ? this.atomicSwapEtherContractAddress
         : this.atomicSwapErc20ContractAddress;
 
+    if (!atomicSwapContractAddress) {
+      throw new Error(`No contract address for ${query.id.prefix} swaps`);
+    }
+
     const params = [
       {
         to: atomicSwapContractAddress,
@@ -1223,28 +1227,12 @@ export class EthereumConnection implements AtomicSwapConnection {
     minHeight: number,
     maxHeight: number,
   ): Promise<ReadonlyArray<AtomicSwap>> {
-    const params = [
-      {
-        fromBlock: encodeQuantity(minHeight),
-        toBlock: encodeQuantity(maxHeight),
-        address: this.atomicSwapEtherContractAddress,
-      },
-    ] as ReadonlyArray<any>;
-    const swapsResponse = await this.rpcClient.run({
-      jsonrpc: "2.0",
-      method: "eth_getLogs",
-      params: params,
-      id: 9,
-    });
-    if (isJsonRpcErrorResponse(swapsResponse)) {
-      throw new Error(JSON.stringify(swapsResponse.error));
+    if (!this.atomicSwapEtherContractAddress) {
+      throw new Error("Ethereum connection was not initialized with any atomic swap contract addresses");
     }
+    const etherSwaps = await this.getSwapLogs(this.atomicSwapEtherContractAddress, minHeight, maxHeight);
 
-    if (swapsResponse.result === null) {
-      return [];
-    }
-
-    return swapsResponse.result
+    return etherSwaps
       .reduce((accumulator: ReadonlyArray<AtomicSwap>, log: EthereumLog): ReadonlyArray<AtomicSwap> => {
         const dataArray = Encoding.fromHex(normalizeHex(log.data));
         const kind = Abi.decodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
@@ -1275,5 +1263,30 @@ export class EthereumConnection implements AtomicSwapConnection {
           throw new Error("unsupported query type");
         },
       );
+  }
+
+  private async getSwapLogs(
+    atomicSwapContractAddress: Address,
+    minHeight: number,
+    maxHeight: number,
+  ): Promise<ReadonlyArray<EthereumLog>> {
+    const params = [
+      {
+        fromBlock: encodeQuantity(minHeight),
+        toBlock: encodeQuantity(maxHeight),
+        address: atomicSwapContractAddress,
+      },
+    ] as ReadonlyArray<any>;
+    const swapsResponse = await this.rpcClient.run({
+      jsonrpc: "2.0",
+      method: "eth_getLogs",
+      params: params,
+      id: 9,
+    });
+
+    if (isJsonRpcErrorResponse(swapsResponse)) {
+      throw new Error(JSON.stringify(swapsResponse.error));
+    }
+    return swapsResponse.result || [];
   }
 }

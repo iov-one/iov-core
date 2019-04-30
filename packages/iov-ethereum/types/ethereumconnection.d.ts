@@ -74,4 +74,5 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     private searchErc20Transfers;
     private getSwapsById;
     private getSwapsWithFilter;
+    private getSwapLogs;
 }
