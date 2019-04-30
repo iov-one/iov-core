@@ -241,6 +241,24 @@ describe("parse", () => {
       expect(parseJsonRpcSuccessResponse(response)).toEqual(response);
     });
 
+    it("works for response with number ID", () => {
+      const response: any = {
+        jsonrpc: "2.0",
+        id: 123,
+        result: {},
+      };
+      expect(parseJsonRpcSuccessResponse(response)).toEqual(response);
+    });
+
+    it("works for response with string ID", () => {
+      const response: any = {
+        jsonrpc: "2.0",
+        id: "40gfh408g",
+        result: {},
+      };
+      expect(parseJsonRpcSuccessResponse(response)).toEqual(response);
+    });
+
     it("throws for invalid type", () => {
       const expectedError = /data must be JSON compatible dictionary/i;
       expect(() => parseJsonRpcSuccessResponse(undefined)).toThrowError(expectedError);
