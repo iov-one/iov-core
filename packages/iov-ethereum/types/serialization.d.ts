@@ -1,15 +1,18 @@
-import { Address, Nonce, SignedTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp";
-import { Erc20Options } from "./erc20";
+import { Address, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
+import { Erc20TokensMap } from "./erc20";
+export declare enum SwapIdPrefix {
+    Ether = "ether",
+    Erc20 = "erc20"
+}
 export declare class Serialization {
     static serializeGenericTransaction(nonce: Nonce, gasPriceHex: string, gasLimitHex: string, recipient: Address, value: string, data: Uint8Array, v: string, r?: Uint8Array, s?: Uint8Array): Uint8Array;
-    static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce, erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>, atomicSwapEtherContractAddress?: Address, atomicSwapErc20ContractAddress?: Address): Uint8Array;
-    static serializeSignedTransaction(signed: SignedTransaction, erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>, atomicSwapEtherContractAddress?: Address, atomicSwapErc20ContractAddress?: Address): Uint8Array;
-    private static checkIsSupportedTransaction;
+    static serializeUnsignedTransaction(unsigned: UnsignedTransaction, nonce: Nonce, erc20Tokens?: Erc20TokensMap, atomicSwapContractAddress?: Address): Uint8Array;
+    static serializeSignedTransaction(signed: SignedTransaction, erc20Tokens?: Erc20TokensMap, atomicSwapContractAddress?: Address): Uint8Array;
     private static checkRecipientAddress;
     private static checkSwapId;
     private static checkHash;
     private static checkPreimage;
-    private static getAtomicSwapContractAddress;
+    private static checkAtomicSwapContractAddress;
     private static checkMemoNotPresent;
     private static checkEtherAmount;
     private static checkErc20Amount;
@@ -26,6 +29,7 @@ export declare class Serialization {
      */
     private static encodeValue;
     private static buildErc20TransferCall;
+    private static buildErc20ApproveCall;
     private static buildAtomicSwapOfferEtherCall;
     private static buildAtomicSwapOfferErc20Call;
     private static buildAtomicSwapClaimCall;
@@ -34,8 +38,10 @@ export declare class Serialization {
     private static serializeUnsignedSwapOfferTransaction;
     private static serializeUnsignedSwapClaimTransaction;
     private static serializeUnsignedSwapAbortTransaction;
+    private static serializeUnsignedErc20ApproveTransaction;
     private static serializeSignedSendTransaction;
     private static serializeSignedSwapOfferTransaction;
     private static serializeSignedSwapClaimTransaction;
     private static serializeSignedSwapAbortTransaction;
+    private static serializeSignedErc20ApproveTransaction;
 }

@@ -11,7 +11,7 @@ import {
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { Erc20Options } from "./erc20";
+import { Erc20Options, Erc20TokensMap } from "./erc20";
 import { EthereumConnectionOptions } from "./ethereumconnection";
 
 const { fromHex } = Encoding;
@@ -56,7 +56,7 @@ export interface EthereumNetworkConfig {
     readonly invalidSignature: RegExp;
     readonly gasLimitTooLow: RegExp;
   };
-  readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
+  readonly erc20Tokens: Erc20TokensMap;
   readonly erc20TransferTests: ReadonlyArray<Erc20TransferTest>;
   readonly expectedTokens: ReadonlyArray<Token>;
 }

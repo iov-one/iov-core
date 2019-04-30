@@ -6,6 +6,7 @@ import {
   ChainId,
   Fee,
   Hash,
+  isSwapTransaction,
   Nonce,
   PostableBytes,
   PrehashType,
@@ -33,8 +34,8 @@ import { Abi, SwapContractMethod } from "./abi";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
-import { Erc20Options } from "./erc20";
-import { Serialization } from "./serialization";
+import { Erc20ApproveTransaction, Erc20TokensMap } from "./erc20";
+import { Serialization, SwapIdPrefix } from "./serialization";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -48,6 +49,7 @@ import {
 const methodCallPrefix = {
   erc20: {
     transfer: toEthereumHex(Abi.calculateMethodId("transfer(address,uint256)")),
+    approve: toEthereumHex(Abi.calculateMethodId("approve(address,uint256)")),
   },
 };
 
@@ -88,15 +90,17 @@ export interface EthereumCodecOptions {
    *
    * The behaviour of encoding/decoding transactions for other tokens is undefined.
    */
-  readonly erc20Tokens?: ReadonlyMap<TokenTicker, Erc20Options>;
+  readonly erc20Tokens?: Erc20TokensMap;
 }
 
 export class EthereumCodec implements TxCodec {
   private readonly atomicSwapEtherContractAddress?: Address;
-  private readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
+  private readonly atomicSwapErc20ContractAddress?: Address;
+  private readonly erc20Tokens: Erc20TokensMap;
 
   constructor(options: EthereumCodecOptions) {
     this.atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress;
+    this.atomicSwapErc20ContractAddress = options.atomicSwapErc20ContractAddress;
     this.erc20Tokens = options.erc20Tokens || new Map();
   }
 
@@ -106,7 +110,7 @@ export class EthereumCodec implements TxCodec {
         unsigned,
         nonce,
         this.erc20Tokens,
-        this.atomicSwapEtherContractAddress,
+        this.getAtomicSwapContractAddress(unsigned),
       ) as SignableBytes,
       prehashType: PrehashType.Keccak256,
     };
@@ -116,7 +120,7 @@ export class EthereumCodec implements TxCodec {
     return Serialization.serializeSignedTransaction(
       signed,
       this.erc20Tokens,
-      this.atomicSwapEtherContractAddress,
+      this.getAtomicSwapContractAddress(signed.transaction),
     ) as PostableBytes;
   }
 
@@ -167,25 +171,33 @@ export class EthereumCodec implements TxCodec {
       },
     };
 
-    const atomicSwap =
-      this.atomicSwapEtherContractAddress &&
-      toChecksummedAddress(json.to).toLowerCase() === this.atomicSwapEtherContractAddress.toLowerCase();
+    const atomicSwapContractAddress = [
+      this.atomicSwapEtherContractAddress,
+      this.atomicSwapErc20ContractAddress,
+    ].find(
+      address =>
+        address !== undefined && toChecksummedAddress(json.to).toLowerCase() === address.toLowerCase(),
+    );
 
-    const erc20Token =
-      !atomicSwap &&
-      [...this.erc20Tokens.values()].find(
-        options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
-      );
+    const erc20Token = [...this.erc20Tokens.values()].find(
+      options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
+    );
 
-    let transaction: SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
-    if (atomicSwap) {
+    let transaction:
+      | SendTransaction
+      | Erc20ApproveTransaction
+      | SwapOfferTransaction
+      | SwapClaimTransaction
+      | SwapAbortTransaction;
+
+    if (atomicSwapContractAddress) {
       const positionMethodIdBegin = 0;
       const positionMethodIdEnd = positionMethodIdBegin + 4;
       const positionSwapIdBegin = positionMethodIdEnd;
       const positionSwapIdEnd = positionSwapIdBegin + 32;
 
       const method = Abi.decodeMethodId(input.slice(positionMethodIdBegin, positionMethodIdEnd));
-      const swapId = {
+      const swapIdWithoutPrefix = {
         data: input.slice(positionSwapIdBegin, positionSwapIdEnd) as SwapIdBytes,
       };
 
@@ -197,6 +209,10 @@ export class EthereumCodec implements TxCodec {
           const positionHashEnd = positionHashBegin + 32;
           const positionTimeoutBegin = positionHashEnd;
           const positionTimeoutEnd = positionTimeoutBegin + 32;
+          const positionErc20ContractAddressBegin = positionTimeoutEnd;
+          const positionErc20ContractAddressEnd = positionErc20ContractAddressBegin + 32;
+          const positionAmountBegin = positionErc20ContractAddressEnd;
+          const positionAmountEnd = positionAmountBegin + 32;
 
           const recipientChecksummedAddress = toChecksummedAddress(
             Abi.decodeAddress(input.slice(positionRecipientBegin, positionRecipientEnd)),
@@ -204,16 +220,36 @@ export class EthereumCodec implements TxCodec {
           const hash = input.slice(positionHashBegin, positionHashEnd) as Hash;
           const timeoutHeight = new BN(input.slice(positionTimeoutBegin, positionTimeoutEnd)).toNumber();
 
+          const erc20ContractAddressBytes = input.slice(
+            positionErc20ContractAddressBegin,
+            positionErc20ContractAddressEnd,
+          );
+          const token = erc20ContractAddressBytes.length
+            ? [...this.erc20Tokens.values()].find(
+                t =>
+                  t.contractAddress.toLowerCase() ===
+                  Abi.decodeAddress(erc20ContractAddressBytes).toLowerCase(),
+              )
+            : null;
+          const fractionalDigits = token ? token.decimals : constants.primaryTokenFractionalDigits;
+          const tokenTicker = token ? (token.symbol as TokenTicker) : constants.primaryTokenTicker;
+          const quantity = token
+            ? Abi.decodeUint256(input.slice(positionAmountBegin, positionAmountEnd))
+            : value;
+
           transaction = {
             kind: "bcp/swap_offer",
             creator: creator,
-            swapId: swapId,
+            swapId: {
+              ...swapIdWithoutPrefix,
+              prefix: token ? SwapIdPrefix.Erc20 : SwapIdPrefix.Ether,
+            },
             fee: fee,
             amounts: [
               {
-                quantity: decodeHexQuantityString(json.value),
-                fractionalDigits: constants.primaryTokenFractionalDigits,
-                tokenTicker: constants.primaryTokenTicker,
+                quantity: quantity,
+                fractionalDigits: fractionalDigits,
+                tokenTicker: tokenTicker,
               },
             ],
             recipient: recipientChecksummedAddress,
@@ -223,28 +259,44 @@ export class EthereumCodec implements TxCodec {
             hash: hash,
           };
           break;
-        case SwapContractMethod.Claim:
+        case SwapContractMethod.Claim: {
           const positionPreimageBegin = positionSwapIdEnd;
           const positionPreimageEnd = positionPreimageBegin + 32;
 
           const preimage = input.slice(positionPreimageBegin, positionPreimageEnd) as Preimage;
+          const prefix =
+            atomicSwapContractAddress === this.atomicSwapErc20ContractAddress
+              ? SwapIdPrefix.Erc20
+              : SwapIdPrefix.Ether;
 
           transaction = {
             kind: "bcp/swap_claim",
             creator: creator,
             fee: fee,
-            swapId: swapId,
+            swapId: {
+              ...swapIdWithoutPrefix,
+              prefix: prefix,
+            },
             preimage: preimage,
           };
           break;
-        case SwapContractMethod.Abort:
+        }
+        case SwapContractMethod.Abort: {
+          const prefix =
+            atomicSwapContractAddress === this.atomicSwapErc20ContractAddress
+              ? SwapIdPrefix.Erc20
+              : SwapIdPrefix.Ether;
           transaction = {
             kind: "bcp/swap_abort",
             creator: creator,
             fee: fee,
-            swapId: swapId,
+            swapId: {
+              ...swapIdWithoutPrefix,
+              prefix: prefix,
+            },
           };
           break;
+        }
         default:
           throw new Error("Atomic swap method not recognized");
       }
@@ -256,6 +308,7 @@ export class EthereumCodec implements TxCodec {
       const positionTransferAmountEnd = positionTransferAmountBegin + 32;
 
       const quantity = Abi.decodeUint256(input.slice(positionTransferAmountBegin, positionTransferAmountEnd));
+
       transaction = {
         kind: "bcp/send",
         creator: creator,
@@ -269,6 +322,27 @@ export class EthereumCodec implements TxCodec {
           Abi.decodeAddress(input.slice(positionTransferRecipientBegin, positionTransferRecipientEnd)),
         ),
         memo: undefined,
+      };
+    } else if (erc20Token && json.input.startsWith(methodCallPrefix.erc20.approve)) {
+      const positionApproveMethodEnd = 4;
+      const positionApproveSpenderBegin = positionApproveMethodEnd;
+      const positionApproveSpenderEnd = positionApproveSpenderBegin + 32;
+      const positionApproveAmountBegin = positionApproveSpenderEnd;
+      const positionApproveAmountEnd = positionApproveAmountBegin + 32;
+
+      const spender = Abi.decodeAddress(input.slice(positionApproveSpenderBegin, positionApproveSpenderEnd));
+      const quantity = Abi.decodeUint256(input.slice(positionApproveAmountBegin, positionApproveAmountEnd));
+
+      transaction = {
+        kind: "erc20/approve",
+        creator: creator,
+        fee: fee,
+        amount: {
+          quantity: quantity,
+          fractionalDigits: erc20Token.decimals,
+          tokenTicker: erc20Token.symbol as TokenTicker,
+        },
+        spender: spender,
       };
     } else {
       let memo: string;
@@ -314,6 +388,16 @@ export class EthereumCodec implements TxCodec {
 
   public isValidAddress(address: string): boolean {
     return isValidAddress(address);
+  }
+
+  private getAtomicSwapContractAddress(unsigned: UnsignedTransaction): Address | undefined {
+    const maybeSwapId = isSwapTransaction(unsigned) ? unsigned.swapId : undefined;
+    return (
+      maybeSwapId &&
+      (maybeSwapId.prefix === SwapIdPrefix.Ether
+        ? this.atomicSwapEtherContractAddress
+        : this.atomicSwapErc20ContractAddress)
+    );
   }
 }
 
