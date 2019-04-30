@@ -85,6 +85,18 @@ describe("parse", () => {
       expect(parseJsonRpcErrorResponse(response)).toEqual(response);
     });
 
+    it("works for error with string ID", () => {
+      const response: any = {
+        jsonrpc: "2.0",
+        id: "a3g4g34g",
+        error: {
+          code: jsonRpcCode.parseError,
+          message: "Could not parse request ID",
+        },
+      };
+      expect(parseJsonRpcErrorResponse(response)).toEqual(response);
+    });
+
     it("works for error with null ID", () => {
       const response: any = {
         jsonrpc: "2.0",

@@ -99,7 +99,7 @@ export function parseJsonRpcErrorResponse(data: unknown): JsonRpcErrorResponse {
   }
 
   const id = data.id;
-  if (typeof id !== "number" && id !== null) {
+  if (typeof id !== "number" && typeof id !== "string" && id !== null) {
     throw new Error("Invalid id field");
   }
 
