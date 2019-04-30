@@ -1,10 +1,16 @@
 import { Stream } from "xstream";
 
 import { Adaptor, adatorForVersion, Decoder, Encoder, Params, Responses } from "./adaptor";
-import { createJsonRpcRequest, JsonRpcEvent } from "./jsonrpc";
+import { createJsonRpcRequest } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
-import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclients";
+import {
+  HttpClient,
+  instanceOfRpcStreamingClient,
+  RpcClient,
+  SubscriptionEvent,
+  WebsocketClient,
+} from "./rpcclients";
 
 export class Client {
   public static async connect(url: string): Promise<Client> {
@@ -227,7 +233,7 @@ export class Client {
     return decode(result);
   }
 
-  private subscribe<T>(request: requests.SubscribeRequest, decode: (e: JsonRpcEvent) => T): Stream<T> {
+  private subscribe<T>(request: requests.SubscribeRequest, decode: (e: SubscriptionEvent) => T): Stream<T> {
     if (!instanceOfRpcStreamingClient(this.client)) {
       throw new Error("This RPC client type cannot subscribe to events");
     }

@@ -19,8 +19,8 @@ import {
   may,
   optional,
 } from "../encodings";
-import { JsonRpcEvent } from "../jsonrpc";
 import * as responses from "../responses";
+import { SubscriptionEvent } from "../rpcclients";
 import { IpPortString, TxBytes, TxHash, ValidatorPubkey, ValidatorSignature } from "../types";
 import { hashTx } from "./hasher";
 
@@ -77,15 +77,15 @@ export class Responses {
     return decodeStatus(response.result as RpcStatusResponse);
   }
 
-  public static decodeNewBlockEvent(event: JsonRpcEvent): responses.NewBlockEvent {
+  public static decodeNewBlockEvent(event: SubscriptionEvent): responses.NewBlockEvent {
     return decodeBlock(event.data.value.block as RpcBlock);
   }
 
-  public static decodeNewBlockHeaderEvent(event: JsonRpcEvent): responses.NewBlockHeaderEvent {
+  public static decodeNewBlockHeaderEvent(event: SubscriptionEvent): responses.NewBlockHeaderEvent {
     return decodeHeader(event.data.value.header as RpcHeader);
   }
 
-  public static decodeTxEvent(event: JsonRpcEvent): responses.TxEvent {
+  public static decodeTxEvent(event: SubscriptionEvent): responses.TxEvent {
     return decodeTxEvent(event.data.value.TxResult as RpcTxEvent);
   }
 

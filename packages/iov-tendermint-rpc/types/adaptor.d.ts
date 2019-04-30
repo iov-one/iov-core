@@ -1,7 +1,7 @@
 import { JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
-import { JsonRpcEvent } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
+import { SubscriptionEvent } from "./rpcclients";
 import { TxBytes, TxHash } from "./types";
 export interface Adaptor {
     readonly params: Params;
@@ -42,9 +42,9 @@ export interface Responses {
     readonly decodeTx: (response: JsonRpcSuccessResponse) => responses.TxResponse;
     readonly decodeTxSearch: (response: JsonRpcSuccessResponse) => responses.TxSearchResponse;
     readonly decodeValidators: (response: JsonRpcSuccessResponse) => responses.ValidatorsResponse;
-    readonly decodeNewBlockEvent: (response: JsonRpcEvent) => responses.NewBlockEvent;
-    readonly decodeNewBlockHeaderEvent: (response: JsonRpcEvent) => responses.NewBlockHeaderEvent;
-    readonly decodeTxEvent: (response: JsonRpcEvent) => responses.TxEvent;
+    readonly decodeNewBlockEvent: (response: SubscriptionEvent) => responses.NewBlockEvent;
+    readonly decodeNewBlockHeaderEvent: (response: SubscriptionEvent) => responses.NewBlockHeaderEvent;
+    readonly decodeTxEvent: (response: SubscriptionEvent) => responses.TxEvent;
 }
 /**
  * Returns an Adaptor implementation for a given tendermint version.

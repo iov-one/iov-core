@@ -1,6 +1,6 @@
 import { JsonRpcSuccessResponse } from "@iov/jsonrpc";
-import { JsonRpcEvent } from "../jsonrpc";
 import * as responses from "../responses";
+import { SubscriptionEvent } from "../rpcclients";
 /*** adaptor ***/
 export declare class Responses {
     static decodeAbciInfo(response: JsonRpcSuccessResponse): responses.AbciInfoResponse;
@@ -15,9 +15,9 @@ export declare class Responses {
     static decodeGenesis(response: JsonRpcSuccessResponse): responses.GenesisResponse;
     static decodeHealth(): responses.HealthResponse;
     static decodeStatus(response: JsonRpcSuccessResponse): responses.StatusResponse;
-    static decodeNewBlockEvent(event: JsonRpcEvent): responses.NewBlockEvent;
-    static decodeNewBlockHeaderEvent(event: JsonRpcEvent): responses.NewBlockHeaderEvent;
-    static decodeTxEvent(event: JsonRpcEvent): responses.TxEvent;
+    static decodeNewBlockEvent(event: SubscriptionEvent): responses.NewBlockEvent;
+    static decodeNewBlockHeaderEvent(event: SubscriptionEvent): responses.NewBlockHeaderEvent;
+    static decodeTxEvent(event: SubscriptionEvent): responses.TxEvent;
     static decodeTx(response: JsonRpcSuccessResponse): responses.TxResponse;
     static decodeTxSearch(response: JsonRpcSuccessResponse): responses.TxSearchResponse;
     static decodeValidators(response: JsonRpcSuccessResponse): responses.ValidatorsResponse;

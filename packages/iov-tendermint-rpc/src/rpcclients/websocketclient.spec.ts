@@ -4,9 +4,10 @@ import { toListPromise } from "@iov/stream";
 
 import { defaultInstance } from "../config.spec";
 import { Integer } from "../encodings";
-import { createJsonRpcRequest, JsonRpcEvent } from "../jsonrpc";
+import { createJsonRpcRequest } from "../jsonrpc";
 import { Method } from "../requests";
 
+import { SubscriptionEvent } from "./rpcclient";
 import { WebsocketClient } from "./websocketclient";
 
 function skipTests(): boolean {
@@ -52,12 +53,12 @@ describe("WebsocketClient", () => {
     const headers = client.listen(req);
 
     // tslint:disable-next-line:readonly-array
-    const events: JsonRpcEvent[] = [];
+    const events: SubscriptionEvent[] = [];
 
     const sub = headers.subscribe({
       error: done.fail,
       complete: () => done.fail("subscription should not complete"),
-      next: (evt: JsonRpcEvent) => {
+      next: (evt: SubscriptionEvent) => {
         events.push(evt);
         expect(evt.query).toEqual(query);
 
@@ -115,12 +116,12 @@ describe("WebsocketClient", () => {
     const headers = client.listen(req);
 
     // tslint:disable-next-line:readonly-array
-    const events: JsonRpcEvent[] = [];
+    const events: SubscriptionEvent[] = [];
 
     const sub = headers.subscribe({
       error: done.fail,
       complete: () => done.fail("subscription should not complete"),
-      next: (evt: JsonRpcEvent) => {
+      next: (evt: SubscriptionEvent) => {
         events.push(evt);
         expect(evt.query).toEqual(query);
 
@@ -154,13 +155,13 @@ describe("WebsocketClient", () => {
     const headers = client.listen(req);
 
     // tslint:disable-next-line:readonly-array
-    const receivedEvents: JsonRpcEvent[] = [];
+    const receivedEvents: SubscriptionEvent[] = [];
 
     setTimeout(() => client.disconnect(), 1500);
 
     headers.subscribe({
       error: done.fail,
-      next: (event: JsonRpcEvent) => receivedEvents.push(event),
+      next: (event: SubscriptionEvent) => receivedEvents.push(event),
       complete: () => {
         expect(receivedEvents.length).toEqual(1);
         done();

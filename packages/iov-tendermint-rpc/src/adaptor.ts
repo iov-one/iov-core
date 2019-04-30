@@ -3,9 +3,9 @@
 
 import { JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
 
-import { JsonRpcEvent } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
+import { SubscriptionEvent } from "./rpcclients";
 import { TxBytes, TxHash } from "./types";
 import { v0_25 } from "./v0-25";
 import { v0_27 } from "./v0-27";
@@ -57,9 +57,9 @@ export interface Responses {
   readonly decodeValidators: (response: JsonRpcSuccessResponse) => responses.ValidatorsResponse;
 
   // events
-  readonly decodeNewBlockEvent: (response: JsonRpcEvent) => responses.NewBlockEvent;
-  readonly decodeNewBlockHeaderEvent: (response: JsonRpcEvent) => responses.NewBlockHeaderEvent;
-  readonly decodeTxEvent: (response: JsonRpcEvent) => responses.TxEvent;
+  readonly decodeNewBlockEvent: (response: SubscriptionEvent) => responses.NewBlockEvent;
+  readonly decodeNewBlockHeaderEvent: (response: SubscriptionEvent) => responses.NewBlockHeaderEvent;
+  readonly decodeTxEvent: (response: SubscriptionEvent) => responses.TxEvent;
 }
 
 /**

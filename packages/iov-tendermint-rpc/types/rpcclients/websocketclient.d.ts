@@ -1,7 +1,6 @@
 import { Stream } from "xstream";
 import { JsonRpcId, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccessResponse } from "@iov/jsonrpc";
-import { JsonRpcEvent } from "../jsonrpc";
-import { RpcStreamingClient } from "./rpcclient";
+import { RpcStreamingClient, SubscriptionEvent } from "./rpcclient";
 export declare class WebsocketClient implements RpcStreamingClient {
     private readonly url;
     private readonly socket;
@@ -10,7 +9,7 @@ export declare class WebsocketClient implements RpcStreamingClient {
     private readonly subscriptionStreams;
     constructor(baseUrl?: string, onError?: (err: any) => void);
     execute(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse>;
-    listen(request: JsonRpcRequest): Stream<JsonRpcEvent>;
+    listen(request: JsonRpcRequest): Stream<SubscriptionEvent>;
     /**
      * Resolves as soon as websocket is connected. execute() queues requests automatically,
      * so this should be required for testing purposes only.

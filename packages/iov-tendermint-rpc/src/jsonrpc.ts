@@ -1,14 +1,5 @@
 import { JsonRpcRequest } from "@iov/jsonrpc";
 
-// JsonRpcEvent is event info stored in result of JsonRpcSuccess
-export interface JsonRpcEvent {
-  readonly query: string;
-  readonly data: {
-    readonly type: string;
-    readonly value: any;
-  };
-}
-
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 /** generates a random alphanumeric character  */
