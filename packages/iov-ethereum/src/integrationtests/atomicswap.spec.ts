@@ -9,13 +9,14 @@ import {
   ClaimedSwap,
   isBlockInfoPending,
   isBlockInfoSucceeded,
+  isClaimedSwap,
+  isOpenSwap,
   OpenSwap,
   Preimage,
   PublicIdentity,
   PublicKeyBundle,
   SendTransaction,
   SwapClaimTransaction,
-  SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
   TokenTicker,
@@ -288,13 +289,17 @@ describe("Full atomic swap", () => {
     // find claim
     const bobSenderSwaps = await bob.getSenderSwaps();
     const aliceClaimed = bobSenderSwaps[bobSenderSwaps.length - 1];
-    expect(aliceClaimed.kind).toEqual(SwapProcessState.Claimed);
+    if (!isClaimedSwap(aliceClaimed)) {
+      throw new Error("Expected swap to be claimed");
+    }
 
     const bobReceiverSwaps2 = await bob.getReceiverSwaps();
     const aliceOffer2 = bobReceiverSwaps2[bobReceiverSwaps2.length - 1];
-    expect(aliceOffer2.kind).toEqual(SwapProcessState.Open);
+    if (!isOpenSwap(aliceOffer2)) {
+      throw new Error("Expected swap to be open");
+    }
 
-    await bob.claimFromRevealedPreimage(aliceOffer2 as OpenSwap, aliceClaimed as ClaimedSwap);
+    await bob.claimFromRevealedPreimage(aliceOffer2, aliceClaimed);
 
     // Bob used Alice's preimage to claim unlock his funds
     expect((await bob.getReceiverBalance()).sub(bobInitialReceiver).gtn(4900000000000000000)).toEqual(true);
