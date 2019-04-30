@@ -3,6 +3,8 @@
 ## 0.15.0
 
 - @iov/bcp: Add `isSwapTransaction` helper function.
+- @iov/bcp: Add `isOpenSwap`, `isClaimedSwap` and `isAbortedSwap` helper
+  functions.
 - @iov/ethereum: Add `createEtherSwapId` and `createErc20SwapId` static methods.
 - @iov/ethereum: Add `SwapIdPrefix` enum.
 - @iov/ethereum: Add `Erc20TokensMap` type.
