@@ -30,13 +30,6 @@ export function throwIfError(resp: JsonRpcResponse): JsonRpcSuccessResponse {
   return resp;
 }
 
-export function ifError(resp: JsonRpcResponse): Error | undefined {
-  if (isJsonRpcErrorResponse(resp)) {
-    return new Error(JSON.stringify(resp.error));
-  }
-  return undefined;
-}
-
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 /** generates a random alphanumeric character  */

@@ -2,6 +2,7 @@
 import { Listener, Producer, Stream, Subscription } from "xstream";
 
 import {
+  isJsonRpcErrorResponse,
   JsonRpcId,
   JsonRpcRequest,
   JsonRpcResponse,
@@ -11,7 +12,7 @@ import {
 import { SocketWrapperMessageEvent, StreamingSocket } from "@iov/socket";
 import { firstEvent } from "@iov/stream";
 
-import { ifError, JsonRpcEvent, throwIfError } from "../jsonrpc";
+import { JsonRpcEvent, throwIfError } from "../jsonrpc";
 
 import { hasProtocol, RpcStreamingClient } from "./rpcclient";
 
@@ -158,10 +159,9 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
       .filter(response => response.id === this.request.id)
       .subscribe({
         next: response => {
-          const err = ifError(response);
-          if (err) {
+          if (isJsonRpcErrorResponse(response)) {
             this.closeSubscriptions();
-            listener.error(err);
+            listener.error(JSON.stringify(response.error));
           }
           idSubscription.unsubscribe();
         },
@@ -174,13 +174,11 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
       .filter(response => response.id === `${this.request.id}#event`)
       .subscribe({
         next: response => {
-          const err = ifError(response);
-          if (err) {
+          if (isJsonRpcErrorResponse(response)) {
             this.closeSubscriptions();
-            listener.error(err);
+            listener.error(JSON.stringify(response.error));
           } else {
-            const result = (response as JsonRpcSuccessResponse).result;
-            listener.next(result as JsonRpcEvent);
+            listener.next(response.result as JsonRpcEvent);
           }
         },
       });
