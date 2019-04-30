@@ -19,6 +19,7 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
+  isAtomicSwapHashQuery,
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
   isAtomicSwapSenderQuery,
@@ -337,9 +338,10 @@ export class BnsConnection implements AtomicSwapConnection {
         return this.query("/escrows/sender", decodeBnsAddress(query.sender).data);
       } else if (isAtomicSwapRecipientQuery(query)) {
         return this.query("/escrows/recipient", decodeBnsAddress(query.recipient).data);
-      } else {
-        // if (isAtomicSwapHashQuery(query))
+      } else if (isAtomicSwapHashQuery(query)) {
         return this.query("/escrows/arbiter", hashIdentifier(query.hash));
+      } else {
+        throw new Error("Unexpected type of query");
       }
     };
 
