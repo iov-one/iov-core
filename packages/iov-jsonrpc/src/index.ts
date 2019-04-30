@@ -19,8 +19,9 @@ export {
 export {
   isJsonRpcErrorResponse,
   isJsonRpcSuccessResponse,
-  JsonRpcRequest,
+  JsonRpcError,
   JsonRpcErrorResponse,
+  JsonRpcRequest,
   JsonRpcResponse,
   JsonRpcSuccessResponse,
   jsonRpcCode,
