@@ -1,5 +1,10 @@
-import { JsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccessResponse } from "./types";
-export declare function parseJsonRpcId(data: unknown): number | null;
+import { JsonRpcErrorResponse, JsonRpcId, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccessResponse } from "./types";
+/**
+ * Extracts ID field from request or response object.
+ *
+ * Returns `null` when no valid ID was found.
+ */
+export declare function parseJsonRpcId(data: unknown): JsonRpcId | null;
 export declare function parseJsonRpcRequest(data: unknown): JsonRpcRequest;
 /** Throws if data is not a JsonRpcErrorResponse */
 export declare function parseJsonRpcErrorResponse(data: unknown): JsonRpcErrorResponse;

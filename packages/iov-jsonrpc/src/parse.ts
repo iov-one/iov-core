@@ -8,18 +8,24 @@ import {
 import {
   JsonRpcError,
   JsonRpcErrorResponse,
+  JsonRpcId,
   JsonRpcRequest,
   JsonRpcResponse,
   JsonRpcSuccessResponse,
 } from "./types";
 
-export function parseJsonRpcId(data: unknown): number | null {
+/**
+ * Extracts ID field from request or response object.
+ *
+ * Returns `null` when no valid ID was found.
+ */
+export function parseJsonRpcId(data: unknown): JsonRpcId | null {
   if (!isJsonCompatibleDictionary(data)) {
     throw new Error("Data must be JSON compatible dictionary");
   }
 
   const id = data.id;
-  if (typeof id !== "number") {
+  if (typeof id !== "number" && typeof id !== "string") {
     return null;
   }
   return id;

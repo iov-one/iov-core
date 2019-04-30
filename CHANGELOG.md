@@ -29,6 +29,9 @@ Breaking changes
 - @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.
 - @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
+- @iov/jsonrpc: The `id` field of `JsonRpcRequest`, `JsonRpcSuccessResponse` and
+  `JsonRpcErrorResponse` is now of type `JsonRpcId`, which can be a string or a
+  number.
 
 ## 0.14.1
 

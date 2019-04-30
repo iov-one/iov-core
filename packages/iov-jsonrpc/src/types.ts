@@ -4,16 +4,18 @@ import {
   JsonCompatibleValue,
 } from "./jsoncompatibledictionary";
 
+export type JsonRpcId = number | string;
+
 export interface JsonRpcRequest {
   readonly jsonrpc: "2.0";
-  readonly id: number;
+  readonly id: JsonRpcId;
   readonly method: string;
   readonly params: JsonCompatibleArray | JsonCompatibleDictionary;
 }
 
 export interface JsonRpcSuccessResponse {
   readonly jsonrpc: "2.0";
-  readonly id: number;
+  readonly id: JsonRpcId;
   readonly result: any;
 }
 
@@ -28,7 +30,7 @@ export interface JsonRpcError {
  */
 export interface JsonRpcErrorResponse {
   readonly jsonrpc: "2.0";
-  readonly id: number | null;
+  readonly id: JsonRpcId | null;
   readonly error: JsonRpcError;
 }
 

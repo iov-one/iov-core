@@ -21,6 +21,7 @@ export {
   isJsonRpcSuccessResponse,
   JsonRpcError,
   JsonRpcErrorResponse,
+  JsonRpcId,
   JsonRpcRequest,
   JsonRpcResponse,
   JsonRpcSuccessResponse,
