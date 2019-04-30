@@ -8,7 +8,6 @@ import { firstEvent, toListPromise } from "@iov/stream";
 import { Adaptor, adatorForVersion } from "./adaptor";
 import { Client } from "./client";
 import { tendermintInstances } from "./config.spec";
-import { randomId } from "./jsonrpc";
 import { buildQuery } from "./requests";
 import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclients";
@@ -37,6 +36,13 @@ function buildKvTx(k: string, v: string): TxBytes {
   return Encoding.toAscii(`${k}=${v}`) as TxBytes;
 }
 
+function randomString(): string {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from({ length: 12 })
+    .map(() => alphabet[Math.floor(Math.random() * alphabet.length)])
+    .join("");
+}
+
 function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
   it("can connect to tendermint with known version", async () => {
     pendingWithoutTendermint();
@@ -56,7 +62,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
   it("can post a transaction", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
-    const tx = buildKvTx(randomId(), randomId());
+    const tx = buildKvTx(randomString(), randomString());
 
     const response = await client.broadcastTxCommit({ tx: tx });
     expect(response.height).toBeGreaterThan(2);
@@ -74,7 +80,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
   it("gets the same tx hash from backend as calculated locally", async () => {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
-    const tx = buildKvTx(randomId(), randomId());
+    const tx = buildKvTx(randomString(), randomString());
     const calculatedTxHash = adaptor.hashTx(tx);
 
     const response = await client.broadcastTxCommit({ tx: tx });
@@ -87,8 +93,8 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
 
-    const key = randomId();
-    const value = randomId();
+    const key = randomString();
+    const value = randomString();
     await client.broadcastTxCommit({ tx: buildKvTx(key, value) });
 
     const binKey = Encoding.toAscii(key);
@@ -136,8 +142,8 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
 
-    const find = randomId();
-    const me = randomId();
+    const find = randomString();
+    const me = randomString();
     const tx = buildKvTx(find, me);
 
     const txRes = await client.broadcastTxCommit({ tx: tx });
@@ -190,11 +196,11 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     pendingWithoutTendermint();
     const client = new Client(rpcFactory(), adaptor);
 
-    const find = randomId();
+    const find = randomString();
     const query = buildQuery({ tags: [{ key: "app.key", value: find }] });
 
     const sendTx = async () => {
-      const me = randomId();
+      const me = randomString();
       const tx = buildKvTx(find, me);
 
       const txRes = await client.broadcastTxCommit({ tx: tx });
@@ -298,8 +304,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
 
     const testStart = ReadonlyDate.now();
 
-    const transactionData1 = buildKvTx(randomId(), randomId());
-    const transactionData2 = buildKvTx(randomId(), randomId());
+    const transactionData1 = buildKvTx(randomString(), randomString());
+    const transactionData2 = buildKvTx(randomString(), randomString());
 
     const events: responses.NewBlockEvent[] = [];
     const client = new Client(rpcFactory(), adaptor);
@@ -378,8 +384,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
       error: fail,
     });
 
-    const transactionData1 = buildKvTx(randomId(), randomId());
-    const transactionData2 = buildKvTx(randomId(), randomId());
+    const transactionData1 = buildKvTx(randomString(), randomString());
+    const transactionData2 = buildKvTx(randomString(), randomString());
 
     await client.broadcastTxCommit({ tx: transactionData1 });
     await client.broadcastTxCommit({ tx: transactionData2 });
@@ -401,8 +407,8 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
   it("can subscribe to transaction events filtered by creator", async () => {
     pendingWithoutTendermint();
 
-    const transactionData1 = buildKvTx(randomId(), randomId());
-    const transactionData2 = buildKvTx(randomId(), randomId());
+    const transactionData1 = buildKvTx(randomString(), randomString());
+    const transactionData2 = buildKvTx(randomString(), randomString());
 
     const events: responses.TxEvent[] = [];
     const client = new Client(rpcFactory(), adaptor);

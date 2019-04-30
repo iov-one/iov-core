@@ -1,7 +1,7 @@
 import { Stream } from "xstream";
 
 import { Adaptor, adatorForVersion, Decoder, Encoder, Params, Responses } from "./adaptor";
-import { JsonRpcEvent, jsonRpcWith } from "./jsonrpc";
+import { createJsonRpcRequest, JsonRpcEvent } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
 import { HttpClient, instanceOfRpcStreamingClient, RpcClient, WebsocketClient } from "./rpcclients";
@@ -14,7 +14,7 @@ export class Client {
   }
 
   public static async detectVersion(client: RpcClient): Promise<Client> {
-    const req = jsonRpcWith(requests.Method.Status);
+    const req = createJsonRpcRequest(requests.Method.Status);
     const response = await client.execute(req);
     const result = response.result;
 

@@ -1,5 +1,5 @@
 import { defaultInstance } from "../config.spec";
-import { jsonRpcWith } from "../jsonrpc";
+import { createJsonRpcRequest } from "../jsonrpc";
 import { Method } from "../requests";
 
 import { HttpClient } from "./httpclient";
@@ -36,7 +36,7 @@ describe("RpcClient", () => {
   it("should also work with trailing slashes", async () => {
     pendingWithoutTendermint();
 
-    const statusRequest = jsonRpcWith(Method.Status);
+    const statusRequest = createJsonRpcRequest(Method.Status);
 
     const httpClient = new HttpClient(tendermintUrl + "/");
     expect(await httpClient.execute(statusRequest)).toBeDefined();

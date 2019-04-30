@@ -6,7 +6,5 @@ export interface JsonRpcEvent {
         readonly value: any;
     };
 }
-export declare function jsonRpcWith(method: string, params?: {}): JsonRpcRequest;
-/** generates a random alphanumeric character  */
-export declare function randomChar(): string;
-export declare function randomId(): string;
+/** Creates a JSON-RPC request with random ID */
+export declare function createJsonRpcRequest(method: string, params?: {}): JsonRpcRequest;
