@@ -23,6 +23,10 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     static createEtherSwapId(): Promise<SwapId>;
     static createErc20SwapId(): Promise<SwapId>;
     static establish(baseUrl: string, options: EthereumConnectionOptions): Promise<EthereumConnection>;
+    private static parseOpenedEventBytes;
+    private static parseClaimedEventBytes;
+    private static parseAbortedEventBytes;
+    private static updateSwapInList;
     private readonly pollIntervalMs;
     private readonly rpcClient;
     private readonly myChainId;
