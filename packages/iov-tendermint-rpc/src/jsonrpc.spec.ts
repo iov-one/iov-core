@@ -29,12 +29,10 @@ describe("jsonrpc", () => {
   it("Generates proper jsonrpc objects with distinct ids", () => {
     const rpc = jsonRpcWith("foo");
     expect(rpc.jsonrpc).toEqual("2.0");
-    expect(rpc.id).toBeTruthy();
-    expect(rpc.id.length).toEqual(12);
+    expect(rpc.id).toMatch(/^[a-zA-Z0-9]{12}$/);
 
     const rpc2 = jsonRpcWith("foo");
-    expect(rpc2.id).toBeTruthy();
-    expect(rpc2.id.length).toEqual(12);
+    expect(rpc2.id).toMatch(/^[a-zA-Z0-9]{12}$/);
 
     expect(rpc2.id).not.toEqual(rpc.id);
   });
@@ -44,8 +42,7 @@ describe("jsonrpc", () => {
     const params = { foo: "bar" };
     const rpc = jsonRpcWith(method, params);
     expect(rpc.jsonrpc).toEqual("2.0");
-    expect(rpc.id).toBeTruthy();
-    expect(rpc.id.length).toEqual(12);
+    expect(rpc.id).toMatch(/^[a-zA-Z0-9]{12}$/);
     expect(rpc.method).toEqual(method);
     expect(rpc.params).toEqual(params);
   });

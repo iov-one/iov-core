@@ -1,6 +1,7 @@
 /* tslint:disable:readonly-keyword readonly-array no-object-mutation */
 import { Listener, Producer, Stream, Subscription } from "xstream";
 
+import { JsonRpcId } from "@iov/jsonrpc";
 import { SocketWrapperMessageEvent, StreamingSocket } from "@iov/socket";
 import { firstEvent } from "@iov/stream";
 
@@ -101,7 +102,7 @@ export class WebsocketClient implements RpcStreamingClient {
     this.socket.disconnect();
   }
 
-  protected async responseForRequestId(id: string): Promise<JsonRpcResponse> {
+  protected async responseForRequestId(id: JsonRpcId): Promise<JsonRpcResponse> {
     return firstEvent(this.jsonRpcResponseStream.filter(r => r.id === id));
   }
 }

@@ -1,4 +1,5 @@
 import { Stream } from "xstream";
+import { JsonRpcId } from "@iov/jsonrpc";
 import { JsonRpcEvent, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess } from "../jsonrpc";
 import { RpcStreamingClient } from "./rpcclient";
 export declare class WebsocketClient implements RpcStreamingClient {
@@ -16,5 +17,5 @@ export declare class WebsocketClient implements RpcStreamingClient {
      */
     connected(): Promise<void>;
     disconnect(): void;
-    protected responseForRequestId(id: string): Promise<JsonRpcResponse>;
+    protected responseForRequestId(id: JsonRpcId): Promise<JsonRpcResponse>;
 }

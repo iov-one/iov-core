@@ -1,10 +1,8 @@
-import { As } from "type-tagger";
-
-export type RpcId = string & As<"rpcid">;
+import { JsonRpcId } from "@iov/jsonrpc";
 
 export interface JsonRpcRequest {
   readonly jsonrpc: "2.0";
-  readonly id: RpcId;
+  readonly id: JsonRpcId;
   readonly method: string;
   readonly params: {};
 }
@@ -13,13 +11,13 @@ export type JsonRpcResponse = JsonRpcSuccess | JsonRpcError;
 
 export interface JsonRpcSuccess {
   readonly jsonrpc: "2.0";
-  readonly id: RpcId;
+  readonly id: JsonRpcId;
   readonly result: any;
 }
 
 export interface JsonRpcError {
   readonly jsonrpc: "2.0";
-  readonly id: RpcId;
+  readonly id: JsonRpcId;
   readonly error: {
     readonly code: number;
     readonly message: string;
@@ -68,8 +66,8 @@ export function randomChar(): string {
   return chars[Math.floor(Math.random() * chars.length)];
 }
 
-export function randomId(): RpcId {
+export function randomId(): string {
   return Array.from({ length: 12 })
     .map(() => randomChar())
-    .join("") as RpcId;
+    .join("");
 }
