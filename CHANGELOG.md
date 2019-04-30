@@ -24,6 +24,7 @@ Breaking changes
   `isAtomicSwapHashlockQuery` to `isAtomicSwapHashQuery`.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
+- @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.
 - @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 
