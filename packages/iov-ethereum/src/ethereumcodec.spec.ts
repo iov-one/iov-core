@@ -171,7 +171,7 @@ describe("ethereumCodec", () => {
     it("interprets ERC20 transfer of unknown contract as ETH send", () => {
       // There is only one transaction type on Ethereum. Smart contract interaction and
       // ETH sends can only reliably be differentiated when all contract addresses are known.
-      // As a result, we interprete all unknown transactions as ETH send.
+      // As a result, we interpret all unknown transactions as ETH send.
 
       // curl -sS -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x80295fc8cdf6ac5fce39f34037f07d5be3abe82baa8468196faf1f00ced239e3"],"id":1}' https://rinkeby.infura.io | jq .result
       const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
@@ -321,6 +321,7 @@ describe("ethereumCodec", () => {
 
     it("works for Ether atomic swap offer", () => {
       // Retrieved from local instance since we haven't deployed this to a public testnet
+      // curl - sS - X POST--data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x044870acdb5fdab0f76266eda11cdeee50de880f58ccf6bfb32a6b651914f637"],"id":1}' http://localhost:8545 | jq .result
       const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
         hash: "0x044870acdb5fdab0f76266eda11cdeee50de880f58ccf6bfb32a6b651914f637",
         nonce: "0x36",
@@ -401,6 +402,7 @@ describe("ethereumCodec", () => {
 
     it("works for Ether atomic swap claim", async () => {
       // Retrieved from local instance since we haven't deployed this to a public testnet
+      // curl - sS - X POST--data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x85bbdfabbf38e6888488f7e967a5b7784bc8041416773ecdfc2b57e365bc3777"],"id":1}' http://localhost:8545 | jq .result
       const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
         hash: "0x85bbdfabbf38e6888488f7e967a5b7784bc8041416773ecdfc2b57e365bc3777",
         nonce: "0x7e",
@@ -468,6 +470,7 @@ describe("ethereumCodec", () => {
 
     it("works for Ether atomic swap abort", async () => {
       // Retrieved from local instance since we haven't deployed this to a public testnet
+      // curl - sS - X POST--data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0xb8a6bdbcc56f30e385e928fee46374bceec1c6887814c0b4bddb23c8df25d91b"],"id":1}' http://localhost:8545 | jq .result
       const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
         hash: "0xb8a6bdbcc56f30e385e928fee46374bceec1c6887814c0b4bddb23c8df25d91b",
         nonce: "0xa0",
@@ -532,6 +535,7 @@ describe("ethereumCodec", () => {
 
     it("works for Erc20 atomic swap offer", () => {
       // Retrieved from local instance since we haven't deployed this to a public testnet
+      // curl - sS - X POST--data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x293419b275bfdab614697c2dabe85cf9f47ad8d728675d622d65e0839992afc2"],"id":1}' http://localhost:8545 | jq .result
       const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
         hash: "0x293419b275bfdab614697c2dabe85cf9f47ad8d728675d622d65e0839992afc2",
         nonce: "0xf5",
@@ -625,6 +629,7 @@ describe("ethereumCodec", () => {
 
     it("works for Erc20 atomic swap claim", async () => {
       // Retrieved from local instance since we haven't deployed this to a public testnet
+      // curl - sS - X POST--data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0xa7a4ed452ee5861aaa20837a4fdf077b8ab28a2c08a228b6eb64268b8ee35764"],"id":1}' http://localhost:8545 | jq .result
       const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
         hash: "0xa7a4ed452ee5861aaa20837a4fdf077b8ab28a2c08a228b6eb64268b8ee35764",
         nonce: "0x133",
@@ -706,6 +711,7 @@ describe("ethereumCodec", () => {
 
     it("works for Erc20 atomic swap abort", async () => {
       // Retrieved from local instance since we haven't deployed this to a public testnet
+      // curl - sS - X POST--data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x224c51c8641da40fec0987972af1f6e7bf4635a2eb7366be68da1bfcea144814"],"id":1}' http://localhost:8545 | jq .result
       const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
         hash: "0x224c51c8641da40fec0987972af1f6e7bf4635a2eb7366be68da1bfcea144814",
         nonce: "0x15b",
