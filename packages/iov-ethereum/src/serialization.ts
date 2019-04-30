@@ -35,6 +35,26 @@ export enum SwapIdPrefix {
   Erc20 = "erc20",
 }
 
+interface UnsignedSerializationOptions {
+  readonly chainIdHex: string;
+  readonly gasPriceHex: string;
+  readonly gasLimitHex: string;
+  readonly nonce: Nonce;
+  readonly erc20Tokens: Erc20TokensMap;
+  readonly atomicSwapContractAddress?: Address;
+}
+
+interface SignedSerializationOptions {
+  readonly v: string;
+  readonly r: Uint8Array;
+  readonly s: Uint8Array;
+  readonly gasPriceHex: string;
+  readonly gasLimitHex: string;
+  readonly nonce: Nonce;
+  readonly erc20Tokens: Erc20TokensMap;
+  readonly atomicSwapContractAddress?: Address;
+}
+
 export class Serialization {
   public static serializeGenericTransaction(
     nonce: Nonce,
@@ -71,29 +91,25 @@ export class Serialization {
     erc20Tokens: Erc20TokensMap = new Map(),
     atomicSwapContractAddress?: Address,
   ): Uint8Array {
-    const chainIdHex = Serialization.getChainIdHex(unsigned);
-    const gasPriceHex = Serialization.getGasPriceHex(unsigned);
-    const gasLimitHex = Serialization.getGasLimitHex(unsigned);
-
-    const args: [string, string, string, Nonce, Erc20TokensMap, Address?] = [
-      chainIdHex,
-      gasPriceHex,
-      gasLimitHex,
-      nonce,
-      erc20Tokens,
-      atomicSwapContractAddress,
-    ];
+    const options: UnsignedSerializationOptions = {
+      chainIdHex: Serialization.getChainIdHex(unsigned),
+      gasPriceHex: Serialization.getGasPriceHex(unsigned),
+      gasLimitHex: Serialization.getGasLimitHex(unsigned),
+      nonce: nonce,
+      erc20Tokens: erc20Tokens,
+      atomicSwapContractAddress: atomicSwapContractAddress,
+    };
 
     if (isSendTransaction(unsigned)) {
-      return Serialization.serializeUnsignedSendTransaction(unsigned, ...args);
+      return Serialization.serializeUnsignedSendTransaction(unsigned, options);
     } else if (isSwapOfferTransaction(unsigned)) {
-      return Serialization.serializeUnsignedSwapOfferTransaction(unsigned, ...args);
+      return Serialization.serializeUnsignedSwapOfferTransaction(unsigned, options);
     } else if (isSwapClaimTransaction(unsigned)) {
-      return Serialization.serializeUnsignedSwapClaimTransaction(unsigned, ...args);
+      return Serialization.serializeUnsignedSwapClaimTransaction(unsigned, options);
     } else if (isSwapAbortTransaction(unsigned)) {
-      return Serialization.serializeUnsignedSwapAbortTransaction(unsigned, ...args);
+      return Serialization.serializeUnsignedSwapAbortTransaction(unsigned, options);
     } else if (isErc20ApproveTransaction(unsigned)) {
-      return Serialization.serializeUnsignedErc20ApproveTransaction(unsigned, ...args);
+      return Serialization.serializeUnsignedErc20ApproveTransaction(unsigned, options);
     } else {
       throw new Error("Unsupported kind of transaction");
     }
@@ -106,10 +122,6 @@ export class Serialization {
   ): Uint8Array {
     const unsigned = signed.transaction;
 
-    const { nonce } = signed.primarySignature;
-    const gasPriceHex = Serialization.getGasPriceHex(unsigned);
-    const gasLimitHex = Serialization.getGasLimitHex(unsigned);
-
     const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
     const r = sig.r();
     const s = sig.s();
@@ -120,27 +132,27 @@ export class Serialization {
         : { forkState: BlknumForkState.Before };
     const v = encodeQuantity(eip155V(chain, sig.recovery));
 
-    const args: [string, Uint8Array, Uint8Array, string, string, Nonce, Erc20TokensMap, Address?] = [
-      v,
-      r,
-      s,
-      gasPriceHex,
-      gasLimitHex,
-      nonce,
-      erc20Tokens,
-      atomicSwapContractAddress,
-    ];
+    const options: SignedSerializationOptions = {
+      v: v,
+      r: r,
+      s: s,
+      gasPriceHex: Serialization.getGasPriceHex(unsigned),
+      gasLimitHex: Serialization.getGasLimitHex(unsigned),
+      nonce: signed.primarySignature.nonce,
+      erc20Tokens: erc20Tokens,
+      atomicSwapContractAddress: atomicSwapContractAddress,
+    };
 
     if (isSendTransaction(unsigned)) {
-      return Serialization.serializeSignedSendTransaction(unsigned, ...args);
+      return Serialization.serializeSignedSendTransaction(unsigned, options);
     } else if (isSwapOfferTransaction(unsigned)) {
-      return Serialization.serializeSignedSwapOfferTransaction(unsigned, ...args);
+      return Serialization.serializeSignedSwapOfferTransaction(unsigned, options);
     } else if (isSwapClaimTransaction(unsigned)) {
-      return Serialization.serializeSignedSwapClaimTransaction(unsigned, ...args);
+      return Serialization.serializeSignedSwapClaimTransaction(unsigned, options);
     } else if (isSwapAbortTransaction(unsigned)) {
-      return Serialization.serializeSignedSwapAbortTransaction(unsigned, ...args);
+      return Serialization.serializeSignedSwapAbortTransaction(unsigned, options);
     } else if (isErc20ApproveTransaction(unsigned)) {
-      return Serialization.serializeSignedErc20ApproveTransaction(unsigned, ...args);
+      return Serialization.serializeSignedErc20ApproveTransaction(unsigned, options);
     } else {
       throw new Error("Unsupported kind of transaction");
     }
@@ -327,13 +339,7 @@ export class Serialization {
 
   private static serializeUnsignedSendTransaction(
     unsigned: SendTransaction,
-    chainIdHex: string,
-    gasPriceHex: string,
-    gasLimitHex: string,
-    nonce: Nonce,
-    erc20Tokens: Erc20TokensMap,
-    _1?: any,
-    _2?: any,
+    { chainIdHex, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: UnsignedSerializationOptions,
   ): Uint8Array {
     Serialization.checkRecipientAddress(unsigned);
 
@@ -371,12 +377,14 @@ export class Serialization {
 
   private static serializeUnsignedSwapOfferTransaction(
     unsigned: SwapOfferTransaction,
-    chainIdHex: string,
-    gasPriceHex: string,
-    gasLimitHex: string,
-    nonce: Nonce,
-    erc20Tokens: Erc20TokensMap,
-    atomicSwapContractAddress?: Address,
+    {
+      chainIdHex,
+      gasPriceHex,
+      gasLimitHex,
+      nonce,
+      erc20Tokens,
+      atomicSwapContractAddress,
+    }: UnsignedSerializationOptions,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkHash(unsigned);
@@ -426,12 +434,7 @@ export class Serialization {
 
   private static serializeUnsignedSwapClaimTransaction(
     unsigned: SwapClaimTransaction,
-    chainIdHex: string,
-    gasPriceHex: string,
-    gasLimitHex: string,
-    nonce: Nonce,
-    _?: any,
-    atomicSwapContractAddress?: Address,
+    { chainIdHex, gasPriceHex, gasLimitHex, nonce, atomicSwapContractAddress }: UnsignedSerializationOptions,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkPreimage(unsigned);
@@ -452,12 +455,7 @@ export class Serialization {
 
   private static serializeUnsignedSwapAbortTransaction(
     unsigned: SwapAbortTransaction,
-    chainIdHex: string,
-    gasPriceHex: string,
-    gasLimitHex: string,
-    nonce: Nonce,
-    _?: any,
-    atomicSwapContractAddress?: Address,
+    { chainIdHex, gasPriceHex, gasLimitHex, nonce, atomicSwapContractAddress }: UnsignedSerializationOptions,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkAtomicSwapContractAddress(atomicSwapContractAddress);
@@ -477,12 +475,7 @@ export class Serialization {
 
   private static serializeUnsignedErc20ApproveTransaction(
     unsigned: Erc20ApproveTransaction,
-    chainIdHex: string,
-    gasPriceHex: string,
-    gasLimitHex: string,
-    nonce: Nonce,
-    erc20Tokens: Erc20TokensMap,
-    _?: any,
+    { chainIdHex, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: UnsignedSerializationOptions,
   ): Uint8Array {
     const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
     const erc20ApproveCall = Serialization.buildErc20ApproveCall(unsigned);
@@ -499,14 +492,7 @@ export class Serialization {
 
   private static serializeSignedSendTransaction(
     unsigned: SendTransaction,
-    v: string,
-    r: Uint8Array,
-    s: Uint8Array,
-    gasPriceHex: string,
-    gasLimitHex: string,
-    nonce: Nonce,
-    erc20Tokens: Erc20TokensMap,
-    _?: any,
+    { v, r, s, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: SignedSerializationOptions,
   ): Uint8Array {
     Serialization.checkRecipientAddress(unsigned);
 
@@ -548,14 +534,16 @@ export class Serialization {
 
   private static serializeSignedSwapOfferTransaction(
     unsigned: SwapOfferTransaction,
-    v: string,
-    r: Uint8Array,
-    s: Uint8Array,
-    gasPriceHex: string,
-    gasLimitHex: string,
-    nonce: Nonce,
-    erc20Tokens: Erc20TokensMap,
-    atomicSwapContractAddress?: Address,
+    {
+      v,
+      r,
+      s,
+      gasPriceHex,
+      gasLimitHex,
+      nonce,
+      erc20Tokens,
+      atomicSwapContractAddress,
+    }: SignedSerializationOptions,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkHash(unsigned);
@@ -609,14 +597,7 @@ export class Serialization {
 
   private static serializeSignedSwapClaimTransaction(
     unsigned: SwapClaimTransaction,
-    v: string,
-    r: Uint8Array,
-    s: Uint8Array,
-    gasPriceHex: string,
-    gasLimitHex: string,
-    nonce: Nonce,
-    _?: any,
-    atomicSwapContractAddress?: Address,
+    { v, r, s, gasPriceHex, gasLimitHex, nonce, atomicSwapContractAddress }: SignedSerializationOptions,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkPreimage(unsigned);
@@ -639,14 +620,7 @@ export class Serialization {
 
   private static serializeSignedSwapAbortTransaction(
     unsigned: SwapAbortTransaction,
-    v: string,
-    r: Uint8Array,
-    s: Uint8Array,
-    gasPriceHex: string,
-    gasLimitHex: string,
-    nonce: Nonce,
-    _?: any,
-    atomicSwapContractAddress?: Address,
+    { v, r, s, gasPriceHex, gasLimitHex, nonce, atomicSwapContractAddress }: SignedSerializationOptions,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkAtomicSwapContractAddress(atomicSwapContractAddress);
@@ -668,14 +642,7 @@ export class Serialization {
 
   private static serializeSignedErc20ApproveTransaction(
     unsigned: Erc20ApproveTransaction,
-    v: string,
-    r: Uint8Array,
-    s: Uint8Array,
-    gasPriceHex: string,
-    gasLimitHex: string,
-    nonce: Nonce,
-    erc20Tokens: Erc20TokensMap,
-    _?: any,
+    { v, r, s, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: SignedSerializationOptions,
   ): Uint8Array {
     const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
     const erc20ApproveCall = Serialization.buildErc20ApproveCall(unsigned);
