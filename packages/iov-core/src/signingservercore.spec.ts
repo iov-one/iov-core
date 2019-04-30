@@ -41,7 +41,7 @@ async function randomBnsAddress(): Promise<Address> {
 describe("SigningServerCore", () => {
   const bnsdUrl = "ws://localhost:23456";
 
-  // unused in the sense that there are no balances on the derives accounts
+  // untouched in the sense that there are no balances on the derived accounts
   const untouchedMnemonicA = "culture speed parent picture lock inquiry around pizza bleak leaf fish hand";
   const untouchedMnemonicB = "muffin width month typical depth boost beauty surface orphan cage youth rack";
 

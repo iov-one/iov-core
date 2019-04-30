@@ -91,7 +91,7 @@ function makeSimpleMessagingConnection(
 describe("signingservice.worker", () => {
   const bnsdUrl = "ws://localhost:23456";
   const signingserviceKarmaUrl = "/base/dist/web/signingservice.worker.js";
-  // time to wait until service is initialized and conected to chain
+  // time to wait until service is initialized and connected to chain
   const signingserviceBootTime = 2_000;
 
   const bnsdFaucetPubkey: PublicKeyBundle = {
