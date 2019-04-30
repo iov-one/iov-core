@@ -2,7 +2,14 @@
 
 ## 0.15.0
 
+- @iov/bcp: Add `isSwapTransaction` helper function.
 - @iov/ethereum: Add `createEtherSwapId` and `createErc20SwapId` static methods.
+- @iov/ethereum: Add `SwapIdPrefix` enum.
+- @iov/ethereum: Add `Erc20TokensMap` type.
+- @iov/ethereum: Add `Erc20ApproveTransaction` type and
+  `isErc20ApproveTransaction` helper function.
+- @iov/ethereum: Add support for ERC 20 `approve` transactions.
+- @iov/ethereum: Add support for ERC20 atomic swap transactions.
 
 Breaking changes
 
