@@ -10,6 +10,7 @@ import {
   isConfirmedTransaction,
   isPublicIdentity,
   PublicIdentity,
+  PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
@@ -90,8 +91,13 @@ function makeSimpleMessagingConnection(
 describe("signingservice.worker", () => {
   const bnsdUrl = "ws://localhost:23456";
   const signingserviceKarmaUrl = "/base/dist/web/signingservice.worker.js";
-  // time to wait until service is initialized and conected to chain
-  const signingserviceBootTime = 1_500;
+  // time to wait until service is initialized and connected to chain
+  const signingserviceBootTime = 2_000;
+
+  const bnsdFaucetPubkey: PublicKeyBundle = {
+    algo: Algorithm.Ed25519,
+    data: fromHex("418f88ff4876d33a3d6e2a17d0fe0e78dc3cb5e4b42c6c156ed1b8bfce5d46d1") as PublicKeyBytes,
+  };
 
   const ganacheChainId = "ethereum-eip155-5777" as ChainId;
   const ganacheSecondIdentity: PublicIdentity = {
@@ -136,10 +142,7 @@ describe("signingservice.worker", () => {
     expect((result as ReadonlyArray<any>).length).toEqual(1);
     expect(result[0]).toEqual({
       chainId: bnsConnection.chainId(),
-      pubkey: {
-        algo: Algorithm.Ed25519,
-        data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
-      },
+      pubkey: bnsdFaucetPubkey,
     });
 
     worker.terminate();
@@ -200,10 +203,7 @@ describe("signingservice.worker", () => {
     expect((result as ReadonlyArray<any>).length).toEqual(2);
     expect(result[0]).toEqual({
       chainId: bnsConnection.chainId(),
-      pubkey: {
-        algo: Algorithm.Ed25519,
-        data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
-      },
+      pubkey: bnsdFaucetPubkey,
     });
     expect(result[1]).toEqual(ganacheSecondIdentity);
 

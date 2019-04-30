@@ -253,11 +253,11 @@ describe("Full atomic swap between bns and ethereum", () => {
 
     const alice = await Actor.create(
       "degree tackle suggest window test behind mesh extra cover prepare oak script",
-      HdPaths.simpleAddress(0),
+      HdPaths.iov(0),
       ganacheMnemonic,
       HdPaths.ethereum(0),
     );
-    expect(alice.bnsAddress).toEqual("tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f");
+    expect(alice.bnsAddress).toEqual("tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea");
     expect(alice.ethereumAddress).toEqual("0x88F3b5659075D0E06bB1004BE7b1a7E66F452284");
 
     const bob = await Actor.create(

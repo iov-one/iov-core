@@ -61,9 +61,12 @@ describe("MultiChainSigner", () => {
   // This uses setup from iov-bns...
   // Same secrets and assume the same blockchain scripts are running
   describe("BNS compatibility", () => {
-    // The key at m/4804438'/0' (simple address derivation) generated from this mnemonic is the faucet identity.
-    // This account has money in the genesis file (setup in docker).
-    const mnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+    // The first IOV key (m/44'/234'/0') generated from this mnemonic produces the address
+    // tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea (bech32) / a4f97447e7df55b6ef0d6209ebef2a7b22625376 (hex).
+    // This account has money in the genesis file (see scripts/bnsd/README.md).
+    const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+    const faucetPath = HdPaths.iov(0);
+
     const cash = "CASH" as TokenTicker;
 
     async function addWalletWithFaucet(
@@ -73,8 +76,8 @@ describe("MultiChainSigner", () => {
       readonly mainWalletId: WalletId;
       readonly faucet: PublicIdentity;
     }> {
-      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
-      const faucet = await profile.createIdentity(wallet.id, chainId, HdPaths.simpleAddress(0));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
+      const faucet = await profile.createIdentity(wallet.id, chainId, faucetPath);
       return { mainWalletId: wallet.id, faucet: faucet };
     }
 

@@ -245,16 +245,16 @@ describe("Keyring", () => {
       const wallet1 = Ed25519HdWallet.fromEntropy(
         fromHex("c7f74844892fd7b707e74fc9b6c8ef917c13ddbb380cadbc"),
       );
-      const i1a = await wallet1.createIdentity(defaultChain, HdPaths.simpleAddress(0));
+      const i1a = await wallet1.createIdentity(defaultChain, HdPaths.iov(0));
       const wallet2 = new Ed25519Wallet();
       const i2a = await wallet2.createIdentity(defaultChain, await makeRandomEd25519Keypair());
       const i2b = await wallet2.createIdentity(defaultChain, await makeRandomEd25519Keypair());
       const wallet3 = Ed25519HdWallet.fromEntropy(
         fromHex("2a7e3f902279af82138f14f871badf8d92b33713eb6c7193"),
       );
-      const i3a = await wallet3.createIdentity(defaultChain, HdPaths.simpleAddress(0));
-      const i3b = await wallet3.createIdentity(defaultChain, HdPaths.simpleAddress(1));
-      const i3c = await wallet3.createIdentity(defaultChain, HdPaths.simpleAddress(2));
+      const i3a = await wallet3.createIdentity(defaultChain, HdPaths.iov(0));
+      const i3b = await wallet3.createIdentity(defaultChain, HdPaths.iov(1));
+      const i3c = await wallet3.createIdentity(defaultChain, HdPaths.iov(2));
       const wallet4 = new Ed25519Wallet();
       const i4a = await wallet4.createIdentity(defaultChain, await makeRandomEd25519Keypair());
       const i4b = await wallet4.createIdentity(defaultChain, await makeRandomEd25519Keypair());

@@ -7,6 +7,7 @@ import {
   isConfirmedTransaction,
   isPublicIdentity,
   PublicIdentity,
+  PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
@@ -52,6 +53,7 @@ async function randomBnsAddress(): Promise<Address> {
 
 const bnsdUrl = "ws://localhost:23456";
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+const bnsdFaucetPath = HdPaths.iov(0);
 const ethereumUrl = "http://localhost:8545";
 const ethereumChainId = "ethereum-eip155-5777" as ChainId;
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
@@ -70,7 +72,7 @@ async function makeBnsEthereumSigningServer(): Promise<JsRpcSigningServer> {
   const ethereumConnection = (await signer.addChain(ethereumConnector(ethereumUrl, {}))).connection;
 
   // faucet identity
-  await profile.createIdentity(ed25519Wallet.id, bnsConnection.chainId(), HdPaths.simpleAddress(0));
+  await profile.createIdentity(ed25519Wallet.id, bnsConnection.chainId(), bnsdFaucetPath);
   // ganache second identity
   await profile.createIdentity(secp256k1Wallet.id, ethereumConnection.chainId(), HdPaths.bip44(60, 0, 0, 1));
 
@@ -84,6 +86,11 @@ async function makeBnsEthereumSigningServer(): Promise<JsRpcSigningServer> {
 }
 
 describe("JsRpcSigningServer", () => {
+  const bnsdFaucetPubkey: PublicKeyBundle = {
+    algo: Algorithm.Ed25519,
+    data: fromHex("418f88ff4876d33a3d6e2a17d0fe0e78dc3cb5e4b42c6c156ed1b8bfce5d46d1") as PublicKeyBytes,
+  };
+
   const ganacheSecondIdentity: PublicIdentity = {
     chainId: ethereumChainId,
     pubkey: {
@@ -123,10 +130,7 @@ describe("JsRpcSigningServer", () => {
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(1);
     expect(response.result[0].chainId).toEqual(bnsConnection.chainId());
-    expect(response.result[0].pubkey.algo).toEqual("ed25519");
-    expect(response.result[0].pubkey.data).toEqual(
-      fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
-    );
+    expect(response.result[0].pubkey).toEqual(bnsdFaucetPubkey);
 
     server.shutdown();
     bnsConnection.disconnect();
@@ -180,10 +184,7 @@ describe("JsRpcSigningServer", () => {
     expect(response.result).toEqual(jasmine.any(Array));
     expect((response.result as ReadonlyArray<any>).length).toEqual(2);
     expect(response.result[0].chainId).toEqual(bnsConnection.chainId());
-    expect(response.result[0].pubkey.algo).toEqual("ed25519");
-    expect(response.result[0].pubkey.data).toEqual(
-      fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
-    );
+    expect(response.result[0].pubkey).toEqual(bnsdFaucetPubkey);
     expect(response.result[1]).toEqual(ganacheSecondIdentity);
 
     server.shutdown();

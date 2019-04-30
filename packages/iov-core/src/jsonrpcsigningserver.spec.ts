@@ -6,6 +6,7 @@ import {
   isConfirmedTransaction,
   isPublicIdentity,
   PublicIdentity,
+  PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
@@ -50,6 +51,7 @@ async function randomBnsAddress(): Promise<Address> {
 
 const bnsdUrl = "ws://localhost:23456";
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+const bnsdFaucetPath = HdPaths.iov(0);
 const ethereumUrl = "http://localhost:8545";
 const ethereumChainId = "ethereum-eip155-5777" as ChainId;
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
@@ -71,7 +73,7 @@ async function makeBnsEthereumSigningServer(
   const ethereumConnection = (await signer.addChain(ethereumConnector(ethereumUrl, {}))).connection;
 
   // faucet identity
-  await profile.createIdentity(ed25519Wallet.id, bnsConnection.chainId(), HdPaths.simpleAddress(0));
+  await profile.createIdentity(ed25519Wallet.id, bnsConnection.chainId(), bnsdFaucetPath);
   // ganache second identity
   await profile.createIdentity(secp256k1Wallet.id, ethereumConnection.chainId(), HdPaths.bip44(60, 0, 0, 1));
 
@@ -83,6 +85,11 @@ import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
 import { TransactionEncoder } from "./transactionencoder";
 
 describe("JsonRpcSigningServer", () => {
+  const bnsdFaucetPubkey: PublicKeyBundle = {
+    algo: Algorithm.Ed25519,
+    data: fromHex("418f88ff4876d33a3d6e2a17d0fe0e78dc3cb5e4b42c6c156ed1b8bfce5d46d1") as PublicKeyBytes,
+  };
+
   const ganacheSecondIdentity: PublicIdentity = {
     chainId: ethereumChainId,
     pubkey: {
@@ -125,10 +132,7 @@ describe("JsonRpcSigningServer", () => {
     expect((result as ReadonlyArray<any>).length).toEqual(1);
     expect(result[0]).toEqual({
       chainId: bnsConnection.chainId(),
-      pubkey: {
-        algo: Algorithm.Ed25519,
-        data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
-      },
+      pubkey: bnsdFaucetPubkey,
     });
 
     server.shutdown();
@@ -188,10 +192,7 @@ describe("JsonRpcSigningServer", () => {
     expect((result as ReadonlyArray<any>).length).toEqual(2);
     expect(result[0]).toEqual({
       chainId: bnsConnection.chainId(),
-      pubkey: {
-        algo: Algorithm.Ed25519,
-        data: fromHex("533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898"),
-      },
+      pubkey: bnsdFaucetPubkey,
     });
     expect(result[1]).toEqual(ganacheSecondIdentity);
 
@@ -226,13 +227,13 @@ describe("JsonRpcSigningServer", () => {
       throw new Error("Identity element is not valid");
     }
 
-    const send: SendTransaction = {
+    const send = await bnsConnection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
       creator: signer,
       memo: `Hello ${Math.random()}`,
       amount: defaultAmount,
       recipient: await randomBnsAddress(),
-    };
+    });
 
     const signAndPostResponse = await server.handleChecked({
       jsonrpc: "2.0",

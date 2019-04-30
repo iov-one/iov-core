@@ -5,6 +5,7 @@ export class HdPaths {
    * IOV's SimpleAddress derivation path
    *
    * @see https://github.com/iov-one/iov-core/blob/v0.6.1/docs/KeyBase.md#simple-addresses
+   * @deprecated we use IOV HD paths in the form m/44'/234'/a' now
    */
   public static simpleAddress(index: number): ReadonlyArray<Slip10RawIndex> {
     const iovPurpose = 4804438;
@@ -59,7 +60,7 @@ export class HdPaths {
   /**
    * An IOV HD path in the form m/44'/234'/a'
    *
-   * @param account The account index statring at 0
+   * @param account The account index `a` starting at 0
    */
   public static iov(account: number): ReadonlyArray<Slip10RawIndex> {
     // coin type 234 is registered for IOV at
@@ -72,8 +73,10 @@ export class HdPaths {
    *
    * This is compatible to MetaMask and Trezor.
    *
-   * What MetaMask calls the account is a BIP44 address index: m/44'/60'/0'/0/<account>
+   * What MetaMask calls the account is a BIP44 address index: m/44'/60'/0'/0/a
    * (see https://github.com/MetaMask/eth-hd-keyring/blob/018a11a3a2/index.js#L8)
+   *
+   * @param account The account index `a` starting at 0
    */
   public static ethereum(account: number): ReadonlyArray<Slip10RawIndex> {
     return HdPaths.bip44(60, 0, 0, account);

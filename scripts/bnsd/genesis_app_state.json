@@ -1,11 +1,11 @@
 {
   "cash": [
     {
-      "address": "b1ca7e78f74423ae01da3b51e676934d9105f282",
+      "address": "bech32:tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea",
       "coins": ["123456789 CASH"]
     },
     {
-      "address": "053e4ffbb040d4dc3b201dfe9264c00d918e087b",
+      "address": "bech32:tiov1q5lyl7asgr2dcweqrhlfyexqpkgcuzrm4e0cku",
       "coins": ["1000000 CASH", "2000000 BASH"]
     }
   ],

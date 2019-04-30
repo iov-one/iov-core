@@ -32,7 +32,9 @@ const { fromHex } = Encoding;
 
 describe("UserProfile", () => {
   const defaultChain = "chain123" as ChainId;
-  const defaultMnemonic = "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash";
+  const defaultMnemonic1 = "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash";
+  const defaultMnemonic2 = "perfect clump orphan margin memory amazing morning use snap skate erosion civil";
+  const defaultMnemonic3 = "judge edge effort prepare caught lawn mask yellow butter phone dragon more";
   const defaultEncryptionPassword = "my super str0ng and super long password";
 
   it("can be constructed without arguments", () => {
@@ -42,7 +44,7 @@ describe("UserProfile", () => {
 
   it("is safe against keyring manipulation", () => {
     const keyring = new Keyring();
-    keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+    keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
     expect(profile.wallets.value.length).toEqual(1);
 
@@ -73,24 +75,16 @@ describe("UserProfile", () => {
 
     {
       const keyring = new Keyring();
-      keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+      keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
       expect(profile.wallets.value.length).toEqual(1);
     }
 
     {
       const keyring = new Keyring();
-      keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
-      keyring.add(
-        Ed25519HdWallet.fromMnemonic(
-          "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
-        ),
-      );
-      keyring.add(
-        Ed25519HdWallet.fromMnemonic(
-          "degree tackle suggest window test behind mesh extra cover prepare oak script",
-        ),
-      );
+      keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
+      keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic2));
+      keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic3));
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
       expect(profile.wallets.value.length).toEqual(3);
     }
@@ -103,7 +97,7 @@ describe("UserProfile", () => {
     }
 
     {
-      const wallet = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
+      const wallet = Ed25519HdWallet.fromMnemonic(defaultMnemonic1);
       wallet.setLabel("label 1");
 
       const keyring = new Keyring();
@@ -113,15 +107,11 @@ describe("UserProfile", () => {
     }
 
     {
-      const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
+      const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic1);
       wallet1.setLabel("label 1");
-      const wallet2 = Ed25519HdWallet.fromMnemonic(
-        "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
-      );
+      const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic2);
       wallet2.setLabel("");
-      const wallet3 = Ed25519HdWallet.fromMnemonic(
-        "degree tackle suggest window test behind mesh extra cover prepare oak script",
-      );
+      const wallet3 = Ed25519HdWallet.fromMnemonic(defaultMnemonic3);
       wallet3.setLabel(undefined);
 
       const keyring = new Keyring();
@@ -135,10 +125,8 @@ describe("UserProfile", () => {
 
   it("can add different kinds of wallets", () => {
     const profile = new UserProfile();
-    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
-    const wallet2 = Secp256k1HdWallet.fromMnemonic(
-      "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
-    );
+    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic1);
+    const wallet2 = Secp256k1HdWallet.fromMnemonic(defaultMnemonic2);
     const wallet3 = new Ed25519Wallet();
     expect(profile.wallets.value.length).toEqual(0);
     expect(profile.wallets.value.map(i => i.label)).toEqual([]);
@@ -157,10 +145,8 @@ describe("UserProfile", () => {
 
   it("returns wallet info when adding wallet", () => {
     const profile = new UserProfile();
-    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
-    const wallet2 = Ed25519HdWallet.fromMnemonic(
-      "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
-    );
+    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic1);
+    const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic2);
     wallet2.setLabel("my-label");
 
     const walletInfo1 = profile.addWallet(wallet1);
@@ -174,8 +160,8 @@ describe("UserProfile", () => {
 
   it("can update wallet labels", () => {
     const keyring = new Keyring();
-    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
-    const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
+    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic1);
+    const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic1);
     keyring.add(wallet1);
     keyring.add(wallet2);
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
@@ -205,17 +191,13 @@ describe("UserProfile", () => {
   it("accessors also work with id instead of number", async () => {
     const profile = new UserProfile();
 
-    const wallet1 = Ed25519HdWallet.fromMnemonic(
-      "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
-    );
+    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic2);
     profile.addWallet(wallet1);
 
     // make sure we can query the ids if we didn't save them from creation
     expect(profile.wallets.value.map(i => i.id)).toEqual([wallet1.id]);
 
-    const wallet2 = Ed25519HdWallet.fromMnemonic(
-      "degree tackle suggest window test behind mesh extra cover prepare oak script",
-    );
+    const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic3);
     profile.addWallet(wallet2);
 
     // make sure we can query the ids if we didn't save them from creation
@@ -227,9 +209,9 @@ describe("UserProfile", () => {
     expect(profile.wallets.value.map(i => i.label)).toEqual(["first", "second"]);
 
     // make some new ids
-    await profile.createIdentity(wallet1.id, defaultChain, HdPaths.simpleAddress(0));
-    const key = await profile.createIdentity(wallet2.id, defaultChain, HdPaths.simpleAddress(0));
-    await profile.createIdentity(wallet2.id, defaultChain, HdPaths.simpleAddress(1));
+    await profile.createIdentity(wallet1.id, defaultChain, HdPaths.iov(0));
+    const key = await profile.createIdentity(wallet2.id, defaultChain, HdPaths.iov(0));
+    await profile.createIdentity(wallet2.id, defaultChain, HdPaths.iov(1));
     expect(profile.getIdentities(wallet1.id).length).toEqual(1);
     expect(profile.getIdentities(wallet2.id).length).toEqual(2);
 
@@ -244,12 +226,10 @@ describe("UserProfile", () => {
   it("throws for non-existent id", () => {
     const profile = new UserProfile();
 
-    const wallet1 = Ed25519HdWallet.fromMnemonic(
-      "perfect clump orphan margin memory amazing morning use snap skate erosion civil",
-    );
+    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic2);
     profile.addWallet(wallet1);
 
-    const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
+    const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic1);
 
     expect(() => profile.getIdentities(wallet2.id)).toThrowError(
       `Wallet of id '${wallet2.id}' does not exist in keyring`,
@@ -261,12 +241,12 @@ describe("UserProfile", () => {
 
   it("added wallet can not be manipulated from outside", async () => {
     const profile = new UserProfile();
-    const newWallet = Ed25519HdWallet.fromMnemonic(defaultMnemonic);
+    const newWallet = Ed25519HdWallet.fromMnemonic(defaultMnemonic1);
     profile.addWallet(newWallet);
     expect(profile.getIdentities(newWallet.id).length).toEqual(0);
 
     // manipulate wallet reference that has been added before
-    await newWallet.createIdentity(defaultChain, HdPaths.simpleAddress(0));
+    await newWallet.createIdentity(defaultChain, HdPaths.iov(0));
     expect(newWallet.getIdentities().length).toEqual(1);
 
     // nothing hapenned to the profile
@@ -346,7 +326,7 @@ describe("UserProfile", () => {
 
     it("works for one wallet", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
 
       const identity1 = await profile.createIdentity(wallet.id, defaultChain, HdPaths.iov(0));
       const identity2 = await profile.createIdentity(wallet.id, defaultChain, HdPaths.iov(1));
@@ -356,8 +336,8 @@ describe("UserProfile", () => {
 
     it("works for two wallets", async () => {
       const profile = new UserProfile();
-      const walletA = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
-      const walletB = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic));
+      const walletA = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
+      const walletB = profile.addWallet(Secp256k1HdWallet.fromMnemonic(defaultMnemonic1));
 
       const identityA1 = await profile.createIdentity(walletA.id, defaultChain, HdPaths.iov(0));
       const identityA2 = await profile.createIdentity(walletA.id, defaultChain, HdPaths.iov(1));
@@ -438,9 +418,7 @@ describe("UserProfile", () => {
 
   it("stored in and loaded from storage when containing special chars", async () => {
     const db = levelup(MemDownConstructor<string, string>());
-    const wallet1 = Ed25519HdWallet.fromMnemonic(
-      "degree tackle suggest window test behind mesh extra cover prepare oak script",
-    );
+    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic3);
 
     const original = new UserProfile();
     original.addWallet(wallet1);
@@ -549,7 +527,7 @@ describe("UserProfile", () => {
       /No wallet for identity '{"chainId":"ethereum","pubkey":{"algo":"ed25519","data":{"0":170}}}' found in keyring/,
     );
     await profile
-      .createIdentity(walletId, defaultChain, HdPaths.simpleAddress(0))
+      .createIdentity(walletId, defaultChain, HdPaths.iov(0))
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
@@ -573,8 +551,8 @@ describe("UserProfile", () => {
   it("can sign and append signature", async () => {
     const createdAt = new ReadonlyDate(ReadonlyDate.now());
     const keyring = new Keyring();
-    const wallet = keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic));
-    const mainIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.simpleAddress(0));
+    const wallet = keyring.add(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
+    const mainIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.iov(0));
     const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
     const fakeTransaction: SendTransaction = {
