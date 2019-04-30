@@ -1,4 +1,4 @@
-import { JsonRpcRequest, JsonRpcResponse, JsonRpcSuccessResponse } from "@iov/jsonrpc";
+import { JsonRpcRequest } from "@iov/jsonrpc";
 export interface JsonRpcEvent {
     readonly query: string;
     readonly data: {
@@ -7,7 +7,6 @@ export interface JsonRpcEvent {
     };
 }
 export declare function jsonRpcWith(method: string, params?: {}): JsonRpcRequest;
-export declare function throwIfError(resp: JsonRpcResponse): JsonRpcSuccessResponse;
 /** generates a random alphanumeric character  */
 export declare function randomChar(): string;
 export declare function randomId(): string;

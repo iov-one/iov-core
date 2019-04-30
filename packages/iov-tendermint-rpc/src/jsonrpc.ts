@@ -23,13 +23,6 @@ export function jsonRpcWith(method: string, params?: {}): JsonRpcRequest {
   };
 }
 
-export function throwIfError(resp: JsonRpcResponse): JsonRpcSuccessResponse {
-  if (isJsonRpcErrorResponse(resp)) {
-    throw new Error(JSON.stringify(resp.error));
-  }
-  return resp;
-}
-
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 /** generates a random alphanumeric character  */

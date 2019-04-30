@@ -12,7 +12,7 @@ import {
 import { SocketWrapperMessageEvent, StreamingSocket } from "@iov/socket";
 import { firstEvent } from "@iov/stream";
 
-import { JsonRpcEvent, throwIfError } from "../jsonrpc";
+import { JsonRpcEvent } from "../jsonrpc";
 
 import { hasProtocol, RpcStreamingClient } from "./rpcclient";
 
@@ -69,7 +69,10 @@ export class WebsocketClient implements RpcStreamingClient {
     const pendingSend = this.socket.send(JSON.stringify(request));
 
     const response = (await Promise.all([pendingResponse, pendingSend]))[0];
-    return throwIfError(response);
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
+    }
+    return response;
   }
 
   public listen(request: JsonRpcRequest): Stream<JsonRpcEvent> {
