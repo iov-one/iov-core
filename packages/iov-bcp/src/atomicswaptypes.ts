@@ -66,6 +66,18 @@ export interface AbortedSwap {
 
 export type AtomicSwap = OpenSwap | ClaimedSwap | AbortedSwap;
 
+export function isOpenSwap(swap: AtomicSwap): swap is OpenSwap {
+  return isSwapProcessStateOpen(swap.kind);
+}
+
+export function isClaimedSwap(swap: AtomicSwap): swap is ClaimedSwap {
+  return isSwapProcessStateClaimed(swap.kind);
+}
+
+export function isAbortedSwap(swap: AtomicSwap): swap is AbortedSwap {
+  return isSwapProcessStateAborted(swap.kind);
+}
+
 export interface AtomicSwapRecipientQuery {
   readonly recipient: Address;
 }

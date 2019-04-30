@@ -46,6 +46,9 @@ export interface AbortedSwap {
     readonly data: SwapData;
 }
 export declare type AtomicSwap = OpenSwap | ClaimedSwap | AbortedSwap;
+export declare function isOpenSwap(swap: AtomicSwap): swap is OpenSwap;
+export declare function isClaimedSwap(swap: AtomicSwap): swap is ClaimedSwap;
+export declare function isAbortedSwap(swap: AtomicSwap): swap is AbortedSwap;
 export interface AtomicSwapRecipientQuery {
     readonly recipient: Address;
 }
