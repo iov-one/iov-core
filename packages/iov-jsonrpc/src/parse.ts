@@ -114,36 +114,6 @@ export function parseJsonRpcErrorResponse(data: unknown): JsonRpcErrorResponse {
   };
 }
 
-/** @deprecated use parseJsonRpcErrorResponse */
-export function parseJsonRpcError(data: unknown): JsonRpcErrorResponse | undefined {
-  if (!isJsonCompatibleDictionary(data)) {
-    throw new Error("Data must be JSON compatible dictionary");
-  }
-
-  if (data.jsonrpc !== "2.0") {
-    throw new Error(`Got unexpected jsonrpc version: ${JSON.stringify(data)}`);
-  }
-
-  const id = data.id;
-  if (typeof id !== "number") {
-    throw new Error("Invalid id field");
-  }
-
-  if (typeof data.error === "undefined") {
-    return undefined;
-  }
-
-  if (!isJsonCompatibleDictionary(data.error)) {
-    throw new Error("Property 'error' is defined but not a JSON compatible dictionary");
-  }
-
-  return {
-    jsonrpc: "2.0",
-    id: id,
-    error: parseError(data.error),
-  };
-}
-
 /** Throws if data is not a JsonRpcSuccessResponse */
 export function parseJsonRpcSuccessResponse(data: unknown): JsonRpcSuccessResponse {
   if (!isJsonCompatibleDictionary(data)) {
@@ -170,11 +140,6 @@ export function parseJsonRpcSuccessResponse(data: unknown): JsonRpcSuccessRespon
     id: id,
     result: result,
   };
-}
-
-/** @deprecated use parseJsonRpcSuccessResponse */
-export function parseJsonRpcResponse(data: unknown): JsonRpcSuccessResponse {
-  return parseJsonRpcSuccessResponse(data);
 }
 
 /**

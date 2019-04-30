@@ -32,6 +32,7 @@ Breaking changes
 - @iov/jsonrpc: The `id` field of `JsonRpcRequest`, `JsonRpcSuccessResponse` and
   `JsonRpcErrorResponse` is now of type `JsonRpcId`, which can be a string or a
   number.
+- @iov/jsonrpc: Remove `parseJsonRpcResponse` and `parseJsonRpcError`.
 
 ## 0.14.1
 
