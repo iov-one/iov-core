@@ -1,18 +1,17 @@
 /* tslint:disable:readonly-keyword readonly-array no-object-mutation */
 import { Listener, Producer, Stream, Subscription } from "xstream";
 
-import { JsonRpcId } from "@iov/jsonrpc";
+import {
+  JsonRpcId,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccessResponse,
+  parseJsonRpcResponse2,
+} from "@iov/jsonrpc";
 import { SocketWrapperMessageEvent, StreamingSocket } from "@iov/socket";
 import { firstEvent } from "@iov/stream";
 
-import {
-  ifError,
-  JsonRpcEvent,
-  JsonRpcRequest,
-  JsonRpcResponse,
-  JsonRpcSuccess,
-  throwIfError,
-} from "../jsonrpc";
+import { ifError, JsonRpcEvent, throwIfError } from "../jsonrpc";
 
 import { hasProtocol, RpcStreamingClient } from "./rpcclient";
 
@@ -26,7 +25,7 @@ function toJsonRpcResponse(message: SocketWrapperMessageEvent): JsonRpcResponse 
     throw new Error(`Unexcepted message type on websocket: ${message.type}`);
   }
 
-  const jsonRpcEvent: JsonRpcResponse = JSON.parse(message.data);
+  const jsonRpcEvent = parseJsonRpcResponse2(JSON.parse(message.data));
   return jsonRpcEvent;
 }
 
@@ -63,7 +62,7 @@ export class WebsocketClient implements RpcStreamingClient {
     this.socket.connect();
   }
 
-  public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
+  public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse> {
     const pendingResponse = this.responseForRequestId(request.id);
     await this.socket.connected;
     const pendingSend = this.socket.send(JSON.stringify(request));
@@ -180,7 +179,7 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
             this.closeSubscriptions();
             listener.error(err);
           } else {
-            const result = (response as JsonRpcSuccess).result;
+            const result = (response as JsonRpcSuccessResponse).result;
             listener.next(result as JsonRpcEvent);
           }
         },

@@ -1,29 +1,9 @@
-import { JsonRpcId } from "@iov/jsonrpc";
-
-export interface JsonRpcRequest {
-  readonly jsonrpc: "2.0";
-  readonly id: JsonRpcId;
-  readonly method: string;
-  readonly params: {};
-}
-
-export type JsonRpcResponse = JsonRpcSuccess | JsonRpcError;
-
-export interface JsonRpcSuccess {
-  readonly jsonrpc: "2.0";
-  readonly id: JsonRpcId;
-  readonly result: any;
-}
-
-export interface JsonRpcError {
-  readonly jsonrpc: "2.0";
-  readonly id: JsonRpcId;
-  readonly error: {
-    readonly code: number;
-    readonly message: string;
-    readonly data?: string;
-  };
-}
+import {
+  isJsonRpcErrorResponse,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccessResponse,
+} from "@iov/jsonrpc";
 
 // JsonRpcEvent is event info stored in result of JsonRpcSuccess
 export interface JsonRpcEvent {
@@ -43,18 +23,16 @@ export function jsonRpcWith(method: string, params?: {}): JsonRpcRequest {
   };
 }
 
-export function throwIfError(resp: JsonRpcResponse): JsonRpcSuccess {
-  const asError = ifError(resp);
-  if (asError) {
-    throw asError;
+export function throwIfError(resp: JsonRpcResponse): JsonRpcSuccessResponse {
+  if (isJsonRpcErrorResponse(resp)) {
+    throw new Error(JSON.stringify(resp.error));
   }
-  return resp as JsonRpcSuccess;
+  return resp;
 }
 
 export function ifError(resp: JsonRpcResponse): Error | undefined {
-  const asError = resp as JsonRpcError;
-  if (asError.error !== undefined) {
-    return new Error(JSON.stringify(asError.error));
+  if (isJsonRpcErrorResponse(resp)) {
+    return new Error(JSON.stringify(resp.error));
   }
   return undefined;
 }

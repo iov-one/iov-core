@@ -1,6 +1,8 @@
 import axios from "axios";
 
-import { JsonRpcRequest, JsonRpcSuccess, throwIfError } from "../jsonrpc";
+import { JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
+
+import { throwIfError } from "../jsonrpc";
 import { hasProtocol, RpcClient } from "./rpcclient";
 
 // Global symbols in some environments
@@ -42,7 +44,7 @@ export class HttpClient implements RpcClient {
     // nothing to be done
   }
 
-  public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
+  public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse> {
     const response = await http("POST", this.url, request);
     return throwIfError(response);
   }

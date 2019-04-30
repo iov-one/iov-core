@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
-import { JsonRpcId } from "@iov/jsonrpc";
-import { JsonRpcEvent, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess } from "../jsonrpc";
+import { JsonRpcId, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccessResponse } from "@iov/jsonrpc";
+import { JsonRpcEvent } from "../jsonrpc";
 import { RpcStreamingClient } from "./rpcclient";
 export declare class WebsocketClient implements RpcStreamingClient {
     private readonly url;
@@ -9,7 +9,7 @@ export declare class WebsocketClient implements RpcStreamingClient {
     private readonly jsonRpcResponseStream;
     private readonly subscriptionStreams;
     constructor(baseUrl?: string, onError?: (err: any) => void);
-    execute(request: JsonRpcRequest): Promise<JsonRpcSuccess>;
+    execute(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse>;
     listen(request: JsonRpcRequest): Stream<JsonRpcEvent>;
     /**
      * Resolves as soon as websocket is connected. execute() queues requests automatically,

@@ -1,7 +1,8 @@
 import { Stream } from "xstream";
-import { JsonRpcEvent, JsonRpcRequest, JsonRpcSuccess } from "../jsonrpc";
+import { JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
+import { JsonRpcEvent } from "../jsonrpc";
 export interface RpcClient {
-    readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccess>;
+    readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccessResponse>;
     readonly disconnect: () => void;
 }
 export interface RpcStreamingClient extends RpcClient {
