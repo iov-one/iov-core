@@ -9,8 +9,6 @@ Keycontrol manages all private keys and keeps them safe.
 Please stick to using the
 [public API](https://iov-one.github.io/iov-core-docs/latest/iov-keycontrol/classes/userprofile.html)
 even if you are importing from JavaScript, where `private` is not enforced.
-There are plans to wrap objects in closures to provide run-time protection of
-secrets like private keys and mneumonic seeds.
 
 ## Getting started
 
