@@ -16,7 +16,7 @@
   "scripts": {
     "docs": "shx rm -rf docs && typedoc --options typedoc.js",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
-    "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",
+    "lint": "cross-env-shell \"eslint . ${ESLINT_FLAGS}\"",
     "prebuild": "yarn format",
     "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && shx rm ./types/*.spec.d.ts && shx rm ./types/**/*.spec.d.ts",
     "build": "shx rm -rf ./build && tsc && yarn move-types",
