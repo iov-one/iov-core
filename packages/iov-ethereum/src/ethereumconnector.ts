@@ -18,6 +18,7 @@ export function ethereumConnector(
     codec: new EthereumCodec({
       erc20Tokens: options.erc20Tokens,
       atomicSwapEtherContractAddress: options.atomicSwapEtherContractAddress,
+      atomicSwapErc20ContractAddress: options.atomicSwapErc20ContractAddress,
     }),
     expectedChainId: expectedChainId,
   };
