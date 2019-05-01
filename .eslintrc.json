@@ -8,5 +8,8 @@
   "parser":  "@typescript-eslint/parser",
   "parserOptions": {
     "sourceType": "module"
+  },
+  "env": {
+    "node": true
   }
 }
