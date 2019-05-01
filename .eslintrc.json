@@ -12,10 +12,18 @@
   "env": {
     "node": true
   },
-  "overrides": {
-    "files": "*.js",
-    "rules": {
-      "@typescript-eslint/no-var-requires": "off"
+  "overrides": [
+    {
+      "files": "*.js",
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    },
+    {
+      "files": "jasmine-testrunner.js",
+      "rules": {
+        "@typescript-eslint/camelcase": "off"
+      }
     }
-  }
+  ]
 }
