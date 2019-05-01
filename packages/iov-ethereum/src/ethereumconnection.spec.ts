@@ -2494,15 +2494,15 @@ describe("EthereumConnection", () => {
           throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
         }
 
-        // // find two open
-        // const midSwaps = await connection.getSwaps(rcptQuery);
-        // expect(midSwaps.length).toEqual(2);
-        // const open1 = midSwaps.find(matchId(swapId1));
-        // const open2 = midSwaps.find(matchId(swapId2));
-        // expect(open1).toBeDefined();
-        // expect(open2).toBeDefined();
-        // expect(open1!.kind).toEqual(SwapProcessState.Open);
-        // expect(open2!.kind).toEqual(SwapProcessState.Open);
+        // find two open
+        const midSwaps = await connection.getSwaps(rcptQuery);
+        expect(midSwaps.length).toEqual(2);
+        const open1 = midSwaps.find(matchId(swapId1));
+        const open2 = midSwaps.find(matchId(swapId2));
+        expect(open1).toBeDefined();
+        expect(open2).toBeDefined();
+        expect(open1!.kind).toEqual(SwapProcessState.Open);
+        expect(open2!.kind).toEqual(SwapProcessState.Open);
 
         // then claim, offer, claim - 2 closed, 1 open
         {
@@ -2521,18 +2521,18 @@ describe("EthereumConnection", () => {
           await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
         }
 
-        // // make sure we find two claims, one open
-        // const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
-        // expect(finalSwaps.length).toEqual(3);
-        // const claim1 = finalSwaps.find(matchId(swapId1));
-        // const claim2 = finalSwaps.find(matchId(swapId2));
-        // const open3 = finalSwaps.find(matchId(swapId3));
-        // expect(claim1).toBeDefined();
-        // expect(claim2).toBeDefined();
-        // expect(open3).toBeDefined();
-        // expect(claim1!.kind).toEqual(SwapProcessState.Claimed);
-        // expect(claim2!.kind).toEqual(SwapProcessState.Claimed);
-        // expect(open3!.kind).toEqual(SwapProcessState.Open);
+        // make sure we find two claims, one open
+        const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
+        expect(finalSwaps.length).toEqual(3);
+        const claim1 = finalSwaps.find(matchId(swapId1));
+        const claim2 = finalSwaps.find(matchId(swapId2));
+        const open3 = finalSwaps.find(matchId(swapId3));
+        expect(claim1).toBeDefined();
+        expect(claim2).toBeDefined();
+        expect(open3).toBeDefined();
+        expect(claim1!.kind).toEqual(SwapProcessState.Claimed);
+        expect(claim2!.kind).toEqual(SwapProcessState.Claimed);
+        expect(open3!.kind).toEqual(SwapProcessState.Open);
       }, 30_000);
 
       it("can start and watch aborted atomic swaps", async () => {
@@ -2593,18 +2593,18 @@ describe("EthereumConnection", () => {
           await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
         }
 
-        // // make sure we find two claims, one open
-        // const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
-        // expect(finalSwaps.length).toEqual(3);
-        // const claim1 = finalSwaps.find(matchId(swapId1));
-        // const claim2 = finalSwaps.find(matchId(swapId2));
-        // const open3 = finalSwaps.find(matchId(swapId3));
-        // expect(claim1).toBeDefined();
-        // expect(claim2).toBeDefined();
-        // expect(open3).toBeDefined();
-        // expect(claim1!.kind).toEqual(SwapProcessState.Aborted);
-        // expect(claim2!.kind).toEqual(SwapProcessState.Aborted);
-        // expect(open3!.kind).toEqual(SwapProcessState.Open);
+        // make sure we find two claims, one open
+        const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
+        expect(finalSwaps.length).toEqual(3);
+        const claim1 = finalSwaps.find(matchId(swapId1));
+        const claim2 = finalSwaps.find(matchId(swapId2));
+        const open3 = finalSwaps.find(matchId(swapId3));
+        expect(claim1).toBeDefined();
+        expect(claim2).toBeDefined();
+        expect(open3).toBeDefined();
+        expect(claim1!.kind).toEqual(SwapProcessState.Aborted);
+        expect(claim2!.kind).toEqual(SwapProcessState.Aborted);
+        expect(open3!.kind).toEqual(SwapProcessState.Open);
       }, 30_000);
     });
   });
