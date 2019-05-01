@@ -14,7 +14,7 @@ source "$SCRIPT_DIR/_includes.sh";
 # Lint
 #
 
-export TSLINT_FLAGS='-c ./tslint_ci.json'
+export ESLINT_FLAGS='--config ../../.eslintrc.ci.json'
 
 fold_start "yarn-lint"
 yarn lint

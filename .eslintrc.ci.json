@@ -1,0 +1,7 @@
+{
+  "extends": "./.eslintrc.json",
+  "rules": {
+    "no-console": "error",
+    "spaced-comment": "error"
+  }
+}
