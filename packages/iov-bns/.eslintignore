@@ -1,1 +1,4 @@
-../../.eslintignore
+build
+dist
+node_modules
+src/generated
