@@ -17,7 +17,7 @@ describe("jsonrpc", () => {
 
     it("copies params", () => {
       const params = { foo: "bar" };
-      const request = createJsonRpcRequest("foo", params);
+      const request = createJsonRpcRequest("some_method", params);
       expect(request.params).toEqual(params);
       expect(request.params).not.toBe(params);
     });
