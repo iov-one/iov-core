@@ -93,13 +93,10 @@ export class SigningServerCore {
   /**
    * Handles a transaction signing request
    *
-   * Returns the transaction ID in case the user authorized the signing.
-   * Returns undefined in the case the user rejected.
+   * @returns the transaction ID in case the user authorized the signing
+   * and `null` in case the user rejected.
    */
-  public async signAndPost(
-    reason: string,
-    transaction: UnsignedTransaction,
-  ): Promise<TransactionId | undefined> {
+  public async signAndPost(reason: string, transaction: UnsignedTransaction): Promise<TransactionId | null> {
     let authorized: boolean;
     try {
       authorized = await this.authorizeSignAndPost(reason, transaction);
@@ -117,7 +114,7 @@ export class SigningServerCore {
       this.signedAndPostedProducer.update([...this.signedAndPostedProducer.value, signedAndPosted]);
       return response.transactionId;
     } else {
-      return undefined;
+      return null;
     }
   }
 
