@@ -11,4 +11,4 @@ module.exports = {
   excludePrivate: true,
   excludeNotExported: true,
   ignoreCompilerErrors: true,
-}
+};
