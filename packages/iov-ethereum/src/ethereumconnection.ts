@@ -261,9 +261,8 @@ export class EthereumConnection implements AtomicSwapConnection {
       return bytes.length === swapIdBytes.length && bytes.every((b, i) => b === swapIdBytes[i]);
     });
     if (swapIndex === -1) {
-      throw new Error(
-        `Found ${kind === SwapProcessState.Claimed ? "Claimed" : "Aborted"} event for non-existent swap`,
-      );
+      // Found a Claimed/Aborted event for a token we’re not tracking
+      return swaps;
     }
     const oldSwap = swaps[swapIndex];
     const newSwap: AtomicSwap =
