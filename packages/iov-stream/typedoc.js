@@ -15,4 +15,4 @@ module.exports = {
   // TODO: tweak this so we can ignore non iov (mono-repo) imports
   excludeExternals: false,
   externalPattern: "^((?!iov).)*$",
-}
+};
