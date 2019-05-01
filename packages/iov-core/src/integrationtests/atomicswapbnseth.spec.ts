@@ -23,17 +23,19 @@ import {
 } from "@iov/bcp";
 import { bnsConnector } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
-import { EthereumConnection, ethereumConnector } from "@iov/ethereum";
+import { Erc20ApproveTransaction, EthereumConnection, ethereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "../multichainsigner";
 
 const CASH = "CASH" as TokenTicker;
 const ETH = "ETH" as TokenTicker;
+const ASH = "ASH" as TokenTicker;
 
 // Copied from 'iov-ethereum/src/testconfig.spec.ts'
 const ganacheMnemonic: string =
   "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
+const atomicSwapErc20ContractAddress = "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address;
 const ethereumBaseUrl: string = "http://localhost:8545";
 const ethereumConnectionOptions = {
   wsUrl: "ws://localhost:8545/ws",
@@ -41,6 +43,17 @@ const ethereumConnectionOptions = {
   pollInterval: 0.1,
   scraperApiUrl: undefined,
   atomicSwapEtherContractAddress: "0xE1C9Ea25A621Cf5C934a7E112ECaB640eC7D8d18" as Address,
+  atomicSwapErc20ContractAddress: atomicSwapErc20ContractAddress,
+  erc20Tokens: new Map([
+    [
+      "ASH" as TokenTicker,
+      {
+        contractAddress: "0xCb642A87923580b6F7D07D1471F93361196f2650" as Address,
+        decimals: 12,
+        symbol: "ASH",
+      },
+    ],
+  ]),
 };
 
 async function sleep(ms: number): Promise<void> {
@@ -144,6 +157,14 @@ class Actor {
     return new BN(amount ? amount.quantity : 0);
   }
 
+  // ASH is a token on Ethereum
+  public async getAshBalance(): Promise<BN> {
+    const account = await this.ethereumConnection.getAccount({ pubkey: this.ethereumIdentity.pubkey });
+    const balance = account ? account.balance : [];
+    const amount = balance.find(row => row.tokenTicker === ASH);
+    return new BN(amount ? amount.quantity : 0);
+  }
+
   public async getBnsSwap(id: SwapId): Promise<AtomicSwap> {
     const swaps = await this.bnsConnection.getSwaps({ id: id });
     return swaps[swaps.length - 1];
@@ -184,6 +205,16 @@ class Actor {
       kind: "bcp/send",
       creator: this.ethereumIdentity,
       recipient: recipient,
+      amount: amount,
+    });
+    return this.sendTransaction(transaction);
+  }
+
+  public async approveErc20Spend(amount: Amount): Promise<Uint8Array | undefined> {
+    const transaction = await this.ethereumConnection.withDefaultFee<Erc20ApproveTransaction>({
+      kind: "erc20/approve",
+      creator: this.ethereumIdentity,
+      spender: atomicSwapErc20ContractAddress,
       amount: amount,
     });
     return this.sendTransaction(transaction);
@@ -249,9 +280,9 @@ class Actor {
   }
 }
 
-describe("Full atomic swap between bns and ethereum", () => {
+describe("Full atomic swap between BNS and Ethereum", () => {
   // TODO: handle different fees... right now with assumes 0.01 of the main token as fee
-  it("works", async () => {
+  it("works for Ether", async () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
@@ -285,12 +316,12 @@ describe("Full atomic swap between bns and ethereum", () => {
       tokenTicker: ETH,
     });
 
-    // alice owns CASH on BNS but no ETH
+    // alice owns CASH on BNS but does not need ETH
     const aliceInitialCash = await alice.getCashBalance();
     const aliceInitialEth = await alice.getEthBalance();
     expect(aliceInitialCash.gtn(100_000000000)).toEqual(true);
 
-    // bob owns ETH on Ethereum but no CASH
+    // bob owns ETH on Ethereum but does not need CASH
     const bobInitialCash = await bob.getCashBalance();
     const bobInitialEth = await bob.getEthBalance();
     expect(bobInitialEth.gtn(100_000000000)).toEqual(true);
@@ -351,7 +382,7 @@ describe("Full atomic swap between bns and ethereum", () => {
       true,
     );
 
-    // check claim was made on BCP
+    // check claim was made on BNS
     const aliceClaim = await bob.getEthereumSwap(bobOfferId);
     expect(aliceClaim.kind).toEqual(SwapProcessState.Claimed);
 
@@ -370,5 +401,116 @@ describe("Full atomic swap between bns and ethereum", () => {
     // Bob's ETH balance now down by 5 (plus fees)
     expect(bobInitialEth.sub(await bob.getEthBalance()).gt(new BN("5000000000000000000"))).toEqual(true);
     expect(bobInitialEth.sub(await bob.getEthBalance()).lt(new BN("5100000000000000000"))).toEqual(true);
+  });
+
+  it("works for ERC20", async () => {
+    pendingWithoutBnsd();
+    pendingWithoutEthereum();
+
+    const alice = await Actor.create(
+      "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      HdPaths.iov(0),
+      ganacheMnemonic,
+      HdPaths.ethereum(0),
+    );
+    expect(alice.bnsAddress).toEqual("tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea");
+    expect(alice.ethereumAddress).toEqual("0x88F3b5659075D0E06bB1004BE7b1a7E66F452284");
+
+    const bob = await Actor.create(
+      "dad kiss slogan offer outer bomb usual dream awkward jeans enlist mansion",
+      HdPaths.iov(0),
+      ganacheMnemonic,
+      HdPaths.ethereum(2),
+    );
+    expect(bob.bnsAddress).toEqual("tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp");
+    expect(bob.ethereumAddress).toEqual("0x585ec8C463C8f9481f606456402cE7CACb8D2d2A");
+
+    // We need to send a 0.01 tokens to the other ones to allow claim fees
+    await alice.sendBnsTokens(bob.bnsAddress, {
+      quantity: "10000000",
+      fractionalDigits: 9,
+      tokenTicker: CASH,
+    });
+    await bob.sendEthereumTokens(alice.ethereumAddress, {
+      quantity: "10000000",
+      fractionalDigits: 18,
+      tokenTicker: ETH,
+    });
+
+    // alice owns CASH on BNS but does not need ASH
+    const aliceInitialCash = await alice.getCashBalance();
+    const aliceInitialAsh = await alice.getAshBalance();
+    expect(aliceInitialCash.gt(new BN(100_000000000))).toEqual(true);
+
+    // bob owns ASH on Ethereum but does not need CASH
+    const bobInitialCash = await bob.getCashBalance();
+    const bobInitialAsh = await bob.getAshBalance();
+    expect(bobInitialAsh.gt(new BN(10_000_000))).toEqual(true);
+
+    // A secret that only Alice knows
+    await alice.generatePreimage();
+    const aliceOfferId = {
+      data: (await alice.sendSwapOfferOnBns(bob.bnsAddress, {
+        quantity: "2000000000",
+        fractionalDigits: 9,
+        tokenTicker: CASH,
+      })) as SwapIdBytes,
+    };
+
+    // Alice's 2 CASH are locked in the contract (also consider fee)
+    expect(aliceInitialCash.sub(await alice.getCashBalance()).toString()).toEqual("2010000000");
+
+    // check correct offer was sent on BNS
+    const aliceOffer = await bob.getBnsSwap(aliceOfferId);
+    expect(aliceOffer.kind).toEqual(SwapProcessState.Open);
+    expect(aliceOffer.data.recipient).toEqual(bob.bnsAddress);
+    expect(aliceOffer.data.amounts.length).toEqual(1);
+    expect(aliceOffer.data.amounts[0]).toEqual({
+      quantity: "2000000000",
+      fractionalDigits: 9,
+      tokenTicker: CASH,
+    });
+
+    const bobOfferId = await EthereumConnection.createErc20SwapId();
+    const bobOfferAmount = {
+      quantity: "5000000",
+      fractionalDigits: 12,
+      tokenTicker: ASH,
+    };
+    await bob.approveErc20Spend(bobOfferAmount);
+    await bob.sendSwapCounterOnEthereum(aliceOffer, bobOfferId, alice.ethereumAddress, bobOfferAmount);
+
+    // Bob's 0.000005 ASH are locked in the contract
+    expect(bobInitialAsh.sub(await bob.getAshBalance()).eq(new BN("5000000"))).toEqual(true);
+
+    // check correct counteroffer was made on BCP
+    const bobOffer = await alice.getEthereumSwap(bobOfferId);
+    expect(bobOffer.kind).toEqual(SwapProcessState.Open);
+    expect(bobOffer.data.recipient).toEqual(alice.ethereumAddress);
+    expect(bobOffer.data.amounts.length).toEqual(1);
+    expect(bobOffer.data.amounts[0]).toEqual(bobOfferAmount);
+    await alice.claimFromKnownPreimageOnEthereum(bobOffer);
+
+    // Alice revealed her secret and should own 0.000005 ASH now
+    expect((await alice.getAshBalance()).sub(aliceInitialAsh).eq(new BN("5000000"))).toEqual(true);
+
+    // check claim was made on BCP
+    const aliceClaim = await bob.getEthereumSwap(bobOfferId);
+    expect(aliceClaim.kind).toEqual(SwapProcessState.Claimed);
+
+    await bob.claimFromRevealedPreimageOnBns(aliceClaim, aliceOfferId);
+
+    // check claim was made on BNS
+    const bobClaim = await alice.getBnsSwap(aliceOfferId);
+    expect(bobClaim.kind).toEqual(SwapProcessState.Claimed);
+
+    // Bob used Alice's preimage to claim his 2 CASH
+    expect((await bob.getCashBalance()).sub(bobInitialCash).toString()).toEqual("1990000000");
+
+    // Alice's CASH balance now down by 2 (plus fees)
+    expect(aliceInitialCash.sub(await alice.getCashBalance()).toString()).toEqual("2010000000");
+
+    // Bob's ASH balance now down by 0.000005
+    expect(bobInitialAsh.sub(await bob.getAshBalance()).eq(new BN("5000000"))).toEqual(true);
   });
 });
