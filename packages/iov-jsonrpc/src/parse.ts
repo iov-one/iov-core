@@ -8,18 +8,24 @@ import {
 import {
   JsonRpcError,
   JsonRpcErrorResponse,
+  JsonRpcId,
   JsonRpcRequest,
   JsonRpcResponse,
   JsonRpcSuccessResponse,
 } from "./types";
 
-export function parseJsonRpcId(data: unknown): number | null {
+/**
+ * Extracts ID field from request or response object.
+ *
+ * Returns `null` when no valid ID was found.
+ */
+export function parseJsonRpcId(data: unknown): JsonRpcId | null {
   if (!isJsonCompatibleDictionary(data)) {
     throw new Error("Data must be JSON compatible dictionary");
   }
 
   const id = data.id;
-  if (typeof id !== "number") {
+  if (typeof id !== "number" && typeof id !== "string") {
     return null;
   }
   return id;
@@ -93,42 +99,12 @@ export function parseJsonRpcErrorResponse(data: unknown): JsonRpcErrorResponse {
   }
 
   const id = data.id;
-  if (typeof id !== "number" && id !== null) {
+  if (typeof id !== "number" && typeof id !== "string" && id !== null) {
     throw new Error("Invalid id field");
   }
 
   if (typeof data.error === "undefined" || !isJsonCompatibleDictionary(data.error)) {
     throw new Error("Invalid error field");
-  }
-
-  return {
-    jsonrpc: "2.0",
-    id: id,
-    error: parseError(data.error),
-  };
-}
-
-/** @deprecated use parseJsonRpcErrorResponse */
-export function parseJsonRpcError(data: unknown): JsonRpcErrorResponse | undefined {
-  if (!isJsonCompatibleDictionary(data)) {
-    throw new Error("Data must be JSON compatible dictionary");
-  }
-
-  if (data.jsonrpc !== "2.0") {
-    throw new Error(`Got unexpected jsonrpc version: ${JSON.stringify(data)}`);
-  }
-
-  const id = data.id;
-  if (typeof id !== "number") {
-    throw new Error("Invalid id field");
-  }
-
-  if (typeof data.error === "undefined") {
-    return undefined;
-  }
-
-  if (!isJsonCompatibleDictionary(data.error)) {
-    throw new Error("Property 'error' is defined but not a JSON compatible dictionary");
   }
 
   return {
@@ -149,7 +125,7 @@ export function parseJsonRpcSuccessResponse(data: unknown): JsonRpcSuccessRespon
   }
 
   const id = data.id;
-  if (typeof id !== "number") {
+  if (typeof id !== "number" && typeof id !== "string") {
     throw new Error("Invalid id field");
   }
 
@@ -164,11 +140,6 @@ export function parseJsonRpcSuccessResponse(data: unknown): JsonRpcSuccessRespon
     id: id,
     result: result,
   };
-}
-
-/** @deprecated use parseJsonRpcSuccessResponse */
-export function parseJsonRpcResponse(data: unknown): JsonRpcSuccessResponse {
-  return parseJsonRpcSuccessResponse(data);
 }
 
 /**

@@ -1,4 +1,5 @@
 import { Encoding } from "@iov/encoding";
+import { JsonRpcSuccessResponse } from "@iov/jsonrpc";
 
 import {
   assertArray,
@@ -18,51 +19,53 @@ import {
   may,
   optional,
 } from "../encodings";
-import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
 import * as responses from "../responses";
+import { SubscriptionEvent } from "../rpcclients";
 import { IpPortString, TxBytes, TxHash, ValidatorPubkey, ValidatorSignature } from "../types";
 import { hashTx } from "./hasher";
 
 /*** adaptor ***/
 
 export class Responses {
-  public static decodeAbciInfo(response: JsonRpcSuccess): responses.AbciInfoResponse {
+  public static decodeAbciInfo(response: JsonRpcSuccessResponse): responses.AbciInfoResponse {
     return decodeAbciInfo(assertSet((response.result as AbciInfoResult).response));
   }
 
-  public static decodeAbciQuery(response: JsonRpcSuccess): responses.AbciQueryResponse {
+  public static decodeAbciQuery(response: JsonRpcSuccessResponse): responses.AbciQueryResponse {
     return decodeAbciQuery(assertSet((response.result as AbciQueryResult).response));
   }
 
-  public static decodeBlock(response: JsonRpcSuccess): responses.BlockResponse {
+  public static decodeBlock(response: JsonRpcSuccessResponse): responses.BlockResponse {
     return decodeBlockResponse(response.result as RpcBlockResponse);
   }
 
-  public static decodeBlockResults(response: JsonRpcSuccess): responses.BlockResultsResponse {
+  public static decodeBlockResults(response: JsonRpcSuccessResponse): responses.BlockResultsResponse {
     return decodeBlockResults(response.result as RpcBlockResultsResponse);
   }
 
-  public static decodeBlockchain(response: JsonRpcSuccess): responses.BlockchainResponse {
+  public static decodeBlockchain(response: JsonRpcSuccessResponse): responses.BlockchainResponse {
     return decodeBlockchain(response.result as RpcBlockchainResponse);
   }
 
-  public static decodeBroadcastTxSync(response: JsonRpcSuccess): responses.BroadcastTxSyncResponse {
+  public static decodeBroadcastTxSync(response: JsonRpcSuccessResponse): responses.BroadcastTxSyncResponse {
     return decodeBroadcastTxSync(response.result as RpcBroadcastTxSyncResponse);
   }
 
-  public static decodeBroadcastTxAsync(response: JsonRpcSuccess): responses.BroadcastTxAsyncResponse {
+  public static decodeBroadcastTxAsync(response: JsonRpcSuccessResponse): responses.BroadcastTxAsyncResponse {
     return this.decodeBroadcastTxSync(response);
   }
 
-  public static decodeBroadcastTxCommit(response: JsonRpcSuccess): responses.BroadcastTxCommitResponse {
+  public static decodeBroadcastTxCommit(
+    response: JsonRpcSuccessResponse,
+  ): responses.BroadcastTxCommitResponse {
     return decodeBroadcastTxCommit(response.result as RpcBroadcastTxCommitResponse);
   }
 
-  public static decodeCommit(response: JsonRpcSuccess): responses.CommitResponse {
+  public static decodeCommit(response: JsonRpcSuccessResponse): responses.CommitResponse {
     return decodeCommitResponse(response.result as RpcCommitResponse);
   }
 
-  public static decodeGenesis(response: JsonRpcSuccess): responses.GenesisResponse {
+  public static decodeGenesis(response: JsonRpcSuccessResponse): responses.GenesisResponse {
     return decodeGenesis(assertSet((response.result as GenesisResult).genesis));
   }
 
@@ -70,31 +73,31 @@ export class Responses {
     return null;
   }
 
-  public static decodeStatus(response: JsonRpcSuccess): responses.StatusResponse {
+  public static decodeStatus(response: JsonRpcSuccessResponse): responses.StatusResponse {
     return decodeStatus(response.result as RpcStatusResponse);
   }
 
-  public static decodeNewBlockEvent(event: JsonRpcEvent): responses.NewBlockEvent {
+  public static decodeNewBlockEvent(event: SubscriptionEvent): responses.NewBlockEvent {
     return decodeBlock(event.data.value.block as RpcBlock);
   }
 
-  public static decodeNewBlockHeaderEvent(event: JsonRpcEvent): responses.NewBlockHeaderEvent {
+  public static decodeNewBlockHeaderEvent(event: SubscriptionEvent): responses.NewBlockHeaderEvent {
     return decodeHeader(event.data.value.header as RpcHeader);
   }
 
-  public static decodeTxEvent(event: JsonRpcEvent): responses.TxEvent {
+  public static decodeTxEvent(event: SubscriptionEvent): responses.TxEvent {
     return decodeTxEvent(event.data.value.TxResult as RpcTxEvent);
   }
 
-  public static decodeTx(response: JsonRpcSuccess): responses.TxResponse {
+  public static decodeTx(response: JsonRpcSuccessResponse): responses.TxResponse {
     return decodeTxResponse(response.result as RpcTxResponse);
   }
 
-  public static decodeTxSearch(response: JsonRpcSuccess): responses.TxSearchResponse {
+  public static decodeTxSearch(response: JsonRpcSuccessResponse): responses.TxSearchResponse {
     return decodeTxSearch(response.result as RpcTxSearchResponse);
   }
 
-  public static decodeValidators(response: JsonRpcSuccess): responses.ValidatorsResponse {
+  public static decodeValidators(response: JsonRpcSuccessResponse): responses.ValidatorsResponse {
     return decodeValidators(response.result as RpcValidatorsResponse);
   }
 }

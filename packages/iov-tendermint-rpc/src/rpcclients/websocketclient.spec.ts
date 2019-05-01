@@ -4,9 +4,10 @@ import { toListPromise } from "@iov/stream";
 
 import { defaultInstance } from "../config.spec";
 import { Integer } from "../encodings";
-import { JsonRpcEvent, jsonRpcWith } from "../jsonrpc";
+import { createJsonRpcRequest } from "../jsonrpc";
 import { Method } from "../requests";
 
+import { SubscriptionEvent } from "./rpcclient";
 import { WebsocketClient } from "./websocketclient";
 
 function skipTests(): boolean {
@@ -27,15 +28,15 @@ describe("WebsocketClient", () => {
 
     const client = new WebsocketClient(tendermintUrl);
 
-    const healthResponse = await client.execute(jsonRpcWith(Method.Health));
+    const healthResponse = await client.execute(createJsonRpcRequest(Method.Health));
     expect(healthResponse.result).toEqual({});
 
-    const statusResponse = await client.execute(jsonRpcWith(Method.Status));
+    const statusResponse = await client.execute(createJsonRpcRequest(Method.Status));
     expect(statusResponse.result).toBeTruthy();
     expect(statusResponse.result.node_info).toBeTruthy();
 
     await client
-      .execute(jsonRpcWith("no-such-method"))
+      .execute(createJsonRpcRequest("no-such-method"))
       .then(() => fail("must not resolve"))
       .catch(error => expect(error).toBeTruthy());
 
@@ -48,16 +49,16 @@ describe("WebsocketClient", () => {
     const client = new WebsocketClient(tendermintUrl);
 
     const query = "tm.event='NewBlockHeader'";
-    const req = jsonRpcWith("subscribe", { query: query });
+    const req = createJsonRpcRequest("subscribe", { query: query });
     const headers = client.listen(req);
 
     // tslint:disable-next-line:readonly-array
-    const events: JsonRpcEvent[] = [];
+    const events: SubscriptionEvent[] = [];
 
     const sub = headers.subscribe({
       error: done.fail,
       complete: () => done.fail("subscription should not complete"),
-      next: (evt: JsonRpcEvent) => {
+      next: (evt: SubscriptionEvent) => {
         events.push(evt);
         expect(evt.query).toEqual(query);
 
@@ -88,8 +89,8 @@ describe("WebsocketClient", () => {
     const newBlockHeaderQuery = "tm.event='NewBlockHeader'";
 
     // we need two requests with unique IDs
-    const request1 = jsonRpcWith("subscribe", { query: newBlockHeaderQuery });
-    const request2 = jsonRpcWith("subscribe", { query: newBlockHeaderQuery });
+    const request1 = createJsonRpcRequest("subscribe", { query: newBlockHeaderQuery });
+    const request2 = createJsonRpcRequest("subscribe", { query: newBlockHeaderQuery });
     const stream1 = client.listen(request1);
     const stream2 = client.listen(request2);
 
@@ -111,16 +112,16 @@ describe("WebsocketClient", () => {
     const client = new WebsocketClient(tendermintUrl);
 
     const query = "tm.event='NewBlockHeader'";
-    const req = jsonRpcWith("subscribe", { query: query });
+    const req = createJsonRpcRequest("subscribe", { query: query });
     const headers = client.listen(req);
 
     // tslint:disable-next-line:readonly-array
-    const events: JsonRpcEvent[] = [];
+    const events: SubscriptionEvent[] = [];
 
     const sub = headers.subscribe({
       error: done.fail,
       complete: () => done.fail("subscription should not complete"),
-      next: (evt: JsonRpcEvent) => {
+      next: (evt: SubscriptionEvent) => {
         events.push(evt);
         expect(evt.query).toEqual(query);
 
@@ -139,7 +140,7 @@ describe("WebsocketClient", () => {
     });
 
     client
-      .execute(jsonRpcWith(Method.Status))
+      .execute(createJsonRpcRequest(Method.Status))
       .then(startusResponse => expect(startusResponse).toBeTruthy())
       .catch(done.fail);
   });
@@ -150,17 +151,17 @@ describe("WebsocketClient", () => {
     const client = new WebsocketClient(tendermintUrl);
 
     const query = "tm.event='NewBlockHeader'";
-    const req = jsonRpcWith("subscribe", { query: query });
+    const req = createJsonRpcRequest("subscribe", { query: query });
     const headers = client.listen(req);
 
     // tslint:disable-next-line:readonly-array
-    const receivedEvents: JsonRpcEvent[] = [];
+    const receivedEvents: SubscriptionEvent[] = [];
 
     setTimeout(() => client.disconnect(), 1500);
 
     headers.subscribe({
       error: done.fail,
-      next: (event: JsonRpcEvent) => receivedEvents.push(event),
+      next: (event: SubscriptionEvent) => receivedEvents.push(event),
       complete: () => {
         expect(receivedEvents.length).toEqual(1);
         done();
@@ -173,12 +174,12 @@ describe("WebsocketClient", () => {
 
     const client = new WebsocketClient(tendermintUrl);
     // dummy command to ensure client is connected
-    await client.execute(jsonRpcWith(Method.Health));
+    await client.execute(createJsonRpcRequest(Method.Health));
 
     client.disconnect();
 
     await client
-      .execute(jsonRpcWith(Method.Health))
+      .execute(createJsonRpcRequest(Method.Health))
       .then(() => fail("must not resolve"))
       .catch(error => expect(error).toMatch(/is not open/i));
   });
@@ -190,12 +191,12 @@ describe("WebsocketClient", () => {
     (async () => {
       const client = new WebsocketClient(tendermintUrl);
       // dummy command to ensure client is connected
-      await client.execute(jsonRpcWith(Method.Health));
+      await client.execute(createJsonRpcRequest(Method.Health));
 
       client.disconnect();
 
       const query = "tm.event='NewBlockHeader'";
-      const req = jsonRpcWith("subscribe", { query: query });
+      const req = createJsonRpcRequest("subscribe", { query: query });
       client.listen(req).subscribe({
         error: error => {
           expect(error.toString()).toMatch(/is not open/);
@@ -212,7 +213,7 @@ describe("WebsocketClient", () => {
 
     const client = new WebsocketClient(tendermintUrl);
 
-    const req = jsonRpcWith(Method.Health);
+    const req = createJsonRpcRequest(Method.Health);
     expect(() => client.listen(req)).toThrowError(/request method must be "subscribe"/i);
 
     await client.connected();

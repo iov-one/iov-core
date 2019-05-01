@@ -1,7 +1,76 @@
-import { parseJsonRpcErrorResponse, parseJsonRpcResponse2, parseJsonRpcSuccessResponse } from "./parse";
-import { jsonRpcCode, JsonRpcErrorResponse, JsonRpcSuccessResponse } from "./types";
+import {
+  parseJsonRpcErrorResponse,
+  parseJsonRpcId,
+  parseJsonRpcResponse2,
+  parseJsonRpcSuccessResponse,
+} from "./parse";
+import { jsonRpcCode, JsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "./types";
 
 describe("parse", () => {
+  describe("parseJsonRpcId", () => {
+    it("works for number IDs", () => {
+      const request: JsonRpcRequest = {
+        jsonrpc: "2.0",
+        id: 123,
+        method: "foo",
+        params: {},
+      };
+      expect(parseJsonRpcId(request)).toEqual(123);
+    });
+
+    it("works for string IDs", () => {
+      const request: JsonRpcRequest = {
+        jsonrpc: "2.0",
+        id: "329fg3b",
+        method: "foo",
+        params: {},
+      };
+      expect(parseJsonRpcId(request)).toEqual("329fg3b");
+    });
+
+    it("returns null for invaid IDs", () => {
+      // unset
+      {
+        const request = {
+          jsonrpc: "2.0",
+          method: "foo",
+          params: {},
+        };
+        expect(parseJsonRpcId(request)).toBeNull();
+      }
+      // wrong type (object)
+      {
+        const request = {
+          jsonrpc: "2.0",
+          id: { content: 123 },
+          method: "foo",
+          params: {},
+        };
+        expect(parseJsonRpcId(request)).toBeNull();
+      }
+      // wrong type (Array)
+      {
+        const request = {
+          jsonrpc: "2.0",
+          id: [1, 2, 3],
+          method: "foo",
+          params: {},
+        };
+        expect(parseJsonRpcId(request)).toBeNull();
+      }
+      // wrong type (null)
+      {
+        const request = {
+          jsonrpc: "2.0",
+          id: null,
+          method: "foo",
+          params: {},
+        };
+        expect(parseJsonRpcId(request)).toBeNull();
+      }
+    });
+  });
+
   describe("parseJsonRpcErrorResponse", () => {
     it("works for valid error", () => {
       const response: any = {
@@ -11,6 +80,18 @@ describe("parse", () => {
           code: jsonRpcCode.serverError.default,
           message: "Something bad happened",
           data: [2, 3, 4],
+        },
+      };
+      expect(parseJsonRpcErrorResponse(response)).toEqual(response);
+    });
+
+    it("works for error with string ID", () => {
+      const response: any = {
+        jsonrpc: "2.0",
+        id: "a3g4g34g",
+        error: {
+          code: jsonRpcCode.parseError,
+          message: "Could not parse request ID",
         },
       };
       expect(parseJsonRpcErrorResponse(response)).toEqual(response);
@@ -156,6 +237,24 @@ describe("parse", () => {
         jsonrpc: "2.0",
         id: 123,
         result: null,
+      };
+      expect(parseJsonRpcSuccessResponse(response)).toEqual(response);
+    });
+
+    it("works for response with number ID", () => {
+      const response: any = {
+        jsonrpc: "2.0",
+        id: 123,
+        result: {},
+      };
+      expect(parseJsonRpcSuccessResponse(response)).toEqual(response);
+    });
+
+    it("works for response with string ID", () => {
+      const response: any = {
+        jsonrpc: "2.0",
+        id: "40gfh408g",
+        result: {},
       };
       expect(parseJsonRpcSuccessResponse(response)).toEqual(response);
     });

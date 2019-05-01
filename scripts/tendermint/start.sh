@@ -18,8 +18,6 @@ chmod 777 "${TMP_DIR}"
 echo "Using temporary dir $TMP_DIR"
 LOGFILE="$TMP_DIR/tendermint.log"
 
-docker pull "tendermint/tendermint:${TENDERMINT_VERSION}"
-
 docker run --rm \
   --user="$UID" \
   -v "${TMP_DIR}:/tendermint" \

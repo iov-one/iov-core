@@ -1,19 +1,18 @@
 /* tslint:disable:readonly-keyword readonly-array no-object-mutation */
 import { Listener, Producer, Stream, Subscription } from "xstream";
 
+import {
+  isJsonRpcErrorResponse,
+  JsonRpcId,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccessResponse,
+  parseJsonRpcResponse2,
+} from "@iov/jsonrpc";
 import { SocketWrapperMessageEvent, StreamingSocket } from "@iov/socket";
 import { firstEvent } from "@iov/stream";
 
-import {
-  ifError,
-  JsonRpcEvent,
-  JsonRpcRequest,
-  JsonRpcResponse,
-  JsonRpcSuccess,
-  throwIfError,
-} from "../jsonrpc";
-
-import { hasProtocol, RpcStreamingClient } from "./rpcclient";
+import { hasProtocol, RpcStreamingClient, SubscriptionEvent } from "./rpcclient";
 
 function defaultErrorHandler(error: any): never {
   throw error;
@@ -25,7 +24,7 @@ function toJsonRpcResponse(message: SocketWrapperMessageEvent): JsonRpcResponse 
     throw new Error(`Unexcepted message type on websocket: ${message.type}`);
   }
 
-  const jsonRpcEvent: JsonRpcResponse = JSON.parse(message.data);
+  const jsonRpcEvent = parseJsonRpcResponse2(JSON.parse(message.data));
   return jsonRpcEvent;
 }
 
@@ -39,7 +38,7 @@ export class WebsocketClient implements RpcStreamingClient {
   //
   // Creating streams is cheap since producer is not started as long as nobody listens to events. Thus this
   // map is never cleared and there is no need to do so. But unsubscribe all the subscriptions!
-  private readonly subscriptionStreams = new Map<string, Stream<JsonRpcEvent>>();
+  private readonly subscriptionStreams = new Map<string, Stream<SubscriptionEvent>>();
 
   constructor(baseUrl: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
     // accept host.name:port and assume ws protocol
@@ -62,16 +61,19 @@ export class WebsocketClient implements RpcStreamingClient {
     this.socket.connect();
   }
 
-  public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccess> {
+  public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse> {
     const pendingResponse = this.responseForRequestId(request.id);
     await this.socket.connected;
     const pendingSend = this.socket.send(JSON.stringify(request));
 
     const response = (await Promise.all([pendingResponse, pendingSend]))[0];
-    return throwIfError(response);
+    if (isJsonRpcErrorResponse(response)) {
+      throw new Error(JSON.stringify(response.error));
+    }
+    return response;
   }
 
-  public listen(request: JsonRpcRequest): Stream<JsonRpcEvent> {
+  public listen(request: JsonRpcRequest): Stream<SubscriptionEvent> {
     if (request.method !== "subscribe") {
       throw new Error(`Request method must be "subscribe" to start event listening`);
     }
@@ -101,12 +103,12 @@ export class WebsocketClient implements RpcStreamingClient {
     this.socket.disconnect();
   }
 
-  protected async responseForRequestId(id: string): Promise<JsonRpcResponse> {
+  protected async responseForRequestId(id: JsonRpcId): Promise<JsonRpcResponse> {
     return firstEvent(this.jsonRpcResponseStream.filter(r => r.id === id));
   }
 }
 
-class RpcEventProducer implements Producer<JsonRpcEvent> {
+class RpcEventProducer implements Producer<SubscriptionEvent> {
   private readonly request: JsonRpcRequest;
   private readonly socket: StreamingSocket;
 
@@ -121,7 +123,7 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
   /**
    * Implementation of Producer.start
    */
-  public async start(listener: Listener<JsonRpcEvent>): Promise<void> {
+  public async start(listener: Listener<SubscriptionEvent>): Promise<void> {
     if (this.running) {
       throw Error("Already started. Please stop first before restarting.");
     }
@@ -150,7 +152,7 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
     this.socket.send(JSON.stringify(endRequest)).catch(_ => 0);
   }
 
-  protected connectToClient(listener: Listener<JsonRpcEvent>): void {
+  protected connectToClient(listener: Listener<SubscriptionEvent>): void {
     const responseStream = this.socket.events.map(toJsonRpcResponse);
 
     // this should unsubscribe itself, so doesn't need to be removed explicitly
@@ -158,10 +160,9 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
       .filter(response => response.id === this.request.id)
       .subscribe({
         next: response => {
-          const err = ifError(response);
-          if (err) {
+          if (isJsonRpcErrorResponse(response)) {
             this.closeSubscriptions();
-            listener.error(err);
+            listener.error(JSON.stringify(response.error));
           }
           idSubscription.unsubscribe();
         },
@@ -174,13 +175,11 @@ class RpcEventProducer implements Producer<JsonRpcEvent> {
       .filter(response => response.id === `${this.request.id}#event`)
       .subscribe({
         next: response => {
-          const err = ifError(response);
-          if (err) {
+          if (isJsonRpcErrorResponse(response)) {
             this.closeSubscriptions();
-            listener.error(err);
+            listener.error(JSON.stringify(response.error));
           } else {
-            const result = (response as JsonRpcSuccess).result;
-            listener.next(result as JsonRpcEvent);
+            listener.next(response.result as SubscriptionEvent);
           }
         },
       });

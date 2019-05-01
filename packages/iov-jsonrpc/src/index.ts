@@ -10,17 +10,17 @@ export {
 export {
   parseJsonRpcId,
   parseJsonRpcRequest,
-  parseJsonRpcResponse,
   parseJsonRpcResponse2,
-  parseJsonRpcError,
   parseJsonRpcErrorResponse,
   parseJsonRpcSuccessResponse,
 } from "./parse";
 export {
   isJsonRpcErrorResponse,
   isJsonRpcSuccessResponse,
-  JsonRpcRequest,
+  JsonRpcError,
   JsonRpcErrorResponse,
+  JsonRpcId,
+  JsonRpcRequest,
   JsonRpcResponse,
   JsonRpcSuccessResponse,
   jsonRpcCode,

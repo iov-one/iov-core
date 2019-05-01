@@ -1,23 +1,24 @@
-import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
+import { JsonRpcSuccessResponse } from "@iov/jsonrpc";
 import * as responses from "../responses";
+import { SubscriptionEvent } from "../rpcclients";
 /*** adaptor ***/
 export declare class Responses {
-    static decodeAbciInfo(response: JsonRpcSuccess): responses.AbciInfoResponse;
-    static decodeAbciQuery(response: JsonRpcSuccess): responses.AbciQueryResponse;
-    static decodeBlock(response: JsonRpcSuccess): responses.BlockResponse;
-    static decodeBlockResults(response: JsonRpcSuccess): responses.BlockResultsResponse;
-    static decodeBlockchain(response: JsonRpcSuccess): responses.BlockchainResponse;
-    static decodeBroadcastTxSync(response: JsonRpcSuccess): responses.BroadcastTxSyncResponse;
-    static decodeBroadcastTxAsync(response: JsonRpcSuccess): responses.BroadcastTxAsyncResponse;
-    static decodeBroadcastTxCommit(response: JsonRpcSuccess): responses.BroadcastTxCommitResponse;
-    static decodeCommit(response: JsonRpcSuccess): responses.CommitResponse;
-    static decodeGenesis(response: JsonRpcSuccess): responses.GenesisResponse;
+    static decodeAbciInfo(response: JsonRpcSuccessResponse): responses.AbciInfoResponse;
+    static decodeAbciQuery(response: JsonRpcSuccessResponse): responses.AbciQueryResponse;
+    static decodeBlock(response: JsonRpcSuccessResponse): responses.BlockResponse;
+    static decodeBlockResults(response: JsonRpcSuccessResponse): responses.BlockResultsResponse;
+    static decodeBlockchain(response: JsonRpcSuccessResponse): responses.BlockchainResponse;
+    static decodeBroadcastTxSync(response: JsonRpcSuccessResponse): responses.BroadcastTxSyncResponse;
+    static decodeBroadcastTxAsync(response: JsonRpcSuccessResponse): responses.BroadcastTxAsyncResponse;
+    static decodeBroadcastTxCommit(response: JsonRpcSuccessResponse): responses.BroadcastTxCommitResponse;
+    static decodeCommit(response: JsonRpcSuccessResponse): responses.CommitResponse;
+    static decodeGenesis(response: JsonRpcSuccessResponse): responses.GenesisResponse;
     static decodeHealth(): responses.HealthResponse;
-    static decodeStatus(response: JsonRpcSuccess): responses.StatusResponse;
-    static decodeNewBlockEvent(event: JsonRpcEvent): responses.NewBlockEvent;
-    static decodeNewBlockHeaderEvent(event: JsonRpcEvent): responses.NewBlockHeaderEvent;
-    static decodeTxEvent(event: JsonRpcEvent): responses.TxEvent;
-    static decodeTx(response: JsonRpcSuccess): responses.TxResponse;
-    static decodeTxSearch(response: JsonRpcSuccess): responses.TxSearchResponse;
-    static decodeValidators(response: JsonRpcSuccess): responses.ValidatorsResponse;
+    static decodeStatus(response: JsonRpcSuccessResponse): responses.StatusResponse;
+    static decodeNewBlockEvent(event: SubscriptionEvent): responses.NewBlockEvent;
+    static decodeNewBlockHeaderEvent(event: SubscriptionEvent): responses.NewBlockHeaderEvent;
+    static decodeTxEvent(event: SubscriptionEvent): responses.TxEvent;
+    static decodeTx(response: JsonRpcSuccessResponse): responses.TxResponse;
+    static decodeTxSearch(response: JsonRpcSuccessResponse): responses.TxSearchResponse;
+    static decodeValidators(response: JsonRpcSuccessResponse): responses.ValidatorsResponse;
 }

@@ -1,4 +1,4 @@
-import { JsonRpcRequest } from "../jsonrpc";
+import { JsonRpcRequest } from "@iov/jsonrpc";
 import * as requests from "../requests";
 /***** queries *****/
 export declare class Params {
