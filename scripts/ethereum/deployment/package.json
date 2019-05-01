@@ -13,7 +13,7 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "prettier": "^1.16.4",
+    "prettier": "^1.17.0",
     "typescript": "~3.3",
     "web3x": "^3.0.6"
   }
