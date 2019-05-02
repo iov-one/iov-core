@@ -8,7 +8,7 @@ module.exports = {
   name: `${packageJson.name} Documentation`,
   readme: "README.md",
   mode: "file",
-  excludePrivate: true,
+  excludeExternals: true,
   excludeNotExported: true,
-  ignoreCompilerErrors: true,
+  excludePrivate: true,
 }
