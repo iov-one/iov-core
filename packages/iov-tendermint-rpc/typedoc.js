@@ -7,7 +7,8 @@ module.exports = {
   target: "es6",
   name: `${packageJson.name} Documentation`,
   readme: "README.md",
-  mode: "modules",
-  excludePrivate: true,
+  mode: "file",
+  excludeExternals: true,
   excludeNotExported: true,
+  excludePrivate: true,
 }

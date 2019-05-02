@@ -9,6 +9,6 @@ module.exports = {
   readme: "README.md",
   mode: "file",
   excludeExternals: true,
-  excludePrivate: true,
   excludeNotExported: true,
+  excludePrivate: true,
 }

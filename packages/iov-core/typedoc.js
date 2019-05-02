@@ -8,11 +8,11 @@ module.exports = {
   name: `${packageJson.name} Documentation`,
   readme: "README.md",
   mode: "file",
+  excludeExternals: false,
+  // TODO: tweak this so we can ignore non iov (mono-repo) imports
+  externalPattern: "^((?!iov).)*$",
   excludePrivate: true,
   excludeNotExported: true,
   // this pulls in all dependencies
   includeDeclarations: true,
-  // TODO: tweak this so we can ignore non iov (mono-repo) imports
-  excludeExternals: false,
-  externalPattern: "^((?!iov).)*$",
 }
