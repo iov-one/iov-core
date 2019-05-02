@@ -835,9 +835,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
       const erc20ContractAddress =
         query.id.prefix === SwapIdPrefix.Erc20
-          ? toChecksummedAddress(
-              Abi.decodeAddress(resultArray.slice(erc20ContractAddressBegin, erc20ContractAddressEnd)),
-            )
+          ? Abi.decodeAddress(resultArray.slice(erc20ContractAddressBegin, erc20ContractAddressEnd))
           : null;
       const erc20Token = erc20ContractAddress
         ? [...this.erc20Tokens.values()].find(token => token.contractAddress === erc20ContractAddress)
@@ -846,8 +844,8 @@ export class EthereumConnection implements AtomicSwapConnection {
       const tokenTicker = erc20Token ? (erc20Token.symbol as TokenTicker) : constants.primaryTokenTicker;
       const swapData: SwapData = {
         id: query.id,
-        sender: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd))),
-        recipient: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd))),
+        sender: Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd)),
+        recipient: Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
         hash: resultArray.slice(hashBegin, hashEnd) as Hash,
         amounts: [
           {
@@ -940,12 +938,8 @@ export class EthereumConnection implements AtomicSwapConnection {
                       prefix: SwapIdPrefix.Ether,
                       data: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
                     },
-                    sender: toChecksummedAddress(
-                      Abi.decodeAddress(dataArray.slice(openedSenderBegin, openedSenderEnd)),
-                    ),
-                    recipient: toChecksummedAddress(
-                      Abi.decodeAddress(dataArray.slice(openedRecipientBegin, openedRecipientEnd)),
-                    ),
+                    sender: Abi.decodeAddress(dataArray.slice(openedSenderBegin, openedSenderEnd)),
+                    recipient: Abi.decodeAddress(dataArray.slice(openedRecipientBegin, openedRecipientEnd)),
                     hash: dataArray.slice(openedHashBegin, openedHashEnd) as Hash,
                     amounts: [
                       {

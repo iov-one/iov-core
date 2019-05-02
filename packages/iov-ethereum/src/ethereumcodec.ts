@@ -214,8 +214,8 @@ export class EthereumCodec implements TxCodec {
           const positionAmountBegin = positionErc20ContractAddressEnd;
           const positionAmountEnd = positionAmountBegin + 32;
 
-          const recipientChecksummedAddress = toChecksummedAddress(
-            Abi.decodeAddress(input.slice(positionRecipientBegin, positionRecipientEnd)),
+          const recipientAddress = Abi.decodeAddress(
+            input.slice(positionRecipientBegin, positionRecipientEnd),
           );
           const hash = input.slice(positionHashBegin, positionHashEnd) as Hash;
           const timeoutHeight = new BN(input.slice(positionTimeoutBegin, positionTimeoutEnd)).toNumber();
@@ -252,7 +252,7 @@ export class EthereumCodec implements TxCodec {
                 tokenTicker: tokenTicker,
               },
             ],
-            recipient: recipientChecksummedAddress,
+            recipient: recipientAddress,
             timeout: {
               height: timeoutHeight,
             },
@@ -318,8 +318,8 @@ export class EthereumCodec implements TxCodec {
           fractionalDigits: erc20Token.decimals,
           tokenTicker: erc20Token.symbol as TokenTicker,
         },
-        recipient: toChecksummedAddress(
-          Abi.decodeAddress(input.slice(positionTransferRecipientBegin, positionTransferRecipientEnd)),
+        recipient: Abi.decodeAddress(
+          input.slice(positionTransferRecipientBegin, positionTransferRecipientEnd),
         ),
         memo: undefined,
       };

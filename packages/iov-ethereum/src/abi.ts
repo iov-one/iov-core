@@ -4,8 +4,7 @@ import { Address, SwapProcessState } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
-import { isValidAddress } from "./address";
-import { toEthereumHex } from "./utils";
+import { isValidAddress, toChecksummedAddress } from "./address";
 
 export interface HeadTail {
   /** An array of start positions within the original data */
@@ -56,8 +55,8 @@ export class Abi {
     if (binary.length !== 32) {
       throw new Error("Input data not 256 bit long");
     }
-    const lowBytes = binary.slice(12);
-    return toEthereumHex(lowBytes) as Address;
+    const lastTwentyBytes = binary.slice(-20);
+    return toChecksummedAddress(lastTwentyBytes);
   }
 
   public static decodeUint256(binary: Uint8Array): string {

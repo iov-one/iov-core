@@ -301,7 +301,7 @@ describe("ethereumCodec", () => {
             fractionalDigits: 18,
             tokenTicker: "REP" as TokenTicker,
           },
-          spender: "0x4b525ae3a20021639d6e00bf752e6d2b7f65196e" as Address,
+          spender: "0x4b525aE3A20021639D6e00bf752E6d2B7F65196e" as Address,
         },
         primarySignature: {
           nonce: 0 as Nonce,
