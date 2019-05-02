@@ -44,11 +44,11 @@ export function toChecksummedAddress(address: string): Address {
 
   const addressLower = address.toLowerCase().replace("0x", "");
   const addressHash = toHex(new Keccak256(toAscii(addressLower)).digest());
-  let checksumAddress = "";
+  let checksumAddress = "0x";
   for (let i = 0; i < 40; i++) {
     checksumAddress += parseInt(addressHash[i], 16) > 7 ? addressLower[i].toUpperCase() : addressLower[i];
   }
-  return toEthereumHex(checksumAddress) as Address;
+  return checksumAddress as Address;
 }
 
 export function pubkeyToAddress(pubkey: PublicKeyBundle): Address {
