@@ -113,19 +113,28 @@ describe("Abi", () => {
         Abi.decodeAddress(fromHex("0000000000000000000000000000000000000000000000000000000000000002")),
       ).toEqual("0x0000000000000000000000000000000000000002");
       expect(
-        Abi.decodeAddress(fromHex("00000000000000000000000000000000000000000000000000000000075bcd15")),
-      ).toEqual("0x00000000000000000000000000000000075bcd15");
+        Abi.decodeAddress(fromHex("0000000000000000000000000000000000000000000000000000000007565415")),
+      ).toEqual("0x0000000000000000000000000000000007565415");
+    });
+
+    it("returns checksummed address", () => {
       expect(
-        Abi.decodeAddress(fromHex("0000000000000000000000003b8a67ad64160e0b977b6dd877e0fb98878ab902")),
-      ).toEqual("0x3b8a67ad64160e0b977b6dd877e0fb98878ab902");
+        Abi.decodeAddress(fromHex("0000000000000000000000005aaeb6053f3e94c9b9a09f33669435e7ef1beaed")),
+      ).toEqual("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed");
     });
 
     it("throws for invalid input", () => {
       const tooShort = fromHex("00000000000000000000000000000000000000000000000000000000000000");
-      expect(() => Abi.decodeAddress(tooShort)).toThrow();
+      expect(() => Abi.decodeAddress(tooShort)).toThrowError(/input data not 256 bit long/i);
 
       const tooLong = fromHex("000000000000000000000000000000000000000000000000000000000000000000");
-      expect(() => Abi.decodeAddress(tooLong)).toThrow();
+      expect(() => Abi.decodeAddress(tooLong)).toThrowError(/input data not 256 bit long/i);
+
+      const nonZeroPadding1 = fromHex("0100000000000000000000000000000000000000000000000000000000000000");
+      expect(() => Abi.decodeAddress(nonZeroPadding1)).toThrowError(/input data is not zero-padded/i);
+
+      const nonZeroPadding2 = fromHex("0000000000000000000000010000000000000000000000000000000000000000");
+      expect(() => Abi.decodeAddress(nonZeroPadding2)).toThrowError(/input data is not zero-padded/i);
     });
   });
 

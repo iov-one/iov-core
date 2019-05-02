@@ -70,6 +70,18 @@ describe("address", () => {
       );
     });
 
+    it("works for binary input", () => {
+      expect(
+        toChecksummedAddress(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])),
+      ).toEqual("0x0000000000000000000000000000000000000000");
+      expect(toChecksummedAddress(fromHex("52908400098527886E0F7030069857D2E4169EE7"))).toEqual(
+        "0x52908400098527886E0F7030069857D2E4169EE7",
+      );
+      expect(toChecksummedAddress(fromHex("8617E340B3D01FA5F11F306F4090FD50E238070D"))).toEqual(
+        "0x8617E340B3D01FA5F11F306F4090FD50E238070D",
+      );
+    });
+
     it("does not change checksummed addresses", () => {
       expect(toChecksummedAddress("0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359")).toEqual(
         "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
@@ -97,6 +109,15 @@ describe("address", () => {
       // incorrectly checksummed
       expect(() => toChecksummedAddress("0xFB6916095ca1df60bB79Ce92cE3Ea74c37c5d359")).toThrowError(
         /not a valid Ethereum address/i,
+      );
+    });
+
+    it("throws for invalid binary input", () => {
+      expect(() => toChecksummedAddress(fromHex("00000000000000000000000000000000000000"))).toThrowError(
+        /invalid Ethereum address length/i,
+      );
+      expect(() => toChecksummedAddress(fromHex("000000000000000000000000000000000000000000"))).toThrowError(
+        /invalid Ethereum address length/i,
       );
     });
   });
