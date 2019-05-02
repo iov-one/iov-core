@@ -65,8 +65,8 @@ export function pubkeyToAddress(pubkey: PublicKeyBundle): Address {
   if (pubkey.algo !== Algorithm.Secp256k1 || pubkey.data.length !== 65 || pubkey.data[0] !== 0x04) {
     throw new Error(`Invalid pubkey data input: ${pubkey}`);
   }
-  const hash = toHex(new Keccak256(pubkey.data.slice(1)).digest());
-  const lastFortyChars = hash.slice(-40);
-  const addressString = toChecksummedAddress(toEthereumHex(lastFortyChars));
+  const hash = new Keccak256(pubkey.data.slice(1)).digest();
+  const lastTwentyBytes = hash.slice(-20);
+  const addressString = toChecksummedAddress(lastTwentyBytes);
   return addressString;
 }
