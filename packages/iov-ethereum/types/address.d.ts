@@ -7,5 +7,5 @@ export declare function isValidAddress(address: string): boolean;
  *
  * @link https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
  */
-export declare function toChecksummedAddress(address: string): Address;
+export declare function toChecksummedAddress(address: string | Uint8Array): Address;
 export declare function pubkeyToAddress(pubkey: PublicKeyBundle): Address;

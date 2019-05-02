@@ -37,12 +37,22 @@ export function isValidAddress(address: string): boolean {
  *
  * @link https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
  */
-export function toChecksummedAddress(address: string): Address {
-  if (!isValidAddress(address)) {
-    throw new Error("Input is not a valid Ethereum address");
+export function toChecksummedAddress(address: string | Uint8Array): Address {
+  // 40 low hex characters
+  let addressLower: string;
+
+  if (typeof address === "string") {
+    if (!isValidAddress(address)) {
+      throw new Error("Input is not a valid Ethereum address");
+    }
+    addressLower = address.toLowerCase().replace("0x", "");
+  } else {
+    if (address.length !== 20) {
+      throw new Error("Invalid Ethereum address length. Must be 20 bytes.");
+    }
+    addressLower = toHex(address);
   }
 
-  const addressLower = address.toLowerCase().replace("0x", "");
   const addressHash = toHex(new Keccak256(toAscii(addressLower)).digest());
   let checksumAddress = "0x";
   for (let i = 0; i < 40; i++) {
