@@ -54,7 +54,7 @@ import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
 
 import { Abi, SwapContractEvent } from "./abi";
-import { pubkeyToAddress, toChecksummedAddress } from "./address";
+import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20TokensMap } from "./erc20";
 import { Erc20Reader } from "./erc20reader";
@@ -207,8 +207,8 @@ export class EthereumConnection implements AtomicSwapConnection {
           prefix: prefix,
           data: bytes.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
         },
-        sender: toChecksummedAddress(Abi.decodeAddress(bytes.slice(senderBegin, senderEnd))),
-        recipient: toChecksummedAddress(Abi.decodeAddress(bytes.slice(recipientBegin, recipientEnd))),
+        sender: Abi.decodeAddress(bytes.slice(senderBegin, senderEnd)),
+        recipient: Abi.decodeAddress(bytes.slice(recipientBegin, recipientEnd)),
         hash: bytes.slice(hashBegin, hashEnd) as Hash,
         amounts: [amount],
         timeout: {
@@ -1199,9 +1199,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
     const erc20ContractAddress =
       query.id.prefix === SwapIdPrefix.Erc20
-        ? toChecksummedAddress(
-            Abi.decodeAddress(resultArray.slice(erc20ContractAddressBegin, erc20ContractAddressEnd)),
-          )
+        ? Abi.decodeAddress(resultArray.slice(erc20ContractAddressBegin, erc20ContractAddressEnd))
         : null;
     const erc20Token = erc20ContractAddress
       ? [...this.erc20Tokens.values()].find(token => token.contractAddress === erc20ContractAddress)
@@ -1210,8 +1208,8 @@ export class EthereumConnection implements AtomicSwapConnection {
     const tokenTicker = erc20Token ? (erc20Token.symbol as TokenTicker) : constants.primaryTokenTicker;
     const swapData: SwapData = {
       id: query.id,
-      sender: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd))),
-      recipient: toChecksummedAddress(Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd))),
+      sender: Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd)),
+      recipient: Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
       hash: resultArray.slice(hashBegin, hashEnd) as Hash,
       amounts: [
         {
