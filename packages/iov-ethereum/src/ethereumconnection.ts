@@ -255,12 +255,11 @@ export class EthereumConnection implements AtomicSwapConnection {
   private static updateSwapInList(
     swaps: ReadonlyArray<AtomicSwap>,
     update: AtomicSwapUpdate,
+    prefix: SwapIdPrefix,
   ): ReadonlyArray<AtomicSwap> {
     const { kind, swapIdBytes } = update;
-    const swapIndex = swaps.findIndex(s => {
-      const bytes = s.data.id.data;
-      return bytes.length === swapIdBytes.length && bytes.every((b, i) => b === swapIdBytes[i]);
-    });
+    const swapId = { data: swapIdBytes, prefix: prefix };
+    const swapIndex = swaps.findIndex(s => swapIdEquals(s.data.id, swapId));
     if (swapIndex === -1) {
       // Found a Claimed/Aborted event for a token we’re not tracking
       return swaps;
@@ -1284,11 +1283,11 @@ export class EthereumConnection implements AtomicSwapConnection {
             return parsed ? [...accumulator, parsed] : accumulator;
           case SwapContractEvent.Claimed: {
             const update = EthereumConnection.parseClaimedEventBytes(dataArray);
-            return EthereumConnection.updateSwapInList(accumulator, update);
+            return EthereumConnection.updateSwapInList(accumulator, update, log.prefix);
           }
           case SwapContractEvent.Aborted: {
             const update = EthereumConnection.parseAbortedEventBytes(dataArray);
-            return EthereumConnection.updateSwapInList(accumulator, update);
+            return EthereumConnection.updateSwapInList(accumulator, update, log.prefix);
           }
           default:
             throw new Error("SwapContractEvent type not handled");
