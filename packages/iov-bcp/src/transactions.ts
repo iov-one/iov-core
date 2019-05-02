@@ -223,11 +223,14 @@ export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
   );
 }
 
-export interface SendTransaction extends UnsignedTransaction {
-  readonly kind: "bcp/send";
+interface SendTransactionProperties {
   readonly amount: Amount;
   readonly recipient: Address;
   readonly memo?: string;
+}
+
+export interface SendTransaction extends UnsignedTransaction, SendTransactionProperties {
+  readonly kind: "bcp/send";
 }
 
 export type SwapTimeout = BlockHeightTimeout | TimestampTimeout;
@@ -254,9 +257,7 @@ export function createTimestampTimeout(secondsFromNow: number): TimestampTimeout
   return { timestamp: Math.floor(ReadonlyDate.now() / 1000) + secondsFromNow };
 }
 
-/** A swap offer or a counter offer */
-export interface SwapOfferTransaction extends UnsignedTransaction {
-  readonly kind: "bcp/swap_offer";
+interface SwapOfferTransactionProperties {
   /**
    * The ID of the swap to aid coordination between the two parties.
    *
@@ -284,15 +285,26 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
   readonly memo?: string;
 }
 
-export interface SwapClaimTransaction extends UnsignedTransaction {
-  readonly kind: "bcp/swap_claim";
+/** A swap offer or a counter offer */
+export interface SwapOfferTransaction extends UnsignedTransaction, SwapOfferTransactionProperties {
+  readonly kind: "bcp/swap_offer";
+}
+
+interface SwapClaimTransactionProperties {
   readonly preimage: Preimage;
   readonly swapId: SwapId; // pulled from the offer transaction
 }
 
-export interface SwapAbortTransaction extends UnsignedTransaction {
-  readonly kind: "bcp/swap_abort";
+export interface SwapClaimTransaction extends UnsignedTransaction, SwapClaimTransactionProperties {
+  readonly kind: "bcp/swap_claim";
+}
+
+interface SwapAbortTransactionProperties {
   readonly swapId: SwapId; // pulled from the offer transaction
+}
+
+export interface SwapAbortTransaction extends UnsignedTransaction, SwapAbortTransactionProperties {
+  readonly kind: "bcp/swap_abort";
 }
 
 export type SwapTransaction = SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
@@ -325,4 +337,34 @@ export function isSwapTransaction(transaction: UnsignedTransaction): transaction
     isSwapClaimTransaction(transaction) ||
     isSwapAbortTransaction(transaction)
   );
+}
+
+/** An identity on a blockchain where the public key is not known/needed */
+export interface LightPublicIdentity {
+  readonly chainId: ChainId;
+  readonly address: Address;
+}
+
+/* A minimal transaction interface for handling data from light sources such as scrapers */
+export interface LightTransaction {
+  readonly id: TransactionId;
+  readonly kind: string;
+  readonly creator: LightPublicIdentity;
+  readonly height: number;
+}
+
+export interface LightSendTransaction extends LightTransaction, SendTransactionProperties {
+  readonly kind: "bcp/send";
+}
+
+export interface LightSwapOfferTransaction extends LightTransaction, SwapOfferTransactionProperties {
+  readonly kind: "bcp/swap_offer";
+}
+
+export interface LightSwapClaimTransaction extends LightTransaction, SwapClaimTransactionProperties {
+  readonly kind: "bcp/swap_claim";
+}
+
+export interface LightSwapAbortTransaction extends LightTransaction, SwapAbortTransactionProperties {
+  readonly kind: "bcp/swap_abort";
 }
