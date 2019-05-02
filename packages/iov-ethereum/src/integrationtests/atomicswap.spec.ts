@@ -24,13 +24,17 @@ import {
 } from "@iov/bcp";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
+import { Erc20ApproveTransaction } from "../erc20";
 import { EthereumCodec } from "../ethereumcodec";
 import { EthereumConnection } from "../ethereumconnection";
 import { testConfig } from "../testconfig.spec";
 
 const ETH = "ETH" as TokenTicker;
+const ASH = "ASH" as TokenTicker;
 const ethereumCodec = new EthereumCodec({
   atomicSwapEtherContractAddress: testConfig.connectionOptions.atomicSwapEtherContractAddress,
+  atomicSwapErc20ContractAddress: testConfig.connectionOptions.atomicSwapErc20ContractAddress,
+  erc20Tokens: testConfig.erc20Tokens,
 });
 
 function pendingWithoutEthereum(): void {
@@ -50,10 +54,10 @@ class Actor {
   public static async create(mnemonic: string, addressIndex1: number, addressIndex2: number): Promise<Actor> {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(mnemonic));
-    const connection: AtomicSwapConnection = await EthereumConnection.establish(
-      testConfig.base,
-      testConfig.connectionOptions,
-    );
+    const connection: AtomicSwapConnection = await EthereumConnection.establish(testConfig.base, {
+      ...testConfig.connectionOptions,
+      erc20Tokens: testConfig.erc20Tokens,
+    });
     const path1 = HdPaths.ethereum(addressIndex1);
     const path2 = HdPaths.ethereum(addressIndex2);
     const senderIdentity = await profile.createIdentity(wallet.id, connection.chainId(), path1);
@@ -110,17 +114,41 @@ class Actor {
     return this.sendTransaction(transaction, this.senderIdentity.pubkey);
   }
 
-  public async getSenderBalance(): Promise<BN> {
+  public async approveErc20Spend(amount: Amount): Promise<void> {
+    const transaction = await this.connection.withDefaultFee<Erc20ApproveTransaction>({
+      kind: "erc20/approve",
+      creator: this.senderIdentity,
+      spender: testConfig.connectionOptions.atomicSwapErc20ContractAddress!,
+      amount: amount,
+    });
+    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
+  }
+
+  public async getSenderEtherBalance(): Promise<BN> {
     const account = await this.connection.getAccount({ pubkey: this.senderIdentity.pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === "ETH");
+    const amount = balance.find(row => row.tokenTicker === ETH);
     return new BN(amount ? amount.quantity : 0);
   }
 
-  public async getReceiverBalance(): Promise<BN> {
+  public async getReceiverEtherBalance(): Promise<BN> {
     const account = await this.connection.getAccount({ pubkey: this.receiverIdentity.pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === "ETH");
+    const amount = balance.find(row => row.tokenTicker === ETH);
+    return new BN(amount ? amount.quantity : 0);
+  }
+
+  public async getSenderErc20Balance(): Promise<BN> {
+    const account = await this.connection.getAccount({ pubkey: this.senderIdentity.pubkey });
+    const balance = account ? account.balance : [];
+    const amount = balance.find(row => row.tokenTicker === ASH);
+    return new BN(amount ? amount.quantity : 0);
+  }
+
+  public async getReceiverErc20Balance(): Promise<BN> {
+    const account = await this.connection.getAccount({ pubkey: this.receiverIdentity.pubkey });
+    const balance = account ? account.balance : [];
+    const amount = balance.find(row => row.tokenTicker === ASH);
     return new BN(amount ? amount.quantity : 0);
   }
 
@@ -138,39 +166,42 @@ class Actor {
   }
 
   public async sendSwapOffer(recipient: Address, amount: Amount): Promise<void> {
-    // tslint:disable-next-line:no-object-mutation
+    const swapId = await (amount.tokenTicker === ETH
+      ? EthereumConnection.createEtherSwapId()
+      : EthereumConnection.createErc20SwapId());
     const transaction = await this.connection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
       creator: this.senderIdentity,
       recipient: recipient,
       amounts: [amount],
-      swapId: await EthereumConnection.createEtherSwapId(),
+      swapId: swapId,
       hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
       timeout: {
-        height: (await this.connection.height()) + 5,
+        height: (await this.connection.height()) + 50,
       },
     });
     return this.sendTransaction(transaction, this.senderIdentity.pubkey);
   }
 
   public async sendSwapCounter(recipient: Address, amount: Amount, offer: AtomicSwap): Promise<void> {
-    // send counteroffer
+    const swapId = await (amount.tokenTicker === ETH
+      ? EthereumConnection.createEtherSwapId()
+      : EthereumConnection.createErc20SwapId());
     const transaction = await this.connection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
       creator: this.senderIdentity,
       recipient: recipient,
       amounts: [amount],
-      swapId: await EthereumConnection.createEtherSwapId(),
+      swapId: swapId,
       hash: offer.data.hash,
       timeout: {
-        height: (await this.connection.height()) + 5,
+        height: (await this.connection.height()) + 50,
       },
     });
     return this.sendTransaction(transaction, this.senderIdentity.pubkey);
   }
 
   public async claimFromKnownPreimage(counter: AtomicSwap): Promise<void> {
-    // claim funds
     const transaction = await this.connection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.receiverIdentity,
@@ -181,7 +212,6 @@ class Actor {
   }
 
   public async claimFromRevealedPreimage(offer: OpenSwap, claimed: ClaimedSwap): Promise<void> {
-    // counter claim funds
     const transaction = await this.connection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       creator: this.receiverIdentity,
@@ -194,7 +224,7 @@ class Actor {
 
 describe("Full atomic swap", () => {
   // TODO: handle different fees... right now assumes the same fee is used for all send txs
-  it("works", async () => {
+  it("works for Ether", async () => {
     pendingWithoutEthereum();
 
     const alice = await Actor.create(testConfig.mnemonic, 0, 100);
@@ -221,14 +251,14 @@ describe("Full atomic swap", () => {
     });
 
     // Alice has ETH in her sender account but not receiver account
-    const aliceInitialSender = await alice.getSenderBalance();
-    const aliceInitialReceiver = await alice.getReceiverBalance();
-    expect(aliceInitialSender.gtn(100_000_000_000_000_000)).toEqual(true);
+    const aliceInitialSender = await alice.getSenderEtherBalance();
+    const aliceInitialReceiver = await alice.getReceiverEtherBalance();
+    expect(aliceInitialSender.gtn(100_000_000_000_000_000_000)).toEqual(true);
 
     // Bob has ETH in his sender account but not receiver account
-    const bobInitialSender = await bob.getSenderBalance();
-    const bobInitialReceiver = await bob.getReceiverBalance();
-    expect(bobInitialSender.gtn(100_000_000_000_000_000)).toEqual(true);
+    const bobInitialSender = await bob.getSenderEtherBalance();
+    const bobInitialReceiver = await bob.getReceiverEtherBalance();
+    expect(bobInitialSender.gtn(100_000_000_000_000_000_000)).toEqual(true);
 
     // A secret that only Alice knows
     await alice.generatePreimage();
@@ -240,7 +270,9 @@ describe("Full atomic swap", () => {
     });
 
     // Alice's Ether are locked in the contract (also includes fee)
-    expect(aliceInitialSender.sub(await alice.getSenderBalance()).gtn(2000000000000000000)).toEqual(true);
+    expect(
+      aliceInitialSender.sub(await alice.getSenderEtherBalance()).gtn(2_000_000_000_000_000_000),
+    ).toEqual(true);
 
     // review offer
     const bobReceiverSwaps = await bob.getReceiverSwaps();
@@ -265,7 +297,9 @@ describe("Full atomic swap", () => {
     );
 
     // Bob's Ether are locked in the contract (also includes fee)
-    expect(bobInitialSender.sub(await bob.getSenderBalance()).gtn(5000000000000000000)).toEqual(true);
+    expect(bobInitialSender.sub(await bob.getSenderEtherBalance()).gtn(5_000_000_000_000_000_000)).toEqual(
+      true,
+    );
 
     // review counteroffer
     const aliceReceiverSwaps = await alice.getReceiverSwaps();
@@ -282,7 +316,126 @@ describe("Full atomic swap", () => {
     await alice.claimFromKnownPreimage(counter);
 
     // Alice revealed her secret and should unlock the funds
-    expect((await alice.getReceiverBalance()).sub(aliceInitialReceiver).gtn(4900000000000000000)).toEqual(
+    expect(
+      (await alice.getReceiverEtherBalance()).sub(aliceInitialReceiver).gtn(4_900_000_000_000_000_000),
+    ).toEqual(true);
+
+    // find claim
+    const bobSenderSwaps = await bob.getSenderSwaps();
+    const aliceClaimed = bobSenderSwaps[bobSenderSwaps.length - 1];
+    if (!isClaimedSwap(aliceClaimed)) {
+      throw new Error("Expected swap to be claimed");
+    }
+
+    const bobReceiverSwaps2 = await bob.getReceiverSwaps();
+    const aliceOffer2 = bobReceiverSwaps2[bobReceiverSwaps2.length - 1];
+    if (!isOpenSwap(aliceOffer2)) {
+      throw new Error("Expected swap to be open");
+    }
+
+    await bob.claimFromRevealedPreimage(aliceOffer2, aliceClaimed);
+
+    // Bob used Alice's preimage to claim unlock his funds
+    expect(
+      (await bob.getReceiverEtherBalance()).sub(bobInitialReceiver).gtn(4_900_000_000_000_000_000),
+    ).toEqual(true);
+
+    // Alice and Bob's funds were not returned to sender
+    expect(
+      aliceInitialSender.sub(await alice.getSenderEtherBalance()).gtn(2_000_000_000_000_000_000),
+    ).toEqual(true);
+    expect(bobInitialSender.sub(await bob.getSenderEtherBalance()).gtn(5_000_000_000_000_000_000)).toEqual(
+      true,
+    );
+  });
+
+  it("works for ERC20", async () => {
+    pendingWithoutEthereum();
+
+    const alice = await Actor.create(testConfig.mnemonic, 0, 100);
+
+    expect(alice.sendAddress).toEqual("0x88F3b5659075D0E06bB1004BE7b1a7E66F452284");
+    expect(alice.receiveAddress).toEqual("0x3DD3246a7a0D3b31D07379b0C422556637Bc0e20");
+
+    const bob = await Actor.create(testConfig.mnemonic, 2, 102);
+    expect(bob.sendAddress).toEqual("0x585ec8C463C8f9481f606456402cE7CACb8D2d2A");
+    expect(bob.receiveAddress).toEqual("0x25e50d0DF784d81edD11d4D70FbaBD3Ade0C6811");
+
+    // We need to send some Ether to the other ones to allow claim fees
+    const claimQuantity = "42000000000000000";
+    await alice.sendEther(alice.receiveAddress, {
+      quantity: claimQuantity,
+      fractionalDigits: 18,
+      tokenTicker: ETH,
+    });
+    await bob.sendEther(bob.receiveAddress, {
+      quantity: claimQuantity,
+      fractionalDigits: 18,
+      tokenTicker: ETH,
+    });
+
+    // Alice has ASH in her sender account but not receiver account
+    const aliceInitialSender = await alice.getSenderErc20Balance();
+    const aliceInitialReceiver = await alice.getReceiverErc20Balance();
+    expect(aliceInitialSender.gt(new BN(10_000_000))).toEqual(true);
+
+    // Bob has ASH in his sender account but not receiver account
+    const bobInitialSender = await bob.getSenderErc20Balance();
+    const bobInitialReceiver = await bob.getReceiverErc20Balance();
+    expect(bobInitialSender.gt(new BN(10_000_000))).toEqual(true);
+
+    // A secret that only Alice knows
+    await alice.generatePreimage();
+    const aliceOfferAmount: Amount = {
+      quantity: "2000000",
+      fractionalDigits: 12,
+      tokenTicker: ASH,
+    };
+    await alice.approveErc20Spend(aliceOfferAmount);
+    await alice.sendSwapOffer(bob.receiveAddress, aliceOfferAmount);
+
+    // Alice's ASH are locked in the contract
+    expect(aliceInitialSender.sub(await alice.getSenderErc20Balance()).eq(new BN(2_000_000))).toEqual(true);
+
+    // review offer
+    const bobReceiverSwaps = await bob.getReceiverSwaps();
+    const aliceOffer = bobReceiverSwaps[bobReceiverSwaps.length - 1];
+    expect(aliceOffer.kind).toEqual(SwapProcessState.Open);
+    expect(aliceOffer.data.recipient).toEqual(bob.receiveAddress);
+    expect(aliceOffer.data.amounts.length).toEqual(1);
+    expect(aliceOffer.data.amounts[0]).toEqual({
+      quantity: "2000000",
+      fractionalDigits: 12,
+      tokenTicker: ASH,
+    });
+
+    const bobCounterAmount: Amount = {
+      quantity: "5000000",
+      fractionalDigits: 12,
+      tokenTicker: ASH,
+    };
+    await bob.approveErc20Spend(bobCounterAmount);
+    await bob.sendSwapCounter(alice.receiveAddress, bobCounterAmount, aliceOffer);
+
+    // Bob's ASH are locked in the contract
+    expect(bobInitialSender.sub(await bob.getSenderErc20Balance()).eq(new BN(5_000_000))).toEqual(true);
+
+    // review counteroffer
+    const aliceReceiverSwaps = await alice.getReceiverSwaps();
+    const counter = aliceReceiverSwaps[aliceReceiverSwaps.length - 1];
+    expect(counter.kind).toEqual(SwapProcessState.Open);
+    expect(counter.data.recipient).toEqual(alice.receiveAddress);
+    expect(counter.data.amounts.length).toEqual(1);
+    expect(counter.data.amounts[0]).toEqual({
+      quantity: "5000000",
+      fractionalDigits: 12,
+      tokenTicker: ASH,
+    });
+
+    await alice.claimFromKnownPreimage(counter);
+
+    // Alice revealed her secret and should unlock the funds
+    expect((await alice.getReceiverErc20Balance()).sub(aliceInitialReceiver).eq(new BN(5_000_000))).toEqual(
       true,
     );
 
@@ -302,10 +455,10 @@ describe("Full atomic swap", () => {
     await bob.claimFromRevealedPreimage(aliceOffer2, aliceClaimed);
 
     // Bob used Alice's preimage to claim unlock his funds
-    expect((await bob.getReceiverBalance()).sub(bobInitialReceiver).gtn(4900000000000000000)).toEqual(true);
+    expect((await bob.getReceiverErc20Balance()).sub(bobInitialReceiver).eq(new BN(2_000_000))).toEqual(true);
 
     // Alice and Bob's funds were not returned to sender
-    expect(aliceInitialSender.sub(await alice.getSenderBalance()).gtn(2000000000000000000)).toEqual(true);
-    expect(bobInitialSender.sub(await bob.getSenderBalance()).gtn(5000000000000000000)).toEqual(true);
+    expect(aliceInitialSender.sub(await alice.getSenderErc20Balance()).eq(new BN(2_000_000))).toEqual(true);
+    expect(bobInitialSender.sub(await bob.getSenderErc20Balance()).eq(new BN(5_000_000))).toEqual(true);
   });
 });

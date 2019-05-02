@@ -14,6 +14,7 @@ const ganacheGasPrice = 50000;
 // From README.md
 const mainIdentity = Address.fromString("0x88F3b5659075D0E06bB1004BE7b1a7E66F452284");
 const secondIdentity = Address.fromString("0x0A65766695A712Af41B5cfECAaD217B1a11CB22A");
+const thirdIdentity = Address.fromString("0x585ec8C463C8f9481f606456402cE7CACb8D2d2A")
 const noEthAddress = Address.fromString("0x0000000000111111111122222222223333333333");
 
 function debugAddress(address: Address | undefined): string | undefined {
@@ -65,6 +66,7 @@ export async function main(args: ReadonlyArray<string>): Promise<void> {
       mintingJobs.push(
         { name: name, contract: contract, recipient: mainIdentity, quantity: "100000000" /* 100 million atomics */ },
         { name: name, contract: contract, recipient: secondIdentity, quantity: "33445566" },
+        { name: name, contract: contract, recipient: thirdIdentity, quantity: "200000000" },
         { name: name, contract: contract, recipient: noEthAddress, quantity: "38" },
       );
     }
