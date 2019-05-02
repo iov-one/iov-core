@@ -175,15 +175,16 @@ export class EthereumConnection implements AtomicSwapConnection {
     const erc20ContractAddressBegin = timeoutEnd;
     const erc20ContractAddressEnd = erc20ContractAddressBegin + 32;
 
+    const erc20ContractAddress =
+      prefix === SwapIdPrefix.Ether
+        ? null
+        : Abi.decodeAddress(bytes.slice(erc20ContractAddressBegin, erc20ContractAddressEnd)).toLowerCase();
+
     const erc20Token =
       prefix === SwapIdPrefix.Ether
         ? null
         : [...erc20Tokens.values()].find(
-            token =>
-              token.contractAddress.toLowerCase() ===
-              Abi.decodeAddress(
-                bytes.slice(erc20ContractAddressBegin, erc20ContractAddressEnd),
-              ).toLowerCase(),
+            token => token.contractAddress.toLowerCase() === erc20ContractAddress,
           );
 
     if (prefix === SwapIdPrefix.Erc20 && !erc20Token) {
