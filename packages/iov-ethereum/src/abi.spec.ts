@@ -125,10 +125,10 @@ describe("Abi", () => {
 
     it("throws for invalid input", () => {
       const tooShort = fromHex("00000000000000000000000000000000000000000000000000000000000000");
-      expect(() => Abi.decodeAddress(tooShort)).toThrow();
+      expect(() => Abi.decodeAddress(tooShort)).toThrowError(/input data not 256 bit long/i);
 
       const tooLong = fromHex("000000000000000000000000000000000000000000000000000000000000000000");
-      expect(() => Abi.decodeAddress(tooLong)).toThrow();
+      expect(() => Abi.decodeAddress(tooLong)).toThrowError(/input data not 256 bit long/i);
     });
   });
 
