@@ -1959,8 +1959,8 @@ describe("EthereumConnection", () => {
         // prepare queries
         const queryTransactionId: TransactionQuery = { id: transactionId };
         const querySwapId: AtomicSwapQuery = { id: swapId };
-        const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
         const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddress };
+        const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
         const querySwapHash: AtomicSwapQuery = { hash: swapOfferHash };
 
         // ----- connection.searchTx() -----
@@ -2195,6 +2195,16 @@ describe("EthereumConnection", () => {
           throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
         }
 
+        // find two open
+        const midSwaps = await connection.getSwaps(rcptQuery);
+        expect(midSwaps.length).toEqual(2);
+        const open1 = midSwaps.find(matchId(swapId1));
+        const open2 = midSwaps.find(matchId(swapId2));
+        expect(open1).toBeDefined();
+        expect(open2).toBeDefined();
+        expect(open1!.kind).toEqual(SwapProcessState.Open);
+        expect(open2!.kind).toEqual(SwapProcessState.Open);
+
         // then abort, offer, abort - 2 aborted, 1 open
         {
           const post = await abortSwap(connection, profile, faucet, swapId2);
@@ -2312,9 +2322,9 @@ describe("EthereumConnection", () => {
         // prepare queries
         const queryTransactionId: TransactionQuery = { id: transactionId };
         const querySwapId: AtomicSwapQuery = { id: swapId };
-        // const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
-        // const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddress };
-        // const querySwapHash: AtomicSwapQuery = { hashlock: swapOfferHash };
+        const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddress };
+        const querySwapSender: AtomicSwapQuery = { sender: faucetAddress };
+        const querySwapHash: AtomicSwapQuery = { hash: swapOfferHash };
 
         // ----- connection.searchTx() -----
 
@@ -2340,22 +2350,22 @@ describe("EthereumConnection", () => {
         expect(swapData.amounts[0]).toEqual(amount);
         expect(swapData.hash).toEqual(swapOfferHash);
 
-        // // we can get the swap by the recipient
-        // const rcptSwaps = await connection.getSwaps(querySwapRecipient);
-        // expect(rcptSwaps.length).toEqual(1);
-        // expect(rcptSwaps[0]).toEqual(swap);
+        // we can get the swap by the recipient
+        const rcptSwaps = await connection.getSwaps(querySwapRecipient);
+        expect(rcptSwaps.length).toEqual(1);
+        expect(rcptSwaps[0]).toEqual(swap);
 
-        // // we can also get it by the sender
-        // const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
-        //   s => s.kind === SwapProcessState.Open,
-        // );
-        // expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
-        // expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
+        // we can also get it by the sender
+        const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
+          s => s.kind === SwapProcessState.Open,
+        );
+        expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
+        expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
 
-        // // we can also get it by the hash
-        // const hashSwap = await connection.getSwaps(querySwapHash);
-        // expect(hashSwap.length).toEqual(1);
-        // expect(hashSwap[0]).toEqual(swap);
+        // we can also get it by the hash
+        const hashSwap = await connection.getSwaps(querySwapHash);
+        expect(hashSwap.length).toEqual(1);
+        expect(hashSwap[0]).toEqual(swap);
 
         connection.disconnect();
       }, 30_000);
@@ -2484,15 +2494,15 @@ describe("EthereumConnection", () => {
           throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
         }
 
-        // // find two open
-        // const midSwaps = await connection.getSwaps(rcptQuery);
-        // expect(midSwaps.length).toEqual(2);
-        // const open1 = midSwaps.find(matchId(swapId1));
-        // const open2 = midSwaps.find(matchId(swapId2));
-        // expect(open1).toBeDefined();
-        // expect(open2).toBeDefined();
-        // expect(open1!.kind).toEqual(SwapProcessState.Open);
-        // expect(open2!.kind).toEqual(SwapProcessState.Open);
+        // find two open
+        const midSwaps = await connection.getSwaps(rcptQuery);
+        expect(midSwaps.length).toEqual(2);
+        const open1 = midSwaps.find(matchId(swapId1));
+        const open2 = midSwaps.find(matchId(swapId2));
+        expect(open1).toBeDefined();
+        expect(open2).toBeDefined();
+        expect(open1!.kind).toEqual(SwapProcessState.Open);
+        expect(open2!.kind).toEqual(SwapProcessState.Open);
 
         // then claim, offer, claim - 2 closed, 1 open
         {
@@ -2511,18 +2521,18 @@ describe("EthereumConnection", () => {
           await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
         }
 
-        // // make sure we find two claims, one open
-        // const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
-        // expect(finalSwaps.length).toEqual(3);
-        // const claim1 = finalSwaps.find(matchId(swapId1));
-        // const claim2 = finalSwaps.find(matchId(swapId2));
-        // const open3 = finalSwaps.find(matchId(swapId3));
-        // expect(claim1).toBeDefined();
-        // expect(claim2).toBeDefined();
-        // expect(open3).toBeDefined();
-        // expect(claim1!.kind).toEqual(SwapProcessState.Claimed);
-        // expect(claim2!.kind).toEqual(SwapProcessState.Claimed);
-        // expect(open3!.kind).toEqual(SwapProcessState.Open);
+        // make sure we find two claims, one open
+        const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
+        expect(finalSwaps.length).toEqual(3);
+        const claim1 = finalSwaps.find(matchId(swapId1));
+        const claim2 = finalSwaps.find(matchId(swapId2));
+        const open3 = finalSwaps.find(matchId(swapId3));
+        expect(claim1).toBeDefined();
+        expect(claim2).toBeDefined();
+        expect(open3).toBeDefined();
+        expect(claim1!.kind).toEqual(SwapProcessState.Claimed);
+        expect(claim2!.kind).toEqual(SwapProcessState.Claimed);
+        expect(open3!.kind).toEqual(SwapProcessState.Open);
       }, 30_000);
 
       it("can start and watch aborted atomic swaps", async () => {
@@ -2583,18 +2593,18 @@ describe("EthereumConnection", () => {
           await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
         }
 
-        // // make sure we find two claims, one open
-        // const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
-        // expect(finalSwaps.length).toEqual(3);
-        // const claim1 = finalSwaps.find(matchId(swapId1));
-        // const claim2 = finalSwaps.find(matchId(swapId2));
-        // const open3 = finalSwaps.find(matchId(swapId3));
-        // expect(claim1).toBeDefined();
-        // expect(claim2).toBeDefined();
-        // expect(open3).toBeDefined();
-        // expect(claim1!.kind).toEqual(SwapProcessState.Aborted);
-        // expect(claim2!.kind).toEqual(SwapProcessState.Aborted);
-        // expect(open3!.kind).toEqual(SwapProcessState.Open);
+        // make sure we find two claims, one open
+        const finalSwaps = await connection.getSwaps({ recipient: recipientAddress });
+        expect(finalSwaps.length).toEqual(3);
+        const claim1 = finalSwaps.find(matchId(swapId1));
+        const claim2 = finalSwaps.find(matchId(swapId2));
+        const open3 = finalSwaps.find(matchId(swapId3));
+        expect(claim1).toBeDefined();
+        expect(claim2).toBeDefined();
+        expect(open3).toBeDefined();
+        expect(claim1!.kind).toEqual(SwapProcessState.Aborted);
+        expect(claim2!.kind).toEqual(SwapProcessState.Aborted);
+        expect(open3!.kind).toEqual(SwapProcessState.Open);
       }, 30_000);
     });
   });

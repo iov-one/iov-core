@@ -5,7 +5,6 @@ import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
 
 import {
-  AbortedSwap,
   Account,
   AccountQuery,
   Address,
@@ -13,11 +12,11 @@ import {
   Amount,
   AtomicSwap,
   AtomicSwapConnection,
+  AtomicSwapIdQuery,
   AtomicSwapQuery,
   BlockHeader,
   BlockInfo,
   ChainId,
-  ClaimedSwap,
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
@@ -31,6 +30,7 @@ import {
   isSwapProcessStateClaimed,
   isSwapProcessStateOpen,
   Nonce,
+  OpenSwap,
   PostableBytes,
   PostTxResponse,
   Preimage,
@@ -54,7 +54,7 @@ import { StreamingSocket } from "@iov/socket";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
 
 import { Abi, SwapContractEvent } from "./abi";
-import { pubkeyToAddress, toChecksummedAddress } from "./address";
+import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20TokensMap } from "./erc20";
 import { Erc20Reader } from "./erc20reader";
@@ -92,10 +92,27 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
   return toBcpChainId(numericChainId.toNumber());
 }
 
+interface AtomicSwapClaimedUpdate {
+  readonly kind: SwapProcessState.Claimed;
+  readonly swapIdBytes: SwapIdBytes;
+  readonly preimage: Preimage;
+}
+
+interface AtomicSwapAbortedUpdate {
+  readonly kind: SwapProcessState.Aborted;
+  readonly swapIdBytes: SwapIdBytes;
+}
+
+type AtomicSwapUpdate = AtomicSwapClaimedUpdate | AtomicSwapAbortedUpdate;
+
 export interface EthereumLog {
   readonly transactionIndex: string;
   readonly data: string;
   readonly topics: ReadonlyArray<string>;
+}
+
+interface EthereumLogWithPrefix extends EthereumLog {
+  readonly prefix: SwapIdPrefix;
 }
 
 export interface EthereumConnectionOptions {
@@ -136,6 +153,130 @@ export class EthereumConnection implements AtomicSwapConnection {
     const chainId = await loadChainId(baseUrl);
 
     return new EthereumConnection(baseUrl, chainId, options);
+  }
+
+  private static parseOpenedEventBytes(
+    bytes: Uint8Array,
+    prefix: SwapIdPrefix,
+    erc20Tokens: Erc20TokensMap,
+  ): OpenSwap | null {
+    const swapIdBegin = 0;
+    const swapIdEnd = swapIdBegin + 32;
+    const senderBegin = swapIdEnd;
+    const senderEnd = senderBegin + 32;
+    const recipientBegin = senderEnd;
+    const recipientEnd = recipientBegin + 32;
+    const hashBegin = recipientEnd;
+    const hashEnd = hashBegin + 32;
+    const amountBegin = hashEnd;
+    const amountEnd = amountBegin + 32;
+    const timeoutBegin = amountEnd;
+    const timeoutEnd = timeoutBegin + 32;
+    const erc20ContractAddressBegin = timeoutEnd;
+    const erc20ContractAddressEnd = erc20ContractAddressBegin + 32;
+
+    const erc20ContractAddress =
+      prefix === SwapIdPrefix.Ether
+        ? null
+        : Abi.decodeAddress(bytes.slice(erc20ContractAddressBegin, erc20ContractAddressEnd)).toLowerCase();
+
+    const erc20Token =
+      prefix === SwapIdPrefix.Ether
+        ? null
+        : [...erc20Tokens.values()].find(
+            token => token.contractAddress.toLowerCase() === erc20ContractAddress,
+          );
+
+    if (prefix === SwapIdPrefix.Erc20 && !erc20Token) {
+      // Found swap for a token we’re not tracking
+      return null;
+    }
+
+    const fractionalDigits = erc20Token ? erc20Token.decimals : constants.primaryTokenFractionalDigits;
+    const tokenTicker = erc20Token ? (erc20Token.symbol as TokenTicker) : constants.primaryTokenTicker;
+    const amount = {
+      quantity: new BN(bytes.slice(amountBegin, amountEnd)).toString(),
+      fractionalDigits: fractionalDigits,
+      tokenTicker: tokenTicker,
+    };
+
+    return {
+      kind: SwapProcessState.Open,
+      data: {
+        id: {
+          prefix: prefix,
+          data: bytes.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
+        },
+        sender: Abi.decodeAddress(bytes.slice(senderBegin, senderEnd)),
+        recipient: Abi.decodeAddress(bytes.slice(recipientBegin, recipientEnd)),
+        hash: bytes.slice(hashBegin, hashEnd) as Hash,
+        amounts: [amount],
+        timeout: {
+          height: new BN(bytes.slice(timeoutBegin, timeoutEnd)).toNumber(),
+        },
+      },
+    };
+  }
+
+  private static parseClaimedEventBytes(
+    bytes: Uint8Array,
+  ): {
+    readonly kind: SwapProcessState.Claimed;
+    readonly swapIdBytes: SwapIdBytes;
+    readonly preimage: Preimage;
+  } {
+    const swapIdBegin = 0;
+    const swapIdEnd = swapIdBegin + 32;
+    const preimageBegin = swapIdEnd;
+    const preimageEnd = preimageBegin + 32;
+
+    return {
+      kind: SwapProcessState.Claimed,
+      swapIdBytes: bytes.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
+      preimage: bytes.slice(preimageBegin, preimageEnd) as Preimage,
+    };
+  }
+
+  private static parseAbortedEventBytes(
+    bytes: Uint8Array,
+  ): {
+    readonly kind: SwapProcessState.Aborted;
+    readonly swapIdBytes: SwapIdBytes;
+  } {
+    const swapIdBegin = 0;
+    const swapIdEnd = swapIdBegin + 32;
+
+    return {
+      kind: SwapProcessState.Aborted,
+      swapIdBytes: bytes.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
+    };
+  }
+
+  private static updateSwapInList(
+    swaps: ReadonlyArray<AtomicSwap>,
+    update: AtomicSwapUpdate,
+    prefix: SwapIdPrefix,
+  ): ReadonlyArray<AtomicSwap> {
+    const { kind, swapIdBytes } = update;
+    const swapId = { data: swapIdBytes, prefix: prefix };
+    const swapIndex = swaps.findIndex(s => swapIdEquals(s.data.id, swapId));
+    if (swapIndex === -1) {
+      // Found a Claimed/Aborted event for a token we’re not tracking
+      return swaps;
+    }
+    const oldSwap = swaps[swapIndex];
+    const newSwap: AtomicSwap =
+      kind === SwapProcessState.Claimed
+        ? {
+            kind: kind,
+            data: { ...oldSwap.data },
+            preimage: (update as AtomicSwapClaimedUpdate).preimage,
+          }
+        : {
+            kind: kind,
+            data: { ...oldSwap.data },
+          };
+    return [...swaps.slice(0, swapIndex), ...swaps.slice(swapIndex + 1), newSwap];
   }
 
   private readonly pollIntervalMs: number;
@@ -789,222 +930,13 @@ export class EthereumConnection implements AtomicSwapConnection {
     maxHeight: number = Number.MAX_SAFE_INTEGER,
   ): Promise<ReadonlyArray<AtomicSwap>> {
     if (isAtomicSwapIdQuery(query)) {
-      const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.id.data]);
-      const atomicSwapContractAddress =
-        query.id.prefix === SwapIdPrefix.Ether
-          ? this.atomicSwapEtherContractAddress
-          : this.atomicSwapErc20ContractAddress;
-
-      const params = [
-        {
-          to: atomicSwapContractAddress,
-          data: toEthereumHex(data),
-        },
-      ] as ReadonlyArray<any>;
-      const swapsResponse = await this.rpcClient.run({
-        jsonrpc: "2.0",
-        method: "eth_call",
-        params: params,
-        id: 7,
-      });
-      if (isJsonRpcErrorResponse(swapsResponse)) {
-        throw new Error(JSON.stringify(swapsResponse.error));
-      }
-
-      if (swapsResponse.result === null) {
-        return [];
-      }
-
-      const senderBegin = 0;
-      const senderEnd = senderBegin + 32;
-      const recipientBegin = senderEnd;
-      const recipientEnd = recipientBegin + 32;
-      const hashBegin = recipientEnd;
-      const hashEnd = hashBegin + 32;
-      const timeoutBegin = hashEnd;
-      const timeoutEnd = timeoutBegin + 32;
-      const amountBegin = timeoutEnd;
-      const amountEnd = amountBegin + 32;
-      const preimageBegin = amountEnd;
-      const preimageEnd = preimageBegin + 32;
-      const stateBegin = preimageEnd;
-      const stateEnd = stateBegin + 32;
-      const erc20ContractAddressBegin = stateEnd;
-      const erc20ContractAddressEnd = erc20ContractAddressBegin + 32;
-
-      const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
-      const erc20ContractAddress =
-        query.id.prefix === SwapIdPrefix.Erc20
-          ? Abi.decodeAddress(resultArray.slice(erc20ContractAddressBegin, erc20ContractAddressEnd))
-          : null;
-      const erc20Token = erc20ContractAddress
-        ? [...this.erc20Tokens.values()].find(token => token.contractAddress === erc20ContractAddress)
-        : null;
-      const fractionalDigits = erc20Token ? erc20Token.decimals : constants.primaryTokenFractionalDigits;
-      const tokenTicker = erc20Token ? (erc20Token.symbol as TokenTicker) : constants.primaryTokenTicker;
-      const swapData: SwapData = {
-        id: query.id,
-        sender: Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd)),
-        recipient: Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
-        hash: resultArray.slice(hashBegin, hashEnd) as Hash,
-        amounts: [
-          {
-            quantity: new BN(resultArray.slice(amountBegin, amountEnd)).toString(),
-            fractionalDigits: fractionalDigits,
-            tokenTicker: tokenTicker,
-          },
-        ] as ReadonlyArray<Amount>,
-        timeout: {
-          height: new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber(),
-        },
-      };
-
-      const kind = Abi.decodeSwapProcessState(resultArray.slice(stateBegin, stateEnd));
-      let swap: AtomicSwap;
-      if (isSwapProcessStateOpen(kind)) {
-        swap = {
-          kind: kind,
-          data: swapData,
-        };
-      } else if (isSwapProcessStateClaimed(kind)) {
-        swap = {
-          kind: kind,
-          data: swapData,
-          preimage: resultArray.slice(preimageBegin, preimageEnd) as Preimage,
-        };
-      } else if (isSwapProcessStateAborted(kind)) {
-        swap = {
-          kind: kind,
-          data: swapData,
-        };
-      } else {
-        throw new Error("unknown swap process state");
-      }
-
-      return [swap];
+      return this.getSwapsById(query);
     } else if (
       isAtomicSwapRecipientQuery(query) ||
       isAtomicSwapSenderQuery(query) ||
       isAtomicSwapHashQuery(query)
     ) {
-      const params = [
-        {
-          fromBlock: encodeQuantity(minHeight),
-          toBlock: encodeQuantity(maxHeight),
-          address: this.atomicSwapEtherContractAddress,
-        },
-      ] as ReadonlyArray<any>;
-      const swapsResponse = await this.rpcClient.run({
-        jsonrpc: "2.0",
-        method: "eth_getLogs",
-        params: params,
-        id: 9,
-      });
-      if (isJsonRpcErrorResponse(swapsResponse)) {
-        throw new Error(JSON.stringify(swapsResponse.error));
-      }
-
-      if (swapsResponse.result === null) {
-        return [];
-      }
-
-      const swapIdBegin = 0;
-      const swapIdEnd = swapIdBegin + 32;
-      const openedSenderBegin = swapIdEnd;
-      const openedSenderEnd = openedSenderBegin + 32;
-      const openedRecipientBegin = openedSenderEnd;
-      const openedRecipientEnd = openedRecipientBegin + 32;
-      const openedHashBegin = openedRecipientEnd;
-      const openedHashEnd = openedHashBegin + 32;
-      const openedAmountBegin = openedHashEnd;
-      const openedAmountEnd = openedAmountBegin + 32;
-      const openedTimeoutBegin = openedAmountEnd;
-      const openedTimeoutEnd = openedTimeoutBegin + 32;
-      const claimedPreimageBegin = swapIdEnd;
-      const claimedPreimageEnd = claimedPreimageBegin + 32;
-
-      return swapsResponse.result
-        .reduce((accumulator: ReadonlyArray<AtomicSwap>, log: EthereumLog): ReadonlyArray<AtomicSwap> => {
-          const dataArray = Encoding.fromHex(normalizeHex(log.data));
-          const kind = Abi.decodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
-          switch (kind) {
-            case SwapContractEvent.Opened:
-              return [
-                ...accumulator,
-                {
-                  kind: SwapProcessState.Open,
-                  data: {
-                    id: {
-                      prefix: SwapIdPrefix.Ether,
-                      data: dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes,
-                    },
-                    sender: Abi.decodeAddress(dataArray.slice(openedSenderBegin, openedSenderEnd)),
-                    recipient: Abi.decodeAddress(dataArray.slice(openedRecipientBegin, openedRecipientEnd)),
-                    hash: dataArray.slice(openedHashBegin, openedHashEnd) as Hash,
-                    amounts: [
-                      {
-                        quantity: new BN(dataArray.slice(openedAmountBegin, openedAmountEnd)).toString(),
-                        fractionalDigits: constants.primaryTokenFractionalDigits,
-                        tokenTicker: constants.primaryTokenTicker,
-                      },
-                    ],
-                    timeout: {
-                      height: new BN(dataArray.slice(openedTimeoutBegin, openedTimeoutEnd)).toNumber(),
-                    },
-                  },
-                },
-              ];
-            case SwapContractEvent.Claimed: {
-              const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
-              const swapIndex = accumulator.findIndex(s =>
-                swapIdEquals(s.data.id, { prefix: SwapIdPrefix.Ether, data: swapId }),
-              );
-              if (swapIndex === -1) {
-                throw new Error("Found Claimed event for non-existent swap");
-              }
-              const oldSwap = accumulator[swapIndex];
-              const newSwap: ClaimedSwap = {
-                kind: SwapProcessState.Claimed,
-                data: {
-                  ...oldSwap.data,
-                },
-                preimage: dataArray.slice(claimedPreimageBegin, claimedPreimageEnd) as Preimage,
-              };
-              return [...accumulator.slice(0, swapIndex), ...accumulator.slice(swapIndex + 1), newSwap];
-            }
-            case SwapContractEvent.Aborted: {
-              const swapId = dataArray.slice(swapIdBegin, swapIdEnd) as SwapIdBytes;
-              const swapIndex = accumulator.findIndex(s =>
-                swapIdEquals(s.data.id, { prefix: SwapIdPrefix.Ether, data: swapId }),
-              );
-              if (swapIndex === -1) {
-                throw new Error("Found Aborted event for non-existent swap");
-              }
-              const oldSwap = accumulator[swapIndex];
-              const newSwap: AbortedSwap = {
-                kind: SwapProcessState.Aborted,
-                data: {
-                  ...oldSwap.data,
-                },
-              };
-              return [...accumulator.slice(0, swapIndex), ...accumulator.slice(swapIndex + 1), newSwap];
-            }
-            default:
-              throw new Error("SwapContractEvent type not handled");
-          }
-        }, [])
-        .filter(
-          (swap: AtomicSwap): boolean => {
-            if (isAtomicSwapRecipientQuery(query)) {
-              return swap.data.recipient === query.recipient;
-            } else if (isAtomicSwapSenderQuery(query)) {
-              return swap.data.sender === query.sender;
-            } else if (isAtomicSwapHashQuery(query)) {
-              return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hash);
-            }
-            throw new Error("unsupported query type");
-          },
-        );
+      return this.getSwapsWithFilter(query, minHeight, maxHeight);
     } else {
       throw new Error("unsupported query type");
     }
@@ -1214,5 +1146,187 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     const transactions = searches.map(search => search[0]);
     return transactions;
+  }
+
+  private async getSwapsById(query: AtomicSwapIdQuery): Promise<ReadonlyArray<AtomicSwap>> {
+    const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.id.data]);
+    const atomicSwapContractAddress =
+      query.id.prefix === SwapIdPrefix.Ether
+        ? this.atomicSwapEtherContractAddress
+        : this.atomicSwapErc20ContractAddress;
+
+    if (!atomicSwapContractAddress) {
+      throw new Error(`No contract address for ${query.id.prefix} swaps`);
+    }
+
+    const params = [
+      {
+        to: atomicSwapContractAddress,
+        data: toEthereumHex(data),
+      },
+    ] as ReadonlyArray<any>;
+    const swapsResponse = await this.rpcClient.run({
+      jsonrpc: "2.0",
+      method: "eth_call",
+      params: params,
+      id: 7,
+    });
+    if (isJsonRpcErrorResponse(swapsResponse)) {
+      throw new Error(JSON.stringify(swapsResponse.error));
+    }
+
+    if (swapsResponse.result === null) {
+      return [];
+    }
+
+    const senderBegin = 0;
+    const senderEnd = senderBegin + 32;
+    const recipientBegin = senderEnd;
+    const recipientEnd = recipientBegin + 32;
+    const hashBegin = recipientEnd;
+    const hashEnd = hashBegin + 32;
+    const timeoutBegin = hashEnd;
+    const timeoutEnd = timeoutBegin + 32;
+    const amountBegin = timeoutEnd;
+    const amountEnd = amountBegin + 32;
+    const preimageBegin = amountEnd;
+    const preimageEnd = preimageBegin + 32;
+    const stateBegin = preimageEnd;
+    const stateEnd = stateBegin + 32;
+    const erc20ContractAddressBegin = stateEnd;
+    const erc20ContractAddressEnd = erc20ContractAddressBegin + 32;
+
+    const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
+    const erc20ContractAddress =
+      query.id.prefix === SwapIdPrefix.Erc20
+        ? Abi.decodeAddress(resultArray.slice(erc20ContractAddressBegin, erc20ContractAddressEnd))
+        : null;
+    const erc20Token = erc20ContractAddress
+      ? [...this.erc20Tokens.values()].find(token => token.contractAddress === erc20ContractAddress)
+      : null;
+    const fractionalDigits = erc20Token ? erc20Token.decimals : constants.primaryTokenFractionalDigits;
+    const tokenTicker = erc20Token ? (erc20Token.symbol as TokenTicker) : constants.primaryTokenTicker;
+    const swapData: SwapData = {
+      id: query.id,
+      sender: Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd)),
+      recipient: Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
+      hash: resultArray.slice(hashBegin, hashEnd) as Hash,
+      amounts: [
+        {
+          quantity: new BN(resultArray.slice(amountBegin, amountEnd)).toString(),
+          fractionalDigits: fractionalDigits,
+          tokenTicker: tokenTicker,
+        },
+      ] as ReadonlyArray<Amount>,
+      timeout: {
+        height: new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber(),
+      },
+    };
+
+    const kind = Abi.decodeSwapProcessState(resultArray.slice(stateBegin, stateEnd));
+    let swap: AtomicSwap;
+    if (isSwapProcessStateOpen(kind)) {
+      swap = {
+        kind: kind,
+        data: swapData,
+      };
+    } else if (isSwapProcessStateClaimed(kind)) {
+      swap = {
+        kind: kind,
+        data: swapData,
+        preimage: resultArray.slice(preimageBegin, preimageEnd) as Preimage,
+      };
+    } else if (isSwapProcessStateAborted(kind)) {
+      swap = {
+        kind: kind,
+        data: swapData,
+      };
+    } else {
+      throw new Error("unknown swap process state");
+    }
+
+    return [swap];
+  }
+
+  private async getSwapsWithFilter(
+    query: AtomicSwapQuery,
+    minHeight: number,
+    maxHeight: number,
+  ): Promise<ReadonlyArray<AtomicSwap>> {
+    if (!this.atomicSwapEtherContractAddress && !this.atomicSwapErc20ContractAddress) {
+      throw new Error("Ethereum connection was not initialized with any atomic swap contract addresses");
+    }
+
+    const [etherLogs, erc20Logs] = await Promise.all([
+      this.atomicSwapEtherContractAddress
+        ? await this.getSwapLogs(this.atomicSwapEtherContractAddress, minHeight, maxHeight)
+        : [],
+      this.atomicSwapErc20ContractAddress
+        ? await this.getSwapLogs(this.atomicSwapErc20ContractAddress, minHeight, maxHeight)
+        : [],
+    ]);
+
+    return [
+      ...etherLogs.map(log => ({ ...log, prefix: SwapIdPrefix.Ether })),
+      ...erc20Logs.map(log => ({ ...log, prefix: SwapIdPrefix.Erc20 })),
+    ]
+      .reduce((accumulator: ReadonlyArray<AtomicSwap>, log: EthereumLogWithPrefix): ReadonlyArray<
+        AtomicSwap
+      > => {
+        const dataArray = Encoding.fromHex(normalizeHex(log.data));
+        const kind = Abi.decodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
+        switch (kind) {
+          case SwapContractEvent.Opened:
+            const parsed = EthereumConnection.parseOpenedEventBytes(dataArray, log.prefix, this.erc20Tokens);
+            return parsed ? [...accumulator, parsed] : accumulator;
+          case SwapContractEvent.Claimed: {
+            const update = EthereumConnection.parseClaimedEventBytes(dataArray);
+            return EthereumConnection.updateSwapInList(accumulator, update, log.prefix);
+          }
+          case SwapContractEvent.Aborted: {
+            const update = EthereumConnection.parseAbortedEventBytes(dataArray);
+            return EthereumConnection.updateSwapInList(accumulator, update, log.prefix);
+          }
+          default:
+            throw new Error("SwapContractEvent type not handled");
+        }
+      }, [])
+      .filter(
+        (swap: AtomicSwap): boolean => {
+          if (isAtomicSwapRecipientQuery(query)) {
+            return swap.data.recipient === query.recipient;
+          } else if (isAtomicSwapSenderQuery(query)) {
+            return swap.data.sender === query.sender;
+          } else if (isAtomicSwapHashQuery(query)) {
+            return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hash);
+          }
+          throw new Error("unsupported query type");
+        },
+      );
+  }
+
+  private async getSwapLogs(
+    atomicSwapContractAddress: Address,
+    minHeight: number,
+    maxHeight: number,
+  ): Promise<ReadonlyArray<EthereumLog>> {
+    const params = [
+      {
+        fromBlock: encodeQuantity(minHeight),
+        toBlock: encodeQuantity(maxHeight),
+        address: atomicSwapContractAddress,
+      },
+    ] as ReadonlyArray<any>;
+    const swapsResponse = await this.rpcClient.run({
+      jsonrpc: "2.0",
+      method: "eth_getLogs",
+      params: params,
+      id: 9,
+    });
+
+    if (isJsonRpcErrorResponse(swapsResponse)) {
+      throw new Error(JSON.stringify(swapsResponse.error));
+    }
+    return swapsResponse.result || [];
   }
 }
