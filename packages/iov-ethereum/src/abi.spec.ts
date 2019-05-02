@@ -129,6 +129,12 @@ describe("Abi", () => {
 
       const tooLong = fromHex("000000000000000000000000000000000000000000000000000000000000000000");
       expect(() => Abi.decodeAddress(tooLong)).toThrowError(/input data not 256 bit long/i);
+
+      const nonZeroPadding1 = fromHex("0100000000000000000000000000000000000000000000000000000000000000");
+      expect(() => Abi.decodeAddress(nonZeroPadding1)).toThrowError(/input data is not zero-padded/i);
+
+      const nonZeroPadding2 = fromHex("0000000000000000000000010000000000000000000000000000000000000000");
+      expect(() => Abi.decodeAddress(nonZeroPadding2)).toThrowError(/input data is not zero-padded/i);
     });
   });
 

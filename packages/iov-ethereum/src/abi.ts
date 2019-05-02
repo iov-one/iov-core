@@ -55,6 +55,10 @@ export class Abi {
     if (binary.length !== 32) {
       throw new Error("Input data not 256 bit long");
     }
+    const firstTwelveBytes = binary.slice(0, 12);
+    if (firstTwelveBytes.some(byte => byte !== 0)) {
+      throw new Error("Input data is not zero-padded");
+    }
     const lastTwentyBytes = binary.slice(-20);
     return toChecksummedAddress(lastTwentyBytes);
   }
