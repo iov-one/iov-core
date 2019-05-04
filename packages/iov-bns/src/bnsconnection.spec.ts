@@ -95,6 +95,7 @@ describe("BnsConnection", () => {
   };
 
   const bnsdTendermintUrl = "ws://localhost:23456";
+  const bnsdTendermintHttpUrl = "http://localhost:23456";
 
   async function userProfileWithFaucet(
     chainId: ChainId,
@@ -148,9 +149,22 @@ describe("BnsConnection", () => {
     expect(addr).toEqual(defaultFaucetAddress);
   });
 
-  it("Can connect to tendermint", async () => {
+  it("can connect to tendermint via WS", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+    const chainId = await connection.chainId();
+    expect(chainId).toMatch(/^[a-zA-Z0-9\-]{7,25}$/);
+
+    const height = await connection.height();
+    expect(height).toBeGreaterThan(1);
+
+    connection.disconnect();
+  });
+
+  it("can connect to tendermint via HTTP", async () => {
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintHttpUrl);
 
     const chainId = await connection.chainId();
     expect(chainId).toMatch(/^[a-zA-Z0-9\-]{7,25}$/);
