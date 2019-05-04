@@ -7,9 +7,6 @@ export BNSD_TM_VERSION=v0.29.1
 # Choose from https://hub.docker.com/r/iov1/bnsd/tags/
 export BNSD_VERSION=v0.11.1
 
-docker pull "iov1/tendermint:${BNSD_TM_VERSION}"
-docker pull "iov1/bnsd:${BNSD_VERSION}"
-
 # get this files directory regardless of pwd when we run it
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
