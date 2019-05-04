@@ -165,14 +165,6 @@ describe("BnsConnection", () => {
     connection.disconnect();
   });
 
-  it("can disconnect from tendermint", async () => {
-    pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const chainId = await connection.chainId();
-    expect(chainId).toBeTruthy();
-    connection.disconnect();
-  });
-
   it("can query all tickers", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
