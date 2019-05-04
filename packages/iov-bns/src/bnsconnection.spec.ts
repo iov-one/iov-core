@@ -152,13 +152,9 @@ describe("BnsConnection", () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-    // we should get a reasonable string here
     const chainId = await connection.chainId();
-    expect(chainId).toBeTruthy();
-    expect(chainId.length).toBeGreaterThan(6);
-    expect(chainId.length).toBeLessThan(26);
+    expect(chainId).toMatch(/^[a-zA-Z0-9\-]{7,25}$/);
 
-    // we expect some block to have been created
     const height = await connection.height();
     expect(height).toBeGreaterThan(1);
 
