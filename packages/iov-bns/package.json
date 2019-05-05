@@ -32,7 +32,9 @@
     "pack-proto": "pbjs -t static-module -w commonjs -o src/generated/codecimpl.js `./scripts/cleaned_protos.sh | sort`",
     "define-proto": "pbts src/generated/codecimpl.js -o src/generated/codecimpl.d.ts",
     "store-codec-version": "git -C ./go/src/github.com/iov-one/weave log --pretty=oneline --decorate --max-count=1 > src/generated/codec_version.txt",
-    "protoc": "./scripts/weave.sh && yarn pack-proto && yarn define-proto && yarn format && yarn store-codec-version"
+    "protoc": "./scripts/weave.sh && yarn pack-proto && yarn define-proto && yarn format && yarn store-codec-version",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "@iov/bcp": "^0.14.1",
@@ -47,9 +49,11 @@
     "long": "^4.0.0",
     "protobufjs": "^6.8.6",
     "type-tagger": "^1.0.0",
-    "xstream": "^11.10.0"
+    "xstream": "^11.10.0",
+    "snyk": "^1.161.1"
   },
   "devDependencies": {
     "@iov/keycontrol": "^0.14.1"
-  }
+  },
+  "snyk": true
 }
