@@ -27,13 +27,17 @@
     "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
     "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari",
-    "test": "yarn build-or-skip && yarn test-node"
+    "test": "yarn build-or-skip && yarn test-node",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "@iov/bcp": "^0.14.1",
     "@iov/bns": "^0.14.1",
     "@iov/crypto": "^0.14.1",
     "@iov/encoding": "^0.14.1",
-    "axios": "^0.18.0"
-  }
+    "axios": "^0.18.0",
+    "snyk": "^1.161.1"
+  },
+  "snyk": true
 }
