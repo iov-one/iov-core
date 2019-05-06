@@ -1,0 +1,12 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.3
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-AXIOS-174505:
+    - '@iov/rise > axios':
+        patched: '2019-05-06T08:31:29.804Z'
+    - '@iov/bns > @iov/tendermint-rpc > axios':
+        patched: '2019-05-06T08:31:29.804Z'
+    - '@iov/faucets > @iov/bns > @iov/tendermint-rpc > axios':
+        patched: '2019-05-06T08:31:29.804Z'

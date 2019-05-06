@@ -19,7 +19,9 @@
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
     "test-node": "node jasmine-testrunner.js",
     "test-bin": "yarn build-or-skip && ./bin/iov-cli --selftest",
-    "test": "yarn build-or-skip && yarn test-node"
+    "test": "yarn build-or-skip && yarn test-node",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "bin": {
     "iov-cli": "bin/iov-cli"
@@ -38,11 +40,13 @@
     "leveldown": "^5.0.0",
     "recast": "^0.15.3",
     "ts-node": "^7.0.0",
-    "typescript": "~3.3"
+    "typescript": "~3.3",
+    "snyk": "^1.161.1"
   },
   "devDependencies": {
     "@types/argparse": "^1.0.34",
     "@types/babylon": "^6.16.3",
     "@types/diff": "^3.5.1"
-  }
+  },
+  "snyk": true
 }
