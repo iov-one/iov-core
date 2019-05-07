@@ -70,9 +70,7 @@ $ iov-cli
 
 > profile.getIdentities(wallet.id)
 [ { chainId: 'test-chain-esuZ1V',
-    pubkey: { algo: 'ed25519', data: [Uint8Array] },
-    label: 'blockchain of value faucet',
-    id: 'ed25519|533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898' } ]
+    pubkey: { algo: 'ed25519', data: [Uint8Array] } } ]
 
 > const faucetAddress = signer.identityToAddress(faucet);
 > faucetAddress
@@ -116,9 +114,8 @@ const sendTx: SendTransaction = {
   { id: 'FtIcQqMWcRpEIruk', label: undefined } ]
 
 > profile.getIdentities(wallet.id)
-[ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
-    label: 'blockchain of value faucet',
-    id: 'uul1wahs5te8fiaD' } ]
+[ { chainId: 'test-chain-esuZ1V',
+    pubkey: { algo: 'ed25519', data: [Uint8Array] } } ]
 
 > profile.getIdentities(wallet2.id)
 []
