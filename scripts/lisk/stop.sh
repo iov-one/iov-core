@@ -9,7 +9,7 @@ mkdir "$TMP_DIR" || true
 
 LISK_DIR="lisk"
 # can be a branch or tag
-LISK_TAG="v1.4.0"
+LISK_TAG="v1.6.0"
 
 (
   cd "$TMP_DIR"

@@ -9,9 +9,9 @@ mkdir -p "$TMP_DIR"
 
 LISK_DIR="lisk"
 # can be a branch or tag
-LISK_TAG="v1.4.0"
+LISK_TAG="v1.6.0"
 # Use a version available on docker hub: https://hub.docker.com/r/lisk/core/tags/
-LISK_DOCKER_VERSION="1.4.0"
+LISK_DOCKER_VERSION="1.6.0"
 
 (
   cd "$TMP_DIR"
