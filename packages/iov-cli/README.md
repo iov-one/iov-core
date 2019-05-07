@@ -107,7 +107,7 @@ const sendTx: SendTransaction = {
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: undefined } ]
 
-> const wallet2 = profile.addWallet(Ed25519HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
+> const wallet2 = profile.addWallet(Secp256k1HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
 
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: undefined },
@@ -120,12 +120,12 @@ const sendTx: SendTransaction = {
 > profile.getIdentities(wallet2.id)
 []
 
-> profile.setWalletLabel(wallet.id, "main")
-> profile.setWalletLabel(wallet2.id, "second")
+> profile.setWalletLabel(wallet.id, "ed")
+> profile.setWalletLabel(wallet2.id, "secp")
 
 > profile.wallets.value
-[ { id: 'ReYESw51lsOOr8_X', label: 'main' },
-  { id: 'FtIcQqMWcRpEIruk', label: 'second' } ]
+[ { id: 'ReYESw51lsOOr8_X', label: 'ed' },
+  { id: 'FtIcQqMWcRpEIruk', label: 'secp' } ]
 ```
 
 5. Now store to disk
@@ -142,7 +142,8 @@ const sendTx: SendTransaction = {
 > profileFromDb
 UserProfile {
   createdAt: 2018-07-04T16:07:14.583Z,
-  keyring: Keyring { wallets: [ [Object], [Object] ] },
+  keyring:
+   Keyring { wallets: [ [Ed25519HdWallet], [Secp256k1HdWallet] ] },
   ...
 ```
 
