@@ -4,7 +4,7 @@
 
 ## Installation and first run
 
-The `iov-cli` executable is available via npm. We recomment local installations
+The `iov-cli` executable is available via npm. We recommend local installations
 to your demo project. If you don't have one yet, just
 `mkdir iov-cli-installation && cd iov-cli-installation && yarn init -y`.
 
