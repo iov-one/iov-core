@@ -12,6 +12,9 @@
   `isErc20ApproveTransaction` helper function.
 - @iov/ethereum: Add support for ERC 20 `approve` transactions.
 - @iov/ethereum: Add support for ERC20 atomic swap transactions.
+- @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
+  using an optional constructor argument.
+- @iov/socket: `StreamingSocket` now times out after 10 seconds.
 
 Breaking changes
 
@@ -35,6 +38,12 @@ Breaking changes
   `JsonRpcErrorResponse` is now of type `JsonRpcId`, which can be a string or a
   number.
 - @iov/jsonrpc: Remove `parseJsonRpcResponse` and `parseJsonRpcError`.
+
+## 0.14.2
+
+- @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
+  using an optional constructor argument.
+- @iov/socket: `StreamingSocket` now times out after 10 seconds.
 
 ## 0.14.1
 
@@ -60,6 +69,12 @@ Breaking changes
   `parseJsonRpcResponse` is removed.
 - @iov/keycontrol: Export `ReadonlyWallet`.
 - @iov/keycontrol: Deprecate `HdPaths.simpleAddress`.
+
+## 0.13.7
+
+- @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
+  using an optional constructor argument.
+- @iov/socket: `StreamingSocket` now times out after 10 seconds.
 
 ## 0.13.6
 

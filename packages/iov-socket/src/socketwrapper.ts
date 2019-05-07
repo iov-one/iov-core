@@ -31,6 +31,7 @@ export class SocketWrapper {
   public readonly connected: Promise<void>;
 
   private connectedResolver: (() => void) | undefined;
+  private connectedRejecter: ((reason: any) => void) | undefined;
   private socket: WebSocket | undefined;
   private closed = false;
 
@@ -40,9 +41,11 @@ export class SocketWrapper {
     private readonly errorHandler: (event: SocketWrapperErrorEvent) => void,
     private readonly openHandler?: () => void,
     private readonly closeHandler?: (event: SocketWrapperCloseEvent) => void,
+    private readonly timeout: number = 10_000,
   ) {
-    this.connected = new Promise((resolve, _) => {
+    this.connected = new Promise((resolve, reject) => {
       this.connectedResolver = resolve;
+      this.connectedRejecter = reject;
     });
   }
 
@@ -72,6 +75,19 @@ export class SocketWrapper {
         this.closeHandler(closeEvent);
       }
     };
+
+    const started = Date.now();
+    setTimeout(() => {
+      socket.onmessage = () => 0;
+      socket.onerror = () => 0;
+      socket.onopen = () => 0;
+      socket.onclose = () => 0;
+      socket.close();
+      this.socket = undefined;
+
+      const elapsed = Math.floor(Date.now() - started);
+      this.connectedRejecter!(`Connection attempt timed out after ${elapsed} ms`);
+    }, this.timeout);
 
     this.socket = socket;
   }

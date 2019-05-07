@@ -120,6 +120,7 @@ describe("BnsConnection", () => {
   const faucetPath = HdPaths.iov(0);
 
   const bnsdTendermintUrl = "ws://localhost:23456";
+  const bnsdTendermintHttpUrl = "http://localhost:23456";
 
   async function userProfileWithFaucet(
     chainId: ChainId,
@@ -170,28 +171,29 @@ describe("BnsConnection", () => {
     await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
   }
 
-  it("Can connect to tendermint", async () => {
+  it("can connect to tendermint via WS", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-    // we should get a reasonable string here
     const chainId = await connection.chainId();
-    expect(chainId).toBeTruthy();
-    expect(chainId.length).toBeGreaterThan(6);
-    expect(chainId.length).toBeLessThan(26);
+    expect(chainId).toMatch(/^[a-zA-Z0-9\-]{7,25}$/);
 
-    // we expect some block to have been created
     const height = await connection.height();
     expect(height).toBeGreaterThan(1);
 
     connection.disconnect();
   });
 
-  it("can disconnect from tendermint", async () => {
+  it("can connect to tendermint via HTTP", async () => {
     pendingWithoutBnsd();
-    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+    const connection = await BnsConnection.establish(bnsdTendermintHttpUrl);
+
     const chainId = await connection.chainId();
-    expect(chainId).toBeTruthy();
+    expect(chainId).toMatch(/^[a-zA-Z0-9\-]{7,25}$/);
+
+    const height = await connection.height();
+    expect(height).toBeGreaterThan(1);
+
     connection.disconnect();
   });
 

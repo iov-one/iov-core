@@ -37,3 +37,6 @@ docker run --rm \
   "iov1/bcpd:${BCPD_VERSION}" \
   -home "/data" \
   init -i
+
+sed -ie 's/cors_allowed_origins.*$/cors_allowed_origins = ["*"]/' \
+  "${BCPD_DIR}/config/config.toml"
