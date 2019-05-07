@@ -24,11 +24,13 @@ export declare class SocketWrapper {
     private readonly errorHandler;
     private readonly openHandler?;
     private readonly closeHandler?;
+    private readonly timeout;
     readonly connected: Promise<void>;
     private connectedResolver;
+    private connectedRejecter;
     private socket;
     private closed;
-    constructor(url: string, messageHandler: (event: SocketWrapperMessageEvent) => void, errorHandler: (event: SocketWrapperErrorEvent) => void, openHandler?: (() => void) | undefined, closeHandler?: ((event: SocketWrapperCloseEvent) => void) | undefined);
+    constructor(url: string, messageHandler: (event: SocketWrapperMessageEvent) => void, errorHandler: (event: SocketWrapperErrorEvent) => void, openHandler?: (() => void) | undefined, closeHandler?: ((event: SocketWrapperCloseEvent) => void) | undefined, timeout?: number);
     /**
      * returns a promise that resolves when connection is open
      */

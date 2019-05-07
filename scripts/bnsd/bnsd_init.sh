@@ -37,3 +37,6 @@ docker run --rm \
   "iov1/bnsd:${BNSD_VERSION}" \
   -home "/data" \
   init -i
+
+sed -ie 's/cors_allowed_origins.*$/cors_allowed_origins = ["*"]/' \
+  "${BNSD_DIR}/config/config.toml"
