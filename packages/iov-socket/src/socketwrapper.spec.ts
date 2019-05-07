@@ -63,6 +63,24 @@ describe("SocketWrapper", () => {
     socket.connect();
   });
 
+  it("times out when establishing connection takes too long", async () => {
+    pendingWithoutSocketServer();
+
+    const socket = new SocketWrapper(
+      socketServerUrlSlow,
+      () => fail("Got unexpected message event"),
+      error => fail(error.message || "Unknown socket error"),
+      () => fail("Got unexpected opened event"),
+      () => fail("Got unexpected closed event"),
+      2_000,
+    );
+    socket.connect();
+
+    await socket.connected
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/connection attempt timed out/i));
+  });
+
   it("can connect and disconnect", done => {
     pendingWithoutSocketServer();
 
