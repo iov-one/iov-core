@@ -4,9 +4,9 @@ import {
   Amount,
   ChainId,
   Hash,
+  Identity,
   Nonce,
   Preimage,
-  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
@@ -132,7 +132,7 @@ describe("Serialization", () => {
     });
 
     it("throws for unset gas price/limit", () => {
-      const creator: PublicIdentity = {
+      const creator: Identity = {
         chainId: "ethereum-eip155-5777" as ChainId,
         pubkey: {
           algo: Algorithm.Secp256k1,
@@ -186,7 +186,7 @@ describe("Serialization", () => {
     });
 
     it("throws for negative nonce", () => {
-      const creator: PublicIdentity = {
+      const creator: Identity = {
         chainId: "ethereum-eip155-5777" as ChainId,
         pubkey: {
           algo: Algorithm.Secp256k1,

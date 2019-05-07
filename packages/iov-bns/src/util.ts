@@ -7,11 +7,11 @@ import {
   ChainId,
   ConfirmedTransaction,
   Hash,
+  Identity,
   isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
   Nonce,
-  PublicIdentity,
   PublicKeyBundle,
   SignableBytes,
   SwapAbortTransaction,
@@ -54,7 +54,7 @@ function keyToIdentifier(key: PublicKeyBundle): Uint8Array {
   return Uint8Array.from([...algoToPrefix(key.algo), ...key.data]);
 }
 
-export function identityToAddress(identity: PublicIdentity): Address {
+export function identityToAddress(identity: Identity): Address {
   const prefix = addressPrefix(identity.chainId);
   const bytes = new Sha256(keyToIdentifier(identity.pubkey)).digest().slice(0, 20);
   return encodeBnsAddress(prefix, bytes);

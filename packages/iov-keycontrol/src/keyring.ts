@@ -1,6 +1,6 @@
 import { As } from "type-tagger";
 
-import { ChainId, PublicIdentity, publicIdentityEquals } from "@iov/bcp";
+import { ChainId, Identity, identityEquals } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 
 import {
@@ -141,10 +141,8 @@ export class Keyring {
    *
    * @returns a wallet if ID is found, undefined otherwise
    */
-  public getWalletByIdentity(identity: PublicIdentity): ReadonlyWallet | undefined {
-    return this.wallets.find(wallet =>
-      wallet.getIdentities().some(publicIdentityEquals.bind(null, identity)),
-    );
+  public getWalletByIdentity(identity: Identity): ReadonlyWallet | undefined {
+    return this.wallets.find(wallet => wallet.getIdentities().some(identityEquals.bind(null, identity)));
   }
 
   /** Sets the label of the wallet with the given ID in the primary keyring  */
@@ -166,7 +164,7 @@ export class Keyring {
     walletId: WalletId,
     chainId: ChainId,
     options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
-  ): Promise<PublicIdentity> {
+  ): Promise<Identity> {
     const wallet = this.getMutableWallet(walletId);
     if (!wallet) {
       throw new Error(`Wallet of id '${walletId}' does not exist in keyring`);
@@ -181,9 +179,9 @@ export class Keyring {
   /**
    * All identities of all wallets
    */
-  public getAllIdentities(): ReadonlyArray<PublicIdentity> {
+  public getAllIdentities(): ReadonlyArray<Identity> {
     // Use Array.flat when available (https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)
-    const out = new Array<PublicIdentity>();
+    const out = new Array<Identity>();
     for (const wallet of this.wallets) {
       out.push(...wallet.getIdentities());
     }
@@ -191,7 +189,7 @@ export class Keyring {
   }
 
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-  public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
+  public setIdentityLabel(identity: Identity, label: string | undefined): void {
     const wallet = this.getMutableWalletByIdentity(identity);
     if (!wallet) {
       throw new Error(`No wallet for identity '${JSON.stringify(identity)}' found in keyring`);
@@ -234,21 +232,19 @@ export class Keyring {
    *
    * @returns a wallet if ID is found, undefined otherwise
    */
-  private getMutableWalletByIdentity(identity: PublicIdentity): Wallet | undefined {
-    return this.wallets.find(wallet =>
-      wallet.getIdentities().some(publicIdentityEquals.bind(null, identity)),
-    );
+  private getMutableWalletByIdentity(identity: Identity): Wallet | undefined {
+    return this.wallets.find(wallet => wallet.getIdentities().some(identityEquals.bind(null, identity)));
   }
 
   /**
    * Throws if any of the new identities already exists in this keyring.
    */
-  private ensureNoIdentityCollision(newIdentities: ReadonlyArray<PublicIdentity>): void {
+  private ensureNoIdentityCollision(newIdentities: ReadonlyArray<Identity>): void {
     const existingIdentities = this.getAllIdentities();
 
     for (const newIdentity of newIdentities) {
       for (const existingIdentity of existingIdentities) {
-        if (publicIdentityEquals(newIdentity, existingIdentity)) {
+        if (identityEquals(newIdentity, existingIdentity)) {
           throw new Error(
             `Identity collision: ${JSON.stringify(newIdentity)} already exists in this Keyring`,
           );

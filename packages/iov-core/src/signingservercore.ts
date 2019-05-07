@@ -1,4 +1,4 @@
-import { ChainId, PostTxResponse, PublicIdentity, TransactionId, UnsignedTransaction } from "@iov/bcp";
+import { ChainId, Identity, PostTxResponse, TransactionId, UnsignedTransaction } from "@iov/bcp";
 import { UserProfile } from "@iov/keycontrol";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 
@@ -17,7 +17,7 @@ export interface GetIdentitiesAuthorization {
    * "Internal server error" and the callback author should
    * ensure this does not happen.
    */
-  (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>): Promise<ReadonlyArray<PublicIdentity>>;
+  (reason: string, matchingIdentities: ReadonlyArray<Identity>): Promise<ReadonlyArray<Identity>>;
 }
 
 export interface SignAndPostAuthorization {
@@ -74,12 +74,12 @@ export class SigningServerCore {
   public async getIdentities(
     reason: string,
     chainIds: ReadonlyArray<ChainId>,
-  ): Promise<ReadonlyArray<PublicIdentity>> {
+  ): Promise<ReadonlyArray<Identity>> {
     const matchingIdentities = this.profile.getAllIdentities().filter(identity => {
       return chainIds.some(chainId => identity.chainId === chainId);
     });
 
-    let authorizedIdentities: ReadonlyArray<PublicIdentity>;
+    let authorizedIdentities: ReadonlyArray<Identity>;
     try {
       authorizedIdentities = await this.authorizeGetIdentities(reason, matchingIdentities);
     } catch (error) {

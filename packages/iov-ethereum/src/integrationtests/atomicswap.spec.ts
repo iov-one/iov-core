@@ -7,13 +7,13 @@ import {
   AtomicSwapConnection,
   AtomicSwapHelpers,
   ClaimedSwap,
+  Identity,
   isBlockInfoPending,
   isBlockInfoSucceeded,
   isClaimedSwap,
   isOpenSwap,
   OpenSwap,
   Preimage,
-  PublicIdentity,
   PublicKeyBundle,
   SendTransaction,
   SwapClaimTransaction,
@@ -46,8 +46,8 @@ function pendingWithoutEthereum(): void {
 interface ActorData {
   readonly profile: UserProfile;
   readonly connection: AtomicSwapConnection;
-  readonly senderIdentity: PublicIdentity;
-  readonly receiverIdentity: PublicIdentity;
+  readonly senderIdentity: Identity;
+  readonly receiverIdentity: Identity;
 }
 
 class Actor {
@@ -70,8 +70,8 @@ class Actor {
     });
   }
 
-  public readonly senderIdentity: PublicIdentity;
-  public readonly receiverIdentity: PublicIdentity;
+  public readonly senderIdentity: Identity;
+  public readonly receiverIdentity: Identity;
 
   public get sendAddress(): Address {
     return ethereumCodec.identityToAddress(this.senderIdentity);

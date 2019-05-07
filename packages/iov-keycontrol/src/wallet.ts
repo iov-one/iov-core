@@ -1,6 +1,6 @@
 import { As } from "type-tagger";
 
-import { ChainId, PrehashType, PublicIdentity, SignableBytes, SignatureBytes } from "@iov/bcp";
+import { ChainId, Identity, PrehashType, SignableBytes, SignatureBytes } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 
@@ -20,12 +20,12 @@ export interface ReadonlyWallet {
   /**
    * Gets a local label associated with the public identity to be displayed in the UI.
    */
-  readonly getIdentityLabel: (identity: PublicIdentity) => string | undefined;
+  readonly getIdentityLabel: (identity: Identity) => string | undefined;
 
   /**
    * Returns all identities currently registered
    */
-  readonly getIdentities: () => ReadonlyArray<PublicIdentity>;
+  readonly getIdentities: () => ReadonlyArray<Identity>;
 
   // canSign flag means the private key material is currently accessible.
   // If a hardware ledger is not plugged in, we may see the public keys,
@@ -45,16 +45,16 @@ export interface ReadonlyWallet {
   readonly previewIdentity: (
     chainId: ChainId,
     options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
-  ) => Promise<PublicIdentity>;
+  ) => Promise<Identity>;
 
   /**
    * Created a detached signature for the signable bytes
-   * with the private key that matches the given PublicIdentity.
+   * with the private key that matches the given Identity.
    *
-   * If a matching PublicIdentity is not present in this wallet, an error is thrown.
+   * If a matching Identity is not present in this wallet, an error is thrown.
    */
   readonly createTransactionSignature: (
-    identity: PublicIdentity,
+    identity: Identity,
     transactionBytes: SignableBytes,
     prehash: PrehashType,
   ) => Promise<SignatureBytes>;
@@ -100,11 +100,11 @@ export interface Wallet extends ReadonlyWallet {
   readonly createIdentity: (
     chainId: ChainId,
     options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
-  ) => Promise<PublicIdentity>;
+  ) => Promise<Identity>;
 
   /**
    * Sets a local label associated with the public identity to be displayed in the UI.
    * To clear a label, set it to undefined
    */
-  readonly setIdentityLabel: (identity: PublicIdentity, label: string | undefined) => void;
+  readonly setIdentityLabel: (identity: Identity, label: string | undefined) => void;
 }

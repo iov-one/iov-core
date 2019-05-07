@@ -1,4 +1,4 @@
-import { Address, Algorithm, ChainId, PublicIdentity, PublicKeyBytes } from "@iov/bcp";
+import { Address, Algorithm, ChainId, Identity, PublicKeyBytes } from "@iov/bcp";
 import { bnsCodec } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 
@@ -7,7 +7,7 @@ import { Ed25519, Random } from "@iov/crypto";
  */
 export async function randomBnsAddress(): Promise<Address> {
   const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));
-  const randomIdentity: PublicIdentity = {
+  const randomIdentity: Identity = {
     chainId: "some-testnet" as ChainId,
     pubkey: {
       algo: Algorithm.Ed25519,

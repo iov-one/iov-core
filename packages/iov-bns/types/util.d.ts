@@ -1,5 +1,5 @@
 import { As } from "type-tagger";
-import { Address, ChainId, ConfirmedTransaction, Hash, Nonce, PublicIdentity, SignableBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TransactionQuery } from "@iov/bcp";
+import { Address, ChainId, ConfirmedTransaction, Hash, Identity, Nonce, SignableBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TransactionQuery } from "@iov/bcp";
 import { QueryString } from "@iov/tendermint-rpc";
 export declare function addressPrefix(chainId: ChainId): "iov" | "tiov";
 /** Encodes raw bytes into a bech32 address */
@@ -9,7 +9,7 @@ export declare function decodeBnsAddress(address: Address): {
     readonly prefix: string;
     readonly data: Uint8Array;
 };
-export declare function identityToAddress(identity: PublicIdentity): Address;
+export declare function identityToAddress(identity: Identity): Address;
 export declare type Condition = Uint8Array & As<"Condition">;
 export declare function escrowCondition(id: Uint8Array): Condition;
 export declare function conditionToAddress(chainId: ChainId, cond: Condition): Address;

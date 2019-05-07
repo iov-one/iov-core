@@ -4,8 +4,8 @@ import { As } from "type-tagger";
 import {
   Algorithm,
   ChainId,
+  Identity,
   PrehashType,
-  PublicIdentity,
   PublicKeyBytes,
   SignableBytes,
   SignatureBytes,
@@ -88,7 +88,7 @@ export class Ed25519Wallet implements Wallet {
     return code as WalletId;
   }
 
-  private static identityId(identity: PublicIdentity): IdentityId {
+  private static identityId(identity: Identity): IdentityId {
     const id = [identity.chainId, identity.pubkey.algo, Encoding.toHex(identity.pubkey.data)].join("|");
     return id as IdentityId;
   }
@@ -104,19 +104,19 @@ export class Ed25519Wallet implements Wallet {
     }
   }
 
-  private static buildIdentity(chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
+  private static buildIdentity(chainId: ChainId, bytes: PublicKeyBytes): Identity {
     if (!chainId) {
       throw new Error("Got empty chain ID when tying to build a local identity.");
     }
 
-    const publicIdentity: PublicIdentity = {
+    const identity: Identity = {
       chainId: chainId,
       pubkey: {
         algo: Algorithm.Ed25519,
         data: bytes,
       },
     };
-    return publicIdentity;
+    return identity;
   }
 
   public readonly label: ValueAndUpdates<string | undefined>;
@@ -128,14 +128,14 @@ export class Ed25519Wallet implements Wallet {
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   // identities
-  private readonly identities: PublicIdentity[];
+  private readonly identities: Identity[];
   private readonly privkeys: Map<IdentityId, Ed25519Keypair>;
   private readonly labels: Map<IdentityId, string | undefined>;
 
   constructor(data?: WalletSerializationString) {
     let id: WalletId;
     let label: string | undefined;
-    const identities: PublicIdentity[] = [];
+    const identities: Identity[] = [];
     const privkeys = new Map<IdentityId, Ed25519Keypair>();
     const labels = new Map<IdentityId, string | undefined>();
 
@@ -179,7 +179,7 @@ export class Ed25519Wallet implements Wallet {
     this.labelProducer.update(label);
   }
 
-  public async previewIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
+  public async previewIdentity(chainId: ChainId, options: unknown): Promise<Identity> {
     if (!(options instanceof Ed25519Keypair)) {
       throw new Error("Ed25519.createIdentity requires a keypair argument");
     }
@@ -187,7 +187,7 @@ export class Ed25519Wallet implements Wallet {
     return Ed25519Wallet.buildIdentity(chainId, keypair.pubkey as PublicKeyBytes);
   }
 
-  public async createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<Identity> {
     if (!(options instanceof Ed25519Keypair)) {
       throw new Error("Ed25519.createIdentity requires a keypair argument");
     }
@@ -208,7 +208,7 @@ export class Ed25519Wallet implements Wallet {
     return newIdentity;
   }
 
-  public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
+  public setIdentityLabel(identity: Identity, label: string | undefined): void {
     const identityId = Ed25519Wallet.identityId(identity);
     const index = this.identities.findIndex(i => Ed25519Wallet.identityId(i) === identityId);
     if (index === -1) {
@@ -218,7 +218,7 @@ export class Ed25519Wallet implements Wallet {
     this.labels.set(identityId, label);
   }
 
-  public getIdentityLabel(identity: PublicIdentity): string | undefined {
+  public getIdentityLabel(identity: Identity): string | undefined {
     const identityId = Ed25519Wallet.identityId(identity);
     const index = this.identities.findIndex(i => Ed25519Wallet.identityId(i) === identityId);
     if (index === -1) {
@@ -228,13 +228,13 @@ export class Ed25519Wallet implements Wallet {
     return this.labels.get(identityId);
   }
 
-  public getIdentities(): ReadonlyArray<PublicIdentity> {
+  public getIdentities(): ReadonlyArray<Identity> {
     // copy array to avoid internal updates to affect caller and vice versa
     return [...this.identities];
   }
 
   public async createTransactionSignature(
-    identity: PublicIdentity,
+    identity: Identity,
     transactionBytes: SignableBytes,
     prehashType: PrehashType,
   ): Promise<SignatureBytes> {
@@ -279,7 +279,7 @@ export class Ed25519Wallet implements Wallet {
   }
 
   // This throws an exception when private key is missing
-  private privateKeyForIdentity(identity: PublicIdentity): Ed25519Keypair {
+  private privateKeyForIdentity(identity: Identity): Ed25519Keypair {
     const identityId = Ed25519Wallet.identityId(identity);
     const privkey = this.privkeys.get(identityId);
     if (!privkey) {

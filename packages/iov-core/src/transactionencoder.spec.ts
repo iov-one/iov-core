@@ -2,7 +2,7 @@ import {
   Address,
   Algorithm,
   ChainId,
-  isPublicIdentity,
+  isIdentity,
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
@@ -159,7 +159,7 @@ describe("TransactionEncoder", () => {
 
       const restored = fromJson(toJson(original));
       expect(restored).toEqual(original);
-      expect(isPublicIdentity(restored.creator)).toEqual(true);
+      expect(isIdentity(restored.creator)).toEqual(true);
     });
   });
 });

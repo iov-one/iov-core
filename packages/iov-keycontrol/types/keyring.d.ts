@@ -1,5 +1,5 @@
 import { As } from "type-tagger";
-import { ChainId, PublicIdentity } from "@iov/bcp";
+import { ChainId, Identity } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ReadonlyWallet, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "./wallet";
 export declare type KeyringSerializationString = string & As<"keyring-serialization">;
@@ -42,7 +42,7 @@ export declare class Keyring {
      *
      * @returns a wallet if ID is found, undefined otherwise
      */
-    getWalletByIdentity(identity: PublicIdentity): ReadonlyWallet | undefined;
+    getWalletByIdentity(identity: Identity): ReadonlyWallet | undefined;
     /** Sets the label of the wallet with the given ID in the primary keyring  */
     setWalletLabel(walletId: WalletId, label: string | undefined): void;
     /**
@@ -51,13 +51,13 @@ export declare class Keyring {
      * The identity is bound to one chain ID to encourage using different
      * keypairs on different chains.
      */
-    createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
+    createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<Identity>;
     /**
      * All identities of all wallets
      */
-    getAllIdentities(): ReadonlyArray<PublicIdentity>;
+    getAllIdentities(): ReadonlyArray<Identity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-    setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
+    setIdentityLabel(identity: Identity, label: string | undefined): void;
     serialize(): KeyringSerializationString;
     clone(): Keyring;
     /**

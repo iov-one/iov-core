@@ -46,29 +46,28 @@ export function publicKeyBundleEquals(left: PublicKeyBundle, right: PublicKeyBun
 export type ChainId = string & As<"chain-id">;
 
 /** a public key we can identify with on a blockchain */
-export interface PublicIdentity {
+export interface Identity {
   readonly chainId: ChainId;
   readonly pubkey: PublicKeyBundle;
 }
 
-export function isPublicIdentity(data: any): data is PublicIdentity {
+export function isIdentity(data: any): data is Identity {
   return (
     typeof data === "object" &&
     data !== null &&
-    typeof (data as PublicIdentity).chainId === "string" &&
-    isPublicKeyBundle((data as PublicIdentity).pubkey)
+    typeof (data as Identity).chainId === "string" &&
+    isPublicKeyBundle((data as Identity).pubkey)
   );
 }
 
 /**
- * Compares two objects that conform to the PublicIdentity interface for equality.
- * This can also be used to compare pairs of derived types like LocalIdentity/PublicIdentity
- * or LocalIdentity/LocalIdentity in which case all non-PublicIdentity fields are ignored.
+ * Compares two objects that conform to the Identity interface for equality.
+ * All additional (non-Identity) fields are ignored.
  *
  * @param left the left hand side of the comparison
  * @param right the right hand side of the comparison
  */
-export function publicIdentityEquals(left: PublicIdentity, right: PublicIdentity): boolean {
+export function identityEquals(left: Identity, right: Identity): boolean {
   return left.chainId === right.chainId && publicKeyBundleEquals(left.pubkey, right.pubkey);
 }
 
@@ -208,7 +207,7 @@ export interface UnsignedTransaction {
    *
    * This implicitly fixes the chain ID this transaction can be used on.
    */
-  readonly creator: PublicIdentity;
+  readonly creator: Identity;
   readonly fee?: Fee;
 }
 
@@ -218,9 +217,7 @@ export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
     return false;
   }
   const tx = data as UnsignedTransaction;
-  return (
-    typeof tx.kind === "string" && isPublicIdentity(tx.creator) && (tx.fee === undefined || isFee(tx.fee))
-  );
+  return typeof tx.kind === "string" && isIdentity(tx.creator) && (tx.fee === undefined || isFee(tx.fee));
 }
 
 export interface SendTransaction extends UnsignedTransaction {

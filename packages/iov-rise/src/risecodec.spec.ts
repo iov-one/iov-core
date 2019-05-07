@@ -2,10 +2,10 @@ import {
   Address,
   Algorithm,
   ChainId,
+  Identity,
   isSendTransaction,
   Nonce,
   PostableBytes,
-  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
@@ -26,7 +26,7 @@ const defaultCreationTimestamp = 865708731 + riseEpochAsUnixTimestamp;
 describe("riseCodec", () => {
   it("derives addresses properly", () => {
     // https://texplorer.rise.vision/address/10145108642177909005R
-    const identity: PublicIdentity = {
+    const identity: Identity = {
       chainId: riseTestnet,
       pubkey: {
         algo: Algorithm.Ed25519,

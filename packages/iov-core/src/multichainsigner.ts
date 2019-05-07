@@ -3,9 +3,9 @@ import {
   BlockchainConnection,
   ChainConnector,
   ChainId,
+  Identity,
   Nonce,
   PostTxResponse,
-  PublicIdentity,
   SignedTransaction,
   TxCodec,
   UnsignedTransaction,
@@ -42,7 +42,7 @@ export interface Profile {
   ) => Promise<SignedTransaction>;
 
   readonly appendSignature: (
-    identity: PublicIdentity,
+    identity: Identity,
     originalTransaction: SignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
@@ -99,7 +99,7 @@ export class MultiChainSigner {
   /**
    * Calculate an address in a blockchain-specific way
    */
-  public identityToAddress(identity: PublicIdentity): Address {
+  public identityToAddress(identity: Identity): Address {
     return this.getChain(identity.chainId).codec.identityToAddress(identity);
   }
 

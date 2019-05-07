@@ -14,6 +14,7 @@ import {
   ChainId,
   createTimestampTimeout,
   Hash,
+  Identity,
   isBlockInfoPending,
   isBlockInfoSucceeded,
   isConfirmedTransaction,
@@ -23,7 +24,6 @@ import {
   Nonce,
   PostTxResponse,
   Preimage,
-  PublicIdentity,
   PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
@@ -127,7 +127,7 @@ describe("BnsConnection", () => {
   ): Promise<{
     readonly profile: UserProfile;
     readonly walletId: WalletId;
-    readonly faucet: PublicIdentity;
+    readonly faucet: Identity;
   }> {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
@@ -138,7 +138,7 @@ describe("BnsConnection", () => {
   async function ensureNonceNonZero(
     connection: BnsConnection,
     profile: UserProfile,
-    identity: PublicIdentity,
+    identity: Identity,
   ): Promise<void> {
     const sendTx = await connection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
@@ -1429,7 +1429,7 @@ describe("BnsConnection", () => {
   const sendCash = async (
     connection: BnsConnection,
     profile: UserProfile,
-    faucet: PublicIdentity,
+    faucet: Identity,
     rcptAddr: Address,
   ): Promise<PostTxResponse> => {
     // construct a sendtx, this is normally used in the MultiChainSigner api
@@ -1660,7 +1660,7 @@ describe("BnsConnection", () => {
   const openSwap = async (
     connection: BnsConnection,
     profile: UserProfile,
-    creator: PublicIdentity,
+    creator: Identity,
     rcptAddr: Address,
     hash: Hash,
   ): Promise<PostTxResponse> => {
@@ -1689,7 +1689,7 @@ describe("BnsConnection", () => {
   const claimSwap = async (
     connection: BnsConnection,
     profile: UserProfile,
-    creator: PublicIdentity,
+    creator: Identity,
     swapId: SwapId,
     preimage: Preimage,
   ): Promise<PostTxResponse> => {
