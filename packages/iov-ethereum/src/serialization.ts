@@ -8,6 +8,7 @@ import {
   isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
+  LightTransaction,
   Nonce,
   SendTransaction,
   SignedTransaction,
@@ -235,15 +236,15 @@ export class Serialization {
     return encodeQuantityString(unsigned.fee.gasLimit);
   }
 
-  private static getErc20Token(unsigned: UnsignedTransaction, erc20Tokens: Erc20TokensMap): Erc20Options {
+  private static getErc20Token(transaction: LightTransaction, erc20Tokens: Erc20TokensMap): Erc20Options {
     let erc20Token: Erc20Options | undefined;
     let ticker: string;
-    if (isSendTransaction(unsigned) || isErc20ApproveTransaction(unsigned)) {
-      erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
-      ticker = unsigned.amount.tokenTicker;
-    } else if (isSwapOfferTransaction(unsigned)) {
-      erc20Token = erc20Tokens.get(unsigned.amounts[0].tokenTicker);
-      ticker = unsigned.amounts[0].tokenTicker;
+    if (isSendTransaction(transaction) || isErc20ApproveTransaction(transaction)) {
+      erc20Token = erc20Tokens.get(transaction.amount.tokenTicker);
+      ticker = transaction.amount.tokenTicker;
+    } else if (isSwapOfferTransaction(transaction)) {
+      erc20Token = erc20Tokens.get(transaction.amounts[0].tokenTicker);
+      ticker = transaction.amounts[0].tokenTicker;
     } else {
       throw new Error("Cannot get ERC20 token for unsupported transaction type");
     }

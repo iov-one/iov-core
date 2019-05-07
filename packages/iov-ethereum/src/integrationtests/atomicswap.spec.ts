@@ -21,6 +21,7 @@ import {
   SwapProcessState,
   TokenTicker,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
@@ -106,7 +107,7 @@ class Actor {
   }
 
   public async sendEther(recipient: Address, amount: Amount): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<SendTransaction>({
+    const transaction = await this.connection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: this.senderIdentity,
       recipient: recipient,
@@ -116,7 +117,7 @@ class Actor {
   }
 
   public async approveErc20Spend(amount: Amount): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<Erc20ApproveTransaction>({
+    const transaction = await this.connection.withDefaultFee<Erc20ApproveTransaction & WithCreator>({
       kind: "erc20/approve",
       creator: this.senderIdentity,
       spender: testConfig.connectionOptions.atomicSwapErc20ContractAddress!,
@@ -170,7 +171,7 @@ class Actor {
     const swapId = await (amount.tokenTicker === ETH
       ? EthereumConnection.createEtherSwapId()
       : EthereumConnection.createErc20SwapId());
-    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction>({
+    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
       kind: "bcp/swap_offer",
       creator: this.senderIdentity,
       recipient: recipient,
@@ -188,7 +189,7 @@ class Actor {
     const swapId = await (amount.tokenTicker === ETH
       ? EthereumConnection.createEtherSwapId()
       : EthereumConnection.createErc20SwapId());
-    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction>({
+    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
       kind: "bcp/swap_offer",
       creator: this.senderIdentity,
       recipient: recipient,
@@ -203,7 +204,7 @@ class Actor {
   }
 
   public async claimFromKnownPreimage(counter: AtomicSwap): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction>({
+    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction & WithCreator>({
       kind: "bcp/swap_claim",
       creator: this.receiverIdentity,
       swapId: counter.data.id,
@@ -213,7 +214,7 @@ class Actor {
   }
 
   public async claimFromRevealedPreimage(offer: OpenSwap, claimed: ClaimedSwap): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction>({
+    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction & WithCreator>({
       kind: "bcp/swap_claim",
       creator: this.receiverIdentity,
       swapId: offer.data.id,
