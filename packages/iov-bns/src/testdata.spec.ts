@@ -17,6 +17,7 @@ import {
   SwapIdBytes,
   SwapOfferTransaction,
   TokenTicker,
+  WithCreator,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
@@ -86,7 +87,7 @@ export const chainId = "test-123" as ChainId;
 // recipient address generated using https://github.com/nym-zone/bech32
 // RCPT=$(./scripts/jsonbytes testvectors/unsigned_tx.json .Sum.SendMsg.dest)
 // bech32 -e -h tiov $RCPT
-export const sendTxJson: SendTransaction = {
+export const sendTxJson: SendTransaction & WithCreator = {
   kind: "bcp/send",
   creator: {
     chainId: chainId,
@@ -142,7 +143,7 @@ const sig2: FullSignature = {
 };
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 009985cb38847474fe9febfd56ab67e14bcd56f3
-const randomMsg: SendTransaction = {
+const randomMsg: SendTransaction & WithCreator = {
   creator: {
     chainId: "foo-bar-baz" as ChainId,
     pubkey: pubJson,
@@ -171,7 +172,7 @@ export const randomTxJson: SignedTransaction = {
 
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 123485cb38847474fe9febfd56ab67e14bcd56f3
-const swapOfferTransaction: SwapOfferTransaction = {
+const swapOfferTransaction: SwapOfferTransaction & WithCreator = {
   creator: {
     chainId: "swap-a-doo" as ChainId,
     pubkey: pubJson,
@@ -195,7 +196,7 @@ export const swapOfferTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 
-const swapClaimMsg: SwapClaimTransaction = {
+const swapClaimMsg: SwapClaimTransaction & WithCreator = {
   creator: {
     chainId: "swap-a-doo" as ChainId,
     pubkey: pubJson,
@@ -212,7 +213,7 @@ export const swapClaimTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 
-const swapAbort: SwapAbortTransaction = {
+const swapAbort: SwapAbortTransaction & WithCreator = {
   creator: {
     chainId: "swap-a-doo" as ChainId,
     pubkey: pubJson,

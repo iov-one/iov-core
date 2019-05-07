@@ -41,6 +41,7 @@ import {
   TransactionState,
   TxReadCodec,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
@@ -400,7 +401,10 @@ export class BnsConnection implements AtomicSwapConnection {
       .map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/abort, delTxs must be a claim/abort
-    const releases: Stream<SwapClaimTransaction | SwapAbortTransaction> = Stream.merge(setTxs, delTxs)
+    const releases: Stream<(SwapClaimTransaction | SwapAbortTransaction) & WithCreator> = Stream.merge(
+      setTxs,
+      delTxs,
+    )
       .filter(isConfirmedWithSwapClaimOrAbortTransaction)
       .map(confirmed => confirmed.transaction);
 

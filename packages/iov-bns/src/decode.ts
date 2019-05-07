@@ -16,6 +16,7 @@ import {
   Token,
   TokenTicker,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
 
@@ -183,7 +184,7 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
 function parseAddAddressToUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.IAddChainAddressMsg,
-): AddAddressToUsernameTx {
+): AddAddressToUsernameTx & WithCreator {
   return {
     ...base,
     kind: "bns/add_address_to_username",
@@ -195,7 +196,10 @@ function parseAddAddressToUsernameTx(
   };
 }
 
-function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): SendTransaction {
+function parseSendTransaction(
+  base: UnsignedTransaction,
+  msg: codecImpl.cash.ISendMsg,
+): SendTransaction & WithCreator {
   const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
@@ -209,7 +213,7 @@ function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISe
 function parseSwapOfferTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.ICreateEscrowMsg,
-): SwapOfferTransaction {
+): SwapOfferTransaction & WithCreator {
   const hashIdentifier = ensure(msg.arbiter, "arbiter");
   if (!isHashIdentifier(hashIdentifier)) {
     throw new Error("escrow not controlled by hashlock");
@@ -229,7 +233,7 @@ function parseSwapClaimTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.IReturnEscrowMsg,
   tx: codecImpl.app.ITx,
-): SwapClaimTransaction {
+): SwapClaimTransaction & WithCreator {
   return {
     ...base,
     kind: "bcp/swap_claim",
@@ -243,7 +247,7 @@ function parseSwapClaimTx(
 function parseSwapAbortTransaction(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.IReturnEscrowMsg,
-): SwapAbortTransaction {
+): SwapAbortTransaction & WithCreator {
   return {
     ...base,
     kind: "bcp/swap_abort",
@@ -270,7 +274,7 @@ function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId
 function parseRegisterUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.IIssueTokenMsg,
-): RegisterUsernameTx {
+): RegisterUsernameTx & WithCreator {
   const chainAddresses = ensure(ensure(msg.details, "details").addresses, "details.addresses");
   const addresses = chainAddresses.map(
     (chainAddress): ChainAddressPair => {
@@ -292,7 +296,7 @@ function parseRegisterUsernameTx(
 function parseRemoveAddressFromUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.IRemoveChainAddressMsg,
-): RemoveAddressFromUsernameTx {
+): RemoveAddressFromUsernameTx & WithCreator {
   return {
     ...base,
     kind: "bns/remove_address_from_username",
@@ -307,7 +311,7 @@ function parseRemoveAddressFromUsernameTx(
 function parseCreateMultisignatureTx(
   base: UnsignedTransaction,
   msg: codecImpl.multisig.ICreateContractMsg,
-): CreateMultisignatureTx {
+): CreateMultisignatureTx & WithCreator {
   const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
@@ -321,7 +325,7 @@ function parseCreateMultisignatureTx(
 function parseUpdateMultisignatureTx(
   base: UnsignedTransaction,
   msg: codecImpl.multisig.IUpdateContractMsg,
-): UpdateMultisignatureTx {
+): UpdateMultisignatureTx & WithCreator {
   const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
