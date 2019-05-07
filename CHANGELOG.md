@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.13.7
+
+- @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
+  using an optional constructor argument.
+- @iov/socket: `StreamingSocket` now times out after 10 seconds.
+
 ## 0.13.6
 
 - @iov/jsonrpc: Create `parseJsonRpcResponse2`, which combines
