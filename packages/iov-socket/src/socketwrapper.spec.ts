@@ -11,6 +11,7 @@ function pendingWithoutSocketServer(): void {
 }
 
 describe("SocketWrapper", () => {
+  const socketServerUrlNonExisting = "ws://localhost:4443/websocket";
   const socketServerUrl = "ws://localhost:4444/websocket";
 
   it("can be constructed", () => {
@@ -32,6 +33,24 @@ describe("SocketWrapper", () => {
     socket.connect();
   });
 
+  it("fails to connect to non-existing server", done => {
+    pendingWithoutSocketServer();
+
+    const socket = new SocketWrapper(
+      socketServerUrlNonExisting,
+      () => done.fail("Got unexpected message event"),
+      error => {
+        if (error.message) {
+          // error message only available in nodejs
+          expect(error.message).toMatch(/ECONNREFUSED/i);
+        }
+        done();
+      },
+      () => done.fail("Got unexpected open event"),
+    );
+    expect(socket).toBeTruthy();
+    socket.connect();
+  });
   it("can connect and disconnect", done => {
     pendingWithoutSocketServer();
 
