@@ -25,6 +25,7 @@ import {
   TransactionId,
   TransactionState,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
@@ -410,7 +411,7 @@ describe("LiskConnection", () => {
         );
 
         for (const _ of [0, 1]) {
-          const sendTx: SendTransaction = {
+          const sendTx: SendTransaction & WithCreator = {
             kind: "bcp/send",
             creator: mainIdentity,
             recipient: recipient,
@@ -523,7 +524,7 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction = {
+      const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
         recipient: devnetDefaultRecipient,
@@ -551,7 +552,7 @@ describe("LiskConnection", () => {
           await devnetDefaultKeypair,
         );
 
-        const sendTx: SendTransaction = {
+        const sendTx: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: mainIdentity,
           recipient: devnetDefaultRecipient,
@@ -597,7 +598,7 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction = {
+      const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
         recipient: devnetDefaultRecipient,
@@ -629,7 +630,7 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction = {
+      const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
         recipient: devnetDefaultRecipient,
@@ -890,7 +891,7 @@ describe("LiskConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-        const sendA: SendTransaction = {
+        const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
@@ -898,7 +899,7 @@ describe("LiskConnection", () => {
           memo: `liveTx() test A ${Math.random()}`,
         };
 
-        const sendB: SendTransaction = {
+        const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
@@ -906,7 +907,7 @@ describe("LiskConnection", () => {
           memo: `liveTx() test B ${Math.random()}`,
         };
 
-        const sendC: SendTransaction = {
+        const sendC: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
@@ -976,7 +977,7 @@ describe("LiskConnection", () => {
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
         const recipientAddress = await randomAddress();
-        const send: SendTransaction = {
+        const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
@@ -1032,7 +1033,7 @@ describe("LiskConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-        const send: SendTransaction = {
+        const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
@@ -1076,7 +1077,7 @@ describe("LiskConnection", () => {
     it("works for send transaction", async () => {
       const connection = new LiskConnection(dummynetBase, dummynetChainId);
 
-      const sendTransaction: SendTransaction = {
+      const sendTransaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: dummynetChainId,
