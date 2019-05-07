@@ -401,7 +401,7 @@ describe("Full atomic swap between BNS and Ethereum", () => {
     // Bob's ETH balance now down by 5 (plus fees)
     expect(bobInitialEth.sub(await bob.getEthBalance()).gt(new BN("5000000000000000000"))).toEqual(true);
     expect(bobInitialEth.sub(await bob.getEthBalance()).lt(new BN("5100000000000000000"))).toEqual(true);
-  });
+  }, 30_000);
 
   it("works for ERC20", async () => {
     pendingWithoutBnsd();
@@ -512,5 +512,5 @@ describe("Full atomic swap between BNS and Ethereum", () => {
 
     // Bob's ASH balance now down by 0.000005
     expect(bobInitialAsh.sub(await bob.getAshBalance()).eq(new BN("5000000"))).toEqual(true);
-  });
+  }, 30_000);
 });
