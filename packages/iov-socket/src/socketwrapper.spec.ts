@@ -13,6 +13,7 @@ function pendingWithoutSocketServer(): void {
 describe("SocketWrapper", () => {
   const socketServerUrlNonExisting = "ws://localhost:4443/websocket";
   const socketServerUrl = "ws://localhost:4444/websocket";
+  const socketServerUrlSlow = "ws://localhost:4445/websocket";
 
   it("can be constructed", () => {
     const socket = new SocketWrapper(socketServerUrl, fail, fail);
@@ -51,6 +52,21 @@ describe("SocketWrapper", () => {
     expect(socket).toBeTruthy();
     socket.connect();
   });
+
+  it("can connect to slow server", done => {
+    pendingWithoutSocketServer();
+
+    const socket = new SocketWrapper(
+      socketServerUrlSlow,
+      () => done.fail("Got unexpected message event"),
+      error => done.fail(error.message || "Unknown socket error"),
+      done,
+      () => done.fail("Connection closed"),
+    );
+    expect(socket).toBeTruthy();
+    socket.connect();
+  });
+
   it("can connect and disconnect", done => {
     pendingWithoutSocketServer();
 
