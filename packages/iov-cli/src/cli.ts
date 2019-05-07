@@ -34,28 +34,12 @@ export function main(originalArgs: ReadonlyArray<string>): void {
   }
 
   const imports = new Map<string, ReadonlyArray<string>>([
-    ["@iov/bcp", ["Algorithm", "PublicKeyBytes"]],
-    ["@iov/bns", ["bnsCodec", "BnsConnection", "bnsConnector", "RegisterUsernameTx"]],
     [
-      "@iov/core",
-      [
-        "Address",
-        "ChainId",
-        "Ed25519HdWallet",
-        "HdPaths",
-        "Keyring",
-        "MultiChainSigner",
-        "Nonce",
-        "Secp256k1HdWallet",
-        "SendTransaction",
-        "TokenTicker",
-        "UserProfile",
-        "Wallet",
-        "WalletId",
-        "WalletImplementationIdString",
-        "WalletSerializationString",
-      ],
+      "@iov/bcp",
+      ["Address", "Algorithm", "ChainId", "PublicKeyBytes", "Nonce", "SendTransaction", "TokenTicker"],
     ],
+    ["@iov/bns", ["bnsCodec", "BnsConnection", "bnsConnector", "RegisterUsernameTx"]],
+    ["@iov/core", ["MultiChainSigner"]],
     [
       "@iov/crypto",
       [
@@ -84,6 +68,20 @@ export function main(originalArgs: ReadonlyArray<string>): void {
       ],
     ],
     ["@iov/faucets", ["IovFaucet"]],
+    [
+      "@iov/keycontrol",
+      [
+        "Ed25519HdWallet",
+        "HdPaths",
+        "Keyring",
+        "Secp256k1HdWallet",
+        "UserProfile",
+        "Wallet",
+        "WalletId",
+        "WalletImplementationIdString",
+        "WalletSerializationString",
+      ],
+    ],
     ["@iov/lisk", ["liskCodec", "LiskConnection", "liskConnector"]],
     ["@iov/rise", ["riseCodec", "RiseConnection", "riseConnector"]],
   ]);
