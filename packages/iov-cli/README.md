@@ -4,9 +4,9 @@
 
 ## Installation and first run
 
-The `iov-cli` executable is available via npm.
-We recomment local installations to your demo project.
-If you don't have one yet, just `mkdir iov-cli-installation && cd iov-cli-installation && yarn init -y`.
+The `iov-cli` executable is available via npm. We recommend local installations
+to your demo project. If you don't have one yet, just
+`mkdir iov-cli-installation && cd iov-cli-installation && yarn init -y`.
 
 ### locally with yarn
 
@@ -39,7 +39,8 @@ $ iov-cli
 ## How to use the IOV-Core command line interface
 
 1. Install `@iov/cli` and run `iov-cli` as shown above
-2. Start a local BNS blockchain as described in [scripts/bnsd/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/bnsd/README.md)
+2. Start a local BNS blockchain as described in
+   [scripts/bnsd/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/bnsd/README.md)
 3. Play around as in the following example code:
 
 ```
@@ -69,9 +70,7 @@ $ iov-cli
 
 > profile.getIdentities(wallet.id)
 [ { chainId: 'test-chain-esuZ1V',
-    pubkey: { algo: 'ed25519', data: [Uint8Array] },
-    label: 'blockchain of value faucet',
-    id: 'ed25519|533e376559fa551130e721735af5e7c9fcd8869ddd54519ee779fce5984d7898' } ]
+    pubkey: { algo: 'ed25519', data: [Uint8Array] } } ]
 
 > const faucetAddress = signer.identityToAddress(faucet);
 > faucetAddress
@@ -108,26 +107,25 @@ const sendTx: SendTransaction = {
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: undefined } ]
 
-> const wallet2 = profile.addWallet(Ed25519HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
+> const wallet2 = profile.addWallet(Secp256k1HdWallet.fromMnemonic("organ wheat manage mirror wish truly tool trumpet since equip flight bracket"))
 
 > profile.wallets.value
 [ { id: 'ReYESw51lsOOr8_X', label: undefined },
   { id: 'FtIcQqMWcRpEIruk', label: undefined } ]
 
 > profile.getIdentities(wallet.id)
-[ { pubkey: { algo: 'ed25519', data: [Uint8Array] },
-    label: 'blockchain of value faucet',
-    id: 'uul1wahs5te8fiaD' } ]
+[ { chainId: 'test-chain-esuZ1V',
+    pubkey: { algo: 'ed25519', data: [Uint8Array] } } ]
 
 > profile.getIdentities(wallet2.id)
 []
 
-> profile.setWalletLabel(wallet.id, "main")
-> profile.setWalletLabel(wallet2.id, "second")
+> profile.setWalletLabel(wallet.id, "ed")
+> profile.setWalletLabel(wallet2.id, "secp")
 
 > profile.wallets.value
-[ { id: 'ReYESw51lsOOr8_X', label: 'main' },
-  { id: 'FtIcQqMWcRpEIruk', label: 'second' } ]
+[ { id: 'ReYESw51lsOOr8_X', label: 'ed' },
+  { id: 'FtIcQqMWcRpEIruk', label: 'secp' } ]
 ```
 
 5. Now store to disk
@@ -144,7 +142,8 @@ const sendTx: SendTransaction = {
 > profileFromDb
 UserProfile {
   createdAt: 2018-07-04T16:07:14.583Z,
-  keyring: Keyring { wallets: [ [Object], [Object] ] },
+  keyring:
+   Keyring { wallets: [ [Ed25519HdWallet], [Secp256k1HdWallet] ] },
   ...
 ```
 
@@ -223,5 +222,7 @@ In this example we connect to a public test network.
 
 ## License
 
-This package is part of the IOV-Core repository, licensed under the Apache License 2.0
-(see [NOTICE](https://github.com/iov-one/iov-core/blob/master/NOTICE) and [LICENSE](https://github.com/iov-one/iov-core/blob/master/LICENSE)).
+This package is part of the IOV-Core repository, licensed under the Apache
+License 2.0 (see
+[NOTICE](https://github.com/iov-one/iov-core/blob/master/NOTICE) and
+[LICENSE](https://github.com/iov-one/iov-core/blob/master/LICENSE)).
