@@ -5,6 +5,8 @@
 - @iov/bcp: Add `isSwapTransaction` helper function.
 - @iov/bcp: Add `isOpenSwap`, `isClaimedSwap` and `isAbortedSwap` helper
   functions.
+- @iov/bcp: Add `LightTransaction` and `WithCreator` types, and
+  `isLightTransaction` helper function.
 - @iov/bns: Add support for multisignature transactions.
 - @iov/bns: Add `CreateMultisignatureTx` and `UpdateMultisignatureTx` types
   along with `Participant`.
@@ -33,6 +35,9 @@ Breaking changes
   `isAtomicSwapHashlockQuery` to `isAtomicSwapHashQuery`.
 - @iov/bcp: Rename `PublicIdentity` to `Identity`, `isPublicIdentity` to
   `isIdentity` and `publicIdentityEquals` to `identityEquals`.
+- @iov/bcp: Several transaction types now extend `LightTransaction` instead of
+  `UnsignedTransaction` (i.e. they have no `creator` field): `SendTransaction`,
+  `SwapOfferTransaction`, `SwapClaimTransaction`, and `SwapAbortTransaction`.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 - @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.
@@ -45,6 +50,8 @@ Breaking changes
   @iov/keycontrol.
 - @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
+- @iov/ethereum: `Erc20ApproveTransaction` now extends `LightTransaction`
+  instead of `UnsignedTransaction` (i.e. it has no `creator` field).
 - @iov/jsonrpc: The `id` field of `JsonRpcRequest`, `JsonRpcSuccessResponse` and
   `JsonRpcErrorResponse` is now of type `JsonRpcId`, which can be a string or a
   number.
