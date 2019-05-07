@@ -4,9 +4,9 @@
 
 ## Installation and first run
 
-The `iov-cli` executable is available via npm.
-We recomment local installations to your demo project.
-If you don't have one yet, just `mkdir iov-cli-installation && cd iov-cli-installation && yarn init -y`.
+The `iov-cli` executable is available via npm. We recomment local installations
+to your demo project. If you don't have one yet, just
+`mkdir iov-cli-installation && cd iov-cli-installation && yarn init -y`.
 
 ### locally with yarn
 
@@ -39,7 +39,8 @@ $ iov-cli
 ## How to use the IOV-Core command line interface
 
 1. Install `@iov/cli` and run `iov-cli` as shown above
-2. Start a local BNS blockchain as described in [scripts/bnsd/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/bnsd/README.md)
+2. Start a local BNS blockchain as described in
+   [scripts/bnsd/README.md](https://github.com/iov-one/iov-core/tree/master/scripts/bnsd/README.md)
 3. Play around as in the following example code:
 
 ```
@@ -223,5 +224,7 @@ In this example we connect to a public test network.
 
 ## License
 
-This package is part of the IOV-Core repository, licensed under the Apache License 2.0
-(see [NOTICE](https://github.com/iov-one/iov-core/blob/master/NOTICE) and [LICENSE](https://github.com/iov-one/iov-core/blob/master/LICENSE)).
+This package is part of the IOV-Core repository, licensed under the Apache
+License 2.0 (see
+[NOTICE](https://github.com/iov-one/iov-core/blob/master/NOTICE) and
+[LICENSE](https://github.com/iov-one/iov-core/blob/master/LICENSE)).
