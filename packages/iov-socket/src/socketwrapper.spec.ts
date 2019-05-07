@@ -1,11 +1,7 @@
 import { SocketWrapper } from "./socketwrapper";
 
-function skipTests(): boolean {
-  return !process.env.SOCKETSERVER_ENABLED;
-}
-
 function pendingWithoutSocketServer(): void {
-  if (skipTests()) {
+  if (!process.env.SOCKETSERVER_ENABLED) {
     pending("Set SOCKETSERVER_ENABLED to enable socket tests");
   }
 }
