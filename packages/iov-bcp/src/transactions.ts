@@ -189,7 +189,7 @@ export function isFee(data: any): data is Fee {
 }
 
 /** The basic transaction type all transactions should extend */
-export interface UnsignedTransaction {
+export interface LightTransaction {
   /**
    * Kind describes the kind of transaction as a "<domain>/<concrete_type>" tuple.
    *
@@ -202,25 +202,35 @@ export interface UnsignedTransaction {
    * other way of namespacing later on, so don't use the `kind` property as a value.
    */
   readonly kind: string;
+  readonly fee?: Fee;
+}
+
+export function isLightTransaction(data: any): data is LightTransaction {
+  const isObject = typeof data === "object" && data !== null;
+  if (!isObject) {
+    return false;
+  }
+  const transaction = data as LightTransaction;
+  return typeof transaction.kind === "string" && (transaction.fee === undefined || isFee(transaction.fee));
+}
+
+export interface WithCreator {
   /**
    * The creator of the transaction.
    *
    * This implicitly fixes the chain ID this transaction can be used on.
    */
   readonly creator: Identity;
-  readonly fee?: Fee;
 }
+
+export type UnsignedTransaction = LightTransaction & WithCreator;
 
 export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
-  const isObject = typeof data === "object" && data !== null;
-  if (!isObject) {
-    return false;
-  }
-  const tx = data as UnsignedTransaction;
-  return typeof tx.kind === "string" && isIdentity(tx.creator) && (tx.fee === undefined || isFee(tx.fee));
+  const transaction = data as UnsignedTransaction;
+  return isLightTransaction(transaction) && isIdentity(transaction.creator);
 }
 
-export interface SendTransaction extends UnsignedTransaction {
+export interface SendTransaction extends LightTransaction {
   readonly kind: "bcp/send";
   readonly amount: Amount;
   readonly recipient: Address;
@@ -252,7 +262,7 @@ export function createTimestampTimeout(secondsFromNow: number): TimestampTimeout
 }
 
 /** A swap offer or a counter offer */
-export interface SwapOfferTransaction extends UnsignedTransaction {
+export interface SwapOfferTransaction extends LightTransaction {
   readonly kind: "bcp/swap_offer";
   /**
    * The ID of the swap to aid coordination between the two parties.
@@ -281,42 +291,36 @@ export interface SwapOfferTransaction extends UnsignedTransaction {
   readonly memo?: string;
 }
 
-export interface SwapClaimTransaction extends UnsignedTransaction {
+export interface SwapClaimTransaction extends LightTransaction {
   readonly kind: "bcp/swap_claim";
   readonly preimage: Preimage;
   readonly swapId: SwapId; // pulled from the offer transaction
 }
 
-export interface SwapAbortTransaction extends UnsignedTransaction {
+export interface SwapAbortTransaction extends LightTransaction {
   readonly kind: "bcp/swap_abort";
   readonly swapId: SwapId; // pulled from the offer transaction
 }
 
 export type SwapTransaction = SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
 
-export function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction {
+export function isSendTransaction(transaction: LightTransaction): transaction is SendTransaction {
   return (transaction as SendTransaction).kind === "bcp/send";
 }
 
-export function isSwapOfferTransaction(
-  transaction: UnsignedTransaction,
-): transaction is SwapOfferTransaction {
+export function isSwapOfferTransaction(transaction: LightTransaction): transaction is SwapOfferTransaction {
   return (transaction as SwapOfferTransaction).kind === "bcp/swap_offer";
 }
 
-export function isSwapClaimTransaction(
-  transaction: UnsignedTransaction,
-): transaction is SwapClaimTransaction {
+export function isSwapClaimTransaction(transaction: LightTransaction): transaction is SwapClaimTransaction {
   return (transaction as SwapClaimTransaction).kind === "bcp/swap_claim";
 }
 
-export function isSwapAbortTransaction(
-  transaction: UnsignedTransaction,
-): transaction is SwapAbortTransaction {
+export function isSwapAbortTransaction(transaction: LightTransaction): transaction is SwapAbortTransaction {
   return (transaction as SwapAbortTransaction).kind === "bcp/swap_abort";
 }
 
-export function isSwapTransaction(transaction: UnsignedTransaction): transaction is SwapTransaction {
+export function isSwapTransaction(transaction: LightTransaction): transaction is SwapTransaction {
   return (
     isSwapOfferTransaction(transaction) ||
     isSwapClaimTransaction(transaction) ||
