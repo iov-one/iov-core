@@ -18,6 +18,7 @@ import {
   TransactionId,
   TxCodec,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { Parse, Serialization } from "@iov/dpos";
 import { Encoding, Int53 } from "@iov/encoding";
@@ -104,7 +105,7 @@ export const riseCodec: TxCodec = {
     let unsignedTransaction: UnsignedTransaction;
     switch (json.type) {
       case 0:
-        const send: SendTransaction = {
+        const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: {
             chainId: chainId,

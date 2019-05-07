@@ -25,6 +25,7 @@ import {
   TransactionId,
   TransactionState,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
@@ -398,7 +399,7 @@ describe("RiseConnection", () => {
         const mainIdentity = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
 
         for (const _ of [0, 1]) {
-          const sendTx: SendTransaction = {
+          const sendTx: SendTransaction & WithCreator = {
             kind: "bcp/send",
             creator: mainIdentity,
             recipient: recipient,
@@ -487,7 +488,7 @@ describe("RiseConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
 
-      const sendTx: SendTransaction = {
+      const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
         recipient: defaultRecipientAddress,
@@ -509,7 +510,7 @@ describe("RiseConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const mainIdentity = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
 
-        const sendTx: SendTransaction = {
+        const sendTx: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: mainIdentity,
           recipient: defaultRecipientAddress,
@@ -554,7 +555,7 @@ describe("RiseConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
 
-      const sendTx: SendTransaction = {
+      const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
         recipient: defaultRecipientAddress,
@@ -692,14 +693,14 @@ describe("RiseConnection", () => {
 
         const recipientAddress = await randomAddress();
 
-        const sendA: SendTransaction = {
+        const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
           amount: defaultSendAmount,
         };
 
-        const sendB: SendTransaction = {
+        const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
@@ -717,7 +718,7 @@ describe("RiseConnection", () => {
         await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction<SendTransaction>>();
+        const events = new Array<ConfirmedTransaction<SendTransaction & WithCreator>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -726,7 +727,7 @@ describe("RiseConnection", () => {
             if (!isSendTransaction(event.transaction)) {
               throw new Error("Unexpected transaction type");
             }
-            events.push(event as ConfirmedTransaction<SendTransaction>);
+            events.push(event as ConfirmedTransaction<SendTransaction & WithCreator>);
 
             if (events.length === 2) {
               // from this test
@@ -761,7 +762,7 @@ describe("RiseConnection", () => {
         const sender = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
 
         const recipientAddress = await randomAddress();
-        const send: SendTransaction = {
+        const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
@@ -815,7 +816,7 @@ describe("RiseConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, riseTestnet, await defaultKeypair);
 
-        const send: SendTransaction = {
+        const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
           recipient: recipientAddress,
@@ -858,7 +859,7 @@ describe("RiseConnection", () => {
     it("works for send transaction", async () => {
       const connection = new RiseConnection(base, riseTestnet);
 
-      const sendTransaction: SendTransaction = {
+      const sendTransaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: riseTestnet,
