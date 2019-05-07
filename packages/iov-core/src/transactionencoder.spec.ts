@@ -6,6 +6,7 @@ import {
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
+  WithCreator,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
@@ -132,7 +133,7 @@ describe("TransactionEncoder", () => {
     });
 
     it("decodes a full send transaction", () => {
-      const original: SendTransaction = {
+      const original: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: "testchain" as ChainId,

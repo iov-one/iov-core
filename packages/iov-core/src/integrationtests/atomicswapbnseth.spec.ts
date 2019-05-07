@@ -20,6 +20,7 @@ import {
   SwapProcessState,
   TokenTicker,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { bnsConnector } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
@@ -191,7 +192,7 @@ class Actor {
   }
 
   public async sendBnsTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction>({
+    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: this.bnsIdentity,
       recipient: recipient,
@@ -201,7 +202,7 @@ class Actor {
   }
 
   public async sendEthereumTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.ethereumConnection.withDefaultFee<SendTransaction>({
+    const transaction = await this.ethereumConnection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: this.ethereumIdentity,
       recipient: recipient,
@@ -211,7 +212,7 @@ class Actor {
   }
 
   public async approveErc20Spend(amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.ethereumConnection.withDefaultFee<Erc20ApproveTransaction>({
+    const transaction = await this.ethereumConnection.withDefaultFee<Erc20ApproveTransaction & WithCreator>({
       kind: "erc20/approve",
       creator: this.ethereumIdentity,
       spender: atomicSwapErc20ContractAddress,
@@ -221,7 +222,7 @@ class Actor {
   }
 
   public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction & WithCreator>({
       kind: "bcp/swap_offer",
       creator: this.bnsIdentity,
       memo: "Take this cash",
@@ -239,7 +240,7 @@ class Actor {
     recipient: Address,
     amount: Amount,
   ): Promise<Uint8Array | undefined> {
-    const transaction = await this.ethereumConnection.withDefaultFee<SwapOfferTransaction>({
+    const transaction = await this.ethereumConnection.withDefaultFee<SwapOfferTransaction & WithCreator>({
       kind: "bcp/swap_offer",
       creator: this.ethereumIdentity,
       swapId: id,
@@ -254,7 +255,7 @@ class Actor {
   }
 
   public async claimFromKnownPreimageOnEthereum(offer: AtomicSwap): Promise<Uint8Array | undefined> {
-    const transaction = await this.ethereumConnection.withDefaultFee<SwapClaimTransaction>({
+    const transaction = await this.ethereumConnection.withDefaultFee<SwapClaimTransaction & WithCreator>({
       kind: "bcp/swap_claim",
       creator: this.ethereumIdentity,
       swapId: offer.data.id,
@@ -270,7 +271,7 @@ class Actor {
     if (!isClaimedSwap(claim)) {
       throw new Error("Expected swap to be claimed");
     }
-    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction & WithCreator>({
       kind: "bcp/swap_claim",
       creator: this.bnsIdentity,
       swapId: unclaimedId,
