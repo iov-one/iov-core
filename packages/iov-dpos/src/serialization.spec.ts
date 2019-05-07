@@ -10,6 +10,7 @@ import {
   SignatureBytes,
   SignedTransaction,
   TokenTicker,
+  WithCreator,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
@@ -90,7 +91,7 @@ describe("Serialization", () => {
     it("can serialize RISE transaction of type 0 without memo", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: riseTestnet,
@@ -118,7 +119,7 @@ describe("Serialization", () => {
     it("can serialize Lisk transaction of type 0 without memo", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: liskTestnet,
@@ -145,7 +146,7 @@ describe("Serialization", () => {
 
     it("throws error is fractionalDigits are not correct", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: riseTestnet,
@@ -169,7 +170,7 @@ describe("Serialization", () => {
     it("can serialize Lisk transaction of type 0 with memo", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: liskTestnet,
@@ -198,7 +199,7 @@ describe("Serialization", () => {
     it("fails to serialize Lisk transaction of type 0 with memo > 64 chars", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: liskTestnet,
@@ -224,7 +225,7 @@ describe("Serialization", () => {
     it("fails to serialize Lisk transaction of type 0 with memo > 64 bytes", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: liskTestnet,
@@ -251,7 +252,7 @@ describe("Serialization", () => {
     it("works for transaction with fee", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: "xnet" as ChainId,
@@ -282,7 +283,7 @@ describe("Serialization", () => {
     it("fails to serialize transaction with empty fee", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: "xnet" as ChainId,
@@ -310,7 +311,7 @@ describe("Serialization", () => {
     it("fails to serialize transaction with gasLimit", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: "xnet" as ChainId,
@@ -338,7 +339,7 @@ describe("Serialization", () => {
     it("fails to serialize transaction with gasPrice", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: "xnet" as ChainId,
@@ -372,7 +373,7 @@ describe("Serialization", () => {
     it("can calculate ID of Lisk transaction of type 0 without memo", () => {
       const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
 
-      const tx: SendTransaction = {
+      const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
           chainId: liskTestnet,
