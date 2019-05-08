@@ -4,11 +4,11 @@ import {
   Address,
   Algorithm,
   ChainId,
+  Identity,
   isSendTransaction,
   Nonce,
   PostableBytes,
   PrehashType,
-  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignableBytes,
@@ -150,7 +150,7 @@ export const riseCodec: TxCodec = {
   /**
    * Address string, e.g. 10145108642177909005R
    */
-  identityToAddress: (identity: PublicIdentity): Address => {
+  identityToAddress: (identity: Identity): Address => {
     return pubkeyToAddress(identity.pubkey.data);
   },
 

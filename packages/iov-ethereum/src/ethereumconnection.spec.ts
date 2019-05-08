@@ -12,6 +12,7 @@ import {
   ChainId,
   ConfirmedTransaction,
   Hash,
+  Identity,
   isBlockInfoPending,
   isBlockInfoSucceeded,
   isConfirmedTransaction,
@@ -20,7 +21,6 @@ import {
   Nonce,
   PostTxResponse,
   Preimage,
-  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SwapAbortTransaction,
@@ -98,7 +98,7 @@ describe("EthereumConnection", () => {
   ): Promise<{
     readonly profile: UserProfile;
     readonly walletId: WalletId;
-    readonly faucet: PublicIdentity;
+    readonly faucet: Identity;
   }> {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
@@ -108,7 +108,7 @@ describe("EthereumConnection", () => {
 
   async function postTransaction(
     profile: UserProfile,
-    sender: PublicIdentity,
+    sender: Identity,
     nonce: Nonce,
     recipient: Address,
     connection: EthereumConnection,
@@ -2010,7 +2010,7 @@ describe("EthereumConnection", () => {
       const openSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: PublicIdentity,
+        creator: Identity,
         rcptAddr: Address,
         hash: Hash,
         swapId: SwapId,
@@ -2044,7 +2044,7 @@ describe("EthereumConnection", () => {
       const claimSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: PublicIdentity,
+        creator: Identity,
         swapId: SwapId,
         preimage: Preimage,
       ): Promise<PostTxResponse> => {
@@ -2064,7 +2064,7 @@ describe("EthereumConnection", () => {
       const abortSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: PublicIdentity,
+        creator: Identity,
         swapId: SwapId,
       ): Promise<PostTxResponse> => {
         const swapAbortTx = await connection.withDefaultFee<SwapAbortTransaction>({
@@ -2373,7 +2373,7 @@ describe("EthereumConnection", () => {
       const openSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: PublicIdentity,
+        creator: Identity,
         rcptAddr: Address,
         hash: Hash,
         swapId: SwapId,
@@ -2419,7 +2419,7 @@ describe("EthereumConnection", () => {
       const claimSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: PublicIdentity,
+        creator: Identity,
         swapId: SwapId,
         preimage: Preimage,
       ): Promise<PostTxResponse> => {
@@ -2439,7 +2439,7 @@ describe("EthereumConnection", () => {
       const abortSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: PublicIdentity,
+        creator: Identity,
         swapId: SwapId,
       ): Promise<PostTxResponse> => {
         const swapAbortTx = await connection.withDefaultFee<SwapAbortTransaction>({

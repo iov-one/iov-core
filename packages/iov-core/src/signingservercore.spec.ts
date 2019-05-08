@@ -4,9 +4,9 @@ import {
   Amount,
   BlockchainConnection,
   ChainId,
+  Identity,
   isBlockInfoPending,
-  isPublicIdentity,
-  PublicIdentity,
+  isIdentity,
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
@@ -28,7 +28,7 @@ function pendingWithoutBnsd(): void {
 
 async function randomBnsAddress(): Promise<Address> {
   const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));
-  const randomIdentity: PublicIdentity = {
+  const randomIdentity: Identity = {
     chainId: "some-testnet" as ChainId,
     pubkey: {
       algo: Algorithm.Ed25519,
@@ -67,7 +67,7 @@ describe("SigningServerCore", () => {
 
   async function sendTokensFromFaucet(
     connection: BlockchainConnection,
-    recipient: Address | PublicIdentity,
+    recipient: Address | Identity,
     amount: Amount = defaultAmount,
   ): Promise<void> {
     const profile = new UserProfile();
@@ -77,7 +77,7 @@ describe("SigningServerCore", () => {
     const sendTx = await connection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
       creator: faucet,
-      recipient: isPublicIdentity(recipient) ? bnsCodec.identityToAddress(recipient) : recipient,
+      recipient: isIdentity(recipient) ? bnsCodec.identityToAddress(recipient) : recipient,
       amount: amount,
     });
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
@@ -124,7 +124,7 @@ describe("SigningServerCore", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
 
-      const identities: ReadonlyArray<PublicIdentity> = [
+      const identities: ReadonlyArray<Identity> = [
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0)),
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1)),
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(2)),
@@ -133,8 +133,8 @@ describe("SigningServerCore", () => {
 
       async function selectEvenIdentitiesCallback(
         _: string,
-        matchingIdentities: ReadonlyArray<PublicIdentity>,
-      ): Promise<ReadonlyArray<PublicIdentity>> {
+        matchingIdentities: ReadonlyArray<Identity>,
+      ): Promise<ReadonlyArray<Identity>> {
         // select all even identities
         return matchingIdentities.filter((_1, index) => index % 2 === 0);
       }
@@ -164,8 +164,8 @@ describe("SigningServerCore", () => {
 
       async function selectNoIdentityCallback(
         _1: string,
-        _2: ReadonlyArray<PublicIdentity>,
-      ): Promise<ReadonlyArray<PublicIdentity>> {
+        _2: ReadonlyArray<Identity>,
+      ): Promise<ReadonlyArray<Identity>> {
         return [];
       }
 
@@ -228,8 +228,8 @@ describe("SigningServerCore", () => {
 
       async function throwingCallback(
         _1: string,
-        _2: ReadonlyArray<PublicIdentity>,
-      ): Promise<ReadonlyArray<PublicIdentity>> {
+        _2: ReadonlyArray<Identity>,
+      ): Promise<ReadonlyArray<Identity>> {
         throw new Error("Something broken in here!");
       }
 

@@ -28,6 +28,8 @@ Breaking changes
 - @iov/bcp: Rename `AtomicSwapHashlockQuery.hashlock` to
   `AtomicSwapHashQuery.hash` and change to type `Hash`; rename
   `isAtomicSwapHashlockQuery` to `isAtomicSwapHashQuery`.
+- @iov/bcp: Rename `PublicIdentity` to `Identity`, `isPublicIdentity` to
+  `isIdentity` and `publicIdentityEquals` to `identityEquals`.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 - @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.

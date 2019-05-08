@@ -4,8 +4,8 @@ import {
   Amount,
   ChainId,
   FullSignature,
+  Identity,
   Nonce,
-  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
@@ -135,7 +135,7 @@ describe("Encode", () => {
   });
 
   describe("buildUnsignedTx", () => {
-    const defaultCreator: PublicIdentity = {
+    const defaultCreator: Identity = {
       chainId: "some-chain" as ChainId,
       pubkey: {
         algo: Algorithm.Ed25519,
@@ -194,7 +194,7 @@ describe("Encode", () => {
   });
 
   describe("buildMsg", () => {
-    const defaultCreator: PublicIdentity = {
+    const defaultCreator: Identity = {
       chainId: "registry-chain" as ChainId,
       pubkey: {
         algo: Algorithm.Ed25519,

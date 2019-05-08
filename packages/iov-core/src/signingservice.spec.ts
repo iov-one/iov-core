@@ -7,9 +7,9 @@ import {
   Algorithm,
   Amount,
   ChainId,
+  Identity,
   isConfirmedTransaction,
-  isPublicIdentity,
-  PublicIdentity,
+  isIdentity,
   PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
@@ -56,7 +56,7 @@ async function sleep(ms: number): Promise<void> {
 
 async function randomBnsAddress(): Promise<Address> {
   const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));
-  const randomIdentity: PublicIdentity = {
+  const randomIdentity: Identity = {
     chainId: "some-testnet" as ChainId,
     pubkey: {
       algo: Algorithm.Ed25519,
@@ -100,7 +100,7 @@ describe("signingservice.worker", () => {
   };
 
   const ganacheChainId = "ethereum-eip155-5777" as ChainId;
-  const ganacheSecondIdentity: PublicIdentity = {
+  const ganacheSecondIdentity: Identity = {
     chainId: ganacheChainId,
     pubkey: {
       algo: Algorithm.Secp256k1,
@@ -237,7 +237,7 @@ describe("signingservice.worker", () => {
     expect(result).toEqual(jasmine.any(Array));
     expect((result as ReadonlyArray<any>).length).toEqual(1);
     const signer = result[0];
-    if (!isPublicIdentity(signer)) {
+    if (!isIdentity(signer)) {
       throw new Error("Identity element is not valid");
     }
 

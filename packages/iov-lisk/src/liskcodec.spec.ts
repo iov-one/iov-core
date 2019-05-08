@@ -2,10 +2,10 @@ import {
   Address,
   Algorithm,
   ChainId,
+  Identity,
   isSendTransaction,
   Nonce,
   PostableBytes,
-  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
@@ -26,7 +26,7 @@ const defaultCreationTimestamp = 865708731 + liskEpochAsUnixTimestamp;
 describe("liskCodec", () => {
   it("derives addresses properly", () => {
     // https://testnet-explorer.lisk.io/address/6076671634347365051L
-    const identity: PublicIdentity = {
+    const identity: Identity = {
       chainId: liskTestnet,
       pubkey: {
         algo: Algorithm.Ed25519,

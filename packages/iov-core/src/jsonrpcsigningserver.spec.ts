@@ -3,9 +3,9 @@ import {
   Algorithm,
   Amount,
   ChainId,
+  Identity,
   isConfirmedTransaction,
-  isPublicIdentity,
-  PublicIdentity,
+  isIdentity,
   PublicKeyBundle,
   PublicKeyBytes,
   SendTransaction,
@@ -39,7 +39,7 @@ function pendingWithoutEthereum(): void {
 
 async function randomBnsAddress(): Promise<Address> {
   const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));
-  const randomIdentity: PublicIdentity = {
+  const randomIdentity: Identity = {
     chainId: "some-testnet" as ChainId,
     pubkey: {
       algo: Algorithm.Ed25519,
@@ -90,7 +90,7 @@ describe("JsonRpcSigningServer", () => {
     data: fromHex("418f88ff4876d33a3d6e2a17d0fe0e78dc3cb5e4b42c6c156ed1b8bfce5d46d1") as PublicKeyBytes,
   };
 
-  const ganacheSecondIdentity: PublicIdentity = {
+  const ganacheSecondIdentity: Identity = {
     chainId: ethereumChainId,
     pubkey: {
       algo: Algorithm.Secp256k1,
@@ -223,7 +223,7 @@ describe("JsonRpcSigningServer", () => {
     expect(identitiesResponse.result).toEqual(jasmine.any(Array));
     expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
     const signer = TransactionEncoder.fromJson(identitiesResponse.result[0]);
-    if (!isPublicIdentity(signer)) {
+    if (!isIdentity(signer)) {
       throw new Error("Identity element is not valid");
     }
 
@@ -284,7 +284,7 @@ describe("JsonRpcSigningServer", () => {
     expect(identitiesResponse.result).toEqual(jasmine.any(Array));
     expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
     const signer = TransactionEncoder.fromJson(identitiesResponse.result[0]);
-    if (!isPublicIdentity(signer)) {
+    if (!isIdentity(signer)) {
       throw new Error("Identity element is not valid");
     }
 

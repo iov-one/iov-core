@@ -1,4 +1,4 @@
-import { Address, BlockchainConnection, ChainConnector, ChainId, Nonce, PostTxResponse, PublicIdentity, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp";
+import { Address, BlockchainConnection, ChainConnector, ChainId, Identity, Nonce, PostTxResponse, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp";
 /**
  * TransactionSigner is just the methods on `UserProfile` that we need in `MultiChainSigner`.
  * By only requiring this interface, we allow the use of other implementations with custom
@@ -6,7 +6,7 @@ import { Address, BlockchainConnection, ChainConnector, ChainId, Nonce, PostTxRe
  */
 export interface Profile {
     readonly signTransaction: (transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
-    readonly appendSignature: (identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
+    readonly appendSignature: (identity: Identity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce) => Promise<SignedTransaction>;
 }
 export declare class MultiChainSigner {
     private readonly knownChains;
@@ -25,7 +25,7 @@ export declare class MultiChainSigner {
     /**
      * Calculate an address in a blockchain-specific way
      */
-    identityToAddress(identity: PublicIdentity): Address;
+    identityToAddress(identity: Identity): Address;
     /**
      * A chain-dependent validation of address
      */

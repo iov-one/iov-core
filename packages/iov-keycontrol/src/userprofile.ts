@@ -5,8 +5,8 @@ import { ReadonlyDate } from "readonly-date";
 import {
   ChainId,
   FullSignature,
+  Identity,
   Nonce,
-  PublicIdentity,
   SignedTransaction,
   TxCodec,
   UnsignedTransaction,
@@ -160,12 +160,12 @@ export class UserProfile {
     walletId: WalletId,
     chainId: ChainId,
     options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
-  ): Promise<PublicIdentity> {
+  ): Promise<Identity> {
     return this.primaryKeyring().createIdentity(walletId, chainId, options);
   }
 
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-  public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
+  public setIdentityLabel(identity: Identity, label: string | undefined): void {
     this.primaryKeyring().setIdentityLabel(identity, label);
   }
 
@@ -173,13 +173,13 @@ export class UserProfile {
    * Gets the local label of one of the identities in the wallet with the given ID
    * in the primary keyring
    */
-  public getIdentityLabel(identity: PublicIdentity): string | undefined {
+  public getIdentityLabel(identity: Identity): string | undefined {
     const wallet = this.findWalletInPrimaryKeyringByIdentity(identity);
     return wallet.getIdentityLabel(identity);
   }
 
   /** Get identities of the wallet with the given ID in the primary keyring  */
-  public getIdentities(id: WalletId): ReadonlyArray<PublicIdentity> {
+  public getIdentities(id: WalletId): ReadonlyArray<Identity> {
     const wallet = this.findWalletInPrimaryKeyring(id);
     return wallet.getIdentities();
   }
@@ -187,7 +187,7 @@ export class UserProfile {
   /**
    * All identities of the primary keyring
    */
-  public getAllIdentities(): ReadonlyArray<PublicIdentity> {
+  public getAllIdentities(): ReadonlyArray<Identity> {
     const keyring = this.primaryKeyring();
     return keyring.getAllIdentities();
   }
@@ -218,7 +218,7 @@ export class UserProfile {
   }
 
   public async appendSignature(
-    identity: PublicIdentity,
+    identity: Identity,
     originalTransaction: SignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
@@ -276,7 +276,7 @@ export class UserProfile {
     return wallet;
   }
 
-  private findWalletInPrimaryKeyringByIdentity(identity: PublicIdentity): ReadonlyWallet {
+  private findWalletInPrimaryKeyringByIdentity(identity: Identity): ReadonlyWallet {
     const keyring = this.primaryKeyring();
 
     const wallet = keyring.getWalletByIdentity(identity);

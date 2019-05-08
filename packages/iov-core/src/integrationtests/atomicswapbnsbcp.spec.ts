@@ -7,11 +7,11 @@ import {
   AtomicSwapConnection,
   AtomicSwapHelpers,
   createTimestampTimeout,
+  Identity,
   isBlockInfoPending,
   isBlockInfoSucceeded,
   isClaimedSwap,
   Preimage,
-  PublicIdentity,
   SendTransaction,
   SwapClaimTransaction,
   SwapId,
@@ -55,8 +55,8 @@ interface ActorData {
   readonly signer: MultiChainSigner;
   readonly bnsConnection: AtomicSwapConnection;
   readonly bcpConnection: AtomicSwapConnection;
-  readonly bnsIdentity: PublicIdentity;
-  readonly bcpIdentity: PublicIdentity;
+  readonly bnsIdentity: Identity;
+  readonly bcpIdentity: Identity;
 }
 
 class Actor {
@@ -80,8 +80,8 @@ class Actor {
     });
   }
 
-  public readonly bnsIdentity: PublicIdentity;
-  public readonly bcpIdentity: PublicIdentity;
+  public readonly bnsIdentity: Identity;
+  public readonly bcpIdentity: Identity;
   public get bnsAddress(): Address {
     return this.signer.identityToAddress(this.bnsIdentity);
   }

@@ -6,12 +6,12 @@ import {
   ChainId,
   Fee,
   Hash,
+  Identity,
   isSwapTransaction,
   Nonce,
   PostableBytes,
   PrehashType,
   Preimage,
-  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignableBytes,
@@ -382,7 +382,7 @@ export class EthereumCodec implements TxCodec {
     };
   }
 
-  public identityToAddress(identity: PublicIdentity): Address {
+  public identityToAddress(identity: Identity): Address {
     return pubkeyToAddress(identity.pubkey);
   }
 

@@ -4,11 +4,11 @@ import {
   Address,
   Algorithm,
   ChainId,
+  Identity,
   isSendTransaction,
   Nonce,
   PostableBytes,
   PrehashType,
-  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignableBytes,
@@ -155,7 +155,7 @@ export const liskCodec: TxCodec = {
    * 2. some addresses exceed the uint64 range (e.g. "19961131544040416558L")
    * These are bugs we have to deal with.
    */
-  identityToAddress: (identity: PublicIdentity): Address => {
+  identityToAddress: (identity: Identity): Address => {
     return pubkeyToAddress(identity.pubkey.data);
   },
 

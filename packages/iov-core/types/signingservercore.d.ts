@@ -1,4 +1,4 @@
-import { ChainId, PostTxResponse, PublicIdentity, TransactionId, UnsignedTransaction } from "@iov/bcp";
+import { ChainId, Identity, PostTxResponse, TransactionId, UnsignedTransaction } from "@iov/bcp";
 import { UserProfile } from "@iov/keycontrol";
 import { ValueAndUpdates } from "@iov/stream";
 import { MultiChainSigner } from "./multichainsigner";
@@ -15,7 +15,7 @@ export interface GetIdentitiesAuthorization {
      * "Internal server error" and the callback author should
      * ensure this does not happen.
      */
-    (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>): Promise<ReadonlyArray<PublicIdentity>>;
+    (reason: string, matchingIdentities: ReadonlyArray<Identity>): Promise<ReadonlyArray<Identity>>;
 }
 export interface SignAndPostAuthorization {
     /**
@@ -51,7 +51,7 @@ export declare class SigningServerCore {
      * the user selected no identity or rejected the request entirely,
      * this returns an empty list.
      */
-    getIdentities(reason: string, chainIds: ReadonlyArray<ChainId>): Promise<ReadonlyArray<PublicIdentity>>;
+    getIdentities(reason: string, chainIds: ReadonlyArray<ChainId>): Promise<ReadonlyArray<Identity>>;
     /**
      * Handles a transaction signing request
      *

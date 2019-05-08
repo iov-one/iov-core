@@ -1,4 +1,4 @@
-import { Address, ChainId, Nonce, PostableBytes, PublicIdentity, SignedTransaction, SigningJob, TransactionId, TxCodec, UnsignedTransaction } from "@iov/bcp";
+import { Address, ChainId, Identity, Nonce, PostableBytes, SignedTransaction, SigningJob, TransactionId, TxCodec, UnsignedTransaction } from "@iov/bcp";
 import { Erc20TokensMap } from "./erc20";
 /**
  * See https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_gettransactionbyhash
@@ -47,7 +47,7 @@ export declare class EthereumCodec implements TxCodec {
     bytesToPost(signed: SignedTransaction): PostableBytes;
     identifier(signed: SignedTransaction): TransactionId;
     parseBytes(bytes: PostableBytes, chainId: ChainId): SignedTransaction;
-    identityToAddress(identity: PublicIdentity): Address;
+    identityToAddress(identity: Identity): Address;
     isValidAddress(address: string): boolean;
     private getAtomicSwapContractAddress;
 }

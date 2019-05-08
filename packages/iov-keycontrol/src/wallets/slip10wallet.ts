@@ -4,8 +4,8 @@ import { As } from "type-tagger";
 import {
   Algorithm,
   ChainId,
+  Identity,
   PrehashType,
-  PublicIdentity,
   PublicKeyBytes,
   SignableBytes,
   SignatureBytes,
@@ -135,7 +135,7 @@ export class Slip10Wallet implements Wallet {
     return code as WalletId;
   }
 
-  private static identityId(identity: PublicIdentity): IdentityId {
+  private static identityId(identity: Identity): IdentityId {
     const id = [identity.chainId, identity.pubkey.algo, Encoding.toHex(identity.pubkey.data)].join("|");
     return id as IdentityId;
   }
@@ -151,20 +151,20 @@ export class Slip10Wallet implements Wallet {
     }
   }
 
-  private static buildIdentity(curve: Slip10Curve, chainId: ChainId, bytes: PublicKeyBytes): PublicIdentity {
+  private static buildIdentity(curve: Slip10Curve, chainId: ChainId, bytes: PublicKeyBytes): Identity {
     if (!chainId) {
       throw new Error("Got empty chain ID when tying to build a local identity.");
     }
 
     const algorithm = Slip10Wallet.algorithmFromCurve(curve);
-    const publicIdentity: PublicIdentity = {
+    const identity: Identity = {
       chainId: chainId,
       pubkey: {
         algo: algorithm,
         data: bytes,
       },
     };
-    return publicIdentity;
+    return identity;
   }
 
   private static algorithmFromString(input: string): Algorithm {
@@ -189,7 +189,7 @@ export class Slip10Wallet implements Wallet {
   private readonly labelProducer: DefaultValueProducer<string | undefined>;
 
   // identities
-  private readonly identities: PublicIdentity[];
+  private readonly identities: Identity[];
   private readonly privkeyPaths: Map<IdentityId, ReadonlyArray<Slip10RawIndex>>;
   private readonly labels: Map<IdentityId, string | undefined>;
 
@@ -210,7 +210,7 @@ export class Slip10Wallet implements Wallet {
     this.label = new ValueAndUpdates(this.labelProducer);
 
     // identities
-    const identities: PublicIdentity[] = [];
+    const identities: Identity[] = [];
     const privkeyPaths = new Map<IdentityId, ReadonlyArray<Slip10RawIndex>>();
     const labels = new Map<IdentityId, string | undefined>();
     for (const record of decodedData.identities) {
@@ -243,7 +243,7 @@ export class Slip10Wallet implements Wallet {
     this.labelProducer.update(label);
   }
 
-  public async previewIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
+  public async previewIdentity(chainId: ChainId, options: unknown): Promise<Identity> {
     if (!isPath(options)) {
       throw new Error("Did not get the correct argument type. Expected array of Slip10RawIndex");
     }
@@ -273,7 +273,7 @@ export class Slip10Wallet implements Wallet {
     return Slip10Wallet.buildIdentity(this.curve, chainId, pubkeyBytes);
   }
 
-  public async createIdentity(chainId: ChainId, options: unknown): Promise<PublicIdentity> {
+  public async createIdentity(chainId: ChainId, options: unknown): Promise<Identity> {
     if (!isPath(options)) {
       throw new Error("Did not get the correct argument type. Expected array of Slip10RawIndex");
     }
@@ -295,7 +295,7 @@ export class Slip10Wallet implements Wallet {
     return newIdentity;
   }
 
-  public setIdentityLabel(identity: PublicIdentity, label: string | undefined): void {
+  public setIdentityLabel(identity: Identity, label: string | undefined): void {
     const identityId = Slip10Wallet.identityId(identity);
     const index = this.identities.findIndex(i => Slip10Wallet.identityId(i) === identityId);
     if (index === -1) {
@@ -304,7 +304,7 @@ export class Slip10Wallet implements Wallet {
     this.labels.set(identityId, label);
   }
 
-  public getIdentityLabel(identity: PublicIdentity): string | undefined {
+  public getIdentityLabel(identity: Identity): string | undefined {
     const identityId = Slip10Wallet.identityId(identity);
     const index = this.identities.findIndex(i => Slip10Wallet.identityId(i) === identityId);
     if (index === -1) {
@@ -314,13 +314,13 @@ export class Slip10Wallet implements Wallet {
     return this.labels.get(identityId);
   }
 
-  public getIdentities(): ReadonlyArray<PublicIdentity> {
+  public getIdentities(): ReadonlyArray<Identity> {
     // copy array to avoid internal updates to affect caller and vice versa
     return [...this.identities];
   }
 
   public async createTransactionSignature(
-    identity: PublicIdentity,
+    identity: Identity,
     transactionBytes: SignableBytes,
     prehashType: PrehashType,
   ): Promise<SignatureBytes> {
@@ -404,7 +404,7 @@ export class Slip10Wallet implements Wallet {
   }
 
   // This throws an exception when private key is missing
-  private privkeyPathForIdentity(identity: PublicIdentity): ReadonlyArray<Slip10RawIndex> {
+  private privkeyPathForIdentity(identity: Identity): ReadonlyArray<Slip10RawIndex> {
     const identityId = Slip10Wallet.identityId(identity);
     const privkeyPath = this.privkeyPaths.get(identityId);
     if (!privkeyPath) {
@@ -414,7 +414,7 @@ export class Slip10Wallet implements Wallet {
   }
 
   // This throws an exception when private key is missing
-  private async privkeyForIdentity(identity: PublicIdentity): Promise<Uint8Array> {
+  private async privkeyForIdentity(identity: Identity): Promise<Uint8Array> {
     const privkeyPath = this.privkeyPathForIdentity(identity);
     const seed = await Bip39.mnemonicToSeed(this.secret);
     const derivationResult = Slip10.derivePath(this.curve, seed, privkeyPath);

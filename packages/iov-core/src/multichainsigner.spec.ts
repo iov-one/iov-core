@@ -2,10 +2,10 @@ import {
   Address,
   Algorithm,
   ChainId,
+  Identity,
   isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
-  PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   TokenTicker,
@@ -36,7 +36,7 @@ const pendingWithoutEthereum = () => {
 
 async function randomBnsAddress(): Promise<Address> {
   const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));
-  const randomIdentity: PublicIdentity = {
+  const randomIdentity: Identity = {
     chainId: "some-testnet" as ChainId,
     pubkey: {
       algo: Algorithm.Ed25519,
@@ -74,7 +74,7 @@ describe("MultiChainSigner", () => {
       chainId: ChainId,
     ): Promise<{
       readonly mainWalletId: WalletId;
-      readonly faucet: PublicIdentity;
+      readonly faucet: Identity;
     }> {
       const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
       const faucet = await profile.createIdentity(wallet.id, chainId, faucetPath);
@@ -160,7 +160,7 @@ describe("MultiChainSigner", () => {
       expect(account).toBeDefined();
       expect(account!.balance.length).toEqual(1);
 
-      const ganacheMainIdentity: PublicIdentity = {
+      const ganacheMainIdentity: Identity = {
         chainId: ethereumChainId,
         pubkey: {
           algo: Algorithm.Secp256k1,

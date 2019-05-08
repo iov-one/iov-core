@@ -3,8 +3,8 @@ import { As } from "type-tagger";
 import {
   Address,
   ChainId,
+  Identity,
   Nonce,
-  PublicIdentity,
   SignedTransaction,
   SigningJob,
   TransactionId,
@@ -17,7 +17,7 @@ export interface TxReadCodec {
   /** parseBytes will recover bytes from the blockchain into a format we can use */
   readonly parseBytes: (bytes: PostableBytes, chainId: ChainId) => SignedTransaction;
   /** chain-dependent way to calculate address from a public key */
-  readonly identityToAddress: (identity: PublicIdentity) => Address;
+  readonly identityToAddress: (identity: Identity) => Address;
   /** chain-dependent validation of address */
   readonly isValidAddress: (address: string) => boolean;
 }

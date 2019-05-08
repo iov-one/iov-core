@@ -1,7 +1,7 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
-import { ChainId, Nonce, PublicIdentity, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp";
+import { ChainId, Identity, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Keyring, WalletInfo } from "./keyring";
@@ -40,26 +40,26 @@ export declare class UserProfile {
      * The identity is bound to one chain ID to encourage using different
      * keypairs on different chains.
      */
-    createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
+    createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<Identity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
-    setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
+    setIdentityLabel(identity: Identity, label: string | undefined): void;
     /**
      * Gets the local label of one of the identities in the wallet with the given ID
      * in the primary keyring
      */
-    getIdentityLabel(identity: PublicIdentity): string | undefined;
+    getIdentityLabel(identity: Identity): string | undefined;
     /** Get identities of the wallet with the given ID in the primary keyring  */
-    getIdentities(id: WalletId): ReadonlyArray<PublicIdentity>;
+    getIdentities(id: WalletId): ReadonlyArray<Identity>;
     /**
      * All identities of the primary keyring
      */
-    getAllIdentities(): ReadonlyArray<PublicIdentity>;
+    getAllIdentities(): ReadonlyArray<Identity>;
     /**
      * Signs a transaction using the profile's primary keyring. The transaction's
      * creator field specifies the keypair to be used for signing.
      */
     signTransaction(transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
-    appendSignature(identity: PublicIdentity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+    appendSignature(identity: Identity, originalTransaction: SignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
     /**
      * Exposes the secret data of a wallet in a printable format for
      * backup purposes.
