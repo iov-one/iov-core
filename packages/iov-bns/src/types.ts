@@ -214,6 +214,18 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
   readonly payload: ChainAddressPair;
 }
 
+export interface Participant {
+  readonly signature: Uint8Array;
+  readonly power: number;
+}
+
+export interface CreateMultisignatureTx extends UnsignedTransaction {
+  readonly kind: "bns/create_multisignature_contract";
+  readonly participants: ReadonlyArray<Participant>;
+  readonly activationThreshold: number;
+  readonly adminThreshold: number;
+}
+
 export interface RegisterUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/register_username";
   readonly username: string;
@@ -235,6 +247,7 @@ export type BnsTx =
   | SwapAbortTransaction
   // BNS
   | AddAddressToUsernameTx
+  | CreateMultisignatureTx
   | RegisterUsernameTx
   | RemoveAddressFromUsernameTx;
 
@@ -255,6 +268,12 @@ export function isAddAddressToUsernameTx(
   transaction: UnsignedTransaction,
 ): transaction is AddAddressToUsernameTx {
   return isBnsTx(transaction) && transaction.kind === "bns/add_address_to_username";
+}
+
+export function isCreateMultisignatureTx(
+  transaction: UnsignedTransaction,
+): transaction is CreateMultisignatureTx {
+  return isBnsTx(transaction) && transaction.kind === "bns/create_multisignature_contract";
 }
 
 export function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx {
