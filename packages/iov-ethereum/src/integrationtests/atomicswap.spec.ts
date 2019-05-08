@@ -27,6 +27,7 @@ import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { Erc20ApproveTransaction } from "../erc20";
 import { EthereumCodec } from "../ethereumcodec";
 import { EthereumConnection } from "../ethereumconnection";
+import { SwapIdPrefix } from "../serialization";
 import { testConfig } from "../testconfig.spec";
 
 const ETH = "ETH" as TokenTicker;
@@ -275,7 +276,9 @@ describe("Full atomic swap", () => {
     ).toEqual(true);
 
     // review offer
-    const bobReceiverSwaps = await bob.getReceiverSwaps();
+    const bobReceiverSwaps = (await bob.getReceiverSwaps()).filter(
+      swap => swap.data.id.prefix === SwapIdPrefix.Ether,
+    );
     const aliceOffer = bobReceiverSwaps[bobReceiverSwaps.length - 1];
     expect(aliceOffer.kind).toEqual(SwapProcessState.Open);
     expect(aliceOffer.data.recipient).toEqual(bob.receiveAddress);
@@ -302,7 +305,9 @@ describe("Full atomic swap", () => {
     );
 
     // review counteroffer
-    const aliceReceiverSwaps = await alice.getReceiverSwaps();
+    const aliceReceiverSwaps = (await alice.getReceiverSwaps()).filter(
+      swap => swap.data.id.prefix === SwapIdPrefix.Ether,
+    );
     const counter = aliceReceiverSwaps[aliceReceiverSwaps.length - 1];
     expect(counter.kind).toEqual(SwapProcessState.Open);
     expect(counter.data.recipient).toEqual(alice.receiveAddress);
@@ -321,13 +326,17 @@ describe("Full atomic swap", () => {
     ).toEqual(true);
 
     // find claim
-    const bobSenderSwaps = await bob.getSenderSwaps();
+    const bobSenderSwaps = (await bob.getSenderSwaps()).filter(
+      swap => swap.data.id.prefix === SwapIdPrefix.Ether,
+    );
     const aliceClaimed = bobSenderSwaps[bobSenderSwaps.length - 1];
     if (!isClaimedSwap(aliceClaimed)) {
       throw new Error("Expected swap to be claimed");
     }
 
-    const bobReceiverSwaps2 = await bob.getReceiverSwaps();
+    const bobReceiverSwaps2 = (await bob.getReceiverSwaps()).filter(
+      swap => swap.data.id.prefix === SwapIdPrefix.Ether,
+    );
     const aliceOffer2 = bobReceiverSwaps2[bobReceiverSwaps2.length - 1];
     if (!isOpenSwap(aliceOffer2)) {
       throw new Error("Expected swap to be open");
@@ -347,7 +356,7 @@ describe("Full atomic swap", () => {
     expect(bobInitialSender.sub(await bob.getSenderEtherBalance()).gtn(5_000_000_000_000_000_000)).toEqual(
       true,
     );
-  });
+  }, 30_000);
 
   it("works for ERC20", async () => {
     pendingWithoutEthereum();
@@ -398,7 +407,9 @@ describe("Full atomic swap", () => {
     expect(aliceInitialSender.sub(await alice.getSenderErc20Balance()).eq(new BN(2_000_000))).toEqual(true);
 
     // review offer
-    const bobReceiverSwaps = await bob.getReceiverSwaps();
+    const bobReceiverSwaps = (await bob.getReceiverSwaps()).filter(
+      swap => swap.data.id.prefix === SwapIdPrefix.Erc20,
+    );
     const aliceOffer = bobReceiverSwaps[bobReceiverSwaps.length - 1];
     expect(aliceOffer.kind).toEqual(SwapProcessState.Open);
     expect(aliceOffer.data.recipient).toEqual(bob.receiveAddress);
@@ -421,7 +432,9 @@ describe("Full atomic swap", () => {
     expect(bobInitialSender.sub(await bob.getSenderErc20Balance()).eq(new BN(5_000_000))).toEqual(true);
 
     // review counteroffer
-    const aliceReceiverSwaps = await alice.getReceiverSwaps();
+    const aliceReceiverSwaps = (await alice.getReceiverSwaps()).filter(
+      swap => swap.data.id.prefix === SwapIdPrefix.Erc20,
+    );
     const counter = aliceReceiverSwaps[aliceReceiverSwaps.length - 1];
     expect(counter.kind).toEqual(SwapProcessState.Open);
     expect(counter.data.recipient).toEqual(alice.receiveAddress);
@@ -440,13 +453,17 @@ describe("Full atomic swap", () => {
     );
 
     // find claim
-    const bobSenderSwaps = await bob.getSenderSwaps();
+    const bobSenderSwaps = (await bob.getSenderSwaps()).filter(
+      swap => swap.data.id.prefix === SwapIdPrefix.Erc20,
+    );
     const aliceClaimed = bobSenderSwaps[bobSenderSwaps.length - 1];
     if (!isClaimedSwap(aliceClaimed)) {
       throw new Error("Expected swap to be claimed");
     }
 
-    const bobReceiverSwaps2 = await bob.getReceiverSwaps();
+    const bobReceiverSwaps2 = (await bob.getReceiverSwaps()).filter(
+      swap => swap.data.id.prefix === SwapIdPrefix.Erc20,
+    );
     const aliceOffer2 = bobReceiverSwaps2[bobReceiverSwaps2.length - 1];
     if (!isOpenSwap(aliceOffer2)) {
       throw new Error("Expected swap to be open");
@@ -460,5 +477,5 @@ describe("Full atomic swap", () => {
     // Alice and Bob's funds were not returned to sender
     expect(aliceInitialSender.sub(await alice.getSenderErc20Balance()).eq(new BN(2_000_000))).toEqual(true);
     expect(bobInitialSender.sub(await bob.getSenderErc20Balance()).eq(new BN(5_000_000))).toEqual(true);
-  });
+  }, 30_000);
 });
