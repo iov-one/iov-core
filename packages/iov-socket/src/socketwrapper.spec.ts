@@ -53,6 +53,7 @@ describe("SocketWrapper", () => {
 
   it("fails to connect to non-existing server but timeout is not triggered", done => {
     pendingWithoutSocketServer();
+    const timeout = 500; // ms
 
     const socket = new SocketWrapper(
       socketServerUrlNonExisting,
@@ -61,11 +62,11 @@ describe("SocketWrapper", () => {
         expect(error).toBeTruthy();
 
         // All done. Delay test end to ensure the timeout is not triggered
-        setTimeout(done, 400);
+        setTimeout(done, timeout * 1.3);
       },
       () => done.fail("Got unexpected open event"),
       () => 0,
-      200,
+      timeout,
     );
     expect(socket).toBeTruthy();
     socket.connect();
@@ -149,6 +150,7 @@ describe("SocketWrapper", () => {
 
   it("can disconnect before waiting for open and timeout will not be triggered", done => {
     pendingWithoutSocketServer();
+    const timeout = 500; // ms
 
     const socket = new SocketWrapper(
       socketServerUrl,
@@ -160,9 +162,9 @@ describe("SocketWrapper", () => {
         expect(closeEvent.code).toEqual(4001);
 
         // All done. Delay test end to ensure the timeout is not triggered
-        setTimeout(done, 400);
+        setTimeout(done, timeout * 1.3);
       },
-      200,
+      timeout,
     );
     socket.connect();
     socket.disconnect();
