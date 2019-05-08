@@ -35,6 +35,7 @@ describe("StreamingSocket", () => {
     pendingWithoutSocketServer();
 
     const socket = new StreamingSocket(socketServerUrlSlow);
+    expect(socket).toBeTruthy();
     socket.connect();
     await socket.connected;
     socket.disconnect();
@@ -75,6 +76,7 @@ describe("StreamingSocket", () => {
     pendingWithoutSocketServer();
 
     const socket = new StreamingSocket(socketServerUrl);
+    expect(socket).toBeTruthy();
     const subscription = socket.events.subscribe({
       complete: () => {
         subscription.unsubscribe();
