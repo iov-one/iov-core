@@ -56,7 +56,12 @@ export class SocketWrapper {
   public connect(): void {
     const socket = new WebSocket(this.url);
 
-    socket.onerror = this.errorHandler;
+    socket.onerror = error => {
+      this.clearTimeout();
+      if (this.errorHandler) {
+        this.errorHandler(error);
+      }
+    };
     socket.onmessage = messageEvent => {
       this.messageHandler({
         type: messageEvent.type,
@@ -97,11 +102,11 @@ export class SocketWrapper {
    * Closes an established connection and aborts other connection states
    */
   public disconnect(): void {
-    if (!this.socket || !this.timeoutId) {
+    if (!this.socket) {
       throw new Error("Socket undefined. This must be called after connecting.");
     }
 
-    clearTimeout(this.timeoutId);
+    this.clearTimeout();
 
     switch (this.socket.readyState) {
       case WebSocket.OPEN:
@@ -144,5 +149,12 @@ export class SocketWrapper {
       throw new Error("Websocket is not open");
     }
     this.socket.send(data);
+  }
+
+  private clearTimeout(): void {
+    if (!this.timeoutId) {
+      throw new Error("Timeout ID not set. This must not happen and usually means connect() was not called.");
+    }
+    clearTimeout(this.timeoutId);
   }
 }

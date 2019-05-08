@@ -41,4 +41,5 @@ export declare class SocketWrapper {
      */
     disconnect(): void;
     send(data: string): Promise<void>;
+    private clearTimeout;
 }
