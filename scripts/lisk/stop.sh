@@ -15,14 +15,10 @@ LISK_TAG="v1.6.0"
   cd "$TMP_DIR"
   echo "Navigated to temp directory $(pwd)"
   if [ -d "$LISK_DIR" ]; then
-    cd "$LISK_DIR"
-    if ! git describe --tags --exact-match --match="$LISK_TAG"; then
+    if ! git -C "$LISK_DIR" describe --tags --exact-match --match="$LISK_TAG"; then
       echo "WARNING: Found incompatible Lisk repo. Deleting..."
-      cd "$TMP_DIR"
       rm -rf "$LISK_DIR"
       git clone --depth 1 --branch "$LISK_TAG" https://github.com/LiskHQ/lisk.git
-    else
-      cd "$TMP_DIR"
     fi
   else
     git clone --depth 1 --branch "$LISK_TAG" https://github.com/LiskHQ/lisk.git

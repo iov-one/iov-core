@@ -14,7 +14,8 @@
 - @iov/ethereum: Add support for ERC20 atomic swap transactions.
 - @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
   using an optional constructor argument.
-- @iov/socket: `StreamingSocket` now times out after 10 seconds.
+- @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
+  configured using an optional constructor argument.
 
 Breaking changes
 
@@ -43,7 +44,8 @@ Breaking changes
 
 - @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
   using an optional constructor argument.
-- @iov/socket: `StreamingSocket` now times out after 10 seconds.
+- @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
+  configured using an optional constructor argument.
 
 ## 0.14.1
 
@@ -74,7 +76,8 @@ Breaking changes
 
 - @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
   using an optional constructor argument.
-- @iov/socket: `StreamingSocket` now times out after 10 seconds.
+- @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
+  configured using an optional constructor argument.
 
 ## 0.13.6
 
