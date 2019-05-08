@@ -10,7 +10,7 @@ export declare class StreamingSocket {
     readonly events: Stream<SocketWrapperMessageEvent>;
     private eventProducerListener;
     private readonly socket;
-    constructor(url: string);
+    constructor(url: string, timeout?: number);
     connect(): void;
     disconnect(): void;
     send(data: string): Promise<void>;

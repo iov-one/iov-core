@@ -49,6 +49,26 @@ describe("SocketWrapper", () => {
     socket.connect();
   });
 
+  it("fails to connect to non-existing server but timeout is not triggered", done => {
+    pendingWithoutSocketServer();
+
+    const socket = new SocketWrapper(
+      socketServerUrlNonExisting,
+      () => done.fail("Got unexpected message event"),
+      error => {
+        expect(error).toBeTruthy();
+
+        // All done. Delay test end to ensure the timeout is not triggered
+        setTimeout(done, 400);
+      },
+      () => done.fail("Got unexpected open event"),
+      () => 0,
+      200,
+    );
+    expect(socket).toBeTruthy();
+    socket.connect();
+  });
+
   it("can connect to slow server", done => {
     pendingWithoutSocketServer();
 
@@ -118,6 +138,27 @@ describe("SocketWrapper", () => {
         expect(closeEvent.code).toEqual(4001);
         done();
       },
+    );
+    socket.connect();
+    socket.disconnect();
+  });
+
+  it("can disconnect before waiting for open and timeout will not be triggered", done => {
+    pendingWithoutSocketServer();
+
+    const socket = new SocketWrapper(
+      socketServerUrl,
+      () => done.fail("Got unexpected message event"),
+      error => done.fail(error.message || "Unknown socket error"),
+      () => done.fail("Got unexpected open event"),
+      closeEvent => {
+        expect(closeEvent.wasClean).toEqual(false);
+        expect(closeEvent.code).toEqual(4001);
+
+        // All done. Delay test end to ensure the timeout is not triggered
+        setTimeout(done, 400);
+      },
+      200,
     );
     socket.connect();
     socket.disconnect();
