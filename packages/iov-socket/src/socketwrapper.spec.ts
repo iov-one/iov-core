@@ -23,8 +23,10 @@ describe("SocketWrapper", () => {
       socketServerUrl,
       () => done.fail("Got unexpected message event"),
       error => done.fail(error.message || "Unknown socket error"),
-      done,
-      () => done.fail("Connection closed"),
+      () => {
+        socket.disconnect();
+        done();
+      },
     );
     expect(socket).toBeTruthy();
     socket.connect();
@@ -76,8 +78,10 @@ describe("SocketWrapper", () => {
       socketServerUrlSlow,
       () => done.fail("Got unexpected message event"),
       error => done.fail(error.message || "Unknown socket error"),
-      done,
-      () => done.fail("Connection closed"),
+      () => {
+        socket.disconnect();
+        done();
+      },
     );
     expect(socket).toBeTruthy();
     socket.connect();
