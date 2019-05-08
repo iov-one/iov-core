@@ -14,6 +14,7 @@ function pendingWithoutSocketServer(): void {
 
 describe("StreamingSocket", () => {
   const socketServerUrl = "ws://localhost:4444/websocket";
+  const socketServerUrlSlow = "ws://localhost:4445/websocket";
 
   it("can be constructed", () => {
     const socket = new StreamingSocket(socketServerUrl);
@@ -28,6 +29,26 @@ describe("StreamingSocket", () => {
     socket.connect();
     await socket.connected;
     socket.disconnect();
+  });
+
+  it("can connect to slow server", async () => {
+    pendingWithoutSocketServer();
+
+    const socket = new StreamingSocket(socketServerUrlSlow);
+    socket.connect();
+    await socket.connected;
+    socket.disconnect();
+  });
+
+  it("times out when establishing connection takes too long", async () => {
+    pendingWithoutSocketServer();
+
+    const socket = new StreamingSocket(socketServerUrlSlow, 2_000);
+    socket.connect();
+
+    await socket.connected
+      .then(() => fail("must not resolve"))
+      .catch(error => expect(error).toMatch(/connection attempt timed out/i));
   });
 
   it("can send events when connected", async () => {
