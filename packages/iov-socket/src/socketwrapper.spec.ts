@@ -53,7 +53,7 @@ describe("SocketWrapper", () => {
 
   it("fails to connect to non-existing server but timeout is not triggered", done => {
     pendingWithoutSocketServer();
-    const timeout = 500; // ms
+    const timeout = 1200; // ms
 
     const socket = new SocketWrapper(
       socketServerUrlNonExisting,
