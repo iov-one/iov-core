@@ -153,7 +153,9 @@ export class SocketWrapper {
 
   private clearTimeout(): void {
     if (!this.timeoutId) {
-      throw new Error("Timeout ID not set. This must not happen and usually means connect() was not called.");
+      throw new Error(
+        "Timeout ID not set. This should not happen and usually means connect() was not called.",
+      );
     }
     clearTimeout(this.timeoutId);
   }
