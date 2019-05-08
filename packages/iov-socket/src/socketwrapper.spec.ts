@@ -123,6 +123,27 @@ describe("SocketWrapper", () => {
     socket.disconnect();
   });
 
+  it("can disconnect before waiting for open and timeout will not be triggered", done => {
+    pendingWithoutSocketServer();
+
+    const socket = new SocketWrapper(
+      socketServerUrl,
+      () => done.fail("Got unexpected message event"),
+      error => done.fail(error.message || "Unknown socket error"),
+      () => done.fail("Got unexpected open event"),
+      closeEvent => {
+        expect(closeEvent.wasClean).toEqual(false);
+        expect(closeEvent.code).toEqual(4001);
+
+        // All done. Delay test end to ensure the timeout is not triggered
+        setTimeout(done, 400);
+      },
+      200,
+    );
+    socket.connect();
+    socket.disconnect();
+  });
+
   it("can send events when connected", done => {
     pendingWithoutSocketServer();
 

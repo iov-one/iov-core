@@ -29,6 +29,7 @@ export declare class SocketWrapper {
     private connectedResolver;
     private connectedRejecter;
     private socket;
+    private timeoutId;
     private closed;
     constructor(url: string, messageHandler: (event: SocketWrapperMessageEvent) => void, errorHandler: (event: SocketWrapperErrorEvent) => void, openHandler?: (() => void) | undefined, closeHandler?: ((event: SocketWrapperCloseEvent) => void) | undefined, timeout?: number);
     /**
