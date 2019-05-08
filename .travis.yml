@@ -42,6 +42,10 @@ matrix:
       env: MODE=tests-chrome
     - os: osx
       env: MODE=tests-firefox
+  allow_failures:
+    # https://github.com/iov-one/iov-core/issues/760
+    - os: linux
+      env: MODE=tests-firefox
 
 # Override default install step
 install:
