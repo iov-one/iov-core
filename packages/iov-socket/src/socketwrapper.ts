@@ -33,6 +33,7 @@ export class SocketWrapper {
   private connectedResolver: (() => void) | undefined;
   private connectedRejecter: ((reason: any) => void) | undefined;
   private socket: WebSocket | undefined;
+  private timeoutId: NodeJS.Timeout | undefined;
   private closed = false;
 
   constructor(
@@ -55,7 +56,12 @@ export class SocketWrapper {
   public connect(): void {
     const socket = new WebSocket(this.url);
 
-    socket.onerror = this.errorHandler;
+    socket.onerror = error => {
+      this.clearTimeout();
+      if (this.errorHandler) {
+        this.errorHandler(error);
+      }
+    };
     socket.onmessage = messageEvent => {
       this.messageHandler({
         type: messageEvent.type,
@@ -77,7 +83,7 @@ export class SocketWrapper {
     };
 
     const started = Date.now();
-    setTimeout(() => {
+    this.timeoutId = setTimeout(() => {
       socket.onmessage = () => 0;
       socket.onerror = () => 0;
       socket.onopen = () => 0;
@@ -99,6 +105,8 @@ export class SocketWrapper {
     if (!this.socket) {
       throw new Error("Socket undefined. This must be called after connecting.");
     }
+
+    this.clearTimeout();
 
     switch (this.socket.readyState) {
       case WebSocket.OPEN:
@@ -141,5 +149,14 @@ export class SocketWrapper {
       throw new Error("Websocket is not open");
     }
     this.socket.send(data);
+  }
+
+  private clearTimeout(): void {
+    if (!this.timeoutId) {
+      throw new Error(
+        "Timeout ID not set. This should not happen and usually means connect() was not called.",
+      );
+    }
+    clearTimeout(this.timeoutId);
   }
 }
