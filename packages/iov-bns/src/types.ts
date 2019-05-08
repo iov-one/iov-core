@@ -239,6 +239,14 @@ export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
   readonly payload: ChainAddressPair;
 }
 
+export interface UpdateMultisignatureTx extends UnsignedTransaction {
+  readonly kind: "bns/update_multisignature_contract";
+  readonly contractId: Uint8Array;
+  readonly participants: ReadonlyArray<Participant>;
+  readonly activationThreshold: number;
+  readonly adminThreshold: number;
+}
+
 export type BnsTx =
   // BCP
   | SendTransaction
@@ -249,7 +257,8 @@ export type BnsTx =
   | AddAddressToUsernameTx
   | CreateMultisignatureTx
   | RegisterUsernameTx
-  | RemoveAddressFromUsernameTx;
+  | RemoveAddressFromUsernameTx
+  | UpdateMultisignatureTx;
 
 export function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx {
   if (
@@ -284,4 +293,10 @@ export function isRemoveAddressFromUsernameTx(
   transaction: UnsignedTransaction,
 ): transaction is RemoveAddressFromUsernameTx {
   return isBnsTx(transaction) && transaction.kind === "bns/remove_address_from_username";
+}
+
+export function isUpdateMultisignatureTx(
+  transaction: UnsignedTransaction,
+): transaction is UpdateMultisignatureTx {
+  return isBnsTx(transaction) && transaction.kind === "bns/update_multisignature_contract";
 }

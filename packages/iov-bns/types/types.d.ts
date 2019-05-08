@@ -103,9 +103,17 @@ export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
     readonly username: string;
     readonly payload: ChainAddressPair;
 }
-export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | AddAddressToUsernameTx | CreateMultisignatureTx | RegisterUsernameTx | RemoveAddressFromUsernameTx;
+export interface UpdateMultisignatureTx extends UnsignedTransaction {
+    readonly kind: "bns/update_multisignature_contract";
+    readonly contractId: Uint8Array;
+    readonly participants: ReadonlyArray<Participant>;
+    readonly activationThreshold: number;
+    readonly adminThreshold: number;
+}
+export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | AddAddressToUsernameTx | CreateMultisignatureTx | RegisterUsernameTx | RemoveAddressFromUsernameTx | UpdateMultisignatureTx;
 export declare function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx;
 export declare function isAddAddressToUsernameTx(transaction: UnsignedTransaction): transaction is AddAddressToUsernameTx;
 export declare function isCreateMultisignatureTx(transaction: UnsignedTransaction): transaction is CreateMultisignatureTx;
 export declare function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx;
 export declare function isRemoveAddressFromUsernameTx(transaction: UnsignedTransaction): transaction is RemoveAddressFromUsernameTx;
+export declare function isUpdateMultisignatureTx(transaction: UnsignedTransaction): transaction is UpdateMultisignatureTx;
