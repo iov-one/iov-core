@@ -72,6 +72,9 @@ const local: EthereumNetworkConfig = {
     wsUrl: "ws://localhost:8545/ws",
     // Low values to speedup test execution on the local ganache chain (using instant mine)
     pollInterval: 0.1,
+    // Local scraper not used by default in CI to avoid circular dependency (@iov/ethereum <- scraper <- @iov/ethereum).
+    // Comment out and set the ETHEREUM_SCRAPER environment variable for manual testing.
+    // scraperApiUrl: "http://localhost:8546/api",
     scraperApiUrl: undefined,
   },
   chainId: "ethereum-eip155-5777" as ChainId,
