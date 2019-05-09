@@ -17,9 +17,9 @@ export interface GetIdentitiesAuthorization {
      *
      * @param reason An explanation why the autorization is requested. This is created by the website and shown to the user.
      * @param matchingIdentities The identities that match the requested chain IDs.
-     * @param requestMeta An object that is passed by reference from request handlers into the callback.
+     * @param meta An object that is passed by reference from request handlers into the callback.
      */
-    (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>, requestMeta?: any): Promise<ReadonlyArray<PublicIdentity>>;
+    (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>, meta?: any): Promise<ReadonlyArray<PublicIdentity>>;
 }
 export interface SignAndPostAuthorization {
     /**
@@ -36,9 +36,9 @@ export interface SignAndPostAuthorization {
      *
      * @param reason An explanation why the autorization is requested. This is created by the website and shown to the user.
      * @param transaction The transaction to be signed.
-     * @param requestMeta An object that is passed by reference from request handlers into the callback.
+     * @param meta An object that is passed by reference from request handlers into the callback.
      */
-    (reason: string, transaction: UnsignedTransaction, requestMeta?: any): Promise<boolean>;
+    (reason: string, transaction: UnsignedTransaction, meta?: any): Promise<boolean>;
 }
 export interface SignedAndPosted {
     readonly transaction: UnsignedTransaction;
@@ -59,14 +59,14 @@ export declare class SigningServerCore {
      * the user selected no identity or rejected the request entirely,
      * this returns an empty list.
      */
-    getIdentities(reason: string, chainIds: ReadonlyArray<ChainId>, requestMeta?: any): Promise<ReadonlyArray<PublicIdentity>>;
+    getIdentities(reason: string, chainIds: ReadonlyArray<ChainId>, meta?: any): Promise<ReadonlyArray<PublicIdentity>>;
     /**
      * Handles a transaction signing request
      *
      * Returns the transaction ID in case the user authorized the signing.
      * Returns undefined in the case the user rejected.
      */
-    signAndPost(reason: string, transaction: UnsignedTransaction, requestMeta?: any): Promise<TransactionId | undefined>;
+    signAndPost(reason: string, transaction: UnsignedTransaction, meta?: any): Promise<TransactionId | undefined>;
     /**
      * Call this to free ressources when server is not needed anymore
      */

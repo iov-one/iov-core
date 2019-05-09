@@ -219,9 +219,9 @@ describe("SigningServerCore", () => {
       const core = new SigningServerCore(
         profile,
         signer,
-        async (_1, _2, requestMeta) => {
+        async (_1, _2, meta) => {
           // we want object identity here
-          expect(requestMeta).toBe(originalRequestMeta);
+          expect(meta).toBe(originalRequestMeta);
           return [];
         },
         defaultSignAndPostCallback,
@@ -357,9 +357,9 @@ describe("SigningServerCore", () => {
         profile,
         signer,
         defaultGetIdentitiesCallback,
-        async (_1, _2, requestMeta) => {
+        async (_1, _2, meta) => {
           // we want object identity here
-          expect(requestMeta).toBe(originalRequestMeta);
+          expect(meta).toBe(originalRequestMeta);
           return false;
         },
       );
