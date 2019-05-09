@@ -12,6 +12,7 @@ echo "Using temporary dir $TMP_DIR"
 LOGFILE="$TMP_DIR/ganache.log"
 
 docker run --rm \
+  --user="$UID" \
   --name "ganache-cli" \
   -p "${PORT}:8545" \
   "trufflesuite/ganache-cli:${VERSION}" \
