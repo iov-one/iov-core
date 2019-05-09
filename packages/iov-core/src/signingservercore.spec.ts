@@ -231,8 +231,7 @@ describe("SigningServerCore", () => {
         defaultSignAndPostCallback,
       );
 
-      const identities = await core.getIdentities("Please select signer", [bnsChain]);
-      const signingIdentity = identities[0];
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
       const send: SendTransaction = {
         kind: "bcp/send",
         creator: signingIdentity,
@@ -270,8 +269,7 @@ describe("SigningServerCore", () => {
         rejectAllTransactions,
       );
 
-      const identities = await core.getIdentities("Please select signer", [bnsChain]);
-      const signingIdentity = identities[0];
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
       const send: SendTransaction = {
         kind: "bcp/send",
         creator: signingIdentity,
