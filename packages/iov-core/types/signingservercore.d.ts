@@ -59,14 +59,14 @@ export declare class SigningServerCore {
      * the user selected no identity or rejected the request entirely,
      * this returns an empty list.
      */
-    getIdentities(reason: string, chainIds: ReadonlyArray<ChainId>): Promise<ReadonlyArray<PublicIdentity>>;
+    getIdentities(reason: string, chainIds: ReadonlyArray<ChainId>, requestMeta?: any): Promise<ReadonlyArray<PublicIdentity>>;
     /**
      * Handles a transaction signing request
      *
      * Returns the transaction ID in case the user authorized the signing.
      * Returns undefined in the case the user rejected.
      */
-    signAndPost(reason: string, transaction: UnsignedTransaction): Promise<TransactionId | undefined>;
+    signAndPost(reason: string, transaction: UnsignedTransaction, requestMeta?: any): Promise<TransactionId | undefined>;
     /**
      * Call this to free ressources when server is not needed anymore
      */

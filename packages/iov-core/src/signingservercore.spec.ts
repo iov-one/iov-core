@@ -208,6 +208,29 @@ describe("SigningServerCore", () => {
 
       core.shutdown();
     });
+
+    it("passes request meta from request handler to callback", async () => {
+      const profile = new UserProfile();
+      profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
+      const signer = new MultiChainSigner(profile);
+
+      const originalRequestMeta = { foo: "bar" };
+
+      const core = new SigningServerCore(
+        profile,
+        signer,
+        async (_1, _2, requestMeta) => {
+          // we want object identity here
+          expect(requestMeta).toBe(originalRequestMeta);
+          return [];
+        },
+        defaultSignAndPostCallback,
+      );
+
+      await core.getIdentities("Login to XY service", [defaultChainId], originalRequestMeta);
+
+      core.shutdown();
+    });
   });
 
   describe("signAndPost", () => {
@@ -311,6 +334,44 @@ describe("SigningServerCore", () => {
         .signAndPost("Please sign now", send)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/internal server error/i));
+
+      core.shutdown();
+    });
+
+    it("passes request meta from request handler to callback", async () => {
+      pendingWithoutBnsd();
+
+      const profile = new UserProfile();
+      const signer = new MultiChainSigner(profile);
+      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const bnsChain = connection.chainId();
+
+      {
+        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
+        await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
+      }
+
+      const originalRequestMeta = { foo: "bar" };
+
+      const core = new SigningServerCore(
+        profile,
+        signer,
+        defaultGetIdentitiesCallback,
+        async (_1, _2, requestMeta) => {
+          // we want object identity here
+          expect(requestMeta).toBe(originalRequestMeta);
+          return false;
+        },
+      );
+
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
+      const send: SendTransaction = {
+        kind: "bcp/send",
+        creator: signingIdentity,
+        amount: defaultAmount,
+        recipient: await randomBnsAddress(),
+      };
+      await core.signAndPost("Please sign now", send, originalRequestMeta);
 
       core.shutdown();
     });

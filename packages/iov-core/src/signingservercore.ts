@@ -84,6 +84,7 @@ export class SigningServerCore {
   public async getIdentities(
     reason: string,
     chainIds: ReadonlyArray<ChainId>,
+    requestMeta?: any,
   ): Promise<ReadonlyArray<PublicIdentity>> {
     const matchingIdentities = this.profile.getAllIdentities().filter(identity => {
       return chainIds.some(chainId => identity.chainId === chainId);
@@ -91,7 +92,7 @@ export class SigningServerCore {
 
     let authorizedIdentities: ReadonlyArray<PublicIdentity>;
     try {
-      authorizedIdentities = await this.authorizeGetIdentities(reason, matchingIdentities);
+      authorizedIdentities = await this.authorizeGetIdentities(reason, matchingIdentities, requestMeta);
     } catch (error) {
       // don't expose callback error details over the server
       throw new Error("Internal server error");
@@ -109,10 +110,11 @@ export class SigningServerCore {
   public async signAndPost(
     reason: string,
     transaction: UnsignedTransaction,
+    requestMeta?: any,
   ): Promise<TransactionId | undefined> {
     let authorized: boolean;
     try {
-      authorized = await this.authorizeSignAndPost(reason, transaction);
+      authorized = await this.authorizeSignAndPost(reason, transaction, requestMeta);
     } catch (error) {
       // don't expose callback error details over the server
       throw new Error("Internal server error");
