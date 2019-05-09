@@ -10,4 +10,4 @@ module.exports = {
   excludePrivate: true,
   excludeNotExported: true,
   includeDefinitions: true,
-}
+};
