@@ -11,8 +11,6 @@ chmod 777 "${TMP_DIR}"
 echo "Using temporary dir $TMP_DIR"
 LOGFILE="$TMP_DIR/ganache.log"
 
-docker pull "trufflesuite/ganache-cli:${VERSION}"
-
 docker run --rm \
   --name "ganache-cli" \
   -p "${PORT}:8545" \
