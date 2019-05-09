@@ -14,6 +14,7 @@ LOGFILE="$TMP_DIR/ganache.log"
 docker pull "trufflesuite/ganache-cli:${VERSION}"
 
 docker run --rm \
+  --name "ganache-cli" \
   -p "${PORT}:8545" \
   "trufflesuite/ganache-cli:${VERSION}" \
   -p 8545 --networkId 5777 \
