@@ -16,8 +16,14 @@ export interface GetIdentitiesAuthorization {
    * callback is sent to the RPC client as an unspecified
    * "Internal server error" and the callback author should
    * ensure this does not happen.
+   *
+   * @param reason An explanation why the autorization is requested. This is created by the website and shown to the user.
+   * @param matchingIdentities The identities that match the requested chain IDs.
+   * @param requestMeta An object that is passed by reference from request handlers into the callback.
    */
-  (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>): Promise<ReadonlyArray<PublicIdentity>>;
+  (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>, requestMeta?: any): Promise<
+    ReadonlyArray<PublicIdentity>
+  >;
 }
 
 export interface SignAndPostAuthorization {
@@ -32,8 +38,12 @@ export interface SignAndPostAuthorization {
    * callback is sent to the RPC client as an unspecified
    * "Internal server error" and the callback author should
    * ensure this does not happen.
+   *
+   * @param reason An explanation why the autorization is requested. This is created by the website and shown to the user.
+   * @param transaction The transaction to be signed.
+   * @param requestMeta An object that is passed by reference from request handlers into the callback.
    */
-  (reason: string, transaction: UnsignedTransaction): Promise<boolean>;
+  (reason: string, transaction: UnsignedTransaction, requestMeta?: any): Promise<boolean>;
 }
 
 export interface SignedAndPosted {
