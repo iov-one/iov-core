@@ -88,7 +88,12 @@ export class JsonRpcSigningServer {
   }
 
   /**
-   * Handles a request from a possible untrusted source.
+   * Handles a request from a possibly untrusted source.
+   *
+   * 1. Parse request as a JSON-RPC request
+   * 2. Convert JSON-RPC request into calls to SigningServerCore
+   * 3. Call SigningServerCore
+   * 4. Convert result to JSON-RPC response
    */
   public async handleUnchecked(request: unknown): Promise<JsonRpcResponse> {
     let checkedRequest: JsonRpcRequest;
@@ -114,9 +119,9 @@ export class JsonRpcSigningServer {
    * Handles a checked request, i.e. a request that is known to be a valid
    * JSON-RPC "Request object".
    *
-   * 1. convert JsRpcRequest into calls to SigningServerCore
-   * 2. call SigningServerCore
-   * 3. convert result to JSON-RPC format
+   * 1. Convert JSON-RPC request into calls to SigningServerCore
+   * 2. Call SigningServerCore
+   * 3. Convert result to JSON-RPC response
    */
   public async handleChecked(request: JsonRpcRequest): Promise<JsonRpcResponse> {
     let call: RpcCall;
