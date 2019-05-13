@@ -2,7 +2,7 @@
 
 ## 0.13.7
 
-- @iov/jsonrpc: Add `makeId`.
+- @iov/jsonrpc: Add `makeJsonRpcId`.
 - @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
   using an optional constructor argument.
 - @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
