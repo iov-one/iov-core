@@ -1,6 +1,4 @@
 /* tslint:disable:no-bitwise */
-import since = require("jasmine2-custom-message");
-
 import { Encoding } from "@iov/encoding";
 
 import { Secp256k1 } from "./secp256k1";
@@ -265,8 +263,8 @@ describe("Secp256k1", () => {
       const pubkey = (await Secp256k1.makeKeypair(row.privkey)).pubkey;
       const messageHash = new Sha256(row.message).digest();
       const isValid = await Secp256k1.verifySignature(Secp256k1Signature.fromDer(row.signature), messageHash, pubkey);
-      since(`(index ${index}) #{message}`)
-        .expect(isValid)
+      expect(isValid)
+        .withContext(`(index ${index})`)
         .toEqual(true);
     }
   });
@@ -335,19 +333,19 @@ describe("Secp256k1", () => {
 
       // verify calculated signature
       const ok1 = await Secp256k1.verifySignature(calculatedSignature, messageHash, keypair.pubkey);
-      since(`(index ${index}) #{message}`)
-        .expect(ok1)
+      expect(ok1)
+        .withContext(`(index ${index})`)
         .toEqual(true);
 
       // verify original signature
       const ok2 = await Secp256k1.verifySignature(Secp256k1Signature.fromDer(row.signature), messageHash, keypair.pubkey);
-      since(`(index ${index}) #{message}`)
-        .expect(ok2)
+      expect(ok2)
+        .withContext(`(index ${index})`)
         .toEqual(true);
 
       // compare signatures
-      since(`(index ${index}) #{message}`)
-        .expect(calculatedSignature.toDer())
+      expect(calculatedSignature.toDer())
+        .withContext(`(index ${index})`)
         .toEqual(row.signature);
     }
   });
