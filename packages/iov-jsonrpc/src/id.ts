@@ -1,4 +1,5 @@
-let counter = 0;
+// Start with 10001 to avoid possible collisions with all hand-selected values like e.g. 1,2,3,42,100
+let counter = 10000;
 
 /**
  * Creates a new ID to be used for creating a JSON-RPC request.
