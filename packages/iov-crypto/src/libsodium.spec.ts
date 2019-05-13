@@ -333,7 +333,7 @@ describe("Libsodium", () => {
       const originalMessage = new Uint8Array([0x11, 0x22, 0x33, 0x44]) as Xchacha20poly1305IetfMessage;
       const ciphertext = await Xchacha20poly1305Ietf.encrypt(originalMessage, key, nonce);
       expect(ciphertext).toBeTruthy();
-      expect(ciphertext.length).toBeTruthy(4 /* message length */ + 32 /* tag length*/);
+      expect(ciphertext.length).toEqual(4 /* message length */ + 16 /* tag length*/);
 
       const decrypted = await Xchacha20poly1305Ietf.decrypt(ciphertext, key, nonce);
       expect(decrypted).toBeTruthy();
@@ -381,7 +381,7 @@ describe("Libsodium", () => {
       const originalMessage = new Uint8Array([0x11, 0x22, 0x33, 0x44]) as Xchacha20poly1305IetfMessage;
       const ciphertext = await Xchacha20poly1305Ietf.encrypt(originalMessage, key, nonce);
       expect(ciphertext).toBeTruthy();
-      expect(ciphertext.length).toBeTruthy(4 /* message length */ + 32 /* tag length*/);
+      expect(ciphertext.length).toEqual(4 /* message length */ + 16 /* tag length*/);
 
       {
         // baseline
