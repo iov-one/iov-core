@@ -43,9 +43,9 @@ if command -v docker > /dev/null ; then
   export LISK_ENABLED=1
   fold_end
 
-  # Wait until API is ready and run in background because script waits for
-  # blocks and takes some time but will be ready before tests start
-  (sleep 20 && ./scripts/lisk/init.sh ) &
+  # Run in background because script waits for node and blocks,
+  # so it takes some time but will be ready before tests start
+  ./scripts/lisk/init.sh &
 
   fold_start "ethereum-start"
   ./scripts/ethereum/start.sh
