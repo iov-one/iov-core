@@ -35,6 +35,11 @@ Breaking changes
 - @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.
 - @iov/core: Change return type of `SigningServerCore.signAndPost` to
   `TransactionId | null`.
+- @iov/core: Remove re-exports `Address`, `ChainId`, `Nonce`, `SendTransaction`,
+  `TokenTicker` from @iov/bcp and `Ed25519HdWallet`, `Ed25519Wallet`, `HdPaths`,
+  `Keyring`, `Secp256k1HdWallet`, `UserProfile`, `Wallet`, `WalletId`,
+  `WalletImplementationIdString`, `WalletSerializationString` from
+  @iov/keycontrol.
 - @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 - @iov/jsonrpc: The `id` field of `JsonRpcRequest`, `JsonRpcSuccessResponse` and
