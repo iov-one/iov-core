@@ -2,6 +2,18 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
+gnutimeout="$(command -v gtimeout || echo timeout)"
+
+# When the HTTP API is ready, the genesis block (height 1) is not necessarily processed.
+# We need the genesis block in order to process initial transactions, so let's wait for height >= 1.
+echo "$(date) [Lisk node init] Waiting for node to answer and genesis block to be processed"
+# shellcheck disable=SC2016
+"$gnutimeout" 50 bash -c 'until [ "$(HEIGHT=$(curl  -sS --fail http://localhost:4000/api/node/status | jq -e .data.height) && echo $HEIGHT || echo 0)" -ge 1 ]; do sleep 2; done'
+echo # add line break
+echo "$(date) [Lisk node init] Got response"
+
+echo "$(date) [Lisk node init] Posting transactions ..."
+
 curl -sS -X POST \
   -H "Content-type: application/json" \
   -d '{"type":0,"amount":"144550000","recipientId":"2222222L","senderPublicKey":"c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f","timestamp":81017778,"fee":"10000000","asset":{},"signature":"3be0019dce1bd0c5586720d3e6b6355cac291d8c236e832f4fe68ea3f0926dd3d4e84f72e083cbc301a55cef0237fc5732b0f0516fd4c4b6345a6e71b9f7e800","id":"14104830969050871842"}' \
