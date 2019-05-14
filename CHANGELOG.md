@@ -7,6 +7,11 @@
   using an optional constructor argument.
 - @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
   configured using an optional constructor argument.
+- @iov/core: Add an optional argument `meta` to `GetIdentitiesAuthorization`,
+  `SignAndPostAuthorization`, `SigningServerCore.getIdentities`,
+  `SigningServerCore.signAndPost`, `JsonRpcSigningServer.handleUnchecked` and
+  `JsonRpcSigningServer.handleChecked` which allows passing request meta
+  information from the request handler to the authorization callbacks.
 
 ## 0.13.6
 

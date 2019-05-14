@@ -38,6 +38,10 @@ async function randomBnsAddress(): Promise<Address> {
 describe("SigningServerCore", () => {
   const bnsdUrl = "ws://localhost:23456";
 
+  // untouched in the sense that there are no balances on the derived accounts
+  const untouchedMnemonicA = "culture speed parent picture lock inquiry around pizza bleak leaf fish hand";
+  const untouchedMnemonicB = "muffin width month typical depth boost beauty surface orphan cage youth rack";
+
   const defaultAmount: Amount = {
     quantity: "1",
     fractionalDigits: 9,
@@ -63,11 +67,7 @@ describe("SigningServerCore", () => {
   describe("getIdentities", () => {
     it("can get identities", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "option diagram plastic million educate they arrow fat comic excite abandon green",
-        ),
-      );
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
       const identity0 = await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
       const identity1 = await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
 
@@ -87,11 +87,7 @@ describe("SigningServerCore", () => {
 
     it("can get some selected identities", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "option diagram plastic million educate they arrow fat comic excite abandon green",
-        ),
-      );
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
 
       const identities: ReadonlyArray<PublicIdentity> = [
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0)),
@@ -124,11 +120,7 @@ describe("SigningServerCore", () => {
 
     it("can get no identities", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "option diagram plastic million educate they arrow fat comic excite abandon green",
-        ),
-      );
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
 
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
@@ -161,19 +153,11 @@ describe("SigningServerCore", () => {
       const ynet = "ynet" as ChainId;
 
       const profile = new UserProfile();
-      const walletA = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "option diagram plastic million educate they arrow fat comic excite abandon green",
-        ),
-      );
+      const walletA = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
       const idA0 = await profile.createIdentity(walletA.id, ynet, HdPaths.simpleAddress(0));
       const idA1 = await profile.createIdentity(walletA.id, xnet, HdPaths.simpleAddress(1));
 
-      const walletB = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "add critic turtle frown attract shop answer cook social wagon humble power",
-        ),
-      );
+      const walletB = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicB));
       const idB0 = await profile.createIdentity(walletB.id, xnet, HdPaths.simpleAddress(0));
       const idB1 = await profile.createIdentity(walletB.id, ynet, HdPaths.simpleAddress(1));
       const idB2 = await profile.createIdentity(walletB.id, xnet, HdPaths.simpleAddress(2));
@@ -200,11 +184,7 @@ describe("SigningServerCore", () => {
 
     it("handles exceptions in callback", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(
-        Ed25519HdWallet.fromMnemonic(
-          "option diagram plastic million educate they arrow fat comic excite abandon green",
-        ),
-      );
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
 
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
@@ -228,6 +208,29 @@ describe("SigningServerCore", () => {
 
       core.shutdown();
     });
+
+    it("passes request meta from request handler to callback", async () => {
+      const profile = new UserProfile();
+      profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
+      const signer = new MultiChainSigner(profile);
+
+      const originalRequestMeta = { foo: "bar" };
+
+      const core = new SigningServerCore(
+        profile,
+        signer,
+        async (_1, _2, meta) => {
+          // we want object identity here
+          expect(meta).toBe(originalRequestMeta);
+          return [];
+        },
+        defaultSignAndPostCallback,
+      );
+
+      await core.getIdentities("Login to XY service", [defaultChainId], originalRequestMeta);
+
+      core.shutdown();
+    });
   });
 
   describe("signAndPost", () => {
@@ -240,11 +243,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(
-          Ed25519HdWallet.fromMnemonic(
-            "option diagram plastic million educate they arrow fat comic excite abandon green",
-          ),
-        );
+        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
         await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
       }
 
@@ -255,8 +254,7 @@ describe("SigningServerCore", () => {
         defaultSignAndPostCallback,
       );
 
-      const identities = await core.getIdentities("Please select signer", [bnsChain]);
-      const signingIdentity = identities[0];
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
       const send: SendTransaction = {
         kind: "bcp/send",
         creator: signingIdentity,
@@ -279,11 +277,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(
-          Ed25519HdWallet.fromMnemonic(
-            "option diagram plastic million educate they arrow fat comic excite abandon green",
-          ),
-        );
+        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
         await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(1));
       }
 
@@ -298,8 +292,7 @@ describe("SigningServerCore", () => {
         rejectAllTransactions,
       );
 
-      const identities = await core.getIdentities("Please select signer", [bnsChain]);
-      const signingIdentity = identities[0];
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
       const send: SendTransaction = {
         kind: "bcp/send",
         creator: signingIdentity,
@@ -321,11 +314,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(
-          Ed25519HdWallet.fromMnemonic(
-            "option diagram plastic million educate they arrow fat comic excite abandon green",
-          ),
-        );
+        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
         await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
       }
 
@@ -348,6 +337,44 @@ describe("SigningServerCore", () => {
 
       core.shutdown();
     });
+
+    it("passes request meta from request handler to callback", async () => {
+      pendingWithoutBnsd();
+
+      const profile = new UserProfile();
+      const signer = new MultiChainSigner(profile);
+      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const bnsChain = connection.chainId();
+
+      {
+        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
+        await profile.createIdentity(wallet.id, bnsChain, HdPaths.simpleAddress(0));
+      }
+
+      const originalRequestMeta = { foo: "bar" };
+
+      const core = new SigningServerCore(
+        profile,
+        signer,
+        defaultGetIdentitiesCallback,
+        async (_1, _2, meta) => {
+          // we want object identity here
+          expect(meta).toBe(originalRequestMeta);
+          return false;
+        },
+      );
+
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
+      const send: SendTransaction = {
+        kind: "bcp/send",
+        creator: signingIdentity,
+        amount: defaultAmount,
+        recipient: await randomBnsAddress(),
+      };
+      await core.signAndPost("Please sign now", send, originalRequestMeta);
+
+      core.shutdown();
+    });
   });
 
   describe("signedAndPosted", () => {
@@ -360,11 +387,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(
-          Ed25519HdWallet.fromMnemonic(
-            "option diagram plastic million educate they arrow fat comic excite abandon green",
-          ),
-        );
+        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
         await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
       }
 
