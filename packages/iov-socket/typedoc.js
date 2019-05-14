@@ -10,4 +10,4 @@ module.exports = {
   mode: "file",
   excludePrivate: true,
   excludeNotExported: true,
-}
+};
