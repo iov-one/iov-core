@@ -6,7 +6,7 @@ gnutimeout="$(command -v gtimeout || echo timeout)"
 
 # Wait for Lisk node to be ready
 echo "$(date) [Lisk node init] Waiting for node"
-"$gnutimeout" 50 bash -c "until curl -s http://localhost:4000/api/node/status; do sleep 2; done"
+"$gnutimeout" 50 bash -c "until curl -s --fail http://localhost:4000/api/node/status; do sleep 2; done"
 echo # add line break
 echo "$(date) [Lisk node init] Got response"
 
