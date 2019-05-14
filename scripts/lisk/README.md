@@ -19,7 +19,6 @@ From repo root:
 
 ```
 ./scripts/lisk/start.sh
-sleep 20
 ./scripts/lisk/init.sh
 export LISK_ENABLED=1
 ```
