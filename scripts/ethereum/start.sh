@@ -3,7 +3,7 @@ set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
 # Choose from https://hub.docker.com/r/trufflesuite/ganache-cli/tags
-VERSION="v6.4.1"
+VERSION="v6.4.3"
 PORT="8545"
 
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/ganache.XXXXXXXXX")
@@ -11,9 +11,9 @@ chmod 777 "${TMP_DIR}"
 echo "Using temporary dir $TMP_DIR"
 LOGFILE="$TMP_DIR/ganache.log"
 
-docker pull "trufflesuite/ganache-cli:${VERSION}"
-
 docker run --rm \
+  --user="$UID" \
+  --name "ganache-cli" \
   -p "${PORT}:8545" \
   "trufflesuite/ganache-cli:${VERSION}" \
   -p 8545 --networkId 5777 \
