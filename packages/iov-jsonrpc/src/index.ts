@@ -1,3 +1,4 @@
+export { makeJsonRpcId } from "./id";
 export { JsonRpcClient, SimpleMessagingConnection } from "./jsonrpcclient";
 export {
   JsonCompatibleArray,

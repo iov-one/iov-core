@@ -2,10 +2,29 @@
 
 ## 0.14.2
 
+- @iov/jsonrpc: Add `makeJsonRpcId`.
 - @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
   using an optional constructor argument.
 - @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
   configured using an optional constructor argument.
+- @iov/core: Add an optional argument `meta` to `GetIdentitiesAuthorization`,
+  `SignAndPostAuthorization`, `SigningServerCore.getIdentities`,
+  `SigningServerCore.signAndPost`, `JsonRpcSigningServer.handleUnchecked` and
+  `JsonRpcSigningServer.handleChecked` which allows passing request meta
+  information from the request handler to the authorization callbacks.
+
+## 0.13.7
+
+- @iov/jsonrpc: Add `makeJsonRpcId`.
+- @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
+  using an optional constructor argument.
+- @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
+  configured using an optional constructor argument.
+- @iov/core: Add an optional argument `meta` to `GetIdentitiesAuthorization`,
+  `SignAndPostAuthorization`, `SigningServerCore.getIdentities`,
+  `SigningServerCore.signAndPost`, `JsonRpcSigningServer.handleUnchecked` and
+  `JsonRpcSigningServer.handleChecked` which allows passing request meta
+  information from the request handler to the authorization callbacks.
 
 ## 0.14.1
 
@@ -31,13 +50,6 @@
   `parseJsonRpcResponse` is removed.
 - @iov/keycontrol: Export `ReadonlyWallet`.
 - @iov/keycontrol: Deprecate `HdPaths.simpleAddress`.
-
-## 0.13.7
-
-- @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
-  using an optional constructor argument.
-- @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
-  configured using an optional constructor argument.
 
 ## 0.13.6
 

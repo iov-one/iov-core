@@ -1,22 +1,21 @@
 module.exports = function(config) {
   config.set({
-
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '.',
+    basePath: ".",
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ["jasmine"],
 
     // list of files / patterns to load in the browser
     files: [
-      'dist/web/tests.js',
+      "dist/web/tests.js",
       {
-        pattern: 'dist/web/signingservice.worker.js',
+        pattern: "dist/web/signingservice.worker.js",
         included: false,
         served: true,
         watched: false,
-        nocache: true
+        nocache: true,
       },
     ],
 
@@ -24,7 +23,7 @@ module.exports = function(config) {
       jasmine: {
         random: false,
         timeoutInterval: 15000,
-      }
+      },
     },
 
     // test results reporter to use
@@ -47,7 +46,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Firefox'],
+    browsers: ["Firefox"],
 
     browserNoActivityTimeout: 90000,
 

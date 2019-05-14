@@ -407,6 +407,8 @@ describe("EthereumConnection", () => {
         confirmations: 1,
       });
 
+      connection.disconnect();
+
       await sleep(50); // wait for node to update nonce for next test
     }, 30_000);
 

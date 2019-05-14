@@ -1,6 +1,6 @@
-const glob = require('glob');
-const path = require('path');
-const webpack = require('webpack');
+const glob = require("glob");
+const path = require("path");
+const webpack = require("webpack");
 
 const target = "web";
 const distdir = path.join(__dirname, "dist", "web");
@@ -13,7 +13,7 @@ module.exports = [
     output: {
       path: distdir,
       filename: "dummyservice.worker.js",
-    }
+    },
   },
   {
     // bundle used for Karma tests
@@ -23,8 +23,6 @@ module.exports = [
       path: distdir,
       filename: "tests.js",
     },
-    plugins: [
-      new webpack.EnvironmentPlugin([]),
-    ],
+    plugins: [new webpack.EnvironmentPlugin([])],
   },
 ];
