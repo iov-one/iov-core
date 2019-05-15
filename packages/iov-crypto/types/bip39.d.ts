@@ -1,9 +1,4 @@
-export declare class EnglishMnemonic {
-    private static readonly mnemonicMatcher;
-    private readonly data;
-    constructor(mnemonic: string);
-    asString(): string;
-}
+import { EnglishMnemonic } from "./englishmnemonic";
 export declare class Bip39 {
     static encode(entropy: Uint8Array): EnglishMnemonic;
     static decode(mnemonic: EnglishMnemonic): Uint8Array;
