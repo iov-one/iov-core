@@ -51,30 +51,14 @@ describe("Bip39", () => {
     expect(Bip39.encode(fromHex("f585c11aec520db57dd353c69554b21a89b20fb0650966fa0a9d6f74fd989d8f")).asString()).toEqual("void come effort suffer camp survey warrior heavy shoot primary clutch crush open amazing screen patrol group space point ten exist slush involve unfold");
 
     // invalid input length
-    expect(() => {
-      Bip39.encode(fromHex(""));
-    }).toThrowError(/invalid input length/);
-    expect(() => {
-      Bip39.encode(fromHex("00"));
-    }).toThrowError(/invalid input length/);
-    expect(() => {
-      Bip39.encode(fromHex("000000000000000000000000000000"));
-    }).toThrowError(/invalid input length/);
-    expect(() => {
-      Bip39.encode(fromHex("0000000000000000000000000000000000"));
-    }).toThrowError(/invalid input length/);
-    expect(() => {
-      Bip39.encode(fromHex("0000000000000000000000000000000000000000000000"));
-    }).toThrowError(/invalid input length/);
-    expect(() => {
-      Bip39.encode(fromHex("00000000000000000000000000000000000000000000000000"));
-    }).toThrowError(/invalid input length/);
-    expect(() => {
-      Bip39.encode(fromHex("00000000000000000000000000000000000000000000000000000000000000"));
-    }).toThrowError(/invalid input length/);
-    expect(() => {
-      Bip39.encode(fromHex("000000000000000000000000000000000000000000000000000000000000000000"));
-    }).toThrowError(/invalid input length/);
+    expect(() => Bip39.encode(fromHex(""))).toThrowError(/invalid input length/);
+    expect(() => Bip39.encode(fromHex("00"))).toThrowError(/invalid input length/);
+    expect(() => Bip39.encode(fromHex("000000000000000000000000000000"))).toThrowError(/invalid input length/);
+    expect(() => Bip39.encode(fromHex("0000000000000000000000000000000000"))).toThrowError(/invalid input length/);
+    expect(() => Bip39.encode(fromHex("0000000000000000000000000000000000000000000000"))).toThrowError(/invalid input length/);
+    expect(() => Bip39.encode(fromHex("00000000000000000000000000000000000000000000000000"))).toThrowError(/invalid input length/);
+    expect(() => Bip39.encode(fromHex("00000000000000000000000000000000000000000000000000000000000000"))).toThrowError(/invalid input length/);
+    expect(() => Bip39.encode(fromHex("000000000000000000000000000000000000000000000000000000000000000000"))).toThrowError(/invalid input length/);
   });
 
   it("can decode from mnemonic", () => {
