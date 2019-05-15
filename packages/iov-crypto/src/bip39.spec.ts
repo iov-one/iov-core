@@ -3,53 +3,21 @@ import { Encoding } from "@iov/encoding";
 import { Bip39 } from "./bip39";
 import { EnglishMnemonic } from "./englishmnemonic";
 
+import bip39Vectors from "./testdata/bip39.json";
+
 const fromHex = Encoding.fromHex;
 
 describe("Bip39", () => {
   describe("encode", () => {
     it("can encode to mnemonic", () => {
-      // Test vectors from
-      // https://github.com/trezor/python-mnemonic/blob/b502451a33a440783926e04428115e0bed87d01f/vectors.json
-      expect(Bip39.encode(fromHex("00000000000000000000000000000000")).asString()).toEqual("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
-      expect(Bip39.encode(fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f")).asString()).toEqual("legal winner thank year wave sausage worth useful legal winner thank yellow");
-      expect(Bip39.encode(fromHex("80808080808080808080808080808080")).asString()).toEqual("letter advice cage absurd amount doctor acoustic avoid letter advice cage above");
-      expect(Bip39.encode(fromHex("ffffffffffffffffffffffffffffffff")).asString()).toEqual("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong");
-      expect(Bip39.encode(fromHex("0000000000000000000000000000000000000000")).asString()).toEqual("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address");
-      expect(Bip39.encode(fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f")).asString()).toEqual("legal winner thank year wave sausage worth useful legal winner thank year wave sausage wise");
-      expect(Bip39.encode(fromHex("8080808080808080808080808080808080808080")).asString()).toEqual("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor accident");
-      expect(Bip39.encode(fromHex("ffffffffffffffffffffffffffffffffffffffff")).asString()).toEqual("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrist");
-      expect(Bip39.encode(fromHex("000000000000000000000000000000000000000000000000")).asString()).toEqual("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon agent");
-      expect(Bip39.encode(fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f")).asString()).toEqual("legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal will");
-      expect(Bip39.encode(fromHex("808080808080808080808080808080808080808080808080")).asString()).toEqual("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter always");
-      expect(Bip39.encode(fromHex("ffffffffffffffffffffffffffffffffffffffffffffffff")).asString()).toEqual("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo when");
-      expect(Bip39.encode(fromHex("00000000000000000000000000000000000000000000000000000000")).asString()).toEqual("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon admit");
-      expect(Bip39.encode(fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f")).asString()).toEqual("legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal winner thank year viable");
-      expect(Bip39.encode(fromHex("80808080808080808080808080808080808080808080808080808080")).asString()).toEqual("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd apart");
-      expect(Bip39.encode(fromHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")).asString()).toEqual("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo veteran");
-      expect(Bip39.encode(fromHex("0000000000000000000000000000000000000000000000000000000000000000")).asString()).toEqual("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art");
-      expect(Bip39.encode(fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f")).asString()).toEqual("legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth title");
-      expect(Bip39.encode(fromHex("8080808080808080808080808080808080808080808080808080808080808080")).asString()).toEqual("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless");
-      expect(Bip39.encode(fromHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")).asString()).toEqual("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo vote");
-      expect(Bip39.encode(fromHex("9e885d952ad362caeb4efe34a8e91bd2")).asString()).toEqual("ozone drill grab fiber curtain grace pudding thank cruise elder eight picnic");
-      expect(Bip39.encode(fromHex("610b25967cdcca9d59875f5cb50b0ea754333118")).asString()).toEqual("genre float grain whale smile exchange gravity typical frequent portion senior exchange drip obtain glow");
-      expect(Bip39.encode(fromHex("6610b25967cdcca9d59875f5cb50b0ea75433311869e930b")).asString()).toEqual("gravity machine north sort system female filter attitude volume fold club stay feature office ecology stable narrow fog");
-      expect(Bip39.encode(fromHex("8a79eaca2324873eacc50cb9c6eca8cc68ea5d936f98787c60c7ebc7")).asString()).toEqual("media soon raw edge embody palm reason pave right danger clay occur modify conduct ethics vessel journey toast cradle stuff laundry");
-      expect(Bip39.encode(fromHex("68a79eaca2324873eacc50cb9c6eca8cc68ea5d936f98787c60c7ebc74e6ce7c")).asString()).toEqual("hamster diagram private dutch cause delay private meat slide toddler razor book happy fancy gospel tennis maple dilemma loan word shrug inflict delay length");
-      expect(Bip39.encode(fromHex("c0ba5a8e914111210f2bd131f3d5e08d")).asString()).toEqual("scheme spot photo card baby mountain device kick cradle pact join borrow");
-      expect(Bip39.encode(fromHex("232c38b9a99e10d2253fa1aa2739a8e9c3b112d0")).asString()).toEqual("case gift common farm three harbor neutral vintage pretty degree health squeeze deposit maximum donor");
-      expect(Bip39.encode(fromHex("6d9be1ee6ebd27a258115aad99b7317b9c8d28b6d76431c3")).asString()).toEqual("horn tenant knee talent sponsor spell gate clip pulse soap slush warm silver nephew swap uncle crack brave");
-      expect(Bip39.encode(fromHex("49208c3112119c4770d44d1a9726b44135748bda464954338f3c1d91")).asString()).toEqual("empty afford arrange category border casual select meadow box rice public list firm echo harbor since feature organ someone depth bitter");
-      expect(Bip39.encode(fromHex("9f6a2878b2520799a44ef18bc7df394e7061a224d2c33cd015b157d746869863")).asString()).toEqual("panda eyebrow bullet gorilla call smoke muffin taste mesh discover soft ostrich alcohol speed nation flash devote level hobby quick inner drive ghost inside");
-      expect(Bip39.encode(fromHex("23db8160a31d3e0dca3688ed941adbf3")).asString()).toEqual("cat swing flag economy stadium alone churn speed unique patch report train");
-      expect(Bip39.encode(fromHex("c9a0ed1374180cd8f8c5cc0bc9c719dfb67add59")).asString()).toEqual("situate alter dynamic trial liar hockey toast ridge armed evolve shoe satoshi guilt huge grass");
-      expect(Bip39.encode(fromHex("8197a4a47f0425faeaa69deebc05ca29c0a5b5cc76ceacc0")).asString()).toEqual("light rule cinnamon wrap drastic word pride squirrel upgrade then income fatal apart sustain crack supply proud access");
-      expect(Bip39.encode(fromHex("dc8a247c5379f57c24dbfbd6a0699a8282875dd0a3f0f39b8fc020a4")).asString()).toEqual("symptom eye business plunge palm safe nature legal stove addict grit agree chronic puzzle dream lawn vicious symbol useless donor eagle");
-      expect(Bip39.encode(fromHex("066dca1a2bb7e8a1db2832148ce9933eea0f3ac9548d793112d9a95c9407efad")).asString()).toEqual("all hour make first leader extend hole alien behind guard gospel lava path output census museum junior mass reopen famous sing advance salt reform");
-      expect(Bip39.encode(fromHex("f30f8c1da665478f49b001d94c5fc452")).asString()).toEqual("vessel ladder alter error federal sibling chat ability sun glass valve picture");
-      expect(Bip39.encode(fromHex("ef38bbc81a5fa1756dfd654b0cc1a1759ce1ed94")).asString()).toEqual("upset shift velvet cruise wheel rival retire protect enrich gravity hair twenty sock walnut fat");
-      expect(Bip39.encode(fromHex("c10ec20dc3cd9f652c7fac2f1230f7a3c828389a14392f05")).asString()).toEqual("scissors invite lock maple supreme raw rapid void congress muscle digital elegant little brisk hair mango congress clump");
-      expect(Bip39.encode(fromHex("a66afdf103bf42b5858cd1c23a20f7e5114edb111880d634b53454bf")).asString()).toEqual("please fitness labor alter vintage food bike olive season speed digital sketch belt horn dutch avoid stomach pizza escape practice walnut");
-      expect(Bip39.encode(fromHex("f585c11aec520db57dd353c69554b21a89b20fb0650966fa0a9d6f74fd989d8f")).asString()).toEqual("void come effort suffer camp survey warrior heavy shoot primary clutch crush open amazing screen patrol group space point ten exist slush involve unfold");
+      // Test vectors from https://github.com/trezor/python-mnemonic/blob/b502451a33a440783926e04428115e0bed87d01f/vectors.json
+      // plus similar vectors generated for the missing lengths 15 and 21 words
+      const { "12": vec12, "15": vec15, "18": vec18, "21": vec21, "24": vec24 } = bip39Vectors.encoding;
+      for (const vectors of [vec12, vec15, vec18, vec21, vec24]) {
+        for (const { entropy, mnemonic } of vectors) {
+          expect(Bip39.encode(fromHex(entropy)).asString()).toEqual(mnemonic);
+        }
+      }
     });
 
     it("throws for invalid input", () => {
@@ -67,48 +35,12 @@ describe("Bip39", () => {
 
   describe("decode", () => {
     it("can decode from mnemonic", () => {
-      expect(Bip39.decode(new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"))).toEqual(fromHex("00000000000000000000000000000000"));
-      expect(Bip39.decode(new EnglishMnemonic("legal winner thank year wave sausage worth useful legal winner thank yellow"))).toEqual(fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f"));
-      expect(Bip39.decode(new EnglishMnemonic("letter advice cage absurd amount doctor acoustic avoid letter advice cage above"))).toEqual(fromHex("80808080808080808080808080808080"));
-      expect(Bip39.decode(new EnglishMnemonic("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong"))).toEqual(fromHex("ffffffffffffffffffffffffffffffff"));
-      expect(Bip39.decode(new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address"))).toEqual(fromHex("0000000000000000000000000000000000000000"));
-      expect(Bip39.decode(new EnglishMnemonic("legal winner thank year wave sausage worth useful legal winner thank year wave sausage wise"))).toEqual(fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f"));
-      expect(Bip39.decode(new EnglishMnemonic("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor accident"))).toEqual(fromHex("8080808080808080808080808080808080808080"));
-      expect(Bip39.decode(new EnglishMnemonic("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrist"))).toEqual(fromHex("ffffffffffffffffffffffffffffffffffffffff"));
-      expect(Bip39.decode(new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon agent"))).toEqual(fromHex("000000000000000000000000000000000000000000000000"));
-      expect(Bip39.decode(new EnglishMnemonic("legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal will"))).toEqual(fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f"));
-      expect(Bip39.decode(new EnglishMnemonic("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter always"))).toEqual(fromHex("808080808080808080808080808080808080808080808080"));
-      expect(Bip39.decode(new EnglishMnemonic("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo when"))).toEqual(fromHex("ffffffffffffffffffffffffffffffffffffffffffffffff"));
-
-      expect(Bip39.decode(new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon admit"))).toEqual(fromHex("00000000000000000000000000000000000000000000000000000000"));
-      expect(Bip39.decode(new EnglishMnemonic("legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal winner thank year viable"))).toEqual(fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f"));
-      expect(Bip39.decode(new EnglishMnemonic("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd apart"))).toEqual(fromHex("80808080808080808080808080808080808080808080808080808080"));
-      expect(Bip39.decode(new EnglishMnemonic("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo veteran"))).toEqual(fromHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
-
-      expect(Bip39.decode(new EnglishMnemonic("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"))).toEqual(fromHex("0000000000000000000000000000000000000000000000000000000000000000"));
-      expect(Bip39.decode(new EnglishMnemonic("legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth useful legal winner thank year wave sausage worth title"))).toEqual(fromHex("7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f"));
-      expect(Bip39.decode(new EnglishMnemonic("letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless"))).toEqual(fromHex("8080808080808080808080808080808080808080808080808080808080808080"));
-      expect(Bip39.decode(new EnglishMnemonic("zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo vote"))).toEqual(fromHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
-      expect(Bip39.decode(new EnglishMnemonic("ozone drill grab fiber curtain grace pudding thank cruise elder eight picnic"))).toEqual(fromHex("9e885d952ad362caeb4efe34a8e91bd2"));
-      expect(Bip39.decode(new EnglishMnemonic("genre float grain whale smile exchange gravity typical frequent portion senior exchange drip obtain glow"))).toEqual(fromHex("610b25967cdcca9d59875f5cb50b0ea754333118"));
-      expect(Bip39.decode(new EnglishMnemonic("gravity machine north sort system female filter attitude volume fold club stay feature office ecology stable narrow fog"))).toEqual(fromHex("6610b25967cdcca9d59875f5cb50b0ea75433311869e930b"));
-      expect(Bip39.decode(new EnglishMnemonic("media soon raw edge embody palm reason pave right danger clay occur modify conduct ethics vessel journey toast cradle stuff laundry"))).toEqual(fromHex("8a79eaca2324873eacc50cb9c6eca8cc68ea5d936f98787c60c7ebc7"));
-      expect(Bip39.decode(new EnglishMnemonic("hamster diagram private dutch cause delay private meat slide toddler razor book happy fancy gospel tennis maple dilemma loan word shrug inflict delay length"))).toEqual(fromHex("68a79eaca2324873eacc50cb9c6eca8cc68ea5d936f98787c60c7ebc74e6ce7c"));
-      expect(Bip39.decode(new EnglishMnemonic("scheme spot photo card baby mountain device kick cradle pact join borrow"))).toEqual(fromHex("c0ba5a8e914111210f2bd131f3d5e08d"));
-      expect(Bip39.decode(new EnglishMnemonic("case gift common farm three harbor neutral vintage pretty degree health squeeze deposit maximum donor"))).toEqual(fromHex("232c38b9a99e10d2253fa1aa2739a8e9c3b112d0"));
-      expect(Bip39.decode(new EnglishMnemonic("horn tenant knee talent sponsor spell gate clip pulse soap slush warm silver nephew swap uncle crack brave"))).toEqual(fromHex("6d9be1ee6ebd27a258115aad99b7317b9c8d28b6d76431c3"));
-      expect(Bip39.decode(new EnglishMnemonic("empty afford arrange category border casual select meadow box rice public list firm echo harbor since feature organ someone depth bitter"))).toEqual(fromHex("49208c3112119c4770d44d1a9726b44135748bda464954338f3c1d91"));
-      expect(Bip39.decode(new EnglishMnemonic("panda eyebrow bullet gorilla call smoke muffin taste mesh discover soft ostrich alcohol speed nation flash devote level hobby quick inner drive ghost inside"))).toEqual(fromHex("9f6a2878b2520799a44ef18bc7df394e7061a224d2c33cd015b157d746869863"));
-      expect(Bip39.decode(new EnglishMnemonic("cat swing flag economy stadium alone churn speed unique patch report train"))).toEqual(fromHex("23db8160a31d3e0dca3688ed941adbf3"));
-      expect(Bip39.decode(new EnglishMnemonic("situate alter dynamic trial liar hockey toast ridge armed evolve shoe satoshi guilt huge grass"))).toEqual(fromHex("c9a0ed1374180cd8f8c5cc0bc9c719dfb67add59"));
-      expect(Bip39.decode(new EnglishMnemonic("light rule cinnamon wrap drastic word pride squirrel upgrade then income fatal apart sustain crack supply proud access"))).toEqual(fromHex("8197a4a47f0425faeaa69deebc05ca29c0a5b5cc76ceacc0"));
-      expect(Bip39.decode(new EnglishMnemonic("symptom eye business plunge palm safe nature legal stove addict grit agree chronic puzzle dream lawn vicious symbol useless donor eagle"))).toEqual(fromHex("dc8a247c5379f57c24dbfbd6a0699a8282875dd0a3f0f39b8fc020a4"));
-      expect(Bip39.decode(new EnglishMnemonic("all hour make first leader extend hole alien behind guard gospel lava path output census museum junior mass reopen famous sing advance salt reform"))).toEqual(fromHex("066dca1a2bb7e8a1db2832148ce9933eea0f3ac9548d793112d9a95c9407efad"));
-      expect(Bip39.decode(new EnglishMnemonic("vessel ladder alter error federal sibling chat ability sun glass valve picture"))).toEqual(fromHex("f30f8c1da665478f49b001d94c5fc452"));
-      expect(Bip39.decode(new EnglishMnemonic("upset shift velvet cruise wheel rival retire protect enrich gravity hair twenty sock walnut fat"))).toEqual(fromHex("ef38bbc81a5fa1756dfd654b0cc1a1759ce1ed94"));
-      expect(Bip39.decode(new EnglishMnemonic("scissors invite lock maple supreme raw rapid void congress muscle digital elegant little brisk hair mango congress clump"))).toEqual(fromHex("c10ec20dc3cd9f652c7fac2f1230f7a3c828389a14392f05"));
-      expect(Bip39.decode(new EnglishMnemonic("please fitness labor alter vintage food bike olive season speed digital sketch belt horn dutch avoid stomach pizza escape practice walnut"))).toEqual(fromHex("a66afdf103bf42b5858cd1c23a20f7e5114edb111880d634b53454bf"));
-      expect(Bip39.decode(new EnglishMnemonic("void come effort suffer camp survey warrior heavy shoot primary clutch crush open amazing screen patrol group space point ten exist slush involve unfold"))).toEqual(fromHex("f585c11aec520db57dd353c69554b21a89b20fb0650966fa0a9d6f74fd989d8f"));
+      const { "12": vec12, "15": vec15, "18": vec18, "21": vec21, "24": vec24 } = bip39Vectors.encoding;
+      for (const vectors of [vec12, vec15, vec18, vec21, vec24]) {
+        for (const { entropy, mnemonic } of vectors) {
+          expect(Bip39.decode(new EnglishMnemonic(mnemonic))).toEqual(fromHex(entropy));
+        }
+      }
     });
   });
 
