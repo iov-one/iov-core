@@ -2,8 +2,24 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
-# a Docker-powered typedoc executable
+# A typedoc executable installed on demand in a temp dir
+#
+# Note: typedoc is hard to encapsulate in a docker container because from there it
+# cannot easily access configuration, input and output files of the host system.
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-docker build -t "typedoc:manual" "$SCRIPT_DIR/.."
-docker run --read-only --rm "typedoc:manual" "$@"
+TMP_DIR="${TMPDIR:-/tmp}/@iov"
+mkdir -p "$TMP_DIR"
+
+EXECUTABLE="$TMP_DIR/typedoc/bin/typedoc"
+
+if [ ! -f "$EXECUTABLE" ]; then
+  (
+    cd "$TMP_DIR"
+    # Fix a version from the master branch as there is no tagged release that includes TypeScript 3.4 support
+    git clone --depth 100 --branch master https://github.com/TypeStrong/typedoc.git
+    git -C ./typedoc checkout d935c3e7c9044c49adc7f94ff332e4bf69e86b21
+    (cd ./typedoc && npm install && npm run prepare)
+  )
+fi
+
+"$EXECUTABLE" "$@"
