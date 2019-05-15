@@ -8,7 +8,7 @@ gnutimeout="$(command -v gtimeout || echo timeout)"
 # We need the genesis block in order to process initial transactions, so let's wait for height >= 1.
 echo "$(date) [Lisk node init] Waiting for node to answer and genesis block to be processed"
 # shellcheck disable=SC2016
-"$gnutimeout" 50 bash -c 'until [ "$(HEIGHT=$(curl  -sS --fail http://localhost:4000/api/node/status | jq -e .data.height) && echo $HEIGHT || echo 0)" -ge 1 ]; do sleep 2; done'
+"$gnutimeout" 50 bash -o pipefail -c 'until [ "$(HEIGHT=$(curl  -sS --fail http://localhost:4000/api/node/status | jq -e .data.height) && echo $HEIGHT || echo 0)" -ge 1 ]; do sleep 2; done'
 echo # add line break
 echo "$(date) [Lisk node init] Got response"
 
