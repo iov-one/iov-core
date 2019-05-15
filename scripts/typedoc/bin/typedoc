@@ -8,7 +8,7 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 # cannot easily access configuration, input and output files of the host system.
 
 # tag, commit or branch
-TYPEDOC_VERSION="v0.15.0-0"
+TYPEDOC_VERSION="d935c3e7c9044c49adc7f94ff332e4bf69e86b21"
 
 TMP_DIR="${TMPDIR:-/tmp}/@iov"
 mkdir -p "$TMP_DIR"
