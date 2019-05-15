@@ -57,26 +57,31 @@ export class Reducer<T, U> {
   }
 }
 
+function increment<T>(sum: number, _: T): number {
+  return sum + 1;
+}
+
 // countStream returns a reducer that contains current count
 // of events on the stream
 export function countStream<T>(stream: Stream<T>): Reducer<T, number> {
-  return new Reducer(stream, counter, 0);
+  return new Reducer(stream, increment, 0);
 }
-const counter: ReducerFunc<any, number> = (sum: number) => sum + 1;
 
-// asArray maintains an array containing all events that have
-// occurred on the stream
-export function asArray<T>(stream: Stream<T>): Reducer<T, ReadonlyArray<T>> {
-  return new Reducer(stream, append, []);
-}
 function append<T>(list: ReadonlyArray<T>, evt: T): ReadonlyArray<T> {
   return [...list, evt];
 }
 
+// asArray maintains an array containing all events that have
+// occurred on the stream
+export function asArray<T>(stream: Stream<T>): Reducer<T, ReadonlyArray<T>> {
+  return new Reducer<T, ReadonlyArray<T>>(stream, append, []);
+}
+
+function last<T>(_: any, event: T): T {
+  return event;
+}
+
 // lastValue returns the last value read from the stream, or undefined if no values sent
 export function lastValue<T>(stream: Stream<T>): Reducer<T, T | undefined> {
-  return new Reducer(stream, last, undefined);
-}
-function last<T>(_: any, evt: T): T {
-  return evt;
+  return new Reducer<T, T | undefined>(stream, last, undefined);
 }
