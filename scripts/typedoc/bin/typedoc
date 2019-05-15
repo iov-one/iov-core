@@ -1,0 +1,9 @@
+#!/bin/bash
+set -o errexit -o nounset -o pipefail
+command -v shellcheck > /dev/null && shellcheck "$0"
+
+# a Docker-powered typedoc executable
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+docker build -t "typedoc:manual" "$SCRIPT_DIR/.."
+docker run --read-only --rm "typedoc:manual" "$@"
