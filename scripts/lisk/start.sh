@@ -26,14 +26,9 @@ LISK_DOCKER_VERSION="1.6.0"
     git clone --depth 1 --branch "$LISK_TAG" https://github.com/LiskHQ/lisk.git
   fi
 
-
   (
     cd "lisk/docker"
-
     sed -e "s|ENV_LISK_VERSION=.*|ENV_LISK_VERSION=$LISK_DOCKER_VERSION|" .env.development > .env
-
-    # Work around old docker-compose version on Travis
-    sed -i -e "s|docker-compose up --detach|docker-compose up -d|" Makefile
 
     make
     make coldstart
