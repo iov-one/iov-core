@@ -1,4 +1,5 @@
 export * from "./bip39";
+export { EnglishMnemonic } from "./englishmnemonic";
 export * from "./hmac";
 export * from "./keccak";
 export * from "./libsodium";

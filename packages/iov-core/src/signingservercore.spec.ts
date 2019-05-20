@@ -243,6 +243,29 @@ describe("SigningServerCore", () => {
 
       core.shutdown();
     });
+
+    it("passes request meta from request handler to callback", async () => {
+      const profile = new UserProfile();
+      profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
+      const signer = new MultiChainSigner(profile);
+
+      const originalRequestMeta = { foo: "bar" };
+
+      const core = new SigningServerCore(
+        profile,
+        signer,
+        async (_1, _2, meta) => {
+          // we want object identity here
+          expect(meta).toBe(originalRequestMeta);
+          return [];
+        },
+        defaultSignAndPostCallback,
+      );
+
+      await core.getIdentities("Login to XY service", [defaultChainId], originalRequestMeta);
+
+      core.shutdown();
+    });
   });
 
   describe("signAndPost", () => {
@@ -268,7 +291,6 @@ describe("SigningServerCore", () => {
       );
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-
       const send = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         creator: signingIdentity,
@@ -291,8 +313,9 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
-        await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
+        await sendTokensFromFaucet(connection, identity, minimalFee);
       }
 
       async function rejectAllTransactions(_1: string, _2: UnsignedTransaction): Promise<boolean> {
@@ -306,14 +329,13 @@ describe("SigningServerCore", () => {
         rejectAllTransactions,
       );
 
-      const identities = await core.getIdentities("Please select signer", [bnsChain]);
-      const signingIdentity = identities[0];
-      const send: SendTransaction = {
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
+      const send = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         creator: signingIdentity,
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
-      };
+      });
       const transactionId = await core.signAndPost("Please sign now", send);
       expect(transactionId).toBeNull();
 
@@ -329,8 +351,9 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
-        await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
+        await sendTokensFromFaucet(connection, identity, minimalFee);
       }
 
       async function throwingCallback(_1: string, _2: UnsignedTransaction): Promise<boolean> {
@@ -338,17 +361,55 @@ describe("SigningServerCore", () => {
       }
       const core = new SigningServerCore(profile, signer, defaultGetIdentitiesCallback, throwingCallback);
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-
-      const send: SendTransaction = {
+      const send = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         creator: signingIdentity,
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
-      };
+      });
       await core
         .signAndPost("Please sign now", send)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/internal server error/i));
+
+      core.shutdown();
+    });
+
+    it("passes request meta from request handler to callback", async () => {
+      pendingWithoutBnsd();
+
+      const profile = new UserProfile();
+      const signer = new MultiChainSigner(profile);
+      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const bnsChain = connection.chainId();
+
+      {
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
+        await sendTokensFromFaucet(connection, identity, minimalFee);
+      }
+
+      const originalRequestMeta = { foo: "bar" };
+
+      const core = new SigningServerCore(
+        profile,
+        signer,
+        defaultGetIdentitiesCallback,
+        async (_1, _2, meta) => {
+          // we want object identity here
+          expect(meta).toBe(originalRequestMeta);
+          return false;
+        },
+      );
+
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
+      const send = await connection.withDefaultFee<SendTransaction>({
+        kind: "bcp/send",
+        creator: signingIdentity,
+        amount: defaultAmount,
+        recipient: await randomBnsAddress(),
+      });
+      await core.signAndPost("Please sign now", send, originalRequestMeta);
 
       core.shutdown();
     });

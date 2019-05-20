@@ -19,12 +19,21 @@ From repo root:
 
 ```
 ./scripts/lisk/start.sh
-sleep 20
 ./scripts/lisk/init.sh
 export LISK_ENABLED=1
 ```
 
 ## Initialize
+
+The faucet account
+
+- 9061425315350165588L
+- m/1229936198'/1'/0'/0'
+- wagon stock borrow episode laundry kitten salute link globe zero feed marble
+
+is loaded with 10000 LSK.
+
+The account 2222222L has no keypair and only receives funds (1.4455 LSK).
 
 The account
 
@@ -32,26 +41,7 @@ The account
 - e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6
 - parrot idle tattoo cheese island stand adult reunion tool tell neglect abandon
 
-gets an initial amount of money and initializes its public key:
-
-```
-// Send 100.44556677 LSK to 1349293588603668134L
-curl -X POST -H "Content-type: application/json" -d '{"type":0,"amount":"10044556677","recipientId":"1349293588603668134L","senderPublicKey":"c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f","timestamp":76888413,"fee":"10000000","asset":{"data":"We ❤️ developers – iov.one"},"signature":"2f79fb84fdf9b968f518c0c98add37811bd6cb46172cc1759cc35b5bca2f65cb0a213511cc93bda37adb2c6e1e77d5a9f6facb4a471e80622962b48e5be3d402","id":"12493173350733478622"}' http://localhost:4000/api/transactions
-
-// Initialize 1349293588603668134L
-curl -X POST -H "Content-type: application/json" -d '{"type":0,"amount":"100000000","recipientId":"1349293588603668134L","senderPublicKey":"e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6","timestamp":76888557,"fee":"10000000","asset":{"data":"We ❤️ developers – iov.one"},"signature":"7f272033202323a6107a92629774102aa580c544abf66dd7c001cc5582259fcfe2b13cab475f130c5d485cae8e078b856a7f56865e6bcfd8b03792d45d6dc00e","id":"3947878526850651767"}' http://localhost:4000/api/transactions
-
-// 1349293588603668134L now owns 100.34556677 LSK
-```
-
-The account 2222222L has no keypair and only receives funds.
-
-```
-// Send 1.4455 LSK to 2222222L
-curl -X POST -H "Content-type: application/json" -d '{"type":0,"amount":"144550000","recipientId":"2222222L","senderPublicKey":"c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f","timestamp":81017778,"fee":"10000000","asset":{},"signature":"3be0019dce1bd0c5586720d3e6b6355cac291d8c236e832f4fe68ea3f0926dd3d4e84f72e083cbc301a55cef0237fc5732b0f0516fd4c4b6345a6e71b9f7e800","id":"14104830969050871842"}' http://localhost:4000/api/transactions
-
-// 2222222L now exists in the accounts list
-```
+gets an initial amount of money and initializes its public key.
 
 ## Stop
 

@@ -88,9 +88,17 @@ export class JsonRpcSigningServer {
   }
 
   /**
-   * Handles a request from a possible untrusted source.
+   * Handles a request from a possibly untrusted source.
+   *
+   * 1. Parse request as a JSON-RPC request
+   * 2. Convert JSON-RPC request into calls to SigningServerCore
+   * 3. Call SigningServerCore
+   * 4. Convert result to JSON-RPC response
+   *
+   * @param request The JSON-RPC request to be handled
+   * @param meta An arbitrary object that is passed by reference into the autorization callbacks
    */
-  public async handleUnchecked(request: unknown): Promise<JsonRpcResponse> {
+  public async handleUnchecked(request: unknown, meta?: any): Promise<JsonRpcResponse> {
     let checkedRequest: JsonRpcRequest;
     try {
       checkedRequest = parseJsonRpcRequest(request);
@@ -107,18 +115,21 @@ export class JsonRpcSigningServer {
       return errorResponse;
     }
 
-    return this.handleChecked(checkedRequest);
+    return this.handleChecked(checkedRequest, meta);
   }
 
   /**
    * Handles a checked request, i.e. a request that is known to be a valid
    * JSON-RPC "Request object".
    *
-   * 1. convert JsonRpcRequest into calls to SigningServerCore
-   * 2. call SigningServerCore
-   * 3. convert result to JSON-RPC format
+   * 1. Convert JSON-RPC request into calls to SigningServerCore
+   * 2. Call SigningServerCore
+   * 3. Convert result to JSON-RPC response
+   *
+   * @param request The JSON-RPC request to be handled
+   * @param meta An arbitrary object that is passed by reference into the autorization callbacks
    */
-  public async handleChecked(request: JsonRpcRequest): Promise<JsonRpcResponse> {
+  public async handleChecked(request: JsonRpcRequest, meta?: any): Promise<JsonRpcResponse> {
     let call: RpcCall;
     try {
       call = parseRpcCall(request);
@@ -147,20 +158,24 @@ export class JsonRpcSigningServer {
     try {
       let response: JsonRpcSuccessResponse;
       switch (call.name) {
-        case "getIdentities":
+        case "getIdentities": {
+          const result = await this.core.getIdentities(call.reason, call.chainIds, meta);
           response = {
             jsonrpc: "2.0",
             id: request.id,
-            result: TransactionEncoder.toJson(await this.core.getIdentities(call.reason, call.chainIds)),
+            result: TransactionEncoder.toJson(result),
           };
           break;
-        case "signAndPost":
+        }
+        case "signAndPost": {
+          const result = await this.core.signAndPost(call.reason, call.transaction, meta);
           response = {
             jsonrpc: "2.0",
             id: request.id,
-            result: TransactionEncoder.toJson(await this.core.signAndPost(call.reason, call.transaction)),
+            result: TransactionEncoder.toJson(result),
           };
           break;
+        }
         default:
           throw new Error("Unsupported RPC call");
       }

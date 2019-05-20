@@ -1,0 +1,36 @@
+#!/bin/bash
+set -o errexit -o nounset -o pipefail
+command -v shellcheck > /dev/null && shellcheck "$0"
+
+# A typedoc executable installed on demand in a temp dir
+#
+# Note: typedoc is hard to encapsulate in a docker container because from there it
+# cannot easily access configuration, input and output files of the host system.
+
+# tag, commit or branch
+TYPEDOC_VERSION="d935c3e7c9044c49adc7f94ff332e4bf69e86b21"
+
+TMP_DIR="${TMPDIR:-/tmp}/@iov"
+mkdir -p "$TMP_DIR"
+
+TYPEDOC_DIR="$TMP_DIR/typedoc"
+
+if [ -d "$TYPEDOC_DIR" ]; then
+  if [ "$(git -C "$TYPEDOC_DIR" log --no-decorate --oneline -n 1 HEAD)" != "$(git -C "$TYPEDOC_DIR" log --no-decorate --oneline -n 1 $TYPEDOC_VERSION)" ]; then
+    echo "WARNING: Found incompatible typedoc repo. Deleting installation..."
+    rm -rf "$TYPEDOC_DIR"
+  fi
+fi
+
+EXECUTABLE="$TYPEDOC_DIR/bin/typedoc"
+
+if [ ! -f "$EXECUTABLE" ]; then
+  (
+    cd "$TMP_DIR"
+    git clone --depth 100 --branch master https://github.com/TypeStrong/typedoc.git
+    git -C ./typedoc checkout "$TYPEDOC_VERSION"
+    (cd ./typedoc && npm install && npm run prepare)
+  )
+fi
+
+"$EXECUTABLE" "$@"

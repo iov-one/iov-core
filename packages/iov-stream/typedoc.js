@@ -11,4 +11,4 @@ module.exports = {
   excludeExternals: true,
   excludeNotExported: true,
   excludePrivate: true,
-}
+};

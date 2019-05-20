@@ -14,8 +14,12 @@ export interface GetIdentitiesAuthorization {
      * callback is sent to the RPC client as an unspecified
      * "Internal server error" and the callback author should
      * ensure this does not happen.
+     *
+     * @param reason An explanation why the autorization is requested. This is created by the website and shown to the user.
+     * @param matchingIdentities The identities that match the requested chain IDs.
+     * @param meta An object that is passed by reference from request handlers into the callback.
      */
-    (reason: string, matchingIdentities: ReadonlyArray<Identity>): Promise<ReadonlyArray<Identity>>;
+    (reason: string, matchingIdentities: ReadonlyArray<Identity>, meta?: any): Promise<ReadonlyArray<Identity>>;
 }
 export interface SignAndPostAuthorization {
     /**
@@ -29,8 +33,12 @@ export interface SignAndPostAuthorization {
      * callback is sent to the RPC client as an unspecified
      * "Internal server error" and the callback author should
      * ensure this does not happen.
+     *
+     * @param reason An explanation why the autorization is requested. This is created by the website and shown to the user.
+     * @param transaction The transaction to be signed.
+     * @param meta An object that is passed by reference from request handlers into the callback.
      */
-    (reason: string, transaction: UnsignedTransaction): Promise<boolean>;
+    (reason: string, transaction: UnsignedTransaction, meta?: any): Promise<boolean>;
 }
 export interface SignedAndPosted {
     readonly transaction: UnsignedTransaction;
@@ -51,14 +59,14 @@ export declare class SigningServerCore {
      * the user selected no identity or rejected the request entirely,
      * this returns an empty list.
      */
-    getIdentities(reason: string, chainIds: ReadonlyArray<ChainId>): Promise<ReadonlyArray<Identity>>;
+    getIdentities(reason: string, chainIds: ReadonlyArray<ChainId>, meta?: any): Promise<ReadonlyArray<Identity>>;
     /**
      * Handles a transaction signing request
      *
      * @returns the transaction ID in case the user authorized the signing
      * and `null` in case the user rejected.
      */
-    signAndPost(reason: string, transaction: UnsignedTransaction): Promise<TransactionId | null>;
+    signAndPost(reason: string, transaction: UnsignedTransaction, meta?: any): Promise<TransactionId | null>;
     /**
      * Call this to free ressources when server is not needed anymore
      */

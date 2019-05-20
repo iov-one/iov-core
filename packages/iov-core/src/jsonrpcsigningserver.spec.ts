@@ -369,4 +369,50 @@ describe("JsonRpcSigningServer", () => {
 
     server.shutdown();
   });
+
+  it("passes request meta from request handler to callback", async () => {
+    pendingWithoutBnsd();
+    pendingWithoutEthereum();
+
+    const bnsConnection = await bnsConnector(bnsdUrl).client();
+
+    const originalRequestMeta = { foo: "bar" };
+
+    const server = await makeBnsEthereumSigningServer(async (_1, _2, requestMeta) => {
+      // we want object identity here
+      expect(requestMeta).toBe(originalRequestMeta);
+      return [];
+    });
+
+    // unchecked
+    await server.handleUnchecked(
+      {
+        jsonrpc: "2.0",
+        id: 123,
+        method: "getIdentities",
+        params: {
+          reason: "string:Who are you?",
+          chainIds: [`string:${bnsConnection.chainId()}`],
+        },
+      },
+      originalRequestMeta,
+    );
+
+    // checked
+    await server.handleChecked(
+      {
+        jsonrpc: "2.0",
+        id: 123,
+        method: "getIdentities",
+        params: {
+          reason: "string:Who are you?",
+          chainIds: [`string:${bnsConnection.chainId()}`],
+        },
+      },
+      originalRequestMeta,
+    );
+
+    server.shutdown();
+    bnsConnection.disconnect();
+  });
 });

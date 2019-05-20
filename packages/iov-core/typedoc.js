@@ -15,4 +15,4 @@ module.exports = {
   excludeNotExported: true,
   // this pulls in all dependencies
   includeDeclarations: true,
-}
+};
