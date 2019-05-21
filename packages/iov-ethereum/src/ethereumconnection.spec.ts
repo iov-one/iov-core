@@ -117,6 +117,7 @@ describe("EthereumConnection", () => {
     const sendTx: SendTransaction & WithCreator = {
       kind: "bcp/send",
       creator: sender,
+      sender: ethereumCodec.identityToAddress(sender),
       recipient: recipient,
       amount: defaultAmount,
       fee: {
@@ -368,6 +369,7 @@ describe("EthereumConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: recipient,
         amount: defaultAmount,
         fee: {
@@ -403,6 +405,7 @@ describe("EthereumConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: recipient,
         amount: defaultAmount,
         fee: {
@@ -450,6 +453,7 @@ describe("EthereumConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: await randomAddress(),
         amount: defaultAmount,
         fee: {
@@ -484,6 +488,7 @@ describe("EthereumConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: brokeIdentity,
+        sender: ethereumCodec.identityToAddress(brokeIdentity),
         recipient: await randomAddress(),
         amount: defaultAmount,
         fee: {
@@ -513,6 +518,7 @@ describe("EthereumConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: await randomAddress(),
         amount: defaultAmount,
         fee: {
@@ -556,6 +562,7 @@ describe("EthereumConnection", () => {
         const sendTx: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: mainIdentity,
+          sender: ethereumCodec.identityToAddress(mainIdentity),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -665,6 +672,7 @@ describe("EthereumConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: recipient,
         amount: defaultAmount,
         fee: {
@@ -721,6 +729,7 @@ describe("EthereumConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: recipientAddress,
         amount: defaultAmount,
         fee: {
@@ -857,6 +866,7 @@ describe("EthereumConnection", () => {
           const sendTx: SendTransaction & WithCreator = {
             kind: "bcp/send",
             creator: mainIdentity,
+            sender: ethereumCodec.identityToAddress(mainIdentity),
             recipient: recipient,
             fee: {
               gasPrice: testConfig.gasPrice,
@@ -917,6 +927,7 @@ describe("EthereumConnection", () => {
           const sendTx: SendTransaction & WithCreator = {
             kind: "bcp/send",
             creator: mainIdentity,
+            sender: ethereumCodec.identityToAddress(mainIdentity),
             recipient: recipient,
             fee: {
               gasPrice: testConfig.gasPrice,
@@ -1011,6 +1022,7 @@ describe("EthereumConnection", () => {
         const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
           fee: {
@@ -1023,6 +1035,7 @@ describe("EthereumConnection", () => {
         const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
           fee: {
@@ -1036,6 +1049,7 @@ describe("EthereumConnection", () => {
         const sendC: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1095,6 +1109,7 @@ describe("EthereumConnection", () => {
         const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
           fee: {
@@ -1107,6 +1122,7 @@ describe("EthereumConnection", () => {
         const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
           fee: {
@@ -1119,6 +1135,7 @@ describe("EthereumConnection", () => {
         const sendC: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
           fee: {
@@ -1209,6 +1226,7 @@ describe("EthereumConnection", () => {
         const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
           fee: {
@@ -1221,6 +1239,7 @@ describe("EthereumConnection", () => {
         const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
           fee: {
@@ -1233,6 +1252,7 @@ describe("EthereumConnection", () => {
         const sendC: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
           fee: {
@@ -1327,6 +1347,7 @@ describe("EthereumConnection", () => {
         const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1338,6 +1359,7 @@ describe("EthereumConnection", () => {
         const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1349,6 +1371,7 @@ describe("EthereumConnection", () => {
         const sendC: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1437,6 +1460,7 @@ describe("EthereumConnection", () => {
         const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1448,6 +1472,7 @@ describe("EthereumConnection", () => {
         const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1459,6 +1484,7 @@ describe("EthereumConnection", () => {
         const sendC: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1549,6 +1575,7 @@ describe("EthereumConnection", () => {
         const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1560,6 +1587,7 @@ describe("EthereumConnection", () => {
         const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1571,6 +1599,7 @@ describe("EthereumConnection", () => {
         const sendC: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1582,6 +1611,7 @@ describe("EthereumConnection", () => {
         const sendD: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
             gasPrice: testConfig.gasPrice,
@@ -1671,6 +1701,7 @@ describe("EthereumConnection", () => {
         const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
           fee: {
@@ -1732,6 +1763,7 @@ describe("EthereumConnection", () => {
         const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
           fee: {
@@ -1845,16 +1877,18 @@ describe("EthereumConnection", () => {
     it("works for send transaction", async () => {
       pendingWithoutEthereum();
       const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const sender = {
+        chainId: connection.chainId(),
+        pubkey: {
+          algo: Algorithm.Secp256k1,
+          data: fromHex("aabbccdd") as PublicKeyBytes,
+        },
+      };
 
       const sendTransaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
-        creator: {
-          chainId: connection.chainId(),
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromHex("aabbccdd") as PublicKeyBytes,
-          },
-        },
+        creator: sender,
+        sender: "not used" as Address,
         recipient: await randomAddress(),
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
         amount: defaultAmount,

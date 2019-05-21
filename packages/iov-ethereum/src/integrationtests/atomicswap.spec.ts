@@ -110,6 +110,7 @@ class Actor {
     const transaction = await this.connection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: this.senderIdentity,
+      sender: ethereumCodec.identityToAddress(this.senderIdentity),
       recipient: recipient,
       amount: amount,
     });

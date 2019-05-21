@@ -314,6 +314,7 @@ export class EthereumCodec implements TxCodec {
       transaction = {
         kind: "bcp/send",
         creator: creator,
+        sender: pubkeyToAddress(creator.pubkey),
         fee: fee,
         amount: {
           quantity: quantity,
@@ -359,6 +360,7 @@ export class EthereumCodec implements TxCodec {
       transaction = {
         kind: "bcp/send",
         creator: creator,
+        sender: pubkeyToAddress(creator.pubkey),
         fee: fee,
         amount: {
           quantity: decodeHexQuantityString(json.value),

@@ -81,6 +81,7 @@ describe("Serialization", () => {
           },
           gasLimit: "21000",
         },
+        sender: "not used" as Address,
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
       };
       const nonce = 0 as Nonce;
@@ -119,6 +120,7 @@ describe("Serialization", () => {
           },
           gasLimit: "21000",
         },
+        sender: "not used" as Address,
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
         memo:
           "The nice memo I attach to that money for the whole world to read, And can encode as much data as you want, and unicode symbols like \u2764",
@@ -165,6 +167,7 @@ describe("Serialization", () => {
             gasPrice: undefined,
             gasLimit: gasLimit,
           },
+          sender: "not used" as Address,
           recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
         };
         expect(() => serializeUnsignedTransaction(tx, nonce)).toThrowError(/gasPrice must be set/i);
@@ -180,6 +183,7 @@ describe("Serialization", () => {
             gasPrice: gasPrice,
             gasLimit: undefined,
           },
+          sender: "not used" as Address,
           recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
         };
         expect(() => serializeUnsignedTransaction(tx, nonce)).toThrowError(/gasLimit must be set/i);
@@ -216,6 +220,7 @@ describe("Serialization", () => {
           gasPrice: gasPrice,
           gasLimit: gasLimit,
         },
+        sender: "not used" as Address,
         recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
       };
       expect(() => serializeUnsignedTransaction(tx, -1 as Nonce)).toThrowError(
@@ -248,6 +253,7 @@ describe("Serialization", () => {
           },
           gasLimit: "52669",
         },
+        sender: "not used" as Address,
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
       };
 
@@ -583,6 +589,7 @@ describe("Serialization", () => {
             },
             gasLimit: "21000",
           },
+          sender: "not used" as Address,
           recipient: "0x095e7baea6a6c7c4c2dfeb977efac326af552d87" as Address,
         },
         primarySignature: {
@@ -634,6 +641,7 @@ describe("Serialization", () => {
             },
             gasLimit: "52669",
           },
+          sender: "not used" as Address,
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
         },
         primarySignature: {
