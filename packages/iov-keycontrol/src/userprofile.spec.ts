@@ -482,6 +482,7 @@ describe("UserProfile", () => {
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
+      sender: "DDEEFF" as Address,
       recipient: "AABBCC" as Address,
     };
     const fakeSignedTransaction: SignedTransaction = {
@@ -564,6 +565,7 @@ describe("UserProfile", () => {
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       },
+      sender: "DDEEFF" as Address,
       recipient: "AABBCC" as Address,
     };
 
