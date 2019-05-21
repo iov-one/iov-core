@@ -149,6 +149,7 @@ class Actor {
     const transaction = await this.bnsConnection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: this.bnsIdentity,
+      sender: this.bnsAddress,
       recipient: recipient,
       amount: amount,
     });
@@ -159,6 +160,7 @@ class Actor {
     const transaction = await this.bcpConnection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: this.bcpIdentity,
+      sender: this.bcpAddress,
       recipient: recipient,
       amount: amount,
     });

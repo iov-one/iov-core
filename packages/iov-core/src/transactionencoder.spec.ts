@@ -148,6 +148,7 @@ describe("TransactionEncoder", () => {
           tokenTicker: "CASH" as TokenTicker,
           fractionalDigits: 2,
         },
+        sender: "not used" as Address,
         recipient: "aabbcc" as Address,
         fee: {
           tokens: {

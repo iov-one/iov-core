@@ -100,6 +100,7 @@ describe("MultiChainSigner", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: recipient,
         memo: memo,
         amount: {
@@ -209,6 +210,7 @@ describe("MultiChainSigner", () => {
         const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction & WithCreator>({
           kind: "bcp/send",
           creator: bnsFaucet,
+          sender: bnsCodec.identityToAddress(bnsFaucet),
           recipient: await randomBnsAddress(),
           memo: `MultiChainSigner style (${Math.random()})`,
           amount: {
@@ -232,6 +234,7 @@ describe("MultiChainSigner", () => {
             tokenTicker: "ETH" as TokenTicker,
             fractionalDigits: 18,
           },
+          sender: bnsCodec.identityToAddress(ganacheMainIdentity),
           recipient: "0x0000000000000000000000000000000000000000" as Address,
           memo: `MultiChainSigner style (${Math.random()})`,
           // TODO: shall we use getFeeQuote here?

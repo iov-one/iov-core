@@ -231,6 +231,7 @@ describe("JsonRpcSigningServer", () => {
     const send = await bnsConnection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: signer,
+      sender: bnsCodec.identityToAddress(signer),
       memo: `Hello ${Math.random()}`,
       amount: defaultAmount,
       recipient: await randomBnsAddress(),
@@ -292,6 +293,7 @@ describe("JsonRpcSigningServer", () => {
     const send: SendTransaction & WithCreator = {
       kind: "bcp/send",
       creator: signer,
+      sender: bnsCodec.identityToAddress(signer),
       memo: `Hello ${Math.random()}`,
       amount: defaultAmount,
       recipient: await randomBnsAddress(),

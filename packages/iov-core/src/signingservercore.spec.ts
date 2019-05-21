@@ -78,6 +78,7 @@ describe("SigningServerCore", () => {
     const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: faucet,
+      sender: bnsCodec.identityToAddress(faucet),
       recipient: isIdentity(recipient) ? bnsCodec.identityToAddress(recipient) : recipient,
       amount: amount,
     });
@@ -296,6 +297,7 @@ describe("SigningServerCore", () => {
       const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
@@ -335,6 +337,7 @@ describe("SigningServerCore", () => {
       const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
@@ -366,6 +369,7 @@ describe("SigningServerCore", () => {
       const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
@@ -408,6 +412,7 @@ describe("SigningServerCore", () => {
       const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
@@ -445,6 +450,7 @@ describe("SigningServerCore", () => {
       const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
