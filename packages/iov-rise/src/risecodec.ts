@@ -101,6 +101,7 @@ export const riseCodec: TxCodec = {
    */
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
+    const senderPublicKey = Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes;
 
     let unsignedTransaction: UnsignedTransaction;
     switch (json.type) {
@@ -111,7 +112,7 @@ export const riseCodec: TxCodec = {
             chainId: chainId,
             pubkey: {
               algo: Algorithm.Ed25519,
-              data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
+              data: senderPublicKey,
             },
           },
           fee: {
@@ -126,6 +127,7 @@ export const riseCodec: TxCodec = {
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenTicker: constants.primaryTokenTicker,
           },
+          sender: pubkeyToAddress(senderPublicKey),
           recipient: json.recipientId as Address,
         };
         unsignedTransaction = send;
@@ -140,7 +142,7 @@ export const riseCodec: TxCodec = {
         nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
+          data: senderPublicKey,
         },
         signature: Encoding.fromHex(json.signature) as SignatureBytes,
       },

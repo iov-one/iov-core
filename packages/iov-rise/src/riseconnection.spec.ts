@@ -402,6 +402,7 @@ describe("RiseConnection", () => {
           const sendTx: SendTransaction & WithCreator = {
             kind: "bcp/send",
             creator: mainIdentity,
+            sender: riseCodec.identityToAddress(mainIdentity),
             recipient: recipient,
             amount: defaultSendAmount,
           };
@@ -491,6 +492,7 @@ describe("RiseConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: riseCodec.identityToAddress(mainIdentity),
         recipient: defaultRecipientAddress,
         amount: defaultSendAmount,
       };
@@ -513,6 +515,7 @@ describe("RiseConnection", () => {
         const sendTx: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: mainIdentity,
+          sender: riseCodec.identityToAddress(mainIdentity),
           recipient: defaultRecipientAddress,
           amount: defaultSendAmount,
         };
@@ -558,6 +561,7 @@ describe("RiseConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: riseCodec.identityToAddress(mainIdentity),
         recipient: defaultRecipientAddress,
         amount: defaultSendAmount,
       };
@@ -696,6 +700,7 @@ describe("RiseConnection", () => {
         const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: riseCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultSendAmount,
         };
@@ -703,6 +708,7 @@ describe("RiseConnection", () => {
         const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: riseCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultSendAmount,
         };
@@ -765,6 +771,7 @@ describe("RiseConnection", () => {
         const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: riseCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultSendAmount,
         };
@@ -819,6 +826,7 @@ describe("RiseConnection", () => {
         const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: riseCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultSendAmount,
         };
@@ -858,16 +866,18 @@ describe("RiseConnection", () => {
   describe("getFeeQuote", () => {
     it("works for send transaction", async () => {
       const connection = new RiseConnection(base, riseTestnet);
+      const sender = {
+        chainId: riseTestnet,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("aabbccdd") as PublicKeyBytes,
+        },
+      };
 
       const sendTransaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
-        creator: {
-          chainId: riseTestnet,
-          pubkey: {
-            algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PublicKeyBytes,
-          },
-        },
+        creator: sender,
+        sender: riseCodec.identityToAddress(sender),
         recipient: defaultRecipientAddress,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
         amount: defaultSendAmount,

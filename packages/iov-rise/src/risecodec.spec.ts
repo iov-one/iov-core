@@ -54,6 +54,7 @@ describe("riseCodec", () => {
         fractionalDigits: 8,
         tokenTicker: "RISE" as TokenTicker,
       },
+      sender: "10055555555555555555R" as Address,
       recipient: "10010344879730196491R" as Address,
     };
     const bytes = riseCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce);
@@ -77,6 +78,7 @@ describe("riseCodec", () => {
         fractionalDigits: 6,
         tokenTicker: "RISE" as TokenTicker,
       },
+      sender: "10055555555555555555R" as Address,
       recipient: "10010344879730196491R" as Address,
     };
     expect(() => riseCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce)).toThrowError(/Requires 8/);
@@ -99,6 +101,7 @@ describe("riseCodec", () => {
         fractionalDigits: 8,
         tokenTicker: "RISE" as TokenTicker,
       },
+      sender: "10055555555555555555R" as Address,
       recipient: "10010344879730196491R" as Address,
     };
 
