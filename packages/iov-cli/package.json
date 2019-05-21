@@ -14,7 +14,7 @@
   "scripts": {
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "format-text": "prettier --write --prose-wrap always --print-width 80 \"./*.md\"",
-    "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",
+    "lint": "tslint -t verbose --project .",
     "prebuild": "yarn format",
     "build": "tsc",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
