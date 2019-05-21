@@ -54,6 +54,7 @@ describe("liskCodec", () => {
         fractionalDigits: 8,
         tokenTicker: "LSK" as TokenTicker,
       },
+      sender: "10055555555555555555L" as Address,
       recipient: "10010344879730196491L" as Address,
     };
     const bytes = liskCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce);
@@ -77,6 +78,7 @@ describe("liskCodec", () => {
         fractionalDigits: 7,
         tokenTicker: "LSK" as TokenTicker,
       },
+      sender: "10055555555555555555L" as Address,
       recipient: "10010344879730196491L" as Address,
     };
     expect(() => liskCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce)).toThrowError(/Requires 8/);
@@ -99,6 +101,7 @@ describe("liskCodec", () => {
         fractionalDigits: 8,
         tokenTicker: "LSK" as TokenTicker,
       },
+      sender: "10055555555555555555L" as Address,
       recipient: "10010344879730196491L" as Address,
     };
 

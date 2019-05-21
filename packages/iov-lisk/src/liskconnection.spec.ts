@@ -414,6 +414,7 @@ describe("LiskConnection", () => {
           const sendTx: SendTransaction & WithCreator = {
             kind: "bcp/send",
             creator: mainIdentity,
+            sender: liskCodec.identityToAddress(mainIdentity),
             recipient: recipient,
             amount: devnetDefaultAmount,
           };
@@ -527,6 +528,7 @@ describe("LiskConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: liskCodec.identityToAddress(mainIdentity),
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
         amount: devnetDefaultAmount,
@@ -555,6 +557,7 @@ describe("LiskConnection", () => {
         const sendTx: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: mainIdentity,
+          sender: liskCodec.identityToAddress(mainIdentity),
           recipient: devnetDefaultRecipient,
           memo: `We ❤️ developers – iov.one ${Math.random()}`,
           amount: devnetDefaultAmount,
@@ -601,6 +604,7 @@ describe("LiskConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: liskCodec.identityToAddress(mainIdentity),
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
         amount: devnetDefaultAmount,
@@ -633,6 +637,7 @@ describe("LiskConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: liskCodec.identityToAddress(mainIdentity),
         recipient: devnetDefaultRecipient,
         memo: "We ❤️ developers – iov.one",
         amount: devnetDefaultAmount,
@@ -894,6 +899,7 @@ describe("LiskConnection", () => {
         const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test A ${Math.random()}`,
@@ -902,6 +908,7 @@ describe("LiskConnection", () => {
         const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test B ${Math.random()}`,
@@ -910,6 +917,7 @@ describe("LiskConnection", () => {
         const sendC: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test C ${Math.random()}`,
@@ -980,6 +988,7 @@ describe("LiskConnection", () => {
         const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test ${Math.random()}`,
@@ -1036,6 +1045,7 @@ describe("LiskConnection", () => {
         const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test ${Math.random()}`,
@@ -1076,16 +1086,18 @@ describe("LiskConnection", () => {
   describe("getFeeQuote", () => {
     it("works for send transaction", async () => {
       const connection = new LiskConnection(dummynetBase, dummynetChainId);
+      const sender = {
+        chainId: dummynetChainId,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("aabbccdd") as PublicKeyBytes,
+        },
+      };
 
       const sendTransaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
-        creator: {
-          chainId: dummynetChainId,
-          pubkey: {
-            algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PublicKeyBytes,
-          },
-        },
+        creator: sender,
+        sender: liskCodec.identityToAddress(sender),
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
         amount: devnetDefaultAmount,
