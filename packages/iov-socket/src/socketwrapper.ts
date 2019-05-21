@@ -69,6 +69,7 @@ export class SocketWrapper {
       });
     };
     socket.onopen = _ => {
+      this.clearTimeout();
       this.connectedResolver!();
 
       if (this.openHandler) {
