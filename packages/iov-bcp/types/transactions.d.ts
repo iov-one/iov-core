@@ -141,6 +141,7 @@ export declare function isUnsignedTransaction(data: any): data is UnsignedTransa
 export interface SendTransaction extends LightTransaction {
     readonly kind: "bcp/send";
     readonly amount: Amount;
+    readonly sender: Address;
     readonly recipient: Address;
     readonly memo?: string;
 }
