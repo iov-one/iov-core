@@ -29,7 +29,6 @@
   "devDependencies": {
     "@types/jasmine": "^3.3.7",
     "@types/memdown": "^3.0.0",
-    "cross-env": "^5.2.0",
     "jasmine": "^3.3.1",
     "jasmine-console-reporter": "^3.0.2",
     "karma": "^3.1.4",
