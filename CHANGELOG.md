@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.3
+
+- @iov/socket: Fix bug in `SocketWrapper` where the timeout error was triggered
+  even if the connection was successfully established.
+
 ## 0.14.2
 
 - @iov/jsonrpc: Add `makeJsonRpcId`.
@@ -12,6 +17,11 @@
   `SigningServerCore.signAndPost`, `JsonRpcSigningServer.handleUnchecked` and
   `JsonRpcSigningServer.handleChecked` which allows passing request meta
   information from the request handler to the authorization callbacks.
+
+## 0.13.8
+
+- @iov/socket: Fix bug in `SocketWrapper` where the timeout error was triggered
+  even if the connection was successfully established.
 
 ## 0.13.7
 
