@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/jasmine": "^3.3.7",
     "@types/memdown": "^3.0.0",
+    "eslint": "^5.16.0",
     "jasmine": "^3.3.1",
     "jasmine-console-reporter": "^3.0.2",
     "karma": "^3.1.4",
