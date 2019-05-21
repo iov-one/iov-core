@@ -38,6 +38,7 @@ Breaking changes
 - @iov/bcp: Several transaction types now extend `LightTransaction` instead of
   `UnsignedTransaction` (i.e. they have no `creator` field): `SendTransaction`,
   `SwapOfferTransaction`, `SwapClaimTransaction`, and `SwapAbortTransaction`.
+- @iov/bcp: Add `sender` field to `SendTransaction`.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 - @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.
