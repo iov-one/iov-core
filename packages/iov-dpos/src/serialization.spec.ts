@@ -31,6 +31,7 @@ const liskTransactionSerializationOptions: TransactionSerializationOptions = {
 const riseTransactionSerializationOptions: TransactionSerializationOptions = {
   maxMemoLength: 0,
 };
+const defaultSender = "10055555555555555555R" as Address;
 
 describe("Serialization", () => {
   describe("toTimestamp", () => {
@@ -105,6 +106,7 @@ describe("Serialization", () => {
           fractionalDigits: 8,
           tokenTicker: "RISE" as TokenTicker,
         },
+        sender: defaultSender,
         recipient: "10010344879730196491R" as Address,
       };
 
@@ -133,6 +135,7 @@ describe("Serialization", () => {
           fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
+        sender: defaultSender,
         recipient: "10010344879730196491L" as Address,
       };
 
@@ -160,6 +163,7 @@ describe("Serialization", () => {
           fractionalDigits: 9,
           tokenTicker: "RISE" as TokenTicker,
         },
+        sender: defaultSender,
         recipient: "10010344879730196491R" as Address,
       };
       expect(() =>
@@ -184,6 +188,7 @@ describe("Serialization", () => {
           fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
+        sender: defaultSender,
         recipient: "10010344879730196491L" as Address,
         memo: "The nice memo I attach to that money for the whole world to read",
       };
@@ -213,6 +218,7 @@ describe("Serialization", () => {
           fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
+        sender: defaultSender,
         memo: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam",
         recipient: "10010344879730196491L" as Address,
       };
@@ -239,6 +245,7 @@ describe("Serialization", () => {
           fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
+        sender: defaultSender,
         // ⇉ (Rightwards Paired Arrows, U+21c9) takes 2 bytes in UTF-8
         memo: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed di⇉",
         recipient: "10010344879730196491L" as Address,
@@ -274,6 +281,7 @@ describe("Serialization", () => {
             tokenTicker: "XNET" as TokenTicker,
           },
         },
+        sender: defaultSender,
         recipient: "10010344879730196491X" as Address,
       };
 
@@ -300,6 +308,7 @@ describe("Serialization", () => {
         fee: {
           // all fields unset
         },
+        sender: defaultSender,
         recipient: "10010344879730196491X" as Address,
       };
 
@@ -325,6 +334,7 @@ describe("Serialization", () => {
           fractionalDigits: 8,
           tokenTicker: "XNET" as TokenTicker,
         },
+        sender: defaultSender,
         recipient: "10010344879730196491X" as Address,
         fee: {
           gasLimit: "1",
@@ -353,6 +363,7 @@ describe("Serialization", () => {
           fractionalDigits: 8,
           tokenTicker: "XNET" as TokenTicker,
         },
+        sender: defaultSender,
         recipient: "10010344879730196491X" as Address,
         fee: {
           gasPrice: {
@@ -387,6 +398,7 @@ describe("Serialization", () => {
           fractionalDigits: 8,
           tokenTicker: "LSK" as TokenTicker,
         },
+        sender: defaultSender,
         recipient: "10010344879730196491L" as Address,
       };
 
