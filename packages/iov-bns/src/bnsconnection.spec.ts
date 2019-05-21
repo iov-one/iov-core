@@ -149,6 +149,7 @@ describe("BnsConnection", () => {
     const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: identity,
+      sender: bnsCodec.identityToAddress(identity),
       recipient: await randomBnsAddress(),
       amount: defaultAmount,
     });
@@ -168,6 +169,7 @@ describe("BnsConnection", () => {
     const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: faucet,
+      sender: bnsCodec.identityToAddress(faucet),
       recipient: recipient,
       amount: amount,
     });
@@ -479,6 +481,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: recipient,
         memo: "My first payment",
         amount: {
@@ -539,6 +542,7 @@ describe("BnsConnection", () => {
       const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: await randomBnsAddress(),
         memo: "This time I pay my bills",
         amount: {
@@ -576,6 +580,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: await randomBnsAddress(),
         memo: "too long".repeat(100),
         amount: defaultAmount,
@@ -605,6 +610,7 @@ describe("BnsConnection", () => {
         const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
           kind: "bcp/send",
           creator: faucet,
+          sender: bnsCodec.identityToAddress(faucet),
           recipient: recipient,
           memo: "My first payment",
           amount: {
@@ -947,6 +953,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: rcptAddress,
         memo: memo,
         amount: defaultAmount,
@@ -987,6 +994,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: rcptAddress,
         memo: memo,
         amount: defaultAmount,
@@ -1024,6 +1032,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: await randomBnsAddress(),
         memo: memo,
         amount: defaultAmount,
@@ -1068,6 +1077,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: recipientAddress,
         memo: memo,
         amount: defaultAmount,
@@ -1151,6 +1161,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: brokeIdentity,
+        sender: bnsCodec.identityToAddress(brokeIdentity),
         recipient: await randomBnsAddress(),
         memo: "Sending from empty",
         amount: defaultAmount,
@@ -1197,6 +1208,7 @@ describe("BnsConnection", () => {
         const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
           kind: "bcp/send",
           creator: faucet,
+          sender: bnsCodec.identityToAddress(faucet),
           recipient: await randomBnsAddress(),
           memo: memo,
           amount: defaultAmount,
@@ -1244,6 +1256,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: await randomBnsAddress(),
         memo: memo,
         amount: defaultAmount,
@@ -1284,6 +1297,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: await randomBnsAddress(),
         memo: memo,
         amount: defaultAmount,
@@ -1322,6 +1336,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: brokeIdentity,
+        sender: bnsCodec.identityToAddress(brokeIdentity),
         recipient: await randomBnsAddress(),
         memo: "Sending from empty",
         amount: defaultAmount,
@@ -1364,6 +1379,7 @@ describe("BnsConnection", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: brokeIdentity,
+        sender: bnsCodec.identityToAddress(brokeIdentity),
         recipient: await randomBnsAddress(),
         memo: "Sending from empty",
         amount: defaultAmount,
@@ -1538,6 +1554,7 @@ describe("BnsConnection", () => {
     const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: faucet,
+      sender: bnsCodec.identityToAddress(faucet),
       recipient: rcptAddr,
       amount: {
         quantity: "68000000000",

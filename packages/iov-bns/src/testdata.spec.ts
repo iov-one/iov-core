@@ -93,6 +93,7 @@ export const sendTxJson: SendTransaction & WithCreator = {
     chainId: chainId,
     pubkey: pubJson,
   },
+  sender: address,
   recipient: "tiov1hl846c5pqgaqnp0kje64rx5axj8t2fvqxunqaf" as Address,
   memo: "Test payment",
   amount: amount,
@@ -149,6 +150,7 @@ const randomMsg: SendTransaction & WithCreator = {
     pubkey: pubJson,
   },
   kind: "bcp/send",
+  sender: address,
   recipient: "tiov1qzvctjecs368fl5la074d2m8u99u64hn8q7kyn" as Address,
   memo: "One more fix!",
   amount: {

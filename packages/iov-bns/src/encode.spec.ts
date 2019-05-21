@@ -164,6 +164,7 @@ describe("Encode", () => {
         kind: "bcp/send",
         creator: defaultCreator,
         amount: defaultAmount,
+        sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
         recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
         memo: "free transaction",
       };
@@ -181,6 +182,7 @@ describe("Encode", () => {
         kind: "bcp/send",
         creator: defaultCreator,
         amount: defaultAmount,
+        sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
         recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
         memo: "paid transaction",
         fee: {
@@ -221,6 +223,7 @@ describe("Encode", () => {
           fractionalDigits: 9,
           tokenTicker: "CASH" as TokenTicker,
         },
+        sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
         recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
         memo: "abc",
       };

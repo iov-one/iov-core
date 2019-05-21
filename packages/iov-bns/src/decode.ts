@@ -36,7 +36,13 @@ import {
   RemoveAddressFromUsernameTx,
   UpdateMultisignatureTx,
 } from "./types";
-import { addressPrefix, encodeBnsAddress, hashFromIdentifier, isHashIdentifier } from "./util";
+import {
+  addressPrefix,
+  encodeBnsAddress,
+  hashFromIdentifier,
+  identityToAddress,
+  isHashIdentifier,
+} from "./util";
 
 const { fromUtf8 } = Encoding;
 
@@ -204,6 +210,7 @@ function parseSendTransaction(
   return {
     ...base,
     kind: "bcp/send",
+    sender: identityToAddress(base.creator),
     recipient: encodeBnsAddress(prefix, ensure(msg.dest, "recipient")),
     amount: decodeAmount(ensure(msg.amount)),
     memo: msg.memo || undefined,
