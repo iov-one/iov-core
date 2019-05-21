@@ -35,9 +35,12 @@ import {
   decodePrivkey,
   decodePubkey,
   isAddAddressToUsernameTx,
+  isCreateMultisignatureTx,
   isRegisterUsernameTx,
   isRemoveAddressFromUsernameTx,
+  isUpdateMultisignatureTx,
   Keyed,
+  Participant,
 } from "./types";
 
 const { fromHex, toUtf8 } = Encoding;
@@ -358,6 +361,72 @@ describe("Decode", () => {
       expect(parsed.username).toEqual("alice");
       expect(parsed.payload.chainId).toEqual("wonderland");
       expect(parsed.payload.address).toEqual("0xAABB001122DD");
+    });
+
+    it("works for CreateMultisignature", () => {
+      // tslint:disable-next-line:readonly-array
+      const participants: codecImpl.multisig.IParticipant[] = [
+        {
+          signature: fromHex("1234567890"),
+          power: 4,
+        },
+        {
+          signature: fromHex("abcdef0123"),
+          power: 1,
+        },
+        {
+          signature: fromHex("9999999999"),
+          power: 1,
+        },
+      ];
+      const transactionMessage: codecImpl.app.ITx = {
+        createContractMsg: {
+          participants: participants,
+          activationThreshold: 2,
+          adminThreshold: 3,
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateMultisignatureTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.participants).toEqual(participants as ReadonlyArray<Participant>);
+      expect(parsed.activationThreshold).toEqual(2);
+      expect(parsed.adminThreshold).toEqual(3);
+    });
+
+    it("works for UpdateMultisignature", () => {
+      // tslint:disable-next-line:readonly-array
+      const participants: codecImpl.multisig.IParticipant[] = [
+        {
+          signature: fromHex("1234567890"),
+          power: 4,
+        },
+        {
+          signature: fromHex("abcdef0123"),
+          power: 1,
+        },
+        {
+          signature: fromHex("9999999999"),
+          power: 1,
+        },
+      ];
+      const transactionMessage: codecImpl.app.ITx = {
+        updateContractMsg: {
+          contractId: fromHex("0123456789"),
+          participants: participants,
+          activationThreshold: 2,
+          adminThreshold: 3,
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isUpdateMultisignatureTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.contractId).toEqual(fromHex("0123456789"));
+      expect(parsed.participants).toEqual(participants as ReadonlyArray<Participant>);
+      expect(parsed.activationThreshold).toEqual(2);
+      expect(parsed.adminThreshold).toEqual(3);
     });
   });
 });
