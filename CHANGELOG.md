@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.8
+
+- @iov/socket: Fix bug in `SocketWrapper` where the timeout error was triggered
+  even if the connection was successfully established.
+
 ## 0.13.7
 
 - @iov/jsonrpc: Add `makeJsonRpcId`.
