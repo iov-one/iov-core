@@ -15,7 +15,7 @@ import {
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { ethereumConnector } from "@iov/ethereum";
+import { ethereumCodec, ethereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
@@ -234,7 +234,7 @@ describe("MultiChainSigner", () => {
             tokenTicker: "ETH" as TokenTicker,
             fractionalDigits: 18,
           },
-          sender: bnsCodec.identityToAddress(ganacheMainIdentity),
+          sender: ethereumCodec.identityToAddress(ganacheMainIdentity),
           recipient: "0x0000000000000000000000000000000000000000" as Address,
           memo: `MultiChainSigner style (${Math.random()})`,
           // TODO: shall we use getFeeQuote here?
