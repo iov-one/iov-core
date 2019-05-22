@@ -242,6 +242,22 @@ describe("Encode", () => {
       expect(msg.ref!.length).toEqual(0);
     });
 
+    it("throws for SendTransaction with mismatched sender and creator", () => {
+      const transaction: SendTransaction & WithCreator = {
+        kind: "bcp/send",
+        creator: defaultCreator,
+        amount: {
+          quantity: "1000000001",
+          fractionalDigits: 9,
+          tokenTicker: "CASH" as TokenTicker,
+        },
+        sender: defaultRecipient,
+        recipient: defaultRecipient,
+        memo: "abc",
+      };
+      expect(() => buildMsg(transaction)).toThrowError(/sender and creator do not match/i);
+    });
+
     it("works for AddAddressToUsernameTx", () => {
       const addAddress: AddAddressToUsernameTx & WithCreator = {
         kind: "bns/add_address_to_username",
