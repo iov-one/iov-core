@@ -853,7 +853,7 @@ describe("BnsConnection", () => {
         [10, 11, 12, 13, 14].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       );
       const participants: ReadonlyArray<Participant> = [identity, ...otherIdentities].map((id, i) => ({
-        signature: decodeBnsAddress(identityToAddress(id)).data,
+        address: identityToAddress(id),
         power: i === 0 ? 5 : 1,
       }));
       const tx1 = await connection.withDefaultFee<CreateMultisignatureTx>({
@@ -881,7 +881,7 @@ describe("BnsConnection", () => {
       }
       expect(firstSearchResultTransaction.participants.length).toEqual(6);
       firstSearchResultTransaction.participants.forEach((participant, i) => {
-        expect(participant.signature).toEqual(participants[i].signature);
+        expect(participant.address).toEqual(participants[i].address);
         expect(participant.power).toEqual(participants[i].power);
       });
       expect(firstSearchResultTransaction.activationThreshold).toEqual(4);
@@ -892,7 +892,7 @@ describe("BnsConnection", () => {
       const participantsUpdated: ReadonlyArray<Participant> = (await Promise.all(
         [15, 16, 17].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       )).map(id => ({
-        signature: decodeBnsAddress(identityToAddress(id)).data,
+        address: identityToAddress(id),
         power: 6,
       }));
       const tx2 = await connection.withDefaultFee<UpdateMultisignatureTx>({
@@ -921,7 +921,7 @@ describe("BnsConnection", () => {
       }
       expect(secondSearchResultTransaction.participants.length).toEqual(3);
       secondSearchResultTransaction.participants.forEach((participant, i) => {
-        expect(participant.signature).toEqual(participantsUpdated[i].signature);
+        expect(participant.address).toEqual(participantsUpdated[i].address);
         expect(participant.power).toEqual(participantsUpdated[i].power);
       });
       expect(secondSearchResultTransaction.activationThreshold).toEqual(2);

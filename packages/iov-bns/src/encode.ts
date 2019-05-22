@@ -19,6 +19,7 @@ import {
   AddAddressToUsernameTx,
   CreateMultisignatureTx,
   isBnsTx,
+  Participant,
   PrivateKeyBundle,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
@@ -87,6 +88,16 @@ export function encodeFullSignature(fullSignature: FullSignature): codecImpl.sig
   });
 }
 
+export function encodeParticipants(
+  participants: ReadonlyArray<Participant>,
+  // tslint:disable-next-line:readonly-array
+): codecImpl.multisig.IParticipant[] {
+  return participants.map(participant => ({
+    signature: decodeBnsAddress(participant.address).data,
+    power: participant.power,
+  }));
+}
+
 export function buildSignedTx(tx: SignedTransaction): codecImpl.app.ITx {
   const sigs: ReadonlyArray<FullSignature> = [tx.primarySignature, ...tx.otherSignatures];
   const built = buildUnsignedTx(tx.transaction);
@@ -152,8 +163,7 @@ function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.
 function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.app.ITx {
   return {
     createContractMsg: {
-      // tslint:disable-next-line:readonly-array
-      participants: tx.participants as codecImpl.multisig.IParticipant[],
+      participants: encodeParticipants(tx.participants),
       activationThreshold: tx.activationThreshold,
       adminThreshold: tx.adminThreshold,
     },
@@ -240,8 +250,7 @@ function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): codecImpl.app.
   return {
     updateContractMsg: {
       contractId: tx.contractId,
-      // tslint:disable-next-line:readonly-array
-      participants: tx.participants as codecImpl.multisig.IParticipant[],
+      participants: encodeParticipants(tx.participants),
       activationThreshold: tx.activationThreshold,
       adminThreshold: tx.adminThreshold,
     },

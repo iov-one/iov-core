@@ -365,23 +365,37 @@ describe("Decode", () => {
 
     it("works for CreateMultisignature", () => {
       // tslint:disable-next-line:readonly-array
-      const participants: codecImpl.multisig.IParticipant[] = [
+      const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
-          signature: fromHex("1234567890"),
+          signature: fromHex("1234567890123456789012345678901234567890"),
           power: 4,
         },
         {
-          signature: fromHex("abcdef0123"),
+          signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
           power: 1,
         },
         {
-          signature: fromHex("9999999999"),
+          signature: fromHex("9999999999999999999999999999999999999999"),
+          power: 1,
+        },
+      ];
+      const participants: ReadonlyArray<Participant> = [
+        {
+          address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
+          power: 4,
+        },
+        {
+          address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
+          power: 1,
+        },
+        {
+          address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
           power: 1,
         },
       ];
       const transactionMessage: codecImpl.app.ITx = {
         createContractMsg: {
-          participants: participants,
+          participants: iParticipants,
           activationThreshold: 2,
           adminThreshold: 3,
         },
@@ -390,31 +404,45 @@ describe("Decode", () => {
       if (!isCreateMultisignatureTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.participants).toEqual(participants as ReadonlyArray<Participant>);
+      expect(parsed.participants).toEqual(participants);
       expect(parsed.activationThreshold).toEqual(2);
       expect(parsed.adminThreshold).toEqual(3);
     });
 
     it("works for UpdateMultisignature", () => {
       // tslint:disable-next-line:readonly-array
-      const participants: codecImpl.multisig.IParticipant[] = [
+      const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
-          signature: fromHex("1234567890"),
+          signature: fromHex("1234567890123456789012345678901234567890"),
           power: 4,
         },
         {
-          signature: fromHex("abcdef0123"),
+          signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
           power: 1,
         },
         {
-          signature: fromHex("9999999999"),
+          signature: fromHex("9999999999999999999999999999999999999999"),
+          power: 1,
+        },
+      ];
+      const participants: ReadonlyArray<Participant> = [
+        {
+          address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
+          power: 4,
+        },
+        {
+          address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
+          power: 1,
+        },
+        {
+          address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
           power: 1,
         },
       ];
       const transactionMessage: codecImpl.app.ITx = {
         updateContractMsg: {
           contractId: fromHex("0123456789"),
-          participants: participants,
+          participants: iParticipants,
           activationThreshold: 2,
           adminThreshold: 3,
         },
@@ -424,7 +452,7 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.contractId).toEqual(fromHex("0123456789"));
-      expect(parsed.participants).toEqual(participants as ReadonlyArray<Participant>);
+      expect(parsed.participants).toEqual(participants);
       expect(parsed.activationThreshold).toEqual(2);
       expect(parsed.adminThreshold).toEqual(3);
     });

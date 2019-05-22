@@ -83,7 +83,7 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
     readonly payload: ChainAddressPair;
 }
 export interface Participant {
-    readonly signature: Uint8Array;
+    readonly address: Address;
     readonly power: number;
 }
 export interface CreateMultisignatureTx extends UnsignedTransaction {

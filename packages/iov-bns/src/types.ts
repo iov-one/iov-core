@@ -215,7 +215,7 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
 }
 
 export interface Participant {
-  readonly signature: Uint8Array;
+  readonly address: Address;
   readonly power: number;
 }
 

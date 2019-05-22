@@ -303,15 +303,30 @@ describe("Encode", () => {
     it("works for CreateMultisignatureTx", () => {
       const participants: ReadonlyArray<Participant> = [
         {
-          signature: fromHex("1234567890"),
+          address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
           power: 4,
         },
         {
-          signature: fromHex("abcdef0123"),
+          address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
           power: 1,
         },
         {
-          signature: fromHex("9999999999"),
+          address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
+          power: 1,
+        },
+      ];
+      // tslint:disable-next-line:readonly-array
+      const iParticipants: codecImpl.multisig.IParticipant[] = [
+        {
+          signature: fromHex("1234567890123456789012345678901234567890"),
+          power: 4,
+        },
+        {
+          signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
+          power: 1,
+        },
+        {
+          signature: fromHex("9999999999999999999999999999999999999999"),
           power: 1,
         },
       ];
@@ -323,7 +338,7 @@ describe("Encode", () => {
         adminThreshold: 3,
       };
       const msg = buildMsg(createMultisignature).createContractMsg!;
-      expect(msg.participants).toEqual(participants.map(p => p as codecImpl.multisig.IParticipant));
+      expect(msg.participants).toEqual(iParticipants);
       expect(msg.activationThreshold).toEqual(2);
       expect(msg.adminThreshold).toEqual(3);
     });
@@ -331,15 +346,30 @@ describe("Encode", () => {
     it("works for UpdateMultisignatureTx", () => {
       const participants: ReadonlyArray<Participant> = [
         {
-          signature: fromHex("1234567890"),
+          address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
           power: 4,
         },
         {
-          signature: fromHex("abcdef0123"),
+          address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
           power: 1,
         },
         {
-          signature: fromHex("9999999999"),
+          address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
+          power: 1,
+        },
+      ];
+      // tslint:disable-next-line:readonly-array
+      const iParticipants: codecImpl.multisig.IParticipant[] = [
+        {
+          signature: fromHex("1234567890123456789012345678901234567890"),
+          power: 4,
+        },
+        {
+          signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
+          power: 1,
+        },
+        {
+          signature: fromHex("9999999999999999999999999999999999999999"),
           power: 1,
         },
       ];
@@ -353,7 +383,7 @@ describe("Encode", () => {
       };
       const msg = buildMsg(updateMultisignature).updateContractMsg!;
       expect(msg.contractId).toEqual(fromHex("abcdef0123"));
-      expect(msg.participants).toEqual(participants.map(p => p as codecImpl.multisig.IParticipant));
+      expect(msg.participants).toEqual(iParticipants);
       expect(msg.activationThreshold).toEqual(3);
       expect(msg.adminThreshold).toEqual(4);
     });

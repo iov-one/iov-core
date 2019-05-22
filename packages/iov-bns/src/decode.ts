@@ -119,6 +119,23 @@ export function decodeJsonAmount(json: string): Amount {
   throw new Error("Impossible type for amount json");
 }
 
+export function decodeParticipants(
+  prefix: "iov" | "tiov",
+  // tslint:disable-next-line:readonly-array
+  maybeParticipants?: codecImpl.multisig.IParticipant[] | null,
+): ReadonlyArray<Participant> {
+  const participants = ensure(maybeParticipants, "participants");
+  participants.forEach((participant, i) => {
+    ensure(participant.signature, `participants.$${i}.signature`);
+    ensure(participant.power, `participants.$${i}.power`);
+  });
+
+  return participants.map(participant => ({
+    power: participant.power!,
+    address: encodeBnsAddress(prefix, participant.signature!),
+  }));
+}
+
 // we only allow up to 9 decimal places
 const humanCoinFormat = new RegExp(/^(\d+)(\.\d{1,9})?\s*([A-Z]{3,4})$/);
 
@@ -287,28 +304,15 @@ function parseRemoveAddressFromUsernameTx(
   };
 }
 
-function ensureParticipants(
-  maybe: ReadonlyArray<codecImpl.multisig.IParticipant> | null | undefined,
-): ReadonlyArray<Participant> {
-  const participants = ensure(maybe, "participants");
-  return participants.map(
-    (participant): Participant => {
-      if ([participant.power, participant.signature].some(p => p === undefined || p === null)) {
-        throw new Error("invalid participant in participants");
-      }
-      return participant as Participant;
-    },
-  );
-}
-
 function parseCreateMultisignatureTx(
   base: UnsignedTransaction,
   msg: codecImpl.multisig.ICreateContractMsg,
 ): CreateMultisignatureTx {
+  const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
     kind: "bns/create_multisignature_contract",
-    participants: ensureParticipants(msg.participants),
+    participants: decodeParticipants(prefix, msg.participants),
     activationThreshold: ensure(msg.activationThreshold, "activationThreshold"),
     adminThreshold: ensure(msg.adminThreshold, "adminThreshold"),
   };
@@ -318,11 +322,12 @@ function parseUpdateMultisignatureTx(
   base: UnsignedTransaction,
   msg: codecImpl.multisig.IUpdateContractMsg,
 ): UpdateMultisignatureTx {
+  const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
     kind: "bns/update_multisignature_contract",
     contractId: ensure(msg.contractId, "contractId"),
-    participants: ensureParticipants(msg.participants),
+    participants: decodeParticipants(prefix, msg.participants),
     activationThreshold: ensure(msg.activationThreshold, "activationThreshold"),
     adminThreshold: ensure(msg.adminThreshold, "adminThreshold"),
   };
