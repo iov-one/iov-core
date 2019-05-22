@@ -22,7 +22,7 @@
   "rules": {
     "curly": ["error", "multi-line", "consistent"],
     "no-case-declarations": "off",
-    "no-console": ["warn", { "allow": ["error", "info", "warn"] }],
+    "no-console": ["off", { "allow": ["error", "info", "warn"] }],
     "no-constant-condition": "off",
     "no-shadow": "error",
     "no-undef": "off",
