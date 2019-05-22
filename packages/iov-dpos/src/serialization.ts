@@ -6,6 +6,8 @@ import { FullSignature, isSendTransaction, TransactionId, UnsignedTransaction } 
 import { Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 
+import { Derivation } from "./derivation";
+
 export interface TransactionSerializationOptions {
   readonly maxMemoLength: number; // in bytes
 }
@@ -50,6 +52,12 @@ export class Serialization {
     }
 
     if (isSendTransaction(unsigned)) {
+      const suffix = unsigned.sender[unsigned.sender.length - 1];
+      const creatorAddress = Derivation.pubkeyToAddress(unsigned.creator.pubkey.data, suffix);
+      if (creatorAddress !== unsigned.sender) {
+        throw new Error("Creator does not match sender");
+      }
+
       const timestamp = Serialization.toTimestamp(creationTime);
       const timestampBytes = new Uint8Array([
         (timestamp >> 0) & 0xff,
