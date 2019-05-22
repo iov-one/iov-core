@@ -214,6 +214,18 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
   readonly payload: ChainAddressPair;
 }
 
+export interface Participant {
+  readonly address: Address;
+  readonly power: number;
+}
+
+export interface CreateMultisignatureTx extends UnsignedTransaction {
+  readonly kind: "bns/create_multisignature_contract";
+  readonly participants: ReadonlyArray<Participant>;
+  readonly activationThreshold: number;
+  readonly adminThreshold: number;
+}
+
 export interface RegisterUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/register_username";
   readonly username: string;
@@ -227,6 +239,14 @@ export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
   readonly payload: ChainAddressPair;
 }
 
+export interface UpdateMultisignatureTx extends UnsignedTransaction {
+  readonly kind: "bns/update_multisignature_contract";
+  readonly contractId: Uint8Array;
+  readonly participants: ReadonlyArray<Participant>;
+  readonly activationThreshold: number;
+  readonly adminThreshold: number;
+}
+
 export type BnsTx =
   // BCP
   | SendTransaction
@@ -235,8 +255,10 @@ export type BnsTx =
   | SwapAbortTransaction
   // BNS
   | AddAddressToUsernameTx
+  | CreateMultisignatureTx
   | RegisterUsernameTx
-  | RemoveAddressFromUsernameTx;
+  | RemoveAddressFromUsernameTx
+  | UpdateMultisignatureTx;
 
 export function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx {
   if (
@@ -257,6 +279,12 @@ export function isAddAddressToUsernameTx(
   return isBnsTx(transaction) && transaction.kind === "bns/add_address_to_username";
 }
 
+export function isCreateMultisignatureTx(
+  transaction: UnsignedTransaction,
+): transaction is CreateMultisignatureTx {
+  return isBnsTx(transaction) && transaction.kind === "bns/create_multisignature_contract";
+}
+
 export function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx {
   return isBnsTx(transaction) && transaction.kind === "bns/register_username";
 }
@@ -265,4 +293,10 @@ export function isRemoveAddressFromUsernameTx(
   transaction: UnsignedTransaction,
 ): transaction is RemoveAddressFromUsernameTx {
   return isBnsTx(transaction) && transaction.kind === "bns/remove_address_from_username";
+}
+
+export function isUpdateMultisignatureTx(
+  transaction: UnsignedTransaction,
+): transaction is UpdateMultisignatureTx {
+  return isBnsTx(transaction) && transaction.kind === "bns/update_multisignature_contract";
 }

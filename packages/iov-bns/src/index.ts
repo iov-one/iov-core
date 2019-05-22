@@ -5,6 +5,7 @@ export { bnsSwapQueryTag } from "./tags";
 export {
   // helpers
   ChainAddressPair,
+  Participant,
   // NFTs
   BnsBlockchainNft,
   BnsBlockchainsByChainIdQuery,
@@ -17,6 +18,8 @@ export {
   // transactions
   BnsTx,
   AddAddressToUsernameTx,
+  CreateMultisignatureTx,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
+  UpdateMultisignatureTx,
 } from "./types";

@@ -26,11 +26,14 @@ import {
   asIntegerNumber,
   BnsUsernameNft,
   ChainAddressPair,
+  CreateMultisignatureTx,
   decodeFullSig,
   ensure,
   Keyed,
+  Participant,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
+  UpdateMultisignatureTx,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, hashFromIdentifier, isHashIdentifier } from "./util";
 
@@ -116,6 +119,23 @@ export function decodeJsonAmount(json: string): Amount {
   throw new Error("Impossible type for amount json");
 }
 
+export function decodeParticipants(
+  prefix: "iov" | "tiov",
+  // tslint:disable-next-line:readonly-array
+  maybeParticipants?: codecImpl.multisig.IParticipant[] | null,
+): ReadonlyArray<Participant> {
+  const participants = ensure(maybeParticipants, "participants");
+  participants.forEach((participant, i) => {
+    ensure(participant.signature, `participants.$${i}.signature`);
+    ensure(participant.power, `participants.$${i}.power`);
+  });
+
+  return participants.map(participant => ({
+    power: participant.power!,
+    address: encodeBnsAddress(prefix, participant.signature!),
+  }));
+}
+
 // we only allow up to 9 decimal places
 const humanCoinFormat = new RegExp(/^(\d+)(\.\d{1,9})?\s*([A-Z]{3,4})$/);
 
@@ -152,6 +172,10 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
     return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
   } else if (tx.removeUsernameAddressMsg) {
     return parseRemoveAddressFromUsernameTx(base, tx.removeUsernameAddressMsg);
+  } else if (tx.createContractMsg) {
+    return parseCreateMultisignatureTx(base, tx.createContractMsg);
+  } else if (tx.updateContractMsg) {
+    return parseUpdateMultisignatureTx(base, tx.updateContractMsg);
   }
   throw new Error("unknown message type in transaction");
 }
@@ -277,5 +301,34 @@ function parseRemoveAddressFromUsernameTx(
       chainId: fromUtf8(ensure(msg.blockchainId, "blockchainId")) as ChainId,
       address: ensure(msg.address, "address") as Address,
     },
+  };
+}
+
+function parseCreateMultisignatureTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.multisig.ICreateContractMsg,
+): CreateMultisignatureTx {
+  const prefix = addressPrefix(base.creator.chainId);
+  return {
+    ...base,
+    kind: "bns/create_multisignature_contract",
+    participants: decodeParticipants(prefix, msg.participants),
+    activationThreshold: ensure(msg.activationThreshold, "activationThreshold"),
+    adminThreshold: ensure(msg.adminThreshold, "adminThreshold"),
+  };
+}
+
+function parseUpdateMultisignatureTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.multisig.IUpdateContractMsg,
+): UpdateMultisignatureTx {
+  const prefix = addressPrefix(base.creator.chainId);
+  return {
+    ...base,
+    kind: "bns/update_multisignature_contract",
+    contractId: ensure(msg.contractId, "contractId"),
+    participants: decodeParticipants(prefix, msg.participants),
+    activationThreshold: ensure(msg.activationThreshold, "activationThreshold"),
+    adminThreshold: ensure(msg.adminThreshold, "adminThreshold"),
   };
 }

@@ -48,11 +48,16 @@ import { BnsConnection } from "./bnsconnection";
 import { bnsSwapQueryTag } from "./tags";
 import {
   AddAddressToUsernameTx,
+  CreateMultisignatureTx,
+  isCreateMultisignatureTx,
   isRegisterUsernameTx,
+  isUpdateMultisignatureTx,
+  Participant,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
+  UpdateMultisignatureTx,
 } from "./types";
-import { encodeBnsAddress, identityToAddress } from "./util";
+import { decodeBnsAddress, encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromHex, toHex } = Encoding;
 
@@ -826,6 +831,102 @@ describe("BnsConnection", () => {
         expect(blockInfo.code).toEqual(14);
         expect(blockInfo.message || "").toMatch(/invalid input/i);
       }
+
+      connection.disconnect();
+    });
+
+    it("can create and update a multisignature account", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create multisignature
+      const otherIdentities = await Promise.all(
+        [10, 11, 12, 13, 14].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+      );
+      const participants: ReadonlyArray<Participant> = [identity, ...otherIdentities].map((id, i) => ({
+        address: identityToAddress(id),
+        power: i === 0 ? 5 : 1,
+      }));
+      const tx1 = await connection.withDefaultFee<CreateMultisignatureTx>({
+        kind: "bns/create_multisignature_contract",
+        creator: identity,
+        participants: participants,
+        activationThreshold: 4,
+        adminThreshold: 5,
+      });
+      const nonce1 = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed1 = await profile.signTransaction(tx1, bnsCodec, nonce1);
+      const txBytes1 = bnsCodec.bytesToPost(signed1);
+      const response1 = await connection.postTx(txBytes1);
+      const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo1.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find transaction1
+      const searchResult1 = (await connection.searchTx({ signedBy: address })).filter(isConfirmedTransaction);
+      expect(searchResult1.length).toEqual(1);
+      const { result: contractId, transaction: firstSearchResultTransaction } = searchResult1[0];
+      if (!isCreateMultisignatureTx(firstSearchResultTransaction)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(firstSearchResultTransaction.participants.length).toEqual(6);
+      firstSearchResultTransaction.participants.forEach((participant, i) => {
+        expect(participant.address).toEqual(participants[i].address);
+        expect(participant.power).toEqual(participants[i].power);
+      });
+      expect(firstSearchResultTransaction.activationThreshold).toEqual(4);
+      expect(firstSearchResultTransaction.adminThreshold).toEqual(5);
+      expect(contractId).toBeDefined();
+
+      // Update multisignature
+      const participantsUpdated: ReadonlyArray<Participant> = (await Promise.all(
+        [15, 16, 17].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+      )).map(id => ({
+        address: identityToAddress(id),
+        power: 6,
+      }));
+      const tx2 = await connection.withDefaultFee<UpdateMultisignatureTx>({
+        kind: "bns/update_multisignature_contract",
+        creator: identity,
+        contractId: contractId!,
+        participants: participantsUpdated,
+        activationThreshold: 2,
+        adminThreshold: 6,
+      });
+      const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed2 = await profile.signTransaction(tx2, bnsCodec, nonce2);
+      const txBytes2 = bnsCodec.bytesToPost(signed2);
+      const response2 = await connection.postTx(txBytes2);
+      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find transaction2
+      const searchResult2 = (await connection.searchTx({ signedBy: address })).filter(isConfirmedTransaction);
+      expect(searchResult2.length).toEqual(2);
+      const { transaction: secondSearchResultTransaction } = searchResult2[1];
+      if (!isUpdateMultisignatureTx(secondSearchResultTransaction)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(secondSearchResultTransaction.participants.length).toEqual(3);
+      secondSearchResultTransaction.participants.forEach((participant, i) => {
+        expect(participant.address).toEqual(participantsUpdated[i].address);
+        expect(participant.power).toEqual(participantsUpdated[i].power);
+      });
+      expect(secondSearchResultTransaction.activationThreshold).toEqual(2);
+      expect(secondSearchResultTransaction.adminThreshold).toEqual(6);
+      expect(contractId).toBeDefined();
 
       connection.disconnect();
     });

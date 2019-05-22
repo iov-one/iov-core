@@ -24,7 +24,14 @@ import {
   encodePubkey,
 } from "./encode";
 import * as codecImpl from "./generated/codecimpl";
-import { AddAddressToUsernameTx, RegisterUsernameTx, RemoveAddressFromUsernameTx } from "./types";
+import {
+  AddAddressToUsernameTx,
+  CreateMultisignatureTx,
+  Participant,
+  RegisterUsernameTx,
+  RemoveAddressFromUsernameTx,
+  UpdateMultisignatureTx,
+} from "./types";
 import { appendSignBytes } from "./util";
 
 import {
@@ -291,6 +298,94 @@ describe("Encode", () => {
       expect(msg.usernameId).toEqual(toUtf8("alice"));
       expect(msg.blockchainId).toEqual(toUtf8("other-land"));
       expect(msg.address).toEqual("865765858O");
+    });
+
+    it("works for CreateMultisignatureTx", () => {
+      const participants: ReadonlyArray<Participant> = [
+        {
+          address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
+          power: 4,
+        },
+        {
+          address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
+          power: 1,
+        },
+        {
+          address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
+          power: 1,
+        },
+      ];
+      // tslint:disable-next-line:readonly-array
+      const iParticipants: codecImpl.multisig.IParticipant[] = [
+        {
+          signature: fromHex("1234567890123456789012345678901234567890"),
+          power: 4,
+        },
+        {
+          signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
+          power: 1,
+        },
+        {
+          signature: fromHex("9999999999999999999999999999999999999999"),
+          power: 1,
+        },
+      ];
+      const createMultisignature: CreateMultisignatureTx = {
+        kind: "bns/create_multisignature_contract",
+        creator: defaultCreator,
+        participants: participants,
+        activationThreshold: 2,
+        adminThreshold: 3,
+      };
+      const msg = buildMsg(createMultisignature).createContractMsg!;
+      expect(msg.participants).toEqual(iParticipants);
+      expect(msg.activationThreshold).toEqual(2);
+      expect(msg.adminThreshold).toEqual(3);
+    });
+
+    it("works for UpdateMultisignatureTx", () => {
+      const participants: ReadonlyArray<Participant> = [
+        {
+          address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
+          power: 4,
+        },
+        {
+          address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
+          power: 1,
+        },
+        {
+          address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
+          power: 1,
+        },
+      ];
+      // tslint:disable-next-line:readonly-array
+      const iParticipants: codecImpl.multisig.IParticipant[] = [
+        {
+          signature: fromHex("1234567890123456789012345678901234567890"),
+          power: 4,
+        },
+        {
+          signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
+          power: 1,
+        },
+        {
+          signature: fromHex("9999999999999999999999999999999999999999"),
+          power: 1,
+        },
+      ];
+      const updateMultisignature: UpdateMultisignatureTx = {
+        kind: "bns/update_multisignature_contract",
+        creator: defaultCreator,
+        contractId: fromHex("abcdef0123"),
+        participants: participants,
+        activationThreshold: 3,
+        adminThreshold: 4,
+      };
+      const msg = buildMsg(updateMultisignature).updateContractMsg!;
+      expect(msg.contractId).toEqual(fromHex("abcdef0123"));
+      expect(msg.participants).toEqual(iParticipants);
+      expect(msg.activationThreshold).toEqual(3);
+      expect(msg.adminThreshold).toEqual(4);
     });
   });
 });

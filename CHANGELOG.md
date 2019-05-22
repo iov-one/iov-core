@@ -5,6 +5,9 @@
 - @iov/bcp: Add `isSwapTransaction` helper function.
 - @iov/bcp: Add `isOpenSwap`, `isClaimedSwap` and `isAbortedSwap` helper
   functions.
+- @iov/bns: Add support for multisignature transactions.
+- @iov/bns: Add `CreateMultisignatureTx` and `UpdateMultisignatureTx` types
+  along with `Participant`.
 - @iov/ethereum: Add `createEtherSwapId` and `createErc20SwapId` static methods.
 - @iov/ethereum: Add `SwapIdPrefix` enum.
 - @iov/ethereum: Add `Erc20TokensMap` type.
