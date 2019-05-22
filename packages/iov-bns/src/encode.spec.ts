@@ -152,6 +152,8 @@ describe("Encode", () => {
         data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PublicKeyBytes,
       },
     };
+    const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
+    const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
 
     const defaultAmount: Amount = {
       quantity: "1000000001",
@@ -164,8 +166,8 @@ describe("Encode", () => {
         kind: "bcp/send",
         creator: defaultCreator,
         amount: defaultAmount,
-        sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
-        recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        sender: defaultSender,
+        recipient: defaultRecipient,
         memo: "free transaction",
       };
 
@@ -182,8 +184,8 @@ describe("Encode", () => {
         kind: "bcp/send",
         creator: defaultCreator,
         amount: defaultAmount,
-        sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
-        recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        sender: defaultSender,
+        recipient: defaultRecipient,
         memo: "paid transaction",
         fee: {
           tokens: defaultAmount,
@@ -213,6 +215,8 @@ describe("Encode", () => {
         data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PublicKeyBytes,
       },
     };
+    const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
+    const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
 
     it("works for SendTransaction", () => {
       const transaction: SendTransaction & WithCreator = {
@@ -223,8 +227,8 @@ describe("Encode", () => {
           fractionalDigits: 9,
           tokenTicker: "CASH" as TokenTicker,
         },
-        sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
-        recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        sender: defaultSender,
+        recipient: defaultRecipient,
         memo: "abc",
       };
 
