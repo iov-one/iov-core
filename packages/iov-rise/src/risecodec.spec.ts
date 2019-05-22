@@ -23,6 +23,21 @@ const { fromHex } = Encoding;
 const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
 const riseEpochAsUnixTimestamp = 1464109200;
 const defaultCreationTimestamp = 865708731 + riseEpochAsUnixTimestamp;
+const defaultPublicKey = {
+  algo: Algorithm.Ed25519,
+  data: fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff") as PublicKeyBytes,
+};
+const defaultCreator = {
+  chainId: riseTestnet,
+  pubkey: defaultPublicKey,
+};
+const defaultSender = "10645226540143571783L" as Address;
+const defaultRecipient = "10010344879730196491R" as Address;
+const defaultAmount = {
+  quantity: "123456789",
+  fractionalDigits: 8,
+  tokenTicker: "RISE" as TokenTicker,
+};
 
 describe("riseCodec", () => {
   it("derives addresses properly", () => {
@@ -38,81 +53,45 @@ describe("riseCodec", () => {
   });
 
   it("can create bytes to sign", () => {
-    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
-
     const tx: SendTransaction & WithCreator = {
       kind: "bcp/send",
-      creator: {
-        chainId: riseTestnet,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
-      },
-      amount: {
-        quantity: "123456789",
-        fractionalDigits: 8,
-        tokenTicker: "RISE" as TokenTicker,
-      },
-      sender: "10055555555555555555R" as Address,
-      recipient: "10010344879730196491R" as Address,
+      creator: defaultCreator,
+      amount: defaultAmount,
+      sender: defaultSender,
+      recipient: defaultRecipient,
     };
     const bytes = riseCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce);
     expect(bytes).toBeTruthy();
   });
 
   it("requires 8 fractional digits in bytes to sign", () => {
-    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
-
     const tx: SendTransaction & WithCreator = {
       kind: "bcp/send",
-      creator: {
-        chainId: riseTestnet,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
-      },
+      creator: defaultCreator,
       amount: {
-        quantity: "123456789",
+        ...defaultAmount,
         fractionalDigits: 6,
-        tokenTicker: "RISE" as TokenTicker,
       },
-      sender: "10055555555555555555R" as Address,
-      recipient: "10010344879730196491R" as Address,
+      sender: defaultSender,
+      recipient: defaultRecipient,
     };
     expect(() => riseCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce)).toThrowError(/Requires 8/);
   });
 
   it("can create bytes to post", () => {
-    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
-
     const tx: SendTransaction & WithCreator = {
       kind: "bcp/send",
-      creator: {
-        chainId: riseTestnet,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
-      },
-      amount: {
-        quantity: "123456789",
-        fractionalDigits: 8,
-        tokenTicker: "RISE" as TokenTicker,
-      },
-      sender: "10055555555555555555R" as Address,
-      recipient: "10010344879730196491R" as Address,
+      creator: defaultCreator,
+      amount: defaultAmount,
+      sender: defaultSender,
+      recipient: defaultRecipient,
     };
 
     const signed: SignedTransaction = {
       transaction: tx,
       primarySignature: {
         nonce: defaultCreationTimestamp as Nonce,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
+        pubkey: defaultPublicKey,
         signature: fromHex("26272829") as SignatureBytes,
       },
       otherSignatures: [],
