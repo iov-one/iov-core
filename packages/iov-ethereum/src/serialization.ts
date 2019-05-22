@@ -17,12 +17,13 @@ import {
   SwapOfferTransaction,
   SwapTransaction,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { Abi } from "./abi";
-import { isValidAddress } from "./address";
+import { isValidAddress, pubkeyToAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
 import { Erc20ApproveTransaction, Erc20Options, Erc20TokensMap, isErc20ApproveTransaction } from "./erc20";
@@ -156,6 +157,16 @@ export class Serialization {
       return Serialization.serializeSignedErc20ApproveTransaction(unsigned, options);
     } else {
       throw new Error("Unsupported kind of transaction");
+    }
+  }
+
+  private static checkCreatorMatchesSender(unsigned: SendTransaction & WithCreator): void {
+    if (unsigned.creator.pubkey.data.length === 0) {
+      return;
+    }
+    const creatorAddress = pubkeyToAddress(unsigned.creator.pubkey);
+    if (creatorAddress !== unsigned.sender) {
+      throw new Error("Creator does not match sender");
     }
   }
 
@@ -339,9 +350,10 @@ export class Serialization {
   }
 
   private static serializeUnsignedSendTransaction(
-    unsigned: SendTransaction,
+    unsigned: SendTransaction & WithCreator,
     { chainIdHex, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: UnsignedSerializationOptions,
   ): Uint8Array {
+    Serialization.checkCreatorMatchesSender(unsigned);
     Serialization.checkRecipientAddress(unsigned);
 
     if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
@@ -492,9 +504,10 @@ export class Serialization {
   }
 
   private static serializeSignedSendTransaction(
-    unsigned: SendTransaction,
+    unsigned: SendTransaction & WithCreator,
     { v, r, s, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: SignedSerializationOptions,
   ): Uint8Array {
+    Serialization.checkCreatorMatchesSender(unsigned);
     Serialization.checkRecipientAddress(unsigned);
 
     if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {

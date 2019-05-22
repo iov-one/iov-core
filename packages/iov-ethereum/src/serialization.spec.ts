@@ -3,6 +3,7 @@ import {
   Algorithm,
   Amount,
   ChainId,
+  Fee,
   Hash,
   Identity,
   Nonce,
@@ -32,196 +33,145 @@ const ETH = "ETH" as TokenTicker;
 const HOT = "HOT" as TokenTicker;
 const REP = "REP" as TokenTicker;
 
-describe("Serialization", () => {
-  const defaultNonce = 26 as Nonce;
-  const defaultErc20Tokens = new Map<TokenTicker, Erc20Options>([
-    [
-      HOT,
-      {
-        contractAddress: "0x2020202020202020202020202020202020202020" as Address,
-        symbol: HOT,
-        decimals: 18,
-      },
-    ],
-    [
-      REP,
-      {
-        contractAddress: "0x1985365e9f78359a9b6ad760e32412f4a445e862" as Address,
-        symbol: REP,
-        decimals: 18,
-      },
-    ],
-  ]);
+const defaultNonce = 26 as Nonce;
+const defaultErc20Tokens = new Map<TokenTicker, Erc20Options>([
+  [
+    HOT,
+    {
+      contractAddress: "0x2020202020202020202020202020202020202020" as Address,
+      symbol: HOT,
+      decimals: 18,
+    },
+  ],
+  [
+    REP,
+    {
+      contractAddress: "0x1985365e9f78359a9b6ad760e32412f4a445e862" as Address,
+      symbol: REP,
+      decimals: 18,
+    },
+  ],
+]);
+const defaultPublicKey = {
+  algo: Algorithm.Secp256k1,
+  data: fromHex(
+    "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
+  ) as PublicKeyBytes,
+};
+const defaultCreator: Identity = {
+  chainId: "ethereum-eip155-5777" as ChainId,
+  pubkey: defaultPublicKey,
+};
+const defaultSender = "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F" as Address;
+const defaultAmount: Amount = {
+  quantity: "20000000000000000000",
+  fractionalDigits: 18,
+  tokenTicker: ETH,
+};
+const defaultFee: Fee = {
+  gasPrice: {
+    quantity: "20000000000",
+    fractionalDigits: 18,
+    tokenTicker: ETH,
+  },
+  gasLimit: "21000",
+};
+const defaultRecipient = "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address;
 
+describe("Serialization", () => {
   describe("serializeUnsignedTransaction", () => {
     it("can serialize transaction without memo", () => {
-      const pubkey = fromHex(
-        "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
-      );
-
       const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
-        creator: {
-          chainId: "ethereum-eip155-5777" as ChainId,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: pubkey as PublicKeyBytes,
-          },
-        },
-        amount: {
-          quantity: "20000000000000000000",
-          fractionalDigits: 18,
-          tokenTicker: ETH,
-        },
-        fee: {
-          gasPrice: {
-            quantity: "20000000000",
-            fractionalDigits: 18,
-            tokenTicker: ETH,
-          },
-          gasLimit: "21000",
-        },
-        sender: "not used" as Address,
-        recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
+        creator: defaultCreator,
+        amount: defaultAmount,
+        fee: defaultFee,
+        sender: defaultSender,
+        recipient: defaultRecipient,
       };
-      const nonce = 0 as Nonce;
-      const serializedTx = serializeUnsignedTransaction(tx, nonce);
+      const serializedTx = serializeUnsignedTransaction(tx, defaultNonce);
       expect(serializedTx).toEqual(
         fromHex(
-          "ef808504a817c8008252089443aa18faae961c23715735682dc75662d90f4dde8901158e460913d00000808216918080",
+          "ef1a8504a817c8008252089443aa18faae961c23715735682dc75662d90f4dde8901158e460913d00000808216918080",
         ),
       );
     });
 
     it("can serialize transaction with memo", () => {
-      const pubkey = fromHex(
-        "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
-      );
-
       const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
-        creator: {
-          chainId: "ethereum-eip155-5777" as ChainId,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: pubkey as PublicKeyBytes,
-          },
-        },
-        amount: {
-          quantity: "20000000000000000000",
-          fractionalDigits: 18,
-          tokenTicker: ETH,
-        },
-        fee: {
-          gasPrice: {
-            quantity: "20000000000",
-            fractionalDigits: 18,
-            tokenTicker: ETH,
-          },
-          gasLimit: "21000",
-        },
-        sender: "not used" as Address,
-        recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
+        creator: defaultCreator,
+        amount: defaultAmount,
+        fee: defaultFee,
+        sender: defaultSender,
+        recipient: defaultRecipient,
         memo:
           "The nice memo I attach to that money for the whole world to read, And can encode as much data as you want, and unicode symbols like \u2764",
       };
-      const nonce = 0 as Nonce;
-      const serializedTx = serializeUnsignedTransaction(tx, nonce);
+      const serializedTx = serializeUnsignedTransaction(tx, defaultNonce);
       expect(serializedTx).toEqual(
         fromHex(
-          "f8b7808504a817c8008252089443aa18faae961c23715735682dc75662d90f4dde8901158e460913d00000b887546865206e696365206d656d6f20492061747461636820746f2074686174206d6f6e657920666f72207468652077686f6c6520776f726c6420746f20726561642c20416e642063616e20656e636f6465206173206d756368206461746120617320796f752077616e742c20616e6420756e69636f64652073796d626f6c73206c696b6520e29da48216918080",
+          "f8b71a8504a817c8008252089443aa18faae961c23715735682dc75662d90f4dde8901158e460913d00000b887546865206e696365206d656d6f20492061747461636820746f2074686174206d6f6e657920666f72207468652077686f6c6520776f726c6420746f20726561642c20416e642063616e20656e636f6465206173206d756368206461746120617320796f752077616e742c20616e6420756e69636f64652073796d626f6c73206c696b6520e29da48216918080",
         ),
       );
     });
 
-    it("throws for unset gas price/limit", () => {
-      const creator: Identity = {
-        chainId: "ethereum-eip155-5777" as ChainId,
-        pubkey: {
-          algo: Algorithm.Secp256k1,
-          data: fromHex(
-            "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
-          ) as PublicKeyBytes,
-        },
+    it("throws if creator and sender do not match", () => {
+      const tx: SendTransaction & WithCreator = {
+        kind: "bcp/send",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        fee: defaultFee,
+        sender: defaultRecipient,
+        recipient: defaultRecipient,
       };
-      const amount: Amount = {
-        quantity: "20000000000000000000",
-        fractionalDigits: 18,
-        tokenTicker: ETH,
-      };
-      const gasPrice: Amount = {
-        quantity: "20000000000",
-        fractionalDigits: 18,
-        tokenTicker: ETH,
-      };
-      const gasLimit = "21000";
-      const nonce = 0 as Nonce;
+      expect(() => serializeUnsignedTransaction(tx, defaultNonce)).toThrowError(
+        /Creator does not match sender/i,
+      );
+    });
 
+    it("throws for unset gas price/limit", () => {
       // gasPrice unset
       {
         const tx: SendTransaction & WithCreator = {
           kind: "bcp/send",
-          creator: creator,
-          amount: amount,
+          creator: defaultCreator,
+          amount: defaultAmount,
           fee: {
+            ...defaultFee,
             gasPrice: undefined,
-            gasLimit: gasLimit,
           },
-          sender: "not used" as Address,
-          recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
+          sender: defaultSender,
+          recipient: defaultRecipient,
         };
-        expect(() => serializeUnsignedTransaction(tx, nonce)).toThrowError(/gasPrice must be set/i);
+        expect(() => serializeUnsignedTransaction(tx, defaultNonce)).toThrowError(/gasPrice must be set/i);
       }
 
       // gasLimit unset
       {
         const tx: SendTransaction & WithCreator = {
           kind: "bcp/send",
-          creator: creator,
-          amount: amount,
+          creator: defaultCreator,
+          amount: defaultAmount,
           fee: {
-            gasPrice: gasPrice,
+            ...defaultFee,
             gasLimit: undefined,
           },
-          sender: "not used" as Address,
-          recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
+          sender: defaultSender,
+          recipient: defaultRecipient,
         };
-        expect(() => serializeUnsignedTransaction(tx, nonce)).toThrowError(/gasLimit must be set/i);
+        expect(() => serializeUnsignedTransaction(tx, defaultNonce)).toThrowError(/gasLimit must be set/i);
       }
     });
 
     it("throws for negative nonce", () => {
-      const creator: Identity = {
-        chainId: "ethereum-eip155-5777" as ChainId,
-        pubkey: {
-          algo: Algorithm.Secp256k1,
-          data: fromHex(
-            "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
-          ) as PublicKeyBytes,
-        },
-      };
-      const amount: Amount = {
-        quantity: "20000000000000000000",
-        fractionalDigits: 18,
-        tokenTicker: ETH,
-      };
-      const gasPrice: Amount = {
-        quantity: "20000000000",
-        fractionalDigits: 18,
-        tokenTicker: ETH,
-      };
-      const gasLimit = "21000";
-
       const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
-        creator: creator,
-        amount: amount,
-        fee: {
-          gasPrice: gasPrice,
-          gasLimit: gasLimit,
-        },
-        sender: "not used" as Address,
-        recipient: "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address,
+        creator: defaultCreator,
+        amount: defaultAmount,
+        fee: defaultFee,
+        sender: defaultSender,
+        recipient: defaultRecipient,
       };
       expect(() => serializeUnsignedTransaction(tx, -1 as Nonce)).toThrowError(
         /not a unsigned safe integer/i,
@@ -237,7 +187,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes,
+            data: fromHex("") as PublicKeyBytes, // unused for serialization
           },
         },
         amount: {
@@ -282,7 +232,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes,
+            data: fromHex("") as PublicKeyBytes, // unused for serialization
           },
         },
         amount: {
@@ -324,7 +274,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes,
+            data: fromHex("") as PublicKeyBytes, // unused for serialization
           },
         },
         amounts: [
@@ -372,7 +322,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes,
+            data: fromHex("") as PublicKeyBytes, // unused for serialization
           },
         },
         fee: {
@@ -409,7 +359,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes,
+            data: fromHex("") as PublicKeyBytes, // unused for serialization
           },
         },
         fee: {
@@ -445,7 +395,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes,
+            data: fromHex("") as PublicKeyBytes, // unused for serialization
           },
         },
         amounts: [
@@ -493,7 +443,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes,
+            data: fromHex("") as PublicKeyBytes, // unused for serialization
           },
         },
         fee: {
@@ -530,7 +480,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes,
+            data: fromHex("") as PublicKeyBytes, // unused for serialization
           },
         },
         fee: {
@@ -625,7 +575,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes,
+              data: fromHex("") as PublicKeyBytes, // unused for serialization
             },
           },
           amount: {
@@ -684,7 +634,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes,
+              data: fromHex("") as PublicKeyBytes, // unused for serialization
             },
           },
           amounts: [
@@ -746,7 +696,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes,
+              data: fromHex("") as PublicKeyBytes, // unused for serialization
             },
           },
           fee: {
@@ -797,7 +747,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes,
+              data: fromHex("") as PublicKeyBytes, // unused for serialization
             },
           },
           fee: {
@@ -847,7 +797,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes,
+              data: fromHex("") as PublicKeyBytes, // unused for serialization
             },
           },
           amounts: [
@@ -909,7 +859,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes,
+              data: fromHex("") as PublicKeyBytes, // unused for serialization
             },
           },
           fee: {
@@ -960,7 +910,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes,
+              data: fromHex("") as PublicKeyBytes, // unused for serialization
             },
           },
           fee: {
