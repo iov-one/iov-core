@@ -52,7 +52,7 @@ export function generateNonce(): Nonce {
 }
 
 function checkAndNormalizeUrl(url: string): string {
-  if (!url.match(/^https?:\/\/[-\.a-zA-Z0-9]+(:[0-9]+)?\/?$/)) {
+  if (!url.match(/^https?:\/\/[-.a-zA-Z0-9]+(:[0-9]+)?\/?$/)) {
     throw new Error(
       "Invalid API URL. Expected a base URL like https://testnet.lisk.io or http://123.123.132.132:8000/",
     );

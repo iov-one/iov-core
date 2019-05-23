@@ -57,7 +57,7 @@ export class UserProfile {
     const formatVersion = Int53.fromString(await db.get(storageKeyFormatVersion, { asBuffer: false }));
 
     switch (formatVersion.toNumber()) {
-      case 1:
+      case 1: {
         // get from storage (raw strings)
         const createdAtFromStorage = await db.get(storageKeyCreatedAt, { asBuffer: false });
         const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
@@ -72,6 +72,7 @@ export class UserProfile {
           createdAt: fromRfc3339(createdAtFromStorage),
           keyring: new Keyring(keyringSerialization),
         });
+      }
       default:
         throw new Error(`Unsupported format version: ${formatVersion.toNumber()}`);
     }

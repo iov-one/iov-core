@@ -57,8 +57,6 @@ function handleRequest(event: MessageEvent): JsonRpcResponse {
 }
 
 onmessage = event => {
-  // console.log("Received message", JSON.stringify(event));
-
   // filter out empty {"isTrusted":true} events
   if (!event.data) {
     return;

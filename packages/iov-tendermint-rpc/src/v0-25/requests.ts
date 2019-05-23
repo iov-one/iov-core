@@ -5,8 +5,6 @@ import { assertNotEmpty, Base64, Base64String, HexString, Integer, IntegerString
 import { createJsonRpcRequest } from "../jsonrpc";
 import * as requests from "../requests";
 
-/***** queries *****/
-
 export class Params {
   public static encodeAbciInfo(req: requests.AbciInfoRequest): JsonRpcRequest {
     return createJsonRpcRequest(req.method);

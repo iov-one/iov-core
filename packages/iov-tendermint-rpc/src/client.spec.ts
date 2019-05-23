@@ -1,4 +1,4 @@
-// tslint:disable:no-console readonly-array
+// tslint:disable:readonly-array
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
@@ -531,7 +531,7 @@ for (const { url, version, appCreator } of tendermintInstances) {
 
     describe("With WebsocketClient", () => {
       // don't print out WebSocket errors if marked pending
-      const onError = skipTests() ? () => 0 : console.log;
+      const onError = skipTests() ? () => 0 : console.error;
       const factory = () => new WebsocketClient(url, onError);
       const adaptor = adatorForVersion(version);
       defaultTestSuite(factory, adaptor);

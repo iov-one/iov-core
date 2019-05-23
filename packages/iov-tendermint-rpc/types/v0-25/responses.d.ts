@@ -1,7 +1,6 @@
 import { JsonRpcSuccessResponse } from "@iov/jsonrpc";
 import * as responses from "../responses";
 import { SubscriptionEvent } from "../rpcclients";
-/*** adaptor ***/
 export declare class Responses {
     static decodeAbciInfo(response: JsonRpcSuccessResponse): responses.AbciInfoResponse;
     static decodeAbciQuery(response: JsonRpcSuccessResponse): responses.AbciQueryResponse;

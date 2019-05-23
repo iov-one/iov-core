@@ -1,6 +1,5 @@
 import { JsonRpcRequest } from "@iov/jsonrpc";
 import * as requests from "../requests";
-/***** queries *****/
 export declare class Params {
     static encodeAbciInfo(req: requests.AbciInfoRequest): JsonRpcRequest;
     static encodeAbciQuery(req: requests.AbciQueryRequest): JsonRpcRequest;

@@ -530,7 +530,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     switch (checkedCount) {
       case 0:
         return [];
-      default:
+      default: {
         // uint53 > 0
         const out = new Array<Nonce>();
         const firstNonce = await this.getNonce(query);
@@ -539,6 +539,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           out.push((firstNonce + index) as Nonce);
         }
         return out;
+      }
     }
   }
 
@@ -586,7 +587,7 @@ export class EthereumConnection implements AtomicSwapConnection {
               // test if this subscription event is ours
               if (
                 typeof blockHeaderJson.params === "object" &&
-                typeof blockHeaderJson.params !== null &&
+                blockHeaderJson.params !== null &&
                 blockHeaderJson.params.subscription === subscriptionId
               ) {
                 // Give node time to store the new block and make it available via the HTTP API.
@@ -806,6 +807,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const searchId = query.id;
       const resultPromise = new Promise<ConfirmedTransaction>(async (resolve, reject) => {
         try {
+          // eslint-disable-next-line no-constant-condition
           while (true) {
             const searchResult = await this.searchTransactionsById(searchId);
             if (searchResult.length > 0) {
@@ -1276,9 +1278,10 @@ export class EthereumConnection implements AtomicSwapConnection {
         const dataArray = Encoding.fromHex(normalizeHex(log.data));
         const kind = Abi.decodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
         switch (kind) {
-          case SwapContractEvent.Opened:
+          case SwapContractEvent.Opened: {
             const parsed = EthereumConnection.parseOpenedEventBytes(dataArray, log.prefix, this.erc20Tokens);
             return parsed ? [...accumulator, parsed] : accumulator;
+          }
           case SwapContractEvent.Claimed: {
             const update = EthereumConnection.parseClaimedEventBytes(dataArray);
             return EthereumConnection.updateSwapInList(accumulator, update, log.prefix);

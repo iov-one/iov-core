@@ -106,7 +106,6 @@ export interface TxEvent {
 export declare const getTxEventHeight: (event: TxEvent) => number;
 export declare const getHeaderEventHeight: (event: NewBlockHeaderEvent) => number;
 export declare const getBlockEventHeight: (event: NewBlockEvent) => number;
-/**** Helper items used above ******/
 export interface Tag {
     readonly key: Uint8Array;
     readonly value: Uint8Array;

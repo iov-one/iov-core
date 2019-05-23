@@ -7,9 +7,6 @@ export function wrapInAsyncFunction(code: string): string {
   })()`;
 
   const ast = recast.parse(codeInAsyncFunction, { parser: babylon });
-  // console.log(recast.print(ast));
-  // console.log(ast.program.body);
-
   const body = ast.program.body[0].expression.callee.body.body;
 
   if (body.length !== 0) {

@@ -218,7 +218,7 @@ describe("Keyring", () => {
       keyring.add(wallet);
 
       expect(keyring.serialize()).toMatch(
-        /^{\"formatVersion\":1,\"wallets\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}\]}$/,
+        /^{"formatVersion":1,"wallets":\[{"implementationId":"ed25519-hd","data":"{.*}"}\]}$/,
       );
     });
 
@@ -237,7 +237,7 @@ describe("Keyring", () => {
       }
 
       expect(keyring.serialize()).toMatch(
-        /^{\"formatVersion\":1,\"wallets\":\[{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}(,{\"implementationId\":\"ed25519-hd\",\"data\":\"{.*}\"}){5}\]}$/,
+        /^{"formatVersion":1,"wallets":\[{"implementationId":"ed25519-hd","data":"{.*}"}(,{"implementationId":"ed25519-hd","data":"{.*}"}){5}\]}$/,
       );
     });
 
