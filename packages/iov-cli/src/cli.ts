@@ -86,7 +86,6 @@ export function main(originalArgs: ReadonlyArray<string>): void {
     ["@iov/rise", ["riseCodec", "RiseConnection", "riseConnector"]],
   ]);
 
-  // console.info("Called main with:", args);
   console.info(colors.green("Initializing session for you. Have fun!"));
   console.info(colors.yellow("Available imports:"));
   console.info(colors.yellow("  * http"));

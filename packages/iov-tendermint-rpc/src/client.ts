@@ -236,7 +236,6 @@ export class Client {
     const eventStream = this.client.listen(req);
     return eventStream.map<T>(event => {
       // tslint:disable-next-line:no-console
-      // console.log(JSON.stringify(event));
       return decode(event);
     });
   }

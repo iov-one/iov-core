@@ -52,8 +52,6 @@ async function main(): Promise<void> {
   const server = new JsonRpcSigningServer(core);
 
   onmessage = async event => {
-    // console.log("Received message", JSON.stringify(event));
-
     // filter out empty {"isTrusted":true} events
     if (!event.data) {
       return;
