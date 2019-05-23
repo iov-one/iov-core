@@ -7,7 +7,6 @@ import {
   SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
-  Token,
 } from "@iov/bcp";
 
 import { decodeAmount } from "./decode";

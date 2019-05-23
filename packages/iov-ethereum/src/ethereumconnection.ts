@@ -31,7 +31,6 @@ import {
   isSwapProcessStateClaimed,
   isSwapProcessStateOpen,
   Nonce,
-  OpenSwap,
   PostableBytes,
   PostTxResponse,
   Preimage,
