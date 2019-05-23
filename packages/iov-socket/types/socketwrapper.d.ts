@@ -19,19 +19,19 @@ export interface SocketWrapperMessageEvent {
  * - handling of corner cases in the open and close behaviour
  */
 export declare class SocketWrapper {
-    private readonly url;
-    private readonly messageHandler;
-    private readonly errorHandler;
-    private readonly openHandler?;
-    private readonly closeHandler?;
-    private readonly timeout;
     readonly connected: Promise<void>;
     private connectedResolver;
     private connectedRejecter;
     private socket;
     private timeoutId;
     private closed;
-    constructor(url: string, messageHandler: (event: SocketWrapperMessageEvent) => void, errorHandler: (event: SocketWrapperErrorEvent) => void, openHandler?: (() => void) | undefined, closeHandler?: ((event: SocketWrapperCloseEvent) => void) | undefined, timeout?: number);
+    private readonly url;
+    private readonly messageHandler;
+    private readonly errorHandler;
+    private readonly openHandler?;
+    private readonly closeHandler?;
+    private readonly timeout;
+    constructor(url: string, messageHandler: (event: SocketWrapperMessageEvent) => void, errorHandler: (event: SocketWrapperErrorEvent) => void, openHandler?: () => void, closeHandler?: (event: SocketWrapperCloseEvent) => void, timeout?: number);
     /**
      * returns a promise that resolves when connection is open
      */

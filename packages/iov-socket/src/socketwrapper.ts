@@ -35,19 +35,32 @@ export class SocketWrapper {
   private socket: WebSocket | undefined;
   private timeoutId: NodeJS.Timeout | undefined;
   private closed = false;
+  private readonly url: string;
+  private readonly messageHandler: (event: SocketWrapperMessageEvent) => void;
+  private readonly errorHandler: (event: SocketWrapperErrorEvent) => void;
+  private readonly openHandler?: () => void;
+  private readonly closeHandler?: (event: SocketWrapperCloseEvent) => void;
+  private readonly timeout: number;
 
   constructor(
-    private readonly url: string,
-    private readonly messageHandler: (event: SocketWrapperMessageEvent) => void,
-    private readonly errorHandler: (event: SocketWrapperErrorEvent) => void,
-    private readonly openHandler?: () => void,
-    private readonly closeHandler?: (event: SocketWrapperCloseEvent) => void,
-    private readonly timeout: number = 10_000,
+    url: string,
+    messageHandler: (event: SocketWrapperMessageEvent) => void,
+    errorHandler: (event: SocketWrapperErrorEvent) => void,
+    openHandler?: () => void,
+    closeHandler?: (event: SocketWrapperCloseEvent) => void,
+    timeout: number = 10_000,
   ) {
     this.connected = new Promise((resolve, reject) => {
       this.connectedResolver = resolve;
       this.connectedRejecter = reject;
     });
+
+    this.url = url;
+    this.messageHandler = messageHandler;
+    this.errorHandler = errorHandler;
+    this.openHandler = openHandler;
+    this.closeHandler = closeHandler;
+    this.timeout = timeout;
   }
 
   /**
