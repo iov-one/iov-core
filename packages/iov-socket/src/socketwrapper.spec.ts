@@ -199,6 +199,30 @@ describe("SocketWrapper", () => {
     socket.connect();
   });
 
+  it("can send events after timeout period", done => {
+    pendingWithoutSocketServer();
+
+    // The "timeout period" is the period in which a timeout could potentially be triggered
+
+    const timeoutPeriodLength = 1_500;
+
+    const socket = new SocketWrapper(
+      socketServerUrl,
+      response => {
+        expect(response.type).toEqual("message");
+        expect(response.data).toEqual("Hello world");
+        socket.disconnect();
+      },
+      error => done.fail(error.message || "Unknown socket error"),
+      undefined,
+      () => done(),
+      timeoutPeriodLength,
+    );
+    socket.connect();
+
+    setTimeout(() => socket.send("Hello world"), 2 * timeoutPeriodLength);
+  });
+
   it("cannot send on a disconnect socket (it will never come back)", done => {
     pendingWithoutSocketServer();
 

@@ -41,5 +41,12 @@ export declare class SocketWrapper {
      */
     disconnect(): void;
     send(data: string): Promise<void>;
+    /**
+     * Clears the timeout function, such that no timeout error will be raised anymore. This should be
+     * called when the connection is established, a connection error occurred or the socket is disconnected.
+     *
+     * This method must not be called before `connect()`.
+     * This method is idempotent.
+     */
     private clearTimeout;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@iov/crypto",
-  "version": "0.14.1",
+  "version": "0.14.3",
   "description": "Cryptography resources for IOV projects",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -15,7 +15,7 @@
   },
   "scripts": {
     "docs": "shx rm -rf docs && typedoc --options typedoc.js",
-    "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",
+    "lint": "eslint --max-warnings 0 \"**/*.{js,ts}\" && tslint -t verbose --project .",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "format-text": "prettier --write --prose-wrap always --print-width 80 \"./*.md\"",
     "test-node": "node jasmine-testrunner.js",
@@ -31,7 +31,7 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/encoding": "^0.14.1",
+    "@iov/encoding": "^0.14.3",
     "bip39": "^2.5.0",
     "bn.js": "^4.11.8",
     "elliptic": "^6.4.0",

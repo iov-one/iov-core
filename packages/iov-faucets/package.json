@@ -1,6 +1,6 @@
 {
   "name": "@iov/faucets",
-  "version": "0.14.1",
+  "version": "0.14.3",
   "description": "Faucets for some of the supported blockchains",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -16,7 +16,7 @@
   "scripts": {
     "docs": "shx rm -rf docs && typedoc --options typedoc.js",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
-    "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",
+    "lint": "eslint --max-warnings 0 \"**/*.{js,ts}\" && tslint -t verbose --project .",
     "prebuild": "yarn format",
     "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && shx rm ./types/*.spec.d.ts",
     "build": "shx rm -rf ./build && tsc && yarn move-types",
@@ -30,10 +30,10 @@
     "test": "yarn build-or-skip && yarn test-node"
   },
   "dependencies": {
-    "@iov/bcp": "^0.14.1",
-    "@iov/bns": "^0.14.1",
-    "@iov/crypto": "^0.14.1",
-    "@iov/encoding": "^0.14.1",
+    "@iov/bcp": "^0.14.3",
+    "@iov/bns": "^0.14.3",
+    "@iov/crypto": "^0.14.3",
+    "@iov/encoding": "^0.14.3",
     "axios": "^0.18.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@iov/cli",
-  "version": "0.14.1",
+  "version": "0.14.3",
   "description": "Command line interface for iov core",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -14,7 +14,7 @@
   "scripts": {
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "format-text": "prettier --write --prose-wrap always --print-width 80 \"./*.md\"",
-    "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",
+    "lint": "eslint --max-warnings 0 \"**/*.{js,ts}\" && tslint -t verbose --project .",
     "prebuild": "yarn format",
     "build": "tsc",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
@@ -26,12 +26,12 @@
     "iov-cli": "bin/iov-cli"
   },
   "dependencies": {
-    "@iov/bns": "^0.14.1",
-    "@iov/core": "^0.14.1",
-    "@iov/ethereum": "^0.14.1",
-    "@iov/faucets": "^0.14.1",
-    "@iov/lisk": "^0.14.1",
-    "@iov/rise": "^0.14.1",
+    "@iov/bns": "^0.14.3",
+    "@iov/core": "^0.14.3",
+    "@iov/ethereum": "^0.14.3",
+    "@iov/faucets": "^0.14.3",
+    "@iov/lisk": "^0.14.3",
+    "@iov/rise": "^0.14.3",
     "argparse": "^1.0.10",
     "babylon": "^6.18.0",
     "colors": "^1.3.3",

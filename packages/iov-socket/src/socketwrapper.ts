@@ -69,6 +69,7 @@ export class SocketWrapper {
       });
     };
     socket.onopen = _ => {
+      this.clearTimeout();
       this.connectedResolver!();
 
       if (this.openHandler) {
@@ -151,12 +152,21 @@ export class SocketWrapper {
     this.socket.send(data);
   }
 
+  /**
+   * Clears the timeout function, such that no timeout error will be raised anymore. This should be
+   * called when the connection is established, a connection error occurred or the socket is disconnected.
+   *
+   * This method must not be called before `connect()`.
+   * This method is idempotent.
+   */
   private clearTimeout(): void {
     if (!this.timeoutId) {
       throw new Error(
         "Timeout ID not set. This should not happen and usually means connect() was not called.",
       );
     }
+
+    // Note: do not unset this.timeoutId to allow multiple calls to this function
     clearTimeout(this.timeoutId);
   }
 }

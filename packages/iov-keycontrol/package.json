@@ -1,6 +1,6 @@
 {
   "name": "@iov/keycontrol",
-  "version": "0.14.1",
+  "version": "0.14.3",
   "description": "Keyrings and Keycontroller for safe cryptography",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -17,7 +17,7 @@
     "docs": "shx rm -rf docs && typedoc --options typedoc.js",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "format-text": "prettier --write --prose-wrap always --print-width 80 \"./*.md\"",
-    "lint": "cross-env-shell \"tslint -t verbose --project . ${TSLINT_FLAGS}\"",
+    "lint": "eslint --max-warnings 0 \"**/*.{js,ts}\" && tslint -t verbose --project .",
     "test-node": "node jasmine-testrunner.js",
     "test-edge": "yarn pack-web && karma start --single-run --browsers Edge",
     "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
@@ -31,10 +31,10 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp": "^0.14.1",
-    "@iov/crypto": "^0.14.1",
-    "@iov/encoding": "^0.14.1",
-    "@iov/stream": "^0.14.1",
+    "@iov/bcp": "^0.14.3",
+    "@iov/crypto": "^0.14.3",
+    "@iov/encoding": "^0.14.3",
+    "@iov/stream": "^0.14.3",
     "@types/abstract-leveldown": "^5.0.1",
     "@types/levelup": "^3.1.0",
     "@types/node": "^10.12.18",
