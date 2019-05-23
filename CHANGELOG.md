@@ -2,6 +2,7 @@
 
 ## 0.14.3
 
+- @iov/bns: Automatically normalize empty memo strings for weave compatibility.
 - @iov/socket: Fix bug in `SocketWrapper` where the timeout error was triggered
   even if the connection was successfully established.
 

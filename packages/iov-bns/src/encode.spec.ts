@@ -4,11 +4,13 @@ import {
   Amount,
   ChainId,
   FullSignature,
+  Hash,
   Nonce,
   PublicIdentity,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
+  SwapOfferTransaction,
   TokenTicker,
 } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
@@ -203,16 +205,17 @@ describe("Encode", () => {
         data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PublicKeyBytes,
       },
     };
+    const defaultAmount: Amount = {
+      quantity: "1000000001",
+      fractionalDigits: 9,
+      tokenTicker: "CASH" as TokenTicker,
+    };
 
     it("works for SendTransaction", () => {
       const transaction: SendTransaction = {
         kind: "bcp/send",
         creator: defaultCreator,
-        amount: {
-          quantity: "1000000001",
-          fractionalDigits: 9,
-          tokenTicker: "CASH" as TokenTicker,
-        },
+        amount: defaultAmount,
         recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
         memo: "abc",
       };
@@ -291,6 +294,46 @@ describe("Encode", () => {
       expect(msg.usernameId).toEqual(toUtf8("alice"));
       expect(msg.blockchainId).toEqual(toUtf8("other-land"));
       expect(msg.address).toEqual("865765858O");
+    });
+
+    it("encodes unset and empty memo the same way", () => {
+      {
+        const memoUnset: SendTransaction = {
+          kind: "bcp/send",
+          creator: defaultCreator,
+          amount: defaultAmount,
+          recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        };
+        const memoEmpty: SendTransaction = {
+          kind: "bcp/send",
+          creator: defaultCreator,
+          amount: defaultAmount,
+          recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+          memo: "",
+        };
+        expect(buildMsg(memoUnset)).toEqual(buildMsg(memoEmpty));
+      }
+
+      {
+        const memoUnset: SwapOfferTransaction = {
+          kind: "bcp/swap_offer",
+          creator: defaultCreator,
+          amounts: [],
+          recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+          timeout: { timestamp: 22 },
+          hash: fromHex("aabbccdd") as Hash,
+        };
+        const memoEmpty: SwapOfferTransaction = {
+          kind: "bcp/swap_offer",
+          creator: defaultCreator,
+          amounts: [],
+          recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+          timeout: { timestamp: 22 },
+          hash: fromHex("aabbccdd") as Hash,
+          memo: "",
+        };
+        expect(buildMsg(memoUnset)).toEqual(buildMsg(memoEmpty));
+      }
     });
   });
 });

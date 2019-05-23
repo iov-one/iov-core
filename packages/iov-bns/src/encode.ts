@@ -31,9 +31,13 @@ function encodeInt(intNumber: number): number | null {
     throw new Error("Received some kind of number that can't be encoded.");
   }
 
-  // use null instead of 0 to not encode zero fields
-  // for compatibility with golang encoder
+  // Normalizes the zero value to null as expected by weave
   return intNumber || null;
+}
+
+function encodeString(data: string | undefined): string | null {
+  // Normalizes the empty string to null as expected by weave
+  return data || null;
 }
 
 export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
@@ -148,7 +152,7 @@ function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       dest: decodeBnsAddress(tx.recipient).data,
       amount: encodeAmount(tx.amount),
-      memo: tx.memo,
+      memo: encodeString(tx.memo),
     }),
   };
 }
@@ -165,7 +169,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: encodeInt(tx.timeout.timestamp),
-      memo: tx.memo,
+      memo: encodeString(tx.memo),
     }),
   };
 }
