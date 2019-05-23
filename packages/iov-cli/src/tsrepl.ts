@@ -1,4 +1,3 @@
-// tslint:disable:no-console
 import { diffLines } from "diff";
 import { join } from "path";
 import { Recoverable, REPLServer, start } from "repl";
@@ -192,8 +191,8 @@ export class TsRepl {
       };
     } catch (error) {
       if (this.debuggingEnabled) {
-        console.log("Current REPL TypeScript program:");
-        console.log(this.evalData.input);
+        console.info("Current REPL TypeScript program:");
+        console.info(this.evalData.input);
       }
 
       let outError: Error | null;

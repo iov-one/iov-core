@@ -58,7 +58,7 @@ export async function main(args: ReadonlyArray<string>): Promise<void> {
     const gasLimit = Math.round(estimatedGas * 1.5);
 
     const receipt = await deploymentTransaction.send({ from: mainIdentity, gas: gasLimit }).getReceipt();
-    console.log(`${name} deployed to`, debugAddress(receipt.contractAddress));
+    console.info(`${name} deployed to`, debugAddress(receipt.contractAddress));
 
     if (typeof contract.methods.mint !== "undefined") {
       mintingJobs.push(
@@ -71,7 +71,7 @@ export async function main(args: ReadonlyArray<string>): Promise<void> {
 
   // Perform minting jobs after all deployments so that deployment nonces stay constant
   for (const { contract, recipient, quantity } of mintingJobs) {
-    console.log(`Minting ${quantity} atomic units for ${recipient} ...`);
+    console.info(`Minting ${quantity} atomic units for ${recipient} ...`);
     await contract.methods
       .mint(recipient, quantity)
       .send({ from: mainIdentity, gasPrice: ganacheGasPrice })

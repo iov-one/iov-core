@@ -1,10 +1,6 @@
 {
   "defaultSeverity": "error",
-  "extends": [
-    "tslint:latest",
-    "tslint-immutable",
-    "tslint-config-prettier"
-  ],
+  "extends": ["tslint:latest", "tslint-immutable", "tslint-config-prettier"],
   "jsRules": {},
   "rules": {
     "callable-types": false,
@@ -13,7 +9,7 @@
     "interface-name": [true, "never-prefix"],
     "max-classes-per-file": false,
     "no-class": false,
-    "no-console": true,
+    "no-console": [true, "log"],
     "no-delete": true,
     "no-empty-interface": false,
     "no-expression-statement": false,
