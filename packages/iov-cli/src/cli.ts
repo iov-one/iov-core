@@ -29,7 +29,7 @@ export function main(originalArgs: ReadonlyArray<string>): void {
 
   if (args.version) {
     const version = require(join(__dirname, "..", "package.json")).version;
-    console.log(version);
+    console.info(version);
     return;
   }
 
@@ -86,25 +86,25 @@ export function main(originalArgs: ReadonlyArray<string>): void {
     ["@iov/rise", ["riseCodec", "RiseConnection", "riseConnector"]],
   ]);
 
-  // console.log("Called main with:", args);
-  console.log(colors.green("Initializing session for you. Have fun!"));
-  console.log(colors.yellow("Available imports:"));
-  console.log(colors.yellow("  * http"));
-  console.log(colors.yellow("  * https"));
-  console.log(colors.yellow("  * leveldown"));
-  console.log(colors.yellow("  * levelup"));
-  console.log(colors.yellow("  * from long"));
-  console.log(colors.yellow("    - Long"));
+  // console.info("Called main with:", args);
+  console.info(colors.green("Initializing session for you. Have fun!"));
+  console.info(colors.yellow("Available imports:"));
+  console.info(colors.yellow("  * http"));
+  console.info(colors.yellow("  * https"));
+  console.info(colors.yellow("  * leveldown"));
+  console.info(colors.yellow("  * levelup"));
+  console.info(colors.yellow("  * from long"));
+  console.info(colors.yellow("    - Long"));
   for (const moduleName of imports.keys()) {
-    console.log(colors.yellow(`  * from ${moduleName}`));
+    console.info(colors.yellow(`  * from ${moduleName}`));
     for (const symbol of imports.get(moduleName)!) {
-      console.log(colors.yellow(`    - ${symbol}`));
+      console.info(colors.yellow(`    - ${symbol}`));
     }
   }
-  console.log(colors.yellow("  * helper functions"));
-  console.log(colors.yellow("    - toAscii"));
-  console.log(colors.yellow("    - fromHex"));
-  console.log(colors.yellow("    - toHex"));
+  console.info(colors.yellow("  * helper functions"));
+  console.info(colors.yellow("    - toAscii"));
+  console.info(colors.yellow("    - fromHex"));
+  console.info(colors.yellow("    - toHex"));
 
   let init = `
     import leveldown = require('leveldown');
@@ -131,7 +131,7 @@ export function main(originalArgs: ReadonlyArray<string>): void {
       await profile.storeIn(db, "secret passwd");
       const profileFromDb = await UserProfile.loadFrom(db, "secret passwd");
 
-      console.log("Done testing, will exit now.");
+      console.info("Done testing, will exit now.");
       process.exit(0);
     `;
   }

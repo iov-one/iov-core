@@ -18,7 +18,7 @@
   ],
   "rules": {
     "curly": ["error", "multi-line", "consistent"],
-    "no-console": ["off", { "allow": ["error", "info", "warn"] }],
+    "no-console": ["warn", { "allow": ["error", "info", "warn"] }],
     "no-shadow": "error",
     "prefer-const": "error",
     "spaced-comment": ["off", "always", { "exceptions": ["*"] }],
