@@ -1,4 +1,3 @@
-// tslint:disable:no-console
 import { diffLines } from "diff";
 import { join } from "path";
 import { Recoverable, REPLServer, start } from "repl";

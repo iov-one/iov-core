@@ -1,4 +1,4 @@
-// tslint:disable:no-console readonly-array
+// tslint:disable:readonly-array
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 

@@ -1,4 +1,3 @@
-// tslint:disable:no-console
 import { ArgumentParser } from "argparse";
 // tslint:disable-next-line:no-submodule-imports
 import colors = require("colors/safe");
