@@ -30,7 +30,7 @@ export declare function assertNumber(value: number): number;
  * This is used when you want to verify that data at runtime matches the expected type.
  * This implies assertSet.
  */
-export declare function assertArray<T>(value: ReadonlyArray<T>): ReadonlyArray<T>;
+export declare function assertArray<T>(value: readonly T[]): readonly T[];
 /**
  * Throws an error if value matches the empty value for the
  * given type (array/string of length 0, number of value 0, ...)

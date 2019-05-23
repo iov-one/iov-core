@@ -13,7 +13,7 @@ export interface Account {
      * - Available after first transaction sent (e.g. Lisk, Tendermint, Ethereum)
      */
     readonly pubkey?: PublicKeyBundle;
-    readonly balance: ReadonlyArray<Amount>;
+    readonly balance: readonly Amount[];
 }
 export interface Token {
     readonly tokenTicker: TokenTicker;
@@ -125,7 +125,7 @@ export interface TransactionQuery {
     /** any transaction signed by this address */
     readonly signedBy?: Address;
     /** chain-specific key value pairs that encode a query */
-    readonly tags?: ReadonlyArray<QueryTag>;
+    readonly tags?: readonly QueryTag[];
     readonly height?: number;
     readonly minHeight?: number;
     readonly maxHeight?: number;
@@ -173,7 +173,7 @@ export interface BlockchainConnection {
     readonly chainId: () => ChainId;
     readonly height: () => Promise<number>;
     readonly getToken: (ticker: TokenTicker) => Promise<Token | undefined>;
-    readonly getAllTokens: () => Promise<ReadonlyArray<Token>>;
+    readonly getAllTokens: () => Promise<readonly Token[]>;
     /**
      * Get the current account information (e.g. balance)
      *
@@ -193,11 +193,11 @@ export interface BlockchainConnection {
      * This avoids querying the blockchain for every nonce and removes the need to
      * wait for blocks before getting updated nonces.
      */
-    readonly getNonces: (query: AddressQuery | PubkeyQuery, count: number) => Promise<ReadonlyArray<Nonce>>;
+    readonly getNonces: (query: AddressQuery | PubkeyQuery, count: number) => Promise<readonly Nonce[]>;
     readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
     readonly watchBlockHeaders: () => Stream<BlockHeader>;
     readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
-    readonly searchTx: (query: TransactionQuery) => Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
+    readonly searchTx: (query: TransactionQuery) => Promise<readonly (ConfirmedTransaction | FailedTransaction)[]>;
     /**
      * Subscribes to all newly added transactions that match the query
      */

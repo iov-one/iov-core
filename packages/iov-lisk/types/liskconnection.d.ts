@@ -14,14 +14,14 @@ export declare class LiskConnection implements BlockchainConnection {
     height(): Promise<number>;
     postTx(bytes: PostableBytes): Promise<PostTxResponse>;
     getToken(searchTicker: TokenTicker): Promise<Token | undefined>;
-    getAllTokens(): Promise<ReadonlyArray<Token>>;
+    getAllTokens(): Promise<readonly Token[]>;
     getAccount(query: AccountQuery): Promise<Account | undefined>;
     getNonce(_: AddressQuery | PubkeyQuery): Promise<Nonce>;
-    getNonces(_: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
+    getNonces(_: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]>;
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
-    searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
+    searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction[]>;
     listenTx(_: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     getFeeQuote(tx: UnsignedTransaction): Promise<Fee>;

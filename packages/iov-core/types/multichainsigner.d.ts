@@ -12,7 +12,7 @@ export declare class MultiChainSigner {
     private readonly knownChains;
     private readonly profile;
     constructor(profile: Profile);
-    chainIds(): ReadonlyArray<ChainId>;
+    chainIds(): readonly ChainId[];
     connection(chainId: ChainId): BlockchainConnection;
     /**
      * Connects to a chain using the provided connector.
