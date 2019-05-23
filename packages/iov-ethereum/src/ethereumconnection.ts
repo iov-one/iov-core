@@ -489,7 +489,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     const producer: Producer<Account | undefined> = {
       start: async listener => {
-        const poll = async () => {
+        const poll = async (): Promise<void> => {
           try {
             const event = await this.getAccount({ address: address });
             if (!equal(event, lastEvent)) {

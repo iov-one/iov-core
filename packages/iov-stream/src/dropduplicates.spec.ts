@@ -53,7 +53,7 @@ describe("dropDuplicates", () => {
   it("uses value to key method for duplicate checks", done => {
     const instream = Stream.fromArray([1, 10, 100, 2000, 2, 27, 1337, 3.14, 33]);
     // use first character of native string representation
-    const valueToKey = (value: number) => `${value}`.charAt(0);
+    const valueToKey = (value: number): string => `${value}`.charAt(0);
     const operand = dropDuplicates(valueToKey);
 
     const events = new Array<number>();

@@ -62,8 +62,11 @@ describe("SigningServerCore", () => {
     tokenTicker: "CASH" as TokenTicker,
   };
   const defaultChainId = "some-network" as ChainId;
-  const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
-  const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
+  const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (
+    _,
+    matching,
+  ): Promise<readonly PublicIdentity[]> => matching;
+  const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2): Promise<boolean> => true;
 
   async function sendTokensFromFaucet(
     connection: BlockchainConnection,

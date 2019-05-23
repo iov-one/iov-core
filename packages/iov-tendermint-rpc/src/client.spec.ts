@@ -194,7 +194,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     const find = randomId();
     const query = buildQuery({ tags: [{ key: "app.key", value: find }] });
 
-    const sendTx = async () => {
+    const sendTx = async (): Promise<void> => {
       const me = randomId();
       const tx = buildKvTx(find, me);
 
@@ -530,7 +530,7 @@ for (const { url, version, appCreator } of tendermintInstances) {
     describe("With WebsocketClient", () => {
       // don't print out WebSocket errors if marked pending
       const onError = skipTests() ? () => 0 : console.error;
-      const factory = () => new WebsocketClient(url, onError);
+      const factory = (): WebsocketClient => new WebsocketClient(url, onError);
       const adaptor = adatorForVersion(version);
       defaultTestSuite(factory, adaptor);
       websocketTestSuite(factory, adaptor, appCreator);

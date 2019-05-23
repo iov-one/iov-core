@@ -232,7 +232,7 @@ export class RiseConnection implements BlockchainConnection {
     let pollInternal: NodeJS.Timeout | undefined;
     const producer: Producer<Account | undefined> = {
       start: async listener => {
-        const poll = async () => {
+        const poll = async (): Promise<void> => {
           try {
             const event = await this.getAccount(query);
             if (!equal(event, lastEvent)) {

@@ -22,7 +22,7 @@
     "no-shadow": "error",
     "prefer-const": "error",
     "spaced-comment": ["warn", "always", { "line": { "markers": ["/ <reference"] } }],
-    "@typescript-eslint/explicit-function-return-type": ["off", { "allowExpressions": true }],
+    "@typescript-eslint/explicit-function-return-type": ["error", { "allowExpressions": true }],
     "@typescript-eslint/explicit-member-accessibility": "off",
     "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/no-explicit-any": "off",

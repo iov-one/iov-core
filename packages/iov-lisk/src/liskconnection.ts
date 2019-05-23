@@ -226,7 +226,7 @@ export class LiskConnection implements BlockchainConnection {
     let pollInternal: NodeJS.Timeout | undefined;
     const producer: Producer<Account | undefined> = {
       start: async listener => {
-        const poll = async () => {
+        const poll = async (): Promise<void> => {
           try {
             const event = await this.getAccount(query);
             if (!equal(event, lastEvent)) {
@@ -296,7 +296,7 @@ export class LiskConnection implements BlockchainConnection {
     const producer: Producer<BlockHeader> = {
       start: async listener => {
         let watchHeight: number = await this.height();
-        const poll = async () => {
+        const poll = async (): Promise<void> => {
           try {
             const event = await this.getBlockHeader(watchHeight);
             if (!equal(event, lastEvent)) {
