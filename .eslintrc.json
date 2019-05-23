@@ -17,6 +17,7 @@
     "plugin:prettier/recommended"
   ],
   "rules": {
+    "curly": ["error", "all"],
     "no-console": ["warn", { "allow": ["error", "info", "warn"] }],
     "no-shadow": "error",
     "prefer-const": "error",
