@@ -103,7 +103,7 @@ export const riseCodec: TxCodec = {
 
     let unsignedTransaction: UnsignedTransaction;
     switch (json.type) {
-      case 0:
+      case 0: {
         const send: SendTransaction = {
           kind: "bcp/send",
           creator: {
@@ -129,6 +129,7 @@ export const riseCodec: TxCodec = {
         };
         unsignedTransaction = send;
         break;
+      }
       default:
         throw new Error(`Transaction parsing failed. Unsupported transaction type: ${json.type}`);
     }

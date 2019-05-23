@@ -366,7 +366,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     switch (checkedCount) {
       case 0:
         return [];
-      default:
+      default: {
         // uint53 > 0
         const out = new Array<Nonce>();
         const firstNonce = await this.getNonce(query);
@@ -375,6 +375,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           out.push((firstNonce + index) as Nonce);
         }
         return out;
+      }
     }
   }
 

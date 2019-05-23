@@ -18,7 +18,6 @@
   ],
   "rules": {
     "curly": ["error", "multi-line", "consistent"],
-    "no-case-declarations": "off",
     "no-console": ["off", { "allow": ["error", "info", "warn"] }],
     "no-shadow": "error",
     "prefer-const": "error",
