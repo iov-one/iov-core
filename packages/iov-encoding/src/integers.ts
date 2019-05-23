@@ -67,7 +67,7 @@ export class Uint32 implements Integer {
 
 export class Int53 implements Integer {
   public static fromString(str: string): Int53 {
-    if (!str.match(/^\-?[0-9]+$/)) {
+    if (!str.match(/^-?[0-9]+$/)) {
       throw new Error("Invalid string format");
     }
 

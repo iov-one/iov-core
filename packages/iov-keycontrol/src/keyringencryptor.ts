@@ -49,7 +49,7 @@ export class KeyringEncryptor {
     const formatVersion = Uint32.fromBigEndianBytes(encrypted.slice(0, formatVersionLength));
 
     switch (formatVersion.toNumber()) {
-      case 1:
+      case 1: {
         const nonceLength = 24;
         const nonce = encrypted.slice(
           formatVersionLength,
@@ -64,6 +64,7 @@ export class KeyringEncryptor {
           nonce,
         );
         return Encoding.fromUtf8(decrypted) as KeyringSerializationString;
+      }
       default:
         throw new Error(`Unsupported format version: ${formatVersion.toNumber()}`);
     }

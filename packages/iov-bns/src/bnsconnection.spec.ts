@@ -170,7 +170,7 @@ describe("BnsConnection", () => {
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
     const chainId = await connection.chainId();
-    expect(chainId).toMatch(/^[a-zA-Z0-9\-]{7,25}$/);
+    expect(chainId).toMatch(/^[a-zA-Z0-9-]{7,25}$/);
 
     const height = await connection.height();
     expect(height).toBeGreaterThan(1);
@@ -183,7 +183,7 @@ describe("BnsConnection", () => {
     const connection = await BnsConnection.establish(bnsdTendermintHttpUrl);
 
     const chainId = await connection.chainId();
-    expect(chainId).toMatch(/^[a-zA-Z0-9\-]{7,25}$/);
+    expect(chainId).toMatch(/^[a-zA-Z0-9-]{7,25}$/);
 
     const height = await connection.height();
     expect(height).toBeGreaterThan(1);

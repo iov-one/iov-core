@@ -31,7 +31,7 @@ describe("bnscodec", () => {
 
     // it should validate
     switch (prehashType) {
-      case PrehashType.Sha512:
+      case PrehashType.Sha512: {
         // testvector is a sha512 digest of our testbytes
         const prehash = new Sha512(bytes).digest();
         expect(prehash).toEqual(signBytes);
@@ -40,6 +40,7 @@ describe("bnscodec", () => {
         const valid = await Ed25519.verifySignature(sig.signature, prehash, pubkey);
         expect(valid).toEqual(true);
         break;
+      }
       default:
         fail("Unexpected prehash type");
     }

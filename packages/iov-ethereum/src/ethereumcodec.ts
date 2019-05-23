@@ -188,7 +188,7 @@ export class EthereumCodec implements TxCodec {
       const swapId = input.slice(positionSwapIdBegin, positionSwapIdEnd) as SwapIdBytes;
 
       switch (method) {
-        case SwapContractMethod.Open:
+        case SwapContractMethod.Open: {
           const positionRecipientBegin = positionSwapIdEnd;
           const positionRecipientEnd = positionRecipientBegin + 32;
           const positionHashBegin = positionRecipientEnd;
@@ -221,7 +221,8 @@ export class EthereumCodec implements TxCodec {
             hash: hash,
           };
           break;
-        case SwapContractMethod.Claim:
+        }
+        case SwapContractMethod.Claim: {
           const positionPreimageBegin = positionSwapIdEnd;
           const positionPreimageEnd = positionPreimageBegin + 32;
 
@@ -235,6 +236,7 @@ export class EthereumCodec implements TxCodec {
             preimage: preimage,
           };
           break;
+        }
         case SwapContractMethod.Abort:
           transaction = {
             kind: "bcp/swap_abort",
