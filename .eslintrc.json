@@ -26,7 +26,6 @@
     "no-var": "off",
     "prefer-const": "error",
     "spaced-comment": ["off", "always", { "exceptions": ["*"] }],
-    "valid-typeof": "off",
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/explicit-function-return-type": ["off", { "allowExpressions": true }],

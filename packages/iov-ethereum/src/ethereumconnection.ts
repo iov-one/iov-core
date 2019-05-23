@@ -586,7 +586,7 @@ export class EthereumConnection implements AtomicSwapConnection {
               // test if this subscription event is ours
               if (
                 typeof blockHeaderJson.params === "object" &&
-                typeof blockHeaderJson.params !== null &&
+                blockHeaderJson.params !== null &&
                 blockHeaderJson.params.subscription === subscriptionId
               ) {
                 // Give node time to store the new block and make it available via the HTTP API.
