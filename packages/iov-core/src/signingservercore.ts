@@ -21,8 +21,8 @@ export interface GetIdentitiesAuthorization {
    * @param matchingIdentities The identities that match the requested chain IDs.
    * @param meta An object that is passed by reference from request handlers into the callback.
    */
-  (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>, meta?: any): Promise<
-    ReadonlyArray<PublicIdentity>
+  (reason: string, matchingIdentities: readonly PublicIdentity[], meta?: any): Promise<
+    readonly PublicIdentity[]
   >;
 }
 
@@ -52,13 +52,13 @@ export interface SignedAndPosted {
 }
 
 export class SigningServerCore {
-  public readonly signedAndPosted: ValueAndUpdates<ReadonlyArray<SignedAndPosted>>;
+  public readonly signedAndPosted: ValueAndUpdates<readonly SignedAndPosted[]>;
 
   private readonly signer: MultiChainSigner;
   private readonly profile: UserProfile;
   private readonly authorizeGetIdentities: GetIdentitiesAuthorization;
   private readonly authorizeSignAndPost: SignAndPostAuthorization;
-  private readonly signedAndPostedProducer = new DefaultValueProducer<ReadonlyArray<SignedAndPosted>>([]);
+  private readonly signedAndPostedProducer = new DefaultValueProducer<readonly SignedAndPosted[]>([]);
 
   constructor(
     profile: UserProfile,
@@ -83,14 +83,14 @@ export class SigningServerCore {
    */
   public async getIdentities(
     reason: string,
-    chainIds: ReadonlyArray<ChainId>,
+    chainIds: readonly ChainId[],
     meta?: any,
-  ): Promise<ReadonlyArray<PublicIdentity>> {
+  ): Promise<readonly PublicIdentity[]> {
     const matchingIdentities = this.profile.getAllIdentities().filter(identity => {
       return chainIds.some(chainId => identity.chainId === chainId);
     });
 
-    let authorizedIdentities: ReadonlyArray<PublicIdentity>;
+    let authorizedIdentities: readonly PublicIdentity[];
     try {
       authorizedIdentities = await this.authorizeGetIdentities(reason, matchingIdentities, meta);
     } catch (error) {

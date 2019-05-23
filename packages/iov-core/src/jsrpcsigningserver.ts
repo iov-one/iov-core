@@ -16,7 +16,7 @@ import { SigningServerCore } from "./signingservercore";
 interface RpcCallGetIdentities {
   readonly name: "getIdentities";
   readonly reason: string;
-  readonly chainIds: ReadonlyArray<ChainId>;
+  readonly chainIds: readonly ChainId[];
 }
 
 interface RpcCallSignAndPost {
@@ -30,7 +30,7 @@ type RpcCall = RpcCallGetIdentities | RpcCallSignAndPost;
 class ParamsError extends Error {}
 class MethodNotFoundError extends Error {}
 
-function isArrayOfStrings(array: ReadonlyArray<any>): array is ReadonlyArray<string> {
+function isArrayOfStrings(array: readonly any[]): array is readonly string[] {
   return array.every(element => typeof element === "string");
 }
 

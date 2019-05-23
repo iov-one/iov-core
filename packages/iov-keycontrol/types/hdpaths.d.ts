@@ -6,7 +6,7 @@ export declare class HdPaths {
      * @see https://github.com/iov-one/iov-core/blob/v0.6.1/docs/KeyBase.md#simple-addresses
      * @deprecated we use IOV HD paths in the form m/44'/234'/a' now
      */
-    static simpleAddress(index: number): ReadonlyArray<Slip10RawIndex>;
+    static simpleAddress(index: number): readonly Slip10RawIndex[];
     /**
      * Only use this for the real BIP-0044 with
      * - 5 component path (m / purpose' / coin_type' / account' / change / address_index)
@@ -14,7 +14,7 @@ export declare class HdPaths {
      *
      * Don't be misled by people calling their path BIP44 in cases where it is not.
      */
-    static bip44(coinType: number, account: number, change: number, address: number): ReadonlyArray<Slip10RawIndex>;
+    static bip44(coinType: number, account: number, change: number, address: number): readonly Slip10RawIndex[];
     /**
      * BIP44-like HD paths for account based coins
      *
@@ -33,13 +33,13 @@ export declare class HdPaths {
      * This is called "BIP44-like" because it follows the idea of BIP44 but is not
      * compatible to the 5 component BIP44 standard.
      */
-    static bip44Like(coinType: number, account: number): ReadonlyArray<Slip10RawIndex>;
+    static bip44Like(coinType: number, account: number): readonly Slip10RawIndex[];
     /**
      * An IOV HD path in the form m/44'/234'/a'
      *
      * @param account The account index `a` starting at 0
      */
-    static iov(account: number): ReadonlyArray<Slip10RawIndex>;
+    static iov(account: number): readonly Slip10RawIndex[];
     /**
      * The default Ethereum derivation path
      *
@@ -50,5 +50,5 @@ export declare class HdPaths {
      *
      * @param account The account index `a` starting at 0
      */
-    static ethereum(account: number): ReadonlyArray<Slip10RawIndex>;
+    static ethereum(account: number): readonly Slip10RawIndex[];
 }

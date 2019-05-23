@@ -9,5 +9,5 @@ export declare class AtomicSwapMerger {
      */
     process(event: OpenSwap | SwapClaimTransaction | SwapAbortTransaction): AtomicSwap | undefined;
     /** The unsettled swaps this object currently holds in undefined order */
-    openSwaps(): ReadonlyArray<OpenSwap>;
+    openSwaps(): readonly OpenSwap[];
 }

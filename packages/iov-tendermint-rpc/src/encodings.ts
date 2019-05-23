@@ -59,7 +59,7 @@ export function assertNumber(value: number): number {
  * This is used when you want to verify that data at runtime matches the expected type.
  * This implies assertSet.
  */
-export function assertArray<T>(value: ReadonlyArray<T>): ReadonlyArray<T> {
+export function assertArray<T>(value: readonly T[]): readonly T[] {
   assertSet(value);
   if (!Array.isArray(value as unknown)) {
     throw new Error("Value must be a an array");

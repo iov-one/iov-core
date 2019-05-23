@@ -129,7 +129,7 @@ describe("JsonRpcSigningServer", () => {
     }
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
-    expect((result as ReadonlyArray<any>).length).toEqual(1);
+    expect((result as readonly any[]).length).toEqual(1);
     expect(result[0]).toEqual({
       chainId: bnsConnection.chainId(),
       pubkey: bnsdFaucetPubkey,
@@ -160,7 +160,7 @@ describe("JsonRpcSigningServer", () => {
     }
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
-    expect((result as ReadonlyArray<any>).length).toEqual(1);
+    expect((result as readonly any[]).length).toEqual(1);
     expect(result[0]).toEqual(ganacheSecondIdentity);
 
     server.shutdown();
@@ -189,7 +189,7 @@ describe("JsonRpcSigningServer", () => {
     }
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
-    expect((result as ReadonlyArray<any>).length).toEqual(2);
+    expect((result as readonly any[]).length).toEqual(2);
     expect(result[0]).toEqual({
       chainId: bnsConnection.chainId(),
       pubkey: bnsdFaucetPubkey,
@@ -221,7 +221,7 @@ describe("JsonRpcSigningServer", () => {
       throw new Error(`Response must not be an error, but got '${identitiesResponse.error.message}'`);
     }
     expect(identitiesResponse.result).toEqual(jasmine.any(Array));
-    expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
+    expect((identitiesResponse.result as readonly any[]).length).toEqual(1);
     const signer = TransactionEncoder.fromJson(identitiesResponse.result[0]);
     if (!isPublicIdentity(signer)) {
       throw new Error("Identity element is not valid");
@@ -282,7 +282,7 @@ describe("JsonRpcSigningServer", () => {
       throw new Error(`Response must not be an error, but got '${identitiesResponse.error.message}'`);
     }
     expect(identitiesResponse.result).toEqual(jasmine.any(Array));
-    expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
+    expect((identitiesResponse.result as readonly any[]).length).toEqual(1);
     const signer = TransactionEncoder.fromJson(identitiesResponse.result[0]);
     if (!isPublicIdentity(signer)) {
       throw new Error("Identity element is not valid");

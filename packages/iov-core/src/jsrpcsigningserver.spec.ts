@@ -128,7 +128,7 @@ describe("JsRpcSigningServer", () => {
       throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
-    expect((response.result as ReadonlyArray<any>).length).toEqual(1);
+    expect((response.result as readonly any[]).length).toEqual(1);
     expect(response.result[0].chainId).toEqual(bnsConnection.chainId());
     expect(response.result[0].pubkey).toEqual(bnsdFaucetPubkey);
 
@@ -155,7 +155,7 @@ describe("JsRpcSigningServer", () => {
       throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
-    expect((response.result as ReadonlyArray<any>).length).toEqual(1);
+    expect((response.result as readonly any[]).length).toEqual(1);
     expect(response.result[0]).toEqual(ganacheSecondIdentity);
 
     server.shutdown();
@@ -182,7 +182,7 @@ describe("JsRpcSigningServer", () => {
       throw new Error(`Response must not be an error, but got '${response.error.message}'`);
     }
     expect(response.result).toEqual(jasmine.any(Array));
-    expect((response.result as ReadonlyArray<any>).length).toEqual(2);
+    expect((response.result as readonly any[]).length).toEqual(2);
     expect(response.result[0].chainId).toEqual(bnsConnection.chainId());
     expect(response.result[0].pubkey).toEqual(bnsdFaucetPubkey);
     expect(response.result[1]).toEqual(ganacheSecondIdentity);
@@ -211,7 +211,7 @@ describe("JsRpcSigningServer", () => {
       throw new Error(`Response must not be an error, but got '${identitiesResponse.error.message}'`);
     }
     expect(identitiesResponse.result).toEqual(jasmine.any(Array));
-    expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
+    expect((identitiesResponse.result as readonly any[]).length).toEqual(1);
     const signer = identitiesResponse.result[0];
     if (!isPublicIdentity(signer)) {
       throw new Error("Identity element is not valid");

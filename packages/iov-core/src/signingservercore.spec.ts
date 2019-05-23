@@ -124,7 +124,7 @@ describe("SigningServerCore", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
 
-      const identities: ReadonlyArray<PublicIdentity> = [
+      const identities: readonly PublicIdentity[] = [
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0)),
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1)),
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(2)),
@@ -133,8 +133,8 @@ describe("SigningServerCore", () => {
 
       async function selectEvenIdentitiesCallback(
         _: string,
-        matchingIdentities: ReadonlyArray<PublicIdentity>,
-      ): Promise<ReadonlyArray<PublicIdentity>> {
+        matchingIdentities: readonly PublicIdentity[],
+      ): Promise<readonly PublicIdentity[]> {
         // select all even identities
         return matchingIdentities.filter((_1, index) => index % 2 === 0);
       }
@@ -164,8 +164,8 @@ describe("SigningServerCore", () => {
 
       async function selectNoIdentityCallback(
         _1: string,
-        _2: ReadonlyArray<PublicIdentity>,
-      ): Promise<ReadonlyArray<PublicIdentity>> {
+        _2: readonly PublicIdentity[],
+      ): Promise<readonly PublicIdentity[]> {
         return [];
       }
 
@@ -228,8 +228,8 @@ describe("SigningServerCore", () => {
 
       async function throwingCallback(
         _1: string,
-        _2: ReadonlyArray<PublicIdentity>,
-      ): Promise<ReadonlyArray<PublicIdentity>> {
+        _2: readonly PublicIdentity[],
+      ): Promise<readonly PublicIdentity[]> {
         throw new Error("Something broken in here!");
       }
 

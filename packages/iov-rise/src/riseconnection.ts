@@ -167,7 +167,7 @@ export class RiseConnection implements BlockchainConnection {
     return results;
   }
 
-  public async getAllTokens(): Promise<ReadonlyArray<Token>> {
+  public async getAllTokens(): Promise<readonly Token[]> {
     return [
       {
         tokenTicker: constants.primaryTokenTicker,
@@ -217,7 +217,7 @@ export class RiseConnection implements BlockchainConnection {
     return generateNonce();
   }
 
-  public async getNonces(_: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
+  public async getNonces(_: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]> {
     const checkedCount = new Uint53(count).toNumber();
     // use unique nonces to ensure the same transaction content leads to a different transaction ID
     // [now-3, now-2, now-1, now] for 4 nonces
@@ -304,7 +304,7 @@ export class RiseConnection implements BlockchainConnection {
     throw new Error("Not implemented");
   }
 
-  public async searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  public async searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction[]> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -472,7 +472,7 @@ export class RiseConnection implements BlockchainConnection {
     searchParams: any,
     minHeight: number | undefined,
     maxHeight: number | undefined,
-  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  ): Promise<readonly ConfirmedTransaction[]> {
     const result = await axios.get(`${this.baseUrl}/api/transactions`, {
       params: searchParams,
     });

@@ -22,7 +22,7 @@ export interface SwapData {
      * Until we have a way to specify the hashing algirithm, this is SHA256.
      */
     readonly hash: Hash;
-    readonly amounts: ReadonlyArray<Amount>;
+    readonly amounts: readonly Amount[];
     /**
      * The first point in time at which the offer is expired.
      *
@@ -73,7 +73,7 @@ export declare function isAtomicSwapHashlockQuery(query: AtomicSwapQuery): query
  */
 export interface AtomicSwapConnection extends BlockchainConnection {
     /** returns all matching swaps in their current state */
-    readonly getSwaps: (swap: AtomicSwapQuery) => Promise<ReadonlyArray<AtomicSwap>>;
+    readonly getSwaps: (swap: AtomicSwapQuery) => Promise<readonly AtomicSwap[]>;
     /**
      * Emits currentState (getSwaps) as a stream, then sends updates for any matching swap.
      *

@@ -14,7 +14,7 @@ export class EnglishMnemonic {
     }
 
     const words = mnemonic.split(" ");
-    const allowedWordsLengths: ReadonlyArray<number> = [12, 15, 18, 21, 24];
+    const allowedWordsLengths: readonly number[] = [12, 15, 18, 21, 24];
     if (allowedWordsLengths.indexOf(words.length) === -1) {
       throw new Error(
         `Invalid word count in mnemonic (allowed: ${allowedWordsLengths} got: ${words.length})`,
@@ -22,7 +22,7 @@ export class EnglishMnemonic {
     }
 
     for (const word of words) {
-      if ((bip39_wordlist_english as ReadonlyArray<string>).indexOf(word) === -1) {
+      if ((bip39_wordlist_english as readonly string[]).indexOf(word) === -1) {
         throw new Error("Mnemonic contains invalid word");
       }
     }

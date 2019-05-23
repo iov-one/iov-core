@@ -31,27 +31,27 @@ export declare class BnsConnection implements AtomicSwapConnection {
     height(): Promise<number>;
     postTx(tx: PostableBytes): Promise<PostTxResponse>;
     getToken(ticker: TokenTicker): Promise<Token | undefined>;
-    getAllTokens(): Promise<ReadonlyArray<Token>>;
+    getAllTokens(): Promise<readonly Token[]>;
     getAccount(query: AccountQuery): Promise<Account | undefined>;
     getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce>;
-    getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
+    getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]>;
     /**
      * All matching swaps that are open (from app state)
      */
-    getSwapsFromState(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>>;
+    getSwapsFromState(query: AtomicSwapQuery): Promise<readonly AtomicSwap[]>;
     /**
      * All matching swaps that are open (in app state)
      *
      * To get claimed and returned, we need to look at the transactions.... TODO
      */
-    getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>>;
+    getSwaps(query: AtomicSwapQuery): Promise<readonly AtomicSwap[]>;
     /**
      * Emits currentState (getSwap) as a stream, then sends updates for any matching swap
      *
      * This includes an open swap beind claimed/aborted as well as a new matching swap being offered
      */
     watchSwaps(query: AtomicSwapQuery): Stream<AtomicSwap>;
-    searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>>;
+    searchTx(query: TransactionQuery): Promise<readonly (ConfirmedTransaction | FailedTransaction)[]>;
     /**
      * A stream of all transactions that match the tags from the present moment on
      */
@@ -69,7 +69,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
      * Gets current balance and emits an update every time it changes
      */
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
-    getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>>;
+    getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]>;
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
@@ -86,5 +86,5 @@ export declare class BnsConnection implements AtomicSwapConnection {
 }
 export interface QueryResponse {
     readonly height?: number;
-    readonly results: ReadonlyArray<Result>;
+    readonly results: readonly Result[];
 }

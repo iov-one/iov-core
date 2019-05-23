@@ -52,7 +52,7 @@ describe("bnscodec", () => {
   });
 
   it("round trip works", () => {
-    const transactionsToBeVerified: ReadonlyArray<SignedTransaction> = [
+    const transactionsToBeVerified: readonly SignedTransaction[] = [
       signedTxJson,
       randomTxJson,
       swapOfferTxJson,

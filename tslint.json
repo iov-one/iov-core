@@ -3,6 +3,7 @@
   "extends": ["tslint:latest", "tslint-immutable", "tslint-config-prettier"],
   "jsRules": {},
   "rules": {
+    "array-type": [true, "array"],
     "callable-types": false,
     "comment-format": [true, "check-space"],
     "deprecation": true,

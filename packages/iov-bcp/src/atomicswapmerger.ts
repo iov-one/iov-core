@@ -67,7 +67,7 @@ export class AtomicSwapMerger {
   }
 
   /** The unsettled swaps this object currently holds in undefined order */
-  public openSwaps(): ReadonlyArray<OpenSwap> {
+  public openSwaps(): readonly OpenSwap[] {
     return [...this.open.values()];
   }
 }

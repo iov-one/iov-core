@@ -21,7 +21,7 @@ export declare class UserProfile {
     static loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<UserProfile>;
     readonly createdAt: ReadonlyDate;
     readonly locked: ValueAndUpdates<boolean>;
-    readonly wallets: ValueAndUpdates<ReadonlyArray<WalletInfo>>;
+    readonly wallets: ValueAndUpdates<readonly WalletInfo[]>;
     private keyring;
     private readonly lockedProducer;
     private readonly walletsProducer;
@@ -40,7 +40,7 @@ export declare class UserProfile {
      * The identity is bound to one chain ID to encourage using different
      * keypairs on different chains.
      */
-    createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<PublicIdentity>;
+    createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | readonly Slip10RawIndex[] | number): Promise<PublicIdentity>;
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
     setIdentityLabel(identity: PublicIdentity, label: string | undefined): void;
     /**
@@ -49,11 +49,11 @@ export declare class UserProfile {
      */
     getIdentityLabel(identity: PublicIdentity): string | undefined;
     /** Get identities of the wallet with the given ID in the primary keyring  */
-    getIdentities(id: WalletId): ReadonlyArray<PublicIdentity>;
+    getIdentities(id: WalletId): readonly PublicIdentity[];
     /**
      * All identities of the primary keyring
      */
-    getAllIdentities(): ReadonlyArray<PublicIdentity>;
+    getAllIdentities(): readonly PublicIdentity[];
     /**
      * Signs a transaction using the profile's primary keyring. The transaction's
      * creator field specifies the keypair to be used for signing.

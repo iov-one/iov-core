@@ -19,7 +19,7 @@ export interface GetIdentitiesAuthorization {
      * @param matchingIdentities The identities that match the requested chain IDs.
      * @param meta An object that is passed by reference from request handlers into the callback.
      */
-    (reason: string, matchingIdentities: ReadonlyArray<PublicIdentity>, meta?: any): Promise<ReadonlyArray<PublicIdentity>>;
+    (reason: string, matchingIdentities: readonly PublicIdentity[], meta?: any): Promise<readonly PublicIdentity[]>;
 }
 export interface SignAndPostAuthorization {
     /**
@@ -45,7 +45,7 @@ export interface SignedAndPosted {
     readonly postResponse: PostTxResponse;
 }
 export declare class SigningServerCore {
-    readonly signedAndPosted: ValueAndUpdates<ReadonlyArray<SignedAndPosted>>;
+    readonly signedAndPosted: ValueAndUpdates<readonly SignedAndPosted[]>;
     private readonly signer;
     private readonly profile;
     private readonly authorizeGetIdentities;
@@ -59,7 +59,7 @@ export declare class SigningServerCore {
      * the user selected no identity or rejected the request entirely,
      * this returns an empty list.
      */
-    getIdentities(reason: string, chainIds: ReadonlyArray<ChainId>, meta?: any): Promise<ReadonlyArray<PublicIdentity>>;
+    getIdentities(reason: string, chainIds: readonly ChainId[], meta?: any): Promise<readonly PublicIdentity[]>;
     /**
      * Handles a transaction signing request
      *

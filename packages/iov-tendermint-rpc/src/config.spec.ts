@@ -18,7 +18,7 @@ export interface TendermintInstance {
  *   docker container ls | grep tendermint/tendermint
  *   docker container kill <container id from 1st column>
  */
-export const tendermintInstances: ReadonlyArray<TendermintInstance> = [
+export const tendermintInstances: readonly TendermintInstance[] = [
   {
     url: "localhost:11125",
     version: "0.25.x",

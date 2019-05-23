@@ -139,7 +139,7 @@ describe("signingservice.worker", () => {
     expect(response.id).toEqual(123);
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
-    expect((result as ReadonlyArray<any>).length).toEqual(1);
+    expect((result as readonly any[]).length).toEqual(1);
     expect(result[0]).toEqual({
       chainId: bnsConnection.chainId(),
       pubkey: bnsdFaucetPubkey,
@@ -170,7 +170,7 @@ describe("signingservice.worker", () => {
     expect(response.id).toEqual(123);
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
-    expect((result as ReadonlyArray<any>).length).toEqual(1);
+    expect((result as readonly any[]).length).toEqual(1);
     expect(result[0]).toEqual(ganacheSecondIdentity);
 
     worker.terminate();
@@ -200,7 +200,7 @@ describe("signingservice.worker", () => {
 
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
-    expect((result as ReadonlyArray<any>).length).toEqual(2);
+    expect((result as readonly any[]).length).toEqual(2);
     expect(result[0]).toEqual({
       chainId: bnsConnection.chainId(),
       pubkey: bnsdFaucetPubkey,
@@ -235,7 +235,7 @@ describe("signingservice.worker", () => {
 
     const result = TransactionEncoder.fromJson(identitiesResponse.result);
     expect(result).toEqual(jasmine.any(Array));
-    expect((result as ReadonlyArray<any>).length).toEqual(1);
+    expect((result as readonly any[]).length).toEqual(1);
     const signer = result[0];
     if (!isPublicIdentity(signer)) {
       throw new Error("Identity element is not valid");

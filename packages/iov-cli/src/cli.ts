@@ -5,7 +5,7 @@ import { join } from "path";
 
 import { TsRepl } from "./tsrepl";
 
-export function main(originalArgs: ReadonlyArray<string>): void {
+export function main(originalArgs: readonly string[]): void {
   const parser = new ArgumentParser({ description: "The IOV-Core REPL" });
   parser.addArgument("--version", {
     action: "storeTrue",
@@ -32,7 +32,7 @@ export function main(originalArgs: ReadonlyArray<string>): void {
     return;
   }
 
-  const imports = new Map<string, ReadonlyArray<string>>([
+  const imports = new Map<string, readonly string[]>([
     [
       "@iov/bcp",
       ["Address", "Algorithm", "ChainId", "Nonce", "PublicKeyBytes", "SendTransaction", "TokenTicker"],

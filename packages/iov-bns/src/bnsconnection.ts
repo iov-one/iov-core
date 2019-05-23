@@ -125,7 +125,7 @@ export class BnsConnection implements AtomicSwapConnection {
   private readonly chainData: ChainData;
   private readonly context: Context;
   // tslint:disable-next-line: readonly-keyword
-  private tokensCache: ReadonlyArray<Token> | undefined;
+  private tokensCache: readonly Token[] | undefined;
 
   /**
    * Private constructor to hide package private types from the public interface
@@ -245,7 +245,7 @@ export class BnsConnection implements AtomicSwapConnection {
     return (await this.getAllTokens()).find(t => t.tokenTicker === ticker);
   }
 
-  public async getAllTokens(): Promise<ReadonlyArray<Token>> {
+  public async getAllTokens(): Promise<readonly Token[]> {
     if (!this.tokensCache) {
       const res = await this.query("/tokens?prefix", Uint8Array.from([]));
       const parser = createParser(codecImpl.currency.TokenInfo, "tokeninfo:");
@@ -309,7 +309,7 @@ export class BnsConnection implements AtomicSwapConnection {
     }
   }
 
-  public async getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
+  public async getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]> {
     const checkedCount = new Uint53(count).toNumber();
     switch (checkedCount) {
       case 0:
@@ -330,7 +330,7 @@ export class BnsConnection implements AtomicSwapConnection {
   /**
    * All matching swaps that are open (from app state)
    */
-  public async getSwapsFromState(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
+  public async getSwapsFromState(query: AtomicSwapQuery): Promise<readonly AtomicSwap[]> {
     const doQuery = async (): Promise<QueryResponse> => {
       if (isAtomicSwapIdQuery(query)) {
         return this.query("/escrows", query.swapid);
@@ -356,21 +356,21 @@ export class BnsConnection implements AtomicSwapConnection {
    *
    * To get claimed and returned, we need to look at the transactions.... TODO
    */
-  public async getSwaps(query: AtomicSwapQuery): Promise<ReadonlyArray<AtomicSwap>> {
+  public async getSwaps(query: AtomicSwapQuery): Promise<readonly AtomicSwap[]> {
     // we need to combine them all to see all transactions that affect the query
-    const setTxs: ReadonlyArray<ConfirmedTransaction> = (await this.searchTx({
+    const setTxs: readonly ConfirmedTransaction[] = (await this.searchTx({
       tags: [bnsSwapQueryTag(query, true)],
     })).filter(isConfirmedTransaction);
-    const delTxs: ReadonlyArray<ConfirmedTransaction> = (await this.searchTx({
+    const delTxs: readonly ConfirmedTransaction[] = (await this.searchTx({
       tags: [bnsSwapQueryTag(query, false)],
     })).filter(isConfirmedTransaction);
 
-    const offers: ReadonlyArray<OpenSwap> = setTxs
+    const offers: readonly OpenSwap[] = setTxs
       .filter(isConfirmedWithSwapOfferTransaction)
       .map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/abort, delTxs must be a claim/abort
-    const releases: ReadonlyArray<SwapClaimTransaction | SwapAbortTransaction> = [...setTxs, ...delTxs]
+    const releases: readonly (SwapClaimTransaction | SwapAbortTransaction)[] = [...setTxs, ...delTxs]
       .filter(isConfirmedWithSwapClaimOrAbortTransaction)
       .map(x => x.transaction);
 
@@ -411,7 +411,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public async searchTx(
     query: TransactionQuery,
-  ): Promise<ReadonlyArray<ConfirmedTransaction | FailedTransaction>> {
+  ): Promise<readonly (ConfirmedTransaction | FailedTransaction)[]> {
     // this will paginate over all transactions, even if multiple pages.
     // FIXME: consider making a streaming interface here, but that will break clients
     const res = await this.tmClient.txSearchAll({ query: buildQueryString(query) });
@@ -571,9 +571,9 @@ export class BnsConnection implements AtomicSwapConnection {
     );
   }
 
-  public async getUsernames(query: BnsUsernamesQuery): Promise<ReadonlyArray<BnsUsernameNft>> {
+  public async getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]> {
     // https://github.com/iov-one/weave/blob/v0.9.2/x/nft/username/handler_test.go#L207
-    let results: ReadonlyArray<Result>;
+    let results: readonly Result[];
     if (isBnsUsernamesByUsernameQuery(query)) {
       results = (await this.query("/nft/usernames", toUtf8(query.username))).results;
     } else if (isBnsUsernamesByOwnerAddressQuery(query)) {
@@ -692,7 +692,7 @@ async function performQuery(
   const response = await tmClient.abciQuery({ path: path, data: data });
   const keys = codecImpl.app.ResultSet.decode(response.key).results;
   const values = codecImpl.app.ResultSet.decode(response.value).results;
-  const results: ReadonlyArray<Result> = zip(keys, values);
+  const results: readonly Result[] = zip(keys, values);
   return { height: response.height, results: results };
 }
 
@@ -700,7 +700,7 @@ async function performQuery(
 
 export interface QueryResponse {
   readonly height?: number;
-  readonly results: ReadonlyArray<Result>;
+  readonly results: readonly Result[];
 }
 
 function createParser<T extends {}>(decoder: Decoder<T>, keyPrefix: string): (res: Result) => T & Keyed {
@@ -729,7 +729,7 @@ interface Join<T, U> {
   readonly value: U;
 }
 
-function zip<T, U>(keys: ReadonlyArray<T>, values: ReadonlyArray<U>): ReadonlyArray<Join<T, U>> {
+function zip<T, U>(keys: readonly T[], values: readonly U[]): readonly Join<T, U>[] {
   if (keys.length !== values.length) {
     throw Error("Got " + keys.length + " keys but " + values.length + " values");
   }

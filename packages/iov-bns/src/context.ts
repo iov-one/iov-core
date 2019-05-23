@@ -32,7 +32,7 @@ export interface ChainData {
 /** Like BCP's Account but with no pubkey. Keep compatible to Account! */
 export interface WalletData {
   readonly address: Address;
-  readonly balance: ReadonlyArray<Amount>;
+  readonly balance: readonly Amount[];
 }
 
 export class Context {

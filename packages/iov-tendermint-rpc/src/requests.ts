@@ -166,7 +166,7 @@ export interface ValidatorsRequest {
 }
 
 export interface BuildQueryComponents {
-  readonly tags?: ReadonlyArray<QueryTag>;
+  readonly tags?: readonly QueryTag[];
   readonly raw?: QueryString;
 }
 

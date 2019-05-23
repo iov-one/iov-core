@@ -194,7 +194,7 @@ export class Serialization {
   }
 
   private static checkIsSupportedTransaction(unsigned: UnsignedTransaction): void {
-    const supportedTransactionCheckers: ReadonlyArray<(unsigned: UnsignedTransaction) => boolean> = [
+    const supportedTransactionCheckers: readonly ((unsigned: UnsignedTransaction) => boolean)[] = [
       isSendTransaction,
       isSwapOfferTransaction,
       isSwapClaimTransaction,
