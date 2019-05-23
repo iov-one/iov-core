@@ -71,7 +71,7 @@ export class Keyring {
     ["ed25519", (data: WalletSerializationString) => new Ed25519Wallet(data)],
     ["ed25519-hd", (data: WalletSerializationString) => new Ed25519HdWallet(data)],
     ["secp256k1-hd", (data: WalletSerializationString) => new Secp256k1HdWallet(data)],
-  ] as ReadonlyArray<[string, WalletDeserializer]>);
+  ] as readonly [string, WalletDeserializer][]);
 
   private static deserializeWallet(serializedWallet: WalletSerialization): Wallet {
     const implId = serializedWallet.implementationId;
@@ -123,7 +123,7 @@ export class Keyring {
   /**
    * Returns an array with immutable references.
    */
-  public getWallets(): ReadonlyArray<ReadonlyWallet> {
+  public getWallets(): readonly ReadonlyWallet[] {
     return this.wallets;
   }
 
@@ -165,7 +165,7 @@ export class Keyring {
   public async createIdentity(
     walletId: WalletId,
     chainId: ChainId,
-    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
+    options: Ed25519Keypair | readonly Slip10RawIndex[] | number,
   ): Promise<PublicIdentity> {
     const wallet = this.getMutableWallet(walletId);
     if (!wallet) {
@@ -181,7 +181,7 @@ export class Keyring {
   /**
    * All identities of all wallets
    */
-  public getAllIdentities(): ReadonlyArray<PublicIdentity> {
+  public getAllIdentities(): readonly PublicIdentity[] {
     // Use Array.flat when available (https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)
     const out = new Array<PublicIdentity>();
     for (const wallet of this.wallets) {
@@ -243,7 +243,7 @@ export class Keyring {
   /**
    * Throws if any of the new identities already exists in this keyring.
    */
-  private ensureNoIdentityCollision(newIdentities: ReadonlyArray<PublicIdentity>): void {
+  private ensureNoIdentityCollision(newIdentities: readonly PublicIdentity[]): void {
     const existingIdentities = this.getAllIdentities();
 
     for (const newIdentity of newIdentities) {

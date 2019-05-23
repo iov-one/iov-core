@@ -80,13 +80,13 @@ export class UserProfile {
 
   public readonly createdAt: ReadonlyDate;
   public readonly locked: ValueAndUpdates<boolean>;
-  public readonly wallets: ValueAndUpdates<ReadonlyArray<WalletInfo>>;
+  public readonly wallets: ValueAndUpdates<readonly WalletInfo[]>;
 
   // Never pass the keyring reference to ensure the keyring is not retained after lock()
   // tslint:disable-next-line:readonly-keyword
   private keyring: Keyring | undefined;
   private readonly lockedProducer: DefaultValueProducer<boolean>;
-  private readonly walletsProducer: DefaultValueProducer<ReadonlyArray<WalletInfo>>;
+  private readonly walletsProducer: DefaultValueProducer<readonly WalletInfo[]>;
 
   // Stores a copy of keyring
   constructor(options?: UserProfileOptions) {
@@ -160,7 +160,7 @@ export class UserProfile {
   public async createIdentity(
     walletId: WalletId,
     chainId: ChainId,
-    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
+    options: Ed25519Keypair | readonly Slip10RawIndex[] | number,
   ): Promise<PublicIdentity> {
     return this.primaryKeyring().createIdentity(walletId, chainId, options);
   }
@@ -180,7 +180,7 @@ export class UserProfile {
   }
 
   /** Get identities of the wallet with the given ID in the primary keyring  */
-  public getIdentities(id: WalletId): ReadonlyArray<PublicIdentity> {
+  public getIdentities(id: WalletId): readonly PublicIdentity[] {
     const wallet = this.findWalletInPrimaryKeyring(id);
     return wallet.getIdentities();
   }
@@ -188,7 +188,7 @@ export class UserProfile {
   /**
    * All identities of the primary keyring
    */
-  public getAllIdentities(): ReadonlyArray<PublicIdentity> {
+  public getAllIdentities(): readonly PublicIdentity[] {
     const keyring = this.primaryKeyring();
     return keyring.getAllIdentities();
   }
@@ -288,7 +288,7 @@ export class UserProfile {
     return wallet;
   }
 
-  private walletInfos(): ReadonlyArray<WalletInfo> {
+  private walletInfos(): readonly WalletInfo[] {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }

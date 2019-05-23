@@ -33,7 +33,7 @@ export interface EthereumNetworkConfig {
       readonly pubkey: PublicKeyBundle;
       readonly address: Address;
       /** expected balance for the `address` */
-      readonly expectedBalance: ReadonlyArray<Amount>;
+      readonly expectedBalance: readonly Amount[];
       /** expected nonce for the `address` */
       readonly expectedNonce: Nonce;
     };
@@ -41,7 +41,7 @@ export interface EthereumNetworkConfig {
     readonly noEth: {
       readonly address: Address;
       /** expected balance for the `address` */
-      readonly expectedBalance: ReadonlyArray<Amount>;
+      readonly expectedBalance: readonly Amount[];
     };
     /** An account not used on this network */
     readonly unused: {
@@ -57,8 +57,8 @@ export interface EthereumNetworkConfig {
     readonly gasLimitTooLow: RegExp;
   };
   readonly erc20Tokens: ReadonlyMap<TokenTicker, Erc20Options>;
-  readonly erc20TransferTests: ReadonlyArray<Erc20TransferTest>;
-  readonly expectedTokens: ReadonlyArray<Token>;
+  readonly erc20TransferTests: readonly Erc20TransferTest[];
+  readonly expectedTokens: readonly Token[];
 }
 
 // Set environment variable ETHEREUM_NETWORK to "local" (default), "ropsten", "rinkeby"

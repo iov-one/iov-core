@@ -66,7 +66,7 @@ export class MultiChainSigner {
     this.knownChains = new Map<string, Chain>();
   }
 
-  public chainIds(): ReadonlyArray<ChainId> {
+  public chainIds(): readonly ChainId[] {
     return Array.from(this.knownChains.keys()).map(key => key as ChainId);
   }
 

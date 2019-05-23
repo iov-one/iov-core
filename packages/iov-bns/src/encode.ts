@@ -90,7 +90,7 @@ export function encodeFullSignature(fullSignature: FullSignature): codecImpl.sig
 }
 
 export function buildSignedTx(tx: SignedTransaction): codecImpl.app.ITx {
-  const sigs: ReadonlyArray<FullSignature> = [tx.primarySignature, ...tx.otherSignatures];
+  const sigs: readonly FullSignature[] = [tx.primarySignature, ...tx.otherSignatures];
   const built = buildUnsignedTx(tx.transaction);
   return { ...built, signatures: sigs.map(encodeFullSignature) };
 }

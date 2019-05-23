@@ -45,7 +45,7 @@ export class Uint32 implements Integer {
     this.data = input;
   }
 
-  public toBytesBigEndian(): ReadonlyArray<number> {
+  public toBytesBigEndian(): readonly number[] {
     // Use division instead of shifting since bitwise operators are defined
     // on SIGNED int32 in JavaScript and we don't want to risk surprises
     return [
@@ -182,11 +182,11 @@ export class Uint64 implements Integer {
     this.data = data;
   }
 
-  public toBytesBigEndian(): ReadonlyArray<number> {
+  public toBytesBigEndian(): readonly number[] {
     return this.data.toArray("be", 8);
   }
 
-  public toBytesLittleEndian(): ReadonlyArray<number> {
+  public toBytesLittleEndian(): readonly number[] {
     return this.data.toArray("le", 8);
   }
 

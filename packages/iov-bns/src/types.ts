@@ -70,7 +70,7 @@ export function isBnsBlockchainsByChainIdQuery(
 export interface BnsUsernameNft {
   readonly id: string;
   readonly owner: Address;
-  readonly addresses: ReadonlyArray<ChainAddressPair>;
+  readonly addresses: readonly ChainAddressPair[];
 }
 
 export interface BnsUsernamesByUsernameQuery {
@@ -217,7 +217,7 @@ export interface AddAddressToUsernameTx extends UnsignedTransaction {
 export interface RegisterUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/register_username";
   readonly username: string;
-  readonly addresses: ReadonlyArray<ChainAddressPair>;
+  readonly addresses: readonly ChainAddressPair[];
 }
 
 export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {

@@ -25,7 +25,7 @@ export interface ReadonlyWallet {
   /**
    * Returns all identities currently registered
    */
-  readonly getIdentities: () => ReadonlyArray<PublicIdentity>;
+  readonly getIdentities: () => readonly PublicIdentity[];
 
   // canSign flag means the private key material is currently accessible.
   // If a hardware ledger is not plugged in, we may see the public keys,
@@ -44,7 +44,7 @@ export interface ReadonlyWallet {
    */
   readonly previewIdentity: (
     chainId: ChainId,
-    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
+    options: Ed25519Keypair | readonly Slip10RawIndex[] | number,
   ) => Promise<PublicIdentity>;
 
   /**
@@ -99,7 +99,7 @@ export interface Wallet extends ReadonlyWallet {
    */
   readonly createIdentity: (
     chainId: ChainId,
-    options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number,
+    options: Ed25519Keypair | readonly Slip10RawIndex[] | number,
   ) => Promise<PublicIdentity>;
 
   /**

@@ -91,7 +91,7 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
 export interface EthereumLog {
   readonly transactionIndex: string;
   readonly data: string;
-  readonly topics: ReadonlyArray<string>;
+  readonly topics: readonly string[];
 }
 
 export interface EthereumConnectionOptions {
@@ -255,7 +255,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return (await this.getAllTokens()).find(t => t.tokenTicker === searchTicker);
   }
 
-  public async getAllTokens(): Promise<ReadonlyArray<Token>> {
+  public async getAllTokens(): Promise<readonly Token[]> {
     const erc20s = await Promise.all(
       [...this.erc20ContractReaders.entries()].map(
         async ([ticker, contract]): Promise<Token> => {
@@ -304,7 +304,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     // eth_getBalance always returns one result. Balance is 0x0 if account does not exist.
     const ethBalance = Parse.ethereumAmount(decodeHexQuantityString(response.result));
 
-    const erc20Balances: ReadonlyArray<Amount> = await Promise.all(
+    const erc20Balances: readonly Amount[] = await Promise.all(
       [...this.erc20ContractReaders.entries()].map(
         async ([ticker, contract]): Promise<Amount> => {
           const symbol = await contract.symbol();
@@ -360,7 +360,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return decodeHexQuantityNonce(response.result);
   }
 
-  public async getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
+  public async getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]> {
     const checkedCount = new Uint53(count).toNumber();
     switch (checkedCount) {
       case 0:
@@ -516,7 +516,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return Stream.create(producer);
   }
 
-  public async searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  public async searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction[]> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -764,7 +764,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     query: AtomicSwapQuery,
     minHeight: number = 0,
     maxHeight: number = Number.MAX_SAFE_INTEGER,
-  ): Promise<ReadonlyArray<AtomicSwap>> {
+  ): Promise<readonly AtomicSwap[]> {
     if (isAtomicSwapIdQuery(query)) {
       const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.swapid]);
 
@@ -773,7 +773,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           to: this.atomicSwapEtherContractAddress,
           data: toEthereumHex(data),
         },
-      ] as ReadonlyArray<any>;
+      ] as readonly any[];
       const swapsResponse = await this.rpcClient.run({
         jsonrpc: "2.0",
         method: "eth_call",
@@ -815,7 +815,7 @@ export class EthereumConnection implements AtomicSwapConnection {
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenTicker: constants.primaryTokenTicker,
           },
-        ] as ReadonlyArray<Amount>,
+        ] as readonly Amount[],
         timeout: {
           height: new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber(),
         },
@@ -855,7 +855,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           toBlock: encodeQuantity(maxHeight),
           address: this.atomicSwapEtherContractAddress,
         },
-      ] as ReadonlyArray<any>;
+      ] as readonly any[];
       const swapsResponse = await this.rpcClient.run({
         jsonrpc: "2.0",
         method: "eth_getLogs",
@@ -886,7 +886,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const claimedPreimageEnd = claimedPreimageBegin + 32;
 
       return swapsResponse.result
-        .reduce((accumulator: ReadonlyArray<AtomicSwap>, log: EthereumLog): ReadonlyArray<AtomicSwap> => {
+        .reduce((accumulator: readonly AtomicSwap[], log: EthereumLog): readonly AtomicSwap[] => {
           const dataArray = Encoding.fromHex(normalizeHex(log.data));
           const kind = Abi.decodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
           switch (kind) {
@@ -993,7 +993,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     }
   }
 
-  private async searchTransactionsById(id: TransactionId): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  private async searchTransactionsById(id: TransactionId): Promise<readonly ConfirmedTransaction[]> {
     const transactionsResponse = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getTransactionByHash",
@@ -1042,7 +1042,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  ): Promise<readonly ConfirmedTransaction[]> {
     // tslint:disable-next-line:readonly-array
     const out: ConfirmedTransaction[] = [];
 
@@ -1067,7 +1067,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  ): Promise<readonly ConfirmedTransaction[]> {
     if (!this.scraperApiUrl) {
       throw new Error("No scraper API URL specified.");
     }
@@ -1108,7 +1108,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  ): Promise<readonly ConfirmedTransaction[]> {
     const [erc20Outgoing, erc20Incoming] = await Promise.all([
       this.searchErc20Transfers(address, null, minHeight, maxHeight),
       this.searchErc20Transfers(null, address, minHeight, maxHeight),
@@ -1134,7 +1134,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     recipient: Address | null,
     minHeight: number,
     maxHeight: number,
-  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  ): Promise<readonly ConfirmedTransaction[]> {
     if (maxHeight < minHeight) {
       return [];
     }

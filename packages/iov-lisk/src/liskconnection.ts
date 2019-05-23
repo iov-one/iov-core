@@ -156,7 +156,7 @@ export class LiskConnection implements BlockchainConnection {
     return results;
   }
 
-  public async getAllTokens(): Promise<ReadonlyArray<Token>> {
+  public async getAllTokens(): Promise<readonly Token[]> {
     return [
       {
         tokenTicker: constants.primaryTokenTicker,
@@ -174,7 +174,7 @@ export class LiskConnection implements BlockchainConnection {
     const responseBody = result.data;
 
     // here we are expecting 0 or 1 results
-    const accounts: ReadonlyArray<Account> = responseBody.data.map(
+    const accounts: readonly Account[] = responseBody.data.map(
       (responseItem: any): Account => {
         const itemBalance: unknown = responseItem.balance;
         const itemPubkey: unknown = responseItem.publicKey;
@@ -211,7 +211,7 @@ export class LiskConnection implements BlockchainConnection {
     return generateNonce();
   }
 
-  public async getNonces(_: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
+  public async getNonces(_: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]> {
     const checkedCount = new Uint53(count).toNumber();
     // use unique nonces to ensure the same transaction content leads to a different transaction ID
     // [now-3, now-2, now-1, now] for 4 nonces
@@ -325,7 +325,7 @@ export class LiskConnection implements BlockchainConnection {
     return Stream.create(producer);
   }
 
-  public async searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  public async searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction[]> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -457,7 +457,7 @@ export class LiskConnection implements BlockchainConnection {
     searchParams: any,
     minHeight: number | undefined,
     maxHeight: number | undefined,
-  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  ): Promise<readonly ConfirmedTransaction[]> {
     if (minHeight !== undefined && maxHeight !== undefined && minHeight > maxHeight) {
       return [];
     }

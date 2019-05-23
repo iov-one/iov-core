@@ -8,7 +8,7 @@ import { EnglishMnemonic } from "./englishmnemonic";
 
 export class Bip39 {
   public static encode(entropy: Uint8Array): EnglishMnemonic {
-    const allowedEntropyLengths: ReadonlyArray<number> = [16, 20, 24, 28, 32];
+    const allowedEntropyLengths: readonly number[] = [16, 20, 24, 28, 32];
 
     if (allowedEntropyLengths.indexOf(entropy.length) === -1) {
       throw new Error("invalid input length");

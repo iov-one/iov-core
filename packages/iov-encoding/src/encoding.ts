@@ -62,7 +62,7 @@ export class Encoding {
   }
 
   public static fromAscii(data: Uint8Array): string {
-    const fromNums = (listOfNumbers: ReadonlyArray<number>) =>
+    const fromNums = (listOfNumbers: readonly number[]) =>
       listOfNumbers.map(
         (x: number): string => {
           // 0x00–0x1F control characters
