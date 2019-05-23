@@ -204,7 +204,7 @@ export class EthereumCodec implements TxCodec {
       };
 
       switch (method) {
-        case SwapContractMethod.Open:
+        case SwapContractMethod.Open: {
           const positionRecipientBegin = positionSwapIdEnd;
           const positionRecipientEnd = positionRecipientBegin + 32;
           const positionHashBegin = positionRecipientEnd;
@@ -261,6 +261,7 @@ export class EthereumCodec implements TxCodec {
             hash: hash,
           };
           break;
+        }
         case SwapContractMethod.Claim: {
           const positionPreimageBegin = positionSwapIdEnd;
           const positionPreimageEnd = positionPreimageBegin + 32;
