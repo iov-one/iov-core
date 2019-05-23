@@ -122,11 +122,11 @@ class Actor {
     return new BN(amount ? amount.quantity : 0);
   }
 
-  public async getReceiverSwaps(): Promise<ReadonlyArray<AtomicSwap>> {
+  public async getReceiverSwaps(): Promise<readonly AtomicSwap[]> {
     return this.connection.getSwaps({ recipient: this.receiveAddress });
   }
 
-  public async getSenderSwaps(): Promise<ReadonlyArray<AtomicSwap>> {
+  public async getSenderSwaps(): Promise<readonly AtomicSwap[]> {
     return this.connection.getSwaps({ sender: this.sendAddress });
   }
 

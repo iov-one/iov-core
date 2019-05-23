@@ -39,7 +39,7 @@ interface LocalIdentitySerialization {
 
 interface IdentitySerialization {
   readonly localIdentity: LocalIdentitySerialization;
-  readonly privkeyPath: ReadonlyArray<number>;
+  readonly privkeyPath: readonly number[];
 }
 
 interface Slip10WalletSerialization {
@@ -48,14 +48,14 @@ interface Slip10WalletSerialization {
   readonly secret: string;
   readonly curve: string;
   readonly label: string | undefined;
-  readonly identities: ReadonlyArray<IdentitySerialization>;
+  readonly identities: readonly IdentitySerialization[];
 }
 
 interface Slip10WalletConstructor {
   new (data: WalletSerializationString): Slip10Wallet;
 }
 
-function isPath(value: unknown): value is ReadonlyArray<Slip10RawIndex> {
+function isPath(value: unknown): value is readonly Slip10RawIndex[] {
   if (!Array.isArray(value)) {
     return false;
   }
@@ -190,7 +190,7 @@ export class Slip10Wallet implements Wallet {
 
   // identities
   private readonly identities: PublicIdentity[];
-  private readonly privkeyPaths: Map<IdentityId, ReadonlyArray<Slip10RawIndex>>;
+  private readonly privkeyPaths: Map<IdentityId, readonly Slip10RawIndex[]>;
   private readonly labels: Map<IdentityId, string | undefined>;
 
   constructor(data: WalletSerializationString) {
@@ -211,7 +211,7 @@ export class Slip10Wallet implements Wallet {
 
     // identities
     const identities: PublicIdentity[] = [];
-    const privkeyPaths = new Map<IdentityId, ReadonlyArray<Slip10RawIndex>>();
+    const privkeyPaths = new Map<IdentityId, readonly Slip10RawIndex[]>();
     const labels = new Map<IdentityId, string | undefined>();
     for (const record of decodedData.identities) {
       const algorithm = Slip10Wallet.algorithmFromString(record.localIdentity.pubkey.algo);
@@ -227,7 +227,7 @@ export class Slip10Wallet implements Wallet {
         Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
       );
 
-      const privkeyPath: ReadonlyArray<Slip10RawIndex> = record.privkeyPath.map(n => new Slip10RawIndex(n));
+      const privkeyPath: readonly Slip10RawIndex[] = record.privkeyPath.map(n => new Slip10RawIndex(n));
       privkeyPaths.set(Slip10Wallet.identityId(identity), privkeyPath);
       labels.set(Slip10Wallet.identityId(identity), record.localIdentity.label);
       identities.push(identity);
@@ -314,7 +314,7 @@ export class Slip10Wallet implements Wallet {
     return this.labels.get(identityId);
   }
 
-  public getIdentities(): ReadonlyArray<PublicIdentity> {
+  public getIdentities(): readonly PublicIdentity[] {
     // copy array to avoid internal updates to affect caller and vice versa
     return [...this.identities];
   }
@@ -404,7 +404,7 @@ export class Slip10Wallet implements Wallet {
   }
 
   // This throws an exception when private key is missing
-  private privkeyPathForIdentity(identity: PublicIdentity): ReadonlyArray<Slip10RawIndex> {
+  private privkeyPathForIdentity(identity: PublicIdentity): readonly Slip10RawIndex[] {
     const identityId = Slip10Wallet.identityId(identity);
     const privkeyPath = this.privkeyPaths.get(identityId);
     if (!privkeyPath) {

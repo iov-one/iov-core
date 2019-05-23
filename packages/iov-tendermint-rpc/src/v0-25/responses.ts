@@ -144,19 +144,19 @@ function decodeAbciQuery(data: RpcAbciQueryResponse): responses.AbciQueryRespons
 interface RpcBlockResultsResponse {
   readonly height: IntegerString;
   readonly results: {
-    readonly DeliverTx: ReadonlyArray<RpcTxData>;
+    readonly DeliverTx: readonly RpcTxData[];
     readonly EndBlock: {
-      readonly validator_updates?: ReadonlyArray<RpcValidatorUpdate>;
+      readonly validator_updates?: readonly RpcValidatorUpdate[];
       readonly consensus_param_updates?: RpcConsensusParams;
-      readonly tags?: ReadonlyArray<RpcTag>;
+      readonly tags?: readonly RpcTag[];
     };
   };
 }
 
 function decodeBlockResults(data: RpcBlockResultsResponse): responses.BlockResultsResponse {
-  const res = optional(data.results.DeliverTx, [] as ReadonlyArray<RpcTxData>);
+  const res = optional(data.results.DeliverTx, [] as readonly RpcTxData[]);
   const end = data.results.EndBlock;
-  const validators = optional(end.validator_updates, [] as ReadonlyArray<RpcValidatorUpdate>);
+  const validators = optional(end.validator_updates, [] as readonly RpcValidatorUpdate[]);
   return {
     height: Integer.parse(assertNotEmpty(data.height)),
     results: assertArray(res).map(decodeTxData),
@@ -170,7 +170,7 @@ function decodeBlockResults(data: RpcBlockResultsResponse): responses.BlockResul
 
 interface RpcBlockchainResponse {
   readonly last_height: IntegerString;
-  readonly block_metas: ReadonlyArray<RpcBlockMeta>;
+  readonly block_metas: readonly RpcBlockMeta[];
 }
 
 function decodeBlockchain(data: RpcBlockchainResponse): responses.BlockchainResponse {
@@ -227,7 +227,7 @@ interface RpcGenesisResponse {
   readonly genesis_time: DateTimeString;
   readonly chain_id: string;
   readonly consensus_params: RpcConsensusParams;
-  readonly validators: ReadonlyArray<RpcValidatorGenesis>;
+  readonly validators: readonly RpcValidatorGenesis[];
   readonly app_hash: HexString;
   readonly app_state: {} | undefined;
 }
@@ -284,7 +284,7 @@ function decodeTxResponse(data: RpcTxResponse): responses.TxResponse {
 }
 
 interface RpcTxSearchResponse {
-  readonly txs: ReadonlyArray<RpcTxResponse>;
+  readonly txs: readonly RpcTxResponse[];
   readonly total_count: IntegerString;
 }
 
@@ -315,7 +315,7 @@ function decodeTxEvent(data: RpcTxEvent): responses.TxEvent {
 
 interface RpcValidatorsResponse {
   readonly block_height: IntegerString;
-  readonly validators: ReadonlyArray<RpcValidatorData>;
+  readonly validators: readonly RpcValidatorData[];
 }
 
 function decodeValidators(data: RpcValidatorsResponse): responses.ValidatorsResponse {
@@ -339,7 +339,7 @@ function decodeTag(data: RpcTag): responses.Tag {
   };
 }
 
-function decodeTags(tags: ReadonlyArray<RpcTag>): ReadonlyArray<responses.Tag> {
+function decodeTags(tags: readonly RpcTag[]): readonly responses.Tag[] {
   return assertArray(tags).map(decodeTag);
 }
 
@@ -347,7 +347,7 @@ interface RpcTxData {
   readonly code?: number;
   readonly log?: string;
   readonly data?: Base64String;
-  readonly tags?: ReadonlyArray<RpcTag>;
+  readonly tags?: readonly RpcTag[];
 }
 
 function decodeTxData(data: RpcTxData): responses.TxData {
@@ -377,7 +377,7 @@ interface RpcTxProof {
   readonly Total: IntegerString;
   readonly Index: IntegerString;
   readonly Proof: {
-    readonly aunts: ReadonlyArray<Base64String>;
+    readonly aunts: readonly Base64String[];
   };
 }
 
@@ -462,7 +462,7 @@ function decodeBlockMeta(data: RpcBlockMeta): responses.BlockMeta {
 
 interface RpcCommit {
   readonly block_id: RpcBlockId;
-  readonly precommits: ReadonlyArray<RpcVote>;
+  readonly precommits: readonly RpcVote[];
 }
 
 function decodeCommit(data: RpcCommit): responses.Commit {
@@ -476,10 +476,10 @@ interface RpcBlock {
   readonly header: RpcHeader;
   readonly last_commit: RpcCommit;
   readonly data: {
-    readonly txs?: ReadonlyArray<Base64String>;
+    readonly txs?: readonly Base64String[];
   };
   readonly evidence?: {
-    readonly evidence?: ReadonlyArray<RpcEvidence>;
+    readonly evidence?: readonly RpcEvidence[];
   };
 }
 
@@ -522,7 +522,7 @@ function decodeEvidence(data: RpcEvidence): responses.Evidence {
   };
 }
 
-function decodeEvidences(ev: ReadonlyArray<RpcEvidence>): ReadonlyArray<responses.Evidence> {
+function decodeEvidences(ev: readonly RpcEvidence[]): readonly responses.Evidence[] {
   return assertArray(ev).map(decodeEvidence);
 }
 

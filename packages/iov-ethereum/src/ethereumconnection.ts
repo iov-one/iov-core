@@ -163,7 +163,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     this.erc20Tokens = erc20Tokens;
     this.erc20ContractReaders = new Map(
       [...erc20Tokens.entries()].map(
-        ([ticker, erc20Options]): [TokenTicker, Erc20Reader] => [
+        ([ticker, erc20Options]): readonly [TokenTicker, Erc20Reader] => [
           ticker,
           new Erc20Reader(ethereumClient, erc20Options),
         ],

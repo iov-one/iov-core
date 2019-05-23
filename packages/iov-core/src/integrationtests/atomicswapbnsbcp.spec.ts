@@ -59,7 +59,7 @@ interface ActorData {
 }
 
 class Actor {
-  public static async create(mnemonic: string, hdPath: ReadonlyArray<Slip10RawIndex>): Promise<Actor> {
+  public static async create(mnemonic: string, hdPath: readonly Slip10RawIndex[]): Promise<Actor> {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
     const signer = new MultiChainSigner(profile);

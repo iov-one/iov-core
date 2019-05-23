@@ -74,9 +74,9 @@ interface ActorData {
 class Actor {
   public static async create(
     bnsMnemonic: string,
-    bnsHdPath: ReadonlyArray<Slip10RawIndex>,
+    bnsHdPath: readonly Slip10RawIndex[],
     ethereumMnemonic: string,
-    ethereumHdPath: ReadonlyArray<Slip10RawIndex>,
+    ethereumHdPath: readonly Slip10RawIndex[],
   ): Promise<Actor> {
     const profile = new UserProfile();
     const ed25519HdWallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(bnsMnemonic));

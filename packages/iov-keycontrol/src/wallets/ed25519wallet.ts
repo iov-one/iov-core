@@ -37,7 +37,7 @@ interface Ed25519WalletSerialization {
   readonly formatVersion: number;
   readonly id: string;
   readonly label: string | undefined;
-  readonly identities: ReadonlyArray<IdentitySerialization>;
+  readonly identities: readonly IdentitySerialization[];
 }
 
 function deserialize(data: WalletSerializationString): Ed25519WalletSerialization {
@@ -228,7 +228,7 @@ export class Ed25519Wallet implements Wallet {
     return this.labels.get(identityId);
   }
 
-  public getIdentities(): ReadonlyArray<PublicIdentity> {
+  public getIdentities(): readonly PublicIdentity[] {
     // copy array to avoid internal updates to affect caller and vice versa
     return [...this.identities];
   }
