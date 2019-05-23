@@ -135,6 +135,7 @@ function encodeTxSearchParams(params: requests.TxSearchParams): RpcTxSearchParam
     query: params.query,
     prove: params.prove,
     page: may(Integer.encode, params.page),
+    // eslint-disable-next-line @typescript-eslint/camelcase
     per_page: may(Integer.encode, params.per_page),
   };
 }

@@ -22,7 +22,6 @@
     "no-shadow": "error",
     "prefer-const": "error",
     "spaced-comment": ["warn", "always", { "line": { "markers": ["/ <reference"] } }],
-    "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/explicit-function-return-type": ["off", { "allowExpressions": true }],
     "@typescript-eslint/explicit-member-accessibility": "off",
     "@typescript-eslint/no-empty-interface": "off",
@@ -38,6 +37,18 @@
       "files": "**/*.js",
       "rules": {
         "@typescript-eslint/no-var-requires": "off"
+      }
+    },
+    {
+      "files": "jasmine-testrunner.js",
+      "rules": {
+        "@typescript-eslint/camelcase": ["error", { "properties": "never" }]
+      }
+    },
+    {
+      "files": "packages/{iov-bns,iov-tendermint-rpc}/**/*.ts",
+      "rules": {
+        "@typescript-eslint/camelcase": ["error", { "allow": ["v0_[0-9]+"] }]
       }
     }
   ]

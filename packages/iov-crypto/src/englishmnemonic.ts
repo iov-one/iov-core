@@ -1,6 +1,6 @@
 import * as bip39 from "bip39";
 // tslint:disable-next-line:no-submodule-imports
-import bip39_wordlist_english from "bip39/wordlists/english.json";
+import bip39WordlistEnglish from "bip39/wordlists/english.json";
 
 export class EnglishMnemonic {
   // list of space separated lower case words (1 or more)
@@ -22,7 +22,7 @@ export class EnglishMnemonic {
     }
 
     for (const word of words) {
-      if ((bip39_wordlist_english as readonly string[]).indexOf(word) === -1) {
+      if ((bip39WordlistEnglish as readonly string[]).indexOf(word) === -1) {
         throw new Error("Mnemonic contains invalid word");
       }
     }
