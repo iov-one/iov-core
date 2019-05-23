@@ -221,11 +221,7 @@ export class TsRepl {
     const oldOutput = this.evalData.output;
 
     // Handle ASI issues with TypeScript re-evaluation.
-    if (
-      oldInput.charAt(oldInput.length - 1) === "\n" &&
-      /^\s*[\[\(\`]/.test(input) &&
-      !/;\s*$/.test(oldInput)
-    ) {
+    if (oldInput.charAt(oldInput.length - 1) === "\n" && /^\s*[[(`]/.test(input) && !/;\s*$/.test(oldInput)) {
       // tslint:disable-next-line:no-object-mutation
       this.evalData.input = `${this.evalData.input.slice(0, -1)};\n`;
     }
