@@ -53,7 +53,7 @@ export class TsRepl {
       // tslint:disable-next-line:variable-name
       _filename: string,
       callback: (err: Error | null, result?: any) => any,
-    ) => {
+    ): Promise<void> => {
       const result = await this.replEval(code);
       callback(result.error, result.result);
     };
@@ -228,7 +228,7 @@ export class TsRepl {
     // tslint:disable-next-line:no-object-mutation
     this.evalData.input += input;
 
-    const undoFunction = () => {
+    const undoFunction = (): void => {
       // tslint:disable-next-line:no-object-mutation
       this.evalData.input = oldInput;
       // tslint:disable-next-line:no-object-mutation

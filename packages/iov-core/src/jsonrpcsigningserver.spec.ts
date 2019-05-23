@@ -56,8 +56,11 @@ const ethereumUrl = "http://localhost:8545";
 const ethereumChainId = "ethereum-eip155-5777" as ChainId;
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
-const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
-const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
+const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (
+  _,
+  matching,
+): Promise<readonly PublicIdentity[]> => matching;
+const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2): Promise<boolean> => true;
 
 async function makeBnsEthereumSigningServer(
   authorizeGetIdentities: GetIdentitiesAuthorization = defaultGetIdentitiesCallback,

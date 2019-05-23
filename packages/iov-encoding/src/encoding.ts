@@ -46,7 +46,7 @@ export class Encoding {
   }
 
   public static toAscii(input: string): Uint8Array {
-    const toNums = (str: string) =>
+    const toNums = (str: string): readonly number[] =>
       str.split("").map((x: string) => {
         const charCode = x.charCodeAt(0);
         // 0x00–0x1F control characters
@@ -62,7 +62,7 @@ export class Encoding {
   }
 
   public static fromAscii(data: Uint8Array): string {
-    const fromNums = (listOfNumbers: readonly number[]) =>
+    const fromNums = (listOfNumbers: readonly number[]): readonly string[] =>
       listOfNumbers.map(
         (x: number): string => {
           // 0x00–0x1F control characters
