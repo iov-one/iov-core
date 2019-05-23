@@ -15,7 +15,6 @@ import {
   PublicKeyBundle,
   SendTransaction,
   SwapClaimTransaction,
-  SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
   TokenTicker,
