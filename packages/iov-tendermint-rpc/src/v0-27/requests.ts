@@ -4,8 +4,6 @@ import { assertNotEmpty, Base64, Base64String, HexString, Integer, IntegerString
 import { JsonRpcRequest, jsonRpcWith } from "../jsonrpc";
 import * as requests from "../requests";
 
-/***** queries *****/
-
 export class Params {
   public static encodeAbciInfo(req: requests.AbciInfoRequest): JsonRpcRequest {
     return jsonRpcWith(req.method);

@@ -151,7 +151,7 @@ export const getTxEventHeight = (event: TxEvent): number => event.height;
 export const getHeaderEventHeight = (event: NewBlockHeaderEvent): number => event.height;
 export const getBlockEventHeight = (event: NewBlockEvent): number => event.header.height;
 
-/**** Helper items used above ******/
+// Helper items used above
 
 export interface Tag {
   readonly key: Uint8Array;

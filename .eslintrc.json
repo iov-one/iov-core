@@ -21,7 +21,7 @@
     "no-console": ["warn", { "allow": ["error", "info", "warn"] }],
     "no-shadow": "error",
     "prefer-const": "error",
-    "spaced-comment": ["off", "always", { "exceptions": ["*"] }],
+    "spaced-comment": ["warn", "always", { "line": { "markers": ["/ <reference"] } }],
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/explicit-function-return-type": ["off", { "allowExpressions": true }],
