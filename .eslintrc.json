@@ -21,7 +21,6 @@
     "no-case-declarations": "off",
     "no-console": ["off", { "allow": ["error", "info", "warn"] }],
     "no-shadow": "error",
-    "no-var": "off",
     "prefer-const": "error",
     "spaced-comment": ["off", "always", { "exceptions": ["*"] }],
     "@typescript-eslint/array-type": "off",
