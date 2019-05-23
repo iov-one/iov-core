@@ -1,6 +1,5 @@
 import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
 import * as responses from "../responses";
-/*** adaptor ***/
 export declare class Responses {
     static decodeAbciInfo(response: JsonRpcSuccess): responses.AbciInfoResponse;
     static decodeAbciQuery(response: JsonRpcSuccess): responses.AbciQueryResponse;

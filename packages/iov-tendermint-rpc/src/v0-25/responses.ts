@@ -23,8 +23,6 @@ import * as responses from "../responses";
 import { IpPortString, TxBytes, TxHash, ValidatorPubkey, ValidatorSignature } from "../types";
 import { hashTx } from "./hasher";
 
-/*** adaptor ***/
-
 export class Responses {
   public static decodeAbciInfo(response: JsonRpcSuccess): responses.AbciInfoResponse {
     return decodeAbciInfo(assertSet((response.result as AbciInfoResult).response));
@@ -98,8 +96,6 @@ export class Responses {
     return decodeValidators(response.result as RpcValidatorsResponse);
   }
 }
-
-/**** results *****/
 
 interface AbciInfoResult {
   readonly response: RpcAbciInfoResponse;
@@ -329,7 +325,7 @@ function decodeValidators(data: RpcValidatorsResponse): responses.ValidatorsResp
   };
 }
 
-/**** Helper items used above ******/
+// Helper items used above
 
 interface RpcTag {
   readonly key: Base64String;
