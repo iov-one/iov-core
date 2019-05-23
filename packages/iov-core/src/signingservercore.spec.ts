@@ -12,6 +12,7 @@ import {
   TokenTicker,
   TransactionState,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
@@ -74,9 +75,10 @@ describe("SigningServerCore", () => {
     const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
     const faucet = await profile.createIdentity(wallet.id, connection.chainId(), faucetPath);
 
-    const sendTx = await connection.withDefaultFee<SendTransaction>({
+    const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: faucet,
+      sender: bnsCodec.identityToAddress(faucet),
       recipient: isIdentity(recipient) ? bnsCodec.identityToAddress(recipient) : recipient,
       amount: amount,
     });
@@ -291,9 +293,11 @@ describe("SigningServerCore", () => {
       );
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send = await connection.withDefaultFee<SendTransaction>({
+
+      const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
@@ -330,9 +334,10 @@ describe("SigningServerCore", () => {
       );
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send = await connection.withDefaultFee<SendTransaction>({
+      const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
@@ -361,9 +366,10 @@ describe("SigningServerCore", () => {
       }
       const core = new SigningServerCore(profile, signer, defaultGetIdentitiesCallback, throwingCallback);
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send = await connection.withDefaultFee<SendTransaction>({
+      const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
@@ -403,9 +409,10 @@ describe("SigningServerCore", () => {
       );
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send = await connection.withDefaultFee<SendTransaction>({
+      const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
@@ -440,9 +447,10 @@ describe("SigningServerCore", () => {
       expect(core.signedAndPosted.value).toEqual([]);
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send = await connection.withDefaultFee<SendTransaction>({
+      const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });

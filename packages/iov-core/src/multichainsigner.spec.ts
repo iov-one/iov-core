@@ -10,11 +10,12 @@ import {
   SendTransaction,
   TokenTicker,
   TransactionState,
+  WithCreator,
 } from "@iov/bcp";
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { ethereumConnector } from "@iov/ethereum";
+import { ethereumCodec, ethereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
@@ -96,9 +97,10 @@ describe("MultiChainSigner", () => {
 
       // construct a sendtx, this mirrors the MultiChainSigner api
       const memo = `MultiChainSigner style (${Math.random()})`;
-      const sendTx = await connection.withDefaultFee<SendTransaction>({
+      const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        sender: bnsCodec.identityToAddress(faucet),
         recipient: recipient,
         memo: memo,
         amount: {
@@ -205,9 +207,10 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on BNS
-        const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction>({
+        const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction & WithCreator>({
           kind: "bcp/send",
           creator: bnsFaucet,
+          sender: bnsCodec.identityToAddress(bnsFaucet),
           recipient: await randomBnsAddress(),
           memo: `MultiChainSigner style (${Math.random()})`,
           amount: {
@@ -223,7 +226,7 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on Ethereum
-        const sendOnEthereum: SendTransaction = {
+        const sendOnEthereum: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: ganacheMainIdentity,
           amount: {
@@ -231,6 +234,7 @@ describe("MultiChainSigner", () => {
             tokenTicker: "ETH" as TokenTicker,
             fractionalDigits: 18,
           },
+          sender: ethereumCodec.identityToAddress(ganacheMainIdentity),
           recipient: "0x0000000000000000000000000000000000000000" as Address,
           memo: `MultiChainSigner style (${Math.random()})`,
           // TODO: shall we use getFeeQuote here?

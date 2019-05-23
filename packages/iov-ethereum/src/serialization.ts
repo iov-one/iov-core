@@ -8,6 +8,7 @@ import {
   isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
+  LightTransaction,
   Nonce,
   SendTransaction,
   SignedTransaction,
@@ -16,12 +17,13 @@ import {
   SwapOfferTransaction,
   SwapTransaction,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 
 import { Abi } from "./abi";
-import { isValidAddress } from "./address";
+import { isValidAddress, pubkeyToAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
 import { Erc20ApproveTransaction, Erc20Options, Erc20TokensMap, isErc20ApproveTransaction } from "./erc20";
@@ -158,6 +160,16 @@ export class Serialization {
     }
   }
 
+  private static checkCreatorMatchesSender(unsigned: SendTransaction & WithCreator): void {
+    if (unsigned.creator.pubkey.data.length === 0) {
+      return;
+    }
+    const creatorAddress = pubkeyToAddress(unsigned.creator.pubkey);
+    if (creatorAddress !== unsigned.sender) {
+      throw new Error("Creator does not match sender");
+    }
+  }
+
   private static checkRecipientAddress(unsigned: SendTransaction | SwapOfferTransaction): void {
     if (!isValidAddress(unsigned.recipient)) {
       throw new Error("Invalid recipient address");
@@ -235,15 +247,15 @@ export class Serialization {
     return encodeQuantityString(unsigned.fee.gasLimit);
   }
 
-  private static getErc20Token(unsigned: UnsignedTransaction, erc20Tokens: Erc20TokensMap): Erc20Options {
+  private static getErc20Token(transaction: LightTransaction, erc20Tokens: Erc20TokensMap): Erc20Options {
     let erc20Token: Erc20Options | undefined;
     let ticker: string;
-    if (isSendTransaction(unsigned) || isErc20ApproveTransaction(unsigned)) {
-      erc20Token = erc20Tokens.get(unsigned.amount.tokenTicker);
-      ticker = unsigned.amount.tokenTicker;
-    } else if (isSwapOfferTransaction(unsigned)) {
-      erc20Token = erc20Tokens.get(unsigned.amounts[0].tokenTicker);
-      ticker = unsigned.amounts[0].tokenTicker;
+    if (isSendTransaction(transaction) || isErc20ApproveTransaction(transaction)) {
+      erc20Token = erc20Tokens.get(transaction.amount.tokenTicker);
+      ticker = transaction.amount.tokenTicker;
+    } else if (isSwapOfferTransaction(transaction)) {
+      erc20Token = erc20Tokens.get(transaction.amounts[0].tokenTicker);
+      ticker = transaction.amounts[0].tokenTicker;
     } else {
       throw new Error("Cannot get ERC20 token for unsupported transaction type");
     }
@@ -338,9 +350,10 @@ export class Serialization {
   }
 
   private static serializeUnsignedSendTransaction(
-    unsigned: SendTransaction,
+    unsigned: SendTransaction & WithCreator,
     { chainIdHex, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: UnsignedSerializationOptions,
   ): Uint8Array {
+    Serialization.checkCreatorMatchesSender(unsigned);
     Serialization.checkRecipientAddress(unsigned);
 
     if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
@@ -491,9 +504,10 @@ export class Serialization {
   }
 
   private static serializeSignedSendTransaction(
-    unsigned: SendTransaction,
+    unsigned: SendTransaction & WithCreator,
     { v, r, s, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: SignedSerializationOptions,
   ): Uint8Array {
+    Serialization.checkCreatorMatchesSender(unsigned);
     Serialization.checkRecipientAddress(unsigned);
 
     if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {

@@ -25,6 +25,7 @@ import {
   TransactionId,
   TransactionState,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
@@ -410,9 +411,10 @@ describe("LiskConnection", () => {
         );
 
         for (const _ of [0, 1]) {
-          const sendTx: SendTransaction = {
+          const sendTx: SendTransaction & WithCreator = {
             kind: "bcp/send",
             creator: mainIdentity,
+            sender: liskCodec.identityToAddress(mainIdentity),
             recipient: recipient,
             amount: devnetDefaultAmount,
           };
@@ -523,9 +525,10 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction = {
+      const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: liskCodec.identityToAddress(mainIdentity),
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
         amount: devnetDefaultAmount,
@@ -551,9 +554,10 @@ describe("LiskConnection", () => {
           await devnetDefaultKeypair,
         );
 
-        const sendTx: SendTransaction = {
+        const sendTx: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: mainIdentity,
+          sender: liskCodec.identityToAddress(mainIdentity),
           recipient: devnetDefaultRecipient,
           memo: `We ❤️ developers – iov.one ${Math.random()}`,
           amount: devnetDefaultAmount,
@@ -597,9 +601,10 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction = {
+      const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: liskCodec.identityToAddress(mainIdentity),
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
         amount: devnetDefaultAmount,
@@ -629,9 +634,10 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction = {
+      const sendTx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: mainIdentity,
+        sender: liskCodec.identityToAddress(mainIdentity),
         recipient: devnetDefaultRecipient,
         memo: "We ❤️ developers – iov.one",
         amount: devnetDefaultAmount,
@@ -890,25 +896,28 @@ describe("LiskConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-        const sendA: SendTransaction = {
+        const sendA: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test A ${Math.random()}`,
         };
 
-        const sendB: SendTransaction = {
+        const sendB: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test B ${Math.random()}`,
         };
 
-        const sendC: SendTransaction = {
+        const sendC: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test C ${Math.random()}`,
@@ -976,9 +985,10 @@ describe("LiskConnection", () => {
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
         const recipientAddress = await randomAddress();
-        const send: SendTransaction = {
+        const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test ${Math.random()}`,
@@ -1032,9 +1042,10 @@ describe("LiskConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-        const send: SendTransaction = {
+        const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: sender,
+          sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test ${Math.random()}`,
@@ -1075,16 +1086,18 @@ describe("LiskConnection", () => {
   describe("getFeeQuote", () => {
     it("works for send transaction", async () => {
       const connection = new LiskConnection(dummynetBase, dummynetChainId);
-
-      const sendTransaction: SendTransaction = {
-        kind: "bcp/send",
-        creator: {
-          chainId: dummynetChainId,
-          pubkey: {
-            algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PublicKeyBytes,
-          },
+      const sender = {
+        chainId: dummynetChainId,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("aabbccdd") as PublicKeyBytes,
         },
+      };
+
+      const sendTransaction: SendTransaction & WithCreator = {
+        kind: "bcp/send",
+        creator: sender,
+        sender: liskCodec.identityToAddress(sender),
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
         amount: devnetDefaultAmount,

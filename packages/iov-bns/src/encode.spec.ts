@@ -10,6 +10,7 @@ import {
   SendTransaction,
   SignatureBytes,
   TokenTicker,
+  WithCreator,
 } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -151,6 +152,8 @@ describe("Encode", () => {
         data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PublicKeyBytes,
       },
     };
+    const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
+    const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
 
     const defaultAmount: Amount = {
       quantity: "1000000001",
@@ -159,11 +162,12 @@ describe("Encode", () => {
     };
 
     it("can encode transaction without fees", () => {
-      const transaction: SendTransaction = {
+      const transaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: defaultCreator,
         amount: defaultAmount,
-        recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        sender: defaultSender,
+        recipient: defaultRecipient,
         memo: "free transaction",
       };
 
@@ -176,11 +180,12 @@ describe("Encode", () => {
     });
 
     it("can encode transaction with fees", () => {
-      const transaction: SendTransaction = {
+      const transaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: defaultCreator,
         amount: defaultAmount,
-        recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        sender: defaultSender,
+        recipient: defaultRecipient,
         memo: "paid transaction",
         fee: {
           tokens: defaultAmount,
@@ -210,9 +215,11 @@ describe("Encode", () => {
         data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PublicKeyBytes,
       },
     };
+    const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
+    const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
 
     it("works for SendTransaction", () => {
-      const transaction: SendTransaction = {
+      const transaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: defaultCreator,
         amount: {
@@ -220,7 +227,8 @@ describe("Encode", () => {
           fractionalDigits: 9,
           tokenTicker: "CASH" as TokenTicker,
         },
-        recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        sender: defaultSender,
+        recipient: defaultRecipient,
         memo: "abc",
       };
 
@@ -234,8 +242,24 @@ describe("Encode", () => {
       expect(msg.ref!.length).toEqual(0);
     });
 
+    it("throws for SendTransaction with mismatched sender and creator", () => {
+      const transaction: SendTransaction & WithCreator = {
+        kind: "bcp/send",
+        creator: defaultCreator,
+        amount: {
+          quantity: "1000000001",
+          fractionalDigits: 9,
+          tokenTicker: "CASH" as TokenTicker,
+        },
+        sender: defaultRecipient,
+        recipient: defaultRecipient,
+        memo: "abc",
+      };
+      expect(() => buildMsg(transaction)).toThrowError(/sender and creator do not match/i);
+    });
+
     it("works for AddAddressToUsernameTx", () => {
-      const addAddress: AddAddressToUsernameTx = {
+      const addAddress: AddAddressToUsernameTx & WithCreator = {
         kind: "bns/add_address_to_username",
         creator: defaultCreator,
         username: "alice",
@@ -251,7 +275,7 @@ describe("Encode", () => {
     });
 
     it("works for RegisterUsernameTx", () => {
-      const registerUsername: RegisterUsernameTx = {
+      const registerUsername: RegisterUsernameTx & WithCreator = {
         kind: "bns/register_username",
         creator: defaultCreator,
         username: "alice",
@@ -285,7 +309,7 @@ describe("Encode", () => {
     });
 
     it("works for RemoveAddressFromUsernameTx", () => {
-      const removeAddress: RemoveAddressFromUsernameTx = {
+      const removeAddress: RemoveAddressFromUsernameTx & WithCreator = {
         kind: "bns/remove_address_from_username",
         creator: defaultCreator,
         username: "alice",
@@ -330,7 +354,7 @@ describe("Encode", () => {
           power: 1,
         },
       ];
-      const createMultisignature: CreateMultisignatureTx = {
+      const createMultisignature: CreateMultisignatureTx & WithCreator = {
         kind: "bns/create_multisignature_contract",
         creator: defaultCreator,
         participants: participants,
@@ -373,7 +397,7 @@ describe("Encode", () => {
           power: 1,
         },
       ];
-      const updateMultisignature: UpdateMultisignatureTx = {
+      const updateMultisignature: UpdateMultisignatureTx & WithCreator = {
         kind: "bns/update_multisignature_contract",
         creator: defaultCreator,
         contractId: fromHex("abcdef0123"),

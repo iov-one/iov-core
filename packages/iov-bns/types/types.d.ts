@@ -1,6 +1,6 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Address, Algorithm, ChainId, FullSignature, PublicKeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TokenTicker, UnsignedTransaction } from "@iov/bcp";
+import { Address, Algorithm, ChainId, FullSignature, LightTransaction, PublicKeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TokenTicker } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 export interface ChainAddressPair {
@@ -76,7 +76,7 @@ export declare function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSi
 export declare function asIntegerNumber(maybeLong: Long | number | null | undefined): number;
 export declare function asInt53(input: Long | number | null | undefined): Int53;
 export declare function ensure<T>(maybe: T | null | undefined, msg?: string): T;
-export interface AddAddressToUsernameTx extends UnsignedTransaction {
+export interface AddAddressToUsernameTx extends LightTransaction {
     readonly kind: "bns/add_address_to_username";
     /** the username to be updated, must exist on chain */
     readonly username: string;
@@ -86,24 +86,24 @@ export interface Participant {
     readonly address: Address;
     readonly power: number;
 }
-export interface CreateMultisignatureTx extends UnsignedTransaction {
+export interface CreateMultisignatureTx extends LightTransaction {
     readonly kind: "bns/create_multisignature_contract";
     readonly participants: ReadonlyArray<Participant>;
     readonly activationThreshold: number;
     readonly adminThreshold: number;
 }
-export interface RegisterUsernameTx extends UnsignedTransaction {
+export interface RegisterUsernameTx extends LightTransaction {
     readonly kind: "bns/register_username";
     readonly username: string;
     readonly addresses: ReadonlyArray<ChainAddressPair>;
 }
-export interface RemoveAddressFromUsernameTx extends UnsignedTransaction {
+export interface RemoveAddressFromUsernameTx extends LightTransaction {
     readonly kind: "bns/remove_address_from_username";
     /** the username to be updated, must exist on chain */
     readonly username: string;
     readonly payload: ChainAddressPair;
 }
-export interface UpdateMultisignatureTx extends UnsignedTransaction {
+export interface UpdateMultisignatureTx extends LightTransaction {
     readonly kind: "bns/update_multisignature_contract";
     readonly contractId: Uint8Array;
     readonly participants: ReadonlyArray<Participant>;
@@ -111,9 +111,9 @@ export interface UpdateMultisignatureTx extends UnsignedTransaction {
     readonly adminThreshold: number;
 }
 export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | AddAddressToUsernameTx | CreateMultisignatureTx | RegisterUsernameTx | RemoveAddressFromUsernameTx | UpdateMultisignatureTx;
-export declare function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx;
-export declare function isAddAddressToUsernameTx(transaction: UnsignedTransaction): transaction is AddAddressToUsernameTx;
-export declare function isCreateMultisignatureTx(transaction: UnsignedTransaction): transaction is CreateMultisignatureTx;
-export declare function isRegisterUsernameTx(transaction: UnsignedTransaction): transaction is RegisterUsernameTx;
-export declare function isRemoveAddressFromUsernameTx(transaction: UnsignedTransaction): transaction is RemoveAddressFromUsernameTx;
-export declare function isUpdateMultisignatureTx(transaction: UnsignedTransaction): transaction is UpdateMultisignatureTx;
+export declare function isBnsTx(transaction: LightTransaction): transaction is BnsTx;
+export declare function isAddAddressToUsernameTx(transaction: LightTransaction): transaction is AddAddressToUsernameTx;
+export declare function isCreateMultisignatureTx(transaction: LightTransaction): transaction is CreateMultisignatureTx;
+export declare function isRegisterUsernameTx(transaction: LightTransaction): transaction is RegisterUsernameTx;
+export declare function isRemoveAddressFromUsernameTx(transaction: LightTransaction): transaction is RemoveAddressFromUsernameTx;
+export declare function isUpdateMultisignatureTx(transaction: LightTransaction): transaction is UpdateMultisignatureTx;

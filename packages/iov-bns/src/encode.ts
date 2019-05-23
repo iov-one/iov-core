@@ -11,6 +11,7 @@ import {
   SwapClaimTransaction,
   SwapOfferTransaction,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
 
@@ -170,7 +171,12 @@ function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.app.
   };
 }
 
-function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
+function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.app.ITx {
+  const { prefix: prefix1, data: data1 } = decodeBnsAddress(identityToAddress(tx.creator));
+  const { prefix: prefix2, data: data2 } = decodeBnsAddress(tx.sender);
+  if (prefix1 !== prefix2 || data1.length !== data2.length || data1.some((b, i) => b !== data2[i])) {
+    throw new Error("Sender and creator do not match (currently unsupported)");
+  }
   return {
     sendMsg: codecImpl.cash.SendMsg.create({
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
@@ -181,7 +187,7 @@ function buildSendTransaction(tx: SendTransaction): codecImpl.app.ITx {
   };
 }
 
-function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.app.ITx {
+function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app.ITx {
   if (!isTimestampTimeout(tx.timeout)) {
     throw new Error("Got unsupported timeout type");
   }
@@ -215,7 +221,7 @@ function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.app.ITx 
   };
 }
 
-function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.app.ITx {
+function buildRegisterUsernameTx(tx: RegisterUsernameTx & WithCreator): codecImpl.app.ITx {
   const chainAddresses = tx.addresses.map(
     (pair): codecImpl.username.IChainAddress => {
       return {

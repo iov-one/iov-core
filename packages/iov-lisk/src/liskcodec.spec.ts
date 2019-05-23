@@ -11,6 +11,7 @@ import {
   SignatureBytes,
   SignedTransaction,
   TokenTicker,
+  WithCreator,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
@@ -22,6 +23,21 @@ const { fromHex } = Encoding;
 const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
 const liskEpochAsUnixTimestamp = 1464109200;
 const defaultCreationTimestamp = 865708731 + liskEpochAsUnixTimestamp;
+const defaultPublicKey = {
+  algo: Algorithm.Ed25519,
+  data: fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff") as PublicKeyBytes,
+};
+const defaultCreator = {
+  chainId: liskTestnet,
+  pubkey: defaultPublicKey,
+};
+const defaultSender = "10645226540143571783L" as Address;
+const defaultRecipient = "10010344879730196491L" as Address;
+const defaultAmount = {
+  quantity: "123456789",
+  fractionalDigits: 8,
+  tokenTicker: "LSK" as TokenTicker,
+};
 
 describe("liskCodec", () => {
   it("derives addresses properly", () => {
@@ -37,78 +53,45 @@ describe("liskCodec", () => {
   });
 
   it("can create bytes to sign", () => {
-    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
-
-    const tx: SendTransaction = {
+    const tx: SendTransaction & WithCreator = {
       kind: "bcp/send",
-      creator: {
-        chainId: liskTestnet,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
-      },
-      amount: {
-        quantity: "123456789",
-        fractionalDigits: 8,
-        tokenTicker: "LSK" as TokenTicker,
-      },
-      recipient: "10010344879730196491L" as Address,
+      creator: defaultCreator,
+      amount: defaultAmount,
+      sender: defaultSender,
+      recipient: defaultRecipient,
     };
     const bytes = liskCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce);
     expect(bytes).toBeTruthy();
   });
 
   it("requires 8 fractional digits in bytes to sign", () => {
-    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
-
-    const tx: SendTransaction = {
+    const tx: SendTransaction & WithCreator = {
       kind: "bcp/send",
-      creator: {
-        chainId: liskTestnet,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
-      },
+      creator: defaultCreator,
       amount: {
-        quantity: "123456789",
+        ...defaultAmount,
         fractionalDigits: 7,
-        tokenTicker: "LSK" as TokenTicker,
       },
-      recipient: "10010344879730196491L" as Address,
+      sender: defaultSender,
+      recipient: defaultRecipient,
     };
     expect(() => liskCodec.bytesToSign(tx, defaultCreationTimestamp as Nonce)).toThrowError(/Requires 8/);
   });
 
   it("can create bytes to post", () => {
-    const pubkey = fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff");
-
-    const tx: SendTransaction = {
+    const tx: SendTransaction & WithCreator = {
       kind: "bcp/send",
-      creator: {
-        chainId: liskTestnet,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
-      },
-      amount: {
-        quantity: "123456789",
-        fractionalDigits: 8,
-        tokenTicker: "LSK" as TokenTicker,
-      },
-      recipient: "10010344879730196491L" as Address,
+      creator: defaultCreator,
+      amount: defaultAmount,
+      sender: defaultSender,
+      recipient: defaultRecipient,
     };
 
     const signed: SignedTransaction = {
       transaction: tx,
       primarySignature: {
         nonce: defaultCreationTimestamp as Nonce,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: pubkey as PublicKeyBytes,
-        },
+        pubkey: defaultPublicKey,
         signature: fromHex("26272829") as SignatureBytes,
       },
       otherSignatures: [],

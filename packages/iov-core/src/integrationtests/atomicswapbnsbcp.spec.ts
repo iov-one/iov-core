@@ -20,6 +20,7 @@ import {
   SwapProcessState,
   TokenTicker,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { bnsConnector } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
@@ -145,9 +146,10 @@ class Actor {
   }
 
   public async sendBnsTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction>({
+    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: this.bnsIdentity,
+      sender: this.bnsAddress,
       recipient: recipient,
       amount: amount,
     });
@@ -155,9 +157,10 @@ class Actor {
   }
 
   public async sendBcpTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bcpConnection.withDefaultFee<SendTransaction>({
+    const transaction = await this.bcpConnection.withDefaultFee<SendTransaction & WithCreator>({
       kind: "bcp/send",
       creator: this.bcpIdentity,
+      sender: this.bcpAddress,
       recipient: recipient,
       amount: amount,
     });
@@ -165,7 +168,7 @@ class Actor {
   }
 
   public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction & WithCreator>({
       kind: "bcp/swap_offer",
       creator: this.bnsIdentity,
       memo: "Take this cash",
@@ -182,7 +185,7 @@ class Actor {
     recipient: Address,
     amount: Amount,
   ): Promise<Uint8Array | undefined> {
-    const transaction = await this.bcpConnection.withDefaultFee<SwapOfferTransaction>({
+    const transaction = await this.bcpConnection.withDefaultFee<SwapOfferTransaction & WithCreator>({
       kind: "bcp/swap_offer",
       creator: this.bcpIdentity,
       amounts: [amount],
@@ -194,7 +197,7 @@ class Actor {
   }
 
   public async claimFromKnownPreimageOnBcp(offer: AtomicSwap): Promise<Uint8Array | undefined> {
-    const transaction = await this.bcpConnection.withDefaultFee<SwapClaimTransaction>({
+    const transaction = await this.bcpConnection.withDefaultFee<SwapClaimTransaction & WithCreator>({
       kind: "bcp/swap_claim",
       creator: this.bcpIdentity,
       swapId: offer.data.id,
@@ -210,7 +213,7 @@ class Actor {
     if (!isClaimedSwap(claim)) {
       throw new Error("Expected swap to be claimed");
     }
-    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction & WithCreator>({
       kind: "bcp/swap_claim",
       creator: this.bnsIdentity,
       swapId: unclaimedId,

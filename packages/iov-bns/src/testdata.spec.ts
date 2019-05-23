@@ -17,6 +17,7 @@ import {
   SwapIdBytes,
   SwapOfferTransaction,
   TokenTicker,
+  WithCreator,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
@@ -86,12 +87,13 @@ export const chainId = "test-123" as ChainId;
 // recipient address generated using https://github.com/nym-zone/bech32
 // RCPT=$(./scripts/jsonbytes testvectors/unsigned_tx.json .Sum.SendMsg.dest)
 // bech32 -e -h tiov $RCPT
-export const sendTxJson: SendTransaction = {
+export const sendTxJson: SendTransaction & WithCreator = {
   kind: "bcp/send",
   creator: {
     chainId: chainId,
     pubkey: pubJson,
   },
+  sender: address,
   recipient: "tiov1hl846c5pqgaqnp0kje64rx5axj8t2fvqxunqaf" as Address,
   memo: "Test payment",
   amount: amount,
@@ -142,12 +144,13 @@ const sig2: FullSignature = {
 };
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 009985cb38847474fe9febfd56ab67e14bcd56f3
-const randomMsg: SendTransaction = {
+const randomMsg: SendTransaction & WithCreator = {
   creator: {
     chainId: "foo-bar-baz" as ChainId,
     pubkey: pubJson,
   },
   kind: "bcp/send",
+  sender: address,
   recipient: "tiov1qzvctjecs368fl5la074d2m8u99u64hn8q7kyn" as Address,
   memo: "One more fix!",
   amount: {
@@ -171,7 +174,7 @@ export const randomTxJson: SignedTransaction = {
 
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 123485cb38847474fe9febfd56ab67e14bcd56f3
-const swapOfferTransaction: SwapOfferTransaction = {
+const swapOfferTransaction: SwapOfferTransaction & WithCreator = {
   creator: {
     chainId: "swap-a-doo" as ChainId,
     pubkey: pubJson,
@@ -195,7 +198,7 @@ export const swapOfferTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 
-const swapClaimMsg: SwapClaimTransaction = {
+const swapClaimMsg: SwapClaimTransaction & WithCreator = {
   creator: {
     chainId: "swap-a-doo" as ChainId,
     pubkey: pubJson,
@@ -212,7 +215,7 @@ export const swapClaimTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 
-const swapAbort: SwapAbortTransaction = {
+const swapAbort: SwapAbortTransaction & WithCreator = {
   creator: {
     chainId: "swap-a-doo" as ChainId,
     pubkey: pubJson,

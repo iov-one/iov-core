@@ -1,5 +1,5 @@
 import { As } from "type-tagger";
-import { Address, ChainId, ConfirmedTransaction, Hash, Identity, Nonce, SignableBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TransactionQuery } from "@iov/bcp";
+import { Address, ChainId, ConfirmedTransaction, Hash, Identity, Nonce, SignableBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TransactionQuery, WithCreator } from "@iov/bcp";
 import { QueryString } from "@iov/tendermint-rpc";
 export declare function addressPrefix(chainId: ChainId): "iov" | "tiov";
 /** Encodes raw bytes into a bech32 address */
@@ -23,6 +23,6 @@ export declare function isHashIdentifier(ident: Uint8Array): ident is HashId;
 export declare function hashFromIdentifier(ident: HashId): Hash;
 export declare function bucketKey(bucket: string): Uint8Array;
 export declare function indexKey(bucket: string, index: string): Uint8Array;
-export declare function isConfirmedWithSwapOfferTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapOfferTransaction>;
-export declare function isConfirmedWithSwapClaimOrAbortTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapClaimTransaction | SwapAbortTransaction>;
+export declare function isConfirmedWithSwapOfferTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<SwapOfferTransaction & WithCreator>;
+export declare function isConfirmedWithSwapClaimOrAbortTransaction(tx: ConfirmedTransaction): tx is ConfirmedTransaction<(SwapClaimTransaction | SwapAbortTransaction) & WithCreator>;
 export declare function buildQueryString(query: TransactionQuery): QueryString;

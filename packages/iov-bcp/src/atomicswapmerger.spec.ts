@@ -14,6 +14,7 @@ import {
   SwapId,
   SwapIdBytes,
   TokenTicker,
+  WithCreator,
 } from "./transactions";
 
 const { fromHex } = Encoding;
@@ -49,7 +50,7 @@ describe("AtomicSwapMerger", () => {
       },
     };
 
-    const claim: SwapClaimTransaction = {
+    const claim: SwapClaimTransaction & WithCreator = {
       kind: "bcp/swap_claim",
       creator: {
         chainId: "lalala" as ChainId,
@@ -115,7 +116,7 @@ describe("AtomicSwapMerger", () => {
       },
     };
 
-    const claimA: SwapClaimTransaction = {
+    const claimA: SwapClaimTransaction & WithCreator = {
       kind: "bcp/swap_claim",
       creator: {
         chainId: "lalala" as ChainId,
@@ -125,7 +126,7 @@ describe("AtomicSwapMerger", () => {
       preimage: preimageA,
     };
 
-    const claimB: SwapClaimTransaction = {
+    const claimB: SwapClaimTransaction & WithCreator = {
       kind: "bcp/swap_claim",
       creator: {
         chainId: "lalala" as ChainId,
@@ -213,7 +214,7 @@ describe("AtomicSwapMerger", () => {
       },
     };
 
-    const claim: SwapClaimTransaction = {
+    const claim: SwapClaimTransaction & WithCreator = {
       kind: "bcp/swap_claim",
       creator: {
         chainId: "lalala" as ChainId,

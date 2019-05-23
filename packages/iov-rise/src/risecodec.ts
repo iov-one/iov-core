@@ -18,6 +18,7 @@ import {
   TransactionId,
   TxCodec,
   UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { Parse, Serialization } from "@iov/dpos";
 import { Encoding, Int53 } from "@iov/encoding";
@@ -100,17 +101,18 @@ export const riseCodec: TxCodec = {
    */
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
+    const senderPublicKey = Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes;
 
     let unsignedTransaction: UnsignedTransaction;
     switch (json.type) {
       case 0:
-        const send: SendTransaction = {
+        const send: SendTransaction & WithCreator = {
           kind: "bcp/send",
           creator: {
             chainId: chainId,
             pubkey: {
               algo: Algorithm.Ed25519,
-              data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
+              data: senderPublicKey,
             },
           },
           fee: {
@@ -125,6 +127,7 @@ export const riseCodec: TxCodec = {
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenTicker: constants.primaryTokenTicker,
           },
+          sender: pubkeyToAddress(senderPublicKey),
           recipient: json.recipientId as Address,
         };
         unsignedTransaction = send;
@@ -139,7 +142,7 @@ export const riseCodec: TxCodec = {
         nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes,
+          data: senderPublicKey,
         },
         signature: Encoding.fromHex(json.signature) as SignatureBytes,
       },

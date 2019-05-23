@@ -71,6 +71,7 @@ describe("ethereumCodec", () => {
             fractionalDigits: 18,
             tokenTicker: "ETH" as TokenTicker,
           },
+          sender: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
           recipient: "0xE137f5264b6B528244E1643a2D570b37660B7F14" as Address,
           memo: "Search tx test 0.6590869173964335",
         },
@@ -149,6 +150,7 @@ describe("ethereumCodec", () => {
             fractionalDigits: 18,
             tokenTicker: "WETH" as TokenTicker,
           },
+          sender: "0x9bD26664827550982960b9E76bcd88C0b6791bb4" as Address,
           recipient: "0x9ea4094Ed5D7E089ac846C7D66fc518bd24753ab" as Address,
           memo: undefined,
         },
@@ -221,6 +223,7 @@ describe("ethereumCodec", () => {
             fractionalDigits: 18,
             tokenTicker: "ETH" as TokenTicker,
           },
+          sender: "0x9bD26664827550982960b9E76bcd88C0b6791bb4" as Address,
           recipient: "0xc778417E063141139Fce010982780140Aa0cD5Ab" as Address,
           // Non-UTF8 automatically represented as hex
           memo:
