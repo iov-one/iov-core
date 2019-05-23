@@ -806,6 +806,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const searchId = query.id;
       const resultPromise = new Promise<ConfirmedTransaction>(async (resolve, reject) => {
         try {
+          // eslint-disable-next-line no-constant-condition
           while (true) {
             const searchResult = await this.searchTransactionsById(searchId);
             if (searchResult.length > 0) {
