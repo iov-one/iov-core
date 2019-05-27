@@ -88,8 +88,8 @@ export class UserProfile {
   private readonly lockedProducer: DefaultValueProducer<boolean>;
   private readonly walletsProducer: DefaultValueProducer<readonly WalletInfo[]>;
 
-  // Stores a copy of keyring
-  constructor(options?: UserProfileOptions) {
+  /** Stores a copy of keyring */
+  public constructor(options?: UserProfileOptions) {
     if (options) {
       this.createdAt = options.createdAt;
       this.keyring = options.keyring.clone();

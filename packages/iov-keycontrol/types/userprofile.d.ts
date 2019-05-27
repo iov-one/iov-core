@@ -25,6 +25,7 @@ export declare class UserProfile {
     private keyring;
     private readonly lockedProducer;
     private readonly walletsProducer;
+    /** Stores a copy of keyring */
     constructor(options?: UserProfileOptions);
     storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void>;
     lock(): void;
