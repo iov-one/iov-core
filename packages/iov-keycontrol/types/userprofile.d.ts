@@ -10,6 +10,16 @@ export interface UserProfileEncryptionKey {
     readonly formatVersion: number;
     readonly data: Uint8Array;
 }
+/**
+ * An error class that allows handling an unexpected format version.
+ * It contains all the data needed to derive the encryption key in a different
+ * format version using UserProfile.deriveEncryptionKey.
+ */
+export declare class UserProfileEncryptionKeyUnexpectedFormatVersion extends Error {
+    readonly expectedFormatVersion: number;
+    readonly actualFormatVersion: number;
+    constructor(expected: number, actual: number);
+}
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;
@@ -27,9 +37,12 @@ export declare class UserProfile {
      * can take many seconds.
      *
      * Use this function to cache the encryption key in memory.
+     *
+     * @param formatVersion Set this if you got a UserProfileEncryptionKeyUnexpectedFormatVersion error. This
+     * error usually means a profile was encrypted with an older format version.
      */
-    static deriveEncryptionKey(password: string): Promise<UserProfileEncryptionKey>;
-    static loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<UserProfile>;
+    static deriveEncryptionKey(password: string, formatVersion?: number): Promise<UserProfileEncryptionKey>;
+    static loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>, encryptionSecret: string | UserProfileEncryptionKey): Promise<UserProfile>;
     private static deriveEncryptionKeyImpl;
     readonly createdAt: ReadonlyDate;
     readonly locked: ValueAndUpdates<boolean>;

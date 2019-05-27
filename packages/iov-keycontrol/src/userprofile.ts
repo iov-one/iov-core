@@ -45,6 +45,24 @@ export interface UserProfileEncryptionKey {
   readonly data: Uint8Array;
 }
 
+/**
+ * An error class that allows handling an unexpected format version.
+ * It contains all the data needed to derive the encryption key in a different
+ * format version using UserProfile.deriveEncryptionKey.
+ */
+export class UserProfileEncryptionKeyUnexpectedFormatVersion extends Error {
+  public readonly expectedFormatVersion: number;
+  public readonly actualFormatVersion: number;
+
+  public constructor(expected: number, actual: number) {
+    super(
+      `Got encryption key of unexpected format. Expected: ${expected} Got: ${actual}. Please derive encryption key in the right format`,
+    );
+    this.expectedFormatVersion = expected;
+    this.actualFormatVersion = actual;
+  }
+}
+
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
   readonly keyring: Keyring;
@@ -63,25 +81,44 @@ export class UserProfile {
    * can take many seconds.
    *
    * Use this function to cache the encryption key in memory.
+   *
+   * @param formatVersion Set this if you got a UserProfileEncryptionKeyUnexpectedFormatVersion error. This
+   * error usually means a profile was encrypted with an older format version.
    */
-  public static async deriveEncryptionKey(password: string): Promise<UserProfileEncryptionKey> {
-    return UserProfile.deriveEncryptionKeyImpl(password, latestFormatVersion);
+  public static async deriveEncryptionKey(
+    password: string,
+    formatVersion?: number,
+  ): Promise<UserProfileEncryptionKey> {
+    return UserProfile.deriveEncryptionKeyImpl(
+      password,
+      formatVersion !== undefined ? formatVersion : latestFormatVersion,
+    );
   }
 
   public static async loadFrom(
     db: LevelUp<AbstractLevelDOWN<string, string>>,
-    password: string,
+    encryptionSecret: string | UserProfileEncryptionKey,
   ): Promise<UserProfile> {
-    const formatVersion = Int53.fromString(await db.get(storageKeyFormatVersion, { asBuffer: false }));
+    const formatVersion = Int53.fromString(
+      await db.get(storageKeyFormatVersion, { asBuffer: false }),
+    ).toNumber();
 
-    switch (formatVersion.toNumber()) {
+    const encryptionKey =
+      typeof encryptionSecret === "string"
+        ? await UserProfile.deriveEncryptionKeyImpl(encryptionSecret, formatVersion)
+        : encryptionSecret;
+
+    if (encryptionKey.formatVersion !== formatVersion) {
+      throw new UserProfileEncryptionKeyUnexpectedFormatVersion(formatVersion, encryptionKey.formatVersion);
+    }
+
+    switch (formatVersion) {
       case 1: {
         // get from storage (raw strings)
         const createdAtFromStorage = await db.get(storageKeyCreatedAt, { asBuffer: false });
         const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
 
         // process
-        const encryptionKey = await UserProfile.deriveEncryptionKeyImpl(password, formatVersion.toNumber());
         const encryptedKeyring = fromBase64(keyringFromStorage) as EncryptedKeyring;
         const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey.data);
 
@@ -92,7 +129,7 @@ export class UserProfile {
         });
       }
       default:
-        throw new Error(`Unsupported format version: ${formatVersion.toNumber()}`);
+        throw new Error(`Unsupported format version: ${formatVersion}`);
     }
   }
 

@@ -24,7 +24,11 @@ import { Encoding } from "@iov/encoding";
 
 import { HdPaths } from "./hdpaths";
 import { Keyring } from "./keyring";
-import { UserProfile } from "./userprofile";
+import {
+  UserProfile,
+  UserProfileEncryptionKey,
+  UserProfileEncryptionKeyUnexpectedFormatVersion,
+} from "./userprofile";
 import { WalletId } from "./wallet";
 import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 
@@ -110,6 +114,56 @@ describe("UserProfile", () => {
       await UserProfile.loadFrom(db, defaultEncryptionPassword)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/unsupported format version/i));
+    });
+
+    it("works for password and encryption key", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
+      const { id } = original.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
+
+      await original.storeIn(db, defaultEncryptionPassword);
+
+      const encryptionKey = await UserProfile.deriveEncryptionKey(defaultEncryptionPassword);
+      const fromEncryptionKey = await UserProfile.loadFrom(db, encryptionKey);
+      const fromPassword = await UserProfile.loadFrom(db, defaultEncryptionPassword);
+
+      // simulate equality check
+      expect(fromEncryptionKey.createdAt).toEqual(fromPassword.createdAt);
+      expect(fromEncryptionKey.getAllIdentities()).toEqual(fromPassword.getAllIdentities());
+      expect(fromEncryptionKey.printableSecret(id)).toEqual(fromPassword.printableSecret(id));
+
+      await db.close();
+    });
+
+    it("throws when given an encryption key in the wrong format version", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
+
+      await original.storeIn(db, defaultEncryptionPassword);
+
+      const encryptionKey: UserProfileEncryptionKey = {
+        formatVersion: 42,
+        data: fromHex("0000000000000000000000000000000000000000000000000000000000000000"),
+      };
+
+      await UserProfile.loadFrom(db, encryptionKey)
+        .then(() => fail("must not resolve"))
+        .catch(error => {
+          if (!(error instanceof UserProfileEncryptionKeyUnexpectedFormatVersion)) {
+            throw new Error("Expected UserProfileEncryptionKeyUnexpectedFormatVersion");
+          }
+          expect(error.expectedFormatVersion).toEqual(1);
+          expect(error.actualFormatVersion).toEqual(42);
+          expect(error.message).toMatch(/got encryption key of unexpected format/i);
+        });
+
+      await db.close();
     });
   });
 
