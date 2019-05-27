@@ -7,6 +7,10 @@
     {
       "address": "bech32:tiov1q5lyl7asgr2dcweqrhlfyexqpkgcuzrm4e0cku",
       "coins": ["1000000 CASH", "2000000 BASH"]
+    },
+    {
+      "address": "bech32:tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp",
+      "coins": ["123456789 BASH"]
     }
   ],
   "currencies": [
