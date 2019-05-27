@@ -89,10 +89,17 @@ export class UserProfile {
     password: string,
     formatVersion?: number,
   ): Promise<UserProfileEncryptionKey> {
-    return UserProfile.deriveEncryptionKeyImpl(
-      password,
-      formatVersion !== undefined ? formatVersion : latestFormatVersion,
-    );
+    const version = formatVersion !== undefined ? formatVersion : latestFormatVersion;
+
+    switch (version) {
+      case 1:
+        return {
+          formatVersion: 1,
+          data: await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions),
+        };
+      default:
+        throw new Error(`Unsupported format version: ${formatVersion}`);
+    }
   }
 
   public static async loadFrom(
@@ -105,7 +112,7 @@ export class UserProfile {
 
     const encryptionKey =
       typeof encryptionSecret === "string"
-        ? await UserProfile.deriveEncryptionKeyImpl(encryptionSecret, formatVersion)
+        ? await UserProfile.deriveEncryptionKey(encryptionSecret, formatVersion)
         : encryptionSecret;
 
     if (encryptionKey.formatVersion !== formatVersion) {
@@ -128,21 +135,6 @@ export class UserProfile {
           keyring: new Keyring(keyringSerialization),
         });
       }
-      default:
-        throw new Error(`Unsupported format version: ${formatVersion}`);
-    }
-  }
-
-  private static async deriveEncryptionKeyImpl(
-    password: string,
-    formatVersion: number,
-  ): Promise<UserProfileEncryptionKey> {
-    switch (formatVersion) {
-      case 1:
-        return {
-          formatVersion: 1,
-          data: await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions),
-        };
       default:
         throw new Error(`Unsupported format version: ${formatVersion}`);
     }
