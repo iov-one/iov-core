@@ -27,17 +27,26 @@ const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
 
 // not great but can be used on the main thread
-const weakPasswordHashingOptions: Argon2idOptions = {
+const passwordHashingOptionsVersion1: Argon2idOptions = {
   outputLength: 32,
   opsLimit: 10,
   memLimitKib: 8 * 1024,
 };
+
+// not great but can be used on the main thread
+const passwordHashingOptionsVersion2: Argon2idOptions = {
+  outputLength: 32,
+  opsLimit: 11,
+  memLimitKib: 8 * 1024,
+};
+
 // A fixed salt is choosen to archive a deterministic password to key derivation.
 // This reduces the scope of a potential rainbow attack to all iov-core users.
 // Must be 16 bytes due to implementation limitations.
 const userProfileSalt = toAscii("core-userprofile");
 
 // the format version in which profiles are stored
+// TODO: activate version 2 in 0.15 (https://github.com/iov-one/iov-core/issues/1025)
 const latestFormatVersion = 1;
 
 export interface UserProfileEncryptionKey {
@@ -95,7 +104,12 @@ export class UserProfile {
       case 1:
         return {
           formatVersion: 1,
-          data: await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions),
+          data: await Argon2id.execute(password, userProfileSalt, passwordHashingOptionsVersion1),
+        };
+      case 2:
+        return {
+          formatVersion: 2,
+          data: await Argon2id.execute(password, userProfileSalt, passwordHashingOptionsVersion2),
         };
       default:
         throw new Error(`Unsupported format version: ${formatVersion}`);
@@ -120,7 +134,8 @@ export class UserProfile {
     }
 
     switch (formatVersion) {
-      case 1: {
+      case 1:
+      case 2: {
         // get from storage (raw strings)
         const createdAtFromStorage = await db.get(storageKeyCreatedAt, { asBuffer: false });
         const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });

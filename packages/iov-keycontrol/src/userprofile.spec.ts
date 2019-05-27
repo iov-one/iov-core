@@ -24,6 +24,7 @@ import { Encoding } from "@iov/encoding";
 
 import { HdPaths } from "./hdpaths";
 import { Keyring } from "./keyring";
+import userprofileData from "./testdata/userprofile.json";
 import {
   UserProfile,
   UserProfileEncryptionKey,
@@ -45,6 +46,12 @@ describe("UserProfile", () => {
     it("works", async () => {
       const key = await UserProfile.deriveEncryptionKey("foobar");
       expect(key.formatVersion).toEqual(1);
+      expect(key.data.length).toEqual(32);
+    });
+
+    it("can use a different version explicitly", async () => {
+      const key = await UserProfile.deriveEncryptionKey("foobar", 2);
+      expect(key.formatVersion).toEqual(2);
       expect(key.data.length).toEqual(32);
     });
   });
@@ -134,6 +141,144 @@ describe("UserProfile", () => {
       expect(fromEncryptionKey.createdAt).toEqual(fromPassword.createdAt);
       expect(fromEncryptionKey.getAllIdentities()).toEqual(fromPassword.getAllIdentities());
       expect(fromEncryptionKey.printableSecret(id)).toEqual(fromPassword.printableSecret(id));
+
+      await db.close();
+    });
+
+    it("can load format version 1 profile with password", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      // Storage data created with IOV-Core 0.14 cli
+      await db.put("format_version", userprofileData.serializations.version1.format_version);
+      await db.put("created_at", userprofileData.serializations.version1.created_at);
+      await db.put("keyring", userprofileData.serializations.version1.keyring);
+
+      const loaded = await UserProfile.loadFrom(db, "secret passwd");
+
+      expect(loaded.createdAt).toEqual(new ReadonlyDate("2019-05-27T16:40:44.522Z"));
+      expect(loaded.wallets.value.length).toEqual(2);
+      expect(loaded.wallets.value[0].label).toEqual("ed");
+      expect(loaded.wallets.value[1].label).toEqual("secp");
+      expect(loaded.printableSecret(loaded.wallets.value[0].id)).toEqual(
+        "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      );
+      expect(loaded.printableSecret(loaded.wallets.value[1].id)).toEqual(
+        "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
+      );
+      expect(loaded.getAllIdentities().length).toEqual(2);
+      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+        "test-chain-GGzjc2" as ChainId,
+        "test-chain-GGzjc2" as ChainId,
+      ]);
+
+      await db.close();
+    });
+
+    it("can load format version 1 profile with key", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      // Storage data created with IOV-Core 0.14 cli
+      await db.put("format_version", userprofileData.serializations.version1.format_version);
+      await db.put("created_at", userprofileData.serializations.version1.created_at);
+      await db.put("keyring", userprofileData.serializations.version1.keyring);
+
+      let loaded: UserProfile;
+      const key = await UserProfile.deriveEncryptionKey("secret passwd");
+      try {
+        loaded = await UserProfile.loadFrom(db, key);
+      } catch (error) {
+        if (error instanceof UserProfileEncryptionKeyUnexpectedFormatVersion) {
+          const key2 = await UserProfile.deriveEncryptionKey("secret passwd", error.expectedFormatVersion);
+          loaded = await UserProfile.loadFrom(db, key2);
+        } else {
+          throw error;
+        }
+      }
+
+      expect(loaded.createdAt).toEqual(new ReadonlyDate("2019-05-27T16:40:44.522Z"));
+      expect(loaded.wallets.value.length).toEqual(2);
+      expect(loaded.wallets.value[0].label).toEqual("ed");
+      expect(loaded.wallets.value[1].label).toEqual("secp");
+      expect(loaded.printableSecret(loaded.wallets.value[0].id)).toEqual(
+        "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      );
+      expect(loaded.printableSecret(loaded.wallets.value[1].id)).toEqual(
+        "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
+      );
+      expect(loaded.getAllIdentities().length).toEqual(2);
+      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+        "test-chain-GGzjc2" as ChainId,
+        "test-chain-GGzjc2" as ChainId,
+      ]);
+
+      await db.close();
+    });
+
+    it("can load format version 2 profile with password", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      // Storage data created with locally modified version of IOV-Core 0.14 cli
+      await db.put("format_version", userprofileData.serializations.version2.format_version);
+      await db.put("created_at", userprofileData.serializations.version2.created_at);
+      await db.put("keyring", userprofileData.serializations.version2.keyring);
+
+      const loaded = await UserProfile.loadFrom(db, "secret passwd");
+
+      expect(loaded.createdAt).toEqual(new ReadonlyDate("2019-05-27T17:00:08.193Z"));
+      expect(loaded.wallets.value.length).toEqual(2);
+      expect(loaded.wallets.value[0].label).toEqual("ed");
+      expect(loaded.wallets.value[1].label).toEqual("secp");
+      expect(loaded.printableSecret(loaded.wallets.value[0].id)).toEqual(
+        "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      );
+      expect(loaded.printableSecret(loaded.wallets.value[1].id)).toEqual(
+        "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
+      );
+      expect(loaded.getAllIdentities().length).toEqual(2);
+      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+        "test-chain-GGzjc2" as ChainId,
+        "test-chain-GGzjc2" as ChainId,
+      ]);
+
+      await db.close();
+    });
+
+    it("can load format version 2 profile with key", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      // Storage data created with locally modified version of IOV-Core 0.14 cli
+      await db.put("format_version", userprofileData.serializations.version2.format_version);
+      await db.put("created_at", userprofileData.serializations.version2.created_at);
+      await db.put("keyring", userprofileData.serializations.version2.keyring);
+
+      let loaded: UserProfile;
+      const key = await UserProfile.deriveEncryptionKey("secret passwd");
+      try {
+        loaded = await UserProfile.loadFrom(db, key);
+      } catch (error) {
+        if (error instanceof UserProfileEncryptionKeyUnexpectedFormatVersion) {
+          const key2 = await UserProfile.deriveEncryptionKey("secret passwd", error.expectedFormatVersion);
+          loaded = await UserProfile.loadFrom(db, key2);
+        } else {
+          throw error;
+        }
+      }
+
+      expect(loaded.createdAt).toEqual(new ReadonlyDate("2019-05-27T17:00:08.193Z"));
+      expect(loaded.wallets.value.length).toEqual(2);
+      expect(loaded.wallets.value[0].label).toEqual("ed");
+      expect(loaded.wallets.value[1].label).toEqual("secp");
+      expect(loaded.printableSecret(loaded.wallets.value[0].id)).toEqual(
+        "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      );
+      expect(loaded.printableSecret(loaded.wallets.value[1].id)).toEqual(
+        "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
+      );
+      expect(loaded.getAllIdentities().length).toEqual(2);
+      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+        "test-chain-GGzjc2" as ChainId,
+        "test-chain-GGzjc2" as ChainId,
+      ]);
 
       await db.close();
     });
