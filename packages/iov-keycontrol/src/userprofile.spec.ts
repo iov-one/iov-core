@@ -45,6 +45,74 @@ describe("UserProfile", () => {
     });
   });
 
+  describe("loadFrom", () => {
+    it("stored in and loaded from storage", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
+
+      await original.storeIn(db, defaultEncryptionPassword);
+
+      const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
+
+      expect(restored.createdAt).toEqual(original.createdAt);
+
+      await db.close();
+    });
+
+    it("stored in and loaded from storage when containing special chars", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+      const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic3);
+
+      const original = new UserProfile();
+      original.addWallet(wallet1);
+      original.setWalletLabel(wallet1.id, "My secret 😛");
+
+      await original.storeIn(db, defaultEncryptionPassword);
+      const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
+
+      expect(restored.wallets.value).toEqual(original.wallets.value);
+
+      await db.close();
+    });
+
+    it("fails when loading with wrong key", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
+
+      await original.storeIn(db, defaultEncryptionPassword);
+
+      const otherEncryptionPassword = "something wrong";
+      await UserProfile.loadFrom(db, otherEncryptionPassword)
+        .then(() => fail("loading must not succeed"))
+        .catch(error => expect(error).toMatch(/invalid usage/));
+
+      await db.close();
+    });
+
+    it("throws when loading a profile with no format version", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      await UserProfile.loadFrom(db, defaultEncryptionPassword)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/key not found in database/i));
+    });
+
+    it("throws when loading a profile with unsupported format version", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+      await db.put("format_version", "123");
+
+      await UserProfile.loadFrom(db, defaultEncryptionPassword)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/unsupported format version/i));
+    });
+  });
+
   it("can be constructed without arguments", () => {
     const profile = new UserProfile();
     expect(profile).toBeTruthy();
@@ -406,72 +474,6 @@ describe("UserProfile", () => {
       });
 
     await db.close();
-  });
-
-  it("stored in and loaded from storage", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
-
-    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
-    const keyring = new Keyring();
-    const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
-
-    await original.storeIn(db, defaultEncryptionPassword);
-
-    const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
-
-    expect(restored.createdAt).toEqual(original.createdAt);
-
-    await db.close();
-  });
-
-  it("stored in and loaded from storage when containing special chars", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
-    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic3);
-
-    const original = new UserProfile();
-    original.addWallet(wallet1);
-    original.setWalletLabel(wallet1.id, "My secret 😛");
-
-    await original.storeIn(db, defaultEncryptionPassword);
-    const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
-
-    expect(restored.wallets.value).toEqual(original.wallets.value);
-
-    await db.close();
-  });
-
-  it("fails when loading with wrong key", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
-
-    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
-    const keyring = new Keyring();
-    const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
-
-    await original.storeIn(db, defaultEncryptionPassword);
-
-    const otherEncryptionPassword = "something wrong";
-    await UserProfile.loadFrom(db, otherEncryptionPassword)
-      .then(() => fail("loading must not succeed"))
-      .catch(error => expect(error).toMatch(/invalid usage/));
-
-    await db.close();
-  });
-
-  it("throws when loading a profile with no format version", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
-
-    await UserProfile.loadFrom(db, defaultEncryptionPassword)
-      .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/key not found in database/i));
-  });
-
-  it("throws when loading a profile with unsupported format version", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
-    await db.put("format_version", "123");
-
-    await UserProfile.loadFrom(db, defaultEncryptionPassword)
-      .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/unsupported format version/i));
   });
 
   it("throws for non-existing wallet id", async () => {
