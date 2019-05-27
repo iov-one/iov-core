@@ -40,7 +40,8 @@ describe("UserProfile", () => {
   describe("deriveEncryptionKey", () => {
     it("works", async () => {
       const key = await UserProfile.deriveEncryptionKey("foobar");
-      expect(key.length).toEqual(32);
+      expect(key.formatVersion).toEqual(1);
+      expect(key.data.length).toEqual(32);
     });
   });
 

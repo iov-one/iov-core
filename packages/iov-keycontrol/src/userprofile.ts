@@ -1,7 +1,6 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
-import { As } from "type-tagger";
 
 import {
   ChainId,
@@ -41,7 +40,10 @@ const userProfileSalt = toAscii("core-userprofile");
 // the format version in which profiles are stored
 const latestFormatVersion = 1;
 
-export type UserProfileEncryptionKey = Uint8Array & As<"userprofile-encryption-key">;
+export interface UserProfileEncryptionKey {
+  readonly formatVersion: number;
+  readonly data: Uint8Array;
+}
 
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
@@ -81,7 +83,7 @@ export class UserProfile {
         // process
         const encryptionKey = await UserProfile.deriveEncryptionKeyImpl(password, formatVersion.toNumber());
         const encryptedKeyring = fromBase64(keyringFromStorage) as EncryptedKeyring;
-        const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey);
+        const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey.data);
 
         // create objects
         return new UserProfile({
@@ -98,15 +100,15 @@ export class UserProfile {
     password: string,
     formatVersion: number,
   ): Promise<UserProfileEncryptionKey> {
-    let key: Uint8Array;
     switch (formatVersion) {
       case 1:
-        key = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
-        break;
+        return {
+          formatVersion: 1,
+          data: await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions),
+        };
       default:
         throw new Error(`Unsupported format version: ${formatVersion}`);
     }
-    return key as UserProfileEncryptionKey;
   }
 
   public readonly createdAt: ReadonlyDate;
