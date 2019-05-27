@@ -38,6 +38,9 @@ const weakPasswordHashingOptions: Argon2idOptions = {
 // Must be 16 bytes due to implementation limitations.
 const userProfileSalt = toAscii("core-userprofile");
 
+// the format version in which profiles are stored
+const latestFormatVersion = 1;
+
 export type UserProfileEncryptionKey = Uint8Array & As<"userprofile-encryption-key">;
 
 export interface UserProfileOptions {
@@ -60,8 +63,7 @@ export class UserProfile {
    * Use this function to cache the encryption key in memory.
    */
   public static async deriveEncryptionKey(password: string): Promise<UserProfileEncryptionKey> {
-    const key = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
-    return key as UserProfileEncryptionKey;
+    return UserProfile.deriveEncryptionKeyImpl(password, latestFormatVersion);
   }
 
   public static async loadFrom(
@@ -77,7 +79,7 @@ export class UserProfile {
         const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
 
         // process
-        const encryptionKey = await UserProfile.deriveEncryptionKey(password);
+        const encryptionKey = await UserProfile.deriveEncryptionKeyImpl(password, formatVersion.toNumber());
         const encryptedKeyring = fromBase64(keyringFromStorage) as EncryptedKeyring;
         const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey);
 
@@ -90,6 +92,21 @@ export class UserProfile {
       default:
         throw new Error(`Unsupported format version: ${formatVersion.toNumber()}`);
     }
+  }
+
+  private static async deriveEncryptionKeyImpl(
+    password: string,
+    formatVersion: number,
+  ): Promise<UserProfileEncryptionKey> {
+    let key: Uint8Array;
+    switch (formatVersion) {
+      case 1:
+        key = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
+        break;
+      default:
+        throw new Error(`Unsupported format version: ${formatVersion}`);
+    }
+    return key as UserProfileEncryptionKey;
   }
 
   public readonly createdAt: ReadonlyDate;
@@ -131,7 +148,7 @@ export class UserProfile {
     const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring.serialize(), encryptionKey);
 
     // create storage values (raw strings)
-    const formatVersionForStorage = "1";
+    const formatVersionForStorage = `${latestFormatVersion}`;
     const createdAtForStorage = toRfc3339(this.createdAt);
     const keyringForStorage = toBase64(encryptedKeyring);
 

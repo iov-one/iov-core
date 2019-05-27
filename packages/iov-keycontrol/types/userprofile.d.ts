@@ -28,6 +28,7 @@ export declare class UserProfile {
      */
     static deriveEncryptionKey(password: string): Promise<UserProfileEncryptionKey>;
     static loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<UserProfile>;
+    private static deriveEncryptionKeyImpl;
     readonly createdAt: ReadonlyDate;
     readonly locked: ValueAndUpdates<boolean>;
     readonly wallets: ValueAndUpdates<readonly WalletInfo[]>;
