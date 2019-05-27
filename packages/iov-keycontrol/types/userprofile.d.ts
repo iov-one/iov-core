@@ -1,11 +1,13 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
+import { As } from "type-tagger";
 import { ChainId, Nonce, PublicIdentity, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Keyring, WalletInfo } from "./keyring";
 import { ReadonlyWallet, WalletId } from "./wallet";
+export declare type UserProfileEncryptionKey = Uint8Array & As<"userprofile-encryption-key">;
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;
@@ -18,6 +20,13 @@ export interface UserProfileOptions {
  * UserProfile via the UserProfileController to get an unlocked UserProfile.
  */
 export declare class UserProfile {
+    /**
+     * Derives an encryption key from the password. This is a computationally intense task that
+     * can take many seconds.
+     *
+     * Use this function to cache the encryption key in memory.
+     */
+    static deriveEncryptionKey(password: string): Promise<UserProfileEncryptionKey>;
     static loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<UserProfile>;
     readonly createdAt: ReadonlyDate;
     readonly locked: ValueAndUpdates<boolean>;

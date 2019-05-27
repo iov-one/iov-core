@@ -1,6 +1,7 @@
 import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
 import { ReadonlyDate } from "readonly-date";
+import { As } from "type-tagger";
 
 import {
   ChainId,
@@ -37,6 +38,8 @@ const weakPasswordHashingOptions: Argon2idOptions = {
 // Must be 16 bytes due to implementation limitations.
 const userProfileSalt = toAscii("core-userprofile");
 
+export type UserProfileEncryptionKey = Uint8Array & As<"userprofile-encryption-key">;
+
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
   readonly keyring: Keyring;
@@ -50,6 +53,17 @@ export interface UserProfileOptions {
  * UserProfile via the UserProfileController to get an unlocked UserProfile.
  */
 export class UserProfile {
+  /**
+   * Derives an encryption key from the password. This is a computationally intense task that
+   * can take many seconds.
+   *
+   * Use this function to cache the encryption key in memory.
+   */
+  public static async deriveEncryptionKey(password: string): Promise<UserProfileEncryptionKey> {
+    const key = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
+    return key as UserProfileEncryptionKey;
+  }
+
   public static async loadFrom(
     db: LevelUp<AbstractLevelDOWN<string, string>>,
     password: string,
@@ -63,7 +77,7 @@ export class UserProfile {
         const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
 
         // process
-        const encryptionKey = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
+        const encryptionKey = await UserProfile.deriveEncryptionKey(password);
         const encryptedKeyring = fromBase64(keyringFromStorage) as EncryptedKeyring;
         const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey);
 

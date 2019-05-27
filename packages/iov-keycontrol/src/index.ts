@@ -1,6 +1,6 @@
 export { HdPaths } from "./hdpaths";
 export { Keyring, WalletInfo } from "./keyring";
-export { UserProfile, UserProfileOptions } from "./userprofile";
+export { UserProfile, UserProfileEncryptionKey, UserProfileOptions } from "./userprofile";
 export {
   ReadonlyWallet,
   Wallet,

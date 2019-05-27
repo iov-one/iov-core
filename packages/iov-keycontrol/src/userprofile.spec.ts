@@ -37,6 +37,13 @@ describe("UserProfile", () => {
   const defaultMnemonic3 = "judge edge effort prepare caught lawn mask yellow butter phone dragon more";
   const defaultEncryptionPassword = "my super str0ng and super long password";
 
+  describe("deriveEncryptionKey", () => {
+    it("works", async () => {
+      const key = await UserProfile.deriveEncryptionKey("foobar");
+      expect(key.length).toEqual(32);
+    });
+  });
+
   it("can be constructed without arguments", () => {
     const profile = new UserProfile();
     expect(profile).toBeTruthy();
