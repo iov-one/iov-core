@@ -484,16 +484,18 @@ describe("UserProfile", () => {
     });
   });
 
-  it("can export a printable secret for a wallet", () => {
-    const profile = new UserProfile();
-    const walletInfo = profile.addWallet(
-      Secp256k1HdWallet.fromMnemonic(
+  describe("printableSecret", () => {
+    it("can export a printable secret for a wallet", () => {
+      const profile = new UserProfile();
+      const walletInfo = profile.addWallet(
+        Secp256k1HdWallet.fromMnemonic(
+          "insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll",
+        ),
+      );
+      expect(profile.printableSecret(walletInfo.id)).toEqual(
         "insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll",
-      ),
-    );
-    expect(profile.printableSecret(walletInfo.id)).toEqual(
-      "insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll",
-    );
+      );
+    });
   });
 
   describe("storeIn", () => {
