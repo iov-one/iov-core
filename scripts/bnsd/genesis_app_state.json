@@ -9,8 +9,12 @@
       "coins": ["1000000 CASH", "2000000 BASH"]
     },
     {
+      "address": "bech32:tiov1xwvnaxahzcszkvmk362m7vndjkzumv8ufmzy3m",
+      "coins": ["4000 CASH"]
+    },
+    {
       "address": "bech32:tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp",
-      "coins": ["123456789 BASH"]
+      "coins": ["4000 BASH"]
     }
   ],
   "currencies": [

@@ -188,10 +188,10 @@ describe("Full atomic swap between BNS and BNS", () => {
     pendingWithoutBnsd();
 
     const alice = await Actor.create(
-      "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      "host century wave huge seed boost success right brave general orphan lion",
       HdPaths.iov(0),
     );
-    expect(alice.bnsAddress).toEqual("tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea");
+    expect(alice.bnsAddress).toEqual("tiov1xwvnaxahzcszkvmk362m7vndjkzumv8ufmzy3m");
 
     const bob = await Actor.create(
       "dad kiss slogan offer outer bomb usual dream awkward jeans enlist mansion",
