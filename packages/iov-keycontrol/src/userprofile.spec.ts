@@ -497,37 +497,39 @@ describe("UserProfile", () => {
     );
   });
 
-  it("can be stored", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
+  describe("storeIn", () => {
+    it("can be stored", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
 
-    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
-    const keyring = new Keyring();
-    const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
-    await profile.storeIn(db, defaultEncryptionPassword);
-    expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
-    expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
-    expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
+      await profile.storeIn(db, defaultEncryptionPassword);
+      expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
+      expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
+      expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
 
-    await db.close();
-  });
+      await db.close();
+    });
 
-  it("clears database when storing", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
+    it("clears database when storing", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
 
-    await db.put("foo", "bar");
+      await db.put("foo", "bar");
 
-    const profile = new UserProfile();
-    await profile.storeIn(db, defaultEncryptionPassword);
+      const profile = new UserProfile();
+      await profile.storeIn(db, defaultEncryptionPassword);
 
-    await db
-      .get("foo")
-      .then(() => fail("get 'foo' promise must not reslve"))
-      .catch(error => {
-        expect(error.notFound).toBeTruthy();
-      });
+      await db
+        .get("foo")
+        .then(() => fail("get 'foo' promise must not reslve"))
+        .catch(error => {
+          expect(error.notFound).toBeTruthy();
+        });
 
-    await db.close();
+      await db.close();
+    });
   });
 
   it("throws for non-existing wallet id", async () => {
