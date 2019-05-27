@@ -151,7 +151,6 @@ describe("UserProfile", () => {
         formatVersion: 42,
         data: fromHex("0000000000000000000000000000000000000000000000000000000000000000"),
       };
-
       await UserProfile.loadFrom(db, encryptionKey)
         .then(() => fail("must not resolve"))
         .catch(error => {
@@ -498,7 +497,7 @@ describe("UserProfile", () => {
   });
 
   describe("storeIn", () => {
-    it("can be stored", async () => {
+    it("can be stored with password", async () => {
       const db = levelup(MemDownConstructor<string, string>());
 
       const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
@@ -509,6 +508,48 @@ describe("UserProfile", () => {
       expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
       expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
       expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
+
+      await db.close();
+    });
+
+    it("can be stored with encryption key", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
+
+      const encryptionKey = await UserProfile.deriveEncryptionKey(defaultEncryptionPassword);
+      await profile.storeIn(db, encryptionKey);
+      expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
+      expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
+      expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
+
+      await db.close();
+    });
+
+    it("throws when storing with format version other than latest", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
+
+      const encryptionKey: UserProfileEncryptionKey = {
+        formatVersion: 42,
+        data: fromHex("0000000000000000000000000000000000000000000000000000000000000000"),
+      };
+      await profile
+        .storeIn(db, encryptionKey)
+        .then(() => fail("must not resolve"))
+        .catch(error => {
+          if (!(error instanceof UserProfileEncryptionKeyUnexpectedFormatVersion)) {
+            throw new Error("Expected UserProfileEncryptionKeyUnexpectedFormatVersion");
+          }
+          expect(error.expectedFormatVersion).toEqual(1);
+          expect(error.actualFormatVersion).toEqual(42);
+          expect(error.message).toMatch(/got encryption key of unexpected format/i);
+        });
 
       await db.close();
     });

@@ -166,20 +166,40 @@ export class UserProfile {
     this.wallets = new ValueAndUpdates(this.walletsProducer);
   }
 
-  // this will clear everything in the database and store the user profile
-  public async storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void> {
+  /**
+   * Store this profile in database.
+   *
+   * This will clear everything in the database and store the user profile.
+   *
+   * @param db the target database
+   * @param encryptionSecret a password or derivation key used for encryption
+   */
+  public async storeIn(
+    db: LevelUp<AbstractLevelDOWN<string, string>>,
+    encryptionSecret: string | UserProfileEncryptionKey,
+  ): Promise<void> {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
     await DatabaseUtils.clear(db);
 
-    // process
-    const encryptionKey = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
-    const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring.serialize(), encryptionKey);
+    const storageFormatVersion = latestFormatVersion;
+
+    // make encryption key
+    const key =
+      typeof encryptionSecret === "string"
+        ? await UserProfile.deriveEncryptionKey(encryptionSecret)
+        : encryptionSecret;
+    if (key.formatVersion !== storageFormatVersion) {
+      throw new UserProfileEncryptionKeyUnexpectedFormatVersion(storageFormatVersion, key.formatVersion);
+    }
+
+    // encrypt
+    const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring.serialize(), key.data);
 
     // create storage values (raw strings)
-    const formatVersionForStorage = `${latestFormatVersion}`;
+    const formatVersionForStorage = `${storageFormatVersion}`;
     const createdAtForStorage = toRfc3339(this.createdAt);
     const keyringForStorage = toBase64(encryptedKeyring);
 

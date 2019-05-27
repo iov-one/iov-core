@@ -51,7 +51,15 @@ export declare class UserProfile {
     private readonly walletsProducer;
     /** Stores a copy of keyring */
     constructor(options?: UserProfileOptions);
-    storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void>;
+    /**
+     * Store this profile in database.
+     *
+     * This will clear everything in the database and store the user profile.
+     *
+     * @param db the target database
+     * @param encryptionSecret a password or derivation key used for encryption
+     */
+    storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, encryptionSecret: string | UserProfileEncryptionKey): Promise<void>;
     lock(): void;
     /**
      * Adds a copy of the wallet to the primary keyring
