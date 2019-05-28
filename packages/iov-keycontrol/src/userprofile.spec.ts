@@ -31,6 +31,27 @@ import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 
 const { fromHex } = Encoding;
 
+/**
+ * A possibly incomplete equality checker that tests as good as possible if two profiles contain
+ * the same information. Equality on UserProfile is not well defined, so use with caution.
+ */
+function expectUserProfilesToEqual(lhs: UserProfile, rhs: UserProfile): void {
+  // meta
+  expect(lhs.createdAt).toEqual(rhs.createdAt);
+
+  // wallets
+  expect(lhs.wallets.value).toEqual(rhs.wallets.value);
+  for (const { id } of rhs.wallets.value) {
+    expect(lhs.printableSecret(id)).toEqual(rhs.printableSecret(id));
+  }
+
+  // identities
+  expect(lhs.getAllIdentities()).toEqual(rhs.getAllIdentities());
+  for (const identity of lhs.getAllIdentities()) {
+    expect(lhs.getIdentityLabel(identity)).toEqual(rhs.getIdentityLabel(identity));
+  }
+}
+
 describe("UserProfile", () => {
   const defaultChain = "chain123" as ChainId;
   const defaultMnemonic1 = "melt wisdom mesh wash item catalog talk enjoy gaze hat brush wash";
@@ -64,7 +85,7 @@ describe("UserProfile", () => {
 
       const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
 
-      expect(restored.createdAt).toEqual(original.createdAt);
+      expectUserProfilesToEqual(restored, original);
 
       await db.close();
     });
@@ -80,7 +101,7 @@ describe("UserProfile", () => {
       await original.storeIn(db, defaultEncryptionPassword);
       const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
 
-      expect(restored.wallets.value).toEqual(original.wallets.value);
+      expectUserProfilesToEqual(restored, original);
 
       await db.close();
     });
@@ -125,7 +146,7 @@ describe("UserProfile", () => {
       const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
       const keyring = new Keyring();
       const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
-      const { id } = original.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
+      original.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
 
       await original.storeIn(db, defaultEncryptionPassword);
 
@@ -133,10 +154,7 @@ describe("UserProfile", () => {
       const fromEncryptionKey = await UserProfile.loadFrom(db, encryptionKey);
       const fromPassword = await UserProfile.loadFrom(db, defaultEncryptionPassword);
 
-      // simulate equality check
-      expect(fromEncryptionKey.createdAt).toEqual(fromPassword.createdAt);
-      expect(fromEncryptionKey.getAllIdentities()).toEqual(fromPassword.getAllIdentities());
-      expect(fromEncryptionKey.printableSecret(id)).toEqual(fromPassword.printableSecret(id));
+      expectUserProfilesToEqual(fromEncryptionKey, fromPassword);
 
       await db.close();
     });
