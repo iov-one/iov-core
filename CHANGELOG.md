@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.4
+
+- @iov/keycontrol: Add missing `UserProfileOptions` export.
+
 ## 0.14.3
 
 - @iov/bns: Automatically normalize empty memo strings for weave compatibility.
