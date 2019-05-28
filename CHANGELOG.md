@@ -39,6 +39,8 @@ Breaking changes
   `UnsignedTransaction` (i.e. they have no `creator` field): `SendTransaction`,
   `SwapOfferTransaction`, `SwapClaimTransaction`, and `SwapAbortTransaction`.
 - @iov/bcp: Add `sender` field to `SendTransaction`.
+- @iov/bns: Remove obsolete types `BnsBlockchainNft`,
+  `BnsBlockchainsByChainIdQuery`, `BnsBlockchainsQuery`.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 - @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.
