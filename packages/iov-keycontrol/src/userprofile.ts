@@ -96,11 +96,9 @@ export class UserProfile {
    */
   public static async deriveEncryptionKey(
     password: string,
-    formatVersion?: number,
+    formatVersion: number = latestFormatVersion,
   ): Promise<UserProfileEncryptionKey> {
-    const version = formatVersion !== undefined ? formatVersion : latestFormatVersion;
-
-    switch (version) {
+    switch (formatVersion) {
       case 1:
         return {
           formatVersion: 1,
