@@ -1,36 +1,12 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Address, Algorithm, ChainId, FullSignature, LightTransaction, PublicKeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TokenTicker } from "@iov/bcp";
+import { Address, Algorithm, ChainId, FullSignature, LightTransaction, PublicKeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 export interface ChainAddressPair {
     readonly chainId: ChainId;
     readonly address: Address;
 }
-export interface BnsBlockchainNft {
-    readonly id: string;
-    readonly owner: Address;
-    /**
-     * The registered chain information
-     *
-     * Fields as defined in https://github.com/iov-one/bns-spec/blob/master/docs/data/ObjectDefinitions.rst#chain
-     */
-    readonly chain: {
-        readonly chainId: ChainId;
-        readonly name: string;
-        readonly enabled: boolean;
-        readonly production: boolean;
-        readonly networkId: string | undefined;
-        readonly mainTickerId: TokenTicker | undefined;
-    };
-    readonly codecName: string;
-    readonly codecConfig: string;
-}
-export interface BnsBlockchainsByChainIdQuery {
-    readonly chainId: ChainId;
-}
-export declare type BnsBlockchainsQuery = BnsBlockchainsByChainIdQuery;
-export declare function isBnsBlockchainsByChainIdQuery(query: BnsBlockchainsQuery): query is BnsBlockchainsByChainIdQuery;
 export interface BnsUsernameNft {
     readonly id: string;
     readonly owner: Address;

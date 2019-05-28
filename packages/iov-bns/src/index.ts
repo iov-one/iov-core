@@ -7,9 +7,6 @@ export {
   ChainAddressPair,
   Participant,
   // NFTs
-  BnsBlockchainNft,
-  BnsBlockchainsByChainIdQuery,
-  BnsBlockchainsQuery,
   BnsUsernamesByChainAndAddressQuery,
   BnsUsernamesByOwnerAddressQuery,
   BnsUsernamesByUsernameQuery,
