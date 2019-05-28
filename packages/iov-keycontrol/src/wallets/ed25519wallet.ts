@@ -132,7 +132,7 @@ export class Ed25519Wallet implements Wallet {
   private readonly privkeys: Map<IdentityId, Ed25519Keypair>;
   private readonly labels: Map<IdentityId, string | undefined>;
 
-  constructor(data?: WalletSerializationString) {
+  public constructor(data?: WalletSerializationString) {
     let id: WalletId;
     let label: string | undefined;
     const identities: PublicIdentity[] = [];

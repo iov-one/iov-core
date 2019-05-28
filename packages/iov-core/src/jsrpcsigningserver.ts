@@ -87,7 +87,7 @@ function parseRpcCall(data: JsRpcRequest): RpcCall {
 export class JsRpcSigningServer {
   private readonly core: SigningServerCore;
 
-  constructor(core: SigningServerCore) {
+  public constructor(core: SigningServerCore) {
     this.core = core;
   }
 

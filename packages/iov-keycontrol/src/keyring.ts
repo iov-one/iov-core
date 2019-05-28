@@ -90,7 +90,7 @@ export class Keyring {
 
   private readonly wallets: Wallet[];
 
-  constructor(data?: KeyringSerializationString) {
+  public constructor(data?: KeyringSerializationString) {
     this.wallets = [];
 
     if (data) {

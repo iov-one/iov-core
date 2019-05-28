@@ -18,7 +18,7 @@ export class ValueAndUpdates<T> {
 
   private readonly producer: DefaultValueProducer<T>;
 
-  constructor(producer: DefaultValueProducer<T>) {
+  public constructor(producer: DefaultValueProducer<T>) {
     this.producer = producer;
     this.updates = MemoryStream.createWithMemory(this.producer);
   }

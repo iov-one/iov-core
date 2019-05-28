@@ -8,7 +8,7 @@ export class EnglishMnemonic {
 
   private readonly data: string;
 
-  constructor(mnemonic: string) {
+  public constructor(mnemonic: string) {
     if (!EnglishMnemonic.mnemonicMatcher.test(mnemonic)) {
       throw new Error("Invalid mnemonic format");
     }

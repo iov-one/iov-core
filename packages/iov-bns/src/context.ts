@@ -38,7 +38,7 @@ export interface WalletData {
 export class Context {
   private readonly chainData: ChainData;
 
-  constructor(chainData: ChainData) {
+  public constructor(chainData: ChainData) {
     this.chainData = chainData;
   }
 

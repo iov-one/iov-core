@@ -22,7 +22,7 @@ export class TsRepl {
   // tslint:disable-next-line:readonly-keyword
   private context: Context | undefined;
 
-  constructor(
+  public constructor(
     tsconfigPath: string,
     initialTypeScript: string,
     debuggingEnabled: boolean = false,

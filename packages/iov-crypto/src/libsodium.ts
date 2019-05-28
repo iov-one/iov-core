@@ -61,7 +61,7 @@ export class Ed25519Keypair {
   public readonly privkey: Uint8Array;
   public readonly pubkey: Uint8Array;
 
-  constructor(privkey: Uint8Array, pubkey: Uint8Array) {
+  public constructor(privkey: Uint8Array, pubkey: Uint8Array) {
     this.privkey = privkey;
     this.pubkey = pubkey;
   }

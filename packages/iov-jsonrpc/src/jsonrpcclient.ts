@@ -18,7 +18,7 @@ export interface SimpleMessagingConnection<Request, Response> {
 export class JsonRpcClient {
   private readonly connection: SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse>;
 
-  constructor(connection: SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse>) {
+  public constructor(connection: SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse>) {
     this.connection = connection;
   }
 

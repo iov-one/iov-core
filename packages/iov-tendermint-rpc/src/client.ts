@@ -34,7 +34,7 @@ export class Client {
   private readonly p: Params;
   private readonly r: Responses;
 
-  constructor(client: RpcClient, adaptor: Adaptor) {
+  public constructor(client: RpcClient, adaptor: Adaptor) {
     this.client = client;
     this.p = adaptor.params;
     this.r = adaptor.responses;

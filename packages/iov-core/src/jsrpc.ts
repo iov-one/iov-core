@@ -238,7 +238,7 @@ export function parseJsRpcResponse(data: unknown): JsRpcSuccessResponse {
 export class JsRpcClient {
   private readonly connection: SimpleMessagingConnection<JsRpcRequest, JsRpcResponse>;
 
-  constructor(connection: SimpleMessagingConnection<JsRpcRequest, JsRpcResponse>) {
+  public constructor(connection: SimpleMessagingConnection<JsRpcRequest, JsRpcResponse>) {
     this.connection = connection;
   }
 

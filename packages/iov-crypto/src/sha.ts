@@ -11,7 +11,7 @@ export class Sha1 implements HashFunction {
 
   private readonly impl: any;
 
-  constructor(firstData?: Uint8Array) {
+  public constructor(firstData?: Uint8Array) {
     this.impl = shajs("sha1");
 
     if (firstData) {
@@ -34,7 +34,7 @@ export class Sha256 implements HashFunction {
 
   private readonly impl: any;
 
-  constructor(firstData?: Uint8Array) {
+  public constructor(firstData?: Uint8Array) {
     this.impl = shajs("sha256");
 
     if (firstData) {
@@ -57,7 +57,7 @@ export class Sha512 implements HashFunction {
 
   private readonly impl: any;
 
-  constructor(firstData?: Uint8Array) {
+  public constructor(firstData?: Uint8Array) {
     this.impl = shajs("sha512");
 
     if (firstData) {

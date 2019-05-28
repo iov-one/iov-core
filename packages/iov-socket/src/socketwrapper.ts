@@ -42,7 +42,7 @@ export class SocketWrapper {
   private readonly closeHandler?: (event: SocketWrapperCloseEvent) => void;
   private readonly timeout: number;
 
-  constructor(
+  public constructor(
     url: string,
     messageHandler: (event: SocketWrapperMessageEvent) => void,
     errorHandler: (event: SocketWrapperErrorEvent) => void,

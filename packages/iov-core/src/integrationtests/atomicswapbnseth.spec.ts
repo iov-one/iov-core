@@ -119,7 +119,7 @@ class Actor {
   // tslint:disable-next-line:readonly-keyword
   private preimage: Preimage | undefined;
 
-  constructor(data: ActorData) {
+  public constructor(data: ActorData) {
     this.signer = data.signer;
     this.bnsConnection = data.bnsConnection;
     this.ethereumConnection = data.ethereumConnection;
