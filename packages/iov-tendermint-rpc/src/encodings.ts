@@ -67,6 +67,29 @@ export function assertArray<T>(value: ReadonlyArray<T>): ReadonlyArray<T> {
   return value;
 }
 
+/**
+ * A runtime checker that ensures a given value is an object in the sense of JSON
+ * (an unordered collection of key–value pairs where the keys are strings)
+ *
+ * This is used when you want to verify that data at runtime matches the expected type.
+ * This implies assertSet.
+ */
+export function assertObject<T>(value: T): T {
+  assertSet(value);
+  if (typeof (value as unknown) !== "object") {
+    throw new Error("Value must be an object");
+  }
+
+  // Exclude special kind of objects like Array, Date or Uint8Array
+  // Object.prototype.toString() returns a specified value:
+  // http://www.ecma-international.org/ecma-262/7.0/index.html#sec-object.prototype.tostring
+  if (Object.prototype.toString.call(value) !== "[object Object]") {
+    throw new Error("Value must be a simple object");
+  }
+
+  return value;
+}
+
 interface Lengther {
   readonly length: number;
 }

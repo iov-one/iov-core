@@ -6,6 +6,7 @@ import {
   assertBoolean,
   assertNotEmpty,
   assertNumber,
+  assertObject,
   assertSet,
   Base64,
   Base64String,
@@ -26,11 +27,11 @@ import { hashTx } from "./hasher";
 
 export class Responses {
   public static decodeAbciInfo(response: JsonRpcSuccessResponse): responses.AbciInfoResponse {
-    return decodeAbciInfo(assertSet((response.result as AbciInfoResult).response));
+    return decodeAbciInfo(assertObject((response.result as AbciInfoResult).response));
   }
 
   public static decodeAbciQuery(response: JsonRpcSuccessResponse): responses.AbciQueryResponse {
-    return decodeAbciQuery(assertSet((response.result as AbciQueryResult).response));
+    return decodeAbciQuery(assertObject((response.result as AbciQueryResult).response));
   }
 
   public static decodeBlock(response: JsonRpcSuccessResponse): responses.BlockResponse {
@@ -64,7 +65,7 @@ export class Responses {
   }
 
   public static decodeGenesis(response: JsonRpcSuccessResponse): responses.GenesisResponse {
-    return decodeGenesis(assertSet((response.result as GenesisResult).genesis));
+    return decodeGenesis(assertObject((response.result as GenesisResult).genesis));
   }
 
   public static decodeHealth(): responses.HealthResponse {
@@ -205,7 +206,7 @@ function decodeBroadcastTxCommit(data: RpcBroadcastTxCommitResponse): responses.
   return {
     height: may(Integer.parse, data.height),
     hash: Encoding.fromHex(assertNotEmpty(data.hash)) as TxHash,
-    checkTx: decodeTxData(assertSet(data.check_tx)),
+    checkTx: decodeTxData(assertObject(data.check_tx)),
     deliverTx: may(decodeTxData, data.deliver_tx),
   };
 }
@@ -276,7 +277,7 @@ interface RpcTxResponse {
 function decodeTxResponse(data: RpcTxResponse): responses.TxResponse {
   return {
     tx: Base64.decode(assertNotEmpty(data.tx)) as TxBytes,
-    result: decodeTxData(assertSet(data.tx_result)),
+    result: decodeTxData(assertObject(data.tx_result)),
     height: Integer.parse(assertNotEmpty(data.height)),
     index: Integer.parse(assertNumber(data.index)),
     hash: Encoding.fromHex(assertNotEmpty(data.hash)) as TxHash,
@@ -471,7 +472,7 @@ interface RpcCommit {
 
 function decodeCommit(data: RpcCommit): responses.Commit {
   return {
-    blockId: decodeBlockId(assertSet(data.block_id)),
+    blockId: decodeBlockId(assertObject(data.block_id)),
     precommits: assertArray(data.precommits).map(decodeVote),
   };
 }
@@ -489,8 +490,8 @@ interface RpcBlock {
 
 function decodeBlock(data: RpcBlock): responses.Block {
   return {
-    header: decodeHeader(assertSet(data.header)),
-    lastCommit: decodeCommit(assertSet(data.last_commit)),
+    header: decodeHeader(assertObject(data.header)),
+    lastCommit: decodeCommit(assertObject(data.last_commit)),
     txs: data.data.txs ? assertArray(data.data.txs).map(Base64.decode) : [],
     evidence: data.evidence && may(decodeEvidences, data.evidence.evidence),
   };
@@ -549,7 +550,7 @@ function decodeVote(data: RpcVote): responses.Vote {
     height: Integer.parse(assertNotEmpty(data.height)),
     round: Integer.parse(assertNotEmpty(data.round)),
     timestamp: DateTime.decode(assertNotEmpty(data.timestamp)),
-    blockId: decodeBlockId(assertSet(data.block_id)),
+    blockId: decodeBlockId(assertObject(data.block_id)),
     signature: decodeSignature(assertNotEmpty(data.signature)),
   };
 }
@@ -619,7 +620,7 @@ interface RpcValidatorGenesis {
 
 function decodeValidatorGenesis(data: RpcValidatorGenesis): responses.Validator {
   return {
-    pubkey: decodePubkey(assertSet(data.pub_key)),
+    pubkey: decodePubkey(assertObject(data.pub_key)),
     votingPower: Integer.parse(assertNotEmpty(data.power)),
     name: data.name,
   };
@@ -634,7 +635,7 @@ interface RpcValidatorUpdate {
 
 function decodeValidatorUpdate(data: RpcValidatorUpdate): responses.Validator {
   return {
-    pubkey: decodePubkey(assertSet(data.pub_key)),
+    pubkey: decodePubkey(assertObject(data.pub_key)),
     votingPower: Integer.parse(assertNotEmpty(data.voting_power)),
     address: Hex.decode(assertNotEmpty(data.address)),
   };
@@ -661,7 +662,7 @@ interface RpcValidatorInfo {
 
 function decodeValidatorInfo(data: RpcValidatorInfo): responses.Validator {
   return {
-    pubkey: decodePubkey(assertSet(data.pub_key)),
+    pubkey: decodePubkey(assertObject(data.pub_key)),
     votingPower: Integer.parse(assertNotEmpty(data.voting_power)),
     address: Encoding.fromHex(assertNotEmpty(data.address)),
   };
@@ -692,8 +693,8 @@ interface RpcConsensusParams {
 
 function decodeConsensusParams(data: RpcConsensusParams): responses.ConsensusParams {
   return {
-    blockSize: decodeBlockParams(assertSet(data.block)),
-    evidence: decodeEvidenceParams(assertSet(data.evidence)),
+    blockSize: decodeBlockParams(assertObject(data.block)),
+    evidence: decodeEvidenceParams(assertObject(data.evidence)),
   };
 }
 
