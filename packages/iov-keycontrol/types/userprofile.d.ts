@@ -6,6 +6,20 @@ import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
 import { Keyring, WalletInfo } from "./keyring";
 import { ReadonlyWallet, WalletId } from "./wallet";
+export interface UserProfileEncryptionKey {
+    readonly formatVersion: number;
+    readonly data: Uint8Array;
+}
+/**
+ * An error class that allows handling an unexpected format version.
+ * It contains all the data needed to derive the encryption key in a different
+ * format version using UserProfile.deriveEncryptionKey.
+ */
+export declare class UnexpectedFormatVersionError extends Error {
+    readonly expectedFormatVersion: number;
+    readonly actualFormatVersion: number;
+    constructor(expected: number, actual: number);
+}
 export interface UserProfileOptions {
     readonly createdAt: ReadonlyDate;
     readonly keyring: Keyring;
@@ -18,7 +32,17 @@ export interface UserProfileOptions {
  * UserProfile via the UserProfileController to get an unlocked UserProfile.
  */
 export declare class UserProfile {
-    static loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<UserProfile>;
+    /**
+     * Derives an encryption key from the password. This is a computationally intense task that
+     * can take many seconds.
+     *
+     * Use this function to cache the encryption key in memory.
+     *
+     * @param formatVersion Set this if you got a UnexpectedFormatVersionError. This
+     * error usually means a profile was encrypted with an older format version.
+     */
+    static deriveEncryptionKey(password: string, formatVersion?: number): Promise<UserProfileEncryptionKey>;
+    static loadFrom(db: LevelUp<AbstractLevelDOWN<string, string>>, encryptionSecret: string | UserProfileEncryptionKey): Promise<UserProfile>;
     readonly createdAt: ReadonlyDate;
     readonly locked: ValueAndUpdates<boolean>;
     readonly wallets: ValueAndUpdates<readonly WalletInfo[]>;
@@ -27,7 +51,13 @@ export declare class UserProfile {
     private readonly walletsProducer;
     /** Stores a copy of keyring */
     constructor(options?: UserProfileOptions);
-    storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void>;
+    /**
+     * Stores this profile in an open database. This will erase all other data in that database.
+     *
+     * @param db the target database
+     * @param encryptionSecret a password or derivation key used for encryption
+     */
+    storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, encryptionSecret: string | UserProfileEncryptionKey): Promise<void>;
     lock(): void;
     /**
      * Adds a copy of the wallet to the primary keyring

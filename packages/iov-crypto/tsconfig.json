@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "resolveJsonModule": true,
     "baseUrl": ".",
     "outDir": "build",
     "declarationDir": "build/types",

@@ -27,15 +27,50 @@ const storageKeyCreatedAt = "created_at";
 const storageKeyKeyring = "keyring";
 
 // not great but can be used on the main thread
-const weakPasswordHashingOptions: Argon2idOptions = {
+const passwordHashingOptionsVersion1: Argon2idOptions = {
   outputLength: 32,
   opsLimit: 10,
   memLimitKib: 8 * 1024,
 };
-// A fixed salt is choosen to archive a deterministic password to key derivation.
+
+// not great but can be used on the main thread
+const passwordHashingOptionsVersion2: Argon2idOptions = {
+  outputLength: 32,
+  opsLimit: 11,
+  memLimitKib: 8 * 1024,
+};
+
+// A fixed salt is chosen to archive a deterministic password to key derivation.
 // This reduces the scope of a potential rainbow attack to all iov-core users.
 // Must be 16 bytes due to implementation limitations.
 const userProfileSalt = toAscii("core-userprofile");
+
+// the format version in which profiles are stored
+// TODO: activate version 2 in 0.15 (https://github.com/iov-one/iov-core/issues/1025)
+const latestFormatVersion = 1;
+
+export interface UserProfileEncryptionKey {
+  readonly formatVersion: number;
+  readonly data: Uint8Array;
+}
+
+/**
+ * An error class that allows handling an unexpected format version.
+ * It contains all the data needed to derive the encryption key in a different
+ * format version using UserProfile.deriveEncryptionKey.
+ */
+export class UnexpectedFormatVersionError extends Error {
+  public readonly expectedFormatVersion: number;
+  public readonly actualFormatVersion: number;
+
+  public constructor(expected: number, actual: number) {
+    super(
+      `Got encryption key of unexpected format. Expected: ${expected} Got: ${actual}. Please derive encryption key in the right format`,
+    );
+    this.expectedFormatVersion = expected;
+    this.actualFormatVersion = actual;
+  }
+}
 
 export interface UserProfileOptions {
   readonly createdAt: ReadonlyDate;
@@ -50,22 +85,62 @@ export interface UserProfileOptions {
  * UserProfile via the UserProfileController to get an unlocked UserProfile.
  */
 export class UserProfile {
+  /**
+   * Derives an encryption key from the password. This is a computationally intense task that
+   * can take many seconds.
+   *
+   * Use this function to cache the encryption key in memory.
+   *
+   * @param formatVersion Set this if you got a UnexpectedFormatVersionError. This
+   * error usually means a profile was encrypted with an older format version.
+   */
+  public static async deriveEncryptionKey(
+    password: string,
+    formatVersion: number = latestFormatVersion,
+  ): Promise<UserProfileEncryptionKey> {
+    switch (formatVersion) {
+      case 1:
+        return {
+          formatVersion: 1,
+          data: await Argon2id.execute(password, userProfileSalt, passwordHashingOptionsVersion1),
+        };
+      case 2:
+        return {
+          formatVersion: 2,
+          data: await Argon2id.execute(password, userProfileSalt, passwordHashingOptionsVersion2),
+        };
+      default:
+        throw new Error(`Unsupported format version: ${formatVersion}`);
+    }
+  }
+
   public static async loadFrom(
     db: LevelUp<AbstractLevelDOWN<string, string>>,
-    password: string,
+    encryptionSecret: string | UserProfileEncryptionKey,
   ): Promise<UserProfile> {
-    const formatVersion = Int53.fromString(await db.get(storageKeyFormatVersion, { asBuffer: false }));
+    const formatVersion = Int53.fromString(
+      await db.get(storageKeyFormatVersion, { asBuffer: false }),
+    ).toNumber();
 
-    switch (formatVersion.toNumber()) {
-      case 1: {
+    const encryptionKey =
+      typeof encryptionSecret === "string"
+        ? await UserProfile.deriveEncryptionKey(encryptionSecret, formatVersion)
+        : encryptionSecret;
+
+    if (encryptionKey.formatVersion !== formatVersion) {
+      throw new UnexpectedFormatVersionError(formatVersion, encryptionKey.formatVersion);
+    }
+
+    switch (formatVersion) {
+      case 1:
+      case 2: {
         // get from storage (raw strings)
         const createdAtFromStorage = await db.get(storageKeyCreatedAt, { asBuffer: false });
         const keyringFromStorage = await db.get(storageKeyKeyring, { asBuffer: false });
 
         // process
-        const encryptionKey = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
         const encryptedKeyring = fromBase64(keyringFromStorage) as EncryptedKeyring;
-        const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey);
+        const keyringSerialization = await KeyringEncryptor.decrypt(encryptedKeyring, encryptionKey.data);
 
         // create objects
         return new UserProfile({
@@ -74,7 +149,7 @@ export class UserProfile {
         });
       }
       default:
-        throw new Error(`Unsupported format version: ${formatVersion.toNumber()}`);
+        throw new Error(`Unsupported format version: ${formatVersion}`);
     }
   }
 
@@ -104,24 +179,38 @@ export class UserProfile {
     this.wallets = new ValueAndUpdates(this.walletsProducer);
   }
 
-  // this will clear everything in the database and store the user profile
-  public async storeIn(db: LevelUp<AbstractLevelDOWN<string, string>>, password: string): Promise<void> {
+  /**
+   * Stores this profile in an open database. This will erase all other data in that database.
+   *
+   * @param db the target database
+   * @param encryptionSecret a password or derivation key used for encryption
+   */
+  public async storeIn(
+    db: LevelUp<AbstractLevelDOWN<string, string>>,
+    encryptionSecret: string | UserProfileEncryptionKey,
+  ): Promise<void> {
     if (!this.keyring) {
       throw new Error("UserProfile is currently locked");
     }
 
     await DatabaseUtils.clear(db);
 
-    // process
-    const encryptionKey = await Argon2id.execute(password, userProfileSalt, weakPasswordHashingOptions);
-    const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring.serialize(), encryptionKey);
+    const storageFormatVersion = latestFormatVersion;
 
-    // create storage values (raw strings)
-    const formatVersionForStorage = "1";
+    const key =
+      typeof encryptionSecret === "string"
+        ? await UserProfile.deriveEncryptionKey(encryptionSecret)
+        : encryptionSecret;
+    if (key.formatVersion !== storageFormatVersion) {
+      throw new UnexpectedFormatVersionError(storageFormatVersion, key.formatVersion);
+    }
+
+    const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring.serialize(), key.data);
+
+    const formatVersionForStorage = `${storageFormatVersion}`;
     const createdAtForStorage = toRfc3339(this.createdAt);
     const keyringForStorage = toBase64(encryptedKeyring);
 
-    // store
     await db.put(storageKeyFormatVersion, formatVersionForStorage);
     await db.put(storageKeyCreatedAt, createdAtForStorage);
     await db.put(storageKeyKeyring, keyringForStorage);

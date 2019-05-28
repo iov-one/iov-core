@@ -1,6 +1,11 @@
 export { HdPaths } from "./hdpaths";
 export { Keyring, WalletInfo } from "./keyring";
-export { UserProfile, UserProfileOptions } from "./userprofile";
+export {
+  UnexpectedFormatVersionError,
+  UserProfile,
+  UserProfileEncryptionKey,
+  UserProfileOptions,
+} from "./userprofile";
 export {
   ReadonlyWallet,
   Wallet,
