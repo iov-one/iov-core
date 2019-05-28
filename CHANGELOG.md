@@ -21,6 +21,7 @@
   using an optional constructor argument.
 - @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
   configured using an optional constructor argument.
+- @iov/tendermint-rpc: Add support for Tendermint 0.30.x. and 0.31.x
 
 Breaking changes
 
@@ -60,6 +61,8 @@ Breaking changes
   number.
 - @iov/jsonrpc: Remove `parseJsonRpcResponse` and `parseJsonRpcError`.
 - @iov/tendermint-rpc: Remove support for Tendermint 0.25.x.
+- @iov/tendermint-rpc: Rename `ConsensusParams.blockSize` to `.block` and
+  `BlockSizeParams` to `BlockParams`.
 
 ## 0.14.3
 

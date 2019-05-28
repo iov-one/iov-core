@@ -8,6 +8,7 @@ import * as responses from "./responses";
 import { SubscriptionEvent } from "./rpcclients";
 import { TxBytes, TxHash } from "./types";
 import { v0_27 } from "./v0-27";
+import { v0_31 } from "./v0-31";
 
 export interface Adaptor {
   readonly params: Params;
@@ -68,8 +69,15 @@ export interface Responses {
  * @param version full Tendermint version string, e.g. "0.20.1"
  */
 export function adatorForVersion(version: string): Adaptor {
-  if (version.startsWith("0.27.") || version.startsWith("0.28.") || version.startsWith("0.29.")) {
+  if (
+    version.startsWith("0.27.") ||
+    version.startsWith("0.28.") ||
+    version.startsWith("0.29.") ||
+    version.startsWith("0.30.")
+  ) {
     return v0_27;
+  } else if (version.startsWith("0.31.")) {
+    return v0_31;
   } else {
     throw new Error(`Unsupported tendermint version: ${version}`);
   }

@@ -28,6 +28,16 @@ export const tendermintInstances: ReadonlyArray<TendermintInstance> = [
     version: "0.29.x",
     appCreator: "Cosmoshi Netowoko",
   },
+  {
+    url: "localhost:11130",
+    version: "0.30.x",
+    appCreator: "Cosmoshi Netowoko",
+  },
+  {
+    url: "localhost:11131",
+    version: "0.31.x",
+    appCreator: "Cosmoshi Netowoko",
+  },
 ];
 
 export const defaultInstance: TendermintInstance = tendermintInstances[0];
