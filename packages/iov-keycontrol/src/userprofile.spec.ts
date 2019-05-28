@@ -149,11 +149,11 @@ describe("UserProfile", () => {
       const db = levelup(MemDownConstructor<string, string>());
 
       // Storage data created with IOV-Core 0.14 cli
-      await db.put("format_version", userprofileData.serializations.version1.format_version);
-      await db.put("created_at", userprofileData.serializations.version1.created_at);
-      await db.put("keyring", userprofileData.serializations.version1.keyring);
+      await db.put("format_version", userprofileData.serializations.version1.db.format_version);
+      await db.put("created_at", userprofileData.serializations.version1.db.created_at);
+      await db.put("keyring", userprofileData.serializations.version1.db.keyring);
 
-      const loaded = await UserProfile.loadFrom(db, "secret passwd");
+      const loaded = await UserProfile.loadFrom(db, userprofileData.serializations.version1.password);
 
       expect(loaded.createdAt).toEqual(new ReadonlyDate("2019-05-27T16:40:44.522Z"));
       expect(loaded.wallets.value.length).toEqual(2);
@@ -178,17 +178,20 @@ describe("UserProfile", () => {
       const db = levelup(MemDownConstructor<string, string>());
 
       // Storage data created with IOV-Core 0.14 cli
-      await db.put("format_version", userprofileData.serializations.version1.format_version);
-      await db.put("created_at", userprofileData.serializations.version1.created_at);
-      await db.put("keyring", userprofileData.serializations.version1.keyring);
+      await db.put("format_version", userprofileData.serializations.version1.db.format_version);
+      await db.put("created_at", userprofileData.serializations.version1.db.created_at);
+      await db.put("keyring", userprofileData.serializations.version1.db.keyring);
 
       let loaded: UserProfile;
-      const key = await UserProfile.deriveEncryptionKey("secret passwd");
+      const key = await UserProfile.deriveEncryptionKey(userprofileData.serializations.version1.password);
       try {
         loaded = await UserProfile.loadFrom(db, key);
       } catch (error) {
         if (error instanceof UserProfileEncryptionKeyUnexpectedFormatVersion) {
-          const key2 = await UserProfile.deriveEncryptionKey("secret passwd", error.expectedFormatVersion);
+          const key2 = await UserProfile.deriveEncryptionKey(
+            userprofileData.serializations.version1.password,
+            error.expectedFormatVersion,
+          );
           loaded = await UserProfile.loadFrom(db, key2);
         } else {
           throw error;
@@ -218,11 +221,11 @@ describe("UserProfile", () => {
       const db = levelup(MemDownConstructor<string, string>());
 
       // Storage data created with locally modified version of IOV-Core 0.14 cli
-      await db.put("format_version", userprofileData.serializations.version2.format_version);
-      await db.put("created_at", userprofileData.serializations.version2.created_at);
-      await db.put("keyring", userprofileData.serializations.version2.keyring);
+      await db.put("format_version", userprofileData.serializations.version2.db.format_version);
+      await db.put("created_at", userprofileData.serializations.version2.db.created_at);
+      await db.put("keyring", userprofileData.serializations.version2.db.keyring);
 
-      const loaded = await UserProfile.loadFrom(db, "secret passwd");
+      const loaded = await UserProfile.loadFrom(db, userprofileData.serializations.version2.password);
 
       expect(loaded.createdAt).toEqual(new ReadonlyDate("2019-05-27T17:00:08.193Z"));
       expect(loaded.wallets.value.length).toEqual(2);
@@ -247,17 +250,20 @@ describe("UserProfile", () => {
       const db = levelup(MemDownConstructor<string, string>());
 
       // Storage data created with locally modified version of IOV-Core 0.14 cli
-      await db.put("format_version", userprofileData.serializations.version2.format_version);
-      await db.put("created_at", userprofileData.serializations.version2.created_at);
-      await db.put("keyring", userprofileData.serializations.version2.keyring);
+      await db.put("format_version", userprofileData.serializations.version2.db.format_version);
+      await db.put("created_at", userprofileData.serializations.version2.db.created_at);
+      await db.put("keyring", userprofileData.serializations.version2.db.keyring);
 
       let loaded: UserProfile;
-      const key = await UserProfile.deriveEncryptionKey("secret passwd");
+      const key = await UserProfile.deriveEncryptionKey(userprofileData.serializations.version2.password);
       try {
         loaded = await UserProfile.loadFrom(db, key);
       } catch (error) {
         if (error instanceof UserProfileEncryptionKeyUnexpectedFormatVersion) {
-          const key2 = await UserProfile.deriveEncryptionKey("secret passwd", error.expectedFormatVersion);
+          const key2 = await UserProfile.deriveEncryptionKey(
+            userprofileData.serializations.version2.password,
+            error.expectedFormatVersion,
+          );
           loaded = await UserProfile.loadFrom(db, key2);
         } else {
           throw error;
