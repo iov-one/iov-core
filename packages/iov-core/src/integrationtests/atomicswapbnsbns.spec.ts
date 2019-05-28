@@ -182,7 +182,7 @@ class Actor {
   }
 }
 
-describe("Full atomic swap between BNS and BNS", () => {
+describe("Full atomic swap between two different tokens on BNS", () => {
   // TODO: handle different fees... right now with assumes 0.01 of the main token as fee
   it("works", async () => {
     pendingWithoutBnsd();
