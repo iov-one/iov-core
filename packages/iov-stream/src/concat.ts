@@ -26,6 +26,7 @@ export function concat<T>(...streams: Stream<T>[]): Stream<T> {
 
   function reset(): void {
     while (subscriptions.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const subscription = subscriptions.shift()!;
       subscription.unsubscribe();
     }

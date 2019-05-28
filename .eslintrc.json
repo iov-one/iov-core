@@ -26,7 +26,6 @@
     "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-inferrable-types": "off",
-    "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-object-literal-type-assertion": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
     "@typescript-eslint/no-use-before-define": "off"
@@ -36,6 +35,12 @@
       "files": "**/*.js",
       "rules": {
         "@typescript-eslint/no-var-requires": "off"
+      }
+    },
+    {
+      "files": "**/*.spec.ts",
+      "rules": {
+        "@typescript-eslint/no-non-null-assertion": "off"
       }
     },
     {

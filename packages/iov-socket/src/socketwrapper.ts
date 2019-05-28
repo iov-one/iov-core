@@ -83,6 +83,7 @@ export class SocketWrapper {
     };
     socket.onopen = _ => {
       this.clearTimeout();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.connectedResolver!();
 
       if (this.openHandler) {
@@ -106,6 +107,7 @@ export class SocketWrapper {
       this.socket = undefined;
 
       const elapsed = Math.floor(Date.now() - started);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.connectedRejecter!(`Connection attempt timed out after ${elapsed} ms`);
     }, this.timeout);
 

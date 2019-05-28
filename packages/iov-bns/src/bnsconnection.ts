@@ -653,7 +653,12 @@ export class BnsConnection implements AtomicSwapConnection {
     const fees = results
       .map(parser)
       .map(msg => msg.fee)
-      .map(x => decodeAmount(x!));
+      .map(x => {
+        if (x === null || x === undefined) {
+          throw new Error("Could not decode missing fee");
+        }
+        return decodeAmount(x);
+      });
     return fees.length > 0 ? fees[0] : undefined;
   }
 }

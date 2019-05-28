@@ -218,7 +218,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     const transactionId = Parse.transactionId(transactionResult);
 
-    let pollInterval: NodeJS.Timeout | undefined;
+    let pollInterval: NodeJS.Timeout;
     const blockInfoPending = new DefaultValueProducer<BlockInfo>(
       {
         state: TransactionState.Pending,
@@ -241,7 +241,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           }, this.pollIntervalMs);
         },
         onStop: () => {
-          clearInterval(pollInterval!);
+          clearInterval(pollInterval);
         },
       },
     );
