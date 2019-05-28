@@ -32,7 +32,7 @@ import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 const { fromHex } = Encoding;
 
 /**
- * A possibly incomplete equality checker that tests as good as possible if two profiles contain
+ * A possibly incomplete equality checker that tests as well as possible if two profiles contain
  * the same information. Equality on UserProfile is not well defined, so use with caution.
  */
 function expectUserProfilesToEqual(lhs: UserProfile, rhs: UserProfile): void {
