@@ -1,8 +1,8 @@
 # IOV atomic swap protocol version 1
 
-| Status | Authors                                | Created    | Last updated | License   |
-| ------ | -------------------------------------- | ---------- | ------------ | --------- |
-| Draft  | Simon Warta, Ethan Frey, Isabella Dell | 2019-03-27 | 2019-04-29   | CC-BY-4.0 |
+| Status | Author                    | Created    | Last updated | License   |
+| ------ | ------------------------- | ---------- | ------------ | --------- |
+| Draft  | The document contributors | 2019-03-27 | 2019-05-28   | CC-BY-4.0 |
 
 ## Abstract
 
@@ -195,6 +195,16 @@ locked tokens until the timeout is reached.
    pushed unexpectedly far into the future, such that the timeout difference for
    the actor in short position to claim is 0 or negative (i.e. impossible to
    claim).
+
+## Contributors
+
+Substantial contributions by the following people in the form of text, review
+and ideas made this document possible:
+
+- Simon Warta
+- Ethan Frey
+- Isabella Dell
+- Will Clark
 
 ## License
 
