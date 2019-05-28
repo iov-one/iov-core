@@ -259,8 +259,7 @@ export interface NodeInfo {
   readonly channels: string; // ???
   readonly moniker: string;
   readonly other: Map<string, string>;
-  /** Optional because this does not exist in Tendermint 0.25.x */
-  readonly protocolVersion?: {
+  readonly protocolVersion: {
     readonly p2p: number;
     readonly block: number;
     readonly app: number;
