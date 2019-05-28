@@ -34,6 +34,7 @@ export class Secp256k1 {
       throw new Error("input data is not a valid secp256k1 private key");
     }
 
+    /* eslint-disable @typescript-eslint/no-object-literal-type-assertion */
     // tslint:disable-next-line:no-object-literal-type-assertion
     return {
       privkey: Encoding.fromHex(keypair.getPrivate("hex")),
@@ -43,6 +44,7 @@ export class Secp256k1 {
       // - 32-byte y coordinate
       pubkey: Encoding.fromHex(keypair.getPublic().encode("hex")),
     } as Secp256k1Keypair;
+    /* eslint-enable @typescript-eslint/no-object-literal-type-assertion */
   }
 
   // Creates a signature that is
