@@ -8,8 +8,8 @@
 
 In the IOV ecosystem, many tools can be used with different blockchains.
 Client-side, this is every application built on top of IOV-Core. Backend-side,
-this is the Blockchain Name System (BNS), a lookup service that allows assigning
-native blockchain addresses to a human readable name.
+this is the Blockchain Name System (BNS), a lookup service which enables the
+assignment of native blockchain addresses to human readable names.
 
 All this tooling needs to be able to uniquely identify a blockchain, which is
 what chain IDs do. The chain ID is interpreted client-side only and all client
@@ -43,7 +43,7 @@ request.
 
 | Chain ID             | Description                                                                                                                             | Example                                                                 |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `bns-%s`             | A BNS chain by IOV with the netwok name in `%s`                                                                                         | `bns-hugnet` for the Hugnet testnet                                     |
+| `bns-%s`             | A BNS chain by IOV with the network name in `%s`                                                                                        | `bns-hugnet` for the Hugnet testnet                                     |
 | `ethereum-eip155-%d` | An Ethereum chain with the chain ID from [EIP155](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md) in the placeholder `%d` | `ethereum-eip155-1` for Ethereum mainnet, `ethereum-eip155-5` for Görli |
 | `lisk-%s`            | A Lisk chain with a 10 digit prefix of the nethash in `%s`                                                                              | `lisk-da3ed6a454` for the Lisk testnet                                  |
 | `rise-%s`            | A RISE chain with a 10 digit prefix of the nethash in `%s`                                                                              | `rise-296dc9a4d1` for the RISE testnet                                  |
