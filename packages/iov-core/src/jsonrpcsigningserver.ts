@@ -29,7 +29,7 @@ type RpcCall = RpcCallGetIdentities | RpcCallSignAndPost;
 
 class ParamsError extends Error {}
 class MethodNotFoundError extends Error {
-  constructor(message?: string) {
+  public constructor(message?: string) {
     super(message || "Unknown method name");
   }
 }
@@ -83,7 +83,7 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
 export class JsonRpcSigningServer {
   private readonly core: SigningServerCore;
 
-  constructor(core: SigningServerCore) {
+  public constructor(core: SigningServerCore) {
     this.core = core;
   }
 

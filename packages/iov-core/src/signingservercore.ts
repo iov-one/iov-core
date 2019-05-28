@@ -60,7 +60,7 @@ export class SigningServerCore {
   private readonly authorizeSignAndPost: SignAndPostAuthorization;
   private readonly signedAndPostedProducer = new DefaultValueProducer<readonly SignedAndPosted[]>([]);
 
-  constructor(
+  public constructor(
     profile: UserProfile,
     signer: MultiChainSigner,
     authorizeGetIdentities: GetIdentitiesAuthorization,

@@ -193,7 +193,7 @@ export class Slip10Wallet implements Wallet {
   private readonly privkeyPaths: Map<IdentityId, readonly Slip10RawIndex[]>;
   private readonly labels: Map<IdentityId, string | undefined>;
 
-  constructor(data: WalletSerializationString) {
+  public constructor(data: WalletSerializationString) {
     const decodedData = deserialize(data);
 
     // id

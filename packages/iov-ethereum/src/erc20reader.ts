@@ -16,7 +16,7 @@ export class Erc20Reader {
   private readonly client: EthereumRpcClient;
   private readonly options: Erc20Options;
 
-  constructor(client: EthereumRpcClient, options: Erc20Options) {
+  public constructor(client: EthereumRpcClient, options: Erc20Options) {
     this.client = client;
     this.options = options;
   }

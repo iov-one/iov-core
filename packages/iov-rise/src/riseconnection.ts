@@ -76,7 +76,7 @@ export class RiseConnection implements BlockchainConnection {
   private readonly baseUrl: string;
   private readonly myChainId: ChainId;
 
-  constructor(baseUrl: string, chainId: ChainId) {
+  public constructor(baseUrl: string, chainId: ChainId) {
     this.baseUrl = checkAndNormalizeUrl(baseUrl);
 
     if (!chainId.match(/^[a-f0-9]{64}$/)) {

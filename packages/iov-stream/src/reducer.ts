@@ -23,7 +23,7 @@ export class Reducer<T, U> {
   // on complete or error
   private readonly completed: Promise<void>;
 
-  constructor(stream: Stream<T>, reducer: ReducerFunc<T, U>, initState: U) {
+  public constructor(stream: Stream<T>, reducer: ReducerFunc<T, U>, initState: U) {
     this.stream = stream;
     this.reducer = reducer;
     this.state = initState;

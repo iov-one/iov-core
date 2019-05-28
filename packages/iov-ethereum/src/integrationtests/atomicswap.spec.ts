@@ -80,7 +80,7 @@ class Actor {
   // tslint:disable-next-line:readonly-keyword
   private preimage?: Preimage;
 
-  constructor(data: ActorData) {
+  public constructor(data: ActorData) {
     this.profile = data.profile;
     this.connection = data.connection;
     this.senderIdentity = data.senderIdentity;

@@ -128,7 +128,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
   private readonly codec: EthereumCodec;
 
-  constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
+  public constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
     this.pollIntervalMs = options.pollInterval ? options.pollInterval * 1000 : 4_000;
     this.rpcClient = new HttpJsonRpcClient(baseUrl);
     this.myChainId = chainId;

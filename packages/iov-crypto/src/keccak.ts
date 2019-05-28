@@ -6,7 +6,7 @@ export class Keccak256 implements HashFunction {
 
   private readonly impl: any;
 
-  constructor(firstData?: Uint8Array) {
+  public constructor(firstData?: Uint8Array) {
     this.impl = jssha3.keccak256.create();
 
     if (firstData) {

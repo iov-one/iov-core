@@ -61,7 +61,7 @@ export class Secp256k1Signature {
     readonly s: Uint8Array;
   };
 
-  constructor(r: Uint8Array, s: Uint8Array) {
+  public constructor(r: Uint8Array, s: Uint8Array) {
     if (r.length > 32 || r.length === 0 || r[0] === 0x00) {
       throw new Error("Unsigned integer r must be encoded as unpadded big endian.");
     }
@@ -137,7 +137,7 @@ export class ExtendedSecp256k1Signature extends Secp256k1Signature {
 
   public readonly recovery: number;
 
-  constructor(r: Uint8Array, s: Uint8Array, recovery: number) {
+  public constructor(r: Uint8Array, s: Uint8Array, recovery: number) {
     super(r, s);
 
     if (!Number.isInteger(recovery)) {

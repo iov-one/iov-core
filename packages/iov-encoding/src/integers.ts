@@ -29,7 +29,7 @@ export class Uint32 implements Integer {
 
   protected readonly data: number;
 
-  constructor(input: number) {
+  public constructor(input: number) {
     if (Number.isNaN(input)) {
       throw new Error("Input is not a number");
     }
@@ -76,7 +76,7 @@ export class Int53 implements Integer {
 
   protected readonly data: number;
 
-  constructor(input: number) {
+  public constructor(input: number) {
     if (Number.isNaN(input)) {
       throw new Error("Input is not a number");
     }
@@ -109,7 +109,7 @@ export class Uint53 implements Integer {
 
   protected readonly data: Int53;
 
-  constructor(input: number) {
+  public constructor(input: number) {
     const signed = new Int53(input);
     if (signed.toNumber() < 0) {
       throw new Error("Input is negative");
