@@ -40,7 +40,7 @@ const passwordHashingOptionsVersion2: Argon2idOptions = {
   memLimitKib: 8 * 1024,
 };
 
-// A fixed salt is choosen to archive a deterministic password to key derivation.
+// A fixed salt is chosen to archive a deterministic password to key derivation.
 // This reduces the scope of a potential rainbow attack to all iov-core users.
 // Must be 16 bytes due to implementation limitations.
 const userProfileSalt = toAscii("core-userprofile");
