@@ -52,9 +52,7 @@ export declare class UserProfile {
     /** Stores a copy of keyring */
     constructor(options?: UserProfileOptions);
     /**
-     * Store this profile in database.
-     *
-     * This will clear everything in the database and store the user profile.
+     * Stores this profile in an open database. This will erase all other data in that database.
      *
      * @param db the target database
      * @param encryptionSecret a password or derivation key used for encryption
