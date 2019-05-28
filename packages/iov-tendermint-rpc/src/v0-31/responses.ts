@@ -670,9 +670,10 @@ function decodeValidatorInfo(data: RpcValidatorInfo): responses.Validator {
 /**
  * Example data:
  * {
- *   "block_size": {
+ *   "block": {
  *     "max_bytes": "22020096",
- *     "max_gas": "-1"
+ *     "max_gas": "-1",
+ *     "time_iota_ms": "1000"
  *   },
  *   "evidence": {
  *     "max_age": "100000"
@@ -685,23 +686,29 @@ function decodeValidatorInfo(data: RpcValidatorInfo): responses.Validator {
  * }
  */
 interface RpcConsensusParams {
-  readonly block_size: RpcBlockSizeParams;
+  readonly block: RpcBlockParams;
   readonly evidence: RpcEvidenceParams;
 }
 
 function decodeConsensusParams(data: RpcConsensusParams): responses.ConsensusParams {
   return {
-    blockSize: decodeBlockSizeParams(assertSet(data.block_size)),
+    blockSize: decodeBlockParams(assertSet(data.block)),
     evidence: decodeEvidenceParams(assertSet(data.evidence)),
   };
 }
 
-interface RpcBlockSizeParams {
+interface RpcBlockParams {
   readonly max_bytes: IntegerString;
   readonly max_gas: IntegerString;
 }
 
-function decodeBlockSizeParams(data: RpcBlockSizeParams): responses.BlockSizeParams {
+/**
+ * Note: we do not parse block.time_iota_ms for now because of this CHANGELOG entry
+ *
+ * > Add time_iota_ms to block's consensus parameters (not exposed to the application)
+ * https://github.com/tendermint/tendermint/blob/master/CHANGELOG.md#v0310
+ */
+function decodeBlockParams(data: RpcBlockParams): responses.BlockSizeParams {
   return {
     maxBytes: Integer.parse(assertNotEmpty(data.max_bytes)),
     maxGas: Integer.parse(assertNotEmpty(data.max_gas)),
