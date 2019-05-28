@@ -2,9 +2,10 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
+# Find latest patch releases at https://hub.docker.com/r/tendermint/tendermint/tags/
 declare -a TM_VERSIONS
 TM_VERSIONS[27]=0.27.4
-TM_VERSIONS[29]=0.29.1
+TM_VERSIONS[29]=0.29.2
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
