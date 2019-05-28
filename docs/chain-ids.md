@@ -58,10 +58,10 @@ request.
 Substantial contributions by the following people in the form of text, review
 and ideas made this document possible:
 
-- Simon Warta
-- Ethan Frey
-- Isabella Dell
-- Will Clark
+- Simon Warta ([webmaster128](https://github.com/webmaster128))
+- Ethan Frey ([ethanfrey](https://github.com/ethanfrey))
+- Isabella Dell ([isabello](https://github.com/isabello))
+- Will Clark ([willclarktech](https://github.com/willclarktech))
 
 ## License
 
