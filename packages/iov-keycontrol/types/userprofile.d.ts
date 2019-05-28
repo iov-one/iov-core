@@ -15,7 +15,7 @@ export interface UserProfileEncryptionKey {
  * It contains all the data needed to derive the encryption key in a different
  * format version using UserProfile.deriveEncryptionKey.
  */
-export declare class UserProfileEncryptionKeyUnexpectedFormatVersion extends Error {
+export declare class UnexpectedFormatVersionError extends Error {
     readonly expectedFormatVersion: number;
     readonly actualFormatVersion: number;
     constructor(expected: number, actual: number);
@@ -38,7 +38,7 @@ export declare class UserProfile {
      *
      * Use this function to cache the encryption key in memory.
      *
-     * @param formatVersion Set this if you got a UserProfileEncryptionKeyUnexpectedFormatVersion error. This
+     * @param formatVersion Set this if you got a UnexpectedFormatVersionError. This
      * error usually means a profile was encrypted with an older format version.
      */
     static deriveEncryptionKey(password: string, formatVersion?: number): Promise<UserProfileEncryptionKey>;

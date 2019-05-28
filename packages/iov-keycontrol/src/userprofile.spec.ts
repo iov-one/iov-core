@@ -25,11 +25,7 @@ import { Encoding } from "@iov/encoding";
 import { HdPaths } from "./hdpaths";
 import { Keyring } from "./keyring";
 import userprofileData from "./testdata/userprofile.json";
-import {
-  UserProfile,
-  UserProfileEncryptionKey,
-  UserProfileEncryptionKeyUnexpectedFormatVersion,
-} from "./userprofile";
+import { UnexpectedFormatVersionError, UserProfile, UserProfileEncryptionKey } from "./userprofile";
 import { WalletId } from "./wallet";
 import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 
@@ -187,7 +183,7 @@ describe("UserProfile", () => {
       try {
         loaded = await UserProfile.loadFrom(db, key);
       } catch (error) {
-        if (error instanceof UserProfileEncryptionKeyUnexpectedFormatVersion) {
+        if (error instanceof UnexpectedFormatVersionError) {
           const key2 = await UserProfile.deriveEncryptionKey(
             userprofileData.serializations.version1.password,
             error.expectedFormatVersion,
@@ -259,7 +255,7 @@ describe("UserProfile", () => {
       try {
         loaded = await UserProfile.loadFrom(db, key);
       } catch (error) {
-        if (error instanceof UserProfileEncryptionKeyUnexpectedFormatVersion) {
+        if (error instanceof UnexpectedFormatVersionError) {
           const key2 = await UserProfile.deriveEncryptionKey(
             userprofileData.serializations.version2.password,
             error.expectedFormatVersion,
@@ -305,8 +301,8 @@ describe("UserProfile", () => {
       await UserProfile.loadFrom(db, encryptionKey)
         .then(() => fail("must not resolve"))
         .catch(error => {
-          if (!(error instanceof UserProfileEncryptionKeyUnexpectedFormatVersion)) {
-            throw new Error("Expected UserProfileEncryptionKeyUnexpectedFormatVersion");
+          if (!(error instanceof UnexpectedFormatVersionError)) {
+            throw new Error("Expected an UnexpectedFormatVersionError");
           }
           expect(error.expectedFormatVersion).toEqual(1);
           expect(error.actualFormatVersion).toEqual(42);
@@ -696,8 +692,8 @@ describe("UserProfile", () => {
         .storeIn(db, encryptionKey)
         .then(() => fail("must not resolve"))
         .catch(error => {
-          if (!(error instanceof UserProfileEncryptionKeyUnexpectedFormatVersion)) {
-            throw new Error("Expected UserProfileEncryptionKeyUnexpectedFormatVersion");
+          if (!(error instanceof UnexpectedFormatVersionError)) {
+            throw new Error("Expected an UnexpectedFormatVersionError");
           }
           expect(error.expectedFormatVersion).toEqual(1);
           expect(error.actualFormatVersion).toEqual(42);

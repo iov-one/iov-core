@@ -59,7 +59,7 @@ export interface UserProfileEncryptionKey {
  * It contains all the data needed to derive the encryption key in a different
  * format version using UserProfile.deriveEncryptionKey.
  */
-export class UserProfileEncryptionKeyUnexpectedFormatVersion extends Error {
+export class UnexpectedFormatVersionError extends Error {
   public readonly expectedFormatVersion: number;
   public readonly actualFormatVersion: number;
 
@@ -91,7 +91,7 @@ export class UserProfile {
    *
    * Use this function to cache the encryption key in memory.
    *
-   * @param formatVersion Set this if you got a UserProfileEncryptionKeyUnexpectedFormatVersion error. This
+   * @param formatVersion Set this if you got a UnexpectedFormatVersionError. This
    * error usually means a profile was encrypted with an older format version.
    */
   public static async deriveEncryptionKey(
@@ -128,7 +128,7 @@ export class UserProfile {
         : encryptionSecret;
 
     if (encryptionKey.formatVersion !== formatVersion) {
-      throw new UserProfileEncryptionKeyUnexpectedFormatVersion(formatVersion, encryptionKey.formatVersion);
+      throw new UnexpectedFormatVersionError(formatVersion, encryptionKey.formatVersion);
     }
 
     switch (formatVersion) {
@@ -202,7 +202,7 @@ export class UserProfile {
         ? await UserProfile.deriveEncryptionKey(encryptionSecret)
         : encryptionSecret;
     if (key.formatVersion !== storageFormatVersion) {
-      throw new UserProfileEncryptionKeyUnexpectedFormatVersion(storageFormatVersion, key.formatVersion);
+      throw new UnexpectedFormatVersionError(storageFormatVersion, key.formatVersion);
     }
 
     const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring.serialize(), key.data);
