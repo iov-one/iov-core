@@ -711,10 +711,8 @@ describe("UserProfile", () => {
 
       await db
         .get("foo")
-        .then(() => fail("get 'foo' promise must not reslve"))
-        .catch(error => {
-          expect(error.notFound).toBeTruthy();
-        });
+        .then(() => fail("get 'foo' promise must not resolve"))
+        .catch(error => expect(error.notFound).toBeTruthy());
 
       await db.close();
     });
