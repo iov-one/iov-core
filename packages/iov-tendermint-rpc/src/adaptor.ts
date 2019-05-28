@@ -68,7 +68,12 @@ export interface Responses {
  * @param version full Tendermint version string, e.g. "0.20.1"
  */
 export function adatorForVersion(version: string): Adaptor {
-  if (version.startsWith("0.27.") || version.startsWith("0.28.") || version.startsWith("0.29.")) {
+  if (
+    version.startsWith("0.27.") ||
+    version.startsWith("0.28.") ||
+    version.startsWith("0.29.") ||
+    version.startsWith("0.30.")
+  ) {
     return v0_27;
   } else {
     throw new Error(`Unsupported tendermint version: ${version}`);
