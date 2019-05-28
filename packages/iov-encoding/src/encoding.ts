@@ -10,7 +10,7 @@ declare const TextDecoder: any | undefined;
 
 export class Encoding {
   public static toHex(data: Uint8Array): string {
-    let out: string = "";
+    let out = "";
     for (const byte of data) {
       out += ("0" + byte.toString(16)).slice(-2);
     }

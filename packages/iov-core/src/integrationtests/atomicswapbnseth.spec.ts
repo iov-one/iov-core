@@ -31,9 +31,8 @@ const CASH = "CASH" as TokenTicker;
 const ETH = "ETH" as TokenTicker;
 
 // Copied from 'iov-ethereum/src/testconfig.spec.ts'
-const ganacheMnemonic: string =
-  "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
-const ethereumBaseUrl: string = "http://localhost:8545";
+const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
+const ethereumBaseUrl = "http://localhost:8545";
 const ethereumConnectionOptions = {
   wsUrl: "ws://localhost:8545/ws",
   // Low values to speedup test execution on the local ganache chain (using instant mine)
