@@ -61,6 +61,8 @@ Breaking changes
   number.
 - @iov/jsonrpc: Remove `parseJsonRpcResponse` and `parseJsonRpcError`.
 - @iov/tendermint-rpc: Remove support for Tendermint 0.25.x.
+- @iov/tendermint-rpc: Rename `ConsensusParams.blockSize` to `.block` and
+  `BlockSizeParams` to `BlockParams`.
 
 ## 0.14.3
 

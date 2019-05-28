@@ -692,7 +692,7 @@ interface RpcConsensusParams {
 
 function decodeConsensusParams(data: RpcConsensusParams): responses.ConsensusParams {
   return {
-    blockSize: decodeBlockSizeParams(assertObject(data.block_size)),
+    block: decodeBlockSizeParams(assertObject(data.block_size)),
     evidence: decodeEvidenceParams(assertObject(data.evidence)),
   };
 }
@@ -702,7 +702,7 @@ interface RpcBlockSizeParams {
   readonly max_gas: IntegerString;
 }
 
-function decodeBlockSizeParams(data: RpcBlockSizeParams): responses.BlockSizeParams {
+function decodeBlockSizeParams(data: RpcBlockSizeParams): responses.BlockParams {
   return {
     maxBytes: Integer.parse(assertNotEmpty(data.max_bytes)),
     maxGas: Integer.parse(assertNotEmpty(data.max_gas)),

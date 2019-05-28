@@ -693,7 +693,7 @@ interface RpcConsensusParams {
 
 function decodeConsensusParams(data: RpcConsensusParams): responses.ConsensusParams {
   return {
-    blockSize: decodeBlockParams(assertObject(data.block)),
+    block: decodeBlockParams(assertObject(data.block)),
     evidence: decodeEvidenceParams(assertObject(data.evidence)),
   };
 }
@@ -709,7 +709,7 @@ interface RpcBlockParams {
  * > Add time_iota_ms to block's consensus parameters (not exposed to the application)
  * https://github.com/tendermint/tendermint/blob/master/CHANGELOG.md#v0310
  */
-function decodeBlockParams(data: RpcBlockParams): responses.BlockSizeParams {
+function decodeBlockParams(data: RpcBlockParams): responses.BlockParams {
   return {
     maxBytes: Integer.parse(assertNotEmpty(data.max_bytes)),
     maxGas: Integer.parse(assertNotEmpty(data.max_gas)),
