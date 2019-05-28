@@ -197,7 +197,6 @@ export class UserProfile {
 
     const storageFormatVersion = latestFormatVersion;
 
-    // make encryption key
     const key =
       typeof encryptionSecret === "string"
         ? await UserProfile.deriveEncryptionKey(encryptionSecret)
@@ -206,15 +205,12 @@ export class UserProfile {
       throw new UserProfileEncryptionKeyUnexpectedFormatVersion(storageFormatVersion, key.formatVersion);
     }
 
-    // encrypt
     const encryptedKeyring = await KeyringEncryptor.encrypt(this.keyring.serialize(), key.data);
 
-    // create storage values (raw strings)
     const formatVersionForStorage = `${storageFormatVersion}`;
     const createdAtForStorage = toRfc3339(this.createdAt);
     const keyringForStorage = toBase64(encryptedKeyring);
 
-    // store
     await db.put(storageKeyFormatVersion, formatVersionForStorage);
     await db.put(storageKeyCreatedAt, createdAtForStorage);
     await db.put(storageKeyKeyring, keyringForStorage);
