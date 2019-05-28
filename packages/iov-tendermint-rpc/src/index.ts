@@ -1,5 +1,4 @@
 // exported to access version-specific hashing
-export { v0_25 } from "./v0-25";
 export { v0_27 } from "./v0-27";
 
 export { Client } from "./client";

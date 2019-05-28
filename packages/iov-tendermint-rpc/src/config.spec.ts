@@ -20,11 +20,6 @@ export interface TendermintInstance {
  */
 export const tendermintInstances: ReadonlyArray<TendermintInstance> = [
   {
-    url: "localhost:11125",
-    version: "0.25.x",
-    appCreator: "jae",
-  },
-  {
     url: "localhost:11127",
     version: "0.27.x",
     appCreator: "Cosmoshi Netowoko",

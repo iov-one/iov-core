@@ -57,6 +57,7 @@ Breaking changes
   `JsonRpcErrorResponse` is now of type `JsonRpcId`, which can be a string or a
   number.
 - @iov/jsonrpc: Remove `parseJsonRpcResponse` and `parseJsonRpcError`.
+- @iov/tendermint-rpc: Remove support for Tendermint 0.25.x.
 
 ## 0.14.3
 
