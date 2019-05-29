@@ -67,6 +67,7 @@ import {
   toBcpChainId,
   toEthereumHex,
 } from "./utils";
+import { WsJsonRpcClient } from "./wsjsonrpcclient";
 
 async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -119,7 +120,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   }
 
   private readonly pollIntervalMs: number;
-  private readonly rpcClient: HttpJsonRpcClient;
+  private readonly rpcClient: HttpJsonRpcClient | WsJsonRpcClient;
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;
@@ -129,8 +130,22 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly codec: EthereumCodec;
 
   public constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
+    const baseUrlIsHttp = ["http://", "https://"].some(prefix => baseUrl.startsWith(prefix));
+    const baseUrlIsWs = ["ws://", "wss://"].some(prefix => baseUrl.startsWith(prefix));
+    if (!baseUrlIsHttp && !baseUrlIsWs) {
+      throw new Error("Unsupported protocol for baseUrl: must be one of http, https or ws");
+    }
+
+    if (baseUrlIsWs || options.wsUrl) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const wsUrl = baseUrlIsWs ? baseUrl : options.wsUrl!;
+      this.socket = new StreamingSocket(wsUrl);
+      this.socket.connect();
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.rpcClient = baseUrlIsWs ? new WsJsonRpcClient(this.socket!) : new HttpJsonRpcClient(baseUrl);
     this.pollIntervalMs = options.pollInterval ? options.pollInterval * 1000 : 4_000;
-    this.rpcClient = new HttpJsonRpcClient(baseUrl);
     this.myChainId = chainId;
     this.scraperApiUrl = options.scraperApiUrl;
 
@@ -150,11 +165,6 @@ export class EthereumConnection implements AtomicSwapConnection {
         return Encoding.fromHex(normalizeHex(response.result));
       },
     };
-
-    if (options.wsUrl) {
-      this.socket = new StreamingSocket(options.wsUrl);
-      this.socket.connect();
-    }
 
     const atomicSwapEtherContractAddress = options.atomicSwapEtherContractAddress;
     const erc20Tokens = options.erc20Tokens || new Map();
