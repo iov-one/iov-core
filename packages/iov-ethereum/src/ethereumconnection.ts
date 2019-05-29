@@ -57,6 +57,7 @@ import { Erc20Options } from "./erc20";
 import { Erc20Reader } from "./erc20reader";
 import { EthereumCodec } from "./ethereumcodec";
 import { HttpJsonRpcClient } from "./httpjsonrpcclient";
+import { JsonRpcClient } from "./jsonrpcclient";
 import { Parse } from "./parse";
 import {
   decodeHexQuantity,
@@ -120,7 +121,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   }
 
   private readonly pollIntervalMs: number;
-  private readonly rpcClient: HttpJsonRpcClient | WsJsonRpcClient;
+  private readonly rpcClient: JsonRpcClient;
   private readonly myChainId: ChainId;
   private readonly socket: StreamingSocket | undefined;
   private readonly scraperApiUrl: string | undefined;

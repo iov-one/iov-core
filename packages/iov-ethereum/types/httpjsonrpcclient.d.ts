@@ -1,5 +1,6 @@
 import { JsonRpcRequest, JsonRpcResponse } from "@iov/jsonrpc";
-export declare class HttpJsonRpcClient {
+import { JsonRpcClient } from "./jsonrpcclient";
+export declare class HttpJsonRpcClient extends JsonRpcClient {
     private readonly baseUrl;
     constructor(baseUrl: string);
     run(request: JsonRpcRequest): Promise<JsonRpcResponse>;

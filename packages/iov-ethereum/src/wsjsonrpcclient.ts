@@ -1,11 +1,13 @@
 import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jsonrpc";
 import { StreamingSocket } from "@iov/socket";
 
+import { JsonRpcClient } from "./jsonrpcclient";
+
 function isNonNull<T>(t: T | null): t is T {
   return t !== null;
 }
 
-export class WsJsonRpcClient {
+export class WsJsonRpcClient implements JsonRpcClient {
   private readonly socket: StreamingSocket;
 
   public constructor(socket: StreamingSocket) {

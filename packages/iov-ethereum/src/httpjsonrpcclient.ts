@@ -2,7 +2,9 @@ import axios from "axios";
 
 import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jsonrpc";
 
-export class HttpJsonRpcClient {
+import { JsonRpcClient } from "./jsonrpcclient";
+
+export class HttpJsonRpcClient implements JsonRpcClient {
   private readonly baseUrl: string;
 
   public constructor(baseUrl: string) {
