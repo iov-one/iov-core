@@ -1,8 +1,12 @@
+import { Stream } from "xstream";
 import { JsonRpcRequest, JsonRpcResponse } from "@iov/jsonrpc";
-import { StreamingSocket } from "@iov/socket";
+import { SocketWrapperMessageEvent } from "@iov/socket";
 import { JsonRpcClient } from "./jsonrpcclient";
-export declare class WsJsonRpcClient extends JsonRpcClient {
+export declare class WsJsonRpcClient implements JsonRpcClient {
+    readonly events: Stream<SocketWrapperMessageEvent>;
     private readonly socket;
-    constructor(socket: StreamingSocket);
+    constructor(baseUrl: string);
     run(request: JsonRpcRequest): Promise<JsonRpcResponse>;
+    socketSend(request: JsonRpcRequest, ignoreNetworkError?: boolean): Promise<void>;
+    disconnect(): void;
 }

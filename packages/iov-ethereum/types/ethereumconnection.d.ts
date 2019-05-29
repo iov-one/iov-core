@@ -24,7 +24,6 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     private readonly pollIntervalMs;
     private readonly rpcClient;
     private readonly myChainId;
-    private readonly socket;
     private readonly scraperApiUrl;
     private readonly atomicSwapEtherContractAddress?;
     private readonly erc20Tokens;
@@ -50,7 +49,6 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
     getSwaps(query: AtomicSwapQuery, minHeight?: number, maxHeight?: number): Promise<readonly AtomicSwap[]>;
     watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap>;
-    private socketSend;
     private searchTransactionsById;
     /**
      * Merges search results from two different sources: scraper and logs.
