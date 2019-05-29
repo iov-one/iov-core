@@ -672,11 +672,11 @@ export class BnsConnection implements AtomicSwapConnection {
    * Queries the blockchain for the enforced anti-spam fee
    */
   protected async getDefaultFee(): Promise<Amount> {
-    const res = await this.query("/", Encoding.toAscii("gconf:cash:minimal_fee"));
-    if (res.results.length !== 1) {
-      throw new Error("Received unexpected number of fees");
+    const { results } = await this.query("/", Encoding.toAscii("gconf:cash:minimal_fee"));
+    if (results.length !== 1) {
+      throw new Error(`Unexpected number of results for minimal fee. Expected: 1 Got: ${results.length}`);
     }
-    const data = Encoding.fromAscii(res.results[0].value);
+    const data = Encoding.fromAscii(results[0].value);
     const amount = decodeJsonAmount(data);
     return amount;
   }
@@ -691,7 +691,7 @@ export class BnsConnection implements AtomicSwapConnection {
     // TODO: add query handler to msgfee
     const { results } = await this.query("/", Encoding.toAscii(`msgfee:${path}`));
     if (results.length > 1) {
-      throw new Error("Received unexpected number of fees");
+      throw new Error(`Unexpected number of results for product fee. Expected: 0/1 Got: ${results.length}`);
     }
     if (results.length === 0) {
       return undefined;
