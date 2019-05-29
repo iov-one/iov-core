@@ -52,6 +52,8 @@ Breaking changes
   `Keyring`, `Secp256k1HdWallet`, `UserProfile`, `Wallet`, `WalletId`,
   `WalletImplementationIdString`, `WalletSerializationString` from
   @iov/keycontrol.
+- @iov/crypto: Remove `Secp256k1KeypairSymbol`. `Secp256k1Keypair` now uses
+  type-tagger instead.
 - @iov/ethereum: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
 - @iov/ethereum: `Erc20ApproveTransaction` now extends `LightTransaction`
