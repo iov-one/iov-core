@@ -129,7 +129,7 @@ export class RiseConnection implements BlockchainConnection {
       throw new Error(`Expected one accepted transaction but got: ${JSON.stringify(response.data.accepted)}`);
     }
 
-    let blockInfoInterval: any;
+    let blockInfoInterval: NodeJS.Timeout;
     const firstEvent: BlockInfo = {
       state: TransactionState.Pending,
     };
@@ -228,7 +228,8 @@ export class RiseConnection implements BlockchainConnection {
   }
 
   public watchAccount(query: AccountQuery): Stream<Account | undefined> {
-    let lastEvent: any = {}; // default to a dummy value to ensure an initial undefined event is sent
+    // default to a dummy value to ensure an initial undefined event is sent
+    let lastEvent: Account | {} | undefined = {};
     let pollInternal: NodeJS.Timeout | undefined;
     const producer: Producer<Account | undefined> = {
       start: async listener => {

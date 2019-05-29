@@ -4,7 +4,7 @@ import { HashFunction } from "./sha";
 export class Keccak256 implements HashFunction {
   public readonly blockSize = 512 / 8;
 
-  private readonly impl: any;
+  private readonly impl: jssha3.Hasher;
 
   public constructor(firstData?: Uint8Array) {
     this.impl = jssha3.keccak256.create();
