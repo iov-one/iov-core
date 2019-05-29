@@ -64,7 +64,7 @@ export interface Participant {
 }
 export interface CreateMultisignatureTx extends LightTransaction {
     readonly kind: "bns/create_multisignature_contract";
-    readonly participants: ReadonlyArray<Participant>;
+    readonly participants: readonly Participant[];
     readonly activationThreshold: number;
     readonly adminThreshold: number;
 }
@@ -82,7 +82,7 @@ export interface RemoveAddressFromUsernameTx extends LightTransaction {
 export interface UpdateMultisignatureTx extends LightTransaction {
     readonly kind: "bns/update_multisignature_contract";
     readonly contractId: Uint8Array;
-    readonly participants: ReadonlyArray<Participant>;
+    readonly participants: readonly Participant[];
     readonly activationThreshold: number;
     readonly adminThreshold: number;
 }
