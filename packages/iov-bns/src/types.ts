@@ -25,12 +25,12 @@ import { Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 
+// username NFT
+
 export interface ChainAddressPair {
   readonly chainId: ChainId;
   readonly address: Address;
 }
-
-// username NFT
 
 export interface BnsUsernameNft {
   readonly id: string;
