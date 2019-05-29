@@ -26,6 +26,7 @@ import {
   asInt53,
   asIntegerNumber,
   BnsUsernameNft,
+  CashConfiguration,
   ChainAddressPair,
   CreateMultisignatureTx,
   decodeFullSig,
@@ -101,6 +102,13 @@ export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
     quantity: quantity,
     fractionalDigits: fractionalDigits,
     tokenTicker: (coin.ticker || "") as TokenTicker,
+  };
+}
+
+export function decodeCashConfiguration(config: codecImpl.cash.Configuration): CashConfiguration {
+  const minimalFee = decodeAmount(ensure(config.minimalFee, "minimalFee"));
+  return {
+    minimalFee: minimalFee,
   };
 }
 

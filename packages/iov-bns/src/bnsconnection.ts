@@ -50,7 +50,7 @@ import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tenderm
 
 import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
-import { decodeAmount, decodeJsonAmount, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
+import { decodeAmount, decodeCashConfiguration, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
@@ -672,13 +672,12 @@ export class BnsConnection implements AtomicSwapConnection {
    * Queries the blockchain for the enforced anti-spam fee
    */
   protected async getDefaultFee(): Promise<Amount> {
-    const { results } = await this.query("/", Encoding.toAscii("gconf:cash:minimal_fee"));
+    const { results } = await this.query("/", Encoding.toAscii("_c:cash"));
     if (results.length !== 1) {
       throw new Error(`Unexpected number of results for minimal fee. Expected: 1 Got: ${results.length}`);
     }
-    const data = Encoding.fromAscii(results[0].value);
-    const amount = decodeJsonAmount(data);
-    return amount;
+    const { minimalFee } = decodeCashConfiguration(codecImpl.cash.Configuration.decode(results[0].value));
+    return minimalFee;
   }
 
   /**

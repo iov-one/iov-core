@@ -1,8 +1,11 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Address, Algorithm, ChainId, FullSignature, LightTransaction, PublicKeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
+import { Address, Algorithm, Amount, ChainId, FullSignature, LightTransaction, PublicKeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
+export interface CashConfiguration {
+    readonly minimalFee: Amount;
+}
 export interface ChainAddressPair {
     readonly chainId: ChainId;
     readonly address: Address;

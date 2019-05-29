@@ -1,10 +1,11 @@
 import { Amount, ChainId, Nonce, SignedTransaction, Token, UnsignedTransaction } from "@iov/bcp";
 import * as codecImpl from "./generated/codecimpl";
-import { BnsUsernameNft, Keyed, Participant } from "./types";
+import { BnsUsernameNft, CashConfiguration, Keyed, Participant } from "./types";
 export declare function decodeUsernameNft(nft: codecImpl.username.IUsernameToken, registryChainId: ChainId): BnsUsernameNft;
 export declare function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce;
 export declare function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token;
 export declare function decodeAmount(coin: codecImpl.coin.ICoin): Amount;
+export declare function decodeCashConfiguration(config: codecImpl.cash.Configuration): CashConfiguration;
 export declare function decodeJsonAmount(json: string): Amount;
 export declare function decodeParticipants(prefix: "iov" | "tiov", maybeParticipants?: codecImpl.multisig.IParticipant[] | null): readonly Participant[];
 export declare function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction;

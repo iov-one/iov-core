@@ -4,6 +4,7 @@ import { As } from "type-tagger";
 import {
   Address,
   Algorithm,
+  Amount,
   ChainId,
   FullSignature,
   isSendTransaction,
@@ -24,6 +25,12 @@ import {
 import { Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
+
+// config (those are not used outside of @iov/bns)
+
+export interface CashConfiguration {
+  readonly minimalFee: Amount;
+}
 
 // username NFT
 
