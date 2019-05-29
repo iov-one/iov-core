@@ -97,10 +97,12 @@ export function encodeParticipants(
   participants: readonly Participant[],
   // tslint:disable-next-line:readonly-array
 ): codecImpl.multisig.IParticipant[] {
-  return participants.map(participant => ({
-    signature: decodeBnsAddress(participant.address).data,
-    power: participant.power,
-  }));
+  return participants.map(
+    (participant): codecImpl.multisig.IParticipant => ({
+      signature: decodeBnsAddress(participant.address).data,
+      weight: participant.power,
+    }),
+  );
 }
 
 function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.ITx {
