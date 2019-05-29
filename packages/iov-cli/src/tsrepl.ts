@@ -164,6 +164,7 @@ export class TsRepl {
     // somewhere. This btw. leads to a different execution order of imports than in the TS source.
     let lastResult: any;
     for (const added of changes.filter(change => change.added)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       lastResult = await executeJavaScriptAsync(added.value, this.evalFilename, this.context!);
     }
     return lastResult;

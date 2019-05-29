@@ -89,6 +89,7 @@ export class WebsocketClient implements RpcStreamingClient {
       const stream = Stream.create(producer);
       this.subscriptionStreams.set(query, stream);
     }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.subscriptionStreams.get(query)!;
   }
 

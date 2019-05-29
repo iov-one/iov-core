@@ -242,6 +242,7 @@ export class Serialization {
     if (contractAddresses.length !== 1) {
       throw new Error("Atomic swap transactions require exactly one atomic swap contract address");
     }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return contractAddresses[0]!;
   }
 
@@ -351,10 +352,13 @@ export class Serialization {
   }
 
   private static buildAtomicSwapOfferEtherCall(unsigned: SwapOfferTransaction): Uint8Array {
+    if (!unsigned.swapId) {
+      throw new Error("Could not build atomic swap offer call: swapId required");
+    }
     const timeout = unsigned.timeout as BlockHeightTimeout;
     return new Uint8Array([
       ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
-      ...unsigned.swapId!,
+      ...unsigned.swapId,
       ...Abi.encodeAddress(unsigned.recipient),
       ...unsigned.hash,
       ...Abi.encodeUint256(timeout.height.toString()),
@@ -365,10 +369,13 @@ export class Serialization {
     unsigned: SwapOfferTransaction,
     erc20ContractAddress: Address,
   ): Uint8Array {
+    if (!unsigned.swapId) {
+      throw new Error("Could not build atomic swap offer call: swapId required");
+    }
     const timeout = unsigned.timeout as BlockHeightTimeout;
     return new Uint8Array([
       ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)"),
-      ...unsigned.swapId!,
+      ...unsigned.swapId,
       ...Abi.encodeAddress(unsigned.recipient),
       ...unsigned.hash,
       ...Abi.encodeUint256(timeout.height.toString()),
@@ -673,18 +680,17 @@ export class Serialization {
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
     Serialization.checkPreimage(unsigned);
-    Serialization.getAtomicSwapContractAddress(
+    const contractAddress = Serialization.getAtomicSwapContractAddress(
       atomicSwapEtherContractAddress,
       atomicSwapErc20ContractAddress,
     );
-
     const atomicSwapClaimCall = Serialization.buildAtomicSwapClaimCall(unsigned);
 
     return Serialization.serializeGenericTransaction(
       nonce,
       gasPriceHex,
       gasLimitHex,
-      (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
+      contractAddress,
       ZERO_ETH_QUANTITY,
       atomicSwapClaimCall,
       encodeQuantity(v),
@@ -705,18 +711,17 @@ export class Serialization {
     atomicSwapErc20ContractAddress?: Address,
   ): Uint8Array {
     Serialization.checkSwapId(unsigned);
-    Serialization.getAtomicSwapContractAddress(
+    const contractAddress = Serialization.getAtomicSwapContractAddress(
       atomicSwapEtherContractAddress,
       atomicSwapErc20ContractAddress,
     );
-
     const atomicSwapAbortCall = Serialization.buildAtomicSwapAbortCall(unsigned);
 
     return Serialization.serializeGenericTransaction(
       nonce,
       gasPriceHex,
       gasLimitHex,
-      (atomicSwapEtherContractAddress || atomicSwapErc20ContractAddress)!,
+      contractAddress,
       ZERO_ETH_QUANTITY,
       atomicSwapAbortCall,
       encodeQuantity(v),

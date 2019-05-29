@@ -95,6 +95,7 @@ export function main(originalArgs: readonly string[]): void {
   console.info(colors.yellow("    - Long"));
   for (const moduleName of imports.keys()) {
     console.info(colors.yellow(`  * from ${moduleName}`));
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     for (const symbol of imports.get(moduleName)!) {
       console.info(colors.yellow(`    - ${symbol}`));
     }
@@ -112,6 +113,7 @@ export function main(originalArgs: readonly string[]): void {
     import Long from "long";
   `;
   for (const moduleName of imports.keys()) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     init += `import { ${imports.get(moduleName)!.join(", ")} } from "${moduleName}";\n`;
   }
   init += `const { toAscii, fromHex, toHex } = Encoding;\n`;
