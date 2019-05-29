@@ -14,17 +14,12 @@ mkdir -p bin
 cd src/github.com/iov-one/weave
 
 echo "Preparing dependencies..."
-make tools
 make deps
 
-echo "Compiling bnsd..."
-cd ./cmd/bnsd
-make build
-cp ./bnsd "$GOPATH/bin"
+echo "Compiling weave project..."
+make dist
 
-echo "Compiling bcpd..."
-cd ../bcpd
-make build
-cp ./bcpd "$GOPATH/bin"
+echo "Copying bnsd..."
+cp ./cmd/bnsd/bnsd "$GOPATH/bin"
 
-echo "bnsd and bcpd installed under ./go/bin"
+echo "bnsd installed under $GOPATH/bin"
