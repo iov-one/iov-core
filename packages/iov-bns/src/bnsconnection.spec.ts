@@ -1280,9 +1280,9 @@ describe("BnsConnection", () => {
         throw new Error("Expected failed transaction");
       }
       expect(result.height).toBeGreaterThan(initialHeight);
-      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L50
-      expect(result.code).toEqual(12);
-      expect(result.message).toMatch(/insufficient amount/i);
+      // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
+      expect(result.code).toEqual(13);
+      expect(result.message).toMatch(/invalid amount/i);
 
       connection.disconnect();
     });
@@ -1453,9 +1453,9 @@ describe("BnsConnection", () => {
         throw new Error("Expected failed transaction");
       }
       expect(result.height).toBeGreaterThan(initialHeight);
-      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L50
-      expect(result.code).toEqual(12);
-      expect(result.message).toMatch(/insufficient amount/i);
+      // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
+      expect(result.code).toEqual(13);
+      expect(result.message).toMatch(/invalid amount/i);
 
       connection.disconnect();
     });
@@ -1492,9 +1492,9 @@ describe("BnsConnection", () => {
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");
       }
-      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L50
-      expect(result.code).toEqual(12);
-      expect(result.message).toMatch(/insufficient amount/i);
+      // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
+      expect(result.code).toEqual(13);
+      expect(result.message).toMatch(/invalid amount/i);
 
       connection.disconnect();
     });
