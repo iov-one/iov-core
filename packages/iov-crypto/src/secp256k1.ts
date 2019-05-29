@@ -9,10 +9,12 @@ import { ExtendedSecp256k1Signature, Secp256k1Signature } from "./secp256k1signa
 const secp256k1 = new elliptic.ec("secp256k1");
 const secp256k1N = new BN("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", "hex");
 
-export type Secp256k1Keypair = {
+interface Keypair {
   readonly pubkey: Uint8Array;
   readonly privkey: Uint8Array;
-} & As<"secp256k1-keypair">;
+}
+
+export type Secp256k1Keypair = Keypair & As<"secp256k1-keypair">;
 
 export class Secp256k1 {
   public static async makeKeypair(privkey: Uint8Array): Promise<Secp256k1Keypair> {
@@ -34,17 +36,15 @@ export class Secp256k1 {
       throw new Error("input data is not a valid secp256k1 private key");
     }
 
-    /* eslint-disable @typescript-eslint/no-object-literal-type-assertion */
-    // tslint:disable-next-line:no-object-literal-type-assertion
-    return {
+    const out: Keypair = {
       privkey: Encoding.fromHex(keypair.getPrivate("hex")),
       // encodes uncompressed as
       // - 1-byte prefix "04"
       // - 32-byte x coordinate
       // - 32-byte y coordinate
       pubkey: Encoding.fromHex(keypair.getPublic().encode("hex")),
-    } as Secp256k1Keypair;
-    /* eslint-enable @typescript-eslint/no-object-literal-type-assertion */
+    };
+    return out as Secp256k1Keypair;
   }
 
   // Creates a signature that is
