@@ -58,6 +58,9 @@ Breaking changes
   appropriate.
 - @iov/ethereum: `Erc20ApproveTransaction` now extends `LightTransaction`
   instead of `UnsignedTransaction` (i.e. it has no `creator` field).
+- @iov/keycontrol: The `UserProfile` storage format version was bumped to 2.
+  Profiles stored in this version can only be opened with IOV-Core 0.14.4 and
+  above.
 - @iov/jsonrpc: The `id` field of `JsonRpcRequest`, `JsonRpcSuccessResponse` and
   `JsonRpcErrorResponse` is now of type `JsonRpcId`, which can be a string or a
   number.
