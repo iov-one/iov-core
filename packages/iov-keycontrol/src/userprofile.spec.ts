@@ -67,10 +67,17 @@ describe("UserProfile", () => {
       expect(key.data.length).toEqual(32);
     });
 
-    it("can use a different version explicitly", async () => {
-      const key = await UserProfile.deriveEncryptionKey("foobar", 2);
-      expect(key.formatVersion).toEqual(2);
+    it("can use a different supported version explicitly", async () => {
+      const key = await UserProfile.deriveEncryptionKey("foobar", 1);
+      expect(key.formatVersion).toEqual(1);
       expect(key.data.length).toEqual(32);
+    });
+
+    it("throws when trying to call with unsupported version", async () => {
+      await UserProfile.deriveEncryptionKey("foobar", 42).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/unsupported format version/i),
+      );
     });
   });
 
