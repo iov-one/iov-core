@@ -346,15 +346,15 @@ describe("Encode", () => {
       const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
           signature: fromHex("1234567890123456789012345678901234567890"),
-          power: 4,
+          weight: 4,
         },
         {
           signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
-          power: 1,
+          weight: 1,
         },
         {
           signature: fromHex("9999999999999999999999999999999999999999"),
-          power: 1,
+          weight: 1,
         },
       ];
       const createMultisignature: CreateMultisignatureTx & WithCreator = {
@@ -389,15 +389,15 @@ describe("Encode", () => {
       const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
           signature: fromHex("1234567890123456789012345678901234567890"),
-          power: 4,
+          weight: 4,
         },
         {
           signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
-          power: 1,
+          weight: 1,
         },
         {
           signature: fromHex("9999999999999999999999999999999999999999"),
-          power: 1,
+          weight: 1,
         },
       ];
       const updateMultisignature: UpdateMultisignatureTx & WithCreator = {

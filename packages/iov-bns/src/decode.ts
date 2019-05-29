@@ -145,12 +145,12 @@ export function decodeParticipants(
   const participants = ensure(maybeParticipants, "participants");
   participants.forEach((participant, i) => {
     ensure(participant.signature, `participants.$${i}.signature`);
-    ensure(participant.power, `participants.$${i}.power`);
+    ensure(participant.weight, `participants.$${i}.weight`);
   });
 
   return participants.map(participant => ({
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    power: participant.power!,
+    power: participant.weight!,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     address: encodeBnsAddress(prefix, participant.signature!),
   }));

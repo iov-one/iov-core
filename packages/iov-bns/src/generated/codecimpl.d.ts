@@ -156,6 +156,18 @@ export namespace app {
 
     /** Tx resetRevenueMsg */
     resetRevenueMsg?: distribution.IResetRevenueMsg | null;
+
+    /** Tx upgradeSchemaMsg */
+    upgradeSchemaMsg?: migration.IUpgradeSchemaMsg | null;
+
+    /** Tx createSwapMsg */
+    createSwapMsg?: aswap.ICreateSwapMsg | null;
+
+    /** Tx releaseSwapMsg */
+    releaseSwapMsg?: aswap.IReleaseSwapMsg | null;
+
+    /** Tx returnSwapMsg */
+    returnSwapMsg?: aswap.IReturnSwapMsg | null;
   }
 
   /** clarity). */
@@ -229,6 +241,18 @@ export namespace app {
     /** Tx resetRevenueMsg. */
     public resetRevenueMsg?: distribution.IResetRevenueMsg | null;
 
+    /** Tx upgradeSchemaMsg. */
+    public upgradeSchemaMsg?: migration.IUpgradeSchemaMsg | null;
+
+    /** Tx createSwapMsg. */
+    public createSwapMsg?: aswap.ICreateSwapMsg | null;
+
+    /** Tx releaseSwapMsg. */
+    public releaseSwapMsg?: aswap.IReleaseSwapMsg | null;
+
+    /** Tx returnSwapMsg. */
+    public returnSwapMsg?: aswap.IReturnSwapMsg | null;
+
     /** msg is a sum type over all allowed messages on this chain. */
     public sum?:
       | "sendMsg"
@@ -247,7 +271,11 @@ export namespace app {
       | "removeUsernameAddressMsg"
       | "newRevenueMsg"
       | "distributeMsg"
-      | "resetRevenueMsg";
+      | "resetRevenueMsg"
+      | "upgradeSchemaMsg"
+      | "createSwapMsg"
+      | "releaseSwapMsg"
+      | "returnSwapMsg";
 
     /**
      * Creates a new Tx instance using the specified properties.
@@ -948,6 +976,100 @@ export namespace username {
   }
 }
 
+/** Namespace weave. */
+export namespace weave {
+  /** Properties of a Metadata. */
+  interface IMetadata {
+    /** Metadata schema */
+    schema?: number | null;
+  }
+
+  /** weave.Metadata metadata = 1; */
+  class Metadata implements IMetadata {
+    /**
+     * Constructs a new Metadata.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: weave.IMetadata);
+
+    /** Metadata schema. */
+    public schema: number;
+
+    /**
+     * Creates a new Metadata instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Metadata instance
+     */
+    public static create(properties?: weave.IMetadata): weave.Metadata;
+
+    /**
+     * Encodes the specified Metadata message. Does not implicitly {@link weave.Metadata.verify|verify} messages.
+     * @param message Metadata message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: weave.IMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Metadata message, length delimited. Does not implicitly {@link weave.Metadata.verify|verify} messages.
+     * @param message Metadata message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: weave.IMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Metadata message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Metadata
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): weave.Metadata;
+
+    /**
+     * Decodes a Metadata message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Metadata
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): weave.Metadata;
+
+    /**
+     * Verifies a Metadata message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Metadata message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Metadata
+     */
+    public static fromObject(object: { [k: string]: any }): weave.Metadata;
+
+    /**
+     * Creates a plain object from a Metadata message. Also converts values to other types if specified.
+     * @param message Metadata
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: weave.Metadata,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Metadata to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
 /** Namespace coin. */
 export namespace coin {
   /** Properties of a Coin. */
@@ -1336,6 +1458,306 @@ export namespace crypto {
   }
 }
 
+/** Namespace migration. */
+export namespace migration {
+  /** Properties of a Configuration. */
+  interface IConfiguration {
+    /** multisig. */
+    admin?: Uint8Array | null;
+  }
+
+  /** Represents a Configuration. */
+  class Configuration implements IConfiguration {
+    /**
+     * Constructs a new Configuration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: migration.IConfiguration);
+
+    /** multisig. */
+    public admin: Uint8Array;
+
+    /**
+     * Creates a new Configuration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Configuration instance
+     */
+    public static create(properties?: migration.IConfiguration): migration.Configuration;
+
+    /**
+     * Encodes the specified Configuration message. Does not implicitly {@link migration.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: migration.IConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Configuration message, length delimited. Does not implicitly {@link migration.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: migration.IConfiguration,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): migration.Configuration;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): migration.Configuration;
+
+    /**
+     * Verifies a Configuration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Configuration
+     */
+    public static fromObject(object: { [k: string]: any }): migration.Configuration;
+
+    /**
+     * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+     * @param message Configuration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: migration.Configuration,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Configuration to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Schema. */
+  interface ISchema {
+    /** Schema metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** For example, for extension `x/myext` package value is `myext` */
+    pkg?: string | null;
+
+    /** Version holds the highest supported schema version. */
+    version?: number | null;
+  }
+
+  /** Schema declares the maxiumum supported schema version for a package. */
+  class Schema implements ISchema {
+    /**
+     * Constructs a new Schema.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: migration.ISchema);
+
+    /** Schema metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** For example, for extension `x/myext` package value is `myext` */
+    public pkg: string;
+
+    /** Version holds the highest supported schema version. */
+    public version: number;
+
+    /**
+     * Creates a new Schema instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Schema instance
+     */
+    public static create(properties?: migration.ISchema): migration.Schema;
+
+    /**
+     * Encodes the specified Schema message. Does not implicitly {@link migration.Schema.verify|verify} messages.
+     * @param message Schema message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: migration.ISchema, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Schema message, length delimited. Does not implicitly {@link migration.Schema.verify|verify} messages.
+     * @param message Schema message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: migration.ISchema, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Schema message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Schema
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): migration.Schema;
+
+    /**
+     * Decodes a Schema message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Schema
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): migration.Schema;
+
+    /**
+     * Verifies a Schema message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Schema message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Schema
+     */
+    public static fromObject(object: { [k: string]: any }): migration.Schema;
+
+    /**
+     * Creates a plain object from a Schema message. Also converts values to other types if specified.
+     * @param message Schema
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: migration.Schema,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Schema to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an UpgradeSchemaMsg. */
+  interface IUpgradeSchemaMsg {
+    /** UpgradeSchemaMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Name of the package that schema version upgrade is made for. */
+    pkg?: string | null;
+  }
+
+  /** by one version. */
+  class UpgradeSchemaMsg implements IUpgradeSchemaMsg {
+    /**
+     * Constructs a new UpgradeSchemaMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: migration.IUpgradeSchemaMsg);
+
+    /** UpgradeSchemaMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Name of the package that schema version upgrade is made for. */
+    public pkg: string;
+
+    /**
+     * Creates a new UpgradeSchemaMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns UpgradeSchemaMsg instance
+     */
+    public static create(properties?: migration.IUpgradeSchemaMsg): migration.UpgradeSchemaMsg;
+
+    /**
+     * Encodes the specified UpgradeSchemaMsg message. Does not implicitly {@link migration.UpgradeSchemaMsg.verify|verify} messages.
+     * @param message UpgradeSchemaMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: migration.IUpgradeSchemaMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified UpgradeSchemaMsg message, length delimited. Does not implicitly {@link migration.UpgradeSchemaMsg.verify|verify} messages.
+     * @param message UpgradeSchemaMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: migration.IUpgradeSchemaMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes an UpgradeSchemaMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns UpgradeSchemaMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): migration.UpgradeSchemaMsg;
+
+    /**
+     * Decodes an UpgradeSchemaMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns UpgradeSchemaMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): migration.UpgradeSchemaMsg;
+
+    /**
+     * Verifies an UpgradeSchemaMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an UpgradeSchemaMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns UpgradeSchemaMsg
+     */
+    public static fromObject(object: { [k: string]: any }): migration.UpgradeSchemaMsg;
+
+    /**
+     * Creates a plain object from an UpgradeSchemaMsg message. Also converts values to other types if specified.
+     * @param message UpgradeSchemaMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: migration.UpgradeSchemaMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this UpgradeSchemaMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
 /** Namespace orm. */
 export namespace orm {
   /** Properties of a MultiRef. */
@@ -1519,6 +1941,554 @@ export namespace orm {
      */
     public toJSON(): { [k: string]: any };
   }
+
+  /** Properties of a VersionedIDRef. */
+  interface IVersionedIDRef {
+    /** Unique identifier */
+    id?: Uint8Array | null;
+
+    /** Document version, starting with 1. */
+    version?: number | null;
+  }
+
+  /** VersionedID is the combination of document ID and version number. */
+  class VersionedIDRef implements IVersionedIDRef {
+    /**
+     * Constructs a new VersionedIDRef.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: orm.IVersionedIDRef);
+
+    /** Unique identifier */
+    public id: Uint8Array;
+
+    /** Document version, starting with 1. */
+    public version: number;
+
+    /**
+     * Creates a new VersionedIDRef instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns VersionedIDRef instance
+     */
+    public static create(properties?: orm.IVersionedIDRef): orm.VersionedIDRef;
+
+    /**
+     * Encodes the specified VersionedIDRef message. Does not implicitly {@link orm.VersionedIDRef.verify|verify} messages.
+     * @param message VersionedIDRef message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: orm.IVersionedIDRef, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified VersionedIDRef message, length delimited. Does not implicitly {@link orm.VersionedIDRef.verify|verify} messages.
+     * @param message VersionedIDRef message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: orm.IVersionedIDRef, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a VersionedIDRef message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns VersionedIDRef
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): orm.VersionedIDRef;
+
+    /**
+     * Decodes a VersionedIDRef message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns VersionedIDRef
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): orm.VersionedIDRef;
+
+    /**
+     * Verifies a VersionedIDRef message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a VersionedIDRef message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns VersionedIDRef
+     */
+    public static fromObject(object: { [k: string]: any }): orm.VersionedIDRef;
+
+    /**
+     * Creates a plain object from a VersionedIDRef message. Also converts values to other types if specified.
+     * @param message VersionedIDRef
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: orm.VersionedIDRef,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this VersionedIDRef to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
+/** Namespace aswap. */
+export namespace aswap {
+  /** Properties of a Swap. */
+  interface ISwap {
+    /** metadata is used for schema versioning support */
+    metadata?: weave.IMetadata | null;
+
+    /** sha256 hash of preimage, 32 bytes long */
+    preimageHash?: Uint8Array | null;
+
+    /** src is a sender address */
+    src?: Uint8Array | null;
+
+    /** recipient is an address of recipient */
+    recipient?: Uint8Array | null;
+
+    /** expired: [timeout, infinity) */
+    timeout?: number | Long | null;
+
+    /** max length 128 characters */
+    memo?: string | null;
+  }
+
+  /** Swap is designed to hold some coins for atomic swap, locked by preimage_hash */
+  class Swap implements ISwap {
+    /**
+     * Constructs a new Swap.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: aswap.ISwap);
+
+    /** metadata is used for schema versioning support */
+    public metadata?: weave.IMetadata | null;
+
+    /** sha256 hash of preimage, 32 bytes long */
+    public preimageHash: Uint8Array;
+
+    /** src is a sender address */
+    public src: Uint8Array;
+
+    /** recipient is an address of recipient */
+    public recipient: Uint8Array;
+
+    /** expired: [timeout, infinity) */
+    public timeout: number | Long;
+
+    /** max length 128 characters */
+    public memo: string;
+
+    /**
+     * Creates a new Swap instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Swap instance
+     */
+    public static create(properties?: aswap.ISwap): aswap.Swap;
+
+    /**
+     * Encodes the specified Swap message. Does not implicitly {@link aswap.Swap.verify|verify} messages.
+     * @param message Swap message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: aswap.ISwap, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Swap message, length delimited. Does not implicitly {@link aswap.Swap.verify|verify} messages.
+     * @param message Swap message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: aswap.ISwap, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Swap message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Swap
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): aswap.Swap;
+
+    /**
+     * Decodes a Swap message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Swap
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): aswap.Swap;
+
+    /**
+     * Verifies a Swap message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Swap message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Swap
+     */
+    public static fromObject(object: { [k: string]: any }): aswap.Swap;
+
+    /**
+     * Creates a plain object from a Swap message. Also converts values to other types if specified.
+     * @param message Swap
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: aswap.Swap, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this Swap to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a CreateSwapMsg. */
+  interface ICreateSwapMsg {
+    /** CreateSwapMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** CreateSwapMsg src */
+    src?: Uint8Array | null;
+
+    /** sha256 hash of preimage, 32 bytes long */
+    preimageHash?: Uint8Array | null;
+
+    /** CreateSwapMsg recipient */
+    recipient?: Uint8Array | null;
+
+    /** amount may contain multiple token types */
+    amount?: coin.ICoin[] | null;
+
+    /** Timeout represents wall clock time. */
+    timeout?: number | Long | null;
+
+    /** max length 128 character */
+    memo?: string | null;
+  }
+
+  /** CreateSwapMsg creates a Swap with some coins. */
+  class CreateSwapMsg implements ICreateSwapMsg {
+    /**
+     * Constructs a new CreateSwapMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: aswap.ICreateSwapMsg);
+
+    /** CreateSwapMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** CreateSwapMsg src. */
+    public src: Uint8Array;
+
+    /** sha256 hash of preimage, 32 bytes long */
+    public preimageHash: Uint8Array;
+
+    /** CreateSwapMsg recipient. */
+    public recipient: Uint8Array;
+
+    /** amount may contain multiple token types */
+    public amount: coin.ICoin[];
+
+    /** Timeout represents wall clock time. */
+    public timeout: number | Long;
+
+    /** max length 128 character */
+    public memo: string;
+
+    /**
+     * Creates a new CreateSwapMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns CreateSwapMsg instance
+     */
+    public static create(properties?: aswap.ICreateSwapMsg): aswap.CreateSwapMsg;
+
+    /**
+     * Encodes the specified CreateSwapMsg message. Does not implicitly {@link aswap.CreateSwapMsg.verify|verify} messages.
+     * @param message CreateSwapMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: aswap.ICreateSwapMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified CreateSwapMsg message, length delimited. Does not implicitly {@link aswap.CreateSwapMsg.verify|verify} messages.
+     * @param message CreateSwapMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: aswap.ICreateSwapMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a CreateSwapMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns CreateSwapMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): aswap.CreateSwapMsg;
+
+    /**
+     * Decodes a CreateSwapMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns CreateSwapMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): aswap.CreateSwapMsg;
+
+    /**
+     * Verifies a CreateSwapMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a CreateSwapMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns CreateSwapMsg
+     */
+    public static fromObject(object: { [k: string]: any }): aswap.CreateSwapMsg;
+
+    /**
+     * Creates a plain object from a CreateSwapMsg message. Also converts values to other types if specified.
+     * @param message CreateSwapMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: aswap.CreateSwapMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this CreateSwapMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a ReleaseSwapMsg. */
+  interface IReleaseSwapMsg {
+    /** ReleaseSwapMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** swap_id to release */
+    swapId?: Uint8Array | null;
+
+    /** must be exactly 32 bytes long */
+    preimage?: Uint8Array | null;
+  }
+
+  /** This operation is authorized by preimage, which is sent raw and then hashed on the backend. */
+  class ReleaseSwapMsg implements IReleaseSwapMsg {
+    /**
+     * Constructs a new ReleaseSwapMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: aswap.IReleaseSwapMsg);
+
+    /** ReleaseSwapMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** swap_id to release */
+    public swapId: Uint8Array;
+
+    /** must be exactly 32 bytes long */
+    public preimage: Uint8Array;
+
+    /**
+     * Creates a new ReleaseSwapMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ReleaseSwapMsg instance
+     */
+    public static create(properties?: aswap.IReleaseSwapMsg): aswap.ReleaseSwapMsg;
+
+    /**
+     * Encodes the specified ReleaseSwapMsg message. Does not implicitly {@link aswap.ReleaseSwapMsg.verify|verify} messages.
+     * @param message ReleaseSwapMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: aswap.IReleaseSwapMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ReleaseSwapMsg message, length delimited. Does not implicitly {@link aswap.ReleaseSwapMsg.verify|verify} messages.
+     * @param message ReleaseSwapMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: aswap.IReleaseSwapMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a ReleaseSwapMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ReleaseSwapMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): aswap.ReleaseSwapMsg;
+
+    /**
+     * Decodes a ReleaseSwapMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ReleaseSwapMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): aswap.ReleaseSwapMsg;
+
+    /**
+     * Verifies a ReleaseSwapMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ReleaseSwapMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ReleaseSwapMsg
+     */
+    public static fromObject(object: { [k: string]: any }): aswap.ReleaseSwapMsg;
+
+    /**
+     * Creates a plain object from a ReleaseSwapMsg message. Also converts values to other types if specified.
+     * @param message ReleaseSwapMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: aswap.ReleaseSwapMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ReleaseSwapMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a ReturnSwapMsg. */
+  interface IReturnSwapMsg {
+    /** ReturnSwapMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** swap_id to return */
+    swapId?: Uint8Array | null;
+  }
+
+  /** This operation only works if the Swap is expired. */
+  class ReturnSwapMsg implements IReturnSwapMsg {
+    /**
+     * Constructs a new ReturnSwapMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: aswap.IReturnSwapMsg);
+
+    /** ReturnSwapMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** swap_id to return */
+    public swapId: Uint8Array;
+
+    /**
+     * Creates a new ReturnSwapMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ReturnSwapMsg instance
+     */
+    public static create(properties?: aswap.IReturnSwapMsg): aswap.ReturnSwapMsg;
+
+    /**
+     * Encodes the specified ReturnSwapMsg message. Does not implicitly {@link aswap.ReturnSwapMsg.verify|verify} messages.
+     * @param message ReturnSwapMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: aswap.IReturnSwapMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ReturnSwapMsg message, length delimited. Does not implicitly {@link aswap.ReturnSwapMsg.verify|verify} messages.
+     * @param message ReturnSwapMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: aswap.IReturnSwapMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a ReturnSwapMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ReturnSwapMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): aswap.ReturnSwapMsg;
+
+    /**
+     * Decodes a ReturnSwapMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ReturnSwapMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): aswap.ReturnSwapMsg;
+
+    /**
+     * Verifies a ReturnSwapMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ReturnSwapMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ReturnSwapMsg
+     */
+    public static fromObject(object: { [k: string]: any }): aswap.ReturnSwapMsg;
+
+    /**
+     * Creates a plain object from a ReturnSwapMsg message. Also converts values to other types if specified.
+     * @param message ReturnSwapMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: aswap.ReturnSwapMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ReturnSwapMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
 }
 
 /** Namespace batch. */
@@ -1619,6 +2589,9 @@ export namespace batch {
 export namespace cash {
   /** Properties of a Set. */
   interface ISet {
+    /** Set metadata */
+    metadata?: weave.IMetadata | null;
+
     /** Set coins */
     coins?: coin.ICoin[] | null;
   }
@@ -1630,6 +2603,9 @@ export namespace cash {
      * @param [properties] Properties to set
      */
     constructor(properties?: cash.ISet);
+
+    /** Set metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** Set coins. */
     public coins: coin.ICoin[];
@@ -1707,6 +2683,9 @@ export namespace cash {
 
   /** Properties of a SendMsg. */
   interface ISendMsg {
+    /** SendMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** SendMsg src */
     src?: Uint8Array | null;
 
@@ -1730,6 +2709,9 @@ export namespace cash {
      * @param [properties] Properties to set
      */
     constructor(properties?: cash.ISendMsg);
+
+    /** SendMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** SendMsg src. */
     public src: Uint8Array;
@@ -1822,6 +2804,9 @@ export namespace cash {
 
   /** Properties of a FeeInfo. */
   interface IFeeInfo {
+    /** FeeInfo metadata */
+    metadata?: weave.IMetadata | null;
+
     /** FeeInfo payer */
     payer?: Uint8Array | null;
 
@@ -1836,6 +2821,9 @@ export namespace cash {
      * @param [properties] Properties to set
      */
     constructor(properties?: cash.IFeeInfo);
+
+    /** FeeInfo metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** FeeInfo payer. */
     public payer: Uint8Array;
@@ -1916,12 +2904,212 @@ export namespace cash {
      */
     public toJSON(): { [k: string]: any };
   }
+
+  /** Properties of a Configuration. */
+  interface IConfiguration {
+    /** TODO: add schema uint32 here */
+    owner?: Uint8Array | null;
+
+    /** Configuration collectorAddress */
+    collectorAddress?: Uint8Array | null;
+
+    /** Configuration minimalFee */
+    minimalFee?: coin.ICoin | null;
+  }
+
+  /** Represents a Configuration. */
+  class Configuration implements IConfiguration {
+    /**
+     * Constructs a new Configuration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: cash.IConfiguration);
+
+    /** TODO: add schema uint32 here */
+    public owner: Uint8Array;
+
+    /** Configuration collectorAddress. */
+    public collectorAddress: Uint8Array;
+
+    /** Configuration minimalFee. */
+    public minimalFee?: coin.ICoin | null;
+
+    /**
+     * Creates a new Configuration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Configuration instance
+     */
+    public static create(properties?: cash.IConfiguration): cash.Configuration;
+
+    /**
+     * Encodes the specified Configuration message. Does not implicitly {@link cash.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: cash.IConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Configuration message, length delimited. Does not implicitly {@link cash.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: cash.IConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): cash.Configuration;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): cash.Configuration;
+
+    /**
+     * Verifies a Configuration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Configuration
+     */
+    public static fromObject(object: { [k: string]: any }): cash.Configuration;
+
+    /**
+     * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+     * @param message Configuration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: cash.Configuration,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Configuration to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a ConfigurationMsg. */
+  interface IConfigurationMsg {
+    /** TODO: add schema uint32 here */
+    patch?: cash.IConfiguration | null;
+  }
+
+  /** Represents a ConfigurationMsg. */
+  class ConfigurationMsg implements IConfigurationMsg {
+    /**
+     * Constructs a new ConfigurationMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: cash.IConfigurationMsg);
+
+    /** TODO: add schema uint32 here */
+    public patch?: cash.IConfiguration | null;
+
+    /**
+     * Creates a new ConfigurationMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ConfigurationMsg instance
+     */
+    public static create(properties?: cash.IConfigurationMsg): cash.ConfigurationMsg;
+
+    /**
+     * Encodes the specified ConfigurationMsg message. Does not implicitly {@link cash.ConfigurationMsg.verify|verify} messages.
+     * @param message ConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: cash.IConfigurationMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ConfigurationMsg message, length delimited. Does not implicitly {@link cash.ConfigurationMsg.verify|verify} messages.
+     * @param message ConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: cash.IConfigurationMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a ConfigurationMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): cash.ConfigurationMsg;
+
+    /**
+     * Decodes a ConfigurationMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): cash.ConfigurationMsg;
+
+    /**
+     * Verifies a ConfigurationMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ConfigurationMsg
+     */
+    public static fromObject(object: { [k: string]: any }): cash.ConfigurationMsg;
+
+    /**
+     * Creates a plain object from a ConfigurationMsg message. Also converts values to other types if specified.
+     * @param message ConfigurationMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: cash.ConfigurationMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ConfigurationMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
 }
 
 /** Namespace currency. */
 export namespace currency {
   /** Properties of a TokenInfo. */
   interface ITokenInfo {
+    /** TokenInfo metadata */
+    metadata?: weave.IMetadata | null;
+
     /** TokenInfo name */
     name?: string | null;
   }
@@ -1933,6 +3121,9 @@ export namespace currency {
      * @param [properties] Properties to set
      */
     constructor(properties?: currency.ITokenInfo);
+
+    /** TokenInfo metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** TokenInfo name. */
     public name: string;
@@ -2013,6 +3204,9 @@ export namespace currency {
 
   /** Properties of a NewTokenInfoMsg. */
   interface INewTokenInfoMsg {
+    /** NewTokenInfoMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** NewTokenInfoMsg ticker */
     ticker?: string | null;
 
@@ -2027,6 +3221,9 @@ export namespace currency {
      * @param [properties] Properties to set
      */
     constructor(properties?: currency.INewTokenInfoMsg);
+
+    /** NewTokenInfoMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** NewTokenInfoMsg ticker. */
     public ticker: string;
@@ -2116,6 +3313,9 @@ export namespace currency {
 export namespace distribution {
   /** Properties of a Revenue. */
   interface IRevenue {
+    /** Revenue metadata */
+    metadata?: weave.IMetadata | null;
+
     /** While not enforced it is best to use a multisig contract here. */
     admin?: Uint8Array | null;
 
@@ -2130,6 +3330,9 @@ export namespace distribution {
      * @param [properties] Properties to set
      */
     constructor(properties?: distribution.IRevenue);
+
+    /** Revenue metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** While not enforced it is best to use a multisig contract here. */
     public admin: Uint8Array;
@@ -2316,6 +3519,9 @@ export namespace distribution {
 
   /** Properties of a NewRevenueMsg. */
   interface INewRevenueMsg {
+    /** NewRevenueMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** While not enforced it is best to use a multisig contract here. */
     admin?: Uint8Array | null;
 
@@ -2330,6 +3536,9 @@ export namespace distribution {
      * @param [properties] Properties to set
      */
     constructor(properties?: distribution.INewRevenueMsg);
+
+    /** NewRevenueMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** While not enforced it is best to use a multisig contract here. */
     public admin: Uint8Array;
@@ -2416,6 +3625,9 @@ export namespace distribution {
 
   /** Properties of a DistributeMsg. */
   interface IDistributeMsg {
+    /** DistributeMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** should be distributed between recipients. */
     revenueId?: Uint8Array | null;
   }
@@ -2427,6 +3639,9 @@ export namespace distribution {
      * @param [properties] Properties to set
      */
     constructor(properties?: distribution.IDistributeMsg);
+
+    /** DistributeMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** should be distributed between recipients. */
     public revenueId: Uint8Array;
@@ -2510,6 +3725,9 @@ export namespace distribution {
 
   /** Properties of a ResetRevenueMsg. */
   interface IResetRevenueMsg {
+    /** ResetRevenueMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** Revenue ID reference an ID of a revenue instance that is updated. */
     revenueId?: Uint8Array | null;
 
@@ -2524,6 +3742,9 @@ export namespace distribution {
      * @param [properties] Properties to set
      */
     constructor(properties?: distribution.IResetRevenueMsg);
+
+    /** ResetRevenueMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** Revenue ID reference an ID of a revenue instance that is updated. */
     public revenueId: Uint8Array;
@@ -2616,7 +3837,10 @@ export namespace distribution {
 export namespace escrow {
   /** Properties of an Escrow. */
   interface IEscrow {
-    /** Sender, Arbiter, Recipient are all weave.Permission */
+    /** Escrow metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Escrow sender */
     sender?: Uint8Array | null;
 
     /** Escrow arbiter */
@@ -2640,7 +3864,10 @@ export namespace escrow {
      */
     constructor(properties?: escrow.IEscrow);
 
-    /** Sender, Arbiter, Recipient are all weave.Permission */
+    /** Escrow metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Escrow sender. */
     public sender: Uint8Array;
 
     /** Escrow arbiter. */
@@ -2731,7 +3958,10 @@ export namespace escrow {
 
   /** Properties of a CreateEscrowMsg. */
   interface ICreateEscrowMsg {
-    /** Sender, Arbiter, Recipient are all weave.Permission */
+    /** CreateEscrowMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** CreateEscrowMsg src */
     src?: Uint8Array | null;
 
     /** CreateEscrowMsg arbiter */
@@ -2758,7 +3988,10 @@ export namespace escrow {
      */
     constructor(properties?: escrow.ICreateEscrowMsg);
 
-    /** Sender, Arbiter, Recipient are all weave.Permission */
+    /** CreateEscrowMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** CreateEscrowMsg src. */
     public src: Uint8Array;
 
     /** CreateEscrowMsg arbiter. */
@@ -2855,6 +4088,9 @@ export namespace escrow {
 
   /** Properties of a ReleaseEscrowMsg. */
   interface IReleaseEscrowMsg {
+    /** ReleaseEscrowMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** ReleaseEscrowMsg escrowId */
     escrowId?: Uint8Array | null;
 
@@ -2869,6 +4105,9 @@ export namespace escrow {
      * @param [properties] Properties to set
      */
     constructor(properties?: escrow.IReleaseEscrowMsg);
+
+    /** ReleaseEscrowMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** ReleaseEscrowMsg escrowId. */
     public escrowId: Uint8Array;
@@ -2955,6 +4194,9 @@ export namespace escrow {
 
   /** Properties of a ReturnEscrowMsg. */
   interface IReturnEscrowMsg {
+    /** ReturnEscrowMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** ReturnEscrowMsg escrowId */
     escrowId?: Uint8Array | null;
   }
@@ -2966,6 +4208,9 @@ export namespace escrow {
      * @param [properties] Properties to set
      */
     constructor(properties?: escrow.IReturnEscrowMsg);
+
+    /** ReturnEscrowMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** ReturnEscrowMsg escrowId. */
     public escrowId: Uint8Array;
@@ -3049,6 +4294,9 @@ export namespace escrow {
 
   /** Properties of an UpdateEscrowPartiesMsg. */
   interface IUpdateEscrowPartiesMsg {
+    /** UpdateEscrowPartiesMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** UpdateEscrowPartiesMsg escrowId */
     escrowId?: Uint8Array | null;
 
@@ -3069,6 +4317,9 @@ export namespace escrow {
      * @param [properties] Properties to set
      */
     constructor(properties?: escrow.IUpdateEscrowPartiesMsg);
+
+    /** UpdateEscrowPartiesMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** UpdateEscrowPartiesMsg escrowId. */
     public escrowId: Uint8Array;
@@ -3170,14 +4421,26 @@ export namespace escrow {
 export namespace gov {
   /** Properties of an Electorate. */
   interface IElectorate {
+    /** Electorate metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Document version */
+    version?: number | null;
+
+    /** Admin is the address that is allowed ot modify an existing electorate. */
+    admin?: Uint8Array | null;
+
     /** Human readable title. */
     title?: string | null;
 
     /** Elector defines a list of all signatures that are allowed to participate in a vote */
     electors?: gov.IElector[] | null;
 
-    /** TotalWeightElectorate is the sum of all electors weights. */
-    totalWeightElectorate?: number | Long | null;
+    /** TotalElectorateWeight is the sum of all electors weights. */
+    totalElectorateWeight?: number | Long | null;
+
+    /** UpdateElectionRuleRef reference the rule to update this electorate. */
+    updateElectionRuleRef?: orm.IVersionedIDRef | null;
   }
 
   /** and is stored for re-use */
@@ -3188,14 +4451,26 @@ export namespace gov {
      */
     constructor(properties?: gov.IElectorate);
 
+    /** Electorate metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Document version */
+    public version: number;
+
+    /** Admin is the address that is allowed ot modify an existing electorate. */
+    public admin: Uint8Array;
+
     /** Human readable title. */
     public title: string;
 
     /** Elector defines a list of all signatures that are allowed to participate in a vote */
     public electors: gov.IElector[];
 
-    /** TotalWeightElectorate is the sum of all electors weights. */
-    public totalWeightElectorate: number | Long;
+    /** TotalElectorateWeight is the sum of all electors weights. */
+    public totalElectorateWeight: number | Long;
+
+    /** UpdateElectionRuleRef reference the rule to update this electorate. */
+    public updateElectionRuleRef?: orm.IVersionedIDRef | null;
 
     /**
      * Creates a new Electorate instance using the specified properties.
@@ -3274,7 +4549,7 @@ export namespace gov {
   /** Properties of an Elector. */
   interface IElector {
     /** The address of the voter. */
-    signature?: Uint8Array | null;
+    address?: Uint8Array | null;
 
     /** Weight defines the power of the participants vote. max value is 65535 (2^16-1). */
     weight?: number | null;
@@ -3289,7 +4564,7 @@ export namespace gov {
     constructor(properties?: gov.IElector);
 
     /** The address of the voter. */
-    public signature: Uint8Array;
+    public address: Uint8Array;
 
     /** Weight defines the power of the participants vote. max value is 65535 (2^16-1). */
     public weight: number;
@@ -3370,6 +4645,15 @@ export namespace gov {
 
   /** Properties of an ElectionRule. */
   interface IElectionRule {
+    /** ElectionRule metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Document version */
+    version?: number | null;
+
+    /** Admin is the address that is allowed ot modify an existing election rule. */
+    admin?: Uint8Array | null;
+
     /** Human readable title. */
     title?: string | null;
 
@@ -3378,6 +4662,9 @@ export namespace gov {
 
     /** of the eligible voters. */
     threshold?: gov.IFraction | null;
+
+    /** of the eligible voters. */
+    quorum?: gov.IFraction | null;
   }
 
   /** Election Rule defines how an election is run. A proposal must be voted upon via a pre-defined ruleset. */
@@ -3388,6 +4675,15 @@ export namespace gov {
      */
     constructor(properties?: gov.IElectionRule);
 
+    /** ElectionRule metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Document version */
+    public version: number;
+
+    /** Admin is the address that is allowed ot modify an existing election rule. */
+    public admin: Uint8Array;
+
     /** Human readable title. */
     public title: string;
 
@@ -3396,6 +4692,9 @@ export namespace gov {
 
     /** of the eligible voters. */
     public threshold?: gov.IFraction | null;
+
+    /** of the eligible voters. */
+    public quorum?: gov.IFraction | null;
 
     /**
      * Creates a new ElectionRule instance using the specified properties.
@@ -3568,19 +4867,204 @@ export namespace gov {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a TextProposal. */
-  interface ITextProposal {
+  /** Properties of a TextProposalPayload. */
+  interface ITextProposalPayload {}
+
+  /** A text form proposal for an on-chain governance process. */
+  class TextProposalPayload implements ITextProposalPayload {
+    /**
+     * Constructs a new TextProposalPayload.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.ITextProposalPayload);
+
+    /**
+     * Creates a new TextProposalPayload instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns TextProposalPayload instance
+     */
+    public static create(properties?: gov.ITextProposalPayload): gov.TextProposalPayload;
+
+    /**
+     * Encodes the specified TextProposalPayload message. Does not implicitly {@link gov.TextProposalPayload.verify|verify} messages.
+     * @param message TextProposalPayload message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.ITextProposalPayload, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified TextProposalPayload message, length delimited. Does not implicitly {@link gov.TextProposalPayload.verify|verify} messages.
+     * @param message TextProposalPayload message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: gov.ITextProposalPayload,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a TextProposalPayload message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns TextProposalPayload
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.TextProposalPayload;
+
+    /**
+     * Decodes a TextProposalPayload message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns TextProposalPayload
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.TextProposalPayload;
+
+    /**
+     * Verifies a TextProposalPayload message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a TextProposalPayload message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns TextProposalPayload
+     */
+    public static fromObject(object: { [k: string]: any }): gov.TextProposalPayload;
+
+    /**
+     * Creates a plain object from a TextProposalPayload message. Also converts values to other types if specified.
+     * @param message TextProposalPayload
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.TextProposalPayload,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this TextProposalPayload to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an ElectorateUpdatePayload. */
+  interface IElectorateUpdatePayload {
+    /** with weight=0. */
+    diffElectors?: gov.IElector[] | null;
+  }
+
+  /** Represents an ElectorateUpdatePayload. */
+  class ElectorateUpdatePayload implements IElectorateUpdatePayload {
+    /**
+     * Constructs a new ElectorateUpdatePayload.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.IElectorateUpdatePayload);
+
+    /** with weight=0. */
+    public diffElectors: gov.IElector[];
+
+    /**
+     * Creates a new ElectorateUpdatePayload instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ElectorateUpdatePayload instance
+     */
+    public static create(properties?: gov.IElectorateUpdatePayload): gov.ElectorateUpdatePayload;
+
+    /**
+     * Encodes the specified ElectorateUpdatePayload message. Does not implicitly {@link gov.ElectorateUpdatePayload.verify|verify} messages.
+     * @param message ElectorateUpdatePayload message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.IElectorateUpdatePayload, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ElectorateUpdatePayload message, length delimited. Does not implicitly {@link gov.ElectorateUpdatePayload.verify|verify} messages.
+     * @param message ElectorateUpdatePayload message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: gov.IElectorateUpdatePayload,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes an ElectorateUpdatePayload message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ElectorateUpdatePayload
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.ElectorateUpdatePayload;
+
+    /**
+     * Decodes an ElectorateUpdatePayload message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ElectorateUpdatePayload
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.ElectorateUpdatePayload;
+
+    /**
+     * Verifies an ElectorateUpdatePayload message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an ElectorateUpdatePayload message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ElectorateUpdatePayload
+     */
+    public static fromObject(object: { [k: string]: any }): gov.ElectorateUpdatePayload;
+
+    /**
+     * Creates a plain object from an ElectorateUpdatePayload message. Also converts values to other types if specified.
+     * @param message ElectorateUpdatePayload
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.ElectorateUpdatePayload,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ElectorateUpdatePayload to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Proposal. */
+  interface IProposal {
+    /** Proposal metadata */
+    metadata?: weave.IMetadata | null;
+
     /** Human readable title. */
     title?: string | null;
 
     /** Description of the proposal in text form. */
     description?: string | null;
 
-    /** Reference to the election rule */
-    electionRuleId?: Uint8Array | null;
+    /** ElectionRuleRef is a reference to the election rule */
+    electionRuleRef?: orm.IVersionedIDRef | null;
 
     /** Reference to the electorate to define the group of possible voters. */
-    electorateId?: Uint8Array | null;
+    electorateRef?: orm.IVersionedIDRef | null;
 
     /** to this start time. */
     votingStartTime?: number | Long | null;
@@ -3594,23 +5078,35 @@ export namespace gov {
     /** Address of the author who created the proposal. If not set explicit on creation it will default to the main signer. */
     author?: Uint8Array | null;
 
-    /** Votes contain the list of individual votes with elector and voted option. */
-    votes?: gov.IVote[] | null;
-
     /** Result of the election. Contains intermediate tally results while voting period is open. */
-    voteResult?: gov.ITallyResult | null;
+    voteState?: gov.ITallyResult | null;
 
-    /** status is the final result based on the votes and election rule. */
-    status?: gov.TextProposal.Status | null;
+    /** Status represents the high level position in the life cycle of the proposal. Initial value is submitted. */
+    status?: gov.Proposal.Status | null;
+
+    /** Result is the final result based on the votes and election rule. Initial value is Undefined. */
+    result?: gov.Proposal.Result | null;
+
+    /** Proposal type */
+    type?: gov.Proposal.Type | null;
+
+    /** Proposal textDetails */
+    textDetails?: gov.ITextProposalPayload | null;
+
+    /** Proposal electorateUpdateDetails */
+    electorateUpdateDetails?: gov.IElectorateUpdatePayload | null;
   }
 
-  /** A text form proposal for an on-chain governance process. */
-  class TextProposal implements ITextProposal {
+  /** A generic proposal for an on-chain governance process. */
+  class Proposal implements IProposal {
     /**
-     * Constructs a new TextProposal.
+     * Constructs a new Proposal.
      * @param [properties] Properties to set
      */
-    constructor(properties?: gov.ITextProposal);
+    constructor(properties?: gov.IProposal);
+
+    /** Proposal metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** Human readable title. */
     public title: string;
@@ -3618,11 +5114,11 @@ export namespace gov {
     /** Description of the proposal in text form. */
     public description: string;
 
-    /** Reference to the election rule */
-    public electionRuleId: Uint8Array;
+    /** ElectionRuleRef is a reference to the election rule */
+    public electionRuleRef?: orm.IVersionedIDRef | null;
 
     /** Reference to the electorate to define the group of possible voters. */
-    public electorateId: Uint8Array;
+    public electorateRef?: orm.IVersionedIDRef | null;
 
     /** to this start time. */
     public votingStartTime: number | Long;
@@ -3636,114 +5132,144 @@ export namespace gov {
     /** Address of the author who created the proposal. If not set explicit on creation it will default to the main signer. */
     public author: Uint8Array;
 
-    /** Votes contain the list of individual votes with elector and voted option. */
-    public votes: gov.IVote[];
-
     /** Result of the election. Contains intermediate tally results while voting period is open. */
-    public voteResult?: gov.ITallyResult | null;
+    public voteState?: gov.ITallyResult | null;
 
-    /** status is the final result based on the votes and election rule. */
-    public status: gov.TextProposal.Status;
+    /** Status represents the high level position in the life cycle of the proposal. Initial value is submitted. */
+    public status: gov.Proposal.Status;
+
+    /** Result is the final result based on the votes and election rule. Initial value is Undefined. */
+    public result: gov.Proposal.Result;
+
+    /** Proposal type. */
+    public type: gov.Proposal.Type;
+
+    /** Proposal textDetails. */
+    public textDetails?: gov.ITextProposalPayload | null;
+
+    /** Proposal electorateUpdateDetails. */
+    public electorateUpdateDetails?: gov.IElectorateUpdatePayload | null;
+
+    /** details */
+    public details?: "textDetails" | "electorateUpdateDetails";
 
     /**
-     * Creates a new TextProposal instance using the specified properties.
+     * Creates a new Proposal instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns TextProposal instance
+     * @returns Proposal instance
      */
-    public static create(properties?: gov.ITextProposal): gov.TextProposal;
+    public static create(properties?: gov.IProposal): gov.Proposal;
 
     /**
-     * Encodes the specified TextProposal message. Does not implicitly {@link gov.TextProposal.verify|verify} messages.
-     * @param message TextProposal message or plain object to encode
+     * Encodes the specified Proposal message. Does not implicitly {@link gov.Proposal.verify|verify} messages.
+     * @param message Proposal message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: gov.ITextProposal, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: gov.IProposal, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified TextProposal message, length delimited. Does not implicitly {@link gov.TextProposal.verify|verify} messages.
-     * @param message TextProposal message or plain object to encode
+     * Encodes the specified Proposal message, length delimited. Does not implicitly {@link gov.Proposal.verify|verify} messages.
+     * @param message Proposal message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(message: gov.ITextProposal, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encodeDelimited(message: gov.IProposal, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a TextProposal message from the specified reader or buffer.
+     * Decodes a Proposal message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns TextProposal
+     * @returns Proposal
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.TextProposal;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.Proposal;
 
     /**
-     * Decodes a TextProposal message from the specified reader or buffer, length delimited.
+     * Decodes a Proposal message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns TextProposal
+     * @returns Proposal
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.TextProposal;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.Proposal;
 
     /**
-     * Verifies a TextProposal message.
+     * Verifies a Proposal message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a TextProposal message from a plain object. Also converts values to their respective internal types.
+     * Creates a Proposal message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns TextProposal
+     * @returns Proposal
      */
-    public static fromObject(object: { [k: string]: any }): gov.TextProposal;
+    public static fromObject(object: { [k: string]: any }): gov.Proposal;
 
     /**
-     * Creates a plain object from a TextProposal message. Also converts values to other types if specified.
-     * @param message TextProposal
+     * Creates a plain object from a Proposal message. Also converts values to other types if specified.
+     * @param message Proposal
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: gov.TextProposal,
+      message: gov.Proposal,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this TextProposal to JSON.
+     * Converts this Proposal to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
   }
 
-  namespace TextProposal {
-    /** Status of the proposal base on the final tally result. `UNDEFINED` as initial value. */
+  namespace Proposal {
+    /** Status enum. */
     enum Status {
-      TEXT_PROPOSAL_STATUS_INVALID = 0,
-      TEXT_PROPOSAL_STATUS_UNDEFINED = 1,
-      TEXT_PROPOSAL_STATUS_ACCEPTED = 2,
-      TEXT_PROPOSAL_STATUS_REJECTED = 3,
+      PROPOSAL_STATUS_INVALID = 0,
+      PROPOSAL_STATUS_SUBMITTED = 1,
+      PROPOSAL_STATUS_CLOSED = 2,
+      PROPOSAL_STATUS_WITHDRAWN = 3,
+    }
+
+    /** Result enum. */
+    enum Result {
+      PROPOSAL_RESULT_INVALID = 0,
+      PROPOSAL_RESULT_UNDEFINED = 1,
+      PROPOSAL_RESULT_ACCEPTED = 2,
+      PROPOSAL_RESULT_REJECTED = 3,
+    }
+
+    /** Type enum. */
+    enum Type {
+      PROPOSAL_TYPE_INVALID = 0,
+      PROPOSAL_TYPE_TEXT = 1,
+      PROPOSAL_TYPE_UPDATE_ELECTORATE = 2,
     }
   }
 
   /** Properties of a TallyResult. */
   interface ITallyResult {
-    /** Sum of weights of all the voters that approved the proposal */
-    totalYes?: number | null;
+    /** TotalYes is the sum of weights of all the voters that approved the proposal */
+    totalYes?: number | Long | null;
 
-    /** Sum of weights of all the voters that rejected the proposal */
-    totalNo?: number | null;
+    /** TotalNo is the sum of weights of all the voters that rejected the proposal */
+    totalNo?: number | Long | null;
 
-    /** Sum of weights of all the voters that voted abstain */
-    totalAbstain?: number | null;
+    /** TotalAbstain is the sum of weights of all the voters that voted abstain */
+    totalAbstain?: number | Long | null;
 
-    /** Sum of all weights in the electorate. */
-    totalWeightElectorate?: number | Long | null;
+    /** TotalElectorateWeight is the sum of all weights in the electorate. */
+    totalElectorateWeight?: number | Long | null;
 
-    /** proposal this value must be exceeded. */
+    /** Quorum when set is the fraction of the total electorate weight that must be exceeded by total votes weight. */
+    quorum?: gov.IFraction | null;
+
+    /** The base value is either the total electorate weight or the sum of Yes/No weights when a quorum is defined. */
     threshold?: gov.IFraction | null;
   }
 
@@ -3755,19 +5281,22 @@ export namespace gov {
      */
     constructor(properties?: gov.ITallyResult);
 
-    /** Sum of weights of all the voters that approved the proposal */
-    public totalYes: number;
+    /** TotalYes is the sum of weights of all the voters that approved the proposal */
+    public totalYes: number | Long;
 
-    /** Sum of weights of all the voters that rejected the proposal */
-    public totalNo: number;
+    /** TotalNo is the sum of weights of all the voters that rejected the proposal */
+    public totalNo: number | Long;
 
-    /** Sum of weights of all the voters that voted abstain */
-    public totalAbstain: number;
+    /** TotalAbstain is the sum of weights of all the voters that voted abstain */
+    public totalAbstain: number | Long;
 
-    /** Sum of all weights in the electorate. */
-    public totalWeightElectorate: number | Long;
+    /** TotalElectorateWeight is the sum of all weights in the electorate. */
+    public totalElectorateWeight: number | Long;
 
-    /** proposal this value must be exceeded. */
+    /** Quorum when set is the fraction of the total electorate weight that must be exceeded by total votes weight. */
+    public quorum?: gov.IFraction | null;
+
+    /** The base value is either the total electorate weight or the sum of Yes/No weights when a quorum is defined. */
     public threshold?: gov.IFraction | null;
 
     /**
@@ -3846,14 +5375,17 @@ export namespace gov {
 
   /** Properties of a Vote. */
   interface IVote {
-    /** Vote elector */
+    /** Vote metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Elector is who voted */
     elector?: gov.IElector | null;
 
-    /** Vote voted */
+    /** VoteOption is what they voted */
     voted?: gov.VoteOption | null;
   }
 
-  /** Vote combines the elector and his voted option to archive them. */
+  /** Vote combines the elector and their voted option to archive them. The proposalID and address is stored within the key. */
   class Vote implements IVote {
     /**
      * Constructs a new Vote.
@@ -3861,10 +5393,13 @@ export namespace gov {
      */
     constructor(properties?: gov.IVote);
 
-    /** Vote elector. */
+    /** Vote metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Elector is who voted */
     public elector?: gov.IElector | null;
 
-    /** Vote voted. */
+    /** VoteOption is what they voted */
     public voted: gov.VoteOption;
 
     /**
@@ -3940,16 +5475,19 @@ export namespace gov {
 
   /** Properties of a CreateTextProposalMsg. */
   interface ICreateTextProposalMsg {
+    /** CreateTextProposalMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$` */
     title?: string | null;
 
     /** Human readable description with 3 to 5000 chars. */
     description?: string | null;
 
-    /** Reference to the election rule */
+    /** ElectionRuleID is a reference to the election rule */
     electionRuleId?: Uint8Array | null;
 
-    /** Reference to the electorate to define the group of possible voters. */
+    /** ElectorateID is the reference to the electorate to define the group of possible voters. */
     electorateId?: Uint8Array | null;
 
     /** Unix timestamp when the proposal starts. Must be in the future. */
@@ -3967,16 +5505,19 @@ export namespace gov {
      */
     constructor(properties?: gov.ICreateTextProposalMsg);
 
+    /** CreateTextProposalMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
     /** Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$` */
     public title: string;
 
     /** Human readable description with 3 to 5000 chars. */
     public description: string;
 
-    /** Reference to the election rule */
+    /** ElectionRuleID is a reference to the election rule */
     public electionRuleId: Uint8Array;
 
-    /** Reference to the electorate to define the group of possible voters. */
+    /** ElectorateID is the reference to the electorate to define the group of possible voters. */
     public electorateId: Uint8Array;
 
     /** Unix timestamp when the proposal starts. Must be in the future. */
@@ -4062,6 +5603,246 @@ export namespace gov {
     public toJSON(): { [k: string]: any };
   }
 
+  /** Properties of a CreateElectorateUpdateProposalMsg. */
+  interface ICreateElectorateUpdateProposalMsg {
+    /** CreateElectorateUpdateProposalMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$` */
+    title?: string | null;
+
+    /** Human readable description with 3 to 5000 chars. */
+    description?: string | null;
+
+    /** ElectorateID is the reference to the electorate that defines the group of possible voters. */
+    electorateId?: Uint8Array | null;
+
+    /** Unix timestamp when the proposal starts. Must be in the future. */
+    startTime?: number | Long | null;
+
+    /** When not set it will default to the main signer. */
+    author?: Uint8Array | null;
+
+    /** with weight=0. */
+    diffElectors?: gov.IElector[] | null;
+  }
+
+  /** CreateElectorateUpdateProposalMsg creates a new governance proposal to update an electorate. */
+  class CreateElectorateUpdateProposalMsg implements ICreateElectorateUpdateProposalMsg {
+    /**
+     * Constructs a new CreateElectorateUpdateProposalMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.ICreateElectorateUpdateProposalMsg);
+
+    /** CreateElectorateUpdateProposalMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$` */
+    public title: string;
+
+    /** Human readable description with 3 to 5000 chars. */
+    public description: string;
+
+    /** ElectorateID is the reference to the electorate that defines the group of possible voters. */
+    public electorateId: Uint8Array;
+
+    /** Unix timestamp when the proposal starts. Must be in the future. */
+    public startTime: number | Long;
+
+    /** When not set it will default to the main signer. */
+    public author: Uint8Array;
+
+    /** with weight=0. */
+    public diffElectors: gov.IElector[];
+
+    /**
+     * Creates a new CreateElectorateUpdateProposalMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns CreateElectorateUpdateProposalMsg instance
+     */
+    public static create(
+      properties?: gov.ICreateElectorateUpdateProposalMsg,
+    ): gov.CreateElectorateUpdateProposalMsg;
+
+    /**
+     * Encodes the specified CreateElectorateUpdateProposalMsg message. Does not implicitly {@link gov.CreateElectorateUpdateProposalMsg.verify|verify} messages.
+     * @param message CreateElectorateUpdateProposalMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: gov.ICreateElectorateUpdateProposalMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified CreateElectorateUpdateProposalMsg message, length delimited. Does not implicitly {@link gov.CreateElectorateUpdateProposalMsg.verify|verify} messages.
+     * @param message CreateElectorateUpdateProposalMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: gov.ICreateElectorateUpdateProposalMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a CreateElectorateUpdateProposalMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns CreateElectorateUpdateProposalMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): gov.CreateElectorateUpdateProposalMsg;
+
+    /**
+     * Decodes a CreateElectorateUpdateProposalMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns CreateElectorateUpdateProposalMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(
+      reader: $protobuf.Reader | Uint8Array,
+    ): gov.CreateElectorateUpdateProposalMsg;
+
+    /**
+     * Verifies a CreateElectorateUpdateProposalMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a CreateElectorateUpdateProposalMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns CreateElectorateUpdateProposalMsg
+     */
+    public static fromObject(object: { [k: string]: any }): gov.CreateElectorateUpdateProposalMsg;
+
+    /**
+     * Creates a plain object from a CreateElectorateUpdateProposalMsg message. Also converts values to other types if specified.
+     * @param message CreateElectorateUpdateProposalMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.CreateElectorateUpdateProposalMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this CreateElectorateUpdateProposalMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a DeleteProposalMsg. */
+  interface IDeleteProposalMsg {
+    /** DeleteProposalMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** ID is the unique identifier of the proposal to delete */
+    id?: Uint8Array | null;
+  }
+
+  /** DeleteProposalMsg deletes a governance proposal. */
+  class DeleteProposalMsg implements IDeleteProposalMsg {
+    /**
+     * Constructs a new DeleteProposalMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.IDeleteProposalMsg);
+
+    /** DeleteProposalMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** ID is the unique identifier of the proposal to delete */
+    public id: Uint8Array;
+
+    /**
+     * Creates a new DeleteProposalMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns DeleteProposalMsg instance
+     */
+    public static create(properties?: gov.IDeleteProposalMsg): gov.DeleteProposalMsg;
+
+    /**
+     * Encodes the specified DeleteProposalMsg message. Does not implicitly {@link gov.DeleteProposalMsg.verify|verify} messages.
+     * @param message DeleteProposalMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.IDeleteProposalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified DeleteProposalMsg message, length delimited. Does not implicitly {@link gov.DeleteProposalMsg.verify|verify} messages.
+     * @param message DeleteProposalMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: gov.IDeleteProposalMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a DeleteProposalMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns DeleteProposalMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.DeleteProposalMsg;
+
+    /**
+     * Decodes a DeleteProposalMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns DeleteProposalMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.DeleteProposalMsg;
+
+    /**
+     * Verifies a DeleteProposalMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a DeleteProposalMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns DeleteProposalMsg
+     */
+    public static fromObject(object: { [k: string]: any }): gov.DeleteProposalMsg;
+
+    /**
+     * Creates a plain object from a DeleteProposalMsg message. Also converts values to other types if specified.
+     * @param message DeleteProposalMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.DeleteProposalMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this DeleteProposalMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
   /** VoteOptions define possible values for a vote including the INVALID default. */
   enum VoteOption {
     VOTE_OPTION_INVALID = 0,
@@ -4072,6 +5853,9 @@ export namespace gov {
 
   /** Properties of a VoteMsg. */
   interface IVoteMsg {
+    /** VoteMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** The unique id of the proposal. */
     proposalId?: Uint8Array | null;
 
@@ -4089,6 +5873,9 @@ export namespace gov {
      * @param [properties] Properties to set
      */
     constructor(properties?: gov.IVoteMsg);
+
+    /** VoteMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** The unique id of the proposal. */
     public proposalId: Uint8Array;
@@ -4175,6 +5962,9 @@ export namespace gov {
 
   /** Properties of a TallyMsg. */
   interface ITallyMsg {
+    /** TallyMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** ProposalID is UUID of the proposal to close. */
     proposalId?: Uint8Array | null;
   }
@@ -4186,6 +5976,9 @@ export namespace gov {
      * @param [properties] Properties to set
      */
     constructor(properties?: gov.ITallyMsg);
+
+    /** TallyMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** ProposalID is UUID of the proposal to close. */
     public proposalId: Uint8Array;
@@ -4263,12 +6056,233 @@ export namespace gov {
      */
     public toJSON(): { [k: string]: any };
   }
+
+  /** Properties of an UpdateElectorateMsg. */
+  interface IUpdateElectorateMsg {
+    /** UpdateElectorateMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** ElectorateID is the reference to the electorate that defines the group of possible voters. */
+    electorateId?: Uint8Array | null;
+
+    /** with weight=0. */
+    diffElectors?: gov.IElector[] | null;
+  }
+
+  /** Represents an UpdateElectorateMsg. */
+  class UpdateElectorateMsg implements IUpdateElectorateMsg {
+    /**
+     * Constructs a new UpdateElectorateMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.IUpdateElectorateMsg);
+
+    /** UpdateElectorateMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** ElectorateID is the reference to the electorate that defines the group of possible voters. */
+    public electorateId: Uint8Array;
+
+    /** with weight=0. */
+    public diffElectors: gov.IElector[];
+
+    /**
+     * Creates a new UpdateElectorateMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns UpdateElectorateMsg instance
+     */
+    public static create(properties?: gov.IUpdateElectorateMsg): gov.UpdateElectorateMsg;
+
+    /**
+     * Encodes the specified UpdateElectorateMsg message. Does not implicitly {@link gov.UpdateElectorateMsg.verify|verify} messages.
+     * @param message UpdateElectorateMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.IUpdateElectorateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified UpdateElectorateMsg message, length delimited. Does not implicitly {@link gov.UpdateElectorateMsg.verify|verify} messages.
+     * @param message UpdateElectorateMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: gov.IUpdateElectorateMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes an UpdateElectorateMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns UpdateElectorateMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.UpdateElectorateMsg;
+
+    /**
+     * Decodes an UpdateElectorateMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns UpdateElectorateMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.UpdateElectorateMsg;
+
+    /**
+     * Verifies an UpdateElectorateMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an UpdateElectorateMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns UpdateElectorateMsg
+     */
+    public static fromObject(object: { [k: string]: any }): gov.UpdateElectorateMsg;
+
+    /**
+     * Creates a plain object from an UpdateElectorateMsg message. Also converts values to other types if specified.
+     * @param message UpdateElectorateMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.UpdateElectorateMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this UpdateElectorateMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an UpdateElectionRuleMsg. */
+  interface IUpdateElectionRuleMsg {
+    /** UpdateElectionRuleMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** ElectionRuleID is a reference to the election rule */
+    electionRuleId?: Uint8Array | null;
+
+    /** Duration how long the voting period will take place. */
+    votingPeriodHours?: number | null;
+
+    /** of the eligible voters. */
+    threshold?: gov.IFraction | null;
+  }
+
+  /** Represents an UpdateElectionRuleMsg. */
+  class UpdateElectionRuleMsg implements IUpdateElectionRuleMsg {
+    /**
+     * Constructs a new UpdateElectionRuleMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: gov.IUpdateElectionRuleMsg);
+
+    /** UpdateElectionRuleMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** ElectionRuleID is a reference to the election rule */
+    public electionRuleId: Uint8Array;
+
+    /** Duration how long the voting period will take place. */
+    public votingPeriodHours: number;
+
+    /** of the eligible voters. */
+    public threshold?: gov.IFraction | null;
+
+    /**
+     * Creates a new UpdateElectionRuleMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns UpdateElectionRuleMsg instance
+     */
+    public static create(properties?: gov.IUpdateElectionRuleMsg): gov.UpdateElectionRuleMsg;
+
+    /**
+     * Encodes the specified UpdateElectionRuleMsg message. Does not implicitly {@link gov.UpdateElectionRuleMsg.verify|verify} messages.
+     * @param message UpdateElectionRuleMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: gov.IUpdateElectionRuleMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified UpdateElectionRuleMsg message, length delimited. Does not implicitly {@link gov.UpdateElectionRuleMsg.verify|verify} messages.
+     * @param message UpdateElectionRuleMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: gov.IUpdateElectionRuleMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes an UpdateElectionRuleMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns UpdateElectionRuleMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.UpdateElectionRuleMsg;
+
+    /**
+     * Decodes an UpdateElectionRuleMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns UpdateElectionRuleMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.UpdateElectionRuleMsg;
+
+    /**
+     * Verifies an UpdateElectionRuleMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an UpdateElectionRuleMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns UpdateElectionRuleMsg
+     */
+    public static fromObject(object: { [k: string]: any }): gov.UpdateElectionRuleMsg;
+
+    /**
+     * Creates a plain object from an UpdateElectionRuleMsg message. Also converts values to other types if specified.
+     * @param message UpdateElectionRuleMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: gov.UpdateElectionRuleMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this UpdateElectionRuleMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
 }
 
 /** Namespace msgfee. */
 export namespace msgfee {
   /** Properties of a MsgFee. */
   interface IMsgFee {
+    /** MsgFee metadata */
+    metadata?: weave.IMetadata | null;
+
     /** MsgFee msgPath */
     msgPath?: string | null;
 
@@ -4283,6 +6297,9 @@ export namespace msgfee {
      * @param [properties] Properties to set
      */
     constructor(properties?: msgfee.IMsgFee);
+
+    /** MsgFee metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** MsgFee msgPath. */
     public msgPath: string;
@@ -4369,6 +6386,9 @@ export namespace msgfee {
 export namespace multisig {
   /** Properties of a Contract. */
   interface IContract {
+    /** Contract metadata */
+    metadata?: weave.IMetadata | null;
+
     /** contract. */
     participants?: multisig.IParticipant[] | null;
 
@@ -4386,6 +6406,9 @@ export namespace multisig {
      * @param [properties] Properties to set
      */
     constructor(properties?: multisig.IContract);
+
+    /** Contract metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** contract. */
     public participants: multisig.IParticipant[];
@@ -4475,8 +6498,8 @@ export namespace multisig {
     /** Participant signature */
     signature?: Uint8Array | null;
 
-    /** Participant power */
-    power?: number | null;
+    /** Participant weight */
+    weight?: number | null;
   }
 
   /** the greater the power of a signature. */
@@ -4490,8 +6513,8 @@ export namespace multisig {
     /** Participant signature. */
     public signature: Uint8Array;
 
-    /** Participant power. */
-    public power: number;
+    /** Participant weight. */
+    public weight: number;
 
     /**
      * Creates a new Participant instance using the specified properties.
@@ -4572,6 +6595,9 @@ export namespace multisig {
 
   /** Properties of a CreateContractMsg. */
   interface ICreateContractMsg {
+    /** CreateContractMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** CreateContractMsg participants */
     participants?: multisig.IParticipant[] | null;
 
@@ -4589,6 +6615,9 @@ export namespace multisig {
      * @param [properties] Properties to set
      */
     constructor(properties?: multisig.ICreateContractMsg);
+
+    /** CreateContractMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** CreateContractMsg participants. */
     public participants: multisig.IParticipant[];
@@ -4678,6 +6707,9 @@ export namespace multisig {
 
   /** Properties of an UpdateContractMsg. */
   interface IUpdateContractMsg {
+    /** UpdateContractMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** UpdateContractMsg contractId */
     contractId?: Uint8Array | null;
 
@@ -4698,6 +6730,9 @@ export namespace multisig {
      * @param [properties] Properties to set
      */
     constructor(properties?: multisig.IUpdateContractMsg);
+
+    /** UpdateContractMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** UpdateContractMsg contractId. */
     public contractId: Uint8Array;
@@ -4793,6 +6828,9 @@ export namespace multisig {
 export namespace namecoin {
   /** Properties of a Wallet. */
   interface IWallet {
+    /** Wallet metadata */
+    metadata?: weave.IMetadata | null;
+
     /** Wallet coins */
     coins?: coin.ICoin[] | null;
 
@@ -4807,6 +6845,9 @@ export namespace namecoin {
      * @param [properties] Properties to set
      */
     constructor(properties?: namecoin.IWallet);
+
+    /** Wallet metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** Wallet coins. */
     public coins: coin.ICoin[];
@@ -4890,6 +6931,9 @@ export namespace namecoin {
 
   /** Properties of a Token. */
   interface IToken {
+    /** Token metadata */
+    metadata?: weave.IMetadata | null;
+
     /** Token name */
     name?: string | null;
 
@@ -4904,6 +6948,9 @@ export namespace namecoin {
      * @param [properties] Properties to set
      */
     constructor(properties?: namecoin.IToken);
+
+    /** Token metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** Token name. */
     public name: string;
@@ -4987,6 +7034,9 @@ export namespace namecoin {
 
   /** Properties of a NewTokenMsg. */
   interface INewTokenMsg {
+    /** NewTokenMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** NewTokenMsg ticker */
     ticker?: string | null;
 
@@ -5004,6 +7054,9 @@ export namespace namecoin {
      * @param [properties] Properties to set
      */
     constructor(properties?: namecoin.INewTokenMsg);
+
+    /** NewTokenMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** NewTokenMsg ticker. */
     public ticker: string;
@@ -5093,6 +7146,9 @@ export namespace namecoin {
 
   /** Properties of a SetWalletNameMsg. */
   interface ISetWalletNameMsg {
+    /** SetWalletNameMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** SetWalletNameMsg address */
     address?: Uint8Array | null;
 
@@ -5107,6 +7163,9 @@ export namespace namecoin {
      * @param [properties] Properties to set
      */
     constructor(properties?: namecoin.ISetWalletNameMsg);
+
+    /** SetWalletNameMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** SetWalletNameMsg address. */
     public address: Uint8Array;
@@ -5196,6 +7255,9 @@ export namespace namecoin {
 export namespace nft {
   /** Properties of a NonFungibleToken. */
   interface INonFungibleToken {
+    /** NonFungibleToken metadata */
+    metadata?: weave.IMetadata | null;
+
     /** ID is the address of this token. */
     id?: Uint8Array | null;
 
@@ -5213,6 +7275,9 @@ export namespace nft {
      * @param [properties] Properties to set
      */
     constructor(properties?: nft.INonFungibleToken);
+
+    /** NonFungibleToken metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** ID is the address of this token. */
     public id: Uint8Array;
@@ -5599,6 +7664,9 @@ export namespace nft {
 
   /** Properties of an AddApprovalMsg. */
   interface IAddApprovalMsg {
+    /** AddApprovalMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** AddApprovalMsg id */
     id?: Uint8Array | null;
 
@@ -5622,6 +7690,9 @@ export namespace nft {
      * @param [properties] Properties to set
      */
     constructor(properties?: nft.IAddApprovalMsg);
+
+    /** AddApprovalMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** AddApprovalMsg id. */
     public id: Uint8Array;
@@ -5714,6 +7785,9 @@ export namespace nft {
 
   /** Properties of a RemoveApprovalMsg. */
   interface IRemoveApprovalMsg {
+    /** RemoveApprovalMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** RemoveApprovalMsg id */
     id?: Uint8Array | null;
 
@@ -5734,6 +7808,9 @@ export namespace nft {
      * @param [properties] Properties to set
      */
     constructor(properties?: nft.IRemoveApprovalMsg);
+
+    /** RemoveApprovalMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** RemoveApprovalMsg id. */
     public id: Uint8Array;
@@ -5829,19 +7906,22 @@ export namespace nft {
 export namespace paychan {
   /** Properties of a PaymentChannel. */
   interface IPaymentChannel {
-    /** Sender is the source that the founds are allocated from (weave.Address). */
+    /** PaymentChannel metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Sender is the source that the founds are allocated from. */
     src?: Uint8Array | null;
 
     /** to the recipient. Signature prevents from altering transfer message. */
     senderPubkey?: crypto.IPublicKey | null;
 
-    /** (weave.Address). */
+    /** Recipient is the party that receives payments through this channel */
     recipient?: Uint8Array | null;
 
     /** payment channel. */
     total?: coin.ICoin | null;
 
-    /** sender. */
+    /** expired: [timeout, infinity) */
     timeout?: number | Long | null;
 
     /** Max length 128 character. */
@@ -5859,19 +7939,22 @@ export namespace paychan {
      */
     constructor(properties?: paychan.IPaymentChannel);
 
-    /** Sender is the source that the founds are allocated from (weave.Address). */
+    /** PaymentChannel metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Sender is the source that the founds are allocated from. */
     public src: Uint8Array;
 
     /** to the recipient. Signature prevents from altering transfer message. */
     public senderPubkey?: crypto.IPublicKey | null;
 
-    /** (weave.Address). */
+    /** Recipient is the party that receives payments through this channel */
     public recipient: Uint8Array;
 
     /** payment channel. */
     public total?: coin.ICoin | null;
 
-    /** sender. */
+    /** expired: [timeout, infinity) */
     public timeout: number | Long;
 
     /** Max length 128 character. */
@@ -5959,6 +8042,9 @@ export namespace paychan {
 
   /** Properties of a CreatePaymentChannelMsg. */
   interface ICreatePaymentChannelMsg {
+    /** CreatePaymentChannelMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** Sender address (weave.Address). */
     src?: Uint8Array | null;
 
@@ -5971,7 +8057,7 @@ export namespace paychan {
     /** Maximum amount that can be transferred via this channel. */
     total?: coin.ICoin | null;
 
-    /** anyone. */
+    /** If reached, channel can be closed by anyone. */
     timeout?: number | Long | null;
 
     /** Max length 128 character. */
@@ -5986,6 +8072,9 @@ export namespace paychan {
      */
     constructor(properties?: paychan.ICreatePaymentChannelMsg);
 
+    /** CreatePaymentChannelMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
     /** Sender address (weave.Address). */
     public src: Uint8Array;
 
@@ -5998,7 +8087,7 @@ export namespace paychan {
     /** Maximum amount that can be transferred via this channel. */
     public total?: coin.ICoin | null;
 
-    /** anyone. */
+    /** If reached, channel can be closed by anyone. */
     public timeout: number | Long;
 
     /** Max length 128 character. */
@@ -6198,6 +8287,9 @@ export namespace paychan {
 
   /** Properties of a TransferPaymentChannelMsg. */
   interface ITransferPaymentChannelMsg {
+    /** TransferPaymentChannelMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** TransferPaymentChannelMsg payment */
     payment?: paychan.IPayment | null;
 
@@ -6212,6 +8304,9 @@ export namespace paychan {
      * @param [properties] Properties to set
      */
     constructor(properties?: paychan.ITransferPaymentChannelMsg);
+
+    /** TransferPaymentChannelMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** TransferPaymentChannelMsg payment. */
     public payment?: paychan.IPayment | null;
@@ -6304,6 +8399,9 @@ export namespace paychan {
 
   /** Properties of a ClosePaymentChannelMsg. */
   interface IClosePaymentChannelMsg {
+    /** ClosePaymentChannelMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** ClosePaymentChannelMsg channelId */
     channelId?: Uint8Array | null;
 
@@ -6311,13 +8409,16 @@ export namespace paychan {
     memo?: string | null;
   }
 
-  /** Sender can close channel only if the timeout chain height was reached. */
+  /** Sender can close channel only if the timeout was reached. */
   class ClosePaymentChannelMsg implements IClosePaymentChannelMsg {
     /**
      * Constructs a new ClosePaymentChannelMsg.
      * @param [properties] Properties to set
      */
     constructor(properties?: paychan.IClosePaymentChannelMsg);
+
+    /** ClosePaymentChannelMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** ClosePaymentChannelMsg channelId. */
     public channelId: Uint8Array;
@@ -6413,6 +8514,9 @@ export namespace paychan {
 export namespace sigs {
   /** Properties of a UserData. */
   interface IUserData {
+    /** UserData metadata */
+    metadata?: weave.IMetadata | null;
+
     /** UserData pubkey */
     pubkey?: crypto.IPublicKey | null;
 
@@ -6427,6 +8531,9 @@ export namespace sigs {
      * @param [properties] Properties to set
      */
     constructor(properties?: sigs.IUserData);
+
+    /** UserData metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** UserData pubkey. */
     public pubkey?: crypto.IPublicKey | null;
@@ -6510,6 +8617,9 @@ export namespace sigs {
 
   /** Properties of a StdSignature. */
   interface IStdSignature {
+    /** StdSignature metadata */
+    metadata?: weave.IMetadata | null;
+
     /** StdSignature sequence */
     sequence?: number | Long | null;
 
@@ -6527,6 +8637,9 @@ export namespace sigs {
      * @param [properties] Properties to set
      */
     constructor(properties?: sigs.IStdSignature);
+
+    /** StdSignature metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** StdSignature sequence. */
     public sequence: number | Long;
@@ -6613,6 +8726,9 @@ export namespace sigs {
 
   /** Properties of a BumpSequenceMsg. */
   interface IBumpSequenceMsg {
+    /** BumpSequenceMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** total increment value, including the default increment. */
     increment?: number | null;
   }
@@ -6624,6 +8740,9 @@ export namespace sigs {
      * @param [properties] Properties to set
      */
     constructor(properties?: sigs.IBumpSequenceMsg);
+
+    /** BumpSequenceMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** total increment value, including the default increment. */
     public increment: number;
@@ -6907,6 +9026,9 @@ export namespace validators {
 
   /** Properties of a SetValidatorsMsg. */
   interface ISetValidatorsMsg {
+    /** SetValidatorsMsg metadata */
+    metadata?: weave.IMetadata | null;
+
     /** SetValidatorsMsg validatorUpdates */
     validatorUpdates?: validators.IValidatorUpdate[] | null;
   }
@@ -6918,6 +9040,9 @@ export namespace validators {
      * @param [properties] Properties to set
      */
     constructor(properties?: validators.ISetValidatorsMsg);
+
+    /** SetValidatorsMsg metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** SetValidatorsMsg validatorUpdates. */
     public validatorUpdates: validators.IValidatorUpdate[];
@@ -7001,6 +9126,9 @@ export namespace validators {
 
   /** Properties of an Accounts. */
   interface IAccounts {
+    /** Accounts metadata */
+    metadata?: weave.IMetadata | null;
+
     /** Accounts addresses */
     addresses?: Uint8Array[] | null;
   }
@@ -7012,6 +9140,9 @@ export namespace validators {
      * @param [properties] Properties to set
      */
     constructor(properties?: validators.IAccounts);
+
+    /** Accounts metadata. */
+    public metadata?: weave.IMetadata | null;
 
     /** Accounts addresses. */
     public addresses: Uint8Array[];

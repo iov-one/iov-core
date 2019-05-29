@@ -251,6 +251,10 @@ $root.app = (function() {
          * @property {distribution.INewRevenueMsg|null} [newRevenueMsg] Tx newRevenueMsg
          * @property {distribution.IDistributeMsg|null} [distributeMsg] Tx distributeMsg
          * @property {distribution.IResetRevenueMsg|null} [resetRevenueMsg] Tx resetRevenueMsg
+         * @property {migration.IUpgradeSchemaMsg|null} [upgradeSchemaMsg] Tx upgradeSchemaMsg
+         * @property {aswap.ICreateSwapMsg|null} [createSwapMsg] Tx createSwapMsg
+         * @property {aswap.IReleaseSwapMsg|null} [releaseSwapMsg] Tx releaseSwapMsg
+         * @property {aswap.IReturnSwapMsg|null} [returnSwapMsg] Tx returnSwapMsg
          */
 
         /**
@@ -438,17 +442,49 @@ $root.app = (function() {
          */
         Tx.prototype.resetRevenueMsg = null;
 
+        /**
+         * Tx upgradeSchemaMsg.
+         * @member {migration.IUpgradeSchemaMsg|null|undefined} upgradeSchemaMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.upgradeSchemaMsg = null;
+
+        /**
+         * Tx createSwapMsg.
+         * @member {aswap.ICreateSwapMsg|null|undefined} createSwapMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.createSwapMsg = null;
+
+        /**
+         * Tx releaseSwapMsg.
+         * @member {aswap.IReleaseSwapMsg|null|undefined} releaseSwapMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.releaseSwapMsg = null;
+
+        /**
+         * Tx returnSwapMsg.
+         * @member {aswap.IReturnSwapMsg|null|undefined} returnSwapMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.returnSwapMsg = null;
+
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * msg is a sum type over all allowed messages on this chain.
-         * @member {"sendMsg"|"createEscrowMsg"|"releaseEscrowMsg"|"returnEscrowMsg"|"updateEscrowMsg"|"createContractMsg"|"updateContractMsg"|"setValidatorsMsg"|"newTokenInfoMsg"|"addApprovalMsg"|"removeApprovalMsg"|"issueUsernameNftMsg"|"addUsernameAddressNftMsg"|"removeUsernameAddressMsg"|"newRevenueMsg"|"distributeMsg"|"resetRevenueMsg"|undefined} sum
+         * @member {"sendMsg"|"createEscrowMsg"|"releaseEscrowMsg"|"returnEscrowMsg"|"updateEscrowMsg"|"createContractMsg"|"updateContractMsg"|"setValidatorsMsg"|"newTokenInfoMsg"|"addApprovalMsg"|"removeApprovalMsg"|"issueUsernameNftMsg"|"addUsernameAddressNftMsg"|"removeUsernameAddressMsg"|"newRevenueMsg"|"distributeMsg"|"resetRevenueMsg"|"upgradeSchemaMsg"|"createSwapMsg"|"releaseSwapMsg"|"returnSwapMsg"|undefined} sum
          * @memberof app.Tx
          * @instance
          */
         Object.defineProperty(Tx.prototype, "sum", {
-            get: $util.oneOfGetter($oneOfFields = ["sendMsg", "createEscrowMsg", "releaseEscrowMsg", "returnEscrowMsg", "updateEscrowMsg", "createContractMsg", "updateContractMsg", "setValidatorsMsg", "newTokenInfoMsg", "addApprovalMsg", "removeApprovalMsg", "issueUsernameNftMsg", "addUsernameAddressNftMsg", "removeUsernameAddressMsg", "newRevenueMsg", "distributeMsg", "resetRevenueMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["sendMsg", "createEscrowMsg", "releaseEscrowMsg", "returnEscrowMsg", "updateEscrowMsg", "createContractMsg", "updateContractMsg", "setValidatorsMsg", "newTokenInfoMsg", "addApprovalMsg", "removeApprovalMsg", "issueUsernameNftMsg", "addUsernameAddressNftMsg", "removeUsernameAddressMsg", "newRevenueMsg", "distributeMsg", "resetRevenueMsg", "upgradeSchemaMsg", "createSwapMsg", "releaseSwapMsg", "returnSwapMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -520,6 +556,14 @@ $root.app = (function() {
                 $root.distribution.DistributeMsg.encode(message.distributeMsg, writer.uint32(/* id 67, wireType 2 =*/538).fork()).ldelim();
             if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg"))
                 $root.distribution.ResetRevenueMsg.encode(message.resetRevenueMsg, writer.uint32(/* id 68, wireType 2 =*/546).fork()).ldelim();
+            if (message.upgradeSchemaMsg != null && message.hasOwnProperty("upgradeSchemaMsg"))
+                $root.migration.UpgradeSchemaMsg.encode(message.upgradeSchemaMsg, writer.uint32(/* id 69, wireType 2 =*/554).fork()).ldelim();
+            if (message.createSwapMsg != null && message.hasOwnProperty("createSwapMsg"))
+                $root.aswap.CreateSwapMsg.encode(message.createSwapMsg, writer.uint32(/* id 70, wireType 2 =*/562).fork()).ldelim();
+            if (message.releaseSwapMsg != null && message.hasOwnProperty("releaseSwapMsg"))
+                $root.aswap.ReleaseSwapMsg.encode(message.releaseSwapMsg, writer.uint32(/* id 71, wireType 2 =*/570).fork()).ldelim();
+            if (message.returnSwapMsg != null && message.hasOwnProperty("returnSwapMsg"))
+                $root.aswap.ReturnSwapMsg.encode(message.returnSwapMsg, writer.uint32(/* id 72, wireType 2 =*/578).fork()).ldelim();
             return writer;
         };
 
@@ -620,6 +664,18 @@ $root.app = (function() {
                     break;
                 case 68:
                     message.resetRevenueMsg = $root.distribution.ResetRevenueMsg.decode(reader, reader.uint32());
+                    break;
+                case 69:
+                    message.upgradeSchemaMsg = $root.migration.UpgradeSchemaMsg.decode(reader, reader.uint32());
+                    break;
+                case 70:
+                    message.createSwapMsg = $root.aswap.CreateSwapMsg.decode(reader, reader.uint32());
+                    break;
+                case 71:
+                    message.releaseSwapMsg = $root.aswap.ReleaseSwapMsg.decode(reader, reader.uint32());
+                    break;
+                case 72:
+                    message.returnSwapMsg = $root.aswap.ReturnSwapMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -849,6 +905,46 @@ $root.app = (function() {
                         return "resetRevenueMsg." + error;
                 }
             }
+            if (message.upgradeSchemaMsg != null && message.hasOwnProperty("upgradeSchemaMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.migration.UpgradeSchemaMsg.verify(message.upgradeSchemaMsg);
+                    if (error)
+                        return "upgradeSchemaMsg." + error;
+                }
+            }
+            if (message.createSwapMsg != null && message.hasOwnProperty("createSwapMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.aswap.CreateSwapMsg.verify(message.createSwapMsg);
+                    if (error)
+                        return "createSwapMsg." + error;
+                }
+            }
+            if (message.releaseSwapMsg != null && message.hasOwnProperty("releaseSwapMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.aswap.ReleaseSwapMsg.verify(message.releaseSwapMsg);
+                    if (error)
+                        return "releaseSwapMsg." + error;
+                }
+            }
+            if (message.returnSwapMsg != null && message.hasOwnProperty("returnSwapMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.aswap.ReturnSwapMsg.verify(message.returnSwapMsg);
+                    if (error)
+                        return "returnSwapMsg." + error;
+                }
+            }
             return null;
         };
 
@@ -979,6 +1075,26 @@ $root.app = (function() {
                     throw TypeError(".app.Tx.resetRevenueMsg: object expected");
                 message.resetRevenueMsg = $root.distribution.ResetRevenueMsg.fromObject(object.resetRevenueMsg);
             }
+            if (object.upgradeSchemaMsg != null) {
+                if (typeof object.upgradeSchemaMsg !== "object")
+                    throw TypeError(".app.Tx.upgradeSchemaMsg: object expected");
+                message.upgradeSchemaMsg = $root.migration.UpgradeSchemaMsg.fromObject(object.upgradeSchemaMsg);
+            }
+            if (object.createSwapMsg != null) {
+                if (typeof object.createSwapMsg !== "object")
+                    throw TypeError(".app.Tx.createSwapMsg: object expected");
+                message.createSwapMsg = $root.aswap.CreateSwapMsg.fromObject(object.createSwapMsg);
+            }
+            if (object.releaseSwapMsg != null) {
+                if (typeof object.releaseSwapMsg !== "object")
+                    throw TypeError(".app.Tx.releaseSwapMsg: object expected");
+                message.releaseSwapMsg = $root.aswap.ReleaseSwapMsg.fromObject(object.releaseSwapMsg);
+            }
+            if (object.returnSwapMsg != null) {
+                if (typeof object.returnSwapMsg !== "object")
+                    throw TypeError(".app.Tx.returnSwapMsg: object expected");
+                message.returnSwapMsg = $root.aswap.ReturnSwapMsg.fromObject(object.returnSwapMsg);
+            }
             return message;
         };
 
@@ -1107,6 +1223,26 @@ $root.app = (function() {
                 object.resetRevenueMsg = $root.distribution.ResetRevenueMsg.toObject(message.resetRevenueMsg, options);
                 if (options.oneofs)
                     object.sum = "resetRevenueMsg";
+            }
+            if (message.upgradeSchemaMsg != null && message.hasOwnProperty("upgradeSchemaMsg")) {
+                object.upgradeSchemaMsg = $root.migration.UpgradeSchemaMsg.toObject(message.upgradeSchemaMsg, options);
+                if (options.oneofs)
+                    object.sum = "upgradeSchemaMsg";
+            }
+            if (message.createSwapMsg != null && message.hasOwnProperty("createSwapMsg")) {
+                object.createSwapMsg = $root.aswap.CreateSwapMsg.toObject(message.createSwapMsg, options);
+                if (options.oneofs)
+                    object.sum = "createSwapMsg";
+            }
+            if (message.releaseSwapMsg != null && message.hasOwnProperty("releaseSwapMsg")) {
+                object.releaseSwapMsg = $root.aswap.ReleaseSwapMsg.toObject(message.releaseSwapMsg, options);
+                if (options.oneofs)
+                    object.sum = "releaseSwapMsg";
+            }
+            if (message.returnSwapMsg != null && message.hasOwnProperty("returnSwapMsg")) {
+                object.returnSwapMsg = $root.aswap.ReturnSwapMsg.toObject(message.returnSwapMsg, options);
+                if (options.oneofs)
+                    object.sum = "returnSwapMsg";
             }
             return object;
         };
@@ -2586,6 +2722,205 @@ $root.username = (function() {
     return username;
 })();
 
+$root.weave = (function() {
+
+    /**
+     * Namespace weave.
+     * @exports weave
+     * @namespace
+     */
+    var weave = {};
+
+    weave.Metadata = (function() {
+
+        /**
+         * Properties of a Metadata.
+         * @memberof weave
+         * @interface IMetadata
+         * @property {number|null} [schema] Metadata schema
+         */
+
+        /**
+         * Constructs a new Metadata.
+         * @memberof weave
+         * @classdesc weave.Metadata metadata = 1;
+         * @implements IMetadata
+         * @constructor
+         * @param {weave.IMetadata=} [properties] Properties to set
+         */
+        function Metadata(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Metadata schema.
+         * @member {number} schema
+         * @memberof weave.Metadata
+         * @instance
+         */
+        Metadata.prototype.schema = 0;
+
+        /**
+         * Creates a new Metadata instance using the specified properties.
+         * @function create
+         * @memberof weave.Metadata
+         * @static
+         * @param {weave.IMetadata=} [properties] Properties to set
+         * @returns {weave.Metadata} Metadata instance
+         */
+        Metadata.create = function create(properties) {
+            return new Metadata(properties);
+        };
+
+        /**
+         * Encodes the specified Metadata message. Does not implicitly {@link weave.Metadata.verify|verify} messages.
+         * @function encode
+         * @memberof weave.Metadata
+         * @static
+         * @param {weave.IMetadata} message Metadata message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Metadata.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.schema != null && message.hasOwnProperty("schema"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.schema);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Metadata message, length delimited. Does not implicitly {@link weave.Metadata.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof weave.Metadata
+         * @static
+         * @param {weave.IMetadata} message Metadata message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Metadata.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Metadata message from the specified reader or buffer.
+         * @function decode
+         * @memberof weave.Metadata
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {weave.Metadata} Metadata
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Metadata.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.weave.Metadata();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.schema = reader.uint32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Metadata message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof weave.Metadata
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {weave.Metadata} Metadata
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Metadata.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Metadata message.
+         * @function verify
+         * @memberof weave.Metadata
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Metadata.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.schema != null && message.hasOwnProperty("schema"))
+                if (!$util.isInteger(message.schema))
+                    return "schema: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a Metadata message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof weave.Metadata
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {weave.Metadata} Metadata
+         */
+        Metadata.fromObject = function fromObject(object) {
+            if (object instanceof $root.weave.Metadata)
+                return object;
+            var message = new $root.weave.Metadata();
+            if (object.schema != null)
+                message.schema = object.schema >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Metadata message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof weave.Metadata
+         * @static
+         * @param {weave.Metadata} message Metadata
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Metadata.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults)
+                object.schema = 0;
+            if (message.schema != null && message.hasOwnProperty("schema"))
+                object.schema = message.schema;
+            return object;
+        };
+
+        /**
+         * Converts this Metadata to JSON.
+         * @function toJSON
+         * @memberof weave.Metadata
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Metadata.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Metadata;
+    })();
+
+    return weave;
+})();
+
 $root.coin = (function() {
 
     /**
@@ -3494,6 +3829,666 @@ $root.crypto = (function() {
     return crypto;
 })();
 
+$root.migration = (function() {
+
+    /**
+     * Namespace migration.
+     * @exports migration
+     * @namespace
+     */
+    var migration = {};
+
+    migration.Configuration = (function() {
+
+        /**
+         * Properties of a Configuration.
+         * @memberof migration
+         * @interface IConfiguration
+         * @property {Uint8Array|null} [admin] multisig.
+         */
+
+        /**
+         * Constructs a new Configuration.
+         * @memberof migration
+         * @classdesc Represents a Configuration.
+         * @implements IConfiguration
+         * @constructor
+         * @param {migration.IConfiguration=} [properties] Properties to set
+         */
+        function Configuration(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * multisig.
+         * @member {Uint8Array} admin
+         * @memberof migration.Configuration
+         * @instance
+         */
+        Configuration.prototype.admin = $util.newBuffer([]);
+
+        /**
+         * Creates a new Configuration instance using the specified properties.
+         * @function create
+         * @memberof migration.Configuration
+         * @static
+         * @param {migration.IConfiguration=} [properties] Properties to set
+         * @returns {migration.Configuration} Configuration instance
+         */
+        Configuration.create = function create(properties) {
+            return new Configuration(properties);
+        };
+
+        /**
+         * Encodes the specified Configuration message. Does not implicitly {@link migration.Configuration.verify|verify} messages.
+         * @function encode
+         * @memberof migration.Configuration
+         * @static
+         * @param {migration.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.admin);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Configuration message, length delimited. Does not implicitly {@link migration.Configuration.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof migration.Configuration
+         * @static
+         * @param {migration.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer.
+         * @function decode
+         * @memberof migration.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {migration.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.migration.Configuration();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 2:
+                    message.admin = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof migration.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {migration.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Configuration message.
+         * @function verify
+         * @memberof migration.Configuration
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Configuration.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
+                    return "admin: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof migration.Configuration
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {migration.Configuration} Configuration
+         */
+        Configuration.fromObject = function fromObject(object) {
+            if (object instanceof $root.migration.Configuration)
+                return object;
+            var message = new $root.migration.Configuration();
+            if (object.admin != null)
+                if (typeof object.admin === "string")
+                    $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
+                else if (object.admin.length)
+                    message.admin = object.admin;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof migration.Configuration
+         * @static
+         * @param {migration.Configuration} message Configuration
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Configuration.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults)
+                if (options.bytes === String)
+                    object.admin = "";
+                else {
+                    object.admin = [];
+                    if (options.bytes !== Array)
+                        object.admin = $util.newBuffer(object.admin);
+                }
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
+            return object;
+        };
+
+        /**
+         * Converts this Configuration to JSON.
+         * @function toJSON
+         * @memberof migration.Configuration
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Configuration.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Configuration;
+    })();
+
+    migration.Schema = (function() {
+
+        /**
+         * Properties of a Schema.
+         * @memberof migration
+         * @interface ISchema
+         * @property {weave.IMetadata|null} [metadata] Schema metadata
+         * @property {string|null} [pkg] For example, for extension `x/myext` package value is `myext`
+         * @property {number|null} [version] Version holds the highest supported schema version.
+         */
+
+        /**
+         * Constructs a new Schema.
+         * @memberof migration
+         * @classdesc Schema declares the maxiumum supported schema version for a package.
+         * @implements ISchema
+         * @constructor
+         * @param {migration.ISchema=} [properties] Properties to set
+         */
+        function Schema(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Schema metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof migration.Schema
+         * @instance
+         */
+        Schema.prototype.metadata = null;
+
+        /**
+         * For example, for extension `x/myext` package value is `myext`
+         * @member {string} pkg
+         * @memberof migration.Schema
+         * @instance
+         */
+        Schema.prototype.pkg = "";
+
+        /**
+         * Version holds the highest supported schema version.
+         * @member {number} version
+         * @memberof migration.Schema
+         * @instance
+         */
+        Schema.prototype.version = 0;
+
+        /**
+         * Creates a new Schema instance using the specified properties.
+         * @function create
+         * @memberof migration.Schema
+         * @static
+         * @param {migration.ISchema=} [properties] Properties to set
+         * @returns {migration.Schema} Schema instance
+         */
+        Schema.create = function create(properties) {
+            return new Schema(properties);
+        };
+
+        /**
+         * Encodes the specified Schema message. Does not implicitly {@link migration.Schema.verify|verify} messages.
+         * @function encode
+         * @memberof migration.Schema
+         * @static
+         * @param {migration.ISchema} message Schema message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Schema.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.pkg != null && message.hasOwnProperty("pkg"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.pkg);
+            if (message.version != null && message.hasOwnProperty("version"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.version);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Schema message, length delimited. Does not implicitly {@link migration.Schema.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof migration.Schema
+         * @static
+         * @param {migration.ISchema} message Schema message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Schema.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Schema message from the specified reader or buffer.
+         * @function decode
+         * @memberof migration.Schema
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {migration.Schema} Schema
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Schema.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.migration.Schema();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.pkg = reader.string();
+                    break;
+                case 3:
+                    message.version = reader.uint32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Schema message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof migration.Schema
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {migration.Schema} Schema
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Schema.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Schema message.
+         * @function verify
+         * @memberof migration.Schema
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Schema.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.pkg != null && message.hasOwnProperty("pkg"))
+                if (!$util.isString(message.pkg))
+                    return "pkg: string expected";
+            if (message.version != null && message.hasOwnProperty("version"))
+                if (!$util.isInteger(message.version))
+                    return "version: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a Schema message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof migration.Schema
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {migration.Schema} Schema
+         */
+        Schema.fromObject = function fromObject(object) {
+            if (object instanceof $root.migration.Schema)
+                return object;
+            var message = new $root.migration.Schema();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".migration.Schema.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.pkg != null)
+                message.pkg = String(object.pkg);
+            if (object.version != null)
+                message.version = object.version >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Schema message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof migration.Schema
+         * @static
+         * @param {migration.Schema} message Schema
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Schema.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.pkg = "";
+                object.version = 0;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.pkg != null && message.hasOwnProperty("pkg"))
+                object.pkg = message.pkg;
+            if (message.version != null && message.hasOwnProperty("version"))
+                object.version = message.version;
+            return object;
+        };
+
+        /**
+         * Converts this Schema to JSON.
+         * @function toJSON
+         * @memberof migration.Schema
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Schema.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Schema;
+    })();
+
+    migration.UpgradeSchemaMsg = (function() {
+
+        /**
+         * Properties of an UpgradeSchemaMsg.
+         * @memberof migration
+         * @interface IUpgradeSchemaMsg
+         * @property {weave.IMetadata|null} [metadata] UpgradeSchemaMsg metadata
+         * @property {string|null} [pkg] Name of the package that schema version upgrade is made for.
+         */
+
+        /**
+         * Constructs a new UpgradeSchemaMsg.
+         * @memberof migration
+         * @classdesc by one version.
+         * @implements IUpgradeSchemaMsg
+         * @constructor
+         * @param {migration.IUpgradeSchemaMsg=} [properties] Properties to set
+         */
+        function UpgradeSchemaMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpgradeSchemaMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof migration.UpgradeSchemaMsg
+         * @instance
+         */
+        UpgradeSchemaMsg.prototype.metadata = null;
+
+        /**
+         * Name of the package that schema version upgrade is made for.
+         * @member {string} pkg
+         * @memberof migration.UpgradeSchemaMsg
+         * @instance
+         */
+        UpgradeSchemaMsg.prototype.pkg = "";
+
+        /**
+         * Creates a new UpgradeSchemaMsg instance using the specified properties.
+         * @function create
+         * @memberof migration.UpgradeSchemaMsg
+         * @static
+         * @param {migration.IUpgradeSchemaMsg=} [properties] Properties to set
+         * @returns {migration.UpgradeSchemaMsg} UpgradeSchemaMsg instance
+         */
+        UpgradeSchemaMsg.create = function create(properties) {
+            return new UpgradeSchemaMsg(properties);
+        };
+
+        /**
+         * Encodes the specified UpgradeSchemaMsg message. Does not implicitly {@link migration.UpgradeSchemaMsg.verify|verify} messages.
+         * @function encode
+         * @memberof migration.UpgradeSchemaMsg
+         * @static
+         * @param {migration.IUpgradeSchemaMsg} message UpgradeSchemaMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpgradeSchemaMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.pkg != null && message.hasOwnProperty("pkg"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.pkg);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpgradeSchemaMsg message, length delimited. Does not implicitly {@link migration.UpgradeSchemaMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof migration.UpgradeSchemaMsg
+         * @static
+         * @param {migration.IUpgradeSchemaMsg} message UpgradeSchemaMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpgradeSchemaMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpgradeSchemaMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof migration.UpgradeSchemaMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {migration.UpgradeSchemaMsg} UpgradeSchemaMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpgradeSchemaMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.migration.UpgradeSchemaMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.pkg = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpgradeSchemaMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof migration.UpgradeSchemaMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {migration.UpgradeSchemaMsg} UpgradeSchemaMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpgradeSchemaMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpgradeSchemaMsg message.
+         * @function verify
+         * @memberof migration.UpgradeSchemaMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpgradeSchemaMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.pkg != null && message.hasOwnProperty("pkg"))
+                if (!$util.isString(message.pkg))
+                    return "pkg: string expected";
+            return null;
+        };
+
+        /**
+         * Creates an UpgradeSchemaMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof migration.UpgradeSchemaMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {migration.UpgradeSchemaMsg} UpgradeSchemaMsg
+         */
+        UpgradeSchemaMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.migration.UpgradeSchemaMsg)
+                return object;
+            var message = new $root.migration.UpgradeSchemaMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".migration.UpgradeSchemaMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.pkg != null)
+                message.pkg = String(object.pkg);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpgradeSchemaMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof migration.UpgradeSchemaMsg
+         * @static
+         * @param {migration.UpgradeSchemaMsg} message UpgradeSchemaMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpgradeSchemaMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.pkg = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.pkg != null && message.hasOwnProperty("pkg"))
+                object.pkg = message.pkg;
+            return object;
+        };
+
+        /**
+         * Converts this UpgradeSchemaMsg to JSON.
+         * @function toJSON
+         * @memberof migration.UpgradeSchemaMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpgradeSchemaMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpgradeSchemaMsg;
+    })();
+
+    return migration;
+})();
+
 $root.orm = (function() {
 
     /**
@@ -3910,7 +4905,1449 @@ $root.orm = (function() {
         return Counter;
     })();
 
+    orm.VersionedIDRef = (function() {
+
+        /**
+         * Properties of a VersionedIDRef.
+         * @memberof orm
+         * @interface IVersionedIDRef
+         * @property {Uint8Array|null} [id] Unique identifier
+         * @property {number|null} [version] Document version, starting with 1.
+         */
+
+        /**
+         * Constructs a new VersionedIDRef.
+         * @memberof orm
+         * @classdesc VersionedID is the combination of document ID and version number.
+         * @implements IVersionedIDRef
+         * @constructor
+         * @param {orm.IVersionedIDRef=} [properties] Properties to set
+         */
+        function VersionedIDRef(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Unique identifier
+         * @member {Uint8Array} id
+         * @memberof orm.VersionedIDRef
+         * @instance
+         */
+        VersionedIDRef.prototype.id = $util.newBuffer([]);
+
+        /**
+         * Document version, starting with 1.
+         * @member {number} version
+         * @memberof orm.VersionedIDRef
+         * @instance
+         */
+        VersionedIDRef.prototype.version = 0;
+
+        /**
+         * Creates a new VersionedIDRef instance using the specified properties.
+         * @function create
+         * @memberof orm.VersionedIDRef
+         * @static
+         * @param {orm.IVersionedIDRef=} [properties] Properties to set
+         * @returns {orm.VersionedIDRef} VersionedIDRef instance
+         */
+        VersionedIDRef.create = function create(properties) {
+            return new VersionedIDRef(properties);
+        };
+
+        /**
+         * Encodes the specified VersionedIDRef message. Does not implicitly {@link orm.VersionedIDRef.verify|verify} messages.
+         * @function encode
+         * @memberof orm.VersionedIDRef
+         * @static
+         * @param {orm.IVersionedIDRef} message VersionedIDRef message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        VersionedIDRef.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.id != null && message.hasOwnProperty("id"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.id);
+            if (message.version != null && message.hasOwnProperty("version"))
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.version);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified VersionedIDRef message, length delimited. Does not implicitly {@link orm.VersionedIDRef.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof orm.VersionedIDRef
+         * @static
+         * @param {orm.IVersionedIDRef} message VersionedIDRef message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        VersionedIDRef.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a VersionedIDRef message from the specified reader or buffer.
+         * @function decode
+         * @memberof orm.VersionedIDRef
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {orm.VersionedIDRef} VersionedIDRef
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        VersionedIDRef.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.orm.VersionedIDRef();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 4:
+                    message.id = reader.bytes();
+                    break;
+                case 5:
+                    message.version = reader.uint32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a VersionedIDRef message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof orm.VersionedIDRef
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {orm.VersionedIDRef} VersionedIDRef
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        VersionedIDRef.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a VersionedIDRef message.
+         * @function verify
+         * @memberof orm.VersionedIDRef
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        VersionedIDRef.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
+            if (message.version != null && message.hasOwnProperty("version"))
+                if (!$util.isInteger(message.version))
+                    return "version: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a VersionedIDRef message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof orm.VersionedIDRef
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {orm.VersionedIDRef} VersionedIDRef
+         */
+        VersionedIDRef.fromObject = function fromObject(object) {
+            if (object instanceof $root.orm.VersionedIDRef)
+                return object;
+            var message = new $root.orm.VersionedIDRef();
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length)
+                    message.id = object.id;
+            if (object.version != null)
+                message.version = object.version >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a VersionedIDRef message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof orm.VersionedIDRef
+         * @static
+         * @param {orm.VersionedIDRef} message VersionedIDRef
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        VersionedIDRef.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.id = "";
+                else {
+                    object.id = [];
+                    if (options.bytes !== Array)
+                        object.id = $util.newBuffer(object.id);
+                }
+                object.version = 0;
+            }
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+            if (message.version != null && message.hasOwnProperty("version"))
+                object.version = message.version;
+            return object;
+        };
+
+        /**
+         * Converts this VersionedIDRef to JSON.
+         * @function toJSON
+         * @memberof orm.VersionedIDRef
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        VersionedIDRef.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return VersionedIDRef;
+    })();
+
     return orm;
+})();
+
+$root.aswap = (function() {
+
+    /**
+     * Namespace aswap.
+     * @exports aswap
+     * @namespace
+     */
+    var aswap = {};
+
+    aswap.Swap = (function() {
+
+        /**
+         * Properties of a Swap.
+         * @memberof aswap
+         * @interface ISwap
+         * @property {weave.IMetadata|null} [metadata] metadata is used for schema versioning support
+         * @property {Uint8Array|null} [preimageHash] sha256 hash of preimage, 32 bytes long
+         * @property {Uint8Array|null} [src] src is a sender address
+         * @property {Uint8Array|null} [recipient] recipient is an address of recipient
+         * @property {number|Long|null} [timeout] expired: [timeout, infinity)
+         * @property {string|null} [memo] max length 128 characters
+         */
+
+        /**
+         * Constructs a new Swap.
+         * @memberof aswap
+         * @classdesc Swap is designed to hold some coins for atomic swap, locked by preimage_hash
+         * @implements ISwap
+         * @constructor
+         * @param {aswap.ISwap=} [properties] Properties to set
+         */
+        function Swap(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * metadata is used for schema versioning support
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof aswap.Swap
+         * @instance
+         */
+        Swap.prototype.metadata = null;
+
+        /**
+         * sha256 hash of preimage, 32 bytes long
+         * @member {Uint8Array} preimageHash
+         * @memberof aswap.Swap
+         * @instance
+         */
+        Swap.prototype.preimageHash = $util.newBuffer([]);
+
+        /**
+         * src is a sender address
+         * @member {Uint8Array} src
+         * @memberof aswap.Swap
+         * @instance
+         */
+        Swap.prototype.src = $util.newBuffer([]);
+
+        /**
+         * recipient is an address of recipient
+         * @member {Uint8Array} recipient
+         * @memberof aswap.Swap
+         * @instance
+         */
+        Swap.prototype.recipient = $util.newBuffer([]);
+
+        /**
+         * expired: [timeout, infinity)
+         * @member {number|Long} timeout
+         * @memberof aswap.Swap
+         * @instance
+         */
+        Swap.prototype.timeout = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * max length 128 characters
+         * @member {string} memo
+         * @memberof aswap.Swap
+         * @instance
+         */
+        Swap.prototype.memo = "";
+
+        /**
+         * Creates a new Swap instance using the specified properties.
+         * @function create
+         * @memberof aswap.Swap
+         * @static
+         * @param {aswap.ISwap=} [properties] Properties to set
+         * @returns {aswap.Swap} Swap instance
+         */
+        Swap.create = function create(properties) {
+            return new Swap(properties);
+        };
+
+        /**
+         * Encodes the specified Swap message. Does not implicitly {@link aswap.Swap.verify|verify} messages.
+         * @function encode
+         * @memberof aswap.Swap
+         * @static
+         * @param {aswap.ISwap} message Swap message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Swap.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.preimageHash);
+            if (message.src != null && message.hasOwnProperty("src"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.src);
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.recipient);
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.timeout);
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                writer.uint32(/* id 7, wireType 2 =*/58).string(message.memo);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Swap message, length delimited. Does not implicitly {@link aswap.Swap.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof aswap.Swap
+         * @static
+         * @param {aswap.ISwap} message Swap message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Swap.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Swap message from the specified reader or buffer.
+         * @function decode
+         * @memberof aswap.Swap
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {aswap.Swap} Swap
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Swap.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.aswap.Swap();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.preimageHash = reader.bytes();
+                    break;
+                case 3:
+                    message.src = reader.bytes();
+                    break;
+                case 5:
+                    message.recipient = reader.bytes();
+                    break;
+                case 6:
+                    message.timeout = reader.int64();
+                    break;
+                case 7:
+                    message.memo = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Swap message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof aswap.Swap
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {aswap.Swap} Swap
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Swap.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Swap message.
+         * @function verify
+         * @memberof aswap.Swap
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Swap.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
+                if (!(message.preimageHash && typeof message.preimageHash.length === "number" || $util.isString(message.preimageHash)))
+                    return "preimageHash: buffer expected";
+            if (message.src != null && message.hasOwnProperty("src"))
+                if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
+                    return "src: buffer expected";
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
+                    return "recipient: buffer expected";
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                if (!$util.isInteger(message.timeout) && !(message.timeout && $util.isInteger(message.timeout.low) && $util.isInteger(message.timeout.high)))
+                    return "timeout: integer|Long expected";
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                if (!$util.isString(message.memo))
+                    return "memo: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a Swap message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof aswap.Swap
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {aswap.Swap} Swap
+         */
+        Swap.fromObject = function fromObject(object) {
+            if (object instanceof $root.aswap.Swap)
+                return object;
+            var message = new $root.aswap.Swap();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".aswap.Swap.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.preimageHash != null)
+                if (typeof object.preimageHash === "string")
+                    $util.base64.decode(object.preimageHash, message.preimageHash = $util.newBuffer($util.base64.length(object.preimageHash)), 0);
+                else if (object.preimageHash.length)
+                    message.preimageHash = object.preimageHash;
+            if (object.src != null)
+                if (typeof object.src === "string")
+                    $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
+                else if (object.src.length)
+                    message.src = object.src;
+            if (object.recipient != null)
+                if (typeof object.recipient === "string")
+                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
+                else if (object.recipient.length)
+                    message.recipient = object.recipient;
+            if (object.timeout != null)
+                if ($util.Long)
+                    (message.timeout = $util.Long.fromValue(object.timeout)).unsigned = false;
+                else if (typeof object.timeout === "string")
+                    message.timeout = parseInt(object.timeout, 10);
+                else if (typeof object.timeout === "number")
+                    message.timeout = object.timeout;
+                else if (typeof object.timeout === "object")
+                    message.timeout = new $util.LongBits(object.timeout.low >>> 0, object.timeout.high >>> 0).toNumber();
+            if (object.memo != null)
+                message.memo = String(object.memo);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Swap message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof aswap.Swap
+         * @static
+         * @param {aswap.Swap} message Swap
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Swap.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.preimageHash = "";
+                else {
+                    object.preimageHash = [];
+                    if (options.bytes !== Array)
+                        object.preimageHash = $util.newBuffer(object.preimageHash);
+                }
+                if (options.bytes === String)
+                    object.src = "";
+                else {
+                    object.src = [];
+                    if (options.bytes !== Array)
+                        object.src = $util.newBuffer(object.src);
+                }
+                if (options.bytes === String)
+                    object.recipient = "";
+                else {
+                    object.recipient = [];
+                    if (options.bytes !== Array)
+                        object.recipient = $util.newBuffer(object.recipient);
+                }
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.timeout = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.timeout = options.longs === String ? "0" : 0;
+                object.memo = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
+                object.preimageHash = options.bytes === String ? $util.base64.encode(message.preimageHash, 0, message.preimageHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.preimageHash) : message.preimageHash;
+            if (message.src != null && message.hasOwnProperty("src"))
+                object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                if (typeof message.timeout === "number")
+                    object.timeout = options.longs === String ? String(message.timeout) : message.timeout;
+                else
+                    object.timeout = options.longs === String ? $util.Long.prototype.toString.call(message.timeout) : options.longs === Number ? new $util.LongBits(message.timeout.low >>> 0, message.timeout.high >>> 0).toNumber() : message.timeout;
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                object.memo = message.memo;
+            return object;
+        };
+
+        /**
+         * Converts this Swap to JSON.
+         * @function toJSON
+         * @memberof aswap.Swap
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Swap.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Swap;
+    })();
+
+    aswap.CreateSwapMsg = (function() {
+
+        /**
+         * Properties of a CreateSwapMsg.
+         * @memberof aswap
+         * @interface ICreateSwapMsg
+         * @property {weave.IMetadata|null} [metadata] CreateSwapMsg metadata
+         * @property {Uint8Array|null} [src] CreateSwapMsg src
+         * @property {Uint8Array|null} [preimageHash] sha256 hash of preimage, 32 bytes long
+         * @property {Uint8Array|null} [recipient] CreateSwapMsg recipient
+         * @property {Array.<coin.ICoin>|null} [amount] amount may contain multiple token types
+         * @property {number|Long|null} [timeout] Timeout represents wall clock time.
+         * @property {string|null} [memo] max length 128 character
+         */
+
+        /**
+         * Constructs a new CreateSwapMsg.
+         * @memberof aswap
+         * @classdesc CreateSwapMsg creates a Swap with some coins.
+         * @implements ICreateSwapMsg
+         * @constructor
+         * @param {aswap.ICreateSwapMsg=} [properties] Properties to set
+         */
+        function CreateSwapMsg(properties) {
+            this.amount = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * CreateSwapMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof aswap.CreateSwapMsg
+         * @instance
+         */
+        CreateSwapMsg.prototype.metadata = null;
+
+        /**
+         * CreateSwapMsg src.
+         * @member {Uint8Array} src
+         * @memberof aswap.CreateSwapMsg
+         * @instance
+         */
+        CreateSwapMsg.prototype.src = $util.newBuffer([]);
+
+        /**
+         * sha256 hash of preimage, 32 bytes long
+         * @member {Uint8Array} preimageHash
+         * @memberof aswap.CreateSwapMsg
+         * @instance
+         */
+        CreateSwapMsg.prototype.preimageHash = $util.newBuffer([]);
+
+        /**
+         * CreateSwapMsg recipient.
+         * @member {Uint8Array} recipient
+         * @memberof aswap.CreateSwapMsg
+         * @instance
+         */
+        CreateSwapMsg.prototype.recipient = $util.newBuffer([]);
+
+        /**
+         * amount may contain multiple token types
+         * @member {Array.<coin.ICoin>} amount
+         * @memberof aswap.CreateSwapMsg
+         * @instance
+         */
+        CreateSwapMsg.prototype.amount = $util.emptyArray;
+
+        /**
+         * Timeout represents wall clock time.
+         * @member {number|Long} timeout
+         * @memberof aswap.CreateSwapMsg
+         * @instance
+         */
+        CreateSwapMsg.prototype.timeout = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * max length 128 character
+         * @member {string} memo
+         * @memberof aswap.CreateSwapMsg
+         * @instance
+         */
+        CreateSwapMsg.prototype.memo = "";
+
+        /**
+         * Creates a new CreateSwapMsg instance using the specified properties.
+         * @function create
+         * @memberof aswap.CreateSwapMsg
+         * @static
+         * @param {aswap.ICreateSwapMsg=} [properties] Properties to set
+         * @returns {aswap.CreateSwapMsg} CreateSwapMsg instance
+         */
+        CreateSwapMsg.create = function create(properties) {
+            return new CreateSwapMsg(properties);
+        };
+
+        /**
+         * Encodes the specified CreateSwapMsg message. Does not implicitly {@link aswap.CreateSwapMsg.verify|verify} messages.
+         * @function encode
+         * @memberof aswap.CreateSwapMsg
+         * @static
+         * @param {aswap.ICreateSwapMsg} message CreateSwapMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreateSwapMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.src != null && message.hasOwnProperty("src"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.src);
+            if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.preimageHash);
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
+            if (message.amount != null && message.amount.length)
+                for (var i = 0; i < message.amount.length; ++i)
+                    $root.coin.Coin.encode(message.amount[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.timeout);
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                writer.uint32(/* id 7, wireType 2 =*/58).string(message.memo);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CreateSwapMsg message, length delimited. Does not implicitly {@link aswap.CreateSwapMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof aswap.CreateSwapMsg
+         * @static
+         * @param {aswap.ICreateSwapMsg} message CreateSwapMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreateSwapMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CreateSwapMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof aswap.CreateSwapMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {aswap.CreateSwapMsg} CreateSwapMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreateSwapMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.aswap.CreateSwapMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.src = reader.bytes();
+                    break;
+                case 3:
+                    message.preimageHash = reader.bytes();
+                    break;
+                case 4:
+                    message.recipient = reader.bytes();
+                    break;
+                case 5:
+                    if (!(message.amount && message.amount.length))
+                        message.amount = [];
+                    message.amount.push($root.coin.Coin.decode(reader, reader.uint32()));
+                    break;
+                case 6:
+                    message.timeout = reader.int64();
+                    break;
+                case 7:
+                    message.memo = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CreateSwapMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof aswap.CreateSwapMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {aswap.CreateSwapMsg} CreateSwapMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreateSwapMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CreateSwapMsg message.
+         * @function verify
+         * @memberof aswap.CreateSwapMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CreateSwapMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.src != null && message.hasOwnProperty("src"))
+                if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
+                    return "src: buffer expected";
+            if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
+                if (!(message.preimageHash && typeof message.preimageHash.length === "number" || $util.isString(message.preimageHash)))
+                    return "preimageHash: buffer expected";
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
+                    return "recipient: buffer expected";
+            if (message.amount != null && message.hasOwnProperty("amount")) {
+                if (!Array.isArray(message.amount))
+                    return "amount: array expected";
+                for (var i = 0; i < message.amount.length; ++i) {
+                    var error = $root.coin.Coin.verify(message.amount[i]);
+                    if (error)
+                        return "amount." + error;
+                }
+            }
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                if (!$util.isInteger(message.timeout) && !(message.timeout && $util.isInteger(message.timeout.low) && $util.isInteger(message.timeout.high)))
+                    return "timeout: integer|Long expected";
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                if (!$util.isString(message.memo))
+                    return "memo: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a CreateSwapMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof aswap.CreateSwapMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {aswap.CreateSwapMsg} CreateSwapMsg
+         */
+        CreateSwapMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.aswap.CreateSwapMsg)
+                return object;
+            var message = new $root.aswap.CreateSwapMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".aswap.CreateSwapMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.src != null)
+                if (typeof object.src === "string")
+                    $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
+                else if (object.src.length)
+                    message.src = object.src;
+            if (object.preimageHash != null)
+                if (typeof object.preimageHash === "string")
+                    $util.base64.decode(object.preimageHash, message.preimageHash = $util.newBuffer($util.base64.length(object.preimageHash)), 0);
+                else if (object.preimageHash.length)
+                    message.preimageHash = object.preimageHash;
+            if (object.recipient != null)
+                if (typeof object.recipient === "string")
+                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
+                else if (object.recipient.length)
+                    message.recipient = object.recipient;
+            if (object.amount) {
+                if (!Array.isArray(object.amount))
+                    throw TypeError(".aswap.CreateSwapMsg.amount: array expected");
+                message.amount = [];
+                for (var i = 0; i < object.amount.length; ++i) {
+                    if (typeof object.amount[i] !== "object")
+                        throw TypeError(".aswap.CreateSwapMsg.amount: object expected");
+                    message.amount[i] = $root.coin.Coin.fromObject(object.amount[i]);
+                }
+            }
+            if (object.timeout != null)
+                if ($util.Long)
+                    (message.timeout = $util.Long.fromValue(object.timeout)).unsigned = false;
+                else if (typeof object.timeout === "string")
+                    message.timeout = parseInt(object.timeout, 10);
+                else if (typeof object.timeout === "number")
+                    message.timeout = object.timeout;
+                else if (typeof object.timeout === "object")
+                    message.timeout = new $util.LongBits(object.timeout.low >>> 0, object.timeout.high >>> 0).toNumber();
+            if (object.memo != null)
+                message.memo = String(object.memo);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CreateSwapMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof aswap.CreateSwapMsg
+         * @static
+         * @param {aswap.CreateSwapMsg} message CreateSwapMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CreateSwapMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.amount = [];
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.src = "";
+                else {
+                    object.src = [];
+                    if (options.bytes !== Array)
+                        object.src = $util.newBuffer(object.src);
+                }
+                if (options.bytes === String)
+                    object.preimageHash = "";
+                else {
+                    object.preimageHash = [];
+                    if (options.bytes !== Array)
+                        object.preimageHash = $util.newBuffer(object.preimageHash);
+                }
+                if (options.bytes === String)
+                    object.recipient = "";
+                else {
+                    object.recipient = [];
+                    if (options.bytes !== Array)
+                        object.recipient = $util.newBuffer(object.recipient);
+                }
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.timeout = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.timeout = options.longs === String ? "0" : 0;
+                object.memo = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.src != null && message.hasOwnProperty("src"))
+                object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
+            if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
+                object.preimageHash = options.bytes === String ? $util.base64.encode(message.preimageHash, 0, message.preimageHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.preimageHash) : message.preimageHash;
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.amount && message.amount.length) {
+                object.amount = [];
+                for (var j = 0; j < message.amount.length; ++j)
+                    object.amount[j] = $root.coin.Coin.toObject(message.amount[j], options);
+            }
+            if (message.timeout != null && message.hasOwnProperty("timeout"))
+                if (typeof message.timeout === "number")
+                    object.timeout = options.longs === String ? String(message.timeout) : message.timeout;
+                else
+                    object.timeout = options.longs === String ? $util.Long.prototype.toString.call(message.timeout) : options.longs === Number ? new $util.LongBits(message.timeout.low >>> 0, message.timeout.high >>> 0).toNumber() : message.timeout;
+            if (message.memo != null && message.hasOwnProperty("memo"))
+                object.memo = message.memo;
+            return object;
+        };
+
+        /**
+         * Converts this CreateSwapMsg to JSON.
+         * @function toJSON
+         * @memberof aswap.CreateSwapMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CreateSwapMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CreateSwapMsg;
+    })();
+
+    aswap.ReleaseSwapMsg = (function() {
+
+        /**
+         * Properties of a ReleaseSwapMsg.
+         * @memberof aswap
+         * @interface IReleaseSwapMsg
+         * @property {weave.IMetadata|null} [metadata] ReleaseSwapMsg metadata
+         * @property {Uint8Array|null} [swapId] swap_id to release
+         * @property {Uint8Array|null} [preimage] must be exactly 32 bytes long
+         */
+
+        /**
+         * Constructs a new ReleaseSwapMsg.
+         * @memberof aswap
+         * @classdesc This operation is authorized by preimage, which is sent raw and then hashed on the backend.
+         * @implements IReleaseSwapMsg
+         * @constructor
+         * @param {aswap.IReleaseSwapMsg=} [properties] Properties to set
+         */
+        function ReleaseSwapMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ReleaseSwapMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof aswap.ReleaseSwapMsg
+         * @instance
+         */
+        ReleaseSwapMsg.prototype.metadata = null;
+
+        /**
+         * swap_id to release
+         * @member {Uint8Array} swapId
+         * @memberof aswap.ReleaseSwapMsg
+         * @instance
+         */
+        ReleaseSwapMsg.prototype.swapId = $util.newBuffer([]);
+
+        /**
+         * must be exactly 32 bytes long
+         * @member {Uint8Array} preimage
+         * @memberof aswap.ReleaseSwapMsg
+         * @instance
+         */
+        ReleaseSwapMsg.prototype.preimage = $util.newBuffer([]);
+
+        /**
+         * Creates a new ReleaseSwapMsg instance using the specified properties.
+         * @function create
+         * @memberof aswap.ReleaseSwapMsg
+         * @static
+         * @param {aswap.IReleaseSwapMsg=} [properties] Properties to set
+         * @returns {aswap.ReleaseSwapMsg} ReleaseSwapMsg instance
+         */
+        ReleaseSwapMsg.create = function create(properties) {
+            return new ReleaseSwapMsg(properties);
+        };
+
+        /**
+         * Encodes the specified ReleaseSwapMsg message. Does not implicitly {@link aswap.ReleaseSwapMsg.verify|verify} messages.
+         * @function encode
+         * @memberof aswap.ReleaseSwapMsg
+         * @static
+         * @param {aswap.IReleaseSwapMsg} message ReleaseSwapMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ReleaseSwapMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.swapId != null && message.hasOwnProperty("swapId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.swapId);
+            if (message.preimage != null && message.hasOwnProperty("preimage"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.preimage);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ReleaseSwapMsg message, length delimited. Does not implicitly {@link aswap.ReleaseSwapMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof aswap.ReleaseSwapMsg
+         * @static
+         * @param {aswap.IReleaseSwapMsg} message ReleaseSwapMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ReleaseSwapMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ReleaseSwapMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof aswap.ReleaseSwapMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {aswap.ReleaseSwapMsg} ReleaseSwapMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ReleaseSwapMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.aswap.ReleaseSwapMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.swapId = reader.bytes();
+                    break;
+                case 3:
+                    message.preimage = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ReleaseSwapMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof aswap.ReleaseSwapMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {aswap.ReleaseSwapMsg} ReleaseSwapMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ReleaseSwapMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ReleaseSwapMsg message.
+         * @function verify
+         * @memberof aswap.ReleaseSwapMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ReleaseSwapMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.swapId != null && message.hasOwnProperty("swapId"))
+                if (!(message.swapId && typeof message.swapId.length === "number" || $util.isString(message.swapId)))
+                    return "swapId: buffer expected";
+            if (message.preimage != null && message.hasOwnProperty("preimage"))
+                if (!(message.preimage && typeof message.preimage.length === "number" || $util.isString(message.preimage)))
+                    return "preimage: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a ReleaseSwapMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof aswap.ReleaseSwapMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {aswap.ReleaseSwapMsg} ReleaseSwapMsg
+         */
+        ReleaseSwapMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.aswap.ReleaseSwapMsg)
+                return object;
+            var message = new $root.aswap.ReleaseSwapMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".aswap.ReleaseSwapMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.swapId != null)
+                if (typeof object.swapId === "string")
+                    $util.base64.decode(object.swapId, message.swapId = $util.newBuffer($util.base64.length(object.swapId)), 0);
+                else if (object.swapId.length)
+                    message.swapId = object.swapId;
+            if (object.preimage != null)
+                if (typeof object.preimage === "string")
+                    $util.base64.decode(object.preimage, message.preimage = $util.newBuffer($util.base64.length(object.preimage)), 0);
+                else if (object.preimage.length)
+                    message.preimage = object.preimage;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ReleaseSwapMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof aswap.ReleaseSwapMsg
+         * @static
+         * @param {aswap.ReleaseSwapMsg} message ReleaseSwapMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ReleaseSwapMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.swapId = "";
+                else {
+                    object.swapId = [];
+                    if (options.bytes !== Array)
+                        object.swapId = $util.newBuffer(object.swapId);
+                }
+                if (options.bytes === String)
+                    object.preimage = "";
+                else {
+                    object.preimage = [];
+                    if (options.bytes !== Array)
+                        object.preimage = $util.newBuffer(object.preimage);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.swapId != null && message.hasOwnProperty("swapId"))
+                object.swapId = options.bytes === String ? $util.base64.encode(message.swapId, 0, message.swapId.length) : options.bytes === Array ? Array.prototype.slice.call(message.swapId) : message.swapId;
+            if (message.preimage != null && message.hasOwnProperty("preimage"))
+                object.preimage = options.bytes === String ? $util.base64.encode(message.preimage, 0, message.preimage.length) : options.bytes === Array ? Array.prototype.slice.call(message.preimage) : message.preimage;
+            return object;
+        };
+
+        /**
+         * Converts this ReleaseSwapMsg to JSON.
+         * @function toJSON
+         * @memberof aswap.ReleaseSwapMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ReleaseSwapMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ReleaseSwapMsg;
+    })();
+
+    aswap.ReturnSwapMsg = (function() {
+
+        /**
+         * Properties of a ReturnSwapMsg.
+         * @memberof aswap
+         * @interface IReturnSwapMsg
+         * @property {weave.IMetadata|null} [metadata] ReturnSwapMsg metadata
+         * @property {Uint8Array|null} [swapId] swap_id to return
+         */
+
+        /**
+         * Constructs a new ReturnSwapMsg.
+         * @memberof aswap
+         * @classdesc This operation only works if the Swap is expired.
+         * @implements IReturnSwapMsg
+         * @constructor
+         * @param {aswap.IReturnSwapMsg=} [properties] Properties to set
+         */
+        function ReturnSwapMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ReturnSwapMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof aswap.ReturnSwapMsg
+         * @instance
+         */
+        ReturnSwapMsg.prototype.metadata = null;
+
+        /**
+         * swap_id to return
+         * @member {Uint8Array} swapId
+         * @memberof aswap.ReturnSwapMsg
+         * @instance
+         */
+        ReturnSwapMsg.prototype.swapId = $util.newBuffer([]);
+
+        /**
+         * Creates a new ReturnSwapMsg instance using the specified properties.
+         * @function create
+         * @memberof aswap.ReturnSwapMsg
+         * @static
+         * @param {aswap.IReturnSwapMsg=} [properties] Properties to set
+         * @returns {aswap.ReturnSwapMsg} ReturnSwapMsg instance
+         */
+        ReturnSwapMsg.create = function create(properties) {
+            return new ReturnSwapMsg(properties);
+        };
+
+        /**
+         * Encodes the specified ReturnSwapMsg message. Does not implicitly {@link aswap.ReturnSwapMsg.verify|verify} messages.
+         * @function encode
+         * @memberof aswap.ReturnSwapMsg
+         * @static
+         * @param {aswap.IReturnSwapMsg} message ReturnSwapMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ReturnSwapMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.swapId != null && message.hasOwnProperty("swapId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.swapId);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ReturnSwapMsg message, length delimited. Does not implicitly {@link aswap.ReturnSwapMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof aswap.ReturnSwapMsg
+         * @static
+         * @param {aswap.IReturnSwapMsg} message ReturnSwapMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ReturnSwapMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ReturnSwapMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof aswap.ReturnSwapMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {aswap.ReturnSwapMsg} ReturnSwapMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ReturnSwapMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.aswap.ReturnSwapMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.swapId = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ReturnSwapMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof aswap.ReturnSwapMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {aswap.ReturnSwapMsg} ReturnSwapMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ReturnSwapMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ReturnSwapMsg message.
+         * @function verify
+         * @memberof aswap.ReturnSwapMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ReturnSwapMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.swapId != null && message.hasOwnProperty("swapId"))
+                if (!(message.swapId && typeof message.swapId.length === "number" || $util.isString(message.swapId)))
+                    return "swapId: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a ReturnSwapMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof aswap.ReturnSwapMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {aswap.ReturnSwapMsg} ReturnSwapMsg
+         */
+        ReturnSwapMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.aswap.ReturnSwapMsg)
+                return object;
+            var message = new $root.aswap.ReturnSwapMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".aswap.ReturnSwapMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.swapId != null)
+                if (typeof object.swapId === "string")
+                    $util.base64.decode(object.swapId, message.swapId = $util.newBuffer($util.base64.length(object.swapId)), 0);
+                else if (object.swapId.length)
+                    message.swapId = object.swapId;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ReturnSwapMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof aswap.ReturnSwapMsg
+         * @static
+         * @param {aswap.ReturnSwapMsg} message ReturnSwapMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ReturnSwapMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.swapId = "";
+                else {
+                    object.swapId = [];
+                    if (options.bytes !== Array)
+                        object.swapId = $util.newBuffer(object.swapId);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.swapId != null && message.hasOwnProperty("swapId"))
+                object.swapId = options.bytes === String ? $util.base64.encode(message.swapId, 0, message.swapId.length) : options.bytes === Array ? Array.prototype.slice.call(message.swapId) : message.swapId;
+            return object;
+        };
+
+        /**
+         * Converts this ReturnSwapMsg to JSON.
+         * @function toJSON
+         * @memberof aswap.ReturnSwapMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ReturnSwapMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ReturnSwapMsg;
+    })();
+
+    return aswap;
 })();
 
 $root.batch = (function() {
@@ -4146,6 +6583,7 @@ $root.cash = (function() {
          * Properties of a Set.
          * @memberof cash
          * @interface ISet
+         * @property {weave.IMetadata|null} [metadata] Set metadata
          * @property {Array.<coin.ICoin>|null} [coins] Set coins
          */
 
@@ -4164,6 +6602,14 @@ $root.cash = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * Set metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof cash.Set
+         * @instance
+         */
+        Set.prototype.metadata = null;
 
         /**
          * Set coins.
@@ -4197,9 +6643,11 @@ $root.cash = (function() {
         Set.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.coins != null && message.coins.length)
                 for (var i = 0; i < message.coins.length; ++i)
-                    $root.coin.Coin.encode(message.coins[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.coin.Coin.encode(message.coins[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             return writer;
         };
 
@@ -4235,6 +6683,9 @@ $root.cash = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     if (!(message.coins && message.coins.length))
                         message.coins = [];
                     message.coins.push($root.coin.Coin.decode(reader, reader.uint32()));
@@ -4274,6 +6725,11 @@ $root.cash = (function() {
         Set.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.coins != null && message.hasOwnProperty("coins")) {
                 if (!Array.isArray(message.coins))
                     return "coins: array expected";
@@ -4298,6 +6754,11 @@ $root.cash = (function() {
             if (object instanceof $root.cash.Set)
                 return object;
             var message = new $root.cash.Set();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".cash.Set.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.coins) {
                 if (!Array.isArray(object.coins))
                     throw TypeError(".cash.Set.coins: array expected");
@@ -4326,6 +6787,10 @@ $root.cash = (function() {
             var object = {};
             if (options.arrays || options.defaults)
                 object.coins = [];
+            if (options.defaults)
+                object.metadata = null;
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.coins && message.coins.length) {
                 object.coins = [];
                 for (var j = 0; j < message.coins.length; ++j)
@@ -4354,6 +6819,7 @@ $root.cash = (function() {
          * Properties of a SendMsg.
          * @memberof cash
          * @interface ISendMsg
+         * @property {weave.IMetadata|null} [metadata] SendMsg metadata
          * @property {Uint8Array|null} [src] SendMsg src
          * @property {Uint8Array|null} [dest] SendMsg dest
          * @property {coin.ICoin|null} [amount] SendMsg amount
@@ -4375,6 +6841,14 @@ $root.cash = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * SendMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof cash.SendMsg
+         * @instance
+         */
+        SendMsg.prototype.metadata = null;
 
         /**
          * SendMsg src.
@@ -4440,16 +6914,18 @@ $root.cash = (function() {
         SendMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.src != null && message.hasOwnProperty("src"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.src);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.src);
             if (message.dest != null && message.hasOwnProperty("dest"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.dest);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.dest);
             if (message.amount != null && message.hasOwnProperty("amount"))
-                $root.coin.Coin.encode(message.amount, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.coin.Coin.encode(message.amount, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.memo != null && message.hasOwnProperty("memo"))
-                writer.uint32(/* id 4, wireType 2 =*/34).string(message.memo);
+                writer.uint32(/* id 5, wireType 2 =*/42).string(message.memo);
             if (message.ref != null && message.hasOwnProperty("ref"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.ref);
+                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.ref);
             return writer;
         };
 
@@ -4485,18 +6961,21 @@ $root.cash = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.src = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.dest = reader.bytes();
+                    message.src = reader.bytes();
                     break;
                 case 3:
-                    message.amount = $root.coin.Coin.decode(reader, reader.uint32());
+                    message.dest = reader.bytes();
                     break;
                 case 4:
-                    message.memo = reader.string();
+                    message.amount = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 case 5:
+                    message.memo = reader.string();
+                    break;
+                case 6:
                     message.ref = reader.bytes();
                     break;
                 default:
@@ -4534,6 +7013,11 @@ $root.cash = (function() {
         SendMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.src != null && message.hasOwnProperty("src"))
                 if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
                     return "src: buffer expected";
@@ -4566,6 +7050,11 @@ $root.cash = (function() {
             if (object instanceof $root.cash.SendMsg)
                 return object;
             var message = new $root.cash.SendMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".cash.SendMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.src != null)
                 if (typeof object.src === "string")
                     $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
@@ -4605,6 +7094,7 @@ $root.cash = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.src = "";
                 else {
@@ -4629,6 +7119,8 @@ $root.cash = (function() {
                         object.ref = $util.newBuffer(object.ref);
                 }
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.src != null && message.hasOwnProperty("src"))
                 object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
             if (message.dest != null && message.hasOwnProperty("dest"))
@@ -4662,6 +7154,7 @@ $root.cash = (function() {
          * Properties of a FeeInfo.
          * @memberof cash
          * @interface IFeeInfo
+         * @property {weave.IMetadata|null} [metadata] FeeInfo metadata
          * @property {Uint8Array|null} [payer] FeeInfo payer
          * @property {coin.ICoin|null} [fees] FeeInfo fees
          */
@@ -4680,6 +7173,14 @@ $root.cash = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * FeeInfo metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof cash.FeeInfo
+         * @instance
+         */
+        FeeInfo.prototype.metadata = null;
 
         /**
          * FeeInfo payer.
@@ -4721,10 +7222,12 @@ $root.cash = (function() {
         FeeInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.payer != null && message.hasOwnProperty("payer"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.payer);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.payer);
             if (message.fees != null && message.hasOwnProperty("fees"))
-                $root.coin.Coin.encode(message.fees, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.coin.Coin.encode(message.fees, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -4760,9 +7263,12 @@ $root.cash = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.payer = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.payer = reader.bytes();
+                    break;
+                case 3:
                     message.fees = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 default:
@@ -4800,6 +7306,11 @@ $root.cash = (function() {
         FeeInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.payer != null && message.hasOwnProperty("payer"))
                 if (!(message.payer && typeof message.payer.length === "number" || $util.isString(message.payer)))
                     return "payer: buffer expected";
@@ -4823,6 +7334,11 @@ $root.cash = (function() {
             if (object instanceof $root.cash.FeeInfo)
                 return object;
             var message = new $root.cash.FeeInfo();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".cash.FeeInfo.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.payer != null)
                 if (typeof object.payer === "string")
                     $util.base64.decode(object.payer, message.payer = $util.newBuffer($util.base64.length(object.payer)), 0);
@@ -4850,6 +7366,7 @@ $root.cash = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.payer = "";
                 else {
@@ -4859,6 +7376,8 @@ $root.cash = (function() {
                 }
                 object.fees = null;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.payer != null && message.hasOwnProperty("payer"))
                 object.payer = options.bytes === String ? $util.base64.encode(message.payer, 0, message.payer.length) : options.bytes === Array ? Array.prototype.slice.call(message.payer) : message.payer;
             if (message.fees != null && message.hasOwnProperty("fees"))
@@ -4880,6 +7399,453 @@ $root.cash = (function() {
         return FeeInfo;
     })();
 
+    cash.Configuration = (function() {
+
+        /**
+         * Properties of a Configuration.
+         * @memberof cash
+         * @interface IConfiguration
+         * @property {Uint8Array|null} [owner] TODO: add schema uint32 here
+         * @property {Uint8Array|null} [collectorAddress] Configuration collectorAddress
+         * @property {coin.ICoin|null} [minimalFee] Configuration minimalFee
+         */
+
+        /**
+         * Constructs a new Configuration.
+         * @memberof cash
+         * @classdesc Represents a Configuration.
+         * @implements IConfiguration
+         * @constructor
+         * @param {cash.IConfiguration=} [properties] Properties to set
+         */
+        function Configuration(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * TODO: add schema uint32 here
+         * @member {Uint8Array} owner
+         * @memberof cash.Configuration
+         * @instance
+         */
+        Configuration.prototype.owner = $util.newBuffer([]);
+
+        /**
+         * Configuration collectorAddress.
+         * @member {Uint8Array} collectorAddress
+         * @memberof cash.Configuration
+         * @instance
+         */
+        Configuration.prototype.collectorAddress = $util.newBuffer([]);
+
+        /**
+         * Configuration minimalFee.
+         * @member {coin.ICoin|null|undefined} minimalFee
+         * @memberof cash.Configuration
+         * @instance
+         */
+        Configuration.prototype.minimalFee = null;
+
+        /**
+         * Creates a new Configuration instance using the specified properties.
+         * @function create
+         * @memberof cash.Configuration
+         * @static
+         * @param {cash.IConfiguration=} [properties] Properties to set
+         * @returns {cash.Configuration} Configuration instance
+         */
+        Configuration.create = function create(properties) {
+            return new Configuration(properties);
+        };
+
+        /**
+         * Encodes the specified Configuration message. Does not implicitly {@link cash.Configuration.verify|verify} messages.
+         * @function encode
+         * @memberof cash.Configuration
+         * @static
+         * @param {cash.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
+            if (message.collectorAddress != null && message.hasOwnProperty("collectorAddress"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.collectorAddress);
+            if (message.minimalFee != null && message.hasOwnProperty("minimalFee"))
+                $root.coin.Coin.encode(message.minimalFee, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Configuration message, length delimited. Does not implicitly {@link cash.Configuration.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof cash.Configuration
+         * @static
+         * @param {cash.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer.
+         * @function decode
+         * @memberof cash.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {cash.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.cash.Configuration();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 2:
+                    message.owner = reader.bytes();
+                    break;
+                case 3:
+                    message.collectorAddress = reader.bytes();
+                    break;
+                case 4:
+                    message.minimalFee = $root.coin.Coin.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof cash.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {cash.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Configuration message.
+         * @function verify
+         * @memberof cash.Configuration
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Configuration.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
+            if (message.collectorAddress != null && message.hasOwnProperty("collectorAddress"))
+                if (!(message.collectorAddress && typeof message.collectorAddress.length === "number" || $util.isString(message.collectorAddress)))
+                    return "collectorAddress: buffer expected";
+            if (message.minimalFee != null && message.hasOwnProperty("minimalFee")) {
+                var error = $root.coin.Coin.verify(message.minimalFee);
+                if (error)
+                    return "minimalFee." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof cash.Configuration
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {cash.Configuration} Configuration
+         */
+        Configuration.fromObject = function fromObject(object) {
+            if (object instanceof $root.cash.Configuration)
+                return object;
+            var message = new $root.cash.Configuration();
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
+            if (object.collectorAddress != null)
+                if (typeof object.collectorAddress === "string")
+                    $util.base64.decode(object.collectorAddress, message.collectorAddress = $util.newBuffer($util.base64.length(object.collectorAddress)), 0);
+                else if (object.collectorAddress.length)
+                    message.collectorAddress = object.collectorAddress;
+            if (object.minimalFee != null) {
+                if (typeof object.minimalFee !== "object")
+                    throw TypeError(".cash.Configuration.minimalFee: object expected");
+                message.minimalFee = $root.coin.Coin.fromObject(object.minimalFee);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof cash.Configuration
+         * @static
+         * @param {cash.Configuration} message Configuration
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Configuration.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
+                if (options.bytes === String)
+                    object.collectorAddress = "";
+                else {
+                    object.collectorAddress = [];
+                    if (options.bytes !== Array)
+                        object.collectorAddress = $util.newBuffer(object.collectorAddress);
+                }
+                object.minimalFee = null;
+            }
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            if (message.collectorAddress != null && message.hasOwnProperty("collectorAddress"))
+                object.collectorAddress = options.bytes === String ? $util.base64.encode(message.collectorAddress, 0, message.collectorAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.collectorAddress) : message.collectorAddress;
+            if (message.minimalFee != null && message.hasOwnProperty("minimalFee"))
+                object.minimalFee = $root.coin.Coin.toObject(message.minimalFee, options);
+            return object;
+        };
+
+        /**
+         * Converts this Configuration to JSON.
+         * @function toJSON
+         * @memberof cash.Configuration
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Configuration.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Configuration;
+    })();
+
+    cash.ConfigurationMsg = (function() {
+
+        /**
+         * Properties of a ConfigurationMsg.
+         * @memberof cash
+         * @interface IConfigurationMsg
+         * @property {cash.IConfiguration|null} [patch] TODO: add schema uint32 here
+         */
+
+        /**
+         * Constructs a new ConfigurationMsg.
+         * @memberof cash
+         * @classdesc Represents a ConfigurationMsg.
+         * @implements IConfigurationMsg
+         * @constructor
+         * @param {cash.IConfigurationMsg=} [properties] Properties to set
+         */
+        function ConfigurationMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * TODO: add schema uint32 here
+         * @member {cash.IConfiguration|null|undefined} patch
+         * @memberof cash.ConfigurationMsg
+         * @instance
+         */
+        ConfigurationMsg.prototype.patch = null;
+
+        /**
+         * Creates a new ConfigurationMsg instance using the specified properties.
+         * @function create
+         * @memberof cash.ConfigurationMsg
+         * @static
+         * @param {cash.IConfigurationMsg=} [properties] Properties to set
+         * @returns {cash.ConfigurationMsg} ConfigurationMsg instance
+         */
+        ConfigurationMsg.create = function create(properties) {
+            return new ConfigurationMsg(properties);
+        };
+
+        /**
+         * Encodes the specified ConfigurationMsg message. Does not implicitly {@link cash.ConfigurationMsg.verify|verify} messages.
+         * @function encode
+         * @memberof cash.ConfigurationMsg
+         * @static
+         * @param {cash.IConfigurationMsg} message ConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ConfigurationMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                $root.cash.Configuration.encode(message.patch, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ConfigurationMsg message, length delimited. Does not implicitly {@link cash.ConfigurationMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof cash.ConfigurationMsg
+         * @static
+         * @param {cash.IConfigurationMsg} message ConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ConfigurationMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ConfigurationMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof cash.ConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {cash.ConfigurationMsg} ConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ConfigurationMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.cash.ConfigurationMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 2:
+                    message.patch = $root.cash.Configuration.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ConfigurationMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof cash.ConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {cash.ConfigurationMsg} ConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ConfigurationMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ConfigurationMsg message.
+         * @function verify
+         * @memberof cash.ConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ConfigurationMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.patch != null && message.hasOwnProperty("patch")) {
+                var error = $root.cash.Configuration.verify(message.patch);
+                if (error)
+                    return "patch." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof cash.ConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {cash.ConfigurationMsg} ConfigurationMsg
+         */
+        ConfigurationMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.cash.ConfigurationMsg)
+                return object;
+            var message = new $root.cash.ConfigurationMsg();
+            if (object.patch != null) {
+                if (typeof object.patch !== "object")
+                    throw TypeError(".cash.ConfigurationMsg.patch: object expected");
+                message.patch = $root.cash.Configuration.fromObject(object.patch);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ConfigurationMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof cash.ConfigurationMsg
+         * @static
+         * @param {cash.ConfigurationMsg} message ConfigurationMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ConfigurationMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults)
+                object.patch = null;
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                object.patch = $root.cash.Configuration.toObject(message.patch, options);
+            return object;
+        };
+
+        /**
+         * Converts this ConfigurationMsg to JSON.
+         * @function toJSON
+         * @memberof cash.ConfigurationMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ConfigurationMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ConfigurationMsg;
+    })();
+
     return cash;
 })();
 
@@ -4898,6 +7864,7 @@ $root.currency = (function() {
          * Properties of a TokenInfo.
          * @memberof currency
          * @interface ITokenInfo
+         * @property {weave.IMetadata|null} [metadata] TokenInfo metadata
          * @property {string|null} [name] TokenInfo name
          */
 
@@ -4915,6 +7882,14 @@ $root.currency = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * TokenInfo metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof currency.TokenInfo
+         * @instance
+         */
+        TokenInfo.prototype.metadata = null;
 
         /**
          * TokenInfo name.
@@ -4948,8 +7923,10 @@ $root.currency = (function() {
         TokenInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.name != null && message.hasOwnProperty("name"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
             return writer;
         };
 
@@ -4985,6 +7962,9 @@ $root.currency = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     message.name = reader.string();
                     break;
                 default:
@@ -5022,6 +8002,11 @@ $root.currency = (function() {
         TokenInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.name != null && message.hasOwnProperty("name"))
                 if (!$util.isString(message.name))
                     return "name: string expected";
@@ -5040,6 +8025,11 @@ $root.currency = (function() {
             if (object instanceof $root.currency.TokenInfo)
                 return object;
             var message = new $root.currency.TokenInfo();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".currency.TokenInfo.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.name != null)
                 message.name = String(object.name);
             return message;
@@ -5058,8 +8048,12 @@ $root.currency = (function() {
             if (!options)
                 options = {};
             var object = {};
-            if (options.defaults)
+            if (options.defaults) {
+                object.metadata = null;
                 object.name = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.name != null && message.hasOwnProperty("name"))
                 object.name = message.name;
             return object;
@@ -5085,6 +8079,7 @@ $root.currency = (function() {
          * Properties of a NewTokenInfoMsg.
          * @memberof currency
          * @interface INewTokenInfoMsg
+         * @property {weave.IMetadata|null} [metadata] NewTokenInfoMsg metadata
          * @property {string|null} [ticker] NewTokenInfoMsg ticker
          * @property {string|null} [name] NewTokenInfoMsg name
          */
@@ -5103,6 +8098,14 @@ $root.currency = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * NewTokenInfoMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof currency.NewTokenInfoMsg
+         * @instance
+         */
+        NewTokenInfoMsg.prototype.metadata = null;
 
         /**
          * NewTokenInfoMsg ticker.
@@ -5144,10 +8147,12 @@ $root.currency = (function() {
         NewTokenInfoMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.ticker != null && message.hasOwnProperty("ticker"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.ticker);
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.ticker);
             if (message.name != null && message.hasOwnProperty("name"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.name);
             return writer;
         };
 
@@ -5183,9 +8188,12 @@ $root.currency = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.ticker = reader.string();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.ticker = reader.string();
+                    break;
+                case 3:
                     message.name = reader.string();
                     break;
                 default:
@@ -5223,6 +8231,11 @@ $root.currency = (function() {
         NewTokenInfoMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.ticker != null && message.hasOwnProperty("ticker"))
                 if (!$util.isString(message.ticker))
                     return "ticker: string expected";
@@ -5244,6 +8257,11 @@ $root.currency = (function() {
             if (object instanceof $root.currency.NewTokenInfoMsg)
                 return object;
             var message = new $root.currency.NewTokenInfoMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".currency.NewTokenInfoMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.ticker != null)
                 message.ticker = String(object.ticker);
             if (object.name != null)
@@ -5265,9 +8283,12 @@ $root.currency = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 object.ticker = "";
                 object.name = "";
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.ticker != null && message.hasOwnProperty("ticker"))
                 object.ticker = message.ticker;
             if (message.name != null && message.hasOwnProperty("name"))
@@ -5307,6 +8328,7 @@ $root.distribution = (function() {
          * Properties of a Revenue.
          * @memberof distribution
          * @interface IRevenue
+         * @property {weave.IMetadata|null} [metadata] Revenue metadata
          * @property {Uint8Array|null} [admin] While not enforced it is best to use a multisig contract here.
          * @property {Array.<distribution.IRecipient>|null} [recipients] distributed to. Must be at least one.
          */
@@ -5326,6 +8348,14 @@ $root.distribution = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * Revenue metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof distribution.Revenue
+         * @instance
+         */
+        Revenue.prototype.metadata = null;
 
         /**
          * While not enforced it is best to use a multisig contract here.
@@ -5367,11 +8397,13 @@ $root.distribution = (function() {
         Revenue.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.admin != null && message.hasOwnProperty("admin"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.admin);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.admin);
             if (message.recipients != null && message.recipients.length)
                 for (var i = 0; i < message.recipients.length; ++i)
-                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -5407,9 +8439,12 @@ $root.distribution = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.admin = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.admin = reader.bytes();
+                    break;
+                case 3:
                     if (!(message.recipients && message.recipients.length))
                         message.recipients = [];
                     message.recipients.push($root.distribution.Recipient.decode(reader, reader.uint32()));
@@ -5449,6 +8484,11 @@ $root.distribution = (function() {
         Revenue.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.admin != null && message.hasOwnProperty("admin"))
                 if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
                     return "admin: buffer expected";
@@ -5476,6 +8516,11 @@ $root.distribution = (function() {
             if (object instanceof $root.distribution.Revenue)
                 return object;
             var message = new $root.distribution.Revenue();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".distribution.Revenue.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.admin != null)
                 if (typeof object.admin === "string")
                     $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
@@ -5509,7 +8554,8 @@ $root.distribution = (function() {
             var object = {};
             if (options.arrays || options.defaults)
                 object.recipients = [];
-            if (options.defaults)
+            if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.admin = "";
                 else {
@@ -5517,6 +8563,9 @@ $root.distribution = (function() {
                     if (options.bytes !== Array)
                         object.admin = $util.newBuffer(object.admin);
                 }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.admin != null && message.hasOwnProperty("admin"))
                 object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
             if (message.recipients && message.recipients.length) {
@@ -5766,6 +8815,7 @@ $root.distribution = (function() {
          * Properties of a NewRevenueMsg.
          * @memberof distribution
          * @interface INewRevenueMsg
+         * @property {weave.IMetadata|null} [metadata] NewRevenueMsg metadata
          * @property {Uint8Array|null} [admin] While not enforced it is best to use a multisig contract here.
          * @property {Array.<distribution.IRecipient>|null} [recipients] distributed to. Must be at least one.
          */
@@ -5785,6 +8835,14 @@ $root.distribution = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * NewRevenueMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof distribution.NewRevenueMsg
+         * @instance
+         */
+        NewRevenueMsg.prototype.metadata = null;
 
         /**
          * While not enforced it is best to use a multisig contract here.
@@ -5826,11 +8884,13 @@ $root.distribution = (function() {
         NewRevenueMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.admin != null && message.hasOwnProperty("admin"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.admin);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.admin);
             if (message.recipients != null && message.recipients.length)
                 for (var i = 0; i < message.recipients.length; ++i)
-                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -5866,9 +8926,12 @@ $root.distribution = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.admin = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.admin = reader.bytes();
+                    break;
+                case 3:
                     if (!(message.recipients && message.recipients.length))
                         message.recipients = [];
                     message.recipients.push($root.distribution.Recipient.decode(reader, reader.uint32()));
@@ -5908,6 +8971,11 @@ $root.distribution = (function() {
         NewRevenueMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.admin != null && message.hasOwnProperty("admin"))
                 if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
                     return "admin: buffer expected";
@@ -5935,6 +9003,11 @@ $root.distribution = (function() {
             if (object instanceof $root.distribution.NewRevenueMsg)
                 return object;
             var message = new $root.distribution.NewRevenueMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".distribution.NewRevenueMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.admin != null)
                 if (typeof object.admin === "string")
                     $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
@@ -5968,7 +9041,8 @@ $root.distribution = (function() {
             var object = {};
             if (options.arrays || options.defaults)
                 object.recipients = [];
-            if (options.defaults)
+            if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.admin = "";
                 else {
@@ -5976,6 +9050,9 @@ $root.distribution = (function() {
                     if (options.bytes !== Array)
                         object.admin = $util.newBuffer(object.admin);
                 }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.admin != null && message.hasOwnProperty("admin"))
                 object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
             if (message.recipients && message.recipients.length) {
@@ -6006,6 +9083,7 @@ $root.distribution = (function() {
          * Properties of a DistributeMsg.
          * @memberof distribution
          * @interface IDistributeMsg
+         * @property {weave.IMetadata|null} [metadata] DistributeMsg metadata
          * @property {Uint8Array|null} [revenueId] should be distributed between recipients.
          */
 
@@ -6023,6 +9101,14 @@ $root.distribution = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * DistributeMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof distribution.DistributeMsg
+         * @instance
+         */
+        DistributeMsg.prototype.metadata = null;
 
         /**
          * should be distributed between recipients.
@@ -6056,8 +9142,10 @@ $root.distribution = (function() {
         DistributeMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.revenueId != null && message.hasOwnProperty("revenueId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.revenueId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.revenueId);
             return writer;
         };
 
@@ -6093,6 +9181,9 @@ $root.distribution = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     message.revenueId = reader.bytes();
                     break;
                 default:
@@ -6130,6 +9221,11 @@ $root.distribution = (function() {
         DistributeMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.revenueId != null && message.hasOwnProperty("revenueId"))
                 if (!(message.revenueId && typeof message.revenueId.length === "number" || $util.isString(message.revenueId)))
                     return "revenueId: buffer expected";
@@ -6148,6 +9244,11 @@ $root.distribution = (function() {
             if (object instanceof $root.distribution.DistributeMsg)
                 return object;
             var message = new $root.distribution.DistributeMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".distribution.DistributeMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.revenueId != null)
                 if (typeof object.revenueId === "string")
                     $util.base64.decode(object.revenueId, message.revenueId = $util.newBuffer($util.base64.length(object.revenueId)), 0);
@@ -6169,7 +9270,8 @@ $root.distribution = (function() {
             if (!options)
                 options = {};
             var object = {};
-            if (options.defaults)
+            if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.revenueId = "";
                 else {
@@ -6177,6 +9279,9 @@ $root.distribution = (function() {
                     if (options.bytes !== Array)
                         object.revenueId = $util.newBuffer(object.revenueId);
                 }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.revenueId != null && message.hasOwnProperty("revenueId"))
                 object.revenueId = options.bytes === String ? $util.base64.encode(message.revenueId, 0, message.revenueId.length) : options.bytes === Array ? Array.prototype.slice.call(message.revenueId) : message.revenueId;
             return object;
@@ -6202,6 +9307,7 @@ $root.distribution = (function() {
          * Properties of a ResetRevenueMsg.
          * @memberof distribution
          * @interface IResetRevenueMsg
+         * @property {weave.IMetadata|null} [metadata] ResetRevenueMsg metadata
          * @property {Uint8Array|null} [revenueId] Revenue ID reference an ID of a revenue instance that is updated.
          * @property {Array.<distribution.IRecipient>|null} [recipients] distributed to. Must be at least one.
          */
@@ -6221,6 +9327,14 @@ $root.distribution = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * ResetRevenueMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof distribution.ResetRevenueMsg
+         * @instance
+         */
+        ResetRevenueMsg.prototype.metadata = null;
 
         /**
          * Revenue ID reference an ID of a revenue instance that is updated.
@@ -6262,11 +9376,13 @@ $root.distribution = (function() {
         ResetRevenueMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.revenueId != null && message.hasOwnProperty("revenueId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.revenueId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.revenueId);
             if (message.recipients != null && message.recipients.length)
                 for (var i = 0; i < message.recipients.length; ++i)
-                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -6302,9 +9418,12 @@ $root.distribution = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.revenueId = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.revenueId = reader.bytes();
+                    break;
+                case 3:
                     if (!(message.recipients && message.recipients.length))
                         message.recipients = [];
                     message.recipients.push($root.distribution.Recipient.decode(reader, reader.uint32()));
@@ -6344,6 +9463,11 @@ $root.distribution = (function() {
         ResetRevenueMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.revenueId != null && message.hasOwnProperty("revenueId"))
                 if (!(message.revenueId && typeof message.revenueId.length === "number" || $util.isString(message.revenueId)))
                     return "revenueId: buffer expected";
@@ -6371,6 +9495,11 @@ $root.distribution = (function() {
             if (object instanceof $root.distribution.ResetRevenueMsg)
                 return object;
             var message = new $root.distribution.ResetRevenueMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".distribution.ResetRevenueMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.revenueId != null)
                 if (typeof object.revenueId === "string")
                     $util.base64.decode(object.revenueId, message.revenueId = $util.newBuffer($util.base64.length(object.revenueId)), 0);
@@ -6404,7 +9533,8 @@ $root.distribution = (function() {
             var object = {};
             if (options.arrays || options.defaults)
                 object.recipients = [];
-            if (options.defaults)
+            if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.revenueId = "";
                 else {
@@ -6412,6 +9542,9 @@ $root.distribution = (function() {
                     if (options.bytes !== Array)
                         object.revenueId = $util.newBuffer(object.revenueId);
                 }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.revenueId != null && message.hasOwnProperty("revenueId"))
                 object.revenueId = options.bytes === String ? $util.base64.encode(message.revenueId, 0, message.revenueId.length) : options.bytes === Array ? Array.prototype.slice.call(message.revenueId) : message.revenueId;
             if (message.recipients && message.recipients.length) {
@@ -6454,7 +9587,8 @@ $root.escrow = (function() {
          * Properties of an Escrow.
          * @memberof escrow
          * @interface IEscrow
-         * @property {Uint8Array|null} [sender] Sender, Arbiter, Recipient are all weave.Permission
+         * @property {weave.IMetadata|null} [metadata] Escrow metadata
+         * @property {Uint8Array|null} [sender] Escrow sender
          * @property {Uint8Array|null} [arbiter] Escrow arbiter
          * @property {Uint8Array|null} [recipient] Escrow recipient
          * @property {number|Long|null} [timeout] expired: [timeout, infinity)
@@ -6477,7 +9611,15 @@ $root.escrow = (function() {
         }
 
         /**
-         * Sender, Arbiter, Recipient are all weave.Permission
+         * Escrow metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof escrow.Escrow
+         * @instance
+         */
+        Escrow.prototype.metadata = null;
+
+        /**
+         * Escrow sender.
          * @member {Uint8Array} sender
          * @memberof escrow.Escrow
          * @instance
@@ -6540,12 +9682,14 @@ $root.escrow = (function() {
         Escrow.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.sender != null && message.hasOwnProperty("sender"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.sender);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.sender);
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.arbiter);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.arbiter);
             if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.recipient);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
@@ -6585,12 +9729,15 @@ $root.escrow = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.sender = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.arbiter = reader.bytes();
+                    message.sender = reader.bytes();
                     break;
                 case 3:
+                    message.arbiter = reader.bytes();
+                    break;
+                case 4:
                     message.recipient = reader.bytes();
                     break;
                 case 5:
@@ -6634,6 +9781,11 @@ $root.escrow = (function() {
         Escrow.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.sender != null && message.hasOwnProperty("sender"))
                 if (!(message.sender && typeof message.sender.length === "number" || $util.isString(message.sender)))
                     return "sender: buffer expected";
@@ -6664,6 +9816,11 @@ $root.escrow = (function() {
             if (object instanceof $root.escrow.Escrow)
                 return object;
             var message = new $root.escrow.Escrow();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".escrow.Escrow.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.sender != null)
                 if (typeof object.sender === "string")
                     $util.base64.decode(object.sender, message.sender = $util.newBuffer($util.base64.length(object.sender)), 0);
@@ -6707,6 +9864,7 @@ $root.escrow = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.sender = "";
                 else {
@@ -6735,6 +9893,8 @@ $root.escrow = (function() {
                     object.timeout = options.longs === String ? "0" : 0;
                 object.memo = "";
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.sender != null && message.hasOwnProperty("sender"))
                 object.sender = options.bytes === String ? $util.base64.encode(message.sender, 0, message.sender.length) : options.bytes === Array ? Array.prototype.slice.call(message.sender) : message.sender;
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
@@ -6771,7 +9931,8 @@ $root.escrow = (function() {
          * Properties of a CreateEscrowMsg.
          * @memberof escrow
          * @interface ICreateEscrowMsg
-         * @property {Uint8Array|null} [src] Sender, Arbiter, Recipient are all weave.Permission
+         * @property {weave.IMetadata|null} [metadata] CreateEscrowMsg metadata
+         * @property {Uint8Array|null} [src] CreateEscrowMsg src
          * @property {Uint8Array|null} [arbiter] CreateEscrowMsg arbiter
          * @property {Uint8Array|null} [recipient] CreateEscrowMsg recipient
          * @property {Array.<coin.ICoin>|null} [amount] amount may contain multiple token types
@@ -6796,7 +9957,15 @@ $root.escrow = (function() {
         }
 
         /**
-         * Sender, Arbiter, Recipient are all weave.Permission
+         * CreateEscrowMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof escrow.CreateEscrowMsg
+         * @instance
+         */
+        CreateEscrowMsg.prototype.metadata = null;
+
+        /**
+         * CreateEscrowMsg src.
          * @member {Uint8Array} src
          * @memberof escrow.CreateEscrowMsg
          * @instance
@@ -6867,19 +10036,21 @@ $root.escrow = (function() {
         CreateEscrowMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.src != null && message.hasOwnProperty("src"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.src);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.src);
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.arbiter);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.arbiter);
             if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.recipient);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
             if (message.amount != null && message.amount.length)
                 for (var i = 0; i < message.amount.length; ++i)
-                    $root.coin.Coin.encode(message.amount[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                    $root.coin.Coin.encode(message.amount[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.timeout != null && message.hasOwnProperty("timeout"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
-                writer.uint32(/* id 6, wireType 2 =*/50).string(message.memo);
+                writer.uint32(/* id 7, wireType 2 =*/58).string(message.memo);
             return writer;
         };
 
@@ -6915,23 +10086,26 @@ $root.escrow = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.src = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.arbiter = reader.bytes();
+                    message.src = reader.bytes();
                     break;
                 case 3:
-                    message.recipient = reader.bytes();
+                    message.arbiter = reader.bytes();
                     break;
                 case 4:
+                    message.recipient = reader.bytes();
+                    break;
+                case 5:
                     if (!(message.amount && message.amount.length))
                         message.amount = [];
                     message.amount.push($root.coin.Coin.decode(reader, reader.uint32()));
                     break;
-                case 5:
+                case 6:
                     message.timeout = reader.int64();
                     break;
-                case 6:
+                case 7:
                     message.memo = reader.string();
                     break;
                 default:
@@ -6969,6 +10143,11 @@ $root.escrow = (function() {
         CreateEscrowMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.src != null && message.hasOwnProperty("src"))
                 if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
                     return "src: buffer expected";
@@ -7008,6 +10187,11 @@ $root.escrow = (function() {
             if (object instanceof $root.escrow.CreateEscrowMsg)
                 return object;
             var message = new $root.escrow.CreateEscrowMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".escrow.CreateEscrowMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.src != null)
                 if (typeof object.src === "string")
                     $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
@@ -7063,6 +10247,7 @@ $root.escrow = (function() {
             if (options.arrays || options.defaults)
                 object.amount = [];
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.src = "";
                 else {
@@ -7091,6 +10276,8 @@ $root.escrow = (function() {
                     object.timeout = options.longs === String ? "0" : 0;
                 object.memo = "";
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.src != null && message.hasOwnProperty("src"))
                 object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
@@ -7132,6 +10319,7 @@ $root.escrow = (function() {
          * Properties of a ReleaseEscrowMsg.
          * @memberof escrow
          * @interface IReleaseEscrowMsg
+         * @property {weave.IMetadata|null} [metadata] ReleaseEscrowMsg metadata
          * @property {Uint8Array|null} [escrowId] ReleaseEscrowMsg escrowId
          * @property {Array.<coin.ICoin>|null} [amount] ReleaseEscrowMsg amount
          */
@@ -7151,6 +10339,14 @@ $root.escrow = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * ReleaseEscrowMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof escrow.ReleaseEscrowMsg
+         * @instance
+         */
+        ReleaseEscrowMsg.prototype.metadata = null;
 
         /**
          * ReleaseEscrowMsg escrowId.
@@ -7192,11 +10388,13 @@ $root.escrow = (function() {
         ReleaseEscrowMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.escrowId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.escrowId);
             if (message.amount != null && message.amount.length)
                 for (var i = 0; i < message.amount.length; ++i)
-                    $root.coin.Coin.encode(message.amount[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.coin.Coin.encode(message.amount[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -7232,9 +10430,12 @@ $root.escrow = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.escrowId = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.escrowId = reader.bytes();
+                    break;
+                case 3:
                     if (!(message.amount && message.amount.length))
                         message.amount = [];
                     message.amount.push($root.coin.Coin.decode(reader, reader.uint32()));
@@ -7274,6 +10475,11 @@ $root.escrow = (function() {
         ReleaseEscrowMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
                 if (!(message.escrowId && typeof message.escrowId.length === "number" || $util.isString(message.escrowId)))
                     return "escrowId: buffer expected";
@@ -7301,6 +10507,11 @@ $root.escrow = (function() {
             if (object instanceof $root.escrow.ReleaseEscrowMsg)
                 return object;
             var message = new $root.escrow.ReleaseEscrowMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".escrow.ReleaseEscrowMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.escrowId != null)
                 if (typeof object.escrowId === "string")
                     $util.base64.decode(object.escrowId, message.escrowId = $util.newBuffer($util.base64.length(object.escrowId)), 0);
@@ -7334,7 +10545,8 @@ $root.escrow = (function() {
             var object = {};
             if (options.arrays || options.defaults)
                 object.amount = [];
-            if (options.defaults)
+            if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.escrowId = "";
                 else {
@@ -7342,6 +10554,9 @@ $root.escrow = (function() {
                     if (options.bytes !== Array)
                         object.escrowId = $util.newBuffer(object.escrowId);
                 }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
                 object.escrowId = options.bytes === String ? $util.base64.encode(message.escrowId, 0, message.escrowId.length) : options.bytes === Array ? Array.prototype.slice.call(message.escrowId) : message.escrowId;
             if (message.amount && message.amount.length) {
@@ -7372,6 +10587,7 @@ $root.escrow = (function() {
          * Properties of a ReturnEscrowMsg.
          * @memberof escrow
          * @interface IReturnEscrowMsg
+         * @property {weave.IMetadata|null} [metadata] ReturnEscrowMsg metadata
          * @property {Uint8Array|null} [escrowId] ReturnEscrowMsg escrowId
          */
 
@@ -7389,6 +10605,14 @@ $root.escrow = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * ReturnEscrowMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof escrow.ReturnEscrowMsg
+         * @instance
+         */
+        ReturnEscrowMsg.prototype.metadata = null;
 
         /**
          * ReturnEscrowMsg escrowId.
@@ -7422,8 +10646,10 @@ $root.escrow = (function() {
         ReturnEscrowMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.escrowId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.escrowId);
             return writer;
         };
 
@@ -7459,6 +10685,9 @@ $root.escrow = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     message.escrowId = reader.bytes();
                     break;
                 default:
@@ -7496,6 +10725,11 @@ $root.escrow = (function() {
         ReturnEscrowMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
                 if (!(message.escrowId && typeof message.escrowId.length === "number" || $util.isString(message.escrowId)))
                     return "escrowId: buffer expected";
@@ -7514,6 +10748,11 @@ $root.escrow = (function() {
             if (object instanceof $root.escrow.ReturnEscrowMsg)
                 return object;
             var message = new $root.escrow.ReturnEscrowMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".escrow.ReturnEscrowMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.escrowId != null)
                 if (typeof object.escrowId === "string")
                     $util.base64.decode(object.escrowId, message.escrowId = $util.newBuffer($util.base64.length(object.escrowId)), 0);
@@ -7535,7 +10774,8 @@ $root.escrow = (function() {
             if (!options)
                 options = {};
             var object = {};
-            if (options.defaults)
+            if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.escrowId = "";
                 else {
@@ -7543,6 +10783,9 @@ $root.escrow = (function() {
                     if (options.bytes !== Array)
                         object.escrowId = $util.newBuffer(object.escrowId);
                 }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
                 object.escrowId = options.bytes === String ? $util.base64.encode(message.escrowId, 0, message.escrowId.length) : options.bytes === Array ? Array.prototype.slice.call(message.escrowId) : message.escrowId;
             return object;
@@ -7568,6 +10811,7 @@ $root.escrow = (function() {
          * Properties of an UpdateEscrowPartiesMsg.
          * @memberof escrow
          * @interface IUpdateEscrowPartiesMsg
+         * @property {weave.IMetadata|null} [metadata] UpdateEscrowPartiesMsg metadata
          * @property {Uint8Array|null} [escrowId] UpdateEscrowPartiesMsg escrowId
          * @property {Uint8Array|null} [sender] UpdateEscrowPartiesMsg sender
          * @property {Uint8Array|null} [arbiter] UpdateEscrowPartiesMsg arbiter
@@ -7588,6 +10832,14 @@ $root.escrow = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * UpdateEscrowPartiesMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof escrow.UpdateEscrowPartiesMsg
+         * @instance
+         */
+        UpdateEscrowPartiesMsg.prototype.metadata = null;
 
         /**
          * UpdateEscrowPartiesMsg escrowId.
@@ -7645,14 +10897,16 @@ $root.escrow = (function() {
         UpdateEscrowPartiesMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.escrowId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.escrowId);
             if (message.sender != null && message.hasOwnProperty("sender"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.sender);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.sender);
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.arbiter);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.arbiter);
             if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.recipient);
             return writer;
         };
 
@@ -7688,15 +10942,18 @@ $root.escrow = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.escrowId = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.sender = reader.bytes();
+                    message.escrowId = reader.bytes();
                     break;
                 case 3:
-                    message.arbiter = reader.bytes();
+                    message.sender = reader.bytes();
                     break;
                 case 4:
+                    message.arbiter = reader.bytes();
+                    break;
+                case 5:
                     message.recipient = reader.bytes();
                     break;
                 default:
@@ -7734,6 +10991,11 @@ $root.escrow = (function() {
         UpdateEscrowPartiesMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
                 if (!(message.escrowId && typeof message.escrowId.length === "number" || $util.isString(message.escrowId)))
                     return "escrowId: buffer expected";
@@ -7761,6 +11023,11 @@ $root.escrow = (function() {
             if (object instanceof $root.escrow.UpdateEscrowPartiesMsg)
                 return object;
             var message = new $root.escrow.UpdateEscrowPartiesMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".escrow.UpdateEscrowPartiesMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.escrowId != null)
                 if (typeof object.escrowId === "string")
                     $util.base64.decode(object.escrowId, message.escrowId = $util.newBuffer($util.base64.length(object.escrowId)), 0);
@@ -7798,6 +11065,7 @@ $root.escrow = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.escrowId = "";
                 else {
@@ -7827,6 +11095,8 @@ $root.escrow = (function() {
                         object.recipient = $util.newBuffer(object.recipient);
                 }
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
                 object.escrowId = options.bytes === String ? $util.base64.encode(message.escrowId, 0, message.escrowId.length) : options.bytes === Array ? Array.prototype.slice.call(message.escrowId) : message.escrowId;
             if (message.sender != null && message.hasOwnProperty("sender"))
@@ -7870,9 +11140,13 @@ $root.gov = (function() {
          * Properties of an Electorate.
          * @memberof gov
          * @interface IElectorate
+         * @property {weave.IMetadata|null} [metadata] Electorate metadata
+         * @property {number|null} [version] Document version
+         * @property {Uint8Array|null} [admin] Admin is the address that is allowed ot modify an existing electorate.
          * @property {string|null} [title] Human readable title.
          * @property {Array.<gov.IElector>|null} [electors] Elector defines a list of all signatures that are allowed to participate in a vote
-         * @property {number|Long|null} [totalWeightElectorate] TotalWeightElectorate is the sum of all electors weights.
+         * @property {number|Long|null} [totalElectorateWeight] TotalElectorateWeight is the sum of all electors weights.
+         * @property {orm.IVersionedIDRef|null} [updateElectionRuleRef] UpdateElectionRuleRef reference the rule to update this electorate.
          */
 
         /**
@@ -7892,6 +11166,30 @@ $root.gov = (function() {
         }
 
         /**
+         * Electorate metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.Electorate
+         * @instance
+         */
+        Electorate.prototype.metadata = null;
+
+        /**
+         * Document version
+         * @member {number} version
+         * @memberof gov.Electorate
+         * @instance
+         */
+        Electorate.prototype.version = 0;
+
+        /**
+         * Admin is the address that is allowed ot modify an existing electorate.
+         * @member {Uint8Array} admin
+         * @memberof gov.Electorate
+         * @instance
+         */
+        Electorate.prototype.admin = $util.newBuffer([]);
+
+        /**
          * Human readable title.
          * @member {string} title
          * @memberof gov.Electorate
@@ -7908,12 +11206,20 @@ $root.gov = (function() {
         Electorate.prototype.electors = $util.emptyArray;
 
         /**
-         * TotalWeightElectorate is the sum of all electors weights.
-         * @member {number|Long} totalWeightElectorate
+         * TotalElectorateWeight is the sum of all electors weights.
+         * @member {number|Long} totalElectorateWeight
          * @memberof gov.Electorate
          * @instance
          */
-        Electorate.prototype.totalWeightElectorate = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+        Electorate.prototype.totalElectorateWeight = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+        /**
+         * UpdateElectionRuleRef reference the rule to update this electorate.
+         * @member {orm.IVersionedIDRef|null|undefined} updateElectionRuleRef
+         * @memberof gov.Electorate
+         * @instance
+         */
+        Electorate.prototype.updateElectionRuleRef = null;
 
         /**
          * Creates a new Electorate instance using the specified properties.
@@ -7939,13 +11245,21 @@ $root.gov = (function() {
         Electorate.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.version != null && message.hasOwnProperty("version"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.version);
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.admin);
             if (message.title != null && message.hasOwnProperty("title"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.title);
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.title);
             if (message.electors != null && message.electors.length)
                 for (var i = 0; i < message.electors.length; ++i)
-                    $root.gov.Elector.encode(message.electors[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-            if (message.totalWeightElectorate != null && message.hasOwnProperty("totalWeightElectorate"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint64(message.totalWeightElectorate);
+                    $root.gov.Elector.encode(message.electors[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            if (message.totalElectorateWeight != null && message.hasOwnProperty("totalElectorateWeight"))
+                writer.uint32(/* id 6, wireType 0 =*/48).uint64(message.totalElectorateWeight);
+            if (message.updateElectionRuleRef != null && message.hasOwnProperty("updateElectionRuleRef"))
+                $root.orm.VersionedIDRef.encode(message.updateElectionRuleRef, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             return writer;
         };
 
@@ -7981,15 +11295,27 @@ $root.gov = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.title = reader.string();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.version = reader.uint32();
+                    break;
+                case 3:
+                    message.admin = reader.bytes();
+                    break;
+                case 4:
+                    message.title = reader.string();
+                    break;
+                case 5:
                     if (!(message.electors && message.electors.length))
                         message.electors = [];
                     message.electors.push($root.gov.Elector.decode(reader, reader.uint32()));
                     break;
-                case 3:
-                    message.totalWeightElectorate = reader.uint64();
+                case 6:
+                    message.totalElectorateWeight = reader.uint64();
+                    break;
+                case 7:
+                    message.updateElectionRuleRef = $root.orm.VersionedIDRef.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -8026,6 +11352,17 @@ $root.gov = (function() {
         Electorate.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.version != null && message.hasOwnProperty("version"))
+                if (!$util.isInteger(message.version))
+                    return "version: integer expected";
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
+                    return "admin: buffer expected";
             if (message.title != null && message.hasOwnProperty("title"))
                 if (!$util.isString(message.title))
                     return "title: string expected";
@@ -8038,9 +11375,14 @@ $root.gov = (function() {
                         return "electors." + error;
                 }
             }
-            if (message.totalWeightElectorate != null && message.hasOwnProperty("totalWeightElectorate"))
-                if (!$util.isInteger(message.totalWeightElectorate) && !(message.totalWeightElectorate && $util.isInteger(message.totalWeightElectorate.low) && $util.isInteger(message.totalWeightElectorate.high)))
-                    return "totalWeightElectorate: integer|Long expected";
+            if (message.totalElectorateWeight != null && message.hasOwnProperty("totalElectorateWeight"))
+                if (!$util.isInteger(message.totalElectorateWeight) && !(message.totalElectorateWeight && $util.isInteger(message.totalElectorateWeight.low) && $util.isInteger(message.totalElectorateWeight.high)))
+                    return "totalElectorateWeight: integer|Long expected";
+            if (message.updateElectionRuleRef != null && message.hasOwnProperty("updateElectionRuleRef")) {
+                var error = $root.orm.VersionedIDRef.verify(message.updateElectionRuleRef);
+                if (error)
+                    return "updateElectionRuleRef." + error;
+            }
             return null;
         };
 
@@ -8056,6 +11398,18 @@ $root.gov = (function() {
             if (object instanceof $root.gov.Electorate)
                 return object;
             var message = new $root.gov.Electorate();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.Electorate.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.version != null)
+                message.version = object.version >>> 0;
+            if (object.admin != null)
+                if (typeof object.admin === "string")
+                    $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
+                else if (object.admin.length)
+                    message.admin = object.admin;
             if (object.title != null)
                 message.title = String(object.title);
             if (object.electors) {
@@ -8068,15 +11422,20 @@ $root.gov = (function() {
                     message.electors[i] = $root.gov.Elector.fromObject(object.electors[i]);
                 }
             }
-            if (object.totalWeightElectorate != null)
+            if (object.totalElectorateWeight != null)
                 if ($util.Long)
-                    (message.totalWeightElectorate = $util.Long.fromValue(object.totalWeightElectorate)).unsigned = true;
-                else if (typeof object.totalWeightElectorate === "string")
-                    message.totalWeightElectorate = parseInt(object.totalWeightElectorate, 10);
-                else if (typeof object.totalWeightElectorate === "number")
-                    message.totalWeightElectorate = object.totalWeightElectorate;
-                else if (typeof object.totalWeightElectorate === "object")
-                    message.totalWeightElectorate = new $util.LongBits(object.totalWeightElectorate.low >>> 0, object.totalWeightElectorate.high >>> 0).toNumber(true);
+                    (message.totalElectorateWeight = $util.Long.fromValue(object.totalElectorateWeight)).unsigned = true;
+                else if (typeof object.totalElectorateWeight === "string")
+                    message.totalElectorateWeight = parseInt(object.totalElectorateWeight, 10);
+                else if (typeof object.totalElectorateWeight === "number")
+                    message.totalElectorateWeight = object.totalElectorateWeight;
+                else if (typeof object.totalElectorateWeight === "object")
+                    message.totalElectorateWeight = new $util.LongBits(object.totalElectorateWeight.low >>> 0, object.totalElectorateWeight.high >>> 0).toNumber(true);
+            if (object.updateElectionRuleRef != null) {
+                if (typeof object.updateElectionRuleRef !== "object")
+                    throw TypeError(".gov.Electorate.updateElectionRuleRef: object expected");
+                message.updateElectionRuleRef = $root.orm.VersionedIDRef.fromObject(object.updateElectionRuleRef);
+            }
             return message;
         };
 
@@ -8096,13 +11455,29 @@ $root.gov = (function() {
             if (options.arrays || options.defaults)
                 object.electors = [];
             if (options.defaults) {
+                object.metadata = null;
+                object.version = 0;
+                if (options.bytes === String)
+                    object.admin = "";
+                else {
+                    object.admin = [];
+                    if (options.bytes !== Array)
+                        object.admin = $util.newBuffer(object.admin);
+                }
                 object.title = "";
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, true);
-                    object.totalWeightElectorate = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                    object.totalElectorateWeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
-                    object.totalWeightElectorate = options.longs === String ? "0" : 0;
+                    object.totalElectorateWeight = options.longs === String ? "0" : 0;
+                object.updateElectionRuleRef = null;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.version != null && message.hasOwnProperty("version"))
+                object.version = message.version;
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
             if (message.title != null && message.hasOwnProperty("title"))
                 object.title = message.title;
             if (message.electors && message.electors.length) {
@@ -8110,11 +11485,13 @@ $root.gov = (function() {
                 for (var j = 0; j < message.electors.length; ++j)
                     object.electors[j] = $root.gov.Elector.toObject(message.electors[j], options);
             }
-            if (message.totalWeightElectorate != null && message.hasOwnProperty("totalWeightElectorate"))
-                if (typeof message.totalWeightElectorate === "number")
-                    object.totalWeightElectorate = options.longs === String ? String(message.totalWeightElectorate) : message.totalWeightElectorate;
+            if (message.totalElectorateWeight != null && message.hasOwnProperty("totalElectorateWeight"))
+                if (typeof message.totalElectorateWeight === "number")
+                    object.totalElectorateWeight = options.longs === String ? String(message.totalElectorateWeight) : message.totalElectorateWeight;
                 else
-                    object.totalWeightElectorate = options.longs === String ? $util.Long.prototype.toString.call(message.totalWeightElectorate) : options.longs === Number ? new $util.LongBits(message.totalWeightElectorate.low >>> 0, message.totalWeightElectorate.high >>> 0).toNumber(true) : message.totalWeightElectorate;
+                    object.totalElectorateWeight = options.longs === String ? $util.Long.prototype.toString.call(message.totalElectorateWeight) : options.longs === Number ? new $util.LongBits(message.totalElectorateWeight.low >>> 0, message.totalElectorateWeight.high >>> 0).toNumber(true) : message.totalElectorateWeight;
+            if (message.updateElectionRuleRef != null && message.hasOwnProperty("updateElectionRuleRef"))
+                object.updateElectionRuleRef = $root.orm.VersionedIDRef.toObject(message.updateElectionRuleRef, options);
             return object;
         };
 
@@ -8138,7 +11515,7 @@ $root.gov = (function() {
          * Properties of an Elector.
          * @memberof gov
          * @interface IElector
-         * @property {Uint8Array|null} [signature] The address of the voter.
+         * @property {Uint8Array|null} [address] The address of the voter.
          * @property {number|null} [weight] Weight defines the power of the participants vote. max value is 65535 (2^16-1).
          */
 
@@ -8159,11 +11536,11 @@ $root.gov = (function() {
 
         /**
          * The address of the voter.
-         * @member {Uint8Array} signature
+         * @member {Uint8Array} address
          * @memberof gov.Elector
          * @instance
          */
-        Elector.prototype.signature = $util.newBuffer([]);
+        Elector.prototype.address = $util.newBuffer([]);
 
         /**
          * Weight defines the power of the participants vote. max value is 65535 (2^16-1).
@@ -8197,8 +11574,8 @@ $root.gov = (function() {
         Elector.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.signature != null && message.hasOwnProperty("signature"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.signature);
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.address);
             if (message.weight != null && message.hasOwnProperty("weight"))
                 writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.weight);
             return writer;
@@ -8236,7 +11613,7 @@ $root.gov = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.signature = reader.bytes();
+                    message.address = reader.bytes();
                     break;
                 case 2:
                     message.weight = reader.uint32();
@@ -8276,9 +11653,9 @@ $root.gov = (function() {
         Elector.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.signature != null && message.hasOwnProperty("signature"))
-                if (!(message.signature && typeof message.signature.length === "number" || $util.isString(message.signature)))
-                    return "signature: buffer expected";
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
             if (message.weight != null && message.hasOwnProperty("weight"))
                 if (!$util.isInteger(message.weight))
                     return "weight: integer expected";
@@ -8297,11 +11674,11 @@ $root.gov = (function() {
             if (object instanceof $root.gov.Elector)
                 return object;
             var message = new $root.gov.Elector();
-            if (object.signature != null)
-                if (typeof object.signature === "string")
-                    $util.base64.decode(object.signature, message.signature = $util.newBuffer($util.base64.length(object.signature)), 0);
-                else if (object.signature.length)
-                    message.signature = object.signature;
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
             if (object.weight != null)
                 message.weight = object.weight >>> 0;
             return message;
@@ -8322,16 +11699,16 @@ $root.gov = (function() {
             var object = {};
             if (options.defaults) {
                 if (options.bytes === String)
-                    object.signature = "";
+                    object.address = "";
                 else {
-                    object.signature = [];
+                    object.address = [];
                     if (options.bytes !== Array)
-                        object.signature = $util.newBuffer(object.signature);
+                        object.address = $util.newBuffer(object.address);
                 }
                 object.weight = 0;
             }
-            if (message.signature != null && message.hasOwnProperty("signature"))
-                object.signature = options.bytes === String ? $util.base64.encode(message.signature, 0, message.signature.length) : options.bytes === Array ? Array.prototype.slice.call(message.signature) : message.signature;
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
             if (message.weight != null && message.hasOwnProperty("weight"))
                 object.weight = message.weight;
             return object;
@@ -8357,9 +11734,13 @@ $root.gov = (function() {
          * Properties of an ElectionRule.
          * @memberof gov
          * @interface IElectionRule
+         * @property {weave.IMetadata|null} [metadata] ElectionRule metadata
+         * @property {number|null} [version] Document version
+         * @property {Uint8Array|null} [admin] Admin is the address that is allowed ot modify an existing election rule.
          * @property {string|null} [title] Human readable title.
          * @property {number|null} [votingPeriodHours] Duration how long the voting period will take place.
          * @property {gov.IFraction|null} [threshold] of the eligible voters.
+         * @property {gov.IFraction|null} [quorum] of the eligible voters.
          */
 
         /**
@@ -8376,6 +11757,30 @@ $root.gov = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * ElectionRule metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.ElectionRule
+         * @instance
+         */
+        ElectionRule.prototype.metadata = null;
+
+        /**
+         * Document version
+         * @member {number} version
+         * @memberof gov.ElectionRule
+         * @instance
+         */
+        ElectionRule.prototype.version = 0;
+
+        /**
+         * Admin is the address that is allowed ot modify an existing election rule.
+         * @member {Uint8Array} admin
+         * @memberof gov.ElectionRule
+         * @instance
+         */
+        ElectionRule.prototype.admin = $util.newBuffer([]);
 
         /**
          * Human readable title.
@@ -8402,6 +11807,14 @@ $root.gov = (function() {
         ElectionRule.prototype.threshold = null;
 
         /**
+         * of the eligible voters.
+         * @member {gov.IFraction|null|undefined} quorum
+         * @memberof gov.ElectionRule
+         * @instance
+         */
+        ElectionRule.prototype.quorum = null;
+
+        /**
          * Creates a new ElectionRule instance using the specified properties.
          * @function create
          * @memberof gov.ElectionRule
@@ -8425,12 +11838,20 @@ $root.gov = (function() {
         ElectionRule.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.version != null && message.hasOwnProperty("version"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.version);
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.admin);
             if (message.title != null && message.hasOwnProperty("title"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.title);
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.title);
             if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.votingPeriodHours);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.votingPeriodHours);
             if (message.threshold != null && message.hasOwnProperty("threshold"))
-                $root.gov.Fraction.encode(message.threshold, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.gov.Fraction.encode(message.threshold, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+            if (message.quorum != null && message.hasOwnProperty("quorum"))
+                $root.gov.Fraction.encode(message.quorum, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             return writer;
         };
 
@@ -8466,13 +11887,25 @@ $root.gov = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.title = reader.string();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.version = reader.uint32();
                     break;
                 case 3:
-                    message.votingPeriodHours = reader.uint32();
+                    message.admin = reader.bytes();
                     break;
                 case 4:
+                    message.title = reader.string();
+                    break;
+                case 5:
+                    message.votingPeriodHours = reader.uint32();
+                    break;
+                case 6:
                     message.threshold = $root.gov.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 7:
+                    message.quorum = $root.gov.Fraction.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -8509,6 +11942,17 @@ $root.gov = (function() {
         ElectionRule.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.version != null && message.hasOwnProperty("version"))
+                if (!$util.isInteger(message.version))
+                    return "version: integer expected";
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
+                    return "admin: buffer expected";
             if (message.title != null && message.hasOwnProperty("title"))
                 if (!$util.isString(message.title))
                     return "title: string expected";
@@ -8519,6 +11963,11 @@ $root.gov = (function() {
                 var error = $root.gov.Fraction.verify(message.threshold);
                 if (error)
                     return "threshold." + error;
+            }
+            if (message.quorum != null && message.hasOwnProperty("quorum")) {
+                var error = $root.gov.Fraction.verify(message.quorum);
+                if (error)
+                    return "quorum." + error;
             }
             return null;
         };
@@ -8535,6 +11984,18 @@ $root.gov = (function() {
             if (object instanceof $root.gov.ElectionRule)
                 return object;
             var message = new $root.gov.ElectionRule();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.ElectionRule.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.version != null)
+                message.version = object.version >>> 0;
+            if (object.admin != null)
+                if (typeof object.admin === "string")
+                    $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
+                else if (object.admin.length)
+                    message.admin = object.admin;
             if (object.title != null)
                 message.title = String(object.title);
             if (object.votingPeriodHours != null)
@@ -8543,6 +12004,11 @@ $root.gov = (function() {
                 if (typeof object.threshold !== "object")
                     throw TypeError(".gov.ElectionRule.threshold: object expected");
                 message.threshold = $root.gov.Fraction.fromObject(object.threshold);
+            }
+            if (object.quorum != null) {
+                if (typeof object.quorum !== "object")
+                    throw TypeError(".gov.ElectionRule.quorum: object expected");
+                message.quorum = $root.gov.Fraction.fromObject(object.quorum);
             }
             return message;
         };
@@ -8561,16 +12027,34 @@ $root.gov = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
+                object.version = 0;
+                if (options.bytes === String)
+                    object.admin = "";
+                else {
+                    object.admin = [];
+                    if (options.bytes !== Array)
+                        object.admin = $util.newBuffer(object.admin);
+                }
                 object.title = "";
                 object.votingPeriodHours = 0;
                 object.threshold = null;
+                object.quorum = null;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.version != null && message.hasOwnProperty("version"))
+                object.version = message.version;
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
             if (message.title != null && message.hasOwnProperty("title"))
                 object.title = message.title;
             if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
                 object.votingPeriodHours = message.votingPeriodHours;
             if (message.threshold != null && message.hasOwnProperty("threshold"))
                 object.threshold = $root.gov.Fraction.toObject(message.threshold, options);
+            if (message.quorum != null && message.hasOwnProperty("quorum"))
+                object.quorum = $root.gov.Fraction.toObject(message.quorum, options);
             return object;
         };
 
@@ -8798,35 +12282,23 @@ $root.gov = (function() {
         return Fraction;
     })();
 
-    gov.TextProposal = (function() {
+    gov.TextProposalPayload = (function() {
 
         /**
-         * Properties of a TextProposal.
+         * Properties of a TextProposalPayload.
          * @memberof gov
-         * @interface ITextProposal
-         * @property {string|null} [title] Human readable title.
-         * @property {string|null} [description] Description of the proposal in text form.
-         * @property {Uint8Array|null} [electionRuleId] Reference to the election rule
-         * @property {Uint8Array|null} [electorateId] Reference to the electorate to define the group of possible voters.
-         * @property {number|Long|null} [votingStartTime] to this start time.
-         * @property {number|Long|null} [votingEndTime] to be included in the election.
-         * @property {number|Long|null} [submissionTime] Unix timestamp of the block where the proposal was added to the chain.
-         * @property {Uint8Array|null} [author] Address of the author who created the proposal. If not set explicit on creation it will default to the main signer.
-         * @property {Array.<gov.IVote>|null} [votes] Votes contain the list of individual votes with elector and voted option.
-         * @property {gov.ITallyResult|null} [voteResult] Result of the election. Contains intermediate tally results while voting period is open.
-         * @property {gov.TextProposal.Status|null} [status] status is the final result based on the votes and election rule.
+         * @interface ITextProposalPayload
          */
 
         /**
-         * Constructs a new TextProposal.
+         * Constructs a new TextProposalPayload.
          * @memberof gov
          * @classdesc A text form proposal for an on-chain governance process.
-         * @implements ITextProposal
+         * @implements ITextProposalPayload
          * @constructor
-         * @param {gov.ITextProposal=} [properties] Properties to set
+         * @param {gov.ITextProposalPayload=} [properties] Properties to set
          */
-        function TextProposal(properties) {
-            this.votes = [];
+        function TextProposalPayload(properties) {
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -8834,208 +12306,240 @@ $root.gov = (function() {
         }
 
         /**
-         * Human readable title.
-         * @member {string} title
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.title = "";
-
-        /**
-         * Description of the proposal in text form.
-         * @member {string} description
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.description = "";
-
-        /**
-         * Reference to the election rule
-         * @member {Uint8Array} electionRuleId
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.electionRuleId = $util.newBuffer([]);
-
-        /**
-         * Reference to the electorate to define the group of possible voters.
-         * @member {Uint8Array} electorateId
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.electorateId = $util.newBuffer([]);
-
-        /**
-         * to this start time.
-         * @member {number|Long} votingStartTime
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.votingStartTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * to be included in the election.
-         * @member {number|Long} votingEndTime
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.votingEndTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * Unix timestamp of the block where the proposal was added to the chain.
-         * @member {number|Long} submissionTime
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.submissionTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * Address of the author who created the proposal. If not set explicit on creation it will default to the main signer.
-         * @member {Uint8Array} author
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.author = $util.newBuffer([]);
-
-        /**
-         * Votes contain the list of individual votes with elector and voted option.
-         * @member {Array.<gov.IVote>} votes
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.votes = $util.emptyArray;
-
-        /**
-         * Result of the election. Contains intermediate tally results while voting period is open.
-         * @member {gov.ITallyResult|null|undefined} voteResult
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.voteResult = null;
-
-        /**
-         * status is the final result based on the votes and election rule.
-         * @member {gov.TextProposal.Status} status
-         * @memberof gov.TextProposal
-         * @instance
-         */
-        TextProposal.prototype.status = 0;
-
-        /**
-         * Creates a new TextProposal instance using the specified properties.
+         * Creates a new TextProposalPayload instance using the specified properties.
          * @function create
-         * @memberof gov.TextProposal
+         * @memberof gov.TextProposalPayload
          * @static
-         * @param {gov.ITextProposal=} [properties] Properties to set
-         * @returns {gov.TextProposal} TextProposal instance
+         * @param {gov.ITextProposalPayload=} [properties] Properties to set
+         * @returns {gov.TextProposalPayload} TextProposalPayload instance
          */
-        TextProposal.create = function create(properties) {
-            return new TextProposal(properties);
+        TextProposalPayload.create = function create(properties) {
+            return new TextProposalPayload(properties);
         };
 
         /**
-         * Encodes the specified TextProposal message. Does not implicitly {@link gov.TextProposal.verify|verify} messages.
+         * Encodes the specified TextProposalPayload message. Does not implicitly {@link gov.TextProposalPayload.verify|verify} messages.
          * @function encode
-         * @memberof gov.TextProposal
+         * @memberof gov.TextProposalPayload
          * @static
-         * @param {gov.ITextProposal} message TextProposal message or plain object to encode
+         * @param {gov.ITextProposalPayload} message TextProposalPayload message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        TextProposal.encode = function encode(message, writer) {
+        TextProposalPayload.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.title != null && message.hasOwnProperty("title"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.title);
-            if (message.description != null && message.hasOwnProperty("description"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.description);
-            if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.electionRuleId);
-            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.electorateId);
-            if (message.votingStartTime != null && message.hasOwnProperty("votingStartTime"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.votingStartTime);
-            if (message.votingEndTime != null && message.hasOwnProperty("votingEndTime"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.votingEndTime);
-            if (message.submissionTime != null && message.hasOwnProperty("submissionTime"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.submissionTime);
-            if (message.author != null && message.hasOwnProperty("author"))
-                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.author);
-            if (message.votes != null && message.votes.length)
-                for (var i = 0; i < message.votes.length; ++i)
-                    $root.gov.Vote.encode(message.votes[i], writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-            if (message.voteResult != null && message.hasOwnProperty("voteResult"))
-                $root.gov.TallyResult.encode(message.voteResult, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-            if (message.status != null && message.hasOwnProperty("status"))
-                writer.uint32(/* id 11, wireType 0 =*/88).int32(message.status);
             return writer;
         };
 
         /**
-         * Encodes the specified TextProposal message, length delimited. Does not implicitly {@link gov.TextProposal.verify|verify} messages.
+         * Encodes the specified TextProposalPayload message, length delimited. Does not implicitly {@link gov.TextProposalPayload.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof gov.TextProposal
+         * @memberof gov.TextProposalPayload
          * @static
-         * @param {gov.ITextProposal} message TextProposal message or plain object to encode
+         * @param {gov.ITextProposalPayload} message TextProposalPayload message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        TextProposal.encodeDelimited = function encodeDelimited(message, writer) {
+        TextProposalPayload.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a TextProposal message from the specified reader or buffer.
+         * Decodes a TextProposalPayload message from the specified reader or buffer.
          * @function decode
-         * @memberof gov.TextProposal
+         * @memberof gov.TextProposalPayload
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {gov.TextProposal} TextProposal
+         * @returns {gov.TextProposalPayload} TextProposalPayload
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        TextProposal.decode = function decode(reader, length) {
+        TextProposalPayload.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.TextProposal();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.TextProposalPayload();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a TextProposalPayload message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof gov.TextProposalPayload
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {gov.TextProposalPayload} TextProposalPayload
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        TextProposalPayload.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a TextProposalPayload message.
+         * @function verify
+         * @memberof gov.TextProposalPayload
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        TextProposalPayload.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            return null;
+        };
+
+        /**
+         * Creates a TextProposalPayload message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof gov.TextProposalPayload
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {gov.TextProposalPayload} TextProposalPayload
+         */
+        TextProposalPayload.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.TextProposalPayload)
+                return object;
+            return new $root.gov.TextProposalPayload();
+        };
+
+        /**
+         * Creates a plain object from a TextProposalPayload message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof gov.TextProposalPayload
+         * @static
+         * @param {gov.TextProposalPayload} message TextProposalPayload
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        TextProposalPayload.toObject = function toObject() {
+            return {};
+        };
+
+        /**
+         * Converts this TextProposalPayload to JSON.
+         * @function toJSON
+         * @memberof gov.TextProposalPayload
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        TextProposalPayload.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return TextProposalPayload;
+    })();
+
+    gov.ElectorateUpdatePayload = (function() {
+
+        /**
+         * Properties of an ElectorateUpdatePayload.
+         * @memberof gov
+         * @interface IElectorateUpdatePayload
+         * @property {Array.<gov.IElector>|null} [diffElectors] with weight=0.
+         */
+
+        /**
+         * Constructs a new ElectorateUpdatePayload.
+         * @memberof gov
+         * @classdesc Represents an ElectorateUpdatePayload.
+         * @implements IElectorateUpdatePayload
+         * @constructor
+         * @param {gov.IElectorateUpdatePayload=} [properties] Properties to set
+         */
+        function ElectorateUpdatePayload(properties) {
+            this.diffElectors = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * with weight=0.
+         * @member {Array.<gov.IElector>} diffElectors
+         * @memberof gov.ElectorateUpdatePayload
+         * @instance
+         */
+        ElectorateUpdatePayload.prototype.diffElectors = $util.emptyArray;
+
+        /**
+         * Creates a new ElectorateUpdatePayload instance using the specified properties.
+         * @function create
+         * @memberof gov.ElectorateUpdatePayload
+         * @static
+         * @param {gov.IElectorateUpdatePayload=} [properties] Properties to set
+         * @returns {gov.ElectorateUpdatePayload} ElectorateUpdatePayload instance
+         */
+        ElectorateUpdatePayload.create = function create(properties) {
+            return new ElectorateUpdatePayload(properties);
+        };
+
+        /**
+         * Encodes the specified ElectorateUpdatePayload message. Does not implicitly {@link gov.ElectorateUpdatePayload.verify|verify} messages.
+         * @function encode
+         * @memberof gov.ElectorateUpdatePayload
+         * @static
+         * @param {gov.IElectorateUpdatePayload} message ElectorateUpdatePayload message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ElectorateUpdatePayload.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.diffElectors != null && message.diffElectors.length)
+                for (var i = 0; i < message.diffElectors.length; ++i)
+                    $root.gov.Elector.encode(message.diffElectors[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ElectorateUpdatePayload message, length delimited. Does not implicitly {@link gov.ElectorateUpdatePayload.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof gov.ElectorateUpdatePayload
+         * @static
+         * @param {gov.IElectorateUpdatePayload} message ElectorateUpdatePayload message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ElectorateUpdatePayload.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an ElectorateUpdatePayload message from the specified reader or buffer.
+         * @function decode
+         * @memberof gov.ElectorateUpdatePayload
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {gov.ElectorateUpdatePayload} ElectorateUpdatePayload
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ElectorateUpdatePayload.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.ElectorateUpdatePayload();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.title = reader.string();
-                    break;
-                case 2:
-                    message.description = reader.string();
-                    break;
-                case 3:
-                    message.electionRuleId = reader.bytes();
-                    break;
-                case 4:
-                    message.electorateId = reader.bytes();
-                    break;
-                case 5:
-                    message.votingStartTime = reader.int64();
-                    break;
-                case 6:
-                    message.votingEndTime = reader.int64();
-                    break;
-                case 7:
-                    message.submissionTime = reader.int64();
-                    break;
-                case 8:
-                    message.author = reader.bytes();
-                    break;
-                case 9:
-                    if (!(message.votes && message.votes.length))
-                        message.votes = [];
-                    message.votes.push($root.gov.Vote.decode(reader, reader.uint32()));
-                    break;
-                case 10:
-                    message.voteResult = $root.gov.TallyResult.decode(reader, reader.uint32());
-                    break;
-                case 11:
-                    message.status = reader.int32();
+                    if (!(message.diffElectors && message.diffElectors.length))
+                        message.diffElectors = [];
+                    message.diffElectors.push($root.gov.Elector.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -9046,44 +12550,468 @@ $root.gov = (function() {
         };
 
         /**
-         * Decodes a TextProposal message from the specified reader or buffer, length delimited.
+         * Decodes an ElectorateUpdatePayload message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof gov.TextProposal
+         * @memberof gov.ElectorateUpdatePayload
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {gov.TextProposal} TextProposal
+         * @returns {gov.ElectorateUpdatePayload} ElectorateUpdatePayload
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        TextProposal.decodeDelimited = function decodeDelimited(reader) {
+        ElectorateUpdatePayload.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a TextProposal message.
+         * Verifies an ElectorateUpdatePayload message.
          * @function verify
-         * @memberof gov.TextProposal
+         * @memberof gov.ElectorateUpdatePayload
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        TextProposal.verify = function verify(message) {
+        ElectorateUpdatePayload.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.diffElectors != null && message.hasOwnProperty("diffElectors")) {
+                if (!Array.isArray(message.diffElectors))
+                    return "diffElectors: array expected";
+                for (var i = 0; i < message.diffElectors.length; ++i) {
+                    var error = $root.gov.Elector.verify(message.diffElectors[i]);
+                    if (error)
+                        return "diffElectors." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates an ElectorateUpdatePayload message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof gov.ElectorateUpdatePayload
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {gov.ElectorateUpdatePayload} ElectorateUpdatePayload
+         */
+        ElectorateUpdatePayload.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.ElectorateUpdatePayload)
+                return object;
+            var message = new $root.gov.ElectorateUpdatePayload();
+            if (object.diffElectors) {
+                if (!Array.isArray(object.diffElectors))
+                    throw TypeError(".gov.ElectorateUpdatePayload.diffElectors: array expected");
+                message.diffElectors = [];
+                for (var i = 0; i < object.diffElectors.length; ++i) {
+                    if (typeof object.diffElectors[i] !== "object")
+                        throw TypeError(".gov.ElectorateUpdatePayload.diffElectors: object expected");
+                    message.diffElectors[i] = $root.gov.Elector.fromObject(object.diffElectors[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an ElectorateUpdatePayload message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof gov.ElectorateUpdatePayload
+         * @static
+         * @param {gov.ElectorateUpdatePayload} message ElectorateUpdatePayload
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ElectorateUpdatePayload.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.diffElectors = [];
+            if (message.diffElectors && message.diffElectors.length) {
+                object.diffElectors = [];
+                for (var j = 0; j < message.diffElectors.length; ++j)
+                    object.diffElectors[j] = $root.gov.Elector.toObject(message.diffElectors[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this ElectorateUpdatePayload to JSON.
+         * @function toJSON
+         * @memberof gov.ElectorateUpdatePayload
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ElectorateUpdatePayload.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ElectorateUpdatePayload;
+    })();
+
+    gov.Proposal = (function() {
+
+        /**
+         * Properties of a Proposal.
+         * @memberof gov
+         * @interface IProposal
+         * @property {weave.IMetadata|null} [metadata] Proposal metadata
+         * @property {string|null} [title] Human readable title.
+         * @property {string|null} [description] Description of the proposal in text form.
+         * @property {orm.IVersionedIDRef|null} [electionRuleRef] ElectionRuleRef is a reference to the election rule
+         * @property {orm.IVersionedIDRef|null} [electorateRef] Reference to the electorate to define the group of possible voters.
+         * @property {number|Long|null} [votingStartTime] to this start time.
+         * @property {number|Long|null} [votingEndTime] to be included in the election.
+         * @property {number|Long|null} [submissionTime] Unix timestamp of the block where the proposal was added to the chain.
+         * @property {Uint8Array|null} [author] Address of the author who created the proposal. If not set explicit on creation it will default to the main signer.
+         * @property {gov.ITallyResult|null} [voteState] Result of the election. Contains intermediate tally results while voting period is open.
+         * @property {gov.Proposal.Status|null} [status] Status represents the high level position in the life cycle of the proposal. Initial value is submitted.
+         * @property {gov.Proposal.Result|null} [result] Result is the final result based on the votes and election rule. Initial value is Undefined.
+         * @property {gov.Proposal.Type|null} [type] Proposal type
+         * @property {gov.ITextProposalPayload|null} [textDetails] Proposal textDetails
+         * @property {gov.IElectorateUpdatePayload|null} [electorateUpdateDetails] Proposal electorateUpdateDetails
+         */
+
+        /**
+         * Constructs a new Proposal.
+         * @memberof gov
+         * @classdesc A generic proposal for an on-chain governance process.
+         * @implements IProposal
+         * @constructor
+         * @param {gov.IProposal=} [properties] Properties to set
+         */
+        function Proposal(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Proposal metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.metadata = null;
+
+        /**
+         * Human readable title.
+         * @member {string} title
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.title = "";
+
+        /**
+         * Description of the proposal in text form.
+         * @member {string} description
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.description = "";
+
+        /**
+         * ElectionRuleRef is a reference to the election rule
+         * @member {orm.IVersionedIDRef|null|undefined} electionRuleRef
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.electionRuleRef = null;
+
+        /**
+         * Reference to the electorate to define the group of possible voters.
+         * @member {orm.IVersionedIDRef|null|undefined} electorateRef
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.electorateRef = null;
+
+        /**
+         * to this start time.
+         * @member {number|Long} votingStartTime
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.votingStartTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * to be included in the election.
+         * @member {number|Long} votingEndTime
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.votingEndTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Unix timestamp of the block where the proposal was added to the chain.
+         * @member {number|Long} submissionTime
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.submissionTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Address of the author who created the proposal. If not set explicit on creation it will default to the main signer.
+         * @member {Uint8Array} author
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.author = $util.newBuffer([]);
+
+        /**
+         * Result of the election. Contains intermediate tally results while voting period is open.
+         * @member {gov.ITallyResult|null|undefined} voteState
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.voteState = null;
+
+        /**
+         * Status represents the high level position in the life cycle of the proposal. Initial value is submitted.
+         * @member {gov.Proposal.Status} status
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.status = 0;
+
+        /**
+         * Result is the final result based on the votes and election rule. Initial value is Undefined.
+         * @member {gov.Proposal.Result} result
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.result = 0;
+
+        /**
+         * Proposal type.
+         * @member {gov.Proposal.Type} type
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.type = 0;
+
+        /**
+         * Proposal textDetails.
+         * @member {gov.ITextProposalPayload|null|undefined} textDetails
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.textDetails = null;
+
+        /**
+         * Proposal electorateUpdateDetails.
+         * @member {gov.IElectorateUpdatePayload|null|undefined} electorateUpdateDetails
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.electorateUpdateDetails = null;
+
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+
+        /**
+         * details
+         * @member {"textDetails"|"electorateUpdateDetails"|undefined} details
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Object.defineProperty(Proposal.prototype, "details", {
+            get: $util.oneOfGetter($oneOfFields = ["textDetails", "electorateUpdateDetails"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * Creates a new Proposal instance using the specified properties.
+         * @function create
+         * @memberof gov.Proposal
+         * @static
+         * @param {gov.IProposal=} [properties] Properties to set
+         * @returns {gov.Proposal} Proposal instance
+         */
+        Proposal.create = function create(properties) {
+            return new Proposal(properties);
+        };
+
+        /**
+         * Encodes the specified Proposal message. Does not implicitly {@link gov.Proposal.verify|verify} messages.
+         * @function encode
+         * @memberof gov.Proposal
+         * @static
+         * @param {gov.IProposal} message Proposal message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Proposal.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.title != null && message.hasOwnProperty("title"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.title);
+            if (message.description != null && message.hasOwnProperty("description"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.description);
+            if (message.electionRuleRef != null && message.hasOwnProperty("electionRuleRef"))
+                $root.orm.VersionedIDRef.encode(message.electionRuleRef, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.electorateRef != null && message.hasOwnProperty("electorateRef"))
+                $root.orm.VersionedIDRef.encode(message.electorateRef, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            if (message.votingStartTime != null && message.hasOwnProperty("votingStartTime"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.votingStartTime);
+            if (message.votingEndTime != null && message.hasOwnProperty("votingEndTime"))
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.votingEndTime);
+            if (message.submissionTime != null && message.hasOwnProperty("submissionTime"))
+                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.submissionTime);
+            if (message.author != null && message.hasOwnProperty("author"))
+                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.author);
+            if (message.voteState != null && message.hasOwnProperty("voteState"))
+                $root.gov.TallyResult.encode(message.voteState, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+            if (message.status != null && message.hasOwnProperty("status"))
+                writer.uint32(/* id 11, wireType 0 =*/88).int32(message.status);
+            if (message.result != null && message.hasOwnProperty("result"))
+                writer.uint32(/* id 12, wireType 0 =*/96).int32(message.result);
+            if (message.type != null && message.hasOwnProperty("type"))
+                writer.uint32(/* id 13, wireType 0 =*/104).int32(message.type);
+            if (message.textDetails != null && message.hasOwnProperty("textDetails"))
+                $root.gov.TextProposalPayload.encode(message.textDetails, writer.uint32(/* id 50, wireType 2 =*/402).fork()).ldelim();
+            if (message.electorateUpdateDetails != null && message.hasOwnProperty("electorateUpdateDetails"))
+                $root.gov.ElectorateUpdatePayload.encode(message.electorateUpdateDetails, writer.uint32(/* id 51, wireType 2 =*/410).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Proposal message, length delimited. Does not implicitly {@link gov.Proposal.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof gov.Proposal
+         * @static
+         * @param {gov.IProposal} message Proposal message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Proposal.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Proposal message from the specified reader or buffer.
+         * @function decode
+         * @memberof gov.Proposal
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {gov.Proposal} Proposal
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Proposal.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.Proposal();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.title = reader.string();
+                    break;
+                case 3:
+                    message.description = reader.string();
+                    break;
+                case 4:
+                    message.electionRuleRef = $root.orm.VersionedIDRef.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.electorateRef = $root.orm.VersionedIDRef.decode(reader, reader.uint32());
+                    break;
+                case 6:
+                    message.votingStartTime = reader.int64();
+                    break;
+                case 7:
+                    message.votingEndTime = reader.int64();
+                    break;
+                case 8:
+                    message.submissionTime = reader.int64();
+                    break;
+                case 9:
+                    message.author = reader.bytes();
+                    break;
+                case 10:
+                    message.voteState = $root.gov.TallyResult.decode(reader, reader.uint32());
+                    break;
+                case 11:
+                    message.status = reader.int32();
+                    break;
+                case 12:
+                    message.result = reader.int32();
+                    break;
+                case 13:
+                    message.type = reader.int32();
+                    break;
+                case 50:
+                    message.textDetails = $root.gov.TextProposalPayload.decode(reader, reader.uint32());
+                    break;
+                case 51:
+                    message.electorateUpdateDetails = $root.gov.ElectorateUpdatePayload.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Proposal message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof gov.Proposal
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {gov.Proposal} Proposal
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Proposal.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Proposal message.
+         * @function verify
+         * @memberof gov.Proposal
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Proposal.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            var properties = {};
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.title != null && message.hasOwnProperty("title"))
                 if (!$util.isString(message.title))
                     return "title: string expected";
             if (message.description != null && message.hasOwnProperty("description"))
                 if (!$util.isString(message.description))
                     return "description: string expected";
-            if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
-                if (!(message.electionRuleId && typeof message.electionRuleId.length === "number" || $util.isString(message.electionRuleId)))
-                    return "electionRuleId: buffer expected";
-            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
-                if (!(message.electorateId && typeof message.electorateId.length === "number" || $util.isString(message.electorateId)))
-                    return "electorateId: buffer expected";
+            if (message.electionRuleRef != null && message.hasOwnProperty("electionRuleRef")) {
+                var error = $root.orm.VersionedIDRef.verify(message.electionRuleRef);
+                if (error)
+                    return "electionRuleRef." + error;
+            }
+            if (message.electorateRef != null && message.hasOwnProperty("electorateRef")) {
+                var error = $root.orm.VersionedIDRef.verify(message.electorateRef);
+                if (error)
+                    return "electorateRef." + error;
+            }
             if (message.votingStartTime != null && message.hasOwnProperty("votingStartTime"))
                 if (!$util.isInteger(message.votingStartTime) && !(message.votingStartTime && $util.isInteger(message.votingStartTime.low) && $util.isInteger(message.votingStartTime.high)))
                     return "votingStartTime: integer|Long expected";
@@ -9096,19 +13024,10 @@ $root.gov = (function() {
             if (message.author != null && message.hasOwnProperty("author"))
                 if (!(message.author && typeof message.author.length === "number" || $util.isString(message.author)))
                     return "author: buffer expected";
-            if (message.votes != null && message.hasOwnProperty("votes")) {
-                if (!Array.isArray(message.votes))
-                    return "votes: array expected";
-                for (var i = 0; i < message.votes.length; ++i) {
-                    var error = $root.gov.Vote.verify(message.votes[i]);
-                    if (error)
-                        return "votes." + error;
-                }
-            }
-            if (message.voteResult != null && message.hasOwnProperty("voteResult")) {
-                var error = $root.gov.TallyResult.verify(message.voteResult);
+            if (message.voteState != null && message.hasOwnProperty("voteState")) {
+                var error = $root.gov.TallyResult.verify(message.voteState);
                 if (error)
-                    return "voteResult." + error;
+                    return "voteState." + error;
             }
             if (message.status != null && message.hasOwnProperty("status"))
                 switch (message.status) {
@@ -9120,35 +13039,77 @@ $root.gov = (function() {
                 case 3:
                     break;
                 }
+            if (message.result != null && message.hasOwnProperty("result"))
+                switch (message.result) {
+                default:
+                    return "result: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    break;
+                }
+            if (message.type != null && message.hasOwnProperty("type"))
+                switch (message.type) {
+                default:
+                    return "type: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                    break;
+                }
+            if (message.textDetails != null && message.hasOwnProperty("textDetails")) {
+                properties.details = 1;
+                {
+                    var error = $root.gov.TextProposalPayload.verify(message.textDetails);
+                    if (error)
+                        return "textDetails." + error;
+                }
+            }
+            if (message.electorateUpdateDetails != null && message.hasOwnProperty("electorateUpdateDetails")) {
+                if (properties.details === 1)
+                    return "details: multiple values";
+                properties.details = 1;
+                {
+                    var error = $root.gov.ElectorateUpdatePayload.verify(message.electorateUpdateDetails);
+                    if (error)
+                        return "electorateUpdateDetails." + error;
+                }
+            }
             return null;
         };
 
         /**
-         * Creates a TextProposal message from a plain object. Also converts values to their respective internal types.
+         * Creates a Proposal message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof gov.TextProposal
+         * @memberof gov.Proposal
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {gov.TextProposal} TextProposal
+         * @returns {gov.Proposal} Proposal
          */
-        TextProposal.fromObject = function fromObject(object) {
-            if (object instanceof $root.gov.TextProposal)
+        Proposal.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.Proposal)
                 return object;
-            var message = new $root.gov.TextProposal();
+            var message = new $root.gov.Proposal();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.Proposal.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.title != null)
                 message.title = String(object.title);
             if (object.description != null)
                 message.description = String(object.description);
-            if (object.electionRuleId != null)
-                if (typeof object.electionRuleId === "string")
-                    $util.base64.decode(object.electionRuleId, message.electionRuleId = $util.newBuffer($util.base64.length(object.electionRuleId)), 0);
-                else if (object.electionRuleId.length)
-                    message.electionRuleId = object.electionRuleId;
-            if (object.electorateId != null)
-                if (typeof object.electorateId === "string")
-                    $util.base64.decode(object.electorateId, message.electorateId = $util.newBuffer($util.base64.length(object.electorateId)), 0);
-                else if (object.electorateId.length)
-                    message.electorateId = object.electorateId;
+            if (object.electionRuleRef != null) {
+                if (typeof object.electionRuleRef !== "object")
+                    throw TypeError(".gov.Proposal.electionRuleRef: object expected");
+                message.electionRuleRef = $root.orm.VersionedIDRef.fromObject(object.electionRuleRef);
+            }
+            if (object.electorateRef != null) {
+                if (typeof object.electorateRef !== "object")
+                    throw TypeError(".gov.Proposal.electorateRef: object expected");
+                message.electorateRef = $root.orm.VersionedIDRef.fromObject(object.electorateRef);
+            }
             if (object.votingStartTime != null)
                 if ($util.Long)
                     (message.votingStartTime = $util.Long.fromValue(object.votingStartTime)).unsigned = false;
@@ -9181,74 +13142,93 @@ $root.gov = (function() {
                     $util.base64.decode(object.author, message.author = $util.newBuffer($util.base64.length(object.author)), 0);
                 else if (object.author.length)
                     message.author = object.author;
-            if (object.votes) {
-                if (!Array.isArray(object.votes))
-                    throw TypeError(".gov.TextProposal.votes: array expected");
-                message.votes = [];
-                for (var i = 0; i < object.votes.length; ++i) {
-                    if (typeof object.votes[i] !== "object")
-                        throw TypeError(".gov.TextProposal.votes: object expected");
-                    message.votes[i] = $root.gov.Vote.fromObject(object.votes[i]);
-                }
-            }
-            if (object.voteResult != null) {
-                if (typeof object.voteResult !== "object")
-                    throw TypeError(".gov.TextProposal.voteResult: object expected");
-                message.voteResult = $root.gov.TallyResult.fromObject(object.voteResult);
+            if (object.voteState != null) {
+                if (typeof object.voteState !== "object")
+                    throw TypeError(".gov.Proposal.voteState: object expected");
+                message.voteState = $root.gov.TallyResult.fromObject(object.voteState);
             }
             switch (object.status) {
-            case "TEXT_PROPOSAL_STATUS_INVALID":
+            case "PROPOSAL_STATUS_INVALID":
             case 0:
                 message.status = 0;
                 break;
-            case "TEXT_PROPOSAL_STATUS_UNDEFINED":
+            case "PROPOSAL_STATUS_SUBMITTED":
             case 1:
                 message.status = 1;
                 break;
-            case "TEXT_PROPOSAL_STATUS_ACCEPTED":
+            case "PROPOSAL_STATUS_CLOSED":
             case 2:
                 message.status = 2;
                 break;
-            case "TEXT_PROPOSAL_STATUS_REJECTED":
+            case "PROPOSAL_STATUS_WITHDRAWN":
             case 3:
                 message.status = 3;
                 break;
+            }
+            switch (object.result) {
+            case "PROPOSAL_RESULT_INVALID":
+            case 0:
+                message.result = 0;
+                break;
+            case "PROPOSAL_RESULT_UNDEFINED":
+            case 1:
+                message.result = 1;
+                break;
+            case "PROPOSAL_RESULT_ACCEPTED":
+            case 2:
+                message.result = 2;
+                break;
+            case "PROPOSAL_RESULT_REJECTED":
+            case 3:
+                message.result = 3;
+                break;
+            }
+            switch (object.type) {
+            case "PROPOSAL_TYPE_INVALID":
+            case 0:
+                message.type = 0;
+                break;
+            case "PROPOSAL_TYPE_TEXT":
+            case 1:
+                message.type = 1;
+                break;
+            case "PROPOSAL_TYPE_UPDATE_ELECTORATE":
+            case 2:
+                message.type = 2;
+                break;
+            }
+            if (object.textDetails != null) {
+                if (typeof object.textDetails !== "object")
+                    throw TypeError(".gov.Proposal.textDetails: object expected");
+                message.textDetails = $root.gov.TextProposalPayload.fromObject(object.textDetails);
+            }
+            if (object.electorateUpdateDetails != null) {
+                if (typeof object.electorateUpdateDetails !== "object")
+                    throw TypeError(".gov.Proposal.electorateUpdateDetails: object expected");
+                message.electorateUpdateDetails = $root.gov.ElectorateUpdatePayload.fromObject(object.electorateUpdateDetails);
             }
             return message;
         };
 
         /**
-         * Creates a plain object from a TextProposal message. Also converts values to other types if specified.
+         * Creates a plain object from a Proposal message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof gov.TextProposal
+         * @memberof gov.Proposal
          * @static
-         * @param {gov.TextProposal} message TextProposal
+         * @param {gov.Proposal} message Proposal
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        TextProposal.toObject = function toObject(message, options) {
+        Proposal.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             var object = {};
-            if (options.arrays || options.defaults)
-                object.votes = [];
             if (options.defaults) {
+                object.metadata = null;
                 object.title = "";
                 object.description = "";
-                if (options.bytes === String)
-                    object.electionRuleId = "";
-                else {
-                    object.electionRuleId = [];
-                    if (options.bytes !== Array)
-                        object.electionRuleId = $util.newBuffer(object.electionRuleId);
-                }
-                if (options.bytes === String)
-                    object.electorateId = "";
-                else {
-                    object.electorateId = [];
-                    if (options.bytes !== Array)
-                        object.electorateId = $util.newBuffer(object.electorateId);
-                }
+                object.electionRuleRef = null;
+                object.electorateRef = null;
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
                     object.votingStartTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -9271,17 +13251,21 @@ $root.gov = (function() {
                     if (options.bytes !== Array)
                         object.author = $util.newBuffer(object.author);
                 }
-                object.voteResult = null;
-                object.status = options.enums === String ? "TEXT_PROPOSAL_STATUS_INVALID" : 0;
+                object.voteState = null;
+                object.status = options.enums === String ? "PROPOSAL_STATUS_INVALID" : 0;
+                object.result = options.enums === String ? "PROPOSAL_RESULT_INVALID" : 0;
+                object.type = options.enums === String ? "PROPOSAL_TYPE_INVALID" : 0;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.title != null && message.hasOwnProperty("title"))
                 object.title = message.title;
             if (message.description != null && message.hasOwnProperty("description"))
                 object.description = message.description;
-            if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
-                object.electionRuleId = options.bytes === String ? $util.base64.encode(message.electionRuleId, 0, message.electionRuleId.length) : options.bytes === Array ? Array.prototype.slice.call(message.electionRuleId) : message.electionRuleId;
-            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
-                object.electorateId = options.bytes === String ? $util.base64.encode(message.electorateId, 0, message.electorateId.length) : options.bytes === Array ? Array.prototype.slice.call(message.electorateId) : message.electorateId;
+            if (message.electionRuleRef != null && message.hasOwnProperty("electionRuleRef"))
+                object.electionRuleRef = $root.orm.VersionedIDRef.toObject(message.electionRuleRef, options);
+            if (message.electorateRef != null && message.hasOwnProperty("electorateRef"))
+                object.electorateRef = $root.orm.VersionedIDRef.toObject(message.electorateRef, options);
             if (message.votingStartTime != null && message.hasOwnProperty("votingStartTime"))
                 if (typeof message.votingStartTime === "number")
                     object.votingStartTime = options.longs === String ? String(message.votingStartTime) : message.votingStartTime;
@@ -9299,48 +13283,91 @@ $root.gov = (function() {
                     object.submissionTime = options.longs === String ? $util.Long.prototype.toString.call(message.submissionTime) : options.longs === Number ? new $util.LongBits(message.submissionTime.low >>> 0, message.submissionTime.high >>> 0).toNumber() : message.submissionTime;
             if (message.author != null && message.hasOwnProperty("author"))
                 object.author = options.bytes === String ? $util.base64.encode(message.author, 0, message.author.length) : options.bytes === Array ? Array.prototype.slice.call(message.author) : message.author;
-            if (message.votes && message.votes.length) {
-                object.votes = [];
-                for (var j = 0; j < message.votes.length; ++j)
-                    object.votes[j] = $root.gov.Vote.toObject(message.votes[j], options);
-            }
-            if (message.voteResult != null && message.hasOwnProperty("voteResult"))
-                object.voteResult = $root.gov.TallyResult.toObject(message.voteResult, options);
+            if (message.voteState != null && message.hasOwnProperty("voteState"))
+                object.voteState = $root.gov.TallyResult.toObject(message.voteState, options);
             if (message.status != null && message.hasOwnProperty("status"))
-                object.status = options.enums === String ? $root.gov.TextProposal.Status[message.status] : message.status;
+                object.status = options.enums === String ? $root.gov.Proposal.Status[message.status] : message.status;
+            if (message.result != null && message.hasOwnProperty("result"))
+                object.result = options.enums === String ? $root.gov.Proposal.Result[message.result] : message.result;
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = options.enums === String ? $root.gov.Proposal.Type[message.type] : message.type;
+            if (message.textDetails != null && message.hasOwnProperty("textDetails")) {
+                object.textDetails = $root.gov.TextProposalPayload.toObject(message.textDetails, options);
+                if (options.oneofs)
+                    object.details = "textDetails";
+            }
+            if (message.electorateUpdateDetails != null && message.hasOwnProperty("electorateUpdateDetails")) {
+                object.electorateUpdateDetails = $root.gov.ElectorateUpdatePayload.toObject(message.electorateUpdateDetails, options);
+                if (options.oneofs)
+                    object.details = "electorateUpdateDetails";
+            }
             return object;
         };
 
         /**
-         * Converts this TextProposal to JSON.
+         * Converts this Proposal to JSON.
          * @function toJSON
-         * @memberof gov.TextProposal
+         * @memberof gov.Proposal
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        TextProposal.prototype.toJSON = function toJSON() {
+        Proposal.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Status of the proposal base on the final tally result. `UNDEFINED` as initial value.
-         * @name gov.TextProposal.Status
+         * Status enum.
+         * @name gov.Proposal.Status
          * @enum {string}
-         * @property {number} TEXT_PROPOSAL_STATUS_INVALID=0 TEXT_PROPOSAL_STATUS_INVALID value
-         * @property {number} TEXT_PROPOSAL_STATUS_UNDEFINED=1 TEXT_PROPOSAL_STATUS_UNDEFINED value
-         * @property {number} TEXT_PROPOSAL_STATUS_ACCEPTED=2 TEXT_PROPOSAL_STATUS_ACCEPTED value
-         * @property {number} TEXT_PROPOSAL_STATUS_REJECTED=3 TEXT_PROPOSAL_STATUS_REJECTED value
+         * @property {number} PROPOSAL_STATUS_INVALID=0 An empty value is invalid and not allowed
+         * @property {number} PROPOSAL_STATUS_SUBMITTED=1 Initial status of a proposal when persisted.
+         * @property {number} PROPOSAL_STATUS_CLOSED=2 Final status of a proposal when the tally was executed
+         * @property {number} PROPOSAL_STATUS_WITHDRAWN=3 is Withdrawn.
          */
-        TextProposal.Status = (function() {
+        Proposal.Status = (function() {
             var valuesById = {}, values = Object.create(valuesById);
-            values[valuesById[0] = "TEXT_PROPOSAL_STATUS_INVALID"] = 0;
-            values[valuesById[1] = "TEXT_PROPOSAL_STATUS_UNDEFINED"] = 1;
-            values[valuesById[2] = "TEXT_PROPOSAL_STATUS_ACCEPTED"] = 2;
-            values[valuesById[3] = "TEXT_PROPOSAL_STATUS_REJECTED"] = 3;
+            values[valuesById[0] = "PROPOSAL_STATUS_INVALID"] = 0;
+            values[valuesById[1] = "PROPOSAL_STATUS_SUBMITTED"] = 1;
+            values[valuesById[2] = "PROPOSAL_STATUS_CLOSED"] = 2;
+            values[valuesById[3] = "PROPOSAL_STATUS_WITHDRAWN"] = 3;
             return values;
         })();
 
-        return TextProposal;
+        /**
+         * Result enum.
+         * @name gov.Proposal.Result
+         * @enum {string}
+         * @property {number} PROPOSAL_RESULT_INVALID=0 An empty value is invalid and not allowed
+         * @property {number} PROPOSAL_RESULT_UNDEFINED=1 Until a final tally has happened the status is undefined
+         * @property {number} PROPOSAL_RESULT_ACCEPTED=2 Final result of the tally
+         * @property {number} PROPOSAL_RESULT_REJECTED=3 Final result of the tally
+         */
+        Proposal.Result = (function() {
+            var valuesById = {}, values = Object.create(valuesById);
+            values[valuesById[0] = "PROPOSAL_RESULT_INVALID"] = 0;
+            values[valuesById[1] = "PROPOSAL_RESULT_UNDEFINED"] = 1;
+            values[valuesById[2] = "PROPOSAL_RESULT_ACCEPTED"] = 2;
+            values[valuesById[3] = "PROPOSAL_RESULT_REJECTED"] = 3;
+            return values;
+        })();
+
+        /**
+         * Type enum.
+         * @name gov.Proposal.Type
+         * @enum {string}
+         * @property {number} PROPOSAL_TYPE_INVALID=0 None is invalid and not allowed
+         * @property {number} PROPOSAL_TYPE_TEXT=1 Text
+         * @property {number} PROPOSAL_TYPE_UPDATE_ELECTORATE=2 UpdateElectorate
+         */
+        Proposal.Type = (function() {
+            var valuesById = {}, values = Object.create(valuesById);
+            values[valuesById[0] = "PROPOSAL_TYPE_INVALID"] = 0;
+            values[valuesById[1] = "PROPOSAL_TYPE_TEXT"] = 1;
+            values[valuesById[2] = "PROPOSAL_TYPE_UPDATE_ELECTORATE"] = 2;
+            return values;
+        })();
+
+        return Proposal;
     })();
 
     gov.TallyResult = (function() {
@@ -9349,11 +13376,12 @@ $root.gov = (function() {
          * Properties of a TallyResult.
          * @memberof gov
          * @interface ITallyResult
-         * @property {number|null} [totalYes] Sum of weights of all the voters that approved the proposal
-         * @property {number|null} [totalNo] Sum of weights of all the voters that rejected the proposal
-         * @property {number|null} [totalAbstain] Sum of weights of all the voters that voted abstain
-         * @property {number|Long|null} [totalWeightElectorate] Sum of all weights in the electorate.
-         * @property {gov.IFraction|null} [threshold] proposal this value must be exceeded.
+         * @property {number|Long|null} [totalYes] TotalYes is the sum of weights of all the voters that approved the proposal
+         * @property {number|Long|null} [totalNo] TotalNo is the sum of weights of all the voters that rejected the proposal
+         * @property {number|Long|null} [totalAbstain] TotalAbstain is the sum of weights of all the voters that voted abstain
+         * @property {number|Long|null} [totalElectorateWeight] TotalElectorateWeight is the sum of all weights in the electorate.
+         * @property {gov.IFraction|null} [quorum] Quorum when set is the fraction of the total electorate weight that must be exceeded by total votes weight.
+         * @property {gov.IFraction|null} [threshold] The base value is either the total electorate weight or the sum of Yes/No weights when a quorum is defined.
          */
 
         /**
@@ -9372,39 +13400,47 @@ $root.gov = (function() {
         }
 
         /**
-         * Sum of weights of all the voters that approved the proposal
-         * @member {number} totalYes
+         * TotalYes is the sum of weights of all the voters that approved the proposal
+         * @member {number|Long} totalYes
          * @memberof gov.TallyResult
          * @instance
          */
-        TallyResult.prototype.totalYes = 0;
+        TallyResult.prototype.totalYes = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
 
         /**
-         * Sum of weights of all the voters that rejected the proposal
-         * @member {number} totalNo
+         * TotalNo is the sum of weights of all the voters that rejected the proposal
+         * @member {number|Long} totalNo
          * @memberof gov.TallyResult
          * @instance
          */
-        TallyResult.prototype.totalNo = 0;
+        TallyResult.prototype.totalNo = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
 
         /**
-         * Sum of weights of all the voters that voted abstain
-         * @member {number} totalAbstain
+         * TotalAbstain is the sum of weights of all the voters that voted abstain
+         * @member {number|Long} totalAbstain
          * @memberof gov.TallyResult
          * @instance
          */
-        TallyResult.prototype.totalAbstain = 0;
+        TallyResult.prototype.totalAbstain = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
 
         /**
-         * Sum of all weights in the electorate.
-         * @member {number|Long} totalWeightElectorate
+         * TotalElectorateWeight is the sum of all weights in the electorate.
+         * @member {number|Long} totalElectorateWeight
          * @memberof gov.TallyResult
          * @instance
          */
-        TallyResult.prototype.totalWeightElectorate = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+        TallyResult.prototype.totalElectorateWeight = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
 
         /**
-         * proposal this value must be exceeded.
+         * Quorum when set is the fraction of the total electorate weight that must be exceeded by total votes weight.
+         * @member {gov.IFraction|null|undefined} quorum
+         * @memberof gov.TallyResult
+         * @instance
+         */
+        TallyResult.prototype.quorum = null;
+
+        /**
+         * The base value is either the total electorate weight or the sum of Yes/No weights when a quorum is defined.
          * @member {gov.IFraction|null|undefined} threshold
          * @memberof gov.TallyResult
          * @instance
@@ -9436,15 +13472,17 @@ $root.gov = (function() {
             if (!writer)
                 writer = $Writer.create();
             if (message.totalYes != null && message.hasOwnProperty("totalYes"))
-                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.totalYes);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.totalYes);
             if (message.totalNo != null && message.hasOwnProperty("totalNo"))
-                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.totalNo);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint64(message.totalNo);
             if (message.totalAbstain != null && message.hasOwnProperty("totalAbstain"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.totalAbstain);
-            if (message.totalWeightElectorate != null && message.hasOwnProperty("totalWeightElectorate"))
-                writer.uint32(/* id 4, wireType 0 =*/32).uint64(message.totalWeightElectorate);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint64(message.totalAbstain);
+            if (message.totalElectorateWeight != null && message.hasOwnProperty("totalElectorateWeight"))
+                writer.uint32(/* id 4, wireType 0 =*/32).uint64(message.totalElectorateWeight);
+            if (message.quorum != null && message.hasOwnProperty("quorum"))
+                $root.gov.Fraction.encode(message.quorum, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.threshold != null && message.hasOwnProperty("threshold"))
-                $root.gov.Fraction.encode(message.threshold, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                $root.gov.Fraction.encode(message.threshold, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
             return writer;
         };
 
@@ -9480,18 +13518,21 @@ $root.gov = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.totalYes = reader.uint32();
+                    message.totalYes = reader.uint64();
                     break;
                 case 2:
-                    message.totalNo = reader.uint32();
+                    message.totalNo = reader.uint64();
                     break;
                 case 3:
-                    message.totalAbstain = reader.uint32();
+                    message.totalAbstain = reader.uint64();
                     break;
                 case 4:
-                    message.totalWeightElectorate = reader.uint64();
+                    message.totalElectorateWeight = reader.uint64();
                     break;
                 case 5:
+                    message.quorum = $root.gov.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 6:
                     message.threshold = $root.gov.Fraction.decode(reader, reader.uint32());
                     break;
                 default:
@@ -9530,17 +13571,22 @@ $root.gov = (function() {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.totalYes != null && message.hasOwnProperty("totalYes"))
-                if (!$util.isInteger(message.totalYes))
-                    return "totalYes: integer expected";
+                if (!$util.isInteger(message.totalYes) && !(message.totalYes && $util.isInteger(message.totalYes.low) && $util.isInteger(message.totalYes.high)))
+                    return "totalYes: integer|Long expected";
             if (message.totalNo != null && message.hasOwnProperty("totalNo"))
-                if (!$util.isInteger(message.totalNo))
-                    return "totalNo: integer expected";
+                if (!$util.isInteger(message.totalNo) && !(message.totalNo && $util.isInteger(message.totalNo.low) && $util.isInteger(message.totalNo.high)))
+                    return "totalNo: integer|Long expected";
             if (message.totalAbstain != null && message.hasOwnProperty("totalAbstain"))
-                if (!$util.isInteger(message.totalAbstain))
-                    return "totalAbstain: integer expected";
-            if (message.totalWeightElectorate != null && message.hasOwnProperty("totalWeightElectorate"))
-                if (!$util.isInteger(message.totalWeightElectorate) && !(message.totalWeightElectorate && $util.isInteger(message.totalWeightElectorate.low) && $util.isInteger(message.totalWeightElectorate.high)))
-                    return "totalWeightElectorate: integer|Long expected";
+                if (!$util.isInteger(message.totalAbstain) && !(message.totalAbstain && $util.isInteger(message.totalAbstain.low) && $util.isInteger(message.totalAbstain.high)))
+                    return "totalAbstain: integer|Long expected";
+            if (message.totalElectorateWeight != null && message.hasOwnProperty("totalElectorateWeight"))
+                if (!$util.isInteger(message.totalElectorateWeight) && !(message.totalElectorateWeight && $util.isInteger(message.totalElectorateWeight.low) && $util.isInteger(message.totalElectorateWeight.high)))
+                    return "totalElectorateWeight: integer|Long expected";
+            if (message.quorum != null && message.hasOwnProperty("quorum")) {
+                var error = $root.gov.Fraction.verify(message.quorum);
+                if (error)
+                    return "quorum." + error;
+            }
             if (message.threshold != null && message.hasOwnProperty("threshold")) {
                 var error = $root.gov.Fraction.verify(message.threshold);
                 if (error)
@@ -9562,20 +13608,46 @@ $root.gov = (function() {
                 return object;
             var message = new $root.gov.TallyResult();
             if (object.totalYes != null)
-                message.totalYes = object.totalYes >>> 0;
-            if (object.totalNo != null)
-                message.totalNo = object.totalNo >>> 0;
-            if (object.totalAbstain != null)
-                message.totalAbstain = object.totalAbstain >>> 0;
-            if (object.totalWeightElectorate != null)
                 if ($util.Long)
-                    (message.totalWeightElectorate = $util.Long.fromValue(object.totalWeightElectorate)).unsigned = true;
-                else if (typeof object.totalWeightElectorate === "string")
-                    message.totalWeightElectorate = parseInt(object.totalWeightElectorate, 10);
-                else if (typeof object.totalWeightElectorate === "number")
-                    message.totalWeightElectorate = object.totalWeightElectorate;
-                else if (typeof object.totalWeightElectorate === "object")
-                    message.totalWeightElectorate = new $util.LongBits(object.totalWeightElectorate.low >>> 0, object.totalWeightElectorate.high >>> 0).toNumber(true);
+                    (message.totalYes = $util.Long.fromValue(object.totalYes)).unsigned = true;
+                else if (typeof object.totalYes === "string")
+                    message.totalYes = parseInt(object.totalYes, 10);
+                else if (typeof object.totalYes === "number")
+                    message.totalYes = object.totalYes;
+                else if (typeof object.totalYes === "object")
+                    message.totalYes = new $util.LongBits(object.totalYes.low >>> 0, object.totalYes.high >>> 0).toNumber(true);
+            if (object.totalNo != null)
+                if ($util.Long)
+                    (message.totalNo = $util.Long.fromValue(object.totalNo)).unsigned = true;
+                else if (typeof object.totalNo === "string")
+                    message.totalNo = parseInt(object.totalNo, 10);
+                else if (typeof object.totalNo === "number")
+                    message.totalNo = object.totalNo;
+                else if (typeof object.totalNo === "object")
+                    message.totalNo = new $util.LongBits(object.totalNo.low >>> 0, object.totalNo.high >>> 0).toNumber(true);
+            if (object.totalAbstain != null)
+                if ($util.Long)
+                    (message.totalAbstain = $util.Long.fromValue(object.totalAbstain)).unsigned = true;
+                else if (typeof object.totalAbstain === "string")
+                    message.totalAbstain = parseInt(object.totalAbstain, 10);
+                else if (typeof object.totalAbstain === "number")
+                    message.totalAbstain = object.totalAbstain;
+                else if (typeof object.totalAbstain === "object")
+                    message.totalAbstain = new $util.LongBits(object.totalAbstain.low >>> 0, object.totalAbstain.high >>> 0).toNumber(true);
+            if (object.totalElectorateWeight != null)
+                if ($util.Long)
+                    (message.totalElectorateWeight = $util.Long.fromValue(object.totalElectorateWeight)).unsigned = true;
+                else if (typeof object.totalElectorateWeight === "string")
+                    message.totalElectorateWeight = parseInt(object.totalElectorateWeight, 10);
+                else if (typeof object.totalElectorateWeight === "number")
+                    message.totalElectorateWeight = object.totalElectorateWeight;
+                else if (typeof object.totalElectorateWeight === "object")
+                    message.totalElectorateWeight = new $util.LongBits(object.totalElectorateWeight.low >>> 0, object.totalElectorateWeight.high >>> 0).toNumber(true);
+            if (object.quorum != null) {
+                if (typeof object.quorum !== "object")
+                    throw TypeError(".gov.TallyResult.quorum: object expected");
+                message.quorum = $root.gov.Fraction.fromObject(object.quorum);
+            }
             if (object.threshold != null) {
                 if (typeof object.threshold !== "object")
                     throw TypeError(".gov.TallyResult.threshold: object expected");
@@ -9598,27 +13670,51 @@ $root.gov = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
-                object.totalYes = 0;
-                object.totalNo = 0;
-                object.totalAbstain = 0;
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, true);
-                    object.totalWeightElectorate = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                    object.totalYes = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
-                    object.totalWeightElectorate = options.longs === String ? "0" : 0;
+                    object.totalYes = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, true);
+                    object.totalNo = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.totalNo = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, true);
+                    object.totalAbstain = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.totalAbstain = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, true);
+                    object.totalElectorateWeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.totalElectorateWeight = options.longs === String ? "0" : 0;
+                object.quorum = null;
                 object.threshold = null;
             }
             if (message.totalYes != null && message.hasOwnProperty("totalYes"))
-                object.totalYes = message.totalYes;
-            if (message.totalNo != null && message.hasOwnProperty("totalNo"))
-                object.totalNo = message.totalNo;
-            if (message.totalAbstain != null && message.hasOwnProperty("totalAbstain"))
-                object.totalAbstain = message.totalAbstain;
-            if (message.totalWeightElectorate != null && message.hasOwnProperty("totalWeightElectorate"))
-                if (typeof message.totalWeightElectorate === "number")
-                    object.totalWeightElectorate = options.longs === String ? String(message.totalWeightElectorate) : message.totalWeightElectorate;
+                if (typeof message.totalYes === "number")
+                    object.totalYes = options.longs === String ? String(message.totalYes) : message.totalYes;
                 else
-                    object.totalWeightElectorate = options.longs === String ? $util.Long.prototype.toString.call(message.totalWeightElectorate) : options.longs === Number ? new $util.LongBits(message.totalWeightElectorate.low >>> 0, message.totalWeightElectorate.high >>> 0).toNumber(true) : message.totalWeightElectorate;
+                    object.totalYes = options.longs === String ? $util.Long.prototype.toString.call(message.totalYes) : options.longs === Number ? new $util.LongBits(message.totalYes.low >>> 0, message.totalYes.high >>> 0).toNumber(true) : message.totalYes;
+            if (message.totalNo != null && message.hasOwnProperty("totalNo"))
+                if (typeof message.totalNo === "number")
+                    object.totalNo = options.longs === String ? String(message.totalNo) : message.totalNo;
+                else
+                    object.totalNo = options.longs === String ? $util.Long.prototype.toString.call(message.totalNo) : options.longs === Number ? new $util.LongBits(message.totalNo.low >>> 0, message.totalNo.high >>> 0).toNumber(true) : message.totalNo;
+            if (message.totalAbstain != null && message.hasOwnProperty("totalAbstain"))
+                if (typeof message.totalAbstain === "number")
+                    object.totalAbstain = options.longs === String ? String(message.totalAbstain) : message.totalAbstain;
+                else
+                    object.totalAbstain = options.longs === String ? $util.Long.prototype.toString.call(message.totalAbstain) : options.longs === Number ? new $util.LongBits(message.totalAbstain.low >>> 0, message.totalAbstain.high >>> 0).toNumber(true) : message.totalAbstain;
+            if (message.totalElectorateWeight != null && message.hasOwnProperty("totalElectorateWeight"))
+                if (typeof message.totalElectorateWeight === "number")
+                    object.totalElectorateWeight = options.longs === String ? String(message.totalElectorateWeight) : message.totalElectorateWeight;
+                else
+                    object.totalElectorateWeight = options.longs === String ? $util.Long.prototype.toString.call(message.totalElectorateWeight) : options.longs === Number ? new $util.LongBits(message.totalElectorateWeight.low >>> 0, message.totalElectorateWeight.high >>> 0).toNumber(true) : message.totalElectorateWeight;
+            if (message.quorum != null && message.hasOwnProperty("quorum"))
+                object.quorum = $root.gov.Fraction.toObject(message.quorum, options);
             if (message.threshold != null && message.hasOwnProperty("threshold"))
                 object.threshold = $root.gov.Fraction.toObject(message.threshold, options);
             return object;
@@ -9644,14 +13740,15 @@ $root.gov = (function() {
          * Properties of a Vote.
          * @memberof gov
          * @interface IVote
-         * @property {gov.IElector|null} [elector] Vote elector
-         * @property {gov.VoteOption|null} [voted] Vote voted
+         * @property {weave.IMetadata|null} [metadata] Vote metadata
+         * @property {gov.IElector|null} [elector] Elector is who voted
+         * @property {gov.VoteOption|null} [voted] VoteOption is what they voted
          */
 
         /**
          * Constructs a new Vote.
          * @memberof gov
-         * @classdesc Vote combines the elector and his voted option to archive them.
+         * @classdesc Vote combines the elector and their voted option to archive them. The proposalID and address is stored within the key.
          * @implements IVote
          * @constructor
          * @param {gov.IVote=} [properties] Properties to set
@@ -9664,7 +13761,15 @@ $root.gov = (function() {
         }
 
         /**
-         * Vote elector.
+         * Vote metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.Vote
+         * @instance
+         */
+        Vote.prototype.metadata = null;
+
+        /**
+         * Elector is who voted
          * @member {gov.IElector|null|undefined} elector
          * @memberof gov.Vote
          * @instance
@@ -9672,7 +13777,7 @@ $root.gov = (function() {
         Vote.prototype.elector = null;
 
         /**
-         * Vote voted.
+         * VoteOption is what they voted
          * @member {gov.VoteOption} voted
          * @memberof gov.Vote
          * @instance
@@ -9703,10 +13808,12 @@ $root.gov = (function() {
         Vote.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.elector != null && message.hasOwnProperty("elector"))
-                $root.gov.Elector.encode(message.elector, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.gov.Elector.encode(message.elector, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.voted != null && message.hasOwnProperty("voted"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.voted);
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.voted);
             return writer;
         };
 
@@ -9742,9 +13849,12 @@ $root.gov = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.elector = $root.gov.Elector.decode(reader, reader.uint32());
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.elector = $root.gov.Elector.decode(reader, reader.uint32());
+                    break;
+                case 3:
                     message.voted = reader.int32();
                     break;
                 default:
@@ -9782,6 +13892,11 @@ $root.gov = (function() {
         Vote.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.elector != null && message.hasOwnProperty("elector")) {
                 var error = $root.gov.Elector.verify(message.elector);
                 if (error)
@@ -9812,6 +13927,11 @@ $root.gov = (function() {
             if (object instanceof $root.gov.Vote)
                 return object;
             var message = new $root.gov.Vote();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.Vote.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.elector != null) {
                 if (typeof object.elector !== "object")
                     throw TypeError(".gov.Vote.elector: object expected");
@@ -9852,9 +13972,12 @@ $root.gov = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 object.elector = null;
                 object.voted = options.enums === String ? "VOTE_OPTION_INVALID" : 0;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.elector != null && message.hasOwnProperty("elector"))
                 object.elector = $root.gov.Elector.toObject(message.elector, options);
             if (message.voted != null && message.hasOwnProperty("voted"))
@@ -9882,10 +14005,11 @@ $root.gov = (function() {
          * Properties of a CreateTextProposalMsg.
          * @memberof gov
          * @interface ICreateTextProposalMsg
+         * @property {weave.IMetadata|null} [metadata] CreateTextProposalMsg metadata
          * @property {string|null} [title] Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$`
          * @property {string|null} [description] Human readable description with 3 to 5000 chars.
-         * @property {Uint8Array|null} [electionRuleId] Reference to the election rule
-         * @property {Uint8Array|null} [electorateId] Reference to the electorate to define the group of possible voters.
+         * @property {Uint8Array|null} [electionRuleId] ElectionRuleID is a reference to the election rule
+         * @property {Uint8Array|null} [electorateId] ElectorateID is the reference to the electorate to define the group of possible voters.
          * @property {number|Long|null} [startTime] Unix timestamp when the proposal starts. Must be in the future.
          * @property {Uint8Array|null} [author] When not set it will default to the main signer.
          */
@@ -9906,6 +14030,14 @@ $root.gov = (function() {
         }
 
         /**
+         * CreateTextProposalMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.CreateTextProposalMsg
+         * @instance
+         */
+        CreateTextProposalMsg.prototype.metadata = null;
+
+        /**
          * Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$`
          * @member {string} title
          * @memberof gov.CreateTextProposalMsg
@@ -9922,7 +14054,7 @@ $root.gov = (function() {
         CreateTextProposalMsg.prototype.description = "";
 
         /**
-         * Reference to the election rule
+         * ElectionRuleID is a reference to the election rule
          * @member {Uint8Array} electionRuleId
          * @memberof gov.CreateTextProposalMsg
          * @instance
@@ -9930,7 +14062,7 @@ $root.gov = (function() {
         CreateTextProposalMsg.prototype.electionRuleId = $util.newBuffer([]);
 
         /**
-         * Reference to the electorate to define the group of possible voters.
+         * ElectorateID is the reference to the electorate to define the group of possible voters.
          * @member {Uint8Array} electorateId
          * @memberof gov.CreateTextProposalMsg
          * @instance
@@ -9977,18 +14109,20 @@ $root.gov = (function() {
         CreateTextProposalMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.title != null && message.hasOwnProperty("title"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.title);
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.title);
             if (message.description != null && message.hasOwnProperty("description"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.description);
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.description);
             if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.electionRuleId);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.electionRuleId);
             if (message.electorateId != null && message.hasOwnProperty("electorateId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.electorateId);
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.electorateId);
             if (message.startTime != null && message.hasOwnProperty("startTime"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.startTime);
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.startTime);
             if (message.author != null && message.hasOwnProperty("author"))
-                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.author);
+                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.author);
             return writer;
         };
 
@@ -10024,21 +14158,24 @@ $root.gov = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.title = reader.string();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.description = reader.string();
+                    message.title = reader.string();
                     break;
                 case 3:
-                    message.electionRuleId = reader.bytes();
+                    message.description = reader.string();
                     break;
                 case 4:
-                    message.electorateId = reader.bytes();
+                    message.electionRuleId = reader.bytes();
                     break;
                 case 5:
+                    message.electorateId = reader.bytes();
+                    break;
+                case 6:
                     message.startTime = reader.int64();
                     break;
-                case 8:
+                case 7:
                     message.author = reader.bytes();
                     break;
                 default:
@@ -10076,6 +14213,11 @@ $root.gov = (function() {
         CreateTextProposalMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.title != null && message.hasOwnProperty("title"))
                 if (!$util.isString(message.title))
                     return "title: string expected";
@@ -10109,6 +14251,11 @@ $root.gov = (function() {
             if (object instanceof $root.gov.CreateTextProposalMsg)
                 return object;
             var message = new $root.gov.CreateTextProposalMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.CreateTextProposalMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.title != null)
                 message.title = String(object.title);
             if (object.description != null)
@@ -10154,6 +14301,7 @@ $root.gov = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 object.title = "";
                 object.description = "";
                 if (options.bytes === String)
@@ -10183,6 +14331,8 @@ $root.gov = (function() {
                         object.author = $util.newBuffer(object.author);
                 }
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.title != null && message.hasOwnProperty("title"))
                 object.title = message.title;
             if (message.description != null && message.hasOwnProperty("description"))
@@ -10215,6 +14365,609 @@ $root.gov = (function() {
         return CreateTextProposalMsg;
     })();
 
+    gov.CreateElectorateUpdateProposalMsg = (function() {
+
+        /**
+         * Properties of a CreateElectorateUpdateProposalMsg.
+         * @memberof gov
+         * @interface ICreateElectorateUpdateProposalMsg
+         * @property {weave.IMetadata|null} [metadata] CreateElectorateUpdateProposalMsg metadata
+         * @property {string|null} [title] Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$`
+         * @property {string|null} [description] Human readable description with 3 to 5000 chars.
+         * @property {Uint8Array|null} [electorateId] ElectorateID is the reference to the electorate that defines the group of possible voters.
+         * @property {number|Long|null} [startTime] Unix timestamp when the proposal starts. Must be in the future.
+         * @property {Uint8Array|null} [author] When not set it will default to the main signer.
+         * @property {Array.<gov.IElector>|null} [diffElectors] with weight=0.
+         */
+
+        /**
+         * Constructs a new CreateElectorateUpdateProposalMsg.
+         * @memberof gov
+         * @classdesc CreateElectorateUpdateProposalMsg creates a new governance proposal to update an electorate.
+         * @implements ICreateElectorateUpdateProposalMsg
+         * @constructor
+         * @param {gov.ICreateElectorateUpdateProposalMsg=} [properties] Properties to set
+         */
+        function CreateElectorateUpdateProposalMsg(properties) {
+            this.diffElectors = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * CreateElectorateUpdateProposalMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @instance
+         */
+        CreateElectorateUpdateProposalMsg.prototype.metadata = null;
+
+        /**
+         * Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$`
+         * @member {string} title
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @instance
+         */
+        CreateElectorateUpdateProposalMsg.prototype.title = "";
+
+        /**
+         * Human readable description with 3 to 5000 chars.
+         * @member {string} description
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @instance
+         */
+        CreateElectorateUpdateProposalMsg.prototype.description = "";
+
+        /**
+         * ElectorateID is the reference to the electorate that defines the group of possible voters.
+         * @member {Uint8Array} electorateId
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @instance
+         */
+        CreateElectorateUpdateProposalMsg.prototype.electorateId = $util.newBuffer([]);
+
+        /**
+         * Unix timestamp when the proposal starts. Must be in the future.
+         * @member {number|Long} startTime
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @instance
+         */
+        CreateElectorateUpdateProposalMsg.prototype.startTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * When not set it will default to the main signer.
+         * @member {Uint8Array} author
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @instance
+         */
+        CreateElectorateUpdateProposalMsg.prototype.author = $util.newBuffer([]);
+
+        /**
+         * with weight=0.
+         * @member {Array.<gov.IElector>} diffElectors
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @instance
+         */
+        CreateElectorateUpdateProposalMsg.prototype.diffElectors = $util.emptyArray;
+
+        /**
+         * Creates a new CreateElectorateUpdateProposalMsg instance using the specified properties.
+         * @function create
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @static
+         * @param {gov.ICreateElectorateUpdateProposalMsg=} [properties] Properties to set
+         * @returns {gov.CreateElectorateUpdateProposalMsg} CreateElectorateUpdateProposalMsg instance
+         */
+        CreateElectorateUpdateProposalMsg.create = function create(properties) {
+            return new CreateElectorateUpdateProposalMsg(properties);
+        };
+
+        /**
+         * Encodes the specified CreateElectorateUpdateProposalMsg message. Does not implicitly {@link gov.CreateElectorateUpdateProposalMsg.verify|verify} messages.
+         * @function encode
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @static
+         * @param {gov.ICreateElectorateUpdateProposalMsg} message CreateElectorateUpdateProposalMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreateElectorateUpdateProposalMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.title != null && message.hasOwnProperty("title"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.title);
+            if (message.description != null && message.hasOwnProperty("description"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.description);
+            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.electorateId);
+            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.startTime);
+            if (message.author != null && message.hasOwnProperty("author"))
+                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.author);
+            if (message.diffElectors != null && message.diffElectors.length)
+                for (var i = 0; i < message.diffElectors.length; ++i)
+                    $root.gov.Elector.encode(message.diffElectors[i], writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CreateElectorateUpdateProposalMsg message, length delimited. Does not implicitly {@link gov.CreateElectorateUpdateProposalMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @static
+         * @param {gov.ICreateElectorateUpdateProposalMsg} message CreateElectorateUpdateProposalMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreateElectorateUpdateProposalMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CreateElectorateUpdateProposalMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {gov.CreateElectorateUpdateProposalMsg} CreateElectorateUpdateProposalMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreateElectorateUpdateProposalMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.CreateElectorateUpdateProposalMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.title = reader.string();
+                    break;
+                case 3:
+                    message.description = reader.string();
+                    break;
+                case 4:
+                    message.electorateId = reader.bytes();
+                    break;
+                case 5:
+                    message.startTime = reader.int64();
+                    break;
+                case 6:
+                    message.author = reader.bytes();
+                    break;
+                case 7:
+                    if (!(message.diffElectors && message.diffElectors.length))
+                        message.diffElectors = [];
+                    message.diffElectors.push($root.gov.Elector.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CreateElectorateUpdateProposalMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {gov.CreateElectorateUpdateProposalMsg} CreateElectorateUpdateProposalMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreateElectorateUpdateProposalMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CreateElectorateUpdateProposalMsg message.
+         * @function verify
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CreateElectorateUpdateProposalMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.title != null && message.hasOwnProperty("title"))
+                if (!$util.isString(message.title))
+                    return "title: string expected";
+            if (message.description != null && message.hasOwnProperty("description"))
+                if (!$util.isString(message.description))
+                    return "description: string expected";
+            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
+                if (!(message.electorateId && typeof message.electorateId.length === "number" || $util.isString(message.electorateId)))
+                    return "electorateId: buffer expected";
+            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
+                    return "startTime: integer|Long expected";
+            if (message.author != null && message.hasOwnProperty("author"))
+                if (!(message.author && typeof message.author.length === "number" || $util.isString(message.author)))
+                    return "author: buffer expected";
+            if (message.diffElectors != null && message.hasOwnProperty("diffElectors")) {
+                if (!Array.isArray(message.diffElectors))
+                    return "diffElectors: array expected";
+                for (var i = 0; i < message.diffElectors.length; ++i) {
+                    var error = $root.gov.Elector.verify(message.diffElectors[i]);
+                    if (error)
+                        return "diffElectors." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a CreateElectorateUpdateProposalMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {gov.CreateElectorateUpdateProposalMsg} CreateElectorateUpdateProposalMsg
+         */
+        CreateElectorateUpdateProposalMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.CreateElectorateUpdateProposalMsg)
+                return object;
+            var message = new $root.gov.CreateElectorateUpdateProposalMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.CreateElectorateUpdateProposalMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.title != null)
+                message.title = String(object.title);
+            if (object.description != null)
+                message.description = String(object.description);
+            if (object.electorateId != null)
+                if (typeof object.electorateId === "string")
+                    $util.base64.decode(object.electorateId, message.electorateId = $util.newBuffer($util.base64.length(object.electorateId)), 0);
+                else if (object.electorateId.length)
+                    message.electorateId = object.electorateId;
+            if (object.startTime != null)
+                if ($util.Long)
+                    (message.startTime = $util.Long.fromValue(object.startTime)).unsigned = false;
+                else if (typeof object.startTime === "string")
+                    message.startTime = parseInt(object.startTime, 10);
+                else if (typeof object.startTime === "number")
+                    message.startTime = object.startTime;
+                else if (typeof object.startTime === "object")
+                    message.startTime = new $util.LongBits(object.startTime.low >>> 0, object.startTime.high >>> 0).toNumber();
+            if (object.author != null)
+                if (typeof object.author === "string")
+                    $util.base64.decode(object.author, message.author = $util.newBuffer($util.base64.length(object.author)), 0);
+                else if (object.author.length)
+                    message.author = object.author;
+            if (object.diffElectors) {
+                if (!Array.isArray(object.diffElectors))
+                    throw TypeError(".gov.CreateElectorateUpdateProposalMsg.diffElectors: array expected");
+                message.diffElectors = [];
+                for (var i = 0; i < object.diffElectors.length; ++i) {
+                    if (typeof object.diffElectors[i] !== "object")
+                        throw TypeError(".gov.CreateElectorateUpdateProposalMsg.diffElectors: object expected");
+                    message.diffElectors[i] = $root.gov.Elector.fromObject(object.diffElectors[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CreateElectorateUpdateProposalMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @static
+         * @param {gov.CreateElectorateUpdateProposalMsg} message CreateElectorateUpdateProposalMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CreateElectorateUpdateProposalMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.diffElectors = [];
+            if (options.defaults) {
+                object.metadata = null;
+                object.title = "";
+                object.description = "";
+                if (options.bytes === String)
+                    object.electorateId = "";
+                else {
+                    object.electorateId = [];
+                    if (options.bytes !== Array)
+                        object.electorateId = $util.newBuffer(object.electorateId);
+                }
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.startTime = options.longs === String ? "0" : 0;
+                if (options.bytes === String)
+                    object.author = "";
+                else {
+                    object.author = [];
+                    if (options.bytes !== Array)
+                        object.author = $util.newBuffer(object.author);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.title != null && message.hasOwnProperty("title"))
+                object.title = message.title;
+            if (message.description != null && message.hasOwnProperty("description"))
+                object.description = message.description;
+            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
+                object.electorateId = options.bytes === String ? $util.base64.encode(message.electorateId, 0, message.electorateId.length) : options.bytes === Array ? Array.prototype.slice.call(message.electorateId) : message.electorateId;
+            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                if (typeof message.startTime === "number")
+                    object.startTime = options.longs === String ? String(message.startTime) : message.startTime;
+                else
+                    object.startTime = options.longs === String ? $util.Long.prototype.toString.call(message.startTime) : options.longs === Number ? new $util.LongBits(message.startTime.low >>> 0, message.startTime.high >>> 0).toNumber() : message.startTime;
+            if (message.author != null && message.hasOwnProperty("author"))
+                object.author = options.bytes === String ? $util.base64.encode(message.author, 0, message.author.length) : options.bytes === Array ? Array.prototype.slice.call(message.author) : message.author;
+            if (message.diffElectors && message.diffElectors.length) {
+                object.diffElectors = [];
+                for (var j = 0; j < message.diffElectors.length; ++j)
+                    object.diffElectors[j] = $root.gov.Elector.toObject(message.diffElectors[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this CreateElectorateUpdateProposalMsg to JSON.
+         * @function toJSON
+         * @memberof gov.CreateElectorateUpdateProposalMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CreateElectorateUpdateProposalMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CreateElectorateUpdateProposalMsg;
+    })();
+
+    gov.DeleteProposalMsg = (function() {
+
+        /**
+         * Properties of a DeleteProposalMsg.
+         * @memberof gov
+         * @interface IDeleteProposalMsg
+         * @property {weave.IMetadata|null} [metadata] DeleteProposalMsg metadata
+         * @property {Uint8Array|null} [id] ID is the unique identifier of the proposal to delete
+         */
+
+        /**
+         * Constructs a new DeleteProposalMsg.
+         * @memberof gov
+         * @classdesc DeleteProposalMsg deletes a governance proposal.
+         * @implements IDeleteProposalMsg
+         * @constructor
+         * @param {gov.IDeleteProposalMsg=} [properties] Properties to set
+         */
+        function DeleteProposalMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * DeleteProposalMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.DeleteProposalMsg
+         * @instance
+         */
+        DeleteProposalMsg.prototype.metadata = null;
+
+        /**
+         * ID is the unique identifier of the proposal to delete
+         * @member {Uint8Array} id
+         * @memberof gov.DeleteProposalMsg
+         * @instance
+         */
+        DeleteProposalMsg.prototype.id = $util.newBuffer([]);
+
+        /**
+         * Creates a new DeleteProposalMsg instance using the specified properties.
+         * @function create
+         * @memberof gov.DeleteProposalMsg
+         * @static
+         * @param {gov.IDeleteProposalMsg=} [properties] Properties to set
+         * @returns {gov.DeleteProposalMsg} DeleteProposalMsg instance
+         */
+        DeleteProposalMsg.create = function create(properties) {
+            return new DeleteProposalMsg(properties);
+        };
+
+        /**
+         * Encodes the specified DeleteProposalMsg message. Does not implicitly {@link gov.DeleteProposalMsg.verify|verify} messages.
+         * @function encode
+         * @memberof gov.DeleteProposalMsg
+         * @static
+         * @param {gov.IDeleteProposalMsg} message DeleteProposalMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DeleteProposalMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.id != null && message.hasOwnProperty("id"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified DeleteProposalMsg message, length delimited. Does not implicitly {@link gov.DeleteProposalMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof gov.DeleteProposalMsg
+         * @static
+         * @param {gov.IDeleteProposalMsg} message DeleteProposalMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DeleteProposalMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a DeleteProposalMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof gov.DeleteProposalMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {gov.DeleteProposalMsg} DeleteProposalMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DeleteProposalMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.DeleteProposalMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.id = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a DeleteProposalMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof gov.DeleteProposalMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {gov.DeleteProposalMsg} DeleteProposalMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DeleteProposalMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a DeleteProposalMsg message.
+         * @function verify
+         * @memberof gov.DeleteProposalMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        DeleteProposalMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a DeleteProposalMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof gov.DeleteProposalMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {gov.DeleteProposalMsg} DeleteProposalMsg
+         */
+        DeleteProposalMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.DeleteProposalMsg)
+                return object;
+            var message = new $root.gov.DeleteProposalMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.DeleteProposalMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length)
+                    message.id = object.id;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a DeleteProposalMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof gov.DeleteProposalMsg
+         * @static
+         * @param {gov.DeleteProposalMsg} message DeleteProposalMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        DeleteProposalMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.id = "";
+                else {
+                    object.id = [];
+                    if (options.bytes !== Array)
+                        object.id = $util.newBuffer(object.id);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+            return object;
+        };
+
+        /**
+         * Converts this DeleteProposalMsg to JSON.
+         * @function toJSON
+         * @memberof gov.DeleteProposalMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        DeleteProposalMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return DeleteProposalMsg;
+    })();
+
     /**
      * VoteOptions define possible values for a vote including the INVALID default.
      * @name gov.VoteOption
@@ -10239,6 +14992,7 @@ $root.gov = (function() {
          * Properties of a VoteMsg.
          * @memberof gov
          * @interface IVoteMsg
+         * @property {weave.IMetadata|null} [metadata] VoteMsg metadata
          * @property {Uint8Array|null} [proposalId] The unique id of the proposal.
          * @property {Uint8Array|null} [voter] must be included in the electorate for a valid vote.
          * @property {gov.VoteOption|null} [selected] Option for the vote. Must be Yes, No or Abstain for a valid vote.
@@ -10258,6 +15012,14 @@ $root.gov = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * VoteMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.VoteMsg
+         * @instance
+         */
+        VoteMsg.prototype.metadata = null;
 
         /**
          * The unique id of the proposal.
@@ -10307,12 +15069,14 @@ $root.gov = (function() {
         VoteMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.proposalId != null && message.hasOwnProperty("proposalId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.proposalId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.proposalId);
             if (message.voter != null && message.hasOwnProperty("voter"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.voter);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.voter);
             if (message.selected != null && message.hasOwnProperty("selected"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.selected);
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.selected);
             return writer;
         };
 
@@ -10348,12 +15112,15 @@ $root.gov = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.proposalId = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.voter = reader.bytes();
+                    message.proposalId = reader.bytes();
                     break;
                 case 3:
+                    message.voter = reader.bytes();
+                    break;
+                case 4:
                     message.selected = reader.int32();
                     break;
                 default:
@@ -10391,6 +15158,11 @@ $root.gov = (function() {
         VoteMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.proposalId != null && message.hasOwnProperty("proposalId"))
                 if (!(message.proposalId && typeof message.proposalId.length === "number" || $util.isString(message.proposalId)))
                     return "proposalId: buffer expected";
@@ -10422,6 +15194,11 @@ $root.gov = (function() {
             if (object instanceof $root.gov.VoteMsg)
                 return object;
             var message = new $root.gov.VoteMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.VoteMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.proposalId != null)
                 if (typeof object.proposalId === "string")
                     $util.base64.decode(object.proposalId, message.proposalId = $util.newBuffer($util.base64.length(object.proposalId)), 0);
@@ -10467,6 +15244,7 @@ $root.gov = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.proposalId = "";
                 else {
@@ -10483,6 +15261,8 @@ $root.gov = (function() {
                 }
                 object.selected = options.enums === String ? "VOTE_OPTION_INVALID" : 0;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.proposalId != null && message.hasOwnProperty("proposalId"))
                 object.proposalId = options.bytes === String ? $util.base64.encode(message.proposalId, 0, message.proposalId.length) : options.bytes === Array ? Array.prototype.slice.call(message.proposalId) : message.proposalId;
             if (message.voter != null && message.hasOwnProperty("voter"))
@@ -10512,6 +15292,7 @@ $root.gov = (function() {
          * Properties of a TallyMsg.
          * @memberof gov
          * @interface ITallyMsg
+         * @property {weave.IMetadata|null} [metadata] TallyMsg metadata
          * @property {Uint8Array|null} [proposalId] ProposalID is UUID of the proposal to close.
          */
 
@@ -10529,6 +15310,14 @@ $root.gov = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * TallyMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.TallyMsg
+         * @instance
+         */
+        TallyMsg.prototype.metadata = null;
 
         /**
          * ProposalID is UUID of the proposal to close.
@@ -10562,8 +15351,10 @@ $root.gov = (function() {
         TallyMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.proposalId != null && message.hasOwnProperty("proposalId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.proposalId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.proposalId);
             return writer;
         };
 
@@ -10599,6 +15390,9 @@ $root.gov = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     message.proposalId = reader.bytes();
                     break;
                 default:
@@ -10636,6 +15430,11 @@ $root.gov = (function() {
         TallyMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.proposalId != null && message.hasOwnProperty("proposalId"))
                 if (!(message.proposalId && typeof message.proposalId.length === "number" || $util.isString(message.proposalId)))
                     return "proposalId: buffer expected";
@@ -10654,6 +15453,11 @@ $root.gov = (function() {
             if (object instanceof $root.gov.TallyMsg)
                 return object;
             var message = new $root.gov.TallyMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.TallyMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.proposalId != null)
                 if (typeof object.proposalId === "string")
                     $util.base64.decode(object.proposalId, message.proposalId = $util.newBuffer($util.base64.length(object.proposalId)), 0);
@@ -10675,7 +15479,8 @@ $root.gov = (function() {
             if (!options)
                 options = {};
             var object = {};
-            if (options.defaults)
+            if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.proposalId = "";
                 else {
@@ -10683,6 +15488,9 @@ $root.gov = (function() {
                     if (options.bytes !== Array)
                         object.proposalId = $util.newBuffer(object.proposalId);
                 }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.proposalId != null && message.hasOwnProperty("proposalId"))
                 object.proposalId = options.bytes === String ? $util.base64.encode(message.proposalId, 0, message.proposalId.length) : options.bytes === Array ? Array.prototype.slice.call(message.proposalId) : message.proposalId;
             return object;
@@ -10700,6 +15508,547 @@ $root.gov = (function() {
         };
 
         return TallyMsg;
+    })();
+
+    gov.UpdateElectorateMsg = (function() {
+
+        /**
+         * Properties of an UpdateElectorateMsg.
+         * @memberof gov
+         * @interface IUpdateElectorateMsg
+         * @property {weave.IMetadata|null} [metadata] UpdateElectorateMsg metadata
+         * @property {Uint8Array|null} [electorateId] ElectorateID is the reference to the electorate that defines the group of possible voters.
+         * @property {Array.<gov.IElector>|null} [diffElectors] with weight=0.
+         */
+
+        /**
+         * Constructs a new UpdateElectorateMsg.
+         * @memberof gov
+         * @classdesc Represents an UpdateElectorateMsg.
+         * @implements IUpdateElectorateMsg
+         * @constructor
+         * @param {gov.IUpdateElectorateMsg=} [properties] Properties to set
+         */
+        function UpdateElectorateMsg(properties) {
+            this.diffElectors = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdateElectorateMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.UpdateElectorateMsg
+         * @instance
+         */
+        UpdateElectorateMsg.prototype.metadata = null;
+
+        /**
+         * ElectorateID is the reference to the electorate that defines the group of possible voters.
+         * @member {Uint8Array} electorateId
+         * @memberof gov.UpdateElectorateMsg
+         * @instance
+         */
+        UpdateElectorateMsg.prototype.electorateId = $util.newBuffer([]);
+
+        /**
+         * with weight=0.
+         * @member {Array.<gov.IElector>} diffElectors
+         * @memberof gov.UpdateElectorateMsg
+         * @instance
+         */
+        UpdateElectorateMsg.prototype.diffElectors = $util.emptyArray;
+
+        /**
+         * Creates a new UpdateElectorateMsg instance using the specified properties.
+         * @function create
+         * @memberof gov.UpdateElectorateMsg
+         * @static
+         * @param {gov.IUpdateElectorateMsg=} [properties] Properties to set
+         * @returns {gov.UpdateElectorateMsg} UpdateElectorateMsg instance
+         */
+        UpdateElectorateMsg.create = function create(properties) {
+            return new UpdateElectorateMsg(properties);
+        };
+
+        /**
+         * Encodes the specified UpdateElectorateMsg message. Does not implicitly {@link gov.UpdateElectorateMsg.verify|verify} messages.
+         * @function encode
+         * @memberof gov.UpdateElectorateMsg
+         * @static
+         * @param {gov.IUpdateElectorateMsg} message UpdateElectorateMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateElectorateMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.electorateId);
+            if (message.diffElectors != null && message.diffElectors.length)
+                for (var i = 0; i < message.diffElectors.length; ++i)
+                    $root.gov.Elector.encode(message.diffElectors[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdateElectorateMsg message, length delimited. Does not implicitly {@link gov.UpdateElectorateMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof gov.UpdateElectorateMsg
+         * @static
+         * @param {gov.IUpdateElectorateMsg} message UpdateElectorateMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateElectorateMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdateElectorateMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof gov.UpdateElectorateMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {gov.UpdateElectorateMsg} UpdateElectorateMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateElectorateMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.UpdateElectorateMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.electorateId = reader.bytes();
+                    break;
+                case 3:
+                    if (!(message.diffElectors && message.diffElectors.length))
+                        message.diffElectors = [];
+                    message.diffElectors.push($root.gov.Elector.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdateElectorateMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof gov.UpdateElectorateMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {gov.UpdateElectorateMsg} UpdateElectorateMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateElectorateMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdateElectorateMsg message.
+         * @function verify
+         * @memberof gov.UpdateElectorateMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdateElectorateMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
+                if (!(message.electorateId && typeof message.electorateId.length === "number" || $util.isString(message.electorateId)))
+                    return "electorateId: buffer expected";
+            if (message.diffElectors != null && message.hasOwnProperty("diffElectors")) {
+                if (!Array.isArray(message.diffElectors))
+                    return "diffElectors: array expected";
+                for (var i = 0; i < message.diffElectors.length; ++i) {
+                    var error = $root.gov.Elector.verify(message.diffElectors[i]);
+                    if (error)
+                        return "diffElectors." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates an UpdateElectorateMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof gov.UpdateElectorateMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {gov.UpdateElectorateMsg} UpdateElectorateMsg
+         */
+        UpdateElectorateMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.UpdateElectorateMsg)
+                return object;
+            var message = new $root.gov.UpdateElectorateMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.UpdateElectorateMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.electorateId != null)
+                if (typeof object.electorateId === "string")
+                    $util.base64.decode(object.electorateId, message.electorateId = $util.newBuffer($util.base64.length(object.electorateId)), 0);
+                else if (object.electorateId.length)
+                    message.electorateId = object.electorateId;
+            if (object.diffElectors) {
+                if (!Array.isArray(object.diffElectors))
+                    throw TypeError(".gov.UpdateElectorateMsg.diffElectors: array expected");
+                message.diffElectors = [];
+                for (var i = 0; i < object.diffElectors.length; ++i) {
+                    if (typeof object.diffElectors[i] !== "object")
+                        throw TypeError(".gov.UpdateElectorateMsg.diffElectors: object expected");
+                    message.diffElectors[i] = $root.gov.Elector.fromObject(object.diffElectors[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdateElectorateMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof gov.UpdateElectorateMsg
+         * @static
+         * @param {gov.UpdateElectorateMsg} message UpdateElectorateMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdateElectorateMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.diffElectors = [];
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.electorateId = "";
+                else {
+                    object.electorateId = [];
+                    if (options.bytes !== Array)
+                        object.electorateId = $util.newBuffer(object.electorateId);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
+                object.electorateId = options.bytes === String ? $util.base64.encode(message.electorateId, 0, message.electorateId.length) : options.bytes === Array ? Array.prototype.slice.call(message.electorateId) : message.electorateId;
+            if (message.diffElectors && message.diffElectors.length) {
+                object.diffElectors = [];
+                for (var j = 0; j < message.diffElectors.length; ++j)
+                    object.diffElectors[j] = $root.gov.Elector.toObject(message.diffElectors[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this UpdateElectorateMsg to JSON.
+         * @function toJSON
+         * @memberof gov.UpdateElectorateMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdateElectorateMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateElectorateMsg;
+    })();
+
+    gov.UpdateElectionRuleMsg = (function() {
+
+        /**
+         * Properties of an UpdateElectionRuleMsg.
+         * @memberof gov
+         * @interface IUpdateElectionRuleMsg
+         * @property {weave.IMetadata|null} [metadata] UpdateElectionRuleMsg metadata
+         * @property {Uint8Array|null} [electionRuleId] ElectionRuleID is a reference to the election rule
+         * @property {number|null} [votingPeriodHours] Duration how long the voting period will take place.
+         * @property {gov.IFraction|null} [threshold] of the eligible voters.
+         */
+
+        /**
+         * Constructs a new UpdateElectionRuleMsg.
+         * @memberof gov
+         * @classdesc Represents an UpdateElectionRuleMsg.
+         * @implements IUpdateElectionRuleMsg
+         * @constructor
+         * @param {gov.IUpdateElectionRuleMsg=} [properties] Properties to set
+         */
+        function UpdateElectionRuleMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdateElectionRuleMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.UpdateElectionRuleMsg
+         * @instance
+         */
+        UpdateElectionRuleMsg.prototype.metadata = null;
+
+        /**
+         * ElectionRuleID is a reference to the election rule
+         * @member {Uint8Array} electionRuleId
+         * @memberof gov.UpdateElectionRuleMsg
+         * @instance
+         */
+        UpdateElectionRuleMsg.prototype.electionRuleId = $util.newBuffer([]);
+
+        /**
+         * Duration how long the voting period will take place.
+         * @member {number} votingPeriodHours
+         * @memberof gov.UpdateElectionRuleMsg
+         * @instance
+         */
+        UpdateElectionRuleMsg.prototype.votingPeriodHours = 0;
+
+        /**
+         * of the eligible voters.
+         * @member {gov.IFraction|null|undefined} threshold
+         * @memberof gov.UpdateElectionRuleMsg
+         * @instance
+         */
+        UpdateElectionRuleMsg.prototype.threshold = null;
+
+        /**
+         * Creates a new UpdateElectionRuleMsg instance using the specified properties.
+         * @function create
+         * @memberof gov.UpdateElectionRuleMsg
+         * @static
+         * @param {gov.IUpdateElectionRuleMsg=} [properties] Properties to set
+         * @returns {gov.UpdateElectionRuleMsg} UpdateElectionRuleMsg instance
+         */
+        UpdateElectionRuleMsg.create = function create(properties) {
+            return new UpdateElectionRuleMsg(properties);
+        };
+
+        /**
+         * Encodes the specified UpdateElectionRuleMsg message. Does not implicitly {@link gov.UpdateElectionRuleMsg.verify|verify} messages.
+         * @function encode
+         * @memberof gov.UpdateElectionRuleMsg
+         * @static
+         * @param {gov.IUpdateElectionRuleMsg} message UpdateElectionRuleMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateElectionRuleMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.electionRuleId);
+            if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.votingPeriodHours);
+            if (message.threshold != null && message.hasOwnProperty("threshold"))
+                $root.gov.Fraction.encode(message.threshold, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdateElectionRuleMsg message, length delimited. Does not implicitly {@link gov.UpdateElectionRuleMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof gov.UpdateElectionRuleMsg
+         * @static
+         * @param {gov.IUpdateElectionRuleMsg} message UpdateElectionRuleMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateElectionRuleMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdateElectionRuleMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof gov.UpdateElectionRuleMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {gov.UpdateElectionRuleMsg} UpdateElectionRuleMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateElectionRuleMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.UpdateElectionRuleMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.electionRuleId = reader.bytes();
+                    break;
+                case 3:
+                    message.votingPeriodHours = reader.uint32();
+                    break;
+                case 4:
+                    message.threshold = $root.gov.Fraction.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdateElectionRuleMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof gov.UpdateElectionRuleMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {gov.UpdateElectionRuleMsg} UpdateElectionRuleMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateElectionRuleMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdateElectionRuleMsg message.
+         * @function verify
+         * @memberof gov.UpdateElectionRuleMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdateElectionRuleMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
+                if (!(message.electionRuleId && typeof message.electionRuleId.length === "number" || $util.isString(message.electionRuleId)))
+                    return "electionRuleId: buffer expected";
+            if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
+                if (!$util.isInteger(message.votingPeriodHours))
+                    return "votingPeriodHours: integer expected";
+            if (message.threshold != null && message.hasOwnProperty("threshold")) {
+                var error = $root.gov.Fraction.verify(message.threshold);
+                if (error)
+                    return "threshold." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates an UpdateElectionRuleMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof gov.UpdateElectionRuleMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {gov.UpdateElectionRuleMsg} UpdateElectionRuleMsg
+         */
+        UpdateElectionRuleMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.UpdateElectionRuleMsg)
+                return object;
+            var message = new $root.gov.UpdateElectionRuleMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.UpdateElectionRuleMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.electionRuleId != null)
+                if (typeof object.electionRuleId === "string")
+                    $util.base64.decode(object.electionRuleId, message.electionRuleId = $util.newBuffer($util.base64.length(object.electionRuleId)), 0);
+                else if (object.electionRuleId.length)
+                    message.electionRuleId = object.electionRuleId;
+            if (object.votingPeriodHours != null)
+                message.votingPeriodHours = object.votingPeriodHours >>> 0;
+            if (object.threshold != null) {
+                if (typeof object.threshold !== "object")
+                    throw TypeError(".gov.UpdateElectionRuleMsg.threshold: object expected");
+                message.threshold = $root.gov.Fraction.fromObject(object.threshold);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdateElectionRuleMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof gov.UpdateElectionRuleMsg
+         * @static
+         * @param {gov.UpdateElectionRuleMsg} message UpdateElectionRuleMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdateElectionRuleMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.electionRuleId = "";
+                else {
+                    object.electionRuleId = [];
+                    if (options.bytes !== Array)
+                        object.electionRuleId = $util.newBuffer(object.electionRuleId);
+                }
+                object.votingPeriodHours = 0;
+                object.threshold = null;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
+                object.electionRuleId = options.bytes === String ? $util.base64.encode(message.electionRuleId, 0, message.electionRuleId.length) : options.bytes === Array ? Array.prototype.slice.call(message.electionRuleId) : message.electionRuleId;
+            if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
+                object.votingPeriodHours = message.votingPeriodHours;
+            if (message.threshold != null && message.hasOwnProperty("threshold"))
+                object.threshold = $root.gov.Fraction.toObject(message.threshold, options);
+            return object;
+        };
+
+        /**
+         * Converts this UpdateElectionRuleMsg to JSON.
+         * @function toJSON
+         * @memberof gov.UpdateElectionRuleMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdateElectionRuleMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateElectionRuleMsg;
     })();
 
     return gov;
@@ -10720,6 +16069,7 @@ $root.msgfee = (function() {
          * Properties of a MsgFee.
          * @memberof msgfee
          * @interface IMsgFee
+         * @property {weave.IMetadata|null} [metadata] MsgFee metadata
          * @property {string|null} [msgPath] MsgFee msgPath
          * @property {coin.ICoin|null} [fee] MsgFee fee
          */
@@ -10738,6 +16088,14 @@ $root.msgfee = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * MsgFee metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof msgfee.MsgFee
+         * @instance
+         */
+        MsgFee.prototype.metadata = null;
 
         /**
          * MsgFee msgPath.
@@ -10779,10 +16137,12 @@ $root.msgfee = (function() {
         MsgFee.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.msgPath != null && message.hasOwnProperty("msgPath"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.msgPath);
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.msgPath);
             if (message.fee != null && message.hasOwnProperty("fee"))
-                $root.coin.Coin.encode(message.fee, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.coin.Coin.encode(message.fee, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -10818,9 +16178,12 @@ $root.msgfee = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.msgPath = reader.string();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.msgPath = reader.string();
+                    break;
+                case 3:
                     message.fee = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 default:
@@ -10858,6 +16221,11 @@ $root.msgfee = (function() {
         MsgFee.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.msgPath != null && message.hasOwnProperty("msgPath"))
                 if (!$util.isString(message.msgPath))
                     return "msgPath: string expected";
@@ -10881,6 +16249,11 @@ $root.msgfee = (function() {
             if (object instanceof $root.msgfee.MsgFee)
                 return object;
             var message = new $root.msgfee.MsgFee();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".msgfee.MsgFee.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.msgPath != null)
                 message.msgPath = String(object.msgPath);
             if (object.fee != null) {
@@ -10905,9 +16278,12 @@ $root.msgfee = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 object.msgPath = "";
                 object.fee = null;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.msgPath != null && message.hasOwnProperty("msgPath"))
                 object.msgPath = message.msgPath;
             if (message.fee != null && message.hasOwnProperty("fee"))
@@ -10947,6 +16323,7 @@ $root.multisig = (function() {
          * Properties of a Contract.
          * @memberof multisig
          * @interface IContract
+         * @property {weave.IMetadata|null} [metadata] Contract metadata
          * @property {Array.<multisig.IParticipant>|null} [participants] contract.
          * @property {number|null} [activationThreshold] computed as the sum of weights of all participating signatures.
          * @property {number|null} [adminThreshold] computed as the sum of weights of all participating signatures.
@@ -10967,6 +16344,14 @@ $root.multisig = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * Contract metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof multisig.Contract
+         * @instance
+         */
+        Contract.prototype.metadata = null;
 
         /**
          * contract.
@@ -11016,13 +16401,15 @@ $root.multisig = (function() {
         Contract.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.participants != null && message.participants.length)
                 for (var i = 0; i < message.participants.length; ++i)
-                    $root.multisig.Participant.encode(message.participants[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.multisig.Participant.encode(message.participants[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.activationThreshold != null && message.hasOwnProperty("activationThreshold"))
-                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.activationThreshold);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.activationThreshold);
             if (message.adminThreshold != null && message.hasOwnProperty("adminThreshold"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.adminThreshold);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.adminThreshold);
             return writer;
         };
 
@@ -11058,14 +16445,17 @@ $root.multisig = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     if (!(message.participants && message.participants.length))
                         message.participants = [];
                     message.participants.push($root.multisig.Participant.decode(reader, reader.uint32()));
                     break;
-                case 2:
+                case 3:
                     message.activationThreshold = reader.uint32();
                     break;
-                case 3:
+                case 4:
                     message.adminThreshold = reader.uint32();
                     break;
                 default:
@@ -11103,6 +16493,11 @@ $root.multisig = (function() {
         Contract.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.participants != null && message.hasOwnProperty("participants")) {
                 if (!Array.isArray(message.participants))
                     return "participants: array expected";
@@ -11133,6 +16528,11 @@ $root.multisig = (function() {
             if (object instanceof $root.multisig.Contract)
                 return object;
             var message = new $root.multisig.Contract();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".multisig.Contract.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.participants) {
                 if (!Array.isArray(object.participants))
                     throw TypeError(".multisig.Contract.participants: array expected");
@@ -11166,9 +16566,12 @@ $root.multisig = (function() {
             if (options.arrays || options.defaults)
                 object.participants = [];
             if (options.defaults) {
+                object.metadata = null;
                 object.activationThreshold = 0;
                 object.adminThreshold = 0;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.participants && message.participants.length) {
                 object.participants = [];
                 for (var j = 0; j < message.participants.length; ++j)
@@ -11202,7 +16605,7 @@ $root.multisig = (function() {
          * @memberof multisig
          * @interface IParticipant
          * @property {Uint8Array|null} [signature] Participant signature
-         * @property {number|null} [power] Participant power
+         * @property {number|null} [weight] Participant weight
          */
 
         /**
@@ -11229,12 +16632,12 @@ $root.multisig = (function() {
         Participant.prototype.signature = $util.newBuffer([]);
 
         /**
-         * Participant power.
-         * @member {number} power
+         * Participant weight.
+         * @member {number} weight
          * @memberof multisig.Participant
          * @instance
          */
-        Participant.prototype.power = 0;
+        Participant.prototype.weight = 0;
 
         /**
          * Creates a new Participant instance using the specified properties.
@@ -11262,8 +16665,8 @@ $root.multisig = (function() {
                 writer = $Writer.create();
             if (message.signature != null && message.hasOwnProperty("signature"))
                 writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.signature);
-            if (message.power != null && message.hasOwnProperty("power"))
-                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.power);
+            if (message.weight != null && message.hasOwnProperty("weight"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.weight);
             return writer;
         };
 
@@ -11302,7 +16705,7 @@ $root.multisig = (function() {
                     message.signature = reader.bytes();
                     break;
                 case 2:
-                    message.power = reader.uint32();
+                    message.weight = reader.uint32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -11342,9 +16745,9 @@ $root.multisig = (function() {
             if (message.signature != null && message.hasOwnProperty("signature"))
                 if (!(message.signature && typeof message.signature.length === "number" || $util.isString(message.signature)))
                     return "signature: buffer expected";
-            if (message.power != null && message.hasOwnProperty("power"))
-                if (!$util.isInteger(message.power))
-                    return "power: integer expected";
+            if (message.weight != null && message.hasOwnProperty("weight"))
+                if (!$util.isInteger(message.weight))
+                    return "weight: integer expected";
             return null;
         };
 
@@ -11365,8 +16768,8 @@ $root.multisig = (function() {
                     $util.base64.decode(object.signature, message.signature = $util.newBuffer($util.base64.length(object.signature)), 0);
                 else if (object.signature.length)
                     message.signature = object.signature;
-            if (object.power != null)
-                message.power = object.power >>> 0;
+            if (object.weight != null)
+                message.weight = object.weight >>> 0;
             return message;
         };
 
@@ -11391,12 +16794,12 @@ $root.multisig = (function() {
                     if (options.bytes !== Array)
                         object.signature = $util.newBuffer(object.signature);
                 }
-                object.power = 0;
+                object.weight = 0;
             }
             if (message.signature != null && message.hasOwnProperty("signature"))
                 object.signature = options.bytes === String ? $util.base64.encode(message.signature, 0, message.signature.length) : options.bytes === Array ? Array.prototype.slice.call(message.signature) : message.signature;
-            if (message.power != null && message.hasOwnProperty("power"))
-                object.power = message.power;
+            if (message.weight != null && message.hasOwnProperty("weight"))
+                object.weight = message.weight;
             return object;
         };
 
@@ -11420,6 +16823,7 @@ $root.multisig = (function() {
          * Properties of a CreateContractMsg.
          * @memberof multisig
          * @interface ICreateContractMsg
+         * @property {weave.IMetadata|null} [metadata] CreateContractMsg metadata
          * @property {Array.<multisig.IParticipant>|null} [participants] CreateContractMsg participants
          * @property {number|null} [activationThreshold] CreateContractMsg activationThreshold
          * @property {number|null} [adminThreshold] CreateContractMsg adminThreshold
@@ -11440,6 +16844,14 @@ $root.multisig = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * CreateContractMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof multisig.CreateContractMsg
+         * @instance
+         */
+        CreateContractMsg.prototype.metadata = null;
 
         /**
          * CreateContractMsg participants.
@@ -11489,13 +16901,15 @@ $root.multisig = (function() {
         CreateContractMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.participants != null && message.participants.length)
                 for (var i = 0; i < message.participants.length; ++i)
-                    $root.multisig.Participant.encode(message.participants[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.multisig.Participant.encode(message.participants[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.activationThreshold != null && message.hasOwnProperty("activationThreshold"))
-                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.activationThreshold);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.activationThreshold);
             if (message.adminThreshold != null && message.hasOwnProperty("adminThreshold"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.adminThreshold);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.adminThreshold);
             return writer;
         };
 
@@ -11531,14 +16945,17 @@ $root.multisig = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     if (!(message.participants && message.participants.length))
                         message.participants = [];
                     message.participants.push($root.multisig.Participant.decode(reader, reader.uint32()));
                     break;
-                case 2:
+                case 3:
                     message.activationThreshold = reader.uint32();
                     break;
-                case 3:
+                case 4:
                     message.adminThreshold = reader.uint32();
                     break;
                 default:
@@ -11576,6 +16993,11 @@ $root.multisig = (function() {
         CreateContractMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.participants != null && message.hasOwnProperty("participants")) {
                 if (!Array.isArray(message.participants))
                     return "participants: array expected";
@@ -11606,6 +17028,11 @@ $root.multisig = (function() {
             if (object instanceof $root.multisig.CreateContractMsg)
                 return object;
             var message = new $root.multisig.CreateContractMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".multisig.CreateContractMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.participants) {
                 if (!Array.isArray(object.participants))
                     throw TypeError(".multisig.CreateContractMsg.participants: array expected");
@@ -11639,9 +17066,12 @@ $root.multisig = (function() {
             if (options.arrays || options.defaults)
                 object.participants = [];
             if (options.defaults) {
+                object.metadata = null;
                 object.activationThreshold = 0;
                 object.adminThreshold = 0;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.participants && message.participants.length) {
                 object.participants = [];
                 for (var j = 0; j < message.participants.length; ++j)
@@ -11674,6 +17104,7 @@ $root.multisig = (function() {
          * Properties of an UpdateContractMsg.
          * @memberof multisig
          * @interface IUpdateContractMsg
+         * @property {weave.IMetadata|null} [metadata] UpdateContractMsg metadata
          * @property {Uint8Array|null} [contractId] UpdateContractMsg contractId
          * @property {Array.<multisig.IParticipant>|null} [participants] UpdateContractMsg participants
          * @property {number|null} [activationThreshold] UpdateContractMsg activationThreshold
@@ -11695,6 +17126,14 @@ $root.multisig = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * UpdateContractMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof multisig.UpdateContractMsg
+         * @instance
+         */
+        UpdateContractMsg.prototype.metadata = null;
 
         /**
          * UpdateContractMsg contractId.
@@ -11752,15 +17191,17 @@ $root.multisig = (function() {
         UpdateContractMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.contractId != null && message.hasOwnProperty("contractId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.contractId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.contractId);
             if (message.participants != null && message.participants.length)
                 for (var i = 0; i < message.participants.length; ++i)
-                    $root.multisig.Participant.encode(message.participants[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.multisig.Participant.encode(message.participants[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.activationThreshold != null && message.hasOwnProperty("activationThreshold"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.activationThreshold);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.activationThreshold);
             if (message.adminThreshold != null && message.hasOwnProperty("adminThreshold"))
-                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.adminThreshold);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.adminThreshold);
             return writer;
         };
 
@@ -11796,17 +17237,20 @@ $root.multisig = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.contractId = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.contractId = reader.bytes();
+                    break;
+                case 3:
                     if (!(message.participants && message.participants.length))
                         message.participants = [];
                     message.participants.push($root.multisig.Participant.decode(reader, reader.uint32()));
                     break;
-                case 3:
+                case 4:
                     message.activationThreshold = reader.uint32();
                     break;
-                case 4:
+                case 5:
                     message.adminThreshold = reader.uint32();
                     break;
                 default:
@@ -11844,6 +17288,11 @@ $root.multisig = (function() {
         UpdateContractMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.contractId != null && message.hasOwnProperty("contractId"))
                 if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
                     return "contractId: buffer expected";
@@ -11877,6 +17326,11 @@ $root.multisig = (function() {
             if (object instanceof $root.multisig.UpdateContractMsg)
                 return object;
             var message = new $root.multisig.UpdateContractMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".multisig.UpdateContractMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.contractId != null)
                 if (typeof object.contractId === "string")
                     $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
@@ -11915,6 +17369,7 @@ $root.multisig = (function() {
             if (options.arrays || options.defaults)
                 object.participants = [];
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.contractId = "";
                 else {
@@ -11925,6 +17380,8 @@ $root.multisig = (function() {
                 object.activationThreshold = 0;
                 object.adminThreshold = 0;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.contractId != null && message.hasOwnProperty("contractId"))
                 object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
             if (message.participants && message.participants.length) {
@@ -11971,6 +17428,7 @@ $root.namecoin = (function() {
          * Properties of a Wallet.
          * @memberof namecoin
          * @interface IWallet
+         * @property {weave.IMetadata|null} [metadata] Wallet metadata
          * @property {Array.<coin.ICoin>|null} [coins] Wallet coins
          * @property {string|null} [name] Wallet name
          */
@@ -11990,6 +17448,14 @@ $root.namecoin = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * Wallet metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof namecoin.Wallet
+         * @instance
+         */
+        Wallet.prototype.metadata = null;
 
         /**
          * Wallet coins.
@@ -12031,11 +17497,13 @@ $root.namecoin = (function() {
         Wallet.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.coins != null && message.coins.length)
                 for (var i = 0; i < message.coins.length; ++i)
-                    $root.coin.Coin.encode(message.coins[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.coin.Coin.encode(message.coins[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.name != null && message.hasOwnProperty("name"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.name);
             return writer;
         };
 
@@ -12071,11 +17539,14 @@ $root.namecoin = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     if (!(message.coins && message.coins.length))
                         message.coins = [];
                     message.coins.push($root.coin.Coin.decode(reader, reader.uint32()));
                     break;
-                case 2:
+                case 3:
                     message.name = reader.string();
                     break;
                 default:
@@ -12113,6 +17584,11 @@ $root.namecoin = (function() {
         Wallet.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.coins != null && message.hasOwnProperty("coins")) {
                 if (!Array.isArray(message.coins))
                     return "coins: array expected";
@@ -12140,6 +17616,11 @@ $root.namecoin = (function() {
             if (object instanceof $root.namecoin.Wallet)
                 return object;
             var message = new $root.namecoin.Wallet();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".namecoin.Wallet.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.coins) {
                 if (!Array.isArray(object.coins))
                     throw TypeError(".namecoin.Wallet.coins: array expected");
@@ -12170,8 +17651,12 @@ $root.namecoin = (function() {
             var object = {};
             if (options.arrays || options.defaults)
                 object.coins = [];
-            if (options.defaults)
+            if (options.defaults) {
+                object.metadata = null;
                 object.name = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.coins && message.coins.length) {
                 object.coins = [];
                 for (var j = 0; j < message.coins.length; ++j)
@@ -12202,6 +17687,7 @@ $root.namecoin = (function() {
          * Properties of a Token.
          * @memberof namecoin
          * @interface IToken
+         * @property {weave.IMetadata|null} [metadata] Token metadata
          * @property {string|null} [name] Token name
          * @property {number|null} [sigFigs] Token sigFigs
          */
@@ -12220,6 +17706,14 @@ $root.namecoin = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * Token metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof namecoin.Token
+         * @instance
+         */
+        Token.prototype.metadata = null;
 
         /**
          * Token name.
@@ -12261,6 +17755,8 @@ $root.namecoin = (function() {
         Token.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.name != null && message.hasOwnProperty("name"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
             if (message.sigFigs != null && message.hasOwnProperty("sigFigs"))
@@ -12299,6 +17795,9 @@ $root.namecoin = (function() {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
                 case 2:
                     message.name = reader.string();
                     break;
@@ -12340,6 +17839,11 @@ $root.namecoin = (function() {
         Token.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.name != null && message.hasOwnProperty("name"))
                 if (!$util.isString(message.name))
                     return "name: string expected";
@@ -12361,6 +17865,11 @@ $root.namecoin = (function() {
             if (object instanceof $root.namecoin.Token)
                 return object;
             var message = new $root.namecoin.Token();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".namecoin.Token.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.name != null)
                 message.name = String(object.name);
             if (object.sigFigs != null)
@@ -12382,9 +17891,12 @@ $root.namecoin = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 object.name = "";
                 object.sigFigs = 0;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.name != null && message.hasOwnProperty("name"))
                 object.name = message.name;
             if (message.sigFigs != null && message.hasOwnProperty("sigFigs"))
@@ -12412,6 +17924,7 @@ $root.namecoin = (function() {
          * Properties of a NewTokenMsg.
          * @memberof namecoin
          * @interface INewTokenMsg
+         * @property {weave.IMetadata|null} [metadata] NewTokenMsg metadata
          * @property {string|null} [ticker] NewTokenMsg ticker
          * @property {string|null} [name] NewTokenMsg name
          * @property {number|null} [sigFigs] NewTokenMsg sigFigs
@@ -12431,6 +17944,14 @@ $root.namecoin = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * NewTokenMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof namecoin.NewTokenMsg
+         * @instance
+         */
+        NewTokenMsg.prototype.metadata = null;
 
         /**
          * NewTokenMsg ticker.
@@ -12480,12 +18001,14 @@ $root.namecoin = (function() {
         NewTokenMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.ticker != null && message.hasOwnProperty("ticker"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.ticker);
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.ticker);
             if (message.name != null && message.hasOwnProperty("name"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.name);
             if (message.sigFigs != null && message.hasOwnProperty("sigFigs"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.sigFigs);
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.sigFigs);
             return writer;
         };
 
@@ -12521,12 +18044,15 @@ $root.namecoin = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.ticker = reader.string();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.name = reader.string();
+                    message.ticker = reader.string();
                     break;
                 case 3:
+                    message.name = reader.string();
+                    break;
+                case 4:
                     message.sigFigs = reader.int32();
                     break;
                 default:
@@ -12564,6 +18090,11 @@ $root.namecoin = (function() {
         NewTokenMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.ticker != null && message.hasOwnProperty("ticker"))
                 if (!$util.isString(message.ticker))
                     return "ticker: string expected";
@@ -12588,6 +18119,11 @@ $root.namecoin = (function() {
             if (object instanceof $root.namecoin.NewTokenMsg)
                 return object;
             var message = new $root.namecoin.NewTokenMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".namecoin.NewTokenMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.ticker != null)
                 message.ticker = String(object.ticker);
             if (object.name != null)
@@ -12611,10 +18147,13 @@ $root.namecoin = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 object.ticker = "";
                 object.name = "";
                 object.sigFigs = 0;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.ticker != null && message.hasOwnProperty("ticker"))
                 object.ticker = message.ticker;
             if (message.name != null && message.hasOwnProperty("name"))
@@ -12644,6 +18183,7 @@ $root.namecoin = (function() {
          * Properties of a SetWalletNameMsg.
          * @memberof namecoin
          * @interface ISetWalletNameMsg
+         * @property {weave.IMetadata|null} [metadata] SetWalletNameMsg metadata
          * @property {Uint8Array|null} [address] SetWalletNameMsg address
          * @property {string|null} [name] SetWalletNameMsg name
          */
@@ -12662,6 +18202,14 @@ $root.namecoin = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * SetWalletNameMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof namecoin.SetWalletNameMsg
+         * @instance
+         */
+        SetWalletNameMsg.prototype.metadata = null;
 
         /**
          * SetWalletNameMsg address.
@@ -12703,10 +18251,12 @@ $root.namecoin = (function() {
         SetWalletNameMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.address != null && message.hasOwnProperty("address"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.address);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.address);
             if (message.name != null && message.hasOwnProperty("name"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.name);
             return writer;
         };
 
@@ -12742,9 +18292,12 @@ $root.namecoin = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.address = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.address = reader.bytes();
+                    break;
+                case 3:
                     message.name = reader.string();
                     break;
                 default:
@@ -12782,6 +18335,11 @@ $root.namecoin = (function() {
         SetWalletNameMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.address != null && message.hasOwnProperty("address"))
                 if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
                     return "address: buffer expected";
@@ -12803,6 +18361,11 @@ $root.namecoin = (function() {
             if (object instanceof $root.namecoin.SetWalletNameMsg)
                 return object;
             var message = new $root.namecoin.SetWalletNameMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".namecoin.SetWalletNameMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.address != null)
                 if (typeof object.address === "string")
                     $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
@@ -12827,6 +18390,7 @@ $root.namecoin = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.address = "";
                 else {
@@ -12836,6 +18400,8 @@ $root.namecoin = (function() {
                 }
                 object.name = "";
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.address != null && message.hasOwnProperty("address"))
                 object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
             if (message.name != null && message.hasOwnProperty("name"))
@@ -12875,6 +18441,7 @@ $root.nft = (function() {
          * Properties of a NonFungibleToken.
          * @memberof nft
          * @interface INonFungibleToken
+         * @property {weave.IMetadata|null} [metadata] NonFungibleToken metadata
          * @property {Uint8Array|null} [id] ID is the address of this token.
          * @property {Uint8Array|null} [owner] Owner is the address of the token owner.
          * @property {Array.<nft.IActionApprovals>|null} [actionApprovals] succeed, all action approvals validation must pass.
@@ -12895,6 +18462,14 @@ $root.nft = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * NonFungibleToken metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof nft.NonFungibleToken
+         * @instance
+         */
+        NonFungibleToken.prototype.metadata = null;
 
         /**
          * ID is the address of this token.
@@ -12944,13 +18519,15 @@ $root.nft = (function() {
         NonFungibleToken.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
             if (message.owner != null && message.hasOwnProperty("owner"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.owner);
             if (message.actionApprovals != null && message.actionApprovals.length)
                 for (var i = 0; i < message.actionApprovals.length; ++i)
-                    $root.nft.ActionApprovals.encode(message.actionApprovals[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                    $root.nft.ActionApprovals.encode(message.actionApprovals[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             return writer;
         };
 
@@ -12986,12 +18563,15 @@ $root.nft = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.id = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.owner = reader.bytes();
+                    message.id = reader.bytes();
                     break;
                 case 3:
+                    message.owner = reader.bytes();
+                    break;
+                case 4:
                     if (!(message.actionApprovals && message.actionApprovals.length))
                         message.actionApprovals = [];
                     message.actionApprovals.push($root.nft.ActionApprovals.decode(reader, reader.uint32()));
@@ -13031,6 +18611,11 @@ $root.nft = (function() {
         NonFungibleToken.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.id != null && message.hasOwnProperty("id"))
                 if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
                     return "id: buffer expected";
@@ -13061,6 +18646,11 @@ $root.nft = (function() {
             if (object instanceof $root.nft.NonFungibleToken)
                 return object;
             var message = new $root.nft.NonFungibleToken();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".nft.NonFungibleToken.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.id != null)
                 if (typeof object.id === "string")
                     $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
@@ -13100,6 +18690,7 @@ $root.nft = (function() {
             if (options.arrays || options.defaults)
                 object.actionApprovals = [];
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.id = "";
                 else {
@@ -13115,6 +18706,8 @@ $root.nft = (function() {
                         object.owner = $util.newBuffer(object.owner);
                 }
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.id != null && message.hasOwnProperty("id"))
                 object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.owner != null && message.hasOwnProperty("owner"))
@@ -13862,6 +19455,7 @@ $root.nft = (function() {
          * Properties of an AddApprovalMsg.
          * @memberof nft
          * @interface IAddApprovalMsg
+         * @property {weave.IMetadata|null} [metadata] AddApprovalMsg metadata
          * @property {Uint8Array|null} [id] AddApprovalMsg id
          * @property {Uint8Array|null} [address] AddApprovalMsg address
          * @property {string|null} [action] AddApprovalMsg action
@@ -13883,6 +19477,14 @@ $root.nft = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * AddApprovalMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof nft.AddApprovalMsg
+         * @instance
+         */
+        AddApprovalMsg.prototype.metadata = null;
 
         /**
          * AddApprovalMsg id.
@@ -13948,16 +19550,18 @@ $root.nft = (function() {
         AddApprovalMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
             if (message.address != null && message.hasOwnProperty("address"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.address);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.address);
             if (message.action != null && message.hasOwnProperty("action"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.action);
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.action);
             if (message.options != null && message.hasOwnProperty("options"))
-                $root.nft.ApprovalOptions.encode(message.options, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.nft.ApprovalOptions.encode(message.options, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.t != null && message.hasOwnProperty("t"))
-                writer.uint32(/* id 5, wireType 2 =*/42).string(message.t);
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.t);
             return writer;
         };
 
@@ -13993,18 +19597,21 @@ $root.nft = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.id = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.address = reader.bytes();
+                    message.id = reader.bytes();
                     break;
                 case 3:
-                    message.action = reader.string();
+                    message.address = reader.bytes();
                     break;
                 case 4:
-                    message.options = $root.nft.ApprovalOptions.decode(reader, reader.uint32());
+                    message.action = reader.string();
                     break;
                 case 5:
+                    message.options = $root.nft.ApprovalOptions.decode(reader, reader.uint32());
+                    break;
+                case 6:
                     message.t = reader.string();
                     break;
                 default:
@@ -14042,6 +19649,11 @@ $root.nft = (function() {
         AddApprovalMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.id != null && message.hasOwnProperty("id"))
                 if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
                     return "id: buffer expected";
@@ -14074,6 +19686,11 @@ $root.nft = (function() {
             if (object instanceof $root.nft.AddApprovalMsg)
                 return object;
             var message = new $root.nft.AddApprovalMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".nft.AddApprovalMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.id != null)
                 if (typeof object.id === "string")
                     $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
@@ -14110,6 +19727,7 @@ $root.nft = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.id = "";
                 else {
@@ -14128,6 +19746,8 @@ $root.nft = (function() {
                 object.options = null;
                 object.t = "";
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.id != null && message.hasOwnProperty("id"))
                 object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.address != null && message.hasOwnProperty("address"))
@@ -14161,6 +19781,7 @@ $root.nft = (function() {
          * Properties of a RemoveApprovalMsg.
          * @memberof nft
          * @interface IRemoveApprovalMsg
+         * @property {weave.IMetadata|null} [metadata] RemoveApprovalMsg metadata
          * @property {Uint8Array|null} [id] RemoveApprovalMsg id
          * @property {Uint8Array|null} [address] RemoveApprovalMsg address
          * @property {string|null} [action] RemoveApprovalMsg action
@@ -14181,6 +19802,14 @@ $root.nft = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * RemoveApprovalMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof nft.RemoveApprovalMsg
+         * @instance
+         */
+        RemoveApprovalMsg.prototype.metadata = null;
 
         /**
          * RemoveApprovalMsg id.
@@ -14238,14 +19867,16 @@ $root.nft = (function() {
         RemoveApprovalMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
             if (message.address != null && message.hasOwnProperty("address"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.address);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.address);
             if (message.action != null && message.hasOwnProperty("action"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.action);
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.action);
             if (message.t != null && message.hasOwnProperty("t"))
-                writer.uint32(/* id 4, wireType 2 =*/34).string(message.t);
+                writer.uint32(/* id 5, wireType 2 =*/42).string(message.t);
             return writer;
         };
 
@@ -14281,15 +19912,18 @@ $root.nft = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.id = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.address = reader.bytes();
+                    message.id = reader.bytes();
                     break;
                 case 3:
-                    message.action = reader.string();
+                    message.address = reader.bytes();
                     break;
                 case 4:
+                    message.action = reader.string();
+                    break;
+                case 5:
                     message.t = reader.string();
                     break;
                 default:
@@ -14327,6 +19961,11 @@ $root.nft = (function() {
         RemoveApprovalMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.id != null && message.hasOwnProperty("id"))
                 if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
                     return "id: buffer expected";
@@ -14354,6 +19993,11 @@ $root.nft = (function() {
             if (object instanceof $root.nft.RemoveApprovalMsg)
                 return object;
             var message = new $root.nft.RemoveApprovalMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".nft.RemoveApprovalMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.id != null)
                 if (typeof object.id === "string")
                     $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
@@ -14385,6 +20029,7 @@ $root.nft = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.id = "";
                 else {
@@ -14402,6 +20047,8 @@ $root.nft = (function() {
                 object.action = "";
                 object.t = "";
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.id != null && message.hasOwnProperty("id"))
                 object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.address != null && message.hasOwnProperty("address"))
@@ -14445,11 +20092,12 @@ $root.paychan = (function() {
          * Properties of a PaymentChannel.
          * @memberof paychan
          * @interface IPaymentChannel
-         * @property {Uint8Array|null} [src] Sender is the source that the founds are allocated from (weave.Address).
+         * @property {weave.IMetadata|null} [metadata] PaymentChannel metadata
+         * @property {Uint8Array|null} [src] Sender is the source that the founds are allocated from.
          * @property {crypto.IPublicKey|null} [senderPubkey] to the recipient. Signature prevents from altering transfer message.
-         * @property {Uint8Array|null} [recipient] (weave.Address).
+         * @property {Uint8Array|null} [recipient] Recipient is the party that receives payments through this channel
          * @property {coin.ICoin|null} [total] payment channel.
-         * @property {number|Long|null} [timeout] sender.
+         * @property {number|Long|null} [timeout] expired: [timeout, infinity)
          * @property {string|null} [memo] Max length 128 character.
          * @property {coin.ICoin|null} [transferred] (total) value. Transferred must never exceed total value.
          */
@@ -14470,7 +20118,15 @@ $root.paychan = (function() {
         }
 
         /**
-         * Sender is the source that the founds are allocated from (weave.Address).
+         * PaymentChannel metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof paychan.PaymentChannel
+         * @instance
+         */
+        PaymentChannel.prototype.metadata = null;
+
+        /**
+         * Sender is the source that the founds are allocated from.
          * @member {Uint8Array} src
          * @memberof paychan.PaymentChannel
          * @instance
@@ -14486,7 +20142,7 @@ $root.paychan = (function() {
         PaymentChannel.prototype.senderPubkey = null;
 
         /**
-         * (weave.Address).
+         * Recipient is the party that receives payments through this channel
          * @member {Uint8Array} recipient
          * @memberof paychan.PaymentChannel
          * @instance
@@ -14502,7 +20158,7 @@ $root.paychan = (function() {
         PaymentChannel.prototype.total = null;
 
         /**
-         * sender.
+         * expired: [timeout, infinity)
          * @member {number|Long} timeout
          * @memberof paychan.PaymentChannel
          * @instance
@@ -14549,20 +20205,22 @@ $root.paychan = (function() {
         PaymentChannel.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.src != null && message.hasOwnProperty("src"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.src);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.src);
             if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
-                $root.crypto.PublicKey.encode(message.senderPubkey, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.crypto.PublicKey.encode(message.senderPubkey, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.recipient);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
             if (message.total != null && message.hasOwnProperty("total"))
-                $root.coin.Coin.encode(message.total, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.coin.Coin.encode(message.total, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.timeout != null && message.hasOwnProperty("timeout"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
-                writer.uint32(/* id 6, wireType 2 =*/50).string(message.memo);
+                writer.uint32(/* id 7, wireType 2 =*/58).string(message.memo);
             if (message.transferred != null && message.hasOwnProperty("transferred"))
-                $root.coin.Coin.encode(message.transferred, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                $root.coin.Coin.encode(message.transferred, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
             return writer;
         };
 
@@ -14598,24 +20256,27 @@ $root.paychan = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.src = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.senderPubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
+                    message.src = reader.bytes();
                     break;
                 case 3:
-                    message.recipient = reader.bytes();
+                    message.senderPubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
                     break;
                 case 4:
-                    message.total = $root.coin.Coin.decode(reader, reader.uint32());
+                    message.recipient = reader.bytes();
                     break;
                 case 5:
-                    message.timeout = reader.int64();
+                    message.total = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 case 6:
-                    message.memo = reader.string();
+                    message.timeout = reader.int64();
                     break;
                 case 7:
+                    message.memo = reader.string();
+                    break;
+                case 8:
                     message.transferred = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 default:
@@ -14653,6 +20314,11 @@ $root.paychan = (function() {
         PaymentChannel.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.src != null && message.hasOwnProperty("src"))
                 if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
                     return "src: buffer expected";
@@ -14695,6 +20361,11 @@ $root.paychan = (function() {
             if (object instanceof $root.paychan.PaymentChannel)
                 return object;
             var message = new $root.paychan.PaymentChannel();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".paychan.PaymentChannel.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.src != null)
                 if (typeof object.src === "string")
                     $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
@@ -14748,6 +20419,7 @@ $root.paychan = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.src = "";
                 else {
@@ -14772,6 +20444,8 @@ $root.paychan = (function() {
                 object.memo = "";
                 object.transferred = null;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.src != null && message.hasOwnProperty("src"))
                 object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
             if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
@@ -14812,11 +20486,12 @@ $root.paychan = (function() {
          * Properties of a CreatePaymentChannelMsg.
          * @memberof paychan
          * @interface ICreatePaymentChannelMsg
+         * @property {weave.IMetadata|null} [metadata] CreatePaymentChannelMsg metadata
          * @property {Uint8Array|null} [src] Sender address (weave.Address).
          * @property {crypto.IPublicKey|null} [senderPubkey] Sender public key is for validating transfer message signature.
          * @property {Uint8Array|null} [recipient] Recipient address  (weave.Address).
          * @property {coin.ICoin|null} [total] Maximum amount that can be transferred via this channel.
-         * @property {number|Long|null} [timeout] anyone.
+         * @property {number|Long|null} [timeout] If reached, channel can be closed by anyone.
          * @property {string|null} [memo] Max length 128 character.
          */
 
@@ -14834,6 +20509,14 @@ $root.paychan = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * CreatePaymentChannelMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof paychan.CreatePaymentChannelMsg
+         * @instance
+         */
+        CreatePaymentChannelMsg.prototype.metadata = null;
 
         /**
          * Sender address (weave.Address).
@@ -14868,7 +20551,7 @@ $root.paychan = (function() {
         CreatePaymentChannelMsg.prototype.total = null;
 
         /**
-         * anyone.
+         * If reached, channel can be closed by anyone.
          * @member {number|Long} timeout
          * @memberof paychan.CreatePaymentChannelMsg
          * @instance
@@ -14907,18 +20590,20 @@ $root.paychan = (function() {
         CreatePaymentChannelMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.src != null && message.hasOwnProperty("src"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.src);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.src);
             if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
-                $root.crypto.PublicKey.encode(message.senderPubkey, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.crypto.PublicKey.encode(message.senderPubkey, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.recipient);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
             if (message.total != null && message.hasOwnProperty("total"))
-                $root.coin.Coin.encode(message.total, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.coin.Coin.encode(message.total, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.timeout != null && message.hasOwnProperty("timeout"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
-                writer.uint32(/* id 6, wireType 2 =*/50).string(message.memo);
+                writer.uint32(/* id 7, wireType 2 =*/58).string(message.memo);
             return writer;
         };
 
@@ -14954,21 +20639,24 @@ $root.paychan = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.src = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.senderPubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
+                    message.src = reader.bytes();
                     break;
                 case 3:
-                    message.recipient = reader.bytes();
+                    message.senderPubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
                     break;
                 case 4:
-                    message.total = $root.coin.Coin.decode(reader, reader.uint32());
+                    message.recipient = reader.bytes();
                     break;
                 case 5:
-                    message.timeout = reader.int64();
+                    message.total = $root.coin.Coin.decode(reader, reader.uint32());
                     break;
                 case 6:
+                    message.timeout = reader.int64();
+                    break;
+                case 7:
                     message.memo = reader.string();
                     break;
                 default:
@@ -15006,6 +20694,11 @@ $root.paychan = (function() {
         CreatePaymentChannelMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.src != null && message.hasOwnProperty("src"))
                 if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
                     return "src: buffer expected";
@@ -15043,6 +20736,11 @@ $root.paychan = (function() {
             if (object instanceof $root.paychan.CreatePaymentChannelMsg)
                 return object;
             var message = new $root.paychan.CreatePaymentChannelMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".paychan.CreatePaymentChannelMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.src != null)
                 if (typeof object.src === "string")
                     $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
@@ -15091,6 +20789,7 @@ $root.paychan = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.src = "";
                 else {
@@ -15114,6 +20813,8 @@ $root.paychan = (function() {
                     object.timeout = options.longs === String ? "0" : 0;
                 object.memo = "";
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.src != null && message.hasOwnProperty("src"))
                 object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
             if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
@@ -15420,6 +21121,7 @@ $root.paychan = (function() {
          * Properties of a TransferPaymentChannelMsg.
          * @memberof paychan
          * @interface ITransferPaymentChannelMsg
+         * @property {weave.IMetadata|null} [metadata] TransferPaymentChannelMsg metadata
          * @property {paychan.IPayment|null} [payment] TransferPaymentChannelMsg payment
          * @property {crypto.ISignature|null} [signature] TransferPaymentChannelMsg signature
          */
@@ -15438,6 +21140,14 @@ $root.paychan = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * TransferPaymentChannelMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof paychan.TransferPaymentChannelMsg
+         * @instance
+         */
+        TransferPaymentChannelMsg.prototype.metadata = null;
 
         /**
          * TransferPaymentChannelMsg payment.
@@ -15479,10 +21189,12 @@ $root.paychan = (function() {
         TransferPaymentChannelMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.payment != null && message.hasOwnProperty("payment"))
-                $root.paychan.Payment.encode(message.payment, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.paychan.Payment.encode(message.payment, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.signature != null && message.hasOwnProperty("signature"))
-                $root.crypto.Signature.encode(message.signature, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.crypto.Signature.encode(message.signature, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -15518,9 +21230,12 @@ $root.paychan = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.payment = $root.paychan.Payment.decode(reader, reader.uint32());
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.payment = $root.paychan.Payment.decode(reader, reader.uint32());
+                    break;
+                case 3:
                     message.signature = $root.crypto.Signature.decode(reader, reader.uint32());
                     break;
                 default:
@@ -15558,6 +21273,11 @@ $root.paychan = (function() {
         TransferPaymentChannelMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.payment != null && message.hasOwnProperty("payment")) {
                 var error = $root.paychan.Payment.verify(message.payment);
                 if (error)
@@ -15583,6 +21303,11 @@ $root.paychan = (function() {
             if (object instanceof $root.paychan.TransferPaymentChannelMsg)
                 return object;
             var message = new $root.paychan.TransferPaymentChannelMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".paychan.TransferPaymentChannelMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.payment != null) {
                 if (typeof object.payment !== "object")
                     throw TypeError(".paychan.TransferPaymentChannelMsg.payment: object expected");
@@ -15610,9 +21335,12 @@ $root.paychan = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 object.payment = null;
                 object.signature = null;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.payment != null && message.hasOwnProperty("payment"))
                 object.payment = $root.paychan.Payment.toObject(message.payment, options);
             if (message.signature != null && message.hasOwnProperty("signature"))
@@ -15640,6 +21368,7 @@ $root.paychan = (function() {
          * Properties of a ClosePaymentChannelMsg.
          * @memberof paychan
          * @interface IClosePaymentChannelMsg
+         * @property {weave.IMetadata|null} [metadata] ClosePaymentChannelMsg metadata
          * @property {Uint8Array|null} [channelId] ClosePaymentChannelMsg channelId
          * @property {string|null} [memo] Max length 128 character.
          */
@@ -15647,7 +21376,7 @@ $root.paychan = (function() {
         /**
          * Constructs a new ClosePaymentChannelMsg.
          * @memberof paychan
-         * @classdesc Sender can close channel only if the timeout chain height was reached.
+         * @classdesc Sender can close channel only if the timeout was reached.
          * @implements IClosePaymentChannelMsg
          * @constructor
          * @param {paychan.IClosePaymentChannelMsg=} [properties] Properties to set
@@ -15658,6 +21387,14 @@ $root.paychan = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * ClosePaymentChannelMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof paychan.ClosePaymentChannelMsg
+         * @instance
+         */
+        ClosePaymentChannelMsg.prototype.metadata = null;
 
         /**
          * ClosePaymentChannelMsg channelId.
@@ -15699,10 +21436,12 @@ $root.paychan = (function() {
         ClosePaymentChannelMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.channelId != null && message.hasOwnProperty("channelId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.channelId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.channelId);
             if (message.memo != null && message.hasOwnProperty("memo"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.memo);
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.memo);
             return writer;
         };
 
@@ -15738,9 +21477,12 @@ $root.paychan = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.channelId = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.channelId = reader.bytes();
+                    break;
+                case 3:
                     message.memo = reader.string();
                     break;
                 default:
@@ -15778,6 +21520,11 @@ $root.paychan = (function() {
         ClosePaymentChannelMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.channelId != null && message.hasOwnProperty("channelId"))
                 if (!(message.channelId && typeof message.channelId.length === "number" || $util.isString(message.channelId)))
                     return "channelId: buffer expected";
@@ -15799,6 +21546,11 @@ $root.paychan = (function() {
             if (object instanceof $root.paychan.ClosePaymentChannelMsg)
                 return object;
             var message = new $root.paychan.ClosePaymentChannelMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".paychan.ClosePaymentChannelMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.channelId != null)
                 if (typeof object.channelId === "string")
                     $util.base64.decode(object.channelId, message.channelId = $util.newBuffer($util.base64.length(object.channelId)), 0);
@@ -15823,6 +21575,7 @@ $root.paychan = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.channelId = "";
                 else {
@@ -15832,6 +21585,8 @@ $root.paychan = (function() {
                 }
                 object.memo = "";
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.channelId != null && message.hasOwnProperty("channelId"))
                 object.channelId = options.bytes === String ? $util.base64.encode(message.channelId, 0, message.channelId.length) : options.bytes === Array ? Array.prototype.slice.call(message.channelId) : message.channelId;
             if (message.memo != null && message.hasOwnProperty("memo"))
@@ -15871,6 +21626,7 @@ $root.sigs = (function() {
          * Properties of a UserData.
          * @memberof sigs
          * @interface IUserData
+         * @property {weave.IMetadata|null} [metadata] UserData metadata
          * @property {crypto.IPublicKey|null} [pubkey] UserData pubkey
          * @property {number|Long|null} [sequence] UserData sequence
          */
@@ -15889,6 +21645,14 @@ $root.sigs = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * UserData metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof sigs.UserData
+         * @instance
+         */
+        UserData.prototype.metadata = null;
 
         /**
          * UserData pubkey.
@@ -15930,10 +21694,12 @@ $root.sigs = (function() {
         UserData.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.pubkey != null && message.hasOwnProperty("pubkey"))
-                $root.crypto.PublicKey.encode(message.pubkey, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.crypto.PublicKey.encode(message.pubkey, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.sequence != null && message.hasOwnProperty("sequence"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.sequence);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.sequence);
             return writer;
         };
 
@@ -15969,9 +21735,12 @@ $root.sigs = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.pubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.pubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
+                    break;
+                case 3:
                     message.sequence = reader.int64();
                     break;
                 default:
@@ -16009,6 +21778,11 @@ $root.sigs = (function() {
         UserData.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.pubkey != null && message.hasOwnProperty("pubkey")) {
                 var error = $root.crypto.PublicKey.verify(message.pubkey);
                 if (error)
@@ -16032,6 +21806,11 @@ $root.sigs = (function() {
             if (object instanceof $root.sigs.UserData)
                 return object;
             var message = new $root.sigs.UserData();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".sigs.UserData.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.pubkey != null) {
                 if (typeof object.pubkey !== "object")
                     throw TypeError(".sigs.UserData.pubkey: object expected");
@@ -16063,6 +21842,7 @@ $root.sigs = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 object.pubkey = null;
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
@@ -16070,6 +21850,8 @@ $root.sigs = (function() {
                 } else
                     object.sequence = options.longs === String ? "0" : 0;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.pubkey != null && message.hasOwnProperty("pubkey"))
                 object.pubkey = $root.crypto.PublicKey.toObject(message.pubkey, options);
             if (message.sequence != null && message.hasOwnProperty("sequence"))
@@ -16100,6 +21882,7 @@ $root.sigs = (function() {
          * Properties of a StdSignature.
          * @memberof sigs
          * @interface IStdSignature
+         * @property {weave.IMetadata|null} [metadata] StdSignature metadata
          * @property {number|Long|null} [sequence] StdSignature sequence
          * @property {crypto.IPublicKey|null} [pubkey] StdSignature pubkey
          * @property {crypto.ISignature|null} [signature] Removed Address, Pubkey is more powerful
@@ -16119,6 +21902,14 @@ $root.sigs = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * StdSignature metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof sigs.StdSignature
+         * @instance
+         */
+        StdSignature.prototype.metadata = null;
 
         /**
          * StdSignature sequence.
@@ -16168,10 +21959,12 @@ $root.sigs = (function() {
         StdSignature.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.sequence != null && message.hasOwnProperty("sequence"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.sequence);
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.sequence);
             if (message.pubkey != null && message.hasOwnProperty("pubkey"))
-                $root.crypto.PublicKey.encode(message.pubkey, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.crypto.PublicKey.encode(message.pubkey, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.signature != null && message.hasOwnProperty("signature"))
                 $root.crypto.Signature.encode(message.signature, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             return writer;
@@ -16209,9 +22002,12 @@ $root.sigs = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.sequence = reader.int64();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.sequence = reader.int64();
+                    break;
+                case 3:
                     message.pubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
                     break;
                 case 4:
@@ -16252,6 +22048,11 @@ $root.sigs = (function() {
         StdSignature.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.sequence != null && message.hasOwnProperty("sequence"))
                 if (!$util.isInteger(message.sequence) && !(message.sequence && $util.isInteger(message.sequence.low) && $util.isInteger(message.sequence.high)))
                     return "sequence: integer|Long expected";
@@ -16280,6 +22081,11 @@ $root.sigs = (function() {
             if (object instanceof $root.sigs.StdSignature)
                 return object;
             var message = new $root.sigs.StdSignature();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".sigs.StdSignature.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.sequence != null)
                 if ($util.Long)
                     (message.sequence = $util.Long.fromValue(object.sequence)).unsigned = false;
@@ -16316,6 +22122,7 @@ $root.sigs = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
                     object.sequence = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -16324,6 +22131,8 @@ $root.sigs = (function() {
                 object.pubkey = null;
                 object.signature = null;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.sequence != null && message.hasOwnProperty("sequence"))
                 if (typeof message.sequence === "number")
                     object.sequence = options.longs === String ? String(message.sequence) : message.sequence;
@@ -16356,6 +22165,7 @@ $root.sigs = (function() {
          * Properties of a BumpSequenceMsg.
          * @memberof sigs
          * @interface IBumpSequenceMsg
+         * @property {weave.IMetadata|null} [metadata] BumpSequenceMsg metadata
          * @property {number|null} [increment] total increment value, including the default increment.
          */
 
@@ -16373,6 +22183,14 @@ $root.sigs = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * BumpSequenceMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof sigs.BumpSequenceMsg
+         * @instance
+         */
+        BumpSequenceMsg.prototype.metadata = null;
 
         /**
          * total increment value, including the default increment.
@@ -16406,8 +22224,10 @@ $root.sigs = (function() {
         BumpSequenceMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.increment != null && message.hasOwnProperty("increment"))
-                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.increment);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.increment);
             return writer;
         };
 
@@ -16443,6 +22263,9 @@ $root.sigs = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     message.increment = reader.uint32();
                     break;
                 default:
@@ -16480,6 +22303,11 @@ $root.sigs = (function() {
         BumpSequenceMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.increment != null && message.hasOwnProperty("increment"))
                 if (!$util.isInteger(message.increment))
                     return "increment: integer expected";
@@ -16498,6 +22326,11 @@ $root.sigs = (function() {
             if (object instanceof $root.sigs.BumpSequenceMsg)
                 return object;
             var message = new $root.sigs.BumpSequenceMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".sigs.BumpSequenceMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.increment != null)
                 message.increment = object.increment >>> 0;
             return message;
@@ -16516,8 +22349,12 @@ $root.sigs = (function() {
             if (!options)
                 options = {};
             var object = {};
-            if (options.defaults)
+            if (options.defaults) {
+                object.metadata = null;
                 object.increment = 0;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.increment != null && message.hasOwnProperty("increment"))
                 object.increment = message.increment;
             return object;
@@ -17003,6 +22840,7 @@ $root.validators = (function() {
          * Properties of a SetValidatorsMsg.
          * @memberof validators
          * @interface ISetValidatorsMsg
+         * @property {weave.IMetadata|null} [metadata] SetValidatorsMsg metadata
          * @property {Array.<validators.IValidatorUpdate>|null} [validatorUpdates] SetValidatorsMsg validatorUpdates
          */
 
@@ -17021,6 +22859,14 @@ $root.validators = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * SetValidatorsMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof validators.SetValidatorsMsg
+         * @instance
+         */
+        SetValidatorsMsg.prototype.metadata = null;
 
         /**
          * SetValidatorsMsg validatorUpdates.
@@ -17054,9 +22900,11 @@ $root.validators = (function() {
         SetValidatorsMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.validatorUpdates != null && message.validatorUpdates.length)
                 for (var i = 0; i < message.validatorUpdates.length; ++i)
-                    $root.validators.ValidatorUpdate.encode(message.validatorUpdates[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.validators.ValidatorUpdate.encode(message.validatorUpdates[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             return writer;
         };
 
@@ -17092,6 +22940,9 @@ $root.validators = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     if (!(message.validatorUpdates && message.validatorUpdates.length))
                         message.validatorUpdates = [];
                     message.validatorUpdates.push($root.validators.ValidatorUpdate.decode(reader, reader.uint32()));
@@ -17131,6 +22982,11 @@ $root.validators = (function() {
         SetValidatorsMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.validatorUpdates != null && message.hasOwnProperty("validatorUpdates")) {
                 if (!Array.isArray(message.validatorUpdates))
                     return "validatorUpdates: array expected";
@@ -17155,6 +23011,11 @@ $root.validators = (function() {
             if (object instanceof $root.validators.SetValidatorsMsg)
                 return object;
             var message = new $root.validators.SetValidatorsMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".validators.SetValidatorsMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.validatorUpdates) {
                 if (!Array.isArray(object.validatorUpdates))
                     throw TypeError(".validators.SetValidatorsMsg.validatorUpdates: array expected");
@@ -17183,6 +23044,10 @@ $root.validators = (function() {
             var object = {};
             if (options.arrays || options.defaults)
                 object.validatorUpdates = [];
+            if (options.defaults)
+                object.metadata = null;
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.validatorUpdates && message.validatorUpdates.length) {
                 object.validatorUpdates = [];
                 for (var j = 0; j < message.validatorUpdates.length; ++j)
@@ -17211,6 +23076,7 @@ $root.validators = (function() {
          * Properties of an Accounts.
          * @memberof validators
          * @interface IAccounts
+         * @property {weave.IMetadata|null} [metadata] Accounts metadata
          * @property {Array.<Uint8Array>|null} [addresses] Accounts addresses
          */
 
@@ -17229,6 +23095,14 @@ $root.validators = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * Accounts metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof validators.Accounts
+         * @instance
+         */
+        Accounts.prototype.metadata = null;
 
         /**
          * Accounts addresses.
@@ -17262,9 +23136,11 @@ $root.validators = (function() {
         Accounts.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.addresses != null && message.addresses.length)
                 for (var i = 0; i < message.addresses.length; ++i)
-                    writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.addresses[i]);
+                    writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.addresses[i]);
             return writer;
         };
 
@@ -17300,6 +23176,9 @@ $root.validators = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
                     if (!(message.addresses && message.addresses.length))
                         message.addresses = [];
                     message.addresses.push(reader.bytes());
@@ -17339,6 +23218,11 @@ $root.validators = (function() {
         Accounts.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.addresses != null && message.hasOwnProperty("addresses")) {
                 if (!Array.isArray(message.addresses))
                     return "addresses: array expected";
@@ -17361,6 +23245,11 @@ $root.validators = (function() {
             if (object instanceof $root.validators.Accounts)
                 return object;
             var message = new $root.validators.Accounts();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".validators.Accounts.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.addresses) {
                 if (!Array.isArray(object.addresses))
                     throw TypeError(".validators.Accounts.addresses: array expected");
@@ -17389,6 +23278,10 @@ $root.validators = (function() {
             var object = {};
             if (options.arrays || options.defaults)
                 object.addresses = [];
+            if (options.defaults)
+                object.metadata = null;
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.addresses && message.addresses.length) {
                 object.addresses = [];
                 for (var j = 0; j < message.addresses.length; ++j)
