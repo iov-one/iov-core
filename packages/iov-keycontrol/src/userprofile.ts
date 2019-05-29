@@ -45,8 +45,13 @@ const passwordHashingOptionsVersion2: Argon2idOptions = {
 // Must be 16 bytes due to implementation limitations.
 const userProfileSalt = toAscii("core-userprofile");
 
-// the format version in which profiles are stored
-const latestFormatVersion = 2;
+/**
+ * The format version in which profiles are stored
+ *
+ * When downgrading IOV-Core should be possible, read support for a new format version
+ * should be rolled out before this number is bumped.
+ */
+const storageFormatVersion = 2;
 
 export interface UserProfileEncryptionKey {
   readonly formatVersion: number;
@@ -95,7 +100,7 @@ export class UserProfile {
    */
   public static async deriveEncryptionKey(
     password: string,
-    formatVersion: number = latestFormatVersion,
+    formatVersion: number = storageFormatVersion,
   ): Promise<UserProfileEncryptionKey> {
     switch (formatVersion) {
       case 1:
@@ -193,8 +198,6 @@ export class UserProfile {
     }
 
     await DatabaseUtils.clear(db);
-
-    const storageFormatVersion = latestFormatVersion;
 
     const key =
       typeof encryptionSecret === "string"
