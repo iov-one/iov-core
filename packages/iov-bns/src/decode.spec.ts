@@ -178,13 +178,13 @@ describe("Decode", () => {
     it("decode invalid transaction fails", () => {
       /* tslint:disable-next-line:no-bitwise */
       const badBin = signedTxBin.map((x: number, i: number) => (i % 5 ? x ^ 0x01 : x));
-      expect(codecImpl.app.Tx.decode.bind(null, badBin)).toThrowError();
+      expect(() => codecImpl.app.Tx.decode(badBin)).toThrowError();
     });
 
     // unsigned tx will fail as parsing requires a sig to extract signer
     it("decode unsigned transaction fails", () => {
       const decoded = codecImpl.app.Tx.decode(sendTxBin);
-      expect(parseTx.bind(null, decoded, chainId)).toThrowError(/missing first signature/);
+      expect(() => parseTx(decoded, chainId)).toThrowError(/missing first signature/);
     });
 
     it("decode signed transaction", () => {
