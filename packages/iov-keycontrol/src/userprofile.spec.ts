@@ -63,7 +63,7 @@ describe("UserProfile", () => {
   describe("deriveEncryptionKey", () => {
     it("works", async () => {
       const key = await UserProfile.deriveEncryptionKey("foobar");
-      expect(key.formatVersion).toEqual(1);
+      expect(key.formatVersion).toEqual(2);
       expect(key.data.length).toEqual(32);
     });
 
@@ -323,7 +323,7 @@ describe("UserProfile", () => {
           if (!(error instanceof UnexpectedFormatVersionError)) {
             throw new Error("Expected an UnexpectedFormatVersionError");
           }
-          expect(error.expectedFormatVersion).toEqual(1);
+          expect(error.expectedFormatVersion).toEqual(2);
           expect(error.actualFormatVersion).toEqual(42);
           expect(error.message).toMatch(/got encryption key of unexpected format/i);
         });
@@ -673,7 +673,7 @@ describe("UserProfile", () => {
       const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
       await profile.storeIn(db, defaultEncryptionPassword);
-      expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
+      expect(await db.get("format_version", { asBuffer: false })).toEqual("2");
       expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
       expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
 
@@ -689,7 +689,7 @@ describe("UserProfile", () => {
 
       const encryptionKey = await UserProfile.deriveEncryptionKey(defaultEncryptionPassword);
       await profile.storeIn(db, encryptionKey);
-      expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
+      expect(await db.get("format_version", { asBuffer: false })).toEqual("2");
       expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
       expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
 
@@ -714,7 +714,7 @@ describe("UserProfile", () => {
           if (!(error instanceof UnexpectedFormatVersionError)) {
             throw new Error("Expected an UnexpectedFormatVersionError");
           }
-          expect(error.expectedFormatVersion).toEqual(1);
+          expect(error.expectedFormatVersion).toEqual(2);
           expect(error.actualFormatVersion).toEqual(42);
           expect(error.message).toMatch(/got encryption key of unexpected format/i);
         });

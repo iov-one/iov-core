@@ -46,8 +46,7 @@ const passwordHashingOptionsVersion2: Argon2idOptions = {
 const userProfileSalt = toAscii("core-userprofile");
 
 // the format version in which profiles are stored
-// TODO: activate version 2 in 0.15 (https://github.com/iov-one/iov-core/issues/1025)
-const latestFormatVersion = 1;
+const latestFormatVersion = 2;
 
 export interface UserProfileEncryptionKey {
   readonly formatVersion: number;
