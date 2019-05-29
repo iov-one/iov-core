@@ -18,7 +18,7 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 import {
@@ -110,39 +110,6 @@ export function decodeCashConfiguration(config: codecImpl.cash.Configuration): C
   return {
     minimalFee: minimalFee,
   };
-}
-
-// adds zeros to the right as needed to ensure given length
-function rightPadZeros(short: string, length: number): string {
-  if (short.length >= length) {
-    return short;
-  }
-  return short + "0".repeat(length - short.length);
-}
-
-// we only allow up to 9 decimal places
-const humanCoinFormat = new RegExp(/^(\d+)(\.\d{1,9})?\s*([A-Z]{3,4})$/);
-
-export function decodeJsonAmount(json: string): Amount {
-  const data = JSON.parse(json);
-  if (typeof data === "string") {
-    // parse eg. "1.23 IOV"
-    const vals = humanCoinFormat.exec(data);
-    if (vals === null) {
-      throw new Error(`Invalid coin string: ${data}`);
-    }
-    const [, wholeStr, fracString, ticker] = vals;
-    const coin = {
-      whole: Int53.fromString(wholeStr).toNumber(),
-      fractional: fracString ? Int53.fromString(rightPadZeros(fracString.slice(1), 9)).toNumber() : undefined,
-      ticker: ticker as TokenTicker,
-    };
-    return decodeAmount(coin);
-  } else if (typeof data === "object" && data !== null) {
-    // parse a json coin representation
-    return decodeAmount(data as codecImpl.coin.ICoin);
-  }
-  throw new Error("Impossible type for amount json");
 }
 
 export function decodeParticipants(
