@@ -118,6 +118,7 @@ function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.
 function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.app.ITx {
   return {
     createContractMsg: {
+      metadata: { schema: 1 },
       participants: encodeParticipants(tx.participants),
       activationThreshold: tx.activationThreshold,
       adminThreshold: tx.adminThreshold,
@@ -133,6 +134,7 @@ function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.app.
   }
   return {
     sendMsg: codecImpl.cash.SendMsg.create({
+      metadata: { schema: 1 },
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       dest: decodeBnsAddress(tx.recipient).data,
       amount: encodeAmount(tx.amount),
@@ -148,6 +150,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app
 
   return {
     createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
+      metadata: { schema: 1 },
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       arbiter: hashIdentifier(tx.hash),
       recipient: decodeBnsAddress(tx.recipient).data,
@@ -161,6 +164,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app
 function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.app.ITx {
   return {
     releaseEscrowMsg: codecImpl.escrow.ReleaseEscrowMsg.create({
+      metadata: { schema: 1 },
       escrowId: tx.swapId.data,
     }),
     preimage: tx.preimage,
@@ -170,6 +174,7 @@ function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.app.ITx {
 function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.app.ITx {
   return {
     returnEscrowMsg: codecImpl.escrow.ReturnEscrowMsg.create({
+      metadata: { schema: 1 },
       escrowId: tx.swapId.data,
     }),
   };
@@ -209,6 +214,7 @@ function buildRemoveAddressFromUsernameTx(tx: RemoveAddressFromUsernameTx): code
 function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): codecImpl.app.ITx {
   return {
     updateContractMsg: {
+      metadata: { schema: 1 },
       contractId: tx.contractId,
       participants: encodeParticipants(tx.participants),
       activationThreshold: tx.activationThreshold,
