@@ -136,7 +136,6 @@ export class EthereumConnection implements AtomicSwapConnection {
       throw new Error("Unsupported protocol for baseUrl: must be one of http, https, ws or wss");
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.rpcClient = wsUrl ? new WsJsonRpcClient(wsUrl) : new HttpJsonRpcClient(baseUrl);
     this.pollIntervalMs = options.pollInterval ? options.pollInterval * 1000 : 4_000;
     this.myChainId = chainId;
