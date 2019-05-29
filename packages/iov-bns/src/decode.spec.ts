@@ -379,7 +379,7 @@ describe("Decode", () => {
           power: 1,
         },
       ];
-      const participants: ReadonlyArray<Participant> = [
+      const participants: readonly Participant[] = [
         {
           address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
           power: 4,
@@ -425,7 +425,7 @@ describe("Decode", () => {
           power: 1,
         },
       ];
-      const participants: ReadonlyArray<Participant> = [
+      const participants: readonly Participant[] = [
         {
           address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
           power: 4,

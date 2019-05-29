@@ -58,7 +58,7 @@ import {
   RemoveAddressFromUsernameTx,
   UpdateMultisignatureTx,
 } from "./types";
-import { decodeBnsAddress, encodeBnsAddress, identityToAddress } from "./util";
+import { encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromHex, toHex } = Encoding;
 
@@ -858,7 +858,7 @@ describe("BnsConnection", () => {
       const otherIdentities = await Promise.all(
         [10, 11, 12, 13, 14].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       );
-      const participants: ReadonlyArray<Participant> = [identity, ...otherIdentities].map((id, i) => ({
+      const participants: readonly Participant[] = [identity, ...otherIdentities].map((id, i) => ({
         address: identityToAddress(id),
         power: i === 0 ? 5 : 1,
       }));
@@ -895,7 +895,7 @@ describe("BnsConnection", () => {
       expect(contractId).toBeDefined();
 
       // Update multisignature
-      const participantsUpdated: ReadonlyArray<Participant> = (await Promise.all(
+      const participantsUpdated: readonly Participant[] = (await Promise.all(
         [15, 16, 17].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       )).map(id => ({
         address: identityToAddress(id),

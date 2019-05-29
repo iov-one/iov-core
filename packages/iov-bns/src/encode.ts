@@ -94,7 +94,7 @@ export function encodeFullSignature(fullSignature: FullSignature): codecImpl.sig
 }
 
 export function encodeParticipants(
-  participants: ReadonlyArray<Participant>,
+  participants: readonly Participant[],
   // tslint:disable-next-line:readonly-array
 ): codecImpl.multisig.IParticipant[] {
   return participants.map(participant => ({

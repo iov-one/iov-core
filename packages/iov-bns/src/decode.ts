@@ -130,7 +130,7 @@ export function decodeParticipants(
   prefix: "iov" | "tiov",
   // tslint:disable-next-line:readonly-array
   maybeParticipants?: codecImpl.multisig.IParticipant[] | null,
-): ReadonlyArray<Participant> {
+): readonly Participant[] {
   const participants = ensure(maybeParticipants, "participants");
   participants.forEach((participant, i) => {
     ensure(participant.signature, `participants.$${i}.signature`);
@@ -138,7 +138,9 @@ export function decodeParticipants(
   });
 
   return participants.map(participant => ({
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     power: participant.power!,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     address: encodeBnsAddress(prefix, participant.signature!),
   }));
 }
