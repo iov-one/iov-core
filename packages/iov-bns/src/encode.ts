@@ -89,53 +89,6 @@ export function encodeFullSignature(fullSignature: FullSignature): codecImpl.sig
   });
 }
 
-export function buildSignedTx(tx: SignedTransaction): codecImpl.app.ITx {
-  const sigs: readonly FullSignature[] = [tx.primarySignature, ...tx.otherSignatures];
-  const built = buildUnsignedTx(tx.transaction);
-  return { ...built, signatures: sigs.map(encodeFullSignature) };
-}
-
-export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {
-  const msg = buildMsg(tx);
-  return codecImpl.app.Tx.create({
-    ...msg,
-    fees:
-      tx.fee && tx.fee.tokens
-        ? {
-            fees: encodeAmount(tx.fee.tokens),
-            payer: decodeBnsAddress(identityToAddress(tx.creator)).data,
-          }
-        : null,
-  });
-}
-
-export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
-  if (!isBnsTx(tx)) {
-    throw new Error("Transaction is not a BNS transaction");
-  }
-
-  switch (tx.kind) {
-    // BCP
-    case "bcp/send":
-      return buildSendTransaction(tx);
-    case "bcp/swap_offer":
-      return buildSwapOfferTx(tx);
-    case "bcp/swap_claim":
-      return buildSwapClaimTx(tx);
-    case "bcp/swap_abort":
-      return buildSwapAbortTransaction(tx);
-    // BNS
-    case "bns/add_address_to_username":
-      return buildAddAddressToUsernameTx(tx);
-    case "bns/register_username":
-      return buildRegisterUsernameTx(tx);
-    case "bns/remove_address_from_username":
-      return buildRemoveAddressFromUsernameTx(tx);
-    default:
-      throw new Error("Received transaction of unsupported kind.");
-  }
-}
-
 function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.ITx {
   return {
     addUsernameAddressNftMsg: {
@@ -220,4 +173,51 @@ function buildRemoveAddressFromUsernameTx(tx: RemoveAddressFromUsernameTx): code
       address: tx.payload.address,
     },
   };
+}
+
+export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
+  if (!isBnsTx(tx)) {
+    throw new Error("Transaction is not a BNS transaction");
+  }
+
+  switch (tx.kind) {
+    // BCP
+    case "bcp/send":
+      return buildSendTransaction(tx);
+    case "bcp/swap_offer":
+      return buildSwapOfferTx(tx);
+    case "bcp/swap_claim":
+      return buildSwapClaimTx(tx);
+    case "bcp/swap_abort":
+      return buildSwapAbortTransaction(tx);
+    // BNS
+    case "bns/add_address_to_username":
+      return buildAddAddressToUsernameTx(tx);
+    case "bns/register_username":
+      return buildRegisterUsernameTx(tx);
+    case "bns/remove_address_from_username":
+      return buildRemoveAddressFromUsernameTx(tx);
+    default:
+      throw new Error("Received transaction of unsupported kind.");
+  }
+}
+
+export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {
+  const msg = buildMsg(tx);
+  return codecImpl.app.Tx.create({
+    ...msg,
+    fees:
+      tx.fee && tx.fee.tokens
+        ? {
+            fees: encodeAmount(tx.fee.tokens),
+            payer: decodeBnsAddress(identityToAddress(tx.creator)).data,
+          }
+        : null,
+  });
+}
+
+export function buildSignedTx(tx: SignedTransaction): codecImpl.app.ITx {
+  const sigs: readonly FullSignature[] = [tx.primarySignature, ...tx.otherSignatures];
+  const built = buildUnsignedTx(tx.transaction);
+  return { ...built, signatures: sigs.map(encodeFullSignature) };
 }

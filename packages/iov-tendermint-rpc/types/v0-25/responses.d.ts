@@ -1,5 +1,6 @@
 import { JsonRpcEvent, JsonRpcSuccess } from "../jsonrpc";
 import * as responses from "../responses";
+export declare type HealthResponse = null;
 export declare class Responses {
     static decodeAbciInfo(response: JsonRpcSuccess): responses.AbciInfoResponse;
     static decodeAbciQuery(response: JsonRpcSuccess): responses.AbciQueryResponse;
@@ -20,4 +21,3 @@ export declare class Responses {
     static decodeTxSearch(response: JsonRpcSuccess): responses.TxSearchResponse;
     static decodeValidators(response: JsonRpcSuccess): responses.ValidatorsResponse;
 }
-export declare type HealthResponse = null;

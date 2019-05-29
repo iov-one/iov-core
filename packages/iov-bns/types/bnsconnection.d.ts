@@ -1,6 +1,10 @@
 import { Stream } from "xstream";
 import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
+export interface QueryResponse {
+    readonly height?: number;
+    readonly results: readonly Result[];
+}
 /**
  * Talks directly to the BNS blockchain and exposes the
  * same interface we have with the BCP protocol.
@@ -83,8 +87,4 @@ export declare class BnsConnection implements AtomicSwapConnection {
      * Returns undefined if no product fee is defined
      */
     protected getProductFee(kind: string): Promise<Amount | undefined>;
-}
-export interface QueryResponse {
-    readonly height?: number;
-    readonly results: readonly Result[];
 }

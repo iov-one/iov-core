@@ -26,10 +26,10 @@ export interface JsonRpcEvent {
         readonly value: any;
     };
 }
-export declare function jsonRpc(): JsonRpc;
-export declare function jsonRpcWith(method: string, params?: {}): JsonRpcRequest;
-export declare function throwIfError(resp: JsonRpcResponse): JsonRpcSuccess;
-export declare function ifError(resp: JsonRpcResponse): Error | undefined;
 /** generates a random alphanumeric character  */
 export declare function randomChar(): string;
 export declare function randomId(): RpcId;
+export declare function jsonRpc(): JsonRpc;
+export declare function jsonRpcWith(method: string, params?: {}): JsonRpcRequest;
+export declare function ifError(resp: JsonRpcResponse): Error | undefined;
+export declare function throwIfError(resp: JsonRpcResponse): JsonRpcSuccess;
