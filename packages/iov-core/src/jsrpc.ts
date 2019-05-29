@@ -44,7 +44,9 @@ export function isJsRpcCompatibleValue(value: unknown): value is JsRpcCompatible
     typeof value === "boolean" ||
     value === null ||
     value instanceof Uint8Array ||
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     isJsRpcCompatibleArray(value) ||
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     isJsRpcCompatibleDictionary(value)
   );
 }

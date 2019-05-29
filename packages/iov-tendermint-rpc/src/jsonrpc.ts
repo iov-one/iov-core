@@ -35,6 +35,19 @@ export interface JsonRpcEvent {
   };
 }
 
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+/** generates a random alphanumeric character  */
+export function randomChar(): string {
+  return chars[Math.floor(Math.random() * chars.length)];
+}
+
+export function randomId(): RpcId {
+  return Array.from({ length: 12 })
+    .map(() => randomChar())
+    .join("") as RpcId;
+}
+
 export function jsonRpc(): JsonRpc {
   return { jsonrpc: "2.0", id: randomId() };
 }
@@ -47,14 +60,6 @@ export function jsonRpcWith(method: string, params?: {}): JsonRpcRequest {
   };
 }
 
-export function throwIfError(resp: JsonRpcResponse): JsonRpcSuccess {
-  const asError = ifError(resp);
-  if (asError) {
-    throw asError;
-  }
-  return resp as JsonRpcSuccess;
-}
-
 export function ifError(resp: JsonRpcResponse): Error | undefined {
   const asError = resp as JsonRpcError;
   if (asError.error !== undefined) {
@@ -63,15 +68,10 @@ export function ifError(resp: JsonRpcResponse): Error | undefined {
   return undefined;
 }
 
-const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-/** generates a random alphanumeric character  */
-export function randomChar(): string {
-  return chars[Math.floor(Math.random() * chars.length)];
-}
-
-export function randomId(): RpcId {
-  return Array.from({ length: 12 })
-    .map(() => randomChar())
-    .join("") as RpcId;
+export function throwIfError(resp: JsonRpcResponse): JsonRpcSuccess {
+  const asError = ifError(resp);
+  if (asError) {
+    throw asError;
+  }
+  return resp as JsonRpcSuccess;
 }

@@ -6,5 +6,5 @@ export declare function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Non
 export declare function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token;
 export declare function decodeAmount(coin: codecImpl.coin.ICoin): Amount;
 export declare function decodeJsonAmount(json: string): Amount;
-export declare function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction;
 export declare function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction;
+export declare function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction;

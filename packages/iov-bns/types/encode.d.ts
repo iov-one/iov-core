@@ -5,6 +5,6 @@ export declare function encodePubkey(publicKey: PublicKeyBundle): codecImpl.cryp
 export declare function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IPrivateKey;
 export declare function encodeAmount(amount: Amount): codecImpl.coin.ICoin;
 export declare function encodeFullSignature(fullSignature: FullSignature): codecImpl.sigs.IStdSignature;
-export declare function buildSignedTx(tx: SignedTransaction): codecImpl.app.ITx;
-export declare function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx;
 export declare function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx;
+export declare function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx;
+export declare function buildSignedTx(tx: SignedTransaction): codecImpl.app.ITx;

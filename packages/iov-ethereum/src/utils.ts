@@ -27,22 +27,6 @@ export function decodeHexQuantityNonce(hexString: string): Nonce {
   return value.toNumber() as Nonce;
 }
 
-export function encodeQuantity(value: number): string {
-  try {
-    const checkedValue = new Uint53(value);
-    return toEthereumHex(new BN(checkedValue.toNumber()).toString(16));
-  } catch {
-    throw new Error("Input is not a unsigned safe integer");
-  }
-}
-
-export function encodeQuantityString(value: string): string {
-  if (!value.match(/^[0-9]+$/)) {
-    throw new Error("Input is not a valid string number");
-  }
-  return toEthereumHex(new BN(value).toString(16));
-}
-
 /**
  * Takes a hex representation optionally prefixed with 0x and returns a normalized
  * representation: unprefixed, padded to even characters count, lower case.
@@ -67,6 +51,22 @@ export function toEthereumHex(input: string | Uint8Array): string {
     throw new Error("Could not convert to Ethereum hex: invalid input");
   }
   return `0x${match[1]}`;
+}
+
+export function encodeQuantity(value: number): string {
+  try {
+    const checkedValue = new Uint53(value);
+    return toEthereumHex(new BN(checkedValue.toNumber()).toString(16));
+  } catch {
+    throw new Error("Input is not a unsigned safe integer");
+  }
+}
+
+export function encodeQuantityString(value: string): string {
+  if (!value.match(/^[0-9]+$/)) {
+    throw new Error("Input is not a valid string number");
+  }
+  return toEthereumHex(new BN(value).toString(16));
 }
 
 export function toBcpChainId(numericChainId: number): ChainId {
