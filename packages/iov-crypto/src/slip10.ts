@@ -57,7 +57,7 @@ export class Slip10 {
   public static derivePath(
     curve: Slip10Curve,
     seed: Uint8Array,
-    path: ReadonlyArray<Slip10RawIndex>,
+    path: readonly Slip10RawIndex[],
   ): Slip10Result {
     let result = this.master(curve, seed);
     for (const rawIndex of path) {

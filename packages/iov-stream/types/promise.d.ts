@@ -9,7 +9,7 @@ export declare function fromListPromise<T>(promise: Promise<Iterable<T>>): Strea
  *
  * Rejects if stream completes before `count` events are collected.
  */
-export declare function toListPromise<T>(stream: Stream<T>, count: number): Promise<ReadonlyArray<T>>;
+export declare function toListPromise<T>(stream: Stream<T>, count: number): Promise<readonly T[]>;
 /**
  * Listens to stream, collects one event and revolves.
  *

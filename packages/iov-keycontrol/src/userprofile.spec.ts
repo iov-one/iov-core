@@ -25,11 +25,33 @@ import { Encoding } from "@iov/encoding";
 
 import { HdPaths } from "./hdpaths";
 import { Keyring } from "./keyring";
-import { UserProfile } from "./userprofile";
+import userprofileData from "./testdata/userprofile.json";
+import { UnexpectedFormatVersionError, UserProfile, UserProfileEncryptionKey } from "./userprofile";
 import { WalletId } from "./wallet";
 import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 
 const { fromHex } = Encoding;
+
+/**
+ * A possibly incomplete equality checker that tests as well as possible if two profiles contain
+ * the same information. Equality on UserProfile is not well defined, so use with caution.
+ */
+function expectUserProfilesToEqual(lhs: UserProfile, rhs: UserProfile): void {
+  // meta
+  expect(lhs.createdAt).toEqual(rhs.createdAt);
+
+  // wallets
+  expect(lhs.wallets.value).toEqual(rhs.wallets.value);
+  for (const { id } of rhs.wallets.value) {
+    expect(lhs.printableSecret(id)).toEqual(rhs.printableSecret(id));
+  }
+
+  // identities
+  expect(lhs.getAllIdentities()).toEqual(rhs.getAllIdentities());
+  for (const identity of lhs.getAllIdentities()) {
+    expect(lhs.getIdentityLabel(identity)).toEqual(rhs.getIdentityLabel(identity));
+  }
+}
 
 describe("UserProfile", () => {
   const defaultChain = "chain123" as ChainId;
@@ -37,6 +59,278 @@ describe("UserProfile", () => {
   const defaultMnemonic2 = "perfect clump orphan margin memory amazing morning use snap skate erosion civil";
   const defaultMnemonic3 = "judge edge effort prepare caught lawn mask yellow butter phone dragon more";
   const defaultEncryptionPassword = "my super str0ng and super long password";
+
+  describe("deriveEncryptionKey", () => {
+    it("works", async () => {
+      const key = await UserProfile.deriveEncryptionKey("foobar");
+      expect(key.formatVersion).toEqual(1);
+      expect(key.data.length).toEqual(32);
+    });
+
+    it("can use a different version explicitly", async () => {
+      const key = await UserProfile.deriveEncryptionKey("foobar", 2);
+      expect(key.formatVersion).toEqual(2);
+      expect(key.data.length).toEqual(32);
+    });
+  });
+
+  describe("loadFrom", () => {
+    it("stored in and loaded from storage", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
+
+      await original.storeIn(db, defaultEncryptionPassword);
+
+      const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
+
+      expectUserProfilesToEqual(restored, original);
+
+      await db.close();
+    });
+
+    it("stored in and loaded from storage when containing special chars", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+      const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic3);
+
+      const original = new UserProfile();
+      original.addWallet(wallet1);
+      original.setWalletLabel(wallet1.id, "My secret 😛");
+
+      await original.storeIn(db, defaultEncryptionPassword);
+      const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
+
+      expectUserProfilesToEqual(restored, original);
+
+      await db.close();
+    });
+
+    it("fails when loading with wrong key", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
+
+      await original.storeIn(db, defaultEncryptionPassword);
+
+      const otherEncryptionPassword = "something wrong";
+      await UserProfile.loadFrom(db, otherEncryptionPassword)
+        .then(() => fail("loading must not succeed"))
+        .catch(error => expect(error).toMatch(/invalid usage/));
+
+      await db.close();
+    });
+
+    it("throws when loading a profile with no format version", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      await UserProfile.loadFrom(db, defaultEncryptionPassword)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/key not found in database/i));
+    });
+
+    it("throws when loading a profile with unsupported format version", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+      await db.put("format_version", "123");
+
+      await UserProfile.loadFrom(db, defaultEncryptionPassword)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/unsupported format version/i));
+    });
+
+    it("works for password and encryption key", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
+      original.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
+
+      await original.storeIn(db, defaultEncryptionPassword);
+
+      const encryptionKey = await UserProfile.deriveEncryptionKey(defaultEncryptionPassword);
+      const fromEncryptionKey = await UserProfile.loadFrom(db, encryptionKey);
+      const fromPassword = await UserProfile.loadFrom(db, defaultEncryptionPassword);
+
+      expectUserProfilesToEqual(fromEncryptionKey, fromPassword);
+
+      await db.close();
+    });
+
+    it("can load format version 1 profile with password", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      // Storage data created with IOV-Core 0.14 cli
+      await db.put("format_version", userprofileData.serializations.version1.db.format_version);
+      await db.put("created_at", userprofileData.serializations.version1.db.created_at);
+      await db.put("keyring", userprofileData.serializations.version1.db.keyring);
+
+      const loaded = await UserProfile.loadFrom(db, userprofileData.serializations.version1.password);
+
+      expect(loaded.createdAt).toEqual(new ReadonlyDate("2019-05-27T16:40:44.522Z"));
+      expect(loaded.wallets.value.length).toEqual(2);
+      expect(loaded.wallets.value[0].label).toEqual("ed");
+      expect(loaded.wallets.value[1].label).toEqual("secp");
+      expect(loaded.printableSecret(loaded.wallets.value[0].id)).toEqual(
+        "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      );
+      expect(loaded.printableSecret(loaded.wallets.value[1].id)).toEqual(
+        "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
+      );
+      expect(loaded.getAllIdentities().length).toEqual(2);
+      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+        "test-chain-GGzjc2" as ChainId,
+        "test-chain-GGzjc2" as ChainId,
+      ]);
+
+      await db.close();
+    });
+
+    it("can load format version 1 profile with key", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      // Storage data created with IOV-Core 0.14 cli
+      await db.put("format_version", userprofileData.serializations.version1.db.format_version);
+      await db.put("created_at", userprofileData.serializations.version1.db.created_at);
+      await db.put("keyring", userprofileData.serializations.version1.db.keyring);
+
+      let loaded: UserProfile;
+      const key = await UserProfile.deriveEncryptionKey(userprofileData.serializations.version1.password);
+      try {
+        loaded = await UserProfile.loadFrom(db, key);
+      } catch (error) {
+        if (error instanceof UnexpectedFormatVersionError) {
+          const key2 = await UserProfile.deriveEncryptionKey(
+            userprofileData.serializations.version1.password,
+            error.expectedFormatVersion,
+          );
+          loaded = await UserProfile.loadFrom(db, key2);
+        } else {
+          throw error;
+        }
+      }
+
+      expect(loaded.createdAt).toEqual(new ReadonlyDate("2019-05-27T16:40:44.522Z"));
+      expect(loaded.wallets.value.length).toEqual(2);
+      expect(loaded.wallets.value[0].label).toEqual("ed");
+      expect(loaded.wallets.value[1].label).toEqual("secp");
+      expect(loaded.printableSecret(loaded.wallets.value[0].id)).toEqual(
+        "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      );
+      expect(loaded.printableSecret(loaded.wallets.value[1].id)).toEqual(
+        "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
+      );
+      expect(loaded.getAllIdentities().length).toEqual(2);
+      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+        "test-chain-GGzjc2" as ChainId,
+        "test-chain-GGzjc2" as ChainId,
+      ]);
+
+      await db.close();
+    });
+
+    it("can load format version 2 profile with password", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      // Storage data created with locally modified version of IOV-Core 0.14 cli
+      await db.put("format_version", userprofileData.serializations.version2.db.format_version);
+      await db.put("created_at", userprofileData.serializations.version2.db.created_at);
+      await db.put("keyring", userprofileData.serializations.version2.db.keyring);
+
+      const loaded = await UserProfile.loadFrom(db, userprofileData.serializations.version2.password);
+
+      expect(loaded.createdAt).toEqual(new ReadonlyDate("2019-05-27T17:00:08.193Z"));
+      expect(loaded.wallets.value.length).toEqual(2);
+      expect(loaded.wallets.value[0].label).toEqual("ed");
+      expect(loaded.wallets.value[1].label).toEqual("secp");
+      expect(loaded.printableSecret(loaded.wallets.value[0].id)).toEqual(
+        "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      );
+      expect(loaded.printableSecret(loaded.wallets.value[1].id)).toEqual(
+        "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
+      );
+      expect(loaded.getAllIdentities().length).toEqual(2);
+      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+        "test-chain-GGzjc2" as ChainId,
+        "test-chain-GGzjc2" as ChainId,
+      ]);
+
+      await db.close();
+    });
+
+    it("can load format version 2 profile with key", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      // Storage data created with locally modified version of IOV-Core 0.14 cli
+      await db.put("format_version", userprofileData.serializations.version2.db.format_version);
+      await db.put("created_at", userprofileData.serializations.version2.db.created_at);
+      await db.put("keyring", userprofileData.serializations.version2.db.keyring);
+
+      let loaded: UserProfile;
+      const key = await UserProfile.deriveEncryptionKey(userprofileData.serializations.version2.password);
+      try {
+        loaded = await UserProfile.loadFrom(db, key);
+      } catch (error) {
+        if (error instanceof UnexpectedFormatVersionError) {
+          const key2 = await UserProfile.deriveEncryptionKey(
+            userprofileData.serializations.version2.password,
+            error.expectedFormatVersion,
+          );
+          loaded = await UserProfile.loadFrom(db, key2);
+        } else {
+          throw error;
+        }
+      }
+
+      expect(loaded.createdAt).toEqual(new ReadonlyDate("2019-05-27T17:00:08.193Z"));
+      expect(loaded.wallets.value.length).toEqual(2);
+      expect(loaded.wallets.value[0].label).toEqual("ed");
+      expect(loaded.wallets.value[1].label).toEqual("secp");
+      expect(loaded.printableSecret(loaded.wallets.value[0].id)).toEqual(
+        "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      );
+      expect(loaded.printableSecret(loaded.wallets.value[1].id)).toEqual(
+        "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
+      );
+      expect(loaded.getAllIdentities().length).toEqual(2);
+      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+        "test-chain-GGzjc2" as ChainId,
+        "test-chain-GGzjc2" as ChainId,
+      ]);
+
+      await db.close();
+    });
+
+    it("throws when given an encryption key in the wrong format version", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
+
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
+
+      await original.storeIn(db, defaultEncryptionPassword);
+
+      const encryptionKey: UserProfileEncryptionKey = {
+        formatVersion: 42,
+        data: fromHex("0000000000000000000000000000000000000000000000000000000000000000"),
+      };
+      await UserProfile.loadFrom(db, encryptionKey)
+        .then(() => fail("must not resolve"))
+        .catch(error => {
+          if (!(error instanceof UnexpectedFormatVersionError)) {
+            throw new Error("Expected an UnexpectedFormatVersionError");
+          }
+          expect(error.expectedFormatVersion).toEqual(1);
+          expect(error.actualFormatVersion).toEqual(42);
+          expect(error.message).toMatch(/got encryption key of unexpected format/i);
+        });
+
+      await db.close();
+    });
+  });
 
   it("can be constructed without arguments", () => {
     const profile = new UserProfile();
@@ -356,115 +650,93 @@ describe("UserProfile", () => {
     });
   });
 
-  it("can export a printable secret for a wallet", () => {
-    const profile = new UserProfile();
-    const walletInfo = profile.addWallet(
-      Secp256k1HdWallet.fromMnemonic(
+  describe("printableSecret", () => {
+    it("can export a printable secret for a wallet", () => {
+      const profile = new UserProfile();
+      const walletInfo = profile.addWallet(
+        Secp256k1HdWallet.fromMnemonic(
+          "insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll",
+        ),
+      );
+      expect(profile.printableSecret(walletInfo.id)).toEqual(
         "insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll",
-      ),
-    );
-    expect(profile.printableSecret(walletInfo.id)).toEqual(
-      "insect spirit promote illness clean damp dash divorce emerge elbow kangaroo enroll",
-    );
+      );
+    });
   });
 
-  it("can be stored", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
+  describe("storeIn", () => {
+    it("can be stored with password", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
 
-    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
-    const keyring = new Keyring();
-    const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
-    await profile.storeIn(db, defaultEncryptionPassword);
-    expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
-    expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
-    expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
+      await profile.storeIn(db, defaultEncryptionPassword);
+      expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
+      expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
+      expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
 
-    await db.close();
-  });
+      await db.close();
+    });
 
-  it("clears database when storing", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
+    it("can be stored with encryption key", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
 
-    await db.put("foo", "bar");
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
-    const profile = new UserProfile();
-    await profile.storeIn(db, defaultEncryptionPassword);
+      const encryptionKey = await UserProfile.deriveEncryptionKey(defaultEncryptionPassword);
+      await profile.storeIn(db, encryptionKey);
+      expect(await db.get("format_version", { asBuffer: false })).toEqual("1");
+      expect(await db.get("created_at", { asBuffer: false })).toEqual("1985-04-12T23:20:50.521Z");
+      expect(await db.get("keyring", { asBuffer: false })).toMatch(/^[-_/=a-zA-Z0-9+]+$/);
 
-    await db
-      .get("foo")
-      .then(() => fail("get 'foo' promise must not reslve"))
-      .catch(error => {
-        expect(error.notFound).toBeTruthy();
-      });
+      await db.close();
+    });
 
-    await db.close();
-  });
+    it("throws when storing with format version other than latest", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
 
-  it("stored in and loaded from storage", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
+      const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
+      const keyring = new Keyring();
+      const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
-    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
-    const keyring = new Keyring();
-    const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
+      const encryptionKey: UserProfileEncryptionKey = {
+        formatVersion: 42,
+        data: fromHex("0000000000000000000000000000000000000000000000000000000000000000"),
+      };
+      await profile
+        .storeIn(db, encryptionKey)
+        .then(() => fail("must not resolve"))
+        .catch(error => {
+          if (!(error instanceof UnexpectedFormatVersionError)) {
+            throw new Error("Expected an UnexpectedFormatVersionError");
+          }
+          expect(error.expectedFormatVersion).toEqual(1);
+          expect(error.actualFormatVersion).toEqual(42);
+          expect(error.message).toMatch(/got encryption key of unexpected format/i);
+        });
 
-    await original.storeIn(db, defaultEncryptionPassword);
+      await db.close();
+    });
 
-    const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
+    it("clears database when storing", async () => {
+      const db = levelup(MemDownConstructor<string, string>());
 
-    expect(restored.createdAt).toEqual(original.createdAt);
+      await db.put("foo", "bar");
 
-    await db.close();
-  });
+      const profile = new UserProfile();
+      await profile.storeIn(db, defaultEncryptionPassword);
 
-  it("stored in and loaded from storage when containing special chars", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
-    const wallet1 = Ed25519HdWallet.fromMnemonic(defaultMnemonic3);
+      await db
+        .get("foo")
+        .then(() => fail("get 'foo' promise must not resolve"))
+        .catch(error => expect(error.notFound).toBeTruthy());
 
-    const original = new UserProfile();
-    original.addWallet(wallet1);
-    original.setWalletLabel(wallet1.id, "My secret 😛");
-
-    await original.storeIn(db, defaultEncryptionPassword);
-    const restored = await UserProfile.loadFrom(db, defaultEncryptionPassword);
-
-    expect(restored.wallets.value).toEqual(original.wallets.value);
-
-    await db.close();
-  });
-
-  it("fails when loading with wrong key", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
-
-    const createdAt = new ReadonlyDate("1985-04-12T23:20:50.521Z");
-    const keyring = new Keyring();
-    const original = new UserProfile({ createdAt: createdAt, keyring: keyring });
-
-    await original.storeIn(db, defaultEncryptionPassword);
-
-    const otherEncryptionPassword = "something wrong";
-    await UserProfile.loadFrom(db, otherEncryptionPassword)
-      .then(() => fail("loading must not succeed"))
-      .catch(error => expect(error).toMatch(/invalid usage/));
-
-    await db.close();
-  });
-
-  it("throws when loading a profile with no format version", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
-
-    await UserProfile.loadFrom(db, defaultEncryptionPassword)
-      .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/key not found in database/i));
-  });
-
-  it("throws when loading a profile with unsupported format version", async () => {
-    const db = levelup(MemDownConstructor<string, string>());
-    await db.put("format_version", "123");
-
-    await UserProfile.loadFrom(db, defaultEncryptionPassword)
-      .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/unsupported format version/i));
+      await db.close();
+    });
   });
 
   it("throws for non-existing wallet id", async () => {

@@ -15,9 +15,9 @@ export declare class Random {
     static getBytes(count: number): Promise<Uint8Array>;
 }
 export declare class Ed25519Keypair {
+    static fromLibsodiumPrivkey(libsodiumPrivkey: Uint8Array): Ed25519Keypair;
     readonly privkey: Uint8Array;
     readonly pubkey: Uint8Array;
-    static fromLibsodiumPrivkey(libsodiumPrivkey: Uint8Array): Ed25519Keypair;
     constructor(privkey: Uint8Array, pubkey: Uint8Array);
     toLibsodiumPrivkey(): Uint8Array;
 }

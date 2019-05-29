@@ -4,11 +4,13 @@ import {
   Amount,
   ChainId,
   FullSignature,
+  Hash,
   Identity,
   Nonce,
   PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
+  SwapOfferTransaction,
   TokenTicker,
   WithCreator,
 } from "@iov/bcp";
@@ -217,16 +219,17 @@ describe("Encode", () => {
     };
     const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
     const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
+    const defaultAmount: Amount = {
+      quantity: "1000000001",
+      fractionalDigits: 9,
+      tokenTicker: "CASH" as TokenTicker,
+    };
 
     it("works for SendTransaction", () => {
       const transaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: defaultCreator,
-        amount: {
-          quantity: "1000000001",
-          fractionalDigits: 9,
-          tokenTicker: "CASH" as TokenTicker,
-        },
+        amount: defaultAmount,
         sender: defaultSender,
         recipient: defaultRecipient,
         memo: "abc",
@@ -325,7 +328,7 @@ describe("Encode", () => {
     });
 
     it("works for CreateMultisignatureTx", () => {
-      const participants: ReadonlyArray<Participant> = [
+      const participants: readonly Participant[] = [
         {
           address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
           power: 4,
@@ -368,7 +371,7 @@ describe("Encode", () => {
     });
 
     it("works for UpdateMultisignatureTx", () => {
-      const participants: ReadonlyArray<Participant> = [
+      const participants: readonly Participant[] = [
         {
           address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
           power: 4,
@@ -410,6 +413,48 @@ describe("Encode", () => {
       expect(msg.participants).toEqual(iParticipants);
       expect(msg.activationThreshold).toEqual(3);
       expect(msg.adminThreshold).toEqual(4);
+    });
+
+    it("encodes unset and empty memo the same way", () => {
+      {
+        const memoUnset: SendTransaction & WithCreator = {
+          kind: "bcp/send",
+          creator: defaultCreator,
+          sender: defaultSender,
+          amount: defaultAmount,
+          recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        };
+        const memoEmpty: SendTransaction & WithCreator = {
+          kind: "bcp/send",
+          creator: defaultCreator,
+          sender: defaultSender,
+          amount: defaultAmount,
+          recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+          memo: "",
+        };
+        expect(buildMsg(memoUnset)).toEqual(buildMsg(memoEmpty));
+      }
+
+      {
+        const memoUnset: SwapOfferTransaction & WithCreator = {
+          kind: "bcp/swap_offer",
+          creator: defaultCreator,
+          amounts: [],
+          recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+          timeout: { timestamp: 22 },
+          hash: fromHex("aabbccdd") as Hash,
+        };
+        const memoEmpty: SwapOfferTransaction & WithCreator = {
+          kind: "bcp/swap_offer",
+          creator: defaultCreator,
+          amounts: [],
+          recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+          timeout: { timestamp: 22 },
+          hash: fromHex("aabbccdd") as Hash,
+          memo: "",
+        };
+        expect(buildMsg(memoUnset)).toEqual(buildMsg(memoEmpty));
+      }
     });
   });
 });

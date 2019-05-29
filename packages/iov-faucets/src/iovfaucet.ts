@@ -5,7 +5,7 @@ import { Address, TokenTicker } from "@iov/bcp";
 export class IovFaucet {
   private readonly baseUrl: string;
 
-  constructor(baseUrl: string) {
+  public constructor(baseUrl: string) {
     if (!baseUrl.match(/^https?:\/\//)) {
       throw new Error("Expected base url to start with http:// or https://");
     }

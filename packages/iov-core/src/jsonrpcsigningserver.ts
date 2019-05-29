@@ -16,7 +16,7 @@ import { TransactionEncoder } from "./transactionencoder";
 interface RpcCallGetIdentities {
   readonly name: "getIdentities";
   readonly reason: string;
-  readonly chainIds: ReadonlyArray<ChainId>;
+  readonly chainIds: readonly ChainId[];
 }
 
 interface RpcCallSignAndPost {
@@ -29,12 +29,12 @@ type RpcCall = RpcCallGetIdentities | RpcCallSignAndPost;
 
 class ParamsError extends Error {}
 class MethodNotFoundError extends Error {
-  constructor(message?: string) {
+  public constructor(message?: string) {
     super(message || "Unknown method name");
   }
 }
 
-function isArrayOfStrings(array: ReadonlyArray<any>): array is ReadonlyArray<string> {
+function isArrayOfStrings(array: readonly any[]): array is readonly string[] {
   return array.every(element => typeof element === "string");
 }
 
@@ -83,7 +83,7 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
 export class JsonRpcSigningServer {
   private readonly core: SigningServerCore;
 
-  constructor(core: SigningServerCore) {
+  public constructor(core: SigningServerCore) {
     this.core = core;
   }
 

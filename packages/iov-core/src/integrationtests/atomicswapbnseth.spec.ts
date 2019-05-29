@@ -34,10 +34,9 @@ const ETH = "ETH" as TokenTicker;
 const ASH = "ASH" as TokenTicker;
 
 // Copied from 'iov-ethereum/src/testconfig.spec.ts'
-const ganacheMnemonic: string =
-  "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
+const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 const atomicSwapErc20ContractAddress = "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address;
-const ethereumBaseUrl: string = "http://localhost:8545";
+const ethereumBaseUrl = "http://localhost:8545";
 const ethereumConnectionOptions = {
   wsUrl: "ws://localhost:8545/ws",
   // Low values to speedup test execution on the local ganache chain (using instant mine)
@@ -89,9 +88,9 @@ interface ActorData {
 class Actor {
   public static async create(
     bnsMnemonic: string,
-    bnsHdPath: ReadonlyArray<Slip10RawIndex>,
+    bnsHdPath: readonly Slip10RawIndex[],
     ethereumMnemonic: string,
-    ethereumHdPath: ReadonlyArray<Slip10RawIndex>,
+    ethereumHdPath: readonly Slip10RawIndex[],
   ): Promise<Actor> {
     const profile = new UserProfile();
     const ed25519HdWallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(bnsMnemonic));
@@ -134,7 +133,7 @@ class Actor {
   // tslint:disable-next-line:readonly-keyword
   private preimage: Preimage | undefined;
 
-  constructor(data: ActorData) {
+  public constructor(data: ActorData) {
     this.signer = data.signer;
     this.bnsConnection = data.bnsConnection;
     this.ethereumConnection = data.ethereumConnection;
@@ -290,12 +289,12 @@ describe("Full atomic swap between BNS and Ethereum", () => {
     pendingWithoutEthereum();
 
     const alice = await Actor.create(
-      "degree tackle suggest window test behind mesh extra cover prepare oak script",
+      "host century wave huge seed boost success right brave general orphan lion",
       HdPaths.iov(0),
       ganacheMnemonic,
       HdPaths.ethereum(0),
     );
-    expect(alice.bnsAddress).toEqual("tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea");
+    expect(alice.bnsAddress).toEqual("tiov1xwvnaxahzcszkvmk362m7vndjkzumv8ufmzy3m");
     expect(alice.ethereumAddress).toEqual("0x88F3b5659075D0E06bB1004BE7b1a7E66F452284");
 
     const bob = await Actor.create(

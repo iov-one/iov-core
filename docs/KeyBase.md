@@ -419,7 +419,7 @@ Simple addresses are BIP43 compatible HD addresses using the IOV purpose.
 
 BIP43 describes the standard HD path specification. It allows the use of custom
 `purpose`s for for custom address schemes. Simple addresses use
-`purpose = 4804438`. The choosen purpose value is the integer created by the
+`purpose = 4804438`. The chosen purpose value is the integer created by the
 ascii encoding of the letters "IOV". We hope it remains unique within the
 industry.
 

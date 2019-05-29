@@ -17,7 +17,7 @@ describe("Slip10", () => {
     const seed = fromHex("000102030405060708090a0b0c0d0e0f");
 
     it("can derive path m", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [];
+      const path: readonly Slip10RawIndex[] = [];
       const derived = Slip10.derivePath(Slip10Curve.Secp256k1, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("873dff81c02f525623fd1fe5167eac3a55a049de3d314bb42ee227ffed37d508"),
@@ -28,7 +28,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [Slip10RawIndex.hardened(0)];
+      const path: readonly Slip10RawIndex[] = [Slip10RawIndex.hardened(0)];
       const derived = Slip10.derivePath(Slip10Curve.Secp256k1, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("47fdacbd0f1097043b78c63c20c34ef4ed9a111d980047ad16282c7ae6236141"),
@@ -39,7 +39,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/1", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [Slip10RawIndex.hardened(0), Slip10RawIndex.normal(1)];
+      const path: readonly Slip10RawIndex[] = [Slip10RawIndex.hardened(0), Slip10RawIndex.normal(1)];
       const derived = Slip10.derivePath(Slip10Curve.Secp256k1, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("2a7857631386ba23dacac34180dd1983734e444fdbf774041578e9b6adb37c19"),
@@ -50,7 +50,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/1/2'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.normal(1),
         Slip10RawIndex.hardened(2),
@@ -65,7 +65,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/1/2'/2", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.normal(1),
         Slip10RawIndex.hardened(2),
@@ -81,7 +81,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/1/2'/2/1000000000", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.normal(1),
         Slip10RawIndex.hardened(2),
@@ -105,7 +105,7 @@ describe("Slip10", () => {
     );
 
     it("can derive path m", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [];
+      const path: readonly Slip10RawIndex[] = [];
       const derived = Slip10.derivePath(Slip10Curve.Secp256k1, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("60499f801b896d83179a4374aeb7822aaeaceaa0db1f85ee3e904c4defbd9689"),
@@ -116,7 +116,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [Slip10RawIndex.normal(0)];
+      const path: readonly Slip10RawIndex[] = [Slip10RawIndex.normal(0)];
       const derived = Slip10.derivePath(Slip10Curve.Secp256k1, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("f0909affaa7ee7abe5dd4e100598d4dc53cd709d5a5c2cac40e7412f232f7c9c"),
@@ -127,10 +127,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0/2147483647'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
-        Slip10RawIndex.normal(0),
-        Slip10RawIndex.hardened(2147483647),
-      ];
+      const path: readonly Slip10RawIndex[] = [Slip10RawIndex.normal(0), Slip10RawIndex.hardened(2147483647)];
       const derived = Slip10.derivePath(Slip10Curve.Secp256k1, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("be17a268474a6bb9c61e1d720cf6215e2a88c5406c4aee7b38547f585c9a37d9"),
@@ -141,7 +138,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0/2147483647'/1", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.normal(0),
         Slip10RawIndex.hardened(2147483647),
         Slip10RawIndex.normal(1),
@@ -156,7 +153,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0/2147483647'/1/2147483646'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.normal(0),
         Slip10RawIndex.hardened(2147483647),
         Slip10RawIndex.normal(1),
@@ -172,7 +169,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0/2147483647'/1/2147483646'/2", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.normal(0),
         Slip10RawIndex.hardened(2147483647),
         Slip10RawIndex.normal(1),
@@ -194,7 +191,7 @@ describe("Slip10", () => {
     const seed = fromHex("000102030405060708090a0b0c0d0e0f");
 
     it("can derive path m", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [];
+      const path: readonly Slip10RawIndex[] = [];
       const derived = Slip10.derivePath(Slip10Curve.Ed25519, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("90046a93de5380a72b5e45010748567d5ea02bbf6522f979e05c0d8d8ca9fffb"),
@@ -205,7 +202,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [Slip10RawIndex.hardened(0)];
+      const path: readonly Slip10RawIndex[] = [Slip10RawIndex.hardened(0)];
       const derived = Slip10.derivePath(Slip10Curve.Ed25519, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("8b59aa11380b624e81507a27fedda59fea6d0b779a778918a2fd3590e16e9c69"),
@@ -216,7 +213,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/1'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [Slip10RawIndex.hardened(0), Slip10RawIndex.hardened(1)];
+      const path: readonly Slip10RawIndex[] = [Slip10RawIndex.hardened(0), Slip10RawIndex.hardened(1)];
       const derived = Slip10.derivePath(Slip10Curve.Ed25519, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("a320425f77d1b5c2505a6b1b27382b37368ee640e3557c315416801243552f14"),
@@ -227,7 +224,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/1'/2'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.hardened(1),
         Slip10RawIndex.hardened(2),
@@ -242,7 +239,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/1'/2'/2'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.hardened(1),
         Slip10RawIndex.hardened(2),
@@ -258,7 +255,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/1'/2'/2'/1000000000'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.hardened(1),
         Slip10RawIndex.hardened(2),
@@ -282,7 +279,7 @@ describe("Slip10", () => {
     );
 
     it("can derive path m", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [];
+      const path: readonly Slip10RawIndex[] = [];
       const derived = Slip10.derivePath(Slip10Curve.Ed25519, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("ef70a74db9c3a5af931b5fe73ed8e1a53464133654fd55e7a66f8570b8e33c3b"),
@@ -293,7 +290,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [Slip10RawIndex.hardened(0)];
+      const path: readonly Slip10RawIndex[] = [Slip10RawIndex.hardened(0)];
       const derived = Slip10.derivePath(Slip10Curve.Ed25519, seed, path);
       expect(derived.chainCode).toEqual(
         fromHex("0b78a3226f915c082bf118f83618a618ab6dec793752624cbeb622acb562862d"),
@@ -304,7 +301,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/2147483647'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.hardened(2147483647),
       ];
@@ -318,7 +315,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/2147483647'/1'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.hardened(2147483647),
         Slip10RawIndex.hardened(1),
@@ -333,7 +330,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/2147483647'/1'/2147483646'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.hardened(2147483647),
         Slip10RawIndex.hardened(1),
@@ -349,7 +346,7 @@ describe("Slip10", () => {
     });
 
     it("can derive path m/0'/2147483647'/1'/2147483646'/2'", () => {
-      const path: ReadonlyArray<Slip10RawIndex> = [
+      const path: readonly Slip10RawIndex[] = [
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.hardened(2147483647),
         Slip10RawIndex.hardened(1),

@@ -5,7 +5,7 @@ import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jso
 export class HttpJsonRpcClient {
   private readonly baseUrl: string;
 
-  constructor(baseUrl: string) {
+  public constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
   }
 

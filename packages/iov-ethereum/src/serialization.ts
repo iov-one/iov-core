@@ -311,10 +311,13 @@ export class Serialization {
   }
 
   private static buildAtomicSwapOfferEtherCall(unsigned: SwapOfferTransaction): Uint8Array {
+    if (!unsigned.swapId) {
+      throw new Error("Could not build atomic swap offer call: swapId required");
+    }
     const timeout = unsigned.timeout as BlockHeightTimeout;
     return new Uint8Array([
       ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)"),
-      ...unsigned.swapId!.data,
+      ...unsigned.swapId.data,
       ...Abi.encodeAddress(unsigned.recipient),
       ...unsigned.hash,
       ...Abi.encodeUint256(timeout.height.toString()),
@@ -325,10 +328,13 @@ export class Serialization {
     unsigned: SwapOfferTransaction,
     erc20ContractAddress: Address,
   ): Uint8Array {
+    if (!unsigned.swapId) {
+      throw new Error("Could not build atomic swap offer call: swapId required");
+    }
     const timeout = unsigned.timeout as BlockHeightTimeout;
     return new Uint8Array([
       ...Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)"),
-      ...unsigned.swapId!.data,
+      ...unsigned.swapId.data,
       ...Abi.encodeAddress(unsigned.recipient),
       ...unsigned.hash,
       ...Abi.encodeUint256(timeout.height.toString()),
@@ -408,6 +414,7 @@ export class Serialization {
       throw new Error("Timeout must be specified as a block height");
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (unsigned.swapId!.prefix === SwapIdPrefix.Ether) {
       // native ETH swap
       Serialization.checkEtherAmount(unsigned);
@@ -418,6 +425,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         atomicSwapContractAddress!,
         unsigned.amounts[0].quantity,
         atomicSwapOfferCall,
@@ -437,6 +445,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         atomicSwapContractAddress!,
         ZERO_ETH_QUANTITY,
         atomicSwapOfferCall,
@@ -459,6 +468,7 @@ export class Serialization {
       nonce,
       gasPriceHex,
       gasLimitHex,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       atomicSwapContractAddress!,
       ZERO_ETH_QUANTITY,
       atomicSwapClaimCall,
@@ -479,6 +489,7 @@ export class Serialization {
       nonce,
       gasPriceHex,
       gasLimitHex,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       atomicSwapContractAddress!,
       ZERO_ETH_QUANTITY,
       atomicSwapAbortCall,
@@ -568,6 +579,7 @@ export class Serialization {
       throw new Error("Timeout must be specified as a block height");
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (unsigned.swapId!.prefix === SwapIdPrefix.Ether) {
       // native ETH swap
       Serialization.checkEtherAmount(unsigned);
@@ -578,6 +590,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         atomicSwapContractAddress!,
         unsigned.amounts[0].quantity,
         atomicSwapOfferCall,
@@ -599,6 +612,7 @@ export class Serialization {
         nonce,
         gasPriceHex,
         gasLimitHex,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         atomicSwapContractAddress!,
         ZERO_ETH_QUANTITY,
         atomicSwapOfferCall,
@@ -623,6 +637,7 @@ export class Serialization {
       nonce,
       gasPriceHex,
       gasLimitHex,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       atomicSwapContractAddress!,
       ZERO_ETH_QUANTITY,
       atomicSwapClaimCall,
@@ -645,6 +660,7 @@ export class Serialization {
       nonce,
       gasPriceHex,
       gasLimitHex,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       atomicSwapContractAddress!,
       ZERO_ETH_QUANTITY,
       atomicSwapAbortCall,

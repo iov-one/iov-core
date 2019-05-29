@@ -29,7 +29,7 @@ export class Uint32 implements Integer {
 
   protected readonly data: number;
 
-  constructor(input: number) {
+  public constructor(input: number) {
     if (Number.isNaN(input)) {
       throw new Error("Input is not a number");
     }
@@ -45,7 +45,7 @@ export class Uint32 implements Integer {
     this.data = input;
   }
 
-  public toBytesBigEndian(): ReadonlyArray<number> {
+  public toBytesBigEndian(): readonly number[] {
     // Use division instead of shifting since bitwise operators are defined
     // on SIGNED int32 in JavaScript and we don't want to risk surprises
     return [
@@ -76,7 +76,7 @@ export class Int53 implements Integer {
 
   protected readonly data: number;
 
-  constructor(input: number) {
+  public constructor(input: number) {
     if (Number.isNaN(input)) {
       throw new Error("Input is not a number");
     }
@@ -109,7 +109,7 @@ export class Uint53 implements Integer {
 
   protected readonly data: Int53;
 
-  constructor(input: number) {
+  public constructor(input: number) {
     const signed = new Int53(input);
     if (signed.toNumber() < 0) {
       throw new Error("Input is negative");
@@ -182,11 +182,11 @@ export class Uint64 implements Integer {
     this.data = data;
   }
 
-  public toBytesBigEndian(): ReadonlyArray<number> {
+  public toBytesBigEndian(): readonly number[] {
     return this.data.toArray("be", 8);
   }
 
-  public toBytesLittleEndian(): ReadonlyArray<number> {
+  public toBytesLittleEndian(): readonly number[] {
     return this.data.toArray("le", 8);
   }
 

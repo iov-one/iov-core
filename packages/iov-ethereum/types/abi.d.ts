@@ -1,9 +1,9 @@
 import { Address, SwapProcessState } from "@iov/bcp";
 export interface HeadTail {
     /** An array of start positions within the original data */
-    readonly head: ReadonlyArray<number>;
+    readonly head: readonly number[];
     /** Arguments split by positions as defined by head */
-    readonly tail: ReadonlyArray<Uint8Array>;
+    readonly tail: readonly Uint8Array[];
 }
 export declare enum SwapContractEvent {
     Opened = 0,

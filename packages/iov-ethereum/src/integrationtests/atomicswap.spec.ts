@@ -88,7 +88,7 @@ class Actor {
   // tslint:disable-next-line:readonly-keyword
   private preimage?: Preimage;
 
-  constructor(data: ActorData) {
+  public constructor(data: ActorData) {
     this.profile = data.profile;
     this.connection = data.connection;
     this.senderIdentity = data.senderIdentity;
@@ -155,11 +155,11 @@ class Actor {
     return new BN(amount ? amount.quantity : 0);
   }
 
-  public async getReceiverSwaps(): Promise<ReadonlyArray<AtomicSwap>> {
+  public async getReceiverSwaps(): Promise<readonly AtomicSwap[]> {
     return this.connection.getSwaps({ recipient: this.receiveAddress });
   }
 
-  public async getSenderSwaps(): Promise<ReadonlyArray<AtomicSwap>> {
+  public async getSenderSwaps(): Promise<readonly AtomicSwap[]> {
     return this.connection.getSwaps({ sender: this.sendAddress });
   }
 

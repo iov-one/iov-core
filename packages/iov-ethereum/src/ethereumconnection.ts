@@ -108,7 +108,7 @@ type AtomicSwapUpdate = AtomicSwapClaimedUpdate | AtomicSwapAbortedUpdate;
 export interface EthereumLog {
   readonly transactionIndex: string;
   readonly data: string;
-  readonly topics: ReadonlyArray<string>;
+  readonly topics: readonly string[];
 }
 
 interface EthereumLogWithPrefix extends EthereumLog {
@@ -253,10 +253,10 @@ export class EthereumConnection implements AtomicSwapConnection {
   }
 
   private static updateSwapInList(
-    swaps: ReadonlyArray<AtomicSwap>,
+    swaps: readonly AtomicSwap[],
     update: AtomicSwapUpdate,
     prefix: SwapIdPrefix,
-  ): ReadonlyArray<AtomicSwap> {
+  ): readonly AtomicSwap[] {
     const { kind, swapIdBytes } = update;
     const swapId = { data: swapIdBytes, prefix: prefix };
     const swapIndex = swaps.findIndex(s => swapIdEquals(s.data.id, swapId));
@@ -290,7 +290,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
   private readonly codec: EthereumCodec;
 
-  constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
+  public constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
     this.pollIntervalMs = options.pollInterval ? options.pollInterval * 1000 : 4_000;
     this.rpcClient = new HttpJsonRpcClient(baseUrl);
     this.myChainId = chainId;
@@ -327,7 +327,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     this.erc20Tokens = erc20Tokens;
     this.erc20ContractReaders = new Map(
       [...erc20Tokens.entries()].map(
-        ([ticker, erc20Options]): [TokenTicker, Erc20Reader] => [
+        ([ticker, erc20Options]): readonly [TokenTicker, Erc20Reader] => [
           ticker,
           new Erc20Reader(ethereumClient, erc20Options),
         ],
@@ -383,7 +383,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     const transactionId = Parse.transactionId(transactionResult);
 
-    let pollInterval: NodeJS.Timeout | undefined;
+    let pollInterval: NodeJS.Timeout;
     const blockInfoPending = new DefaultValueProducer<BlockInfo>(
       {
         state: TransactionState.Pending,
@@ -406,7 +406,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           }, this.pollIntervalMs);
         },
         onStop: () => {
-          clearInterval(pollInterval!);
+          clearInterval(pollInterval);
         },
       },
     );
@@ -420,7 +420,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return (await this.getAllTokens()).find(t => t.tokenTicker === searchTicker);
   }
 
-  public async getAllTokens(): Promise<ReadonlyArray<Token>> {
+  public async getAllTokens(): Promise<readonly Token[]> {
     const erc20s = await Promise.all(
       [...this.erc20ContractReaders.entries()].map(
         async ([ticker, contract]): Promise<Token> => {
@@ -469,7 +469,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     // eth_getBalance always returns one result. Balance is 0x0 if account does not exist.
     const ethBalance = Parse.ethereumAmount(decodeHexQuantityString(response.result));
 
-    const erc20Balances: ReadonlyArray<Amount> = await Promise.all(
+    const erc20Balances: readonly Amount[] = await Promise.all(
       [...this.erc20ContractReaders.entries()].map(
         async ([ticker, contract]): Promise<Amount> => {
           const symbol = await contract.symbol();
@@ -525,7 +525,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return decodeHexQuantityNonce(response.result);
   }
 
-  public async getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>> {
+  public async getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]> {
     const checkedCount = new Uint53(count).toNumber();
     switch (checkedCount) {
       case 0:
@@ -654,7 +654,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     const producer: Producer<Account | undefined> = {
       start: async listener => {
-        const poll = async () => {
+        const poll = async (): Promise<void> => {
           try {
             const event = await this.getAccount({ address: address });
             if (!equal(event, lastEvent)) {
@@ -681,7 +681,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return Stream.create(producer);
   }
 
-  public async searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  public async searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction[]> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -930,7 +930,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     query: AtomicSwapQuery,
     minHeight: number = 0,
     maxHeight: number = Number.MAX_SAFE_INTEGER,
-  ): Promise<ReadonlyArray<AtomicSwap>> {
+  ): Promise<readonly AtomicSwap[]> {
     if (isAtomicSwapIdQuery(query)) {
       return this.getSwapsById(query);
     } else if (
@@ -964,7 +964,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     }
   }
 
-  private async searchTransactionsById(id: TransactionId): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  private async searchTransactionsById(id: TransactionId): Promise<readonly ConfirmedTransaction[]> {
     const transactionsResponse = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getTransactionByHash",
@@ -1013,7 +1013,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  ): Promise<readonly ConfirmedTransaction[]> {
     // tslint:disable-next-line:readonly-array
     const out: ConfirmedTransaction[] = [];
 
@@ -1038,7 +1038,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  ): Promise<readonly ConfirmedTransaction[]> {
     if (!this.scraperApiUrl) {
       throw new Error("No scraper API URL specified.");
     }
@@ -1079,7 +1079,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  ): Promise<readonly ConfirmedTransaction[]> {
     const [erc20Outgoing, erc20Incoming] = await Promise.all([
       this.searchErc20Transfers(address, null, minHeight, maxHeight),
       this.searchErc20Transfers(null, address, minHeight, maxHeight),
@@ -1105,7 +1105,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     recipient: Address | null,
     minHeight: number,
     maxHeight: number,
-  ): Promise<ReadonlyArray<ConfirmedTransaction>> {
+  ): Promise<readonly ConfirmedTransaction[]> {
     if (maxHeight < minHeight) {
       return [];
     }
@@ -1150,7 +1150,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return transactions;
   }
 
-  private async getSwapsById(query: AtomicSwapIdQuery): Promise<ReadonlyArray<AtomicSwap>> {
+  private async getSwapsById(query: AtomicSwapIdQuery): Promise<readonly AtomicSwap[]> {
     const data = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...query.id.data]);
     const atomicSwapContractAddress =
       query.id.prefix === SwapIdPrefix.Ether
@@ -1166,7 +1166,7 @@ export class EthereumConnection implements AtomicSwapConnection {
         to: atomicSwapContractAddress,
         data: toEthereumHex(data),
       },
-    ] as ReadonlyArray<any>;
+    ] as readonly any[];
     const swapsResponse = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_call",
@@ -1219,7 +1219,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           fractionalDigits: fractionalDigits,
           tokenTicker: tokenTicker,
         },
-      ] as ReadonlyArray<Amount>,
+      ] as readonly Amount[],
       timeout: {
         height: new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber(),
       },
@@ -1254,7 +1254,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     query: AtomicSwapQuery,
     minHeight: number,
     maxHeight: number,
-  ): Promise<ReadonlyArray<AtomicSwap>> {
+  ): Promise<readonly AtomicSwap[]> {
     if (!this.atomicSwapEtherContractAddress && !this.atomicSwapErc20ContractAddress) {
       throw new Error("Ethereum connection was not initialized with any atomic swap contract addresses");
     }
@@ -1272,9 +1272,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       ...etherLogs.map(log => ({ ...log, prefix: SwapIdPrefix.Ether })),
       ...erc20Logs.map(log => ({ ...log, prefix: SwapIdPrefix.Erc20 })),
     ]
-      .reduce((accumulator: ReadonlyArray<AtomicSwap>, log: EthereumLogWithPrefix): ReadonlyArray<
-        AtomicSwap
-      > => {
+      .reduce((accumulator: readonly AtomicSwap[], log: EthereumLogWithPrefix): readonly AtomicSwap[] => {
         const dataArray = Encoding.fromHex(normalizeHex(log.data));
         const kind = Abi.decodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
         switch (kind) {
@@ -1312,14 +1310,14 @@ export class EthereumConnection implements AtomicSwapConnection {
     atomicSwapContractAddress: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<ReadonlyArray<EthereumLog>> {
+  ): Promise<readonly EthereumLog[]> {
     const params = [
       {
         fromBlock: encodeQuantity(minHeight),
         toBlock: encodeQuantity(maxHeight),
         address: atomicSwapContractAddress,
       },
-    ] as ReadonlyArray<any>;
+    ] as readonly any[];
     const swapsResponse = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getLogs",

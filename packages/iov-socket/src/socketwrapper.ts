@@ -35,19 +35,32 @@ export class SocketWrapper {
   private socket: WebSocket | undefined;
   private timeoutId: NodeJS.Timeout | undefined;
   private closed = false;
+  private readonly url: string;
+  private readonly messageHandler: (event: SocketWrapperMessageEvent) => void;
+  private readonly errorHandler: (event: SocketWrapperErrorEvent) => void;
+  private readonly openHandler?: () => void;
+  private readonly closeHandler?: (event: SocketWrapperCloseEvent) => void;
+  private readonly timeout: number;
 
-  constructor(
-    private readonly url: string,
-    private readonly messageHandler: (event: SocketWrapperMessageEvent) => void,
-    private readonly errorHandler: (event: SocketWrapperErrorEvent) => void,
-    private readonly openHandler?: () => void,
-    private readonly closeHandler?: (event: SocketWrapperCloseEvent) => void,
-    private readonly timeout: number = 10_000,
+  public constructor(
+    url: string,
+    messageHandler: (event: SocketWrapperMessageEvent) => void,
+    errorHandler: (event: SocketWrapperErrorEvent) => void,
+    openHandler?: () => void,
+    closeHandler?: (event: SocketWrapperCloseEvent) => void,
+    timeout: number = 10_000,
   ) {
     this.connected = new Promise((resolve, reject) => {
       this.connectedResolver = resolve;
       this.connectedRejecter = reject;
     });
+
+    this.url = url;
+    this.messageHandler = messageHandler;
+    this.errorHandler = errorHandler;
+    this.openHandler = openHandler;
+    this.closeHandler = closeHandler;
+    this.timeout = timeout;
   }
 
   /**
@@ -70,6 +83,7 @@ export class SocketWrapper {
     };
     socket.onopen = _ => {
       this.clearTimeout();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.connectedResolver!();
 
       if (this.openHandler) {
@@ -93,6 +107,7 @@ export class SocketWrapper {
       this.socket = undefined;
 
       const elapsed = Math.floor(Date.now() - started);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.connectedRejecter!(`Connection attempt timed out after ${elapsed} ms`);
     }, this.timeout);
 

@@ -58,7 +58,13 @@ export class Ed25519Keypair {
     return new Ed25519Keypair(libsodiumPrivkey.slice(0, 32), libsodiumPrivkey.slice(32, 64));
   }
 
-  constructor(public readonly privkey: Uint8Array, public readonly pubkey: Uint8Array) {}
+  public readonly privkey: Uint8Array;
+  public readonly pubkey: Uint8Array;
+
+  public constructor(privkey: Uint8Array, pubkey: Uint8Array) {
+    this.privkey = privkey;
+    this.pubkey = pubkey;
+  }
 
   public toLibsodiumPrivkey(): Uint8Array {
     return new Uint8Array([...this.privkey, ...this.pubkey]);

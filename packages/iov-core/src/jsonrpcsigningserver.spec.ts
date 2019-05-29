@@ -57,8 +57,11 @@ const ethereumUrl = "http://localhost:8545";
 const ethereumChainId = "ethereum-eip155-5777" as ChainId;
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
-const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
-const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
+const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (
+  _,
+  matching,
+): Promise<readonly Identity[]> => matching;
+const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2): Promise<boolean> => true;
 
 async function makeBnsEthereumSigningServer(
   authorizeGetIdentities: GetIdentitiesAuthorization = defaultGetIdentitiesCallback,
@@ -130,7 +133,7 @@ describe("JsonRpcSigningServer", () => {
     }
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
-    expect((result as ReadonlyArray<any>).length).toEqual(1);
+    expect((result as readonly any[]).length).toEqual(1);
     expect(result[0]).toEqual({
       chainId: bnsConnection.chainId(),
       pubkey: bnsdFaucetPubkey,
@@ -161,7 +164,7 @@ describe("JsonRpcSigningServer", () => {
     }
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
-    expect((result as ReadonlyArray<any>).length).toEqual(1);
+    expect((result as readonly any[]).length).toEqual(1);
     expect(result[0]).toEqual(ganacheSecondIdentity);
 
     server.shutdown();
@@ -190,7 +193,7 @@ describe("JsonRpcSigningServer", () => {
     }
     const result = TransactionEncoder.fromJson(response.result);
     expect(result).toEqual(jasmine.any(Array));
-    expect((result as ReadonlyArray<any>).length).toEqual(2);
+    expect((result as readonly any[]).length).toEqual(2);
     expect(result[0]).toEqual({
       chainId: bnsConnection.chainId(),
       pubkey: bnsdFaucetPubkey,
@@ -222,7 +225,7 @@ describe("JsonRpcSigningServer", () => {
       throw new Error(`Response must not be an error, but got '${identitiesResponse.error.message}'`);
     }
     expect(identitiesResponse.result).toEqual(jasmine.any(Array));
-    expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
+    expect((identitiesResponse.result as readonly any[]).length).toEqual(1);
     const signer = TransactionEncoder.fromJson(identitiesResponse.result[0]);
     if (!isIdentity(signer)) {
       throw new Error("Identity element is not valid");
@@ -284,7 +287,7 @@ describe("JsonRpcSigningServer", () => {
       throw new Error(`Response must not be an error, but got '${identitiesResponse.error.message}'`);
     }
     expect(identitiesResponse.result).toEqual(jasmine.any(Array));
-    expect((identitiesResponse.result as ReadonlyArray<any>).length).toEqual(1);
+    expect((identitiesResponse.result as readonly any[]).length).toEqual(1);
     const signer = TransactionEncoder.fromJson(identitiesResponse.result[0]);
     if (!isIdentity(signer)) {
       throw new Error("Identity element is not valid");

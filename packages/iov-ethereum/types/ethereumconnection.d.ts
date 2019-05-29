@@ -4,7 +4,7 @@ import { Erc20TokensMap } from "./erc20";
 export interface EthereumLog {
     readonly transactionIndex: string;
     readonly data: string;
-    readonly topics: ReadonlyArray<string>;
+    readonly topics: readonly string[];
 }
 export interface EthereumConnectionOptions {
     readonly wsUrl?: string;
@@ -43,19 +43,19 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     height(): Promise<number>;
     postTx(bytes: PostableBytes): Promise<PostTxResponse>;
     getToken(searchTicker: TokenTicker): Promise<Token | undefined>;
-    getAllTokens(): Promise<ReadonlyArray<Token>>;
+    getAllTokens(): Promise<readonly Token[]>;
     getAccount(query: AccountQuery): Promise<Account | undefined>;
     getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce>;
-    getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<ReadonlyArray<Nonce>>;
+    getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
-    searchTx(query: TransactionQuery): Promise<ReadonlyArray<ConfirmedTransaction>>;
+    searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction[]>;
     listenTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
-    getSwaps(query: AtomicSwapQuery, minHeight?: number, maxHeight?: number): Promise<ReadonlyArray<AtomicSwap>>;
+    getSwaps(query: AtomicSwapQuery, minHeight?: number, maxHeight?: number): Promise<readonly AtomicSwap[]>;
     watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap>;
     private socketSend;
     private searchTransactionsById;

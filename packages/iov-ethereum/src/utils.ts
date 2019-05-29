@@ -63,7 +63,10 @@ export function normalizeHex(input: string): string {
 export function toEthereumHex(input: string | Uint8Array): string {
   const str = typeof input === "string" ? input : Encoding.toHex(input);
   const match = str.match(/^(?:0x)?(.*)$/);
-  return `0x${match![1]}`;
+  if (!match) {
+    throw new Error("Could not convert to Ethereum hex: invalid input");
+  }
+  return `0x${match[1]}`;
 }
 
 export function toBcpChainId(numericChainId: number): ChainId {

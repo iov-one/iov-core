@@ -17,7 +17,7 @@ export class DefaultValueProducer<T> implements Producer<T> {
   // tslint:disable-next-line:readonly-keyword
   private listener: Listener<T> | undefined;
 
-  constructor(value: T, callbacks?: DefaultValueProducerCallsbacks) {
+  public constructor(value: T, callbacks?: DefaultValueProducerCallsbacks) {
     this.callbacks = callbacks;
     this.internalValue = value;
   }

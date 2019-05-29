@@ -22,7 +22,7 @@ export class TsRepl {
   // tslint:disable-next-line:readonly-keyword
   private context: Context | undefined;
 
-  constructor(
+  public constructor(
     tsconfigPath: string,
     initialTypeScript: string,
     debuggingEnabled: boolean = false,
@@ -53,7 +53,7 @@ export class TsRepl {
       // tslint:disable-next-line:variable-name
       _filename: string,
       callback: (err: Error | null, result?: any) => any,
-    ) => {
+    ): Promise<void> => {
       const result = await this.replEval(code);
       callback(result.error, result.result);
     };
@@ -164,6 +164,7 @@ export class TsRepl {
     // somewhere. This btw. leads to a different execution order of imports than in the TS source.
     let lastResult: any;
     for (const added of changes.filter(change => change.added)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       lastResult = await executeJavaScriptAsync(added.value, this.evalFilename, this.context!);
     }
     return lastResult;
@@ -228,7 +229,7 @@ export class TsRepl {
     // tslint:disable-next-line:no-object-mutation
     this.evalData.input += input;
 
-    const undoFunction = () => {
+    const undoFunction = (): void => {
       // tslint:disable-next-line:no-object-mutation
       this.evalData.input = oldInput;
       // tslint:disable-next-line:no-object-mutation

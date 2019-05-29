@@ -63,8 +63,11 @@ describe("SigningServerCore", () => {
     tokenTicker: "CASH" as TokenTicker,
   };
   const defaultChainId = "some-network" as ChainId;
-  const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (_, matching) => matching;
-  const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2) => true;
+  const defaultGetIdentitiesCallback: GetIdentitiesAuthorization = async (
+    _,
+    matching,
+  ): Promise<readonly Identity[]> => matching;
+  const defaultSignAndPostCallback: SignAndPostAuthorization = async (_1, _2): Promise<boolean> => true;
 
   async function sendTokensFromFaucet(
     connection: BlockchainConnection,
@@ -126,7 +129,7 @@ describe("SigningServerCore", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
 
-      const identities: ReadonlyArray<Identity> = [
+      const identities: readonly Identity[] = [
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0)),
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1)),
         await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(2)),
@@ -135,8 +138,8 @@ describe("SigningServerCore", () => {
 
       async function selectEvenIdentitiesCallback(
         _: string,
-        matchingIdentities: ReadonlyArray<Identity>,
-      ): Promise<ReadonlyArray<Identity>> {
+        matchingIdentities: readonly Identity[],
+      ): Promise<readonly Identity[]> {
         // select all even identities
         return matchingIdentities.filter((_1, index) => index % 2 === 0);
       }
@@ -166,8 +169,8 @@ describe("SigningServerCore", () => {
 
       async function selectNoIdentityCallback(
         _1: string,
-        _2: ReadonlyArray<Identity>,
-      ): Promise<ReadonlyArray<Identity>> {
+        _2: readonly Identity[],
+      ): Promise<readonly Identity[]> {
         return [];
       }
 
@@ -228,10 +231,7 @@ describe("SigningServerCore", () => {
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(2));
       await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(3));
 
-      async function throwingCallback(
-        _1: string,
-        _2: ReadonlyArray<Identity>,
-      ): Promise<ReadonlyArray<Identity>> {
+      async function throwingCallback(_1: string, _2: readonly Identity[]): Promise<readonly Identity[]> {
         throw new Error("Something broken in here!");
       }
 

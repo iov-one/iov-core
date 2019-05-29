@@ -10,5 +10,5 @@ export declare class Reducer<T, U> {
     finished(): Promise<void>;
 }
 export declare function countStream<T>(stream: Stream<T>): Reducer<T, number>;
-export declare function asArray<T>(stream: Stream<T>): Reducer<T, ReadonlyArray<T>>;
+export declare function asArray<T>(stream: Stream<T>): Reducer<T, readonly T[]>;
 export declare function lastValue<T>(stream: Stream<T>): Reducer<T, T | undefined>;

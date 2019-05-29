@@ -40,7 +40,10 @@ export class WebsocketClient implements RpcStreamingClient {
   // map is never cleared and there is no need to do so. But unsubscribe all the subscriptions!
   private readonly subscriptionStreams = new Map<string, Stream<SubscriptionEvent>>();
 
-  constructor(baseUrl: string = "ws://localhost:46657", onError: (err: any) => void = defaultErrorHandler) {
+  public constructor(
+    baseUrl: string = "ws://localhost:46657",
+    onError: (err: any) => void = defaultErrorHandler,
+  ) {
     // accept host.name:port and assume ws protocol
     // make sure we don't end up with ...//websocket
     const path = baseUrl.endsWith("/") ? "websocket" : "/websocket";
@@ -88,6 +91,7 @@ export class WebsocketClient implements RpcStreamingClient {
       const stream = Stream.create(producer);
       this.subscriptionStreams.set(query, stream);
     }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.subscriptionStreams.get(query)!;
   }
 
@@ -115,7 +119,7 @@ class RpcEventProducer implements Producer<SubscriptionEvent> {
   private running: boolean = false;
   private subscriptions: Subscription[] = [];
 
-  constructor(request: JsonRpcRequest, socket: StreamingSocket) {
+  public constructor(request: JsonRpcRequest, socket: StreamingSocket) {
     this.request = request;
     this.socket = socket;
   }

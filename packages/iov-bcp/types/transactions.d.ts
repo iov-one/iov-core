@@ -76,7 +76,7 @@ export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTrans
     readonly transaction: T;
     readonly primarySignature: FullSignature;
     /** signatures can be appended as this is signed */
-    readonly otherSignatures: ReadonlyArray<FullSignature>;
+    readonly otherSignatures: readonly FullSignature[];
 }
 /** A codec specific address encoded as a string */
 export declare type Address = string & As<"address">;
@@ -170,7 +170,7 @@ export interface SwapOfferTransaction extends LightTransaction {
      * the requirements of the individual chain.
      */
     readonly swapId?: SwapId;
-    readonly amounts: ReadonlyArray<Amount>;
+    readonly amounts: readonly Amount[];
     readonly recipient: Address;
     /**
      * The first point in time at which the offer is expired.

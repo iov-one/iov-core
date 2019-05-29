@@ -176,7 +176,7 @@ export function buildQueryString(query: TransactionQuery): QueryString {
   const minHeightComponents = query.minHeight !== undefined ? [`tx.height>${query.minHeight}`] : [];
   const maxHeightComponents = query.maxHeight !== undefined ? [`tx.height<${query.maxHeight}`] : [];
 
-  const components: ReadonlyArray<string> = [
+  const components: readonly string[] = [
     ...sentComponents,
     ...signedByComponents,
     ...tagComponents,

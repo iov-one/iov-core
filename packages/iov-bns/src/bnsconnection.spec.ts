@@ -97,7 +97,6 @@ const cash = "CASH" as TokenTicker;
 const blockTime = 1000;
 
 describe("BnsConnection", () => {
-  const defaultChain = "chain123" as ChainId;
   const defaultAmount: Amount = {
     quantity: "1000000001",
     fractionalDigits: 9,

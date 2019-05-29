@@ -10,7 +10,7 @@ export interface ChainAddressPair {
 export interface BnsUsernameNft {
     readonly id: string;
     readonly owner: Address;
-    readonly addresses: ReadonlyArray<ChainAddressPair>;
+    readonly addresses: readonly ChainAddressPair[];
 }
 export interface BnsUsernamesByUsernameQuery {
     readonly username: string;
@@ -71,7 +71,7 @@ export interface CreateMultisignatureTx extends LightTransaction {
 export interface RegisterUsernameTx extends LightTransaction {
     readonly kind: "bns/register_username";
     readonly username: string;
-    readonly addresses: ReadonlyArray<ChainAddressPair>;
+    readonly addresses: readonly ChainAddressPair[];
 }
 export interface RemoveAddressFromUsernameTx extends LightTransaction {
     readonly kind: "bns/remove_address_from_username";

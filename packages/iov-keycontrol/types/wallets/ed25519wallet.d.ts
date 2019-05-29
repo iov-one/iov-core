@@ -22,7 +22,7 @@ export declare class Ed25519Wallet implements Wallet {
     createIdentity(chainId: ChainId, options: unknown): Promise<Identity>;
     setIdentityLabel(identity: Identity, label: string | undefined): void;
     getIdentityLabel(identity: Identity): string | undefined;
-    getIdentities(): ReadonlyArray<Identity>;
+    getIdentities(): readonly Identity[];
     createTransactionSignature(identity: Identity, transactionBytes: SignableBytes, prehashType: PrehashType): Promise<SignatureBytes>;
     printableSecret(): string;
     serialize(): WalletSerializationString;

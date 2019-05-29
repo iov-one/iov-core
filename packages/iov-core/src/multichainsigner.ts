@@ -61,12 +61,12 @@ export class MultiChainSigner {
 
   // initialize a write with a userProfile with secret info,
   // chains we want to connect to added with addChain (to keep async out of constructor)
-  constructor(profile: Profile) {
+  public constructor(profile: Profile) {
     this.profile = profile;
     this.knownChains = new Map<string, Chain>();
   }
 
-  public chainIds(): ReadonlyArray<ChainId> {
+  public chainIds(): readonly ChainId[] {
     return Array.from(this.knownChains.keys()).map(key => key as ChainId);
   }
 

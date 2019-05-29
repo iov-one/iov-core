@@ -20,16 +20,16 @@ export interface BlockResponse {
 }
 export interface BlockResultsResponse {
     readonly height: number;
-    readonly results: ReadonlyArray<TxData>;
+    readonly results: readonly TxData[];
     readonly endBlock: {
-        readonly validatorUpdates: ReadonlyArray<Validator>;
+        readonly validatorUpdates: readonly Validator[];
         readonly consensusUpdates?: ConsensusParams;
-        readonly tags?: ReadonlyArray<Tag>;
+        readonly tags?: readonly Tag[];
     };
 }
 export interface BlockchainResponse {
     readonly lastHeight: number;
-    readonly blockMetas: ReadonlyArray<BlockMeta>;
+    readonly blockMetas: readonly BlockMeta[];
 }
 /** No data in here because RPC method BroadcastTxAsync "returns right away, with no response" */
 export interface BroadcastTxAsyncResponse {
@@ -61,7 +61,7 @@ export interface GenesisResponse {
     readonly genesisTime: ReadonlyDate;
     readonly chainId: string;
     readonly consensusParams: ConsensusParams;
-    readonly validators: ReadonlyArray<Validator>;
+    readonly validators: readonly Validator[];
     readonly appHash: Uint8Array;
     readonly appState: {} | undefined;
 }
@@ -85,12 +85,12 @@ export interface TxResponse {
     readonly proof?: TxProof;
 }
 export interface TxSearchResponse {
-    readonly txs: ReadonlyArray<TxResponse>;
+    readonly txs: readonly TxResponse[];
     readonly totalCount: number;
 }
 export interface ValidatorsResponse {
     readonly blockHeight: number;
-    readonly results: ReadonlyArray<Validator>;
+    readonly results: readonly Validator[];
 }
 export interface NewBlockEvent extends Block {
 }
@@ -114,7 +114,7 @@ export interface TxData {
     readonly code: number;
     readonly log?: string;
     readonly data?: Uint8Array;
-    readonly tags?: ReadonlyArray<Tag>;
+    readonly tags?: readonly Tag[];
 }
 export interface TxProof {
     readonly data: Uint8Array;
@@ -124,7 +124,7 @@ export interface TxProof {
         readonly index: number;
         /** Optional because does not exist in Tendermint 0.25.x */
         readonly leafHash?: Uint8Array;
-        readonly aunts: ReadonlyArray<Uint8Array>;
+        readonly aunts: readonly Uint8Array[];
     };
 }
 export interface BlockMeta {
@@ -141,8 +141,8 @@ export interface BlockId {
 export interface Block {
     readonly header: Header;
     readonly lastCommit: Commit;
-    readonly txs: ReadonlyArray<Uint8Array>;
-    readonly evidence?: ReadonlyArray<Evidence>;
+    readonly txs: readonly Uint8Array[];
+    readonly evidence?: readonly Evidence[];
 }
 export interface Evidence {
     readonly type: string;
@@ -153,7 +153,7 @@ export interface Evidence {
 }
 export interface Commit {
     readonly blockId: BlockId;
-    readonly precommits: ReadonlyArray<Vote>;
+    readonly precommits: readonly Vote[];
 }
 /**
  * raw values from https://github.com/tendermint/tendermint/blob/dfa9a9a30a666132425b29454e90a472aa579a48/types/vote.go#L44

@@ -6,7 +6,7 @@ export declare class Uint32 implements Integer {
     static fromBigEndianBytes(bytes: ArrayLike<number>): Uint32;
     protected readonly data: number;
     constructor(input: number);
-    toBytesBigEndian(): ReadonlyArray<number>;
+    toBytesBigEndian(): readonly number[];
     toNumber(): number;
     toString(): string;
 }
@@ -30,8 +30,8 @@ export declare class Uint64 implements Integer {
     static fromNumber(input: number): Uint64;
     private readonly data;
     private constructor();
-    toBytesBigEndian(): ReadonlyArray<number>;
-    toBytesLittleEndian(): ReadonlyArray<number>;
+    toBytesBigEndian(): readonly number[];
+    toBytesLittleEndian(): readonly number[];
     toString(): string;
     toNumber(): number;
 }

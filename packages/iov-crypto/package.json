@@ -24,7 +24,6 @@
     "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari",
     "test": "yarn build-or-skip && yarn test-node",
-    "prebuild": "yarn format",
     "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && shx rm ./types/*.spec.d.ts",
     "build": "shx rm -rf ./build && tsc && yarn move-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",

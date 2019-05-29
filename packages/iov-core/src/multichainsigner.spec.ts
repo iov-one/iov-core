@@ -29,11 +29,11 @@ function pendingWithoutBnsd(): void {
   }
 }
 
-const pendingWithoutEthereum = () => {
+function pendingWithoutEthereum(): void {
   if (!process.env.ETHEREUM_ENABLED) {
     pending("Set ETHEREUM_ENABLED to enable ethereum-based tests");
   }
-};
+}
 
 async function randomBnsAddress(): Promise<Address> {
   const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));

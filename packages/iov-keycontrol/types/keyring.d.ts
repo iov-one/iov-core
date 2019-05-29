@@ -30,7 +30,7 @@ export declare class Keyring {
     /**
      * Returns an array with immutable references.
      */
-    getWallets(): ReadonlyArray<ReadonlyWallet>;
+    getWallets(): readonly ReadonlyWallet[];
     /**
      * Finds a wallet and returns an immutable reference.
      *
@@ -51,11 +51,11 @@ export declare class Keyring {
      * The identity is bound to one chain ID to encourage using different
      * keypairs on different chains.
      */
-    createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number): Promise<Identity>;
+    createIdentity(walletId: WalletId, chainId: ChainId, options: Ed25519Keypair | readonly Slip10RawIndex[] | number): Promise<Identity>;
     /**
      * All identities of all wallets
      */
-    getAllIdentities(): ReadonlyArray<Identity>;
+    getAllIdentities(): readonly Identity[];
     /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
     setIdentityLabel(identity: Identity, label: string | undefined): void;
     serialize(): KeyringSerializationString;

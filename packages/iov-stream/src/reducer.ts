@@ -23,7 +23,7 @@ export class Reducer<T, U> {
   // on complete or error
   private readonly completed: Promise<void>;
 
-  constructor(stream: Stream<T>, reducer: ReducerFunc<T, U>, initState: U) {
+  public constructor(stream: Stream<T>, reducer: ReducerFunc<T, U>, initState: U) {
     this.stream = stream;
     this.reducer = reducer;
     this.state = initState;
@@ -67,14 +67,14 @@ export function countStream<T>(stream: Stream<T>): Reducer<T, number> {
   return new Reducer(stream, increment, 0);
 }
 
-function append<T>(list: ReadonlyArray<T>, evt: T): ReadonlyArray<T> {
+function append<T>(list: readonly T[], evt: T): readonly T[] {
   return [...list, evt];
 }
 
 // asArray maintains an array containing all events that have
 // occurred on the stream
-export function asArray<T>(stream: Stream<T>): Reducer<T, ReadonlyArray<T>> {
-  return new Reducer<T, ReadonlyArray<T>>(stream, append, []);
+export function asArray<T>(stream: Stream<T>): Reducer<T, readonly T[]> {
+  return new Reducer<T, readonly T[]>(stream, append, []);
 }
 
 function last<T>(_: any, event: T): T {

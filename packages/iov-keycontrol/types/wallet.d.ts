@@ -16,7 +16,7 @@ export interface ReadonlyWallet {
     /**
      * Returns all identities currently registered
      */
-    readonly getIdentities: () => ReadonlyArray<Identity>;
+    readonly getIdentities: () => readonly Identity[];
     readonly canSign: ValueAndUpdates<boolean>;
     readonly implementationId: WalletImplementationIdString;
     /**
@@ -25,7 +25,7 @@ export interface ReadonlyWallet {
      * This allows the Keyring to check for duplicate identities before they
      * are persisted.
      */
-    readonly previewIdentity: (chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number) => Promise<Identity>;
+    readonly previewIdentity: (chainId: ChainId, options: Ed25519Keypair | readonly Slip10RawIndex[] | number) => Promise<Identity>;
     /**
      * Created a detached signature for the signable bytes
      * with the private key that matches the given Identity.
@@ -65,7 +65,7 @@ export interface Wallet extends ReadonlyWallet {
      * The identity is bound to one chain ID to encourage using different
      * keypairs on different chains.
      */
-    readonly createIdentity: (chainId: ChainId, options: Ed25519Keypair | ReadonlyArray<Slip10RawIndex> | number) => Promise<Identity>;
+    readonly createIdentity: (chainId: ChainId, options: Ed25519Keypair | readonly Slip10RawIndex[] | number) => Promise<Identity>;
     /**
      * Sets a local label associated with the public identity to be displayed in the UI.
      * To clear a label, set it to undefined

@@ -35,9 +35,13 @@ function encodeInt(intNumber: number): number | null {
     throw new Error("Received some kind of number that can't be encoded.");
   }
 
-  // use null instead of 0 to not encode zero fields
-  // for compatibility with golang encoder
+  // Normalizes the zero value to null as expected by weave
   return intNumber || null;
+}
+
+function encodeString(data: string | undefined): string | null {
+  // Normalizes the empty string to null as expected by weave
+  return data || null;
 }
 
 export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
@@ -100,7 +104,7 @@ export function encodeParticipants(
 }
 
 export function buildSignedTx(tx: SignedTransaction): codecImpl.app.ITx {
-  const sigs: ReadonlyArray<FullSignature> = [tx.primarySignature, ...tx.otherSignatures];
+  const sigs: readonly FullSignature[] = [tx.primarySignature, ...tx.otherSignatures];
   const built = buildUnsignedTx(tx.transaction);
   return { ...built, signatures: sigs.map(encodeFullSignature) };
 }
@@ -182,7 +186,7 @@ function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.app.
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       dest: decodeBnsAddress(tx.recipient).data,
       amount: encodeAmount(tx.amount),
-      memo: tx.memo,
+      memo: encodeString(tx.memo),
     }),
   };
 }
@@ -199,7 +203,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: encodeInt(tx.timeout.timestamp),
-      memo: tx.memo,
+      memo: encodeString(tx.memo),
     }),
   };
 }
