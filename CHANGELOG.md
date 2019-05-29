@@ -2,6 +2,7 @@
 
 ## 0.14.4
 
+- @iov/ethereum: EthereumConnection now accepts a ws:// url as its baseUrl.
 - @iov/keycontrol: Add missing `UserProfileOptions` export.
 - @iov/keycontrol: Add `UserProfile.deriveEncryptionKey`, which lets the caller
   create and cache a `UserProfileEncryptionKey`, in order to speed up `.storeIn`
