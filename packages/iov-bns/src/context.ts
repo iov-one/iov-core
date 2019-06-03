@@ -3,11 +3,11 @@ import {
   Amount,
   ChainId,
   ConfirmedTransaction,
+  isUnsignedTransaction,
   OpenSwap,
   SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
-  WithCreator,
 } from "@iov/bcp";
 
 import { decodeAmount } from "./decode";
@@ -76,8 +76,13 @@ export class Context {
     };
   }
 
-  public swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction & WithCreator>): OpenSwap {
+  public swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction>): OpenSwap {
     const transaction = confirmed.transaction;
+    // In BNS, searching is not done via a scraper or logs, so in practice the
+    // confirmed transactions passed into this function should all include a creator
+    if (!isUnsignedTransaction(transaction)) {
+      throw new Error("Cannot create swap offer from transaction without creator");
+    }
     return {
       kind: SwapProcessState.Open,
       data: {

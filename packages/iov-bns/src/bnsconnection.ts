@@ -26,6 +26,7 @@ import {
   isConfirmedTransaction,
   isFailedTransaction,
   isPubkeyQuery,
+  LightTransaction,
   Nonce,
   OpenSwap,
   PostableBytes,
@@ -41,7 +42,6 @@ import {
   TransactionState,
   TxReadCodec,
   UnsignedTransaction,
-  WithCreator,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
@@ -438,10 +438,10 @@ export class BnsConnection implements AtomicSwapConnection {
    */
   public async getSwaps(query: AtomicSwapQuery): Promise<readonly AtomicSwap[]> {
     // we need to combine them all to see all transactions that affect the query
-    const setTxs: readonly ConfirmedTransaction[] = (await this.searchTx({
+    const setTxs: readonly ConfirmedTransaction<LightTransaction>[] = (await this.searchTx({
       tags: [bnsSwapQueryTag(query, true)],
     })).filter(isConfirmedTransaction);
-    const delTxs: readonly ConfirmedTransaction[] = (await this.searchTx({
+    const delTxs: readonly ConfirmedTransaction<LightTransaction>[] = (await this.searchTx({
       tags: [bnsSwapQueryTag(query, false)],
     })).filter(isConfirmedTransaction);
 
@@ -479,10 +479,7 @@ export class BnsConnection implements AtomicSwapConnection {
       .map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/abort, delTxs must be a claim/abort
-    const releases: Stream<(SwapClaimTransaction | SwapAbortTransaction) & WithCreator> = Stream.merge(
-      setTxs,
-      delTxs,
-    )
+    const releases: Stream<SwapClaimTransaction | SwapAbortTransaction> = Stream.merge(setTxs, delTxs)
       .filter(isConfirmedWithSwapClaimOrAbortTransaction)
       .map(confirmed => confirmed.transaction);
 
@@ -494,7 +491,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public async searchTx(
     query: TransactionQuery,
-  ): Promise<readonly (ConfirmedTransaction | FailedTransaction)[]> {
+  ): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]> {
     // this will paginate over all transactions, even if multiple pages.
     // FIXME: consider making a streaming interface here, but that will break clients
     const res = await this.tmClient.txSearchAll({ query: buildQueryString(query) });
@@ -531,11 +528,13 @@ export class BnsConnection implements AtomicSwapConnection {
   /**
    * A stream of all transactions that match the tags from the present moment on
    */
-  public listenTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+  public listenTx(
+    query: TransactionQuery,
+  ): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
     const chainId = this.chainId();
     const rawQuery = buildQueryString(query);
     return this.tmClient.subscribeTx(rawQuery).map(
-      (transaction): ConfirmedTransaction | FailedTransaction => {
+      (transaction): ConfirmedTransaction<LightTransaction> | FailedTransaction => {
         const transactionId = Encoding.toHex(transaction.hash).toUpperCase() as TransactionId;
 
         if (transaction.result.code === 0) {
@@ -566,7 +565,7 @@ export class BnsConnection implements AtomicSwapConnection {
    * It returns a stream starting the array of all existing transactions
    * and then continuing with live feeds
    */
-  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
     const historyStream = fromListPromise(this.searchTx(query));
     const updatesStream = this.listenTx(query);
     const combinedStream = concat(historyStream, updatesStream);
