@@ -58,7 +58,7 @@ pass the VERSION you want to compile as an environmental variable, and call:
 
 `VERSION=v0.10.0 yarn protoc`
 
-## Generating test vectors
+## Test vectors
 
 [testdata.spec.ts](./src/testdata.spec.ts) contains a number of examples of
 encodings generated from the golang binary to help ensure compatibility in the
@@ -66,45 +66,10 @@ serialization without requiring posting to a running blockchain. If there are
 breaking changes to the protobuf format, or you want to add more examples, you
 need to follow these steps.
 
-### Generate a set of testvectors
-
-You must first have a proper golang development setup, ideally with golang 1.10
-or 1.11 installed. You will compile and run some golang code.
-
-Before starting make sure you have run `weave.sh` and there is a locally checked
-out copy of the codebase. You already have this if you successfully performed
-the above commands or ran `yarn protoc`
-
-Now, it is time to build and run it:
-
 ```shell
-# build the binary
-./scripts/build_bnsd.sh
-# run it to generate testvectors
-rm -rf ./testvectors
-./go/bin/bnsd testgen ./testvectors
+$ ./scripts/weave.sh v0.15.0
+$ ./scripts/collect_testdata.sh > src/testdata/bnsd.json
 ```
-
-Keep the address mentioned there, you will need it in updating
-[testdata.spec.ts](./src/testdata.spec.ts). I would suggest going through the
-existing file and for every binary mentioned there, you will want to run
-something like:
-
-```shell
-./scripts/tohex ./testvectors/pub_key.bin
-```
-
-For json, you can just view it, and use that to construct the object. However,
-there are various binary fields that are base64 encoded. The simplest approach
-to extract them into hex is:
-
-```shell
-cat ./testvectors/pub_key.json | jq .
-./scripts/jsonbytes ./testvectors/pub_key.json .Pub.Ed25519
-```
-
-There is often a bit of adjusting to adapt the json to the internal object
-format, but it should be straight-forward.
 
 Note, you will also have to compile and install this script as a bech32 helper
 to generate the addresses: https://github.com/nym-zone/bech32

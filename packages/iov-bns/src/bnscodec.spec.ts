@@ -6,10 +6,10 @@ import {
   chainId,
   randomTxJson,
   sendTxJson,
-  sig,
-  signBytes,
+  sendTxSignBytes,
   signedTxBin,
   signedTxJson,
+  signedTxSig,
   swapAbortTxJson,
   swapClaimTxJson,
   swapOfferTxJson,
@@ -27,16 +27,16 @@ describe("bnscodec", () => {
   });
 
   it("properly generates signbytes", async () => {
-    const { bytes, prehashType } = bnsCodec.bytesToSign(sendTxJson, sig.nonce);
+    const { bytes, prehashType } = bnsCodec.bytesToSign(sendTxJson, signedTxSig.nonce);
 
     // it should validate
     switch (prehashType) {
       case PrehashType.Sha512: {
         // testvector is a sha512 digest of our testbytes
         const prehash = new Sha512(bytes).digest();
-        expect(prehash).toEqual(signBytes);
-        const pubkey = sig.pubkey.data;
-        const valid = await Ed25519.verifySignature(sig.signature, prehash, pubkey);
+        expect(prehash).toEqual(sendTxSignBytes);
+        const pubkey = signedTxSig.pubkey.data;
+        const valid = await Ed25519.verifySignature(signedTxSig.signature, prehash, pubkey);
         expect(valid).toEqual(true);
         break;
       }
