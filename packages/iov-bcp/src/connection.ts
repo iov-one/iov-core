@@ -149,14 +149,14 @@ export interface FailedTransaction {
   readonly message?: string;
 }
 
-export function isConfirmedTransaction(
-  transaction: ConfirmedTransaction | FailedTransaction,
-): transaction is ConfirmedTransaction {
+export function isConfirmedTransaction<T extends LightTransaction = UnsignedTransaction>(
+  transaction: ConfirmedTransaction<T> | FailedTransaction,
+): transaction is ConfirmedTransaction<T> {
   return typeof (transaction as any).transaction !== "undefined";
 }
 
-export function isFailedTransaction(
-  transaction: ConfirmedTransaction | FailedTransaction,
+export function isFailedTransaction<T extends LightTransaction = UnsignedTransaction>(
+  transaction: ConfirmedTransaction<T> | FailedTransaction,
 ): transaction is FailedTransaction {
   return !isConfirmedTransaction(transaction);
 }
@@ -267,16 +267,20 @@ export interface BlockchainConnection {
   readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
   readonly searchTx: (
     query: TransactionQuery,
-  ) => Promise<readonly (ConfirmedTransaction | FailedTransaction)[]>;
+  ) => Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]>;
   /**
    * Subscribes to all newly added transactions that match the query
    */
-  readonly listenTx: (query: TransactionQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
+  readonly listenTx: (
+    query: TransactionQuery,
+  ) => Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
   /**
    * Returns a stream for all historical transactions that match
    * the query, along with all new transactions arriving from listenTx
    */
-  readonly liveTx: (query: TransactionQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
+  readonly liveTx: (
+    query: TransactionQuery,
+  ) => Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
   readonly getFeeQuote: (tx: UnsignedTransaction) => Promise<Fee>;
   // withDefaultFee will set the fee of the transaction to the result of getFeeQuote
   readonly withDefaultFee: <T extends UnsignedTransaction>(tx: T) => Promise<T>;
