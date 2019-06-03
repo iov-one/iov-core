@@ -14,6 +14,7 @@ import {
   isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
+  LightTransaction,
   Nonce,
   PubkeyQuery,
   PublicKeyBundle,
@@ -942,7 +943,7 @@ describe("LiskConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1005,7 +1006,7 @@ describe("LiskConnection", () => {
         await postResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after transaction is in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1059,7 +1060,7 @@ describe("LiskConnection", () => {
         const transactionId = postResult.transactionId;
 
         // setup listener before transaction is in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
