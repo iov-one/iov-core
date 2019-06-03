@@ -18,6 +18,7 @@ import {
   isConfirmedTransaction,
   isSendTransaction,
   isSwapOfferTransaction,
+  LightTransaction,
   Nonce,
   PostTxResponse,
   Preimage,
@@ -762,7 +763,6 @@ describe("EthereumConnection", () => {
       }
       expect(transaction.recipient).toEqual(recipient);
       expect(transaction.amount.quantity).toEqual("445500");
-      expect(transaction.creator.pubkey).toEqual(mainIdentity.pubkey);
       connection.disconnect();
     }, 30_000);
 
@@ -959,7 +959,6 @@ describe("EthereumConnection", () => {
           if (!isSendTransaction(transaction)) {
             throw new Error("Unexpected transaction type");
           }
-          expect(transaction.creator).toEqual(mainIdentity);
           expect(transaction.recipient).toEqual(recipient);
           expect(transaction.amount).toEqual(sendTest.amount);
           expect(transaction.memo).toBeUndefined();
@@ -1024,7 +1023,6 @@ describe("EthereumConnection", () => {
           if (!isSendTransaction(transaction)) {
             throw new Error("Unexpected transaction type");
           }
-          expect(transaction.creator).toEqual(mainIdentity);
           expect(transaction.recipient).toEqual(recipient);
           expect(transaction.amount).toEqual(sendTest.amount);
           expect(transaction.memo).toBeUndefined();
@@ -1054,7 +1052,7 @@ describe("EthereumConnection", () => {
 
         // setup listener
         const transactionIds = new Set<TransactionId>();
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.listenTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1067,7 +1065,6 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
-            expect(event.transaction.creator).toEqual(sender);
             expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
@@ -1238,7 +1235,7 @@ describe("EthereumConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1251,7 +1248,6 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
-            expect(event.transaction.creator).toEqual(sender);
             expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
@@ -1358,7 +1354,7 @@ describe("EthereumConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection
           .liveTx({ sentFromOrTo: senderAddress, minHeight: minHeight })
           .subscribe({
@@ -1373,7 +1369,6 @@ describe("EthereumConnection", () => {
                 throw new Error("Unexpected transaction type");
               }
               expect(event.transaction.recipient).toEqual(recipientAddress);
-              expect(event.transaction.creator).toEqual(sender);
               expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
               if (events.length === 3) {
@@ -1472,7 +1467,7 @@ describe("EthereumConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1485,7 +1480,6 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
-            expect(event.transaction.creator).toEqual(sender);
             expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
@@ -1585,7 +1579,7 @@ describe("EthereumConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection
           .liveTx({ sentFromOrTo: senderAddress, minHeight: minHeight })
           .subscribe({
@@ -1600,7 +1594,6 @@ describe("EthereumConnection", () => {
                 throw new Error("Unexpected transaction type");
               }
               expect(event.transaction.recipient).toEqual(recipientAddress);
-              expect(event.transaction.creator).toEqual(sender);
               expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
               if (events.length === 3) {
@@ -1716,7 +1709,7 @@ describe("EthereumConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1729,7 +1722,6 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
-            expect(event.transaction.creator).toEqual(sender);
             expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 4) {
@@ -1797,7 +1789,7 @@ describe("EthereumConnection", () => {
         await postResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after transaction is in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1859,7 +1851,7 @@ describe("EthereumConnection", () => {
         const transactionId = postResult.transactionId;
 
         // setup listener before transaction is in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {

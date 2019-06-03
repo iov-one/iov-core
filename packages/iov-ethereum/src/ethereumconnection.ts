@@ -29,6 +29,7 @@ import {
   isSwapProcessStateAborted,
   isSwapProcessStateClaimed,
   isSwapProcessStateOpen,
+  LightTransaction,
   Nonce,
   OpenSwap,
   PostableBytes,
@@ -682,7 +683,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return Stream.create(producer);
   }
 
-  public async searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction[]> {
+  public async searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction<LightTransaction>[]> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -710,7 +711,9 @@ export class EthereumConnection implements AtomicSwapConnection {
     }
   }
 
-  public listenTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+  public listenTx(
+    query: TransactionQuery,
+  ): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -759,7 +762,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       };
 
       let pollIntervalLogs: NodeJS.Timeout | undefined;
-      const fromLogsProducer: Producer<ConfirmedTransaction | FailedTransaction> = {
+      const fromLogsProducer: Producer<ConfirmedTransaction<LightTransaction> | FailedTransaction> = {
         start: async listener => {
           const currentHeight = await this.height();
           let minHeight = Math.max(query.minHeight || 0, currentHeight + 1);
@@ -799,7 +802,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     }
   }
 
-  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
+  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -863,7 +866,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       };
 
       let pollIntervalLogs: NodeJS.Timeout | undefined;
-      const fromLogsProducer: Producer<ConfirmedTransaction | FailedTransaction> = {
+      const fromLogsProducer: Producer<ConfirmedTransaction<LightTransaction> | FailedTransaction> = {
         start: async listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
