@@ -55,8 +55,8 @@ import { constants } from "./constants";
 import { Erc20Options } from "./erc20";
 import { Erc20Reader } from "./erc20reader";
 import { EthereumCodec } from "./ethereumcodec";
-import { HttpJsonRpcClient } from "./httpjsonrpcclient";
-import { JsonRpcClient } from "./jsonrpcclient";
+import { EthereumRpcClient } from "./ethereumrpcclient";
+import { HttpEthereumRpcClient } from "./httpethereumrpcclient";
 import { Parse } from "./parse";
 import {
   decodeHexQuantity,
@@ -67,7 +67,7 @@ import {
   toBcpChainId,
   toEthereumHex,
 } from "./utils";
-import { WsJsonRpcClient } from "./wsjsonrpcclient";
+import { WsEthereumRpcClient } from "./wsethereumrpcclient";
 
 async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -75,7 +75,7 @@ async function sleep(ms: number): Promise<void> {
 
 async function loadChainId(baseUrl: string): Promise<ChainId> {
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
-  const response = await new HttpJsonRpcClient(baseUrl).run({
+  const response = await new HttpEthereumRpcClient(baseUrl).run({
     jsonrpc: "2.0",
     method: "net_version",
     params: [],
@@ -120,7 +120,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   }
 
   private readonly pollIntervalMs: number;
-  private readonly rpcClient: JsonRpcClient;
+  private readonly rpcClient: EthereumRpcClient;
   private readonly myChainId: ChainId;
   private readonly scraperApiUrl: string | undefined;
   private readonly atomicSwapEtherContractAddress?: Address;
@@ -131,12 +131,12 @@ export class EthereumConnection implements AtomicSwapConnection {
   public constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
     const baseUrlIsHttp = ["http://", "https://"].some(prefix => baseUrl.startsWith(prefix));
     const baseUrlIsWs = ["ws://", "wss://"].some(prefix => baseUrl.startsWith(prefix));
-    const wsUrl = baseUrlIsWs ? baseUrl : options.wsUrl;
-    if (!wsUrl && !baseUrlIsHttp) {
+    if (!baseUrlIsHttp && !baseUrlIsWs) {
       throw new Error("Unsupported protocol for baseUrl: must be one of http, https, ws or wss");
     }
 
-    this.rpcClient = wsUrl ? new WsJsonRpcClient(wsUrl) : new HttpJsonRpcClient(baseUrl);
+    const wsUrl = baseUrlIsWs ? baseUrl : options.wsUrl;
+    this.rpcClient = wsUrl ? new WsEthereumRpcClient(wsUrl) : new HttpEthereumRpcClient(baseUrl);
     this.pollIntervalMs = options.pollInterval ? options.pollInterval * 1000 : 4_000;
     this.myChainId = chainId;
     this.scraperApiUrl = options.scraperApiUrl;

@@ -3,13 +3,13 @@ import { Stream } from "xstream";
 import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jsonrpc";
 import { SocketWrapperMessageEvent, StreamingSocket } from "@iov/socket";
 
-import { JsonRpcClient } from "./jsonrpcclient";
+import { EthereumRpcClient } from "./ethereumrpcclient";
 
 function isNonNull<T>(t: T | null): t is T {
   return t !== null;
 }
 
-export class WsJsonRpcClient implements JsonRpcClient {
+export class WsEthereumRpcClient implements EthereumRpcClient {
   public readonly events: Stream<SocketWrapperMessageEvent>;
   private readonly socket: StreamingSocket;
 

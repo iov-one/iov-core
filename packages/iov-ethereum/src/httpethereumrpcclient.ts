@@ -3,9 +3,9 @@ import xstream from "xstream";
 
 import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jsonrpc";
 
-import { JsonRpcClient } from "./jsonrpcclient";
+import { EthereumRpcClient } from "./ethereumrpcclient";
 
-export class HttpJsonRpcClient implements JsonRpcClient {
+export class HttpEthereumRpcClient implements EthereumRpcClient {
   public readonly events = xstream.throw(
     new Error("Events are not available when connecting via HTTP, use Websockets instead."),
   );

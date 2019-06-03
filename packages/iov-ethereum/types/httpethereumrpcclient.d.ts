@@ -1,6 +1,6 @@
 import { JsonRpcRequest, JsonRpcResponse } from "@iov/jsonrpc";
-import { JsonRpcClient } from "./jsonrpcclient";
-export declare class HttpJsonRpcClient implements JsonRpcClient {
+import { EthereumRpcClient } from "./ethereumrpcclient";
+export declare class HttpEthereumRpcClient implements EthereumRpcClient {
     readonly events: import("xstream").Stream<any>;
     private readonly baseUrl;
     constructor(baseUrl: string);
