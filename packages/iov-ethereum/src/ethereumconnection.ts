@@ -650,7 +650,8 @@ export class EthereumConnection implements AtomicSwapConnection {
     const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey) : query.address;
 
     let pollInterval: NodeJS.Timeout | undefined;
-    let lastEvent: any = {}; // use non-undefined init value ensure undefined is sent as an event
+    // use non-undefined init value to ensure undefined is sent as an event
+    let lastEvent: Account | {} | undefined = {};
 
     const producer: Producer<Account | undefined> = {
       start: async listener => {

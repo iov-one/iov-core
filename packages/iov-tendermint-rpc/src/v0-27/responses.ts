@@ -100,6 +100,7 @@ function decodeValidatorUpdate(data: RpcValidatorUpdate): responses.Validator {
     address: Hex.decode(assertNotEmpty(data.address)),
   };
 }
+
 interface RpcTag {
   readonly key: Base64String;
   readonly value: Base64String;
