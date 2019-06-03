@@ -7,7 +7,6 @@ export interface EthereumLog {
     readonly topics: readonly string[];
 }
 export interface EthereumConnectionOptions {
-    readonly wsUrl?: string;
     /** URL to an Etherscan compatible scraper API */
     readonly scraperApiUrl?: string;
     /** Address of the deployed atomic swap contract for ETH */

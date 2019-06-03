@@ -65,7 +65,7 @@ describe("Erc20Reader", () => {
   it("can query total supply", async () => {
     pendingWithoutEthereum();
 
-    const reader = new Erc20Reader(makeClient(testConfig.base), ashToken);
+    const reader = new Erc20Reader(makeClient(testConfig.baseHttp), ashToken);
     const result = await reader.totalSupply();
     expect(result).toBeTruthy();
     expect(result.gt(new BN(33_445566))).toEqual(true);
@@ -76,7 +76,7 @@ describe("Erc20Reader", () => {
     it("works for address with balance", async () => {
       pendingWithoutEthereum();
 
-      const reader = new Erc20Reader(makeClient(testConfig.base), ashToken);
+      const reader = new Erc20Reader(makeClient(testConfig.baseHttp), ashToken);
       const result = await reader.balanceOf(testConfig.accountStates.default.address);
       expect(result.toString()).toEqual("33445566");
     });
@@ -84,7 +84,7 @@ describe("Erc20Reader", () => {
     it("works for unused address", async () => {
       pendingWithoutEthereum();
 
-      const reader = new Erc20Reader(makeClient(testConfig.base), ashToken);
+      const reader = new Erc20Reader(makeClient(testConfig.baseHttp), ashToken);
       const result = await reader.balanceOf(await randomAddress());
       expect(result.toString()).toEqual("0");
     });
@@ -94,7 +94,7 @@ describe("Erc20Reader", () => {
     it("works if set on-chain", async () => {
       pendingWithoutEthereum();
 
-      const reader = new Erc20Reader(makeClient(testConfig.base), ashToken);
+      const reader = new Erc20Reader(makeClient(testConfig.baseHttp), ashToken);
       const result = await reader.symbol();
       expect(result).toEqual("ASH");
     });
@@ -102,7 +102,7 @@ describe("Erc20Reader", () => {
     it("returns configured value if set", async () => {
       pendingWithoutEthereum();
 
-      const reader = new Erc20Reader(makeClient(testConfig.base), trashToken);
+      const reader = new Erc20Reader(makeClient(testConfig.baseHttp), trashToken);
       const result = await reader.symbol();
       expect(result).toEqual("TRASH");
     });
@@ -112,7 +112,7 @@ describe("Erc20Reader", () => {
     it("works if set on-chain", async () => {
       pendingWithoutEthereum();
 
-      const reader = new Erc20Reader(makeClient(testConfig.base), ashToken);
+      const reader = new Erc20Reader(makeClient(testConfig.baseHttp), ashToken);
       const result = await reader.name();
       expect(result).toEqual("Ash Token");
     });
@@ -120,7 +120,7 @@ describe("Erc20Reader", () => {
     it("returns configured value if set", async () => {
       pendingWithoutEthereum();
 
-      const reader = new Erc20Reader(makeClient(testConfig.base), trashToken);
+      const reader = new Erc20Reader(makeClient(testConfig.baseHttp), trashToken);
       const result = await reader.name();
       expect(result).toEqual("Trash Token");
     });
@@ -130,7 +130,7 @@ describe("Erc20Reader", () => {
     it("works if set on-chain", async () => {
       pendingWithoutEthereum();
 
-      const reader = new Erc20Reader(makeClient(testConfig.base), ashToken);
+      const reader = new Erc20Reader(makeClient(testConfig.baseHttp), ashToken);
       const result = await reader.decimals();
       expect(result).toEqual(12);
     });
@@ -138,7 +138,7 @@ describe("Erc20Reader", () => {
     it("returns configured value if set", async () => {
       pendingWithoutEthereum();
 
-      const reader = new Erc20Reader(makeClient(testConfig.base), trashToken);
+      const reader = new Erc20Reader(makeClient(testConfig.baseHttp), trashToken);
       const result = await reader.decimals();
       expect(result).toEqual(9);
     });

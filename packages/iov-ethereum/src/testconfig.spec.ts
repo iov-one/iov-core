@@ -22,7 +22,8 @@ export interface Erc20TransferTest {
 
 export interface EthereumNetworkConfig {
   readonly env: string;
-  readonly base: string;
+  readonly baseHttp: string;
+  readonly baseWs: string;
   readonly connectionOptions: EthereumConnectionOptions;
   readonly chainId: ChainId;
   readonly minHeight: number;
@@ -66,9 +67,9 @@ const env = process.env.ETHEREUM_NETWORK || "local";
 
 const local: EthereumNetworkConfig = {
   env: "local",
-  base: "http://localhost:8545",
+  baseHttp: "http://localhost:8545",
+  baseWs: "ws://localhost:8545/ws",
   connectionOptions: {
-    wsUrl: "ws://localhost:8545/ws",
     // Low values to speedup test execution on the local ganache chain (using instant mine)
     pollInterval: 0.1,
     // Local scraper not used by default in CI to avoid circular dependency (@iov/ethereum <- scraper <- @iov/ethereum).
@@ -208,9 +209,9 @@ const local: EthereumNetworkConfig = {
 /** Ropsten config is not well maintained and probably outdated. Use at your won risk. */
 const ropsten: EthereumNetworkConfig = {
   env: "ropsten",
-  base: "https://ropsten.infura.io/",
+  baseHttp: "https://ropsten.infura.io/",
+  baseWs: "wss://ropsten.infura.io/ws",
   connectionOptions: {
-    wsUrl: "wss://ropsten.infura.io/ws",
     scraperApiUrl: "https://api-ropsten.etherscan.io/api",
   },
   chainId: "ethereum-eip155-3" as ChainId,
@@ -279,9 +280,9 @@ const ropsten: EthereumNetworkConfig = {
 
 const rinkeby: EthereumNetworkConfig = {
   env: "rinkeby",
-  base: "https://rinkeby.infura.io",
+  baseHttp: "https://rinkeby.infura.io",
+  baseWs: "wss://rinkeby.infura.io/ws",
   connectionOptions: {
-    wsUrl: "wss://rinkeby.infura.io/ws",
     scraperApiUrl: "https://api-rinkeby.etherscan.io/api",
   },
   chainId: "ethereum-eip155-4" as ChainId,
