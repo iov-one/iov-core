@@ -10,6 +10,7 @@ import {
   Amount,
   ChainId,
   Fee,
+  LightTransaction,
   Nonce,
   PublicKeyBundle,
   SignedTransaction,
@@ -115,7 +116,7 @@ export interface PostTxResponse {
   readonly log?: string;
 }
 
-export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction>
+export interface ConfirmedTransaction<T extends LightTransaction = UnsignedTransaction>
   extends SignedTransaction<T> {
   readonly height: number; // the block it was written to
   /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */

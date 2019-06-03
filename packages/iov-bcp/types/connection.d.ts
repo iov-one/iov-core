@@ -3,7 +3,7 @@ import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { ValueAndUpdates } from "@iov/stream";
 import { PostableBytes } from "./codec";
-import { Address, Amount, ChainId, Fee, Nonce, PublicKeyBundle, SignedTransaction, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
+import { Address, Amount, ChainId, Fee, LightTransaction, Nonce, PublicKeyBundle, SignedTransaction, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
 export interface Account {
     readonly address: Address;
     /**
@@ -83,7 +83,7 @@ export interface PostTxResponse {
     /** a human readable debugging log */
     readonly log?: string;
 }
-export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction> extends SignedTransaction<T> {
+export interface ConfirmedTransaction<T extends LightTransaction = UnsignedTransaction> extends SignedTransaction<T> {
     readonly height: number;
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
     readonly confirmations: number;
