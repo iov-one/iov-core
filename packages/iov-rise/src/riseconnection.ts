@@ -306,7 +306,9 @@ export class RiseConnection implements BlockchainConnection {
     throw new Error("Not implemented");
   }
 
-  public async searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction[]> {
+  public async searchTx(
+    query: TransactionQuery,
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -405,7 +407,9 @@ export class RiseConnection implements BlockchainConnection {
     return { ...transaction, fee: await this.getFeeQuote(transaction) };
   }
 
-  private async searchSingleTransaction(searchId: TransactionId): Promise<ConfirmedTransaction | undefined> {
+  private async searchSingleTransaction(
+    searchId: TransactionId,
+  ): Promise<ConfirmedTransaction<UnsignedTransaction> | undefined> {
     const result = await axios.get(`${this.baseUrl}/api/transactions/get`, {
       params: { id: searchId },
     });
@@ -438,9 +442,11 @@ export class RiseConnection implements BlockchainConnection {
     };
   }
 
-  private waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction> {
+  private waitForTransaction(
+    id: TransactionId,
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     let poller: NodeJS.Timeout | undefined;
-    const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
+    const producer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
       start: listener => {
         setInterval(async () => {
           try {
@@ -474,7 +480,7 @@ export class RiseConnection implements BlockchainConnection {
     searchParams: any,
     minHeight: number | undefined,
     maxHeight: number | undefined,
-  ): Promise<readonly ConfirmedTransaction[]> {
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     const result = await axios.get(`${this.baseUrl}/api/transactions`, {
       params: searchParams,
     });

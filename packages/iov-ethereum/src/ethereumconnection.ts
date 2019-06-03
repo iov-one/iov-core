@@ -726,7 +726,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const sentFromOrTo = query.sentFromOrTo;
 
       let pollIntervalScraper: NodeJS.Timeout | undefined;
-      const fromScraperProducer: Producer<ConfirmedTransaction | FailedTransaction> = {
+      const fromScraperProducer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
         start: async listener => {
           const searchStartHeight = (await this.height()) - 1; // TODO: get current height from scraper
           let minHeight = Math.max(query.minHeight || 0, searchStartHeight);
@@ -809,7 +809,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     if (query.id !== undefined) {
       const searchId = query.id;
-      const resultPromise = new Promise<ConfirmedTransaction>(async (resolve, reject) => {
+      const resultPromise = new Promise<ConfirmedTransaction<LightTransaction>>(async (resolve, reject) => {
         try {
           // eslint-disable-next-line no-constant-condition
           while (true) {
@@ -831,7 +831,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const sentFromOrTo = query.sentFromOrTo;
 
       let pollIntervalScraper: NodeJS.Timeout | undefined;
-      const fromScraperProducer: Producer<ConfirmedTransaction | FailedTransaction> = {
+      const fromScraperProducer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
         start: async listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
@@ -952,7 +952,9 @@ export class EthereumConnection implements AtomicSwapConnection {
     throw new Error("not implemented");
   }
 
-  private async searchTransactionsById(id: TransactionId): Promise<readonly ConfirmedTransaction[]> {
+  private async searchTransactionsById(
+    id: TransactionId,
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     const transactionsResponse = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getTransactionByHash",
@@ -1001,9 +1003,9 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<readonly ConfirmedTransaction[]> {
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     // tslint:disable-next-line:readonly-array
-    const out: ConfirmedTransaction[] = [];
+    const out: ConfirmedTransaction<UnsignedTransaction>[] = [];
 
     if (this.scraperApiUrl) {
       const fromScraper = await this.searchSendTransactionsByAddressOnScraper(address, minHeight, maxHeight);
@@ -1026,7 +1028,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<readonly ConfirmedTransaction[]> {
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     if (!this.scraperApiUrl) {
       throw new Error("No scraper API URL specified.");
     }
@@ -1036,7 +1038,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     }
 
     // tslint:disable-next-line:readonly-array
-    const out: ConfirmedTransaction[] = [];
+    const out: ConfirmedTransaction<UnsignedTransaction>[] = [];
 
     // API: https://etherscan.io/apis#accounts
     const responseBody = (await axios.get(this.scraperApiUrl, {
@@ -1067,14 +1069,14 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<readonly ConfirmedTransaction[]> {
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     const [erc20Outgoing, erc20Incoming] = await Promise.all([
       this.searchErc20Transfers(address, null, minHeight, maxHeight),
       this.searchErc20Transfers(null, address, minHeight, maxHeight),
     ]);
 
     // tslint:disable-next-line:readonly-array
-    const out: ConfirmedTransaction[] = [...erc20Outgoing, ...erc20Incoming];
+    const out: ConfirmedTransaction<UnsignedTransaction>[] = [...erc20Outgoing, ...erc20Incoming];
 
     // Sort by height, descending.
     // Order of multiple transactions in the same block is undetermined.
@@ -1093,7 +1095,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     recipient: Address | null,
     minHeight: number,
     maxHeight: number,
-  ): Promise<readonly ConfirmedTransaction[]> {
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     if (maxHeight < minHeight) {
       return [];
     }

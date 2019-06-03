@@ -499,7 +499,7 @@ export class BnsConnection implements AtomicSwapConnection {
     const currentHeight = await this.height();
 
     return res.txs.map(
-      (txResponse): ConfirmedTransaction | FailedTransaction => {
+      (txResponse): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => {
         const { tx, hash, height, result } = txResponse;
         const transactionId = Encoding.toHex(hash).toUpperCase() as TransactionId;
 

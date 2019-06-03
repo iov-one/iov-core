@@ -116,8 +116,7 @@ export interface PostTxResponse {
   readonly log?: string;
 }
 
-export interface ConfirmedTransaction<T extends LightTransaction = UnsignedTransaction>
-  extends SignedTransaction<T> {
+export interface ConfirmedTransaction<T extends LightTransaction> extends SignedTransaction<T> {
   readonly height: number; // the block it was written to
   /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
   readonly confirmations: number;
@@ -149,13 +148,13 @@ export interface FailedTransaction {
   readonly message?: string;
 }
 
-export function isConfirmedTransaction<T extends LightTransaction = UnsignedTransaction>(
+export function isConfirmedTransaction<T extends LightTransaction>(
   transaction: ConfirmedTransaction<T> | FailedTransaction,
 ): transaction is ConfirmedTransaction<T> {
   return typeof (transaction as any).transaction !== "undefined";
 }
 
-export function isFailedTransaction<T extends LightTransaction = UnsignedTransaction>(
+export function isFailedTransaction<T extends LightTransaction>(
   transaction: ConfirmedTransaction<T> | FailedTransaction,
 ): transaction is FailedTransaction {
   return !isConfirmedTransaction(transaction);

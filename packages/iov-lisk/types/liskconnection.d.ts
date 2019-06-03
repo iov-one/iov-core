@@ -21,7 +21,7 @@ export declare class LiskConnection implements BlockchainConnection {
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
-    searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction[]>;
+    searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]>;
     listenTx(_: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
     liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
     getFeeQuote(tx: UnsignedTransaction): Promise<Fee>;

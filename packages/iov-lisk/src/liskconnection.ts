@@ -327,7 +327,9 @@ export class LiskConnection implements BlockchainConnection {
     return Stream.create(producer);
   }
 
-  public async searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction[]> {
+  public async searchTx(
+    query: TransactionQuery,
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -418,9 +420,11 @@ export class LiskConnection implements BlockchainConnection {
     return { ...transaction, fee: await this.getFeeQuote(transaction) };
   }
 
-  private waitForTransaction(id: TransactionId): Stream<ConfirmedTransaction | FailedTransaction> {
+  private waitForTransaction(
+    id: TransactionId,
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     let pollInternal: NodeJS.Timeout | undefined;
-    const producer: Producer<ConfirmedTransaction | FailedTransaction> = {
+    const producer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
       start: listener => {
         setInterval(async () => {
           try {
@@ -459,7 +463,7 @@ export class LiskConnection implements BlockchainConnection {
     searchParams: any,
     minHeight: number | undefined,
     maxHeight: number | undefined,
-  ): Promise<readonly ConfirmedTransaction[]> {
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     if (minHeight !== undefined && maxHeight !== undefined && minHeight > maxHeight) {
       return [];
     }
