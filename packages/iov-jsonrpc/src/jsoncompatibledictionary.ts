@@ -28,7 +28,9 @@ export function isJsonCompatibleValue(value: unknown): value is JsonCompatibleVa
     typeof value === "number" ||
     typeof value === "boolean" ||
     value === null ||
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     isJsonCompatibleArray(value) ||
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     isJsonCompatibleDictionary(value)
   ) {
     return true;

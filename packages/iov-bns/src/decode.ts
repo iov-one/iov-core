@@ -104,6 +104,17 @@ export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
   };
 }
 
+// adds zeros to the right as needed to ensure given length
+function rightPadZeros(short: string, length: number): string {
+  if (short.length >= length) {
+    return short;
+  }
+  return short + "0".repeat(length - short.length);
+}
+
+// we only allow up to 9 decimal places
+const humanCoinFormat = new RegExp(/^(\d+)(\.\d{1,9})?\s*([A-Z]{3,4})$/);
+
 export function decodeJsonAmount(json: string): Amount {
   const data = JSON.parse(json);
   if (typeof data === "string") {
@@ -143,50 +154,6 @@ export function decodeParticipants(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     address: encodeBnsAddress(prefix, participant.signature!),
   }));
-}
-
-// we only allow up to 9 decimal places
-const humanCoinFormat = new RegExp(/^(\d+)(\.\d{1,9})?\s*([A-Z]{3,4})$/);
-
-// adds zeros to the right as needed to ensure given length
-function rightPadZeros(short: string, length: number): string {
-  if (short.length >= length) {
-    return short;
-  }
-  return short + "0".repeat(length - short.length);
-}
-
-export function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction {
-  const sigs = ensure(tx.signatures, "signatures").map(decodeFullSig);
-  const sig = ensure(sigs[0], "first signature");
-  return {
-    transaction: parseMsg(parseBaseTx(tx, sig, chainId), tx),
-    primarySignature: sig,
-    otherSignatures: sigs.slice(1),
-  };
-}
-
-export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction {
-  if (tx.addUsernameAddressNftMsg) {
-    return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
-  } else if (tx.sendMsg) {
-    return parseSendTransaction(base, tx.sendMsg);
-  } else if (tx.createEscrowMsg) {
-    return parseSwapOfferTx(base, tx.createEscrowMsg);
-  } else if (tx.releaseEscrowMsg) {
-    return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
-  } else if (tx.returnEscrowMsg) {
-    return parseSwapAbortTransaction(base, tx.returnEscrowMsg);
-  } else if (tx.issueUsernameNftMsg) {
-    return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
-  } else if (tx.removeUsernameAddressMsg) {
-    return parseRemoveAddressFromUsernameTx(base, tx.removeUsernameAddressMsg);
-  } else if (tx.createContractMsg) {
-    return parseCreateMultisignatureTx(base, tx.createContractMsg);
-  } else if (tx.updateContractMsg) {
-    return parseUpdateMultisignatureTx(base, tx.updateContractMsg);
-  }
-  throw new Error("unknown message type in transaction");
 }
 
 function parseAddAddressToUsernameTx(
@@ -266,20 +233,6 @@ function parseSwapAbortTransaction(
   };
 }
 
-function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
-  const base: UnsignedTransaction = {
-    kind: "",
-    creator: {
-      chainId: chainId,
-      pubkey: sig.pubkey,
-    },
-  };
-  if (tx.fees && tx.fees.fees) {
-    return { ...base, fee: { tokens: decodeAmount(tx.fees.fees) } };
-  }
-  return base;
-}
-
 function parseRegisterUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.IIssueTokenMsg,
@@ -343,5 +296,52 @@ function parseUpdateMultisignatureTx(
     participants: decodeParticipants(prefix, msg.participants),
     activationThreshold: ensure(msg.activationThreshold, "activationThreshold"),
     adminThreshold: ensure(msg.adminThreshold, "adminThreshold"),
+  };
+}
+
+export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction {
+  if (tx.addUsernameAddressNftMsg) {
+    return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
+  } else if (tx.sendMsg) {
+    return parseSendTransaction(base, tx.sendMsg);
+  } else if (tx.createEscrowMsg) {
+    return parseSwapOfferTx(base, tx.createEscrowMsg);
+  } else if (tx.releaseEscrowMsg) {
+    return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
+  } else if (tx.returnEscrowMsg) {
+    return parseSwapAbortTransaction(base, tx.returnEscrowMsg);
+  } else if (tx.issueUsernameNftMsg) {
+    return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
+  } else if (tx.removeUsernameAddressMsg) {
+    return parseRemoveAddressFromUsernameTx(base, tx.removeUsernameAddressMsg);
+  } else if (tx.createContractMsg) {
+    return parseCreateMultisignatureTx(base, tx.createContractMsg);
+  } else if (tx.updateContractMsg) {
+    return parseUpdateMultisignatureTx(base, tx.updateContractMsg);
+  }
+  throw new Error("unknown message type in transaction");
+}
+
+function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
+  const base: UnsignedTransaction = {
+    kind: "",
+    creator: {
+      chainId: chainId,
+      pubkey: sig.pubkey,
+    },
+  };
+  if (tx.fees && tx.fees.fees) {
+    return { ...base, fee: { tokens: decodeAmount(tx.fees.fees) } };
+  }
+  return base;
+}
+
+export function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction {
+  const sigs = ensure(tx.signatures, "signatures").map(decodeFullSig);
+  const sig = ensure(sigs[0], "first signature");
+  return {
+    transaction: parseMsg(parseBaseTx(tx, sig, chainId), tx),
+    primarySignature: sig,
+    otherSignatures: sigs.slice(1),
   };
 }

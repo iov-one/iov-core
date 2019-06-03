@@ -21,8 +21,10 @@ import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { firstEvent } from "@iov/stream";
 
+import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
 import { MultiChainSigner } from "./multichainsigner";
 import { GetIdentitiesAuthorization, SignAndPostAuthorization, SigningServerCore } from "./signingservercore";
+import { TransactionEncoder } from "./transactionencoder";
 
 const { fromHex } = Encoding;
 
@@ -84,9 +86,6 @@ async function makeBnsEthereumSigningServer(
   const core = new SigningServerCore(profile, signer, authorizeGetIdentities, authorizeSignAndPost);
   return new JsonRpcSigningServer(core);
 }
-
-import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
-import { TransactionEncoder } from "./transactionencoder";
 
 describe("JsonRpcSigningServer", () => {
   const bnsdFaucetPubkey: PublicKeyBundle = {
