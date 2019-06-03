@@ -8,7 +8,7 @@ import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 import { pubkeyToAddress } from "./address";
 import { Erc20Options } from "./erc20";
 import { Erc20Reader, EthereumRpcClient } from "./erc20reader";
-import { HttpJsonRpcClient } from "./httpjsonrpcclient";
+import { HttpEthereumRpcClient } from "./httpethereumrpcclient";
 import { testConfig } from "./testconfig.spec";
 import { normalizeHex, toEthereumHex } from "./utils";
 
@@ -34,7 +34,7 @@ function makeClient(baseUrl: string): EthereumRpcClient {
   return {
     ethCall: async (contractAddress: Address, data: Uint8Array) => {
       // see https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_call
-      const response = await new HttpJsonRpcClient(baseUrl).run({
+      const response = await new HttpEthereumRpcClient(baseUrl).run({
         jsonrpc: "2.0",
         method: "eth_call",
         params: [{ to: contractAddress, data: toEthereumHex(data) }, "latest"],
