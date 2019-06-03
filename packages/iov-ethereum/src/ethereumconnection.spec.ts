@@ -71,6 +71,12 @@ function pendingWithoutEthereumScraper(): void {
   }
 }
 
+function pendingWithoutWs(): void {
+  if (!testConfig.connectionOptions.wsUrl) {
+    pending("No ws url available to test connection");
+  }
+}
+
 async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -159,11 +165,21 @@ describe("EthereumConnection", () => {
     });
   });
 
-  it("can be constructed", () => {
-    pendingWithoutEthereum();
-    const connection = new EthereumConnection(testConfig.base, testConfig.chainId, {});
-    expect(connection).toBeTruthy();
-    connection.disconnect();
+  describe("constructor", () => {
+    it("can be constructed with http", () => {
+      pendingWithoutEthereum();
+      const connection = new EthereumConnection(testConfig.base, testConfig.chainId, {});
+      expect(connection).toBeTruthy();
+      connection.disconnect();
+    });
+
+    it("can be constructed with ws", () => {
+      pendingWithoutEthereum();
+      pendingWithoutWs();
+      const connection = new EthereumConnection(testConfig.connectionOptions.wsUrl!, testConfig.chainId, {});
+      expect(connection).toBeTruthy();
+      connection.disconnect();
+    });
   });
 
   it("can get chain ID", async () => {
@@ -174,12 +190,26 @@ describe("EthereumConnection", () => {
     connection.disconnect();
   });
 
-  it("can get height", async () => {
-    pendingWithoutEthereum();
-    const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
-    const height = await connection.height();
-    expect(height).toBeGreaterThanOrEqual(testConfig.minHeight);
-    connection.disconnect();
+  describe("height", () => {
+    it("can get height with http", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const height = await connection.height();
+      expect(height).toBeGreaterThanOrEqual(testConfig.minHeight);
+      connection.disconnect();
+    });
+
+    it("can get height with ws", async () => {
+      pendingWithoutEthereum();
+      pendingWithoutWs();
+      const connection = await EthereumConnection.establish(
+        testConfig.connectionOptions.wsUrl!,
+        testConfig.connectionOptions,
+      );
+      const height = await connection.height();
+      expect(height).toBeGreaterThanOrEqual(testConfig.minHeight);
+      connection.disconnect();
+    });
   });
 
   describe("getToken", () => {
