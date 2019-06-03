@@ -73,9 +73,18 @@ async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function isHttpUrl(url: string): boolean {
+  return ["http://", "https://"].some(prefix => url.startsWith(prefix));
+}
+
+function isWsUrl(url: string): boolean {
+  return ["ws://", "wss://"].some(prefix => url.startsWith(prefix));
+}
+
 async function loadChainId(baseUrl: string): Promise<ChainId> {
+  const client = isWsUrl(baseUrl) ? new WsEthereumRpcClient(baseUrl) : new HttpEthereumRpcClient(baseUrl);
   // see https://github.com/ethereum/wiki/wiki/JSON-RPC#net_version
-  const response = await new HttpEthereumRpcClient(baseUrl).run({
+  const response = await client.run({
     jsonrpc: "2.0",
     method: "net_version",
     params: [],
@@ -129,8 +138,8 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly codec: EthereumCodec;
 
   public constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
-    const baseUrlIsHttp = ["http://", "https://"].some(prefix => baseUrl.startsWith(prefix));
-    const baseUrlIsWs = ["ws://", "wss://"].some(prefix => baseUrl.startsWith(prefix));
+    const baseUrlIsHttp = isHttpUrl(baseUrl);
+    const baseUrlIsWs = isWsUrl(baseUrl);
     if (!baseUrlIsHttp && !baseUrlIsWs) {
       throw new Error("Unsupported protocol for baseUrl: must be one of http, https, ws or wss");
     }
