@@ -71,12 +71,6 @@ function pendingWithoutEthereumScraper(): void {
   }
 }
 
-function pendingWithoutWs(): void {
-  if (!testConfig.connectionOptions.wsUrl) {
-    pending("No ws url available to test connection");
-  }
-}
-
 async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -168,15 +162,14 @@ describe("EthereumConnection", () => {
   describe("constructor", () => {
     it("can be constructed with http", () => {
       pendingWithoutEthereum();
-      const connection = new EthereumConnection(testConfig.base, testConfig.chainId, {});
+      const connection = new EthereumConnection(testConfig.baseHttp, testConfig.chainId, {});
       expect(connection).toBeTruthy();
       connection.disconnect();
     });
 
     it("can be constructed with ws", () => {
       pendingWithoutEthereum();
-      pendingWithoutWs();
-      const connection = new EthereumConnection(testConfig.connectionOptions.wsUrl!, testConfig.chainId, {});
+      const connection = new EthereumConnection(testConfig.baseWs, testConfig.chainId, {});
       expect(connection).toBeTruthy();
       connection.disconnect();
     });
@@ -184,7 +177,7 @@ describe("EthereumConnection", () => {
 
   it("can get chain ID", async () => {
     pendingWithoutEthereum();
-    const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+    const connection = await EthereumConnection.establish(testConfig.baseHttp, testConfig.connectionOptions);
     const chainId = connection.chainId();
     expect(chainId).toEqual(testConfig.chainId);
     connection.disconnect();
@@ -193,7 +186,10 @@ describe("EthereumConnection", () => {
   describe("height", () => {
     it("can get height with http", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const height = await connection.height();
       expect(height).toBeGreaterThanOrEqual(testConfig.minHeight);
       connection.disconnect();
@@ -201,11 +197,7 @@ describe("EthereumConnection", () => {
 
     it("can get height with ws", async () => {
       pendingWithoutEthereum();
-      pendingWithoutWs();
-      const connection = await EthereumConnection.establish(
-        testConfig.connectionOptions.wsUrl!,
-        testConfig.connectionOptions,
-      );
+      const connection = await EthereumConnection.establish(testConfig.baseWs, testConfig.connectionOptions);
       const height = await connection.height();
       expect(height).toBeGreaterThanOrEqual(testConfig.minHeight);
       connection.disconnect();
@@ -215,7 +207,10 @@ describe("EthereumConnection", () => {
   describe("getToken", () => {
     it("can get existing ticker", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const token = await connection.getToken("ETH" as TokenTicker);
       expect(token).toEqual({
         tokenTicker: "ETH" as TokenTicker,
@@ -227,7 +222,10 @@ describe("EthereumConnection", () => {
 
     it("produces empty result for non-existing ticker", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const token = await connection.getToken("ALX" as TokenTicker);
       expect(token).toBeUndefined();
       connection.disconnect();
@@ -237,7 +235,7 @@ describe("EthereumConnection", () => {
   describe("getAllTokens", () => {
     it("can get all tokens", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, {
+      const connection = await EthereumConnection.establish(testConfig.baseHttp, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
@@ -250,7 +248,7 @@ describe("EthereumConnection", () => {
   describe("getAccount", () => {
     it("can get account from address", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, {
+      const connection = await EthereumConnection.establish(testConfig.baseHttp, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
@@ -263,7 +261,7 @@ describe("EthereumConnection", () => {
 
     it("can get account from pubkey", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, {
+      const connection = await EthereumConnection.establish(testConfig.baseHttp, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
@@ -276,7 +274,7 @@ describe("EthereumConnection", () => {
 
     it("can get account from unused address", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, {
+      const connection = await EthereumConnection.establish(testConfig.baseHttp, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
@@ -289,7 +287,7 @@ describe("EthereumConnection", () => {
 
     it("can get account from unused pubkey", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, {
+      const connection = await EthereumConnection.establish(testConfig.baseHttp, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
@@ -302,7 +300,7 @@ describe("EthereumConnection", () => {
 
     it("has balance for account with no ETH but ERC20 tokens", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, {
+      const connection = await EthereumConnection.establish(testConfig.baseHttp, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
@@ -318,7 +316,10 @@ describe("EthereumConnection", () => {
   describe("getNonce", () => {
     it("can get nonce", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
 
       // by address
       {
@@ -338,7 +339,10 @@ describe("EthereumConnection", () => {
   describe("getNonces", () => {
     it("can get 0/1/2 nonces", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
 
       // by address, 0 nonces
       {
@@ -408,7 +412,10 @@ describe("EthereumConnection", () => {
         },
         memo: "We \u2665 developers – iov.one",
       };
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
@@ -444,7 +451,10 @@ describe("EthereumConnection", () => {
         },
         memo: "We \u2665 developers – iov.one",
       };
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
@@ -474,7 +484,10 @@ describe("EthereumConnection", () => {
     it("reports error for gas limit too low", async () => {
       pendingWithoutEthereum();
 
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
@@ -505,7 +518,10 @@ describe("EthereumConnection", () => {
     it("reports error for insufficient funds", async () => {
       pendingWithoutEthereum();
 
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
@@ -557,7 +573,10 @@ describe("EthereumConnection", () => {
         },
         memo: "We \u2665 developers – iov.one",
       };
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
       // tslint:disable-next-line:no-bitwise no-object-mutation
@@ -581,7 +600,7 @@ describe("EthereumConnection", () => {
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
       const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
-      const connection = await EthereumConnection.establish(testConfig.base, {
+      const connection = await EthereumConnection.establish(testConfig.baseHttp, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
@@ -629,7 +648,10 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+        const connection = await EthereumConnection.establish(
+          testConfig.baseHttp,
+          testConfig.connectionOptions,
+        );
 
         const recipient = await randomAddress();
 
@@ -671,7 +693,10 @@ describe("EthereumConnection", () => {
   describe("searchTx", () => {
     it("throws error for invalid transaction hash", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       // invalid lenght
       const invalidHashLenght = "0x1234567890abcdef" as TransactionId;
       await connection
@@ -683,7 +708,10 @@ describe("EthereumConnection", () => {
 
     it("can search non-existing transaction by hash", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const nonExistingHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" as TransactionId;
       const results = await connection.searchTx({ id: nonExistingHash });
       expect(results.length).toEqual(0);
@@ -711,7 +739,10 @@ describe("EthereumConnection", () => {
         },
         memo: `Search tx test ${Math.random()}`,
       };
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
       const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
@@ -738,7 +769,10 @@ describe("EthereumConnection", () => {
     it("can search a transaction by account", async () => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const results = await connection.searchTx({ sentFromOrTo: testConfig.accountStates.default.address });
       expect(results.length).toBeGreaterThan(1);
       connection.disconnect();
@@ -748,7 +782,10 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
@@ -877,7 +914,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
-      const connection = await EthereumConnection.establish(testConfig.base, {
+      const connection = await EthereumConnection.establish(testConfig.baseHttp, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
@@ -936,7 +973,7 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
-      const connection = await EthereumConnection.establish(testConfig.base, {
+      const connection = await EthereumConnection.establish(testConfig.baseHttp, {
         ...testConfig.connectionOptions,
         erc20Tokens: testConfig.erc20Tokens,
       });
@@ -1005,7 +1042,7 @@ describe("EthereumConnection", () => {
 
       (async () => {
         const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
-        const connection = await EthereumConnection.establish(testConfig.base, {
+        const connection = await EthereumConnection.establish(testConfig.baseHttp, {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
@@ -1125,7 +1162,10 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereumScraper();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+        const connection = await EthereumConnection.establish(
+          testConfig.baseHttp,
+          testConfig.connectionOptions,
+        );
 
         const recipientAddress = await randomAddress();
 
@@ -1241,7 +1281,10 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereumScraper();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+        const connection = await EthereumConnection.establish(
+          testConfig.baseHttp,
+          testConfig.connectionOptions,
+        );
         // only future transactions for this test
         const minHeight = (await connection.height()) + 1;
 
@@ -1360,7 +1403,7 @@ describe("EthereumConnection", () => {
 
       (async () => {
         const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
-        const connection = await EthereumConnection.establish(testConfig.base, {
+        const connection = await EthereumConnection.establish(testConfig.baseHttp, {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
@@ -1472,7 +1515,7 @@ describe("EthereumConnection", () => {
 
       (async () => {
         const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
-        const connection = await EthereumConnection.establish(testConfig.base, {
+        const connection = await EthereumConnection.establish(testConfig.baseHttp, {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
@@ -1588,7 +1631,7 @@ describe("EthereumConnection", () => {
 
       (async () => {
         const codec = new EthereumCodec({ erc20Tokens: testConfig.erc20Tokens });
-        const connection = await EthereumConnection.establish(testConfig.base, {
+        const connection = await EthereumConnection.establish(testConfig.baseHttp, {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
@@ -1720,7 +1763,10 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereumScraper();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+        const connection = await EthereumConnection.establish(
+          testConfig.baseHttp,
+          testConfig.connectionOptions,
+        );
 
         const profile = new UserProfile();
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
@@ -1779,7 +1825,10 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereumScraper();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+        const connection = await EthereumConnection.establish(
+          testConfig.baseHttp,
+          testConfig.connectionOptions,
+        );
 
         const recipientAddress = await randomAddress();
 
@@ -1837,7 +1886,10 @@ describe("EthereumConnection", () => {
   describe("getBlockHeader", () => {
     it("can get header from block", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const blockHeader = await connection.getBlockHeader(0);
       expect(blockHeader.id).toMatch(/^0x[0-9a-f]{64}$/);
       expect(blockHeader.height).toEqual(0);
@@ -1847,7 +1899,10 @@ describe("EthereumConnection", () => {
 
     it("throws error from invalid block number", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       await connection
         .getBlockHeader(99999999999999)
         .then(() => fail("promise must be rejected"))
@@ -1861,7 +1916,10 @@ describe("EthereumConnection", () => {
       pendingWithoutEthereum();
 
       (async () => {
-        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+        const connection = await EthereumConnection.establish(
+          testConfig.baseWs,
+          testConfig.connectionOptions,
+        );
         const events = new Array<BlockHeader>();
 
         const subscription = connection.watchBlockHeaders().subscribe({
@@ -1905,7 +1963,10 @@ describe("EthereumConnection", () => {
   describe("getFeeQuote", () => {
     it("works for send transaction", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
       const sender = {
         chainId: connection.chainId(),
         pubkey: {
@@ -1937,7 +1998,10 @@ describe("EthereumConnection", () => {
 
     it("throws for unsupported transaction kind", async () => {
       pendingWithoutEthereum();
-      const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
 
       const otherTransaction: UnsignedTransaction = {
         kind: "other/kind",
@@ -1963,7 +2027,10 @@ describe("EthereumConnection", () => {
       it("can start atomic swap", async () => {
         pendingWithoutEthereum();
 
-        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+        const connection = await EthereumConnection.establish(
+          testConfig.baseHttp,
+          testConfig.connectionOptions,
+        );
         const chainId = connection.chainId();
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
@@ -2147,7 +2214,10 @@ describe("EthereumConnection", () => {
       it("can start and watch an atomic swap lifecycle", async () => {
         pendingWithoutEthereum();
 
-        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+        const connection = await EthereumConnection.establish(
+          testConfig.baseHttp,
+          testConfig.connectionOptions,
+        );
         const chainId = connection.chainId();
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
@@ -2226,7 +2296,10 @@ describe("EthereumConnection", () => {
       it("can start and watch aborted atomic swaps", async () => {
         pendingWithoutEthereum();
 
-        const connection = await EthereumConnection.establish(testConfig.base, testConfig.connectionOptions);
+        const connection = await EthereumConnection.establish(
+          testConfig.baseHttp,
+          testConfig.connectionOptions,
+        );
         const chainId = connection.chainId();
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
@@ -2307,7 +2380,7 @@ describe("EthereumConnection", () => {
       it("can start atomic swap", async () => {
         pendingWithoutEthereum();
 
-        const connection = await EthereumConnection.establish(testConfig.base, {
+        const connection = await EthereumConnection.establish(testConfig.baseHttp, {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
@@ -2522,7 +2595,7 @@ describe("EthereumConnection", () => {
       it("can start and watch an atomic swap lifecycle", async () => {
         pendingWithoutEthereum();
 
-        const connection = await EthereumConnection.establish(testConfig.base, {
+        const connection = await EthereumConnection.establish(testConfig.baseHttp, {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
@@ -2604,7 +2677,7 @@ describe("EthereumConnection", () => {
       it("can start and watch aborted atomic swaps", async () => {
         pendingWithoutEthereum();
 
-        const connection = await EthereumConnection.establish(testConfig.base, {
+        const connection = await EthereumConnection.establish(testConfig.baseHttp, {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });

@@ -56,7 +56,7 @@ class Actor {
   public static async create(mnemonic: string, addressIndex1: number, addressIndex2: number): Promise<Actor> {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(mnemonic));
-    const connection: AtomicSwapConnection = await EthereumConnection.establish(testConfig.base, {
+    const connection: AtomicSwapConnection = await EthereumConnection.establish(testConfig.baseHttp, {
       ...testConfig.connectionOptions,
       erc20Tokens: testConfig.erc20Tokens,
     });

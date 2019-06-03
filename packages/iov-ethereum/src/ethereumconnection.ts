@@ -126,7 +126,6 @@ interface EthereumLogWithPrefix extends EthereumLog {
 }
 
 export interface EthereumConnectionOptions {
-  readonly wsUrl?: string;
   /** URL to an Etherscan compatible scraper API */
   readonly scraperApiUrl?: string;
   /** Address of the deployed atomic swap contract for ETH */
@@ -306,8 +305,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       throw new Error("Unsupported protocol for baseUrl: must be one of http, https, ws or wss");
     }
 
-    const wsUrl = baseUrlIsWs ? baseUrl : options.wsUrl;
-    this.rpcClient = wsUrl ? new WsEthereumRpcClient(wsUrl) : new HttpEthereumRpcClient(baseUrl);
+    this.rpcClient = baseUrlIsWs ? new WsEthereumRpcClient(baseUrl) : new HttpEthereumRpcClient(baseUrl);
     this.pollIntervalMs = options.pollInterval ? options.pollInterval * 1000 : 4_000;
     this.myChainId = chainId;
     this.scraperApiUrl = options.scraperApiUrl;
