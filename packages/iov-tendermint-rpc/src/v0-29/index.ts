@@ -4,7 +4,7 @@ import { Params } from "./requests";
 import { Responses } from "./responses";
 
 // tslint:disable-next-line:variable-name
-export const v0_27: Adaptor = {
+export const v0_29: Adaptor = {
   params: Params,
   responses: Responses,
   hashTx: hashTx,
