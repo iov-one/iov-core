@@ -58,6 +58,8 @@ Breaking changes
   appropriate.
 - @iov/ethereum: `Erc20ApproveTransaction` now extends `LightTransaction`
   instead of `UnsignedTransaction` (i.e. it has no `creator` field).
+- @iov/ethereum: Remove `wsUrl` from `connectionOptions`. Pass either WS or HTTP
+  URLs via `baseUrl` instead.
 - @iov/keycontrol: The `UserProfile` storage format version was bumped to 2.
   Profiles stored in this version can only be opened with IOV-Core 0.14.4 and
   above.
