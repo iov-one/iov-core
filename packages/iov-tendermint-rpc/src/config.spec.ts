@@ -10,7 +10,6 @@ export interface TendermintInstance {
  * Testing different versions: as a convention, the minor version number is encoded
  * in the port 111<version>, e.g. Tendermint 0.21.0 runs on port 11121. To start
  * a specific version use:
- *   TENDERMINT_VERSION=0.27.4 TENDERMINT_PORT=11127 ./scripts/tendermint/start.sh
  *   TENDERMINT_VERSION=0.29.2 TENDERMINT_PORT=11129 ./scripts/tendermint/start.sh
  *
  * When more than 1 instances of tendermint are running, stop them manually:
@@ -18,11 +17,6 @@ export interface TendermintInstance {
  *   docker container kill <container id from 1st column>
  */
 export const tendermintInstances: readonly TendermintInstance[] = [
-  {
-    url: "localhost:11127",
-    version: "0.27.x",
-    appCreator: "Cosmoshi Netowoko",
-  },
   {
     url: "localhost:11129",
     version: "0.29.x",

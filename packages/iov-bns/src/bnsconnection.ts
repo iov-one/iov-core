@@ -77,7 +77,7 @@ import {
 
 const { toAscii, toHex, toUtf8 } = Encoding;
 
-// https://github.com/tendermint/tendermint/blob/v0.27.0/rpc/lib/types/types.go#L229
+// https://github.com/tendermint/tendermint/blob/v0.29.0/rpc/lib/types/types.go#L229
 const tendermintInternalError = -32603;
 
 interface TendermintRpcError {

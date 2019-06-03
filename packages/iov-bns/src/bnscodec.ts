@@ -10,7 +10,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
-import { TxBytes, v0_27 } from "@iov/tendermint-rpc";
+import { TxBytes, v0_29 } from "@iov/tendermint-rpc";
 
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
@@ -39,7 +39,7 @@ export const bnsCodec: TxCodec = {
   // identifier is usually some sort of hash of bytesToPost, chain-dependent
   identifier: (tx: SignedTransaction): TransactionId => {
     const transactionBytes = (bnsCodec.bytesToPost(tx) as unknown) as TxBytes;
-    const hash = v0_27.hashTx(transactionBytes);
+    const hash = v0_29.hashTx(transactionBytes);
     return Encoding.toHex(hash).toUpperCase() as TransactionId;
   },
 
