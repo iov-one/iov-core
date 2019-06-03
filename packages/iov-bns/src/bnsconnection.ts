@@ -104,6 +104,83 @@ function isDefined<T>(value: T | undefined): value is T {
   return value !== undefined;
 }
 
+function mapKindToBnsPath(kind: string): string | undefined {
+  switch (kind) {
+    case "bcp/send":
+      return "cash/send";
+    case "bcp/swap_offer":
+      return "escrow/create";
+    case "bcp/swap_claim":
+      return "escrow/release";
+    case "bcp/swap_abort":
+      return "escrow/return";
+    case "bns/register_username":
+      return "nft/username/issue";
+    case "bns/add_address_to_username":
+      return "nft/username/address/add";
+    case "bns/remove_address_from_username":
+      return "nft/username/address/remove";
+    default:
+      return undefined;
+  }
+}
+
+// maybe a bit abstract, but maybe we can reuse...
+interface Join<T, U> {
+  readonly key: T;
+  readonly value: U;
+}
+
+function zip<T, U>(keys: readonly T[], values: readonly U[]): readonly Join<T, U>[] {
+  if (keys.length !== values.length) {
+    throw Error("Got " + keys.length + " keys but " + values.length + " values");
+  }
+  return keys.map((key, i) => ({ key: key, value: values[i] }));
+}
+
+/**
+ * Performs a query
+ *
+ * This is pulled out to be used in static initialzers as well
+ */
+async function performQuery(
+  tmClient: TendermintClient,
+  path: string,
+  data: Uint8Array,
+): Promise<QueryResponse> {
+  const response = await tmClient.abciQuery({ path: path, data: data });
+  const keys = codecImpl.app.ResultSet.decode(response.key).results;
+  const values = codecImpl.app.ResultSet.decode(response.value).results;
+  const results: readonly Result[] = zip(keys, values);
+  return { height: response.height, results: results };
+}
+
+/* Various helpers for parsing the results of querying abci */
+
+export interface QueryResponse {
+  readonly height?: number;
+  readonly results: readonly Result[];
+}
+
+function createParser<T extends {}>(decoder: Decoder<T>, keyPrefix: string): (res: Result) => T & Keyed {
+  const parser = (res: Result): T & Keyed => {
+    const keyPrefixAsAscii = toAscii(keyPrefix);
+    if (!keyPrefixAsAscii.every((byte, i) => byte === res.key[i])) {
+      throw new Error(
+        "Result does not start with expected prefix. " +
+          `Expected prefix '${keyPrefix}' (0x${toHex(keyPrefixAsAscii)}) in 0x${toHex(res.key)}`,
+      );
+    }
+
+    const val: T = decoder.decode(res.value);
+    // bug: https://github.com/Microsoft/TypeScript/issues/13557
+    // workaround from: https://github.com/OfficeDev/office-ui-fabric-react/blob/1dbfc5ee7c38e982282f13ef92884538e7226169/packages/foundation/src/createComponent.tsx#L62-L64
+    // tslint:disable-next-line:prefer-object-spread
+    return Object.assign({}, val, { _id: res.key.slice(keyPrefix.length) });
+  };
+  return parser;
+}
+
 /**
  * Talks directly to the BNS blockchain and exposes the
  * same interface we have with the BCP protocol.
@@ -667,82 +744,4 @@ export class BnsConnection implements AtomicSwapConnection {
       });
     return fees.length > 0 ? fees[0] : undefined;
   }
-}
-
-function mapKindToBnsPath(kind: string): string | undefined {
-  switch (kind) {
-    case "bcp/send":
-      return "cash/send";
-    case "bcp/swap_offer":
-      return "escrow/create";
-    case "bcp/swap_claim":
-      return "escrow/release";
-    case "bcp/swap_abort":
-      return "escrow/return";
-    case "bns/register_username":
-      return "nft/username/issue";
-    case "bns/add_address_to_username":
-      return "nft/username/address/add";
-    case "bns/remove_address_from_username":
-      return "nft/username/address/remove";
-    default:
-      return undefined;
-  }
-}
-
-/**
- * Performs a query
- *
- * This is pulled out to be used in static initialzers as well
- */
-async function performQuery(
-  tmClient: TendermintClient,
-  path: string,
-  data: Uint8Array,
-): Promise<QueryResponse> {
-  const response = await tmClient.abciQuery({ path: path, data: data });
-  const keys = codecImpl.app.ResultSet.decode(response.key).results;
-  const values = codecImpl.app.ResultSet.decode(response.value).results;
-  const results: readonly Result[] = zip(keys, values);
-  return { height: response.height, results: results };
-}
-
-/* Various helpers for parsing the results of querying abci */
-
-export interface QueryResponse {
-  readonly height?: number;
-  readonly results: readonly Result[];
-}
-
-function createParser<T extends {}>(decoder: Decoder<T>, keyPrefix: string): (res: Result) => T & Keyed {
-  const parser = (res: Result): T & Keyed => {
-    const keyPrefixAsAscii = toAscii(keyPrefix);
-    if (!keyPrefixAsAscii.every((byte, i) => byte === res.key[i])) {
-      throw new Error(
-        "Result does not start with expected prefix. " +
-          `Expected prefix '${keyPrefix}' (0x${toHex(keyPrefixAsAscii)}) in 0x${toHex(res.key)}`,
-      );
-    }
-
-    const val: T = decoder.decode(res.value);
-    // bug: https://github.com/Microsoft/TypeScript/issues/13557
-    // workaround from: https://github.com/OfficeDev/office-ui-fabric-react/blob/1dbfc5ee7c38e982282f13ef92884538e7226169/packages/foundation/src/createComponent.tsx#L62-L64
-    // tslint:disable-next-line:prefer-object-spread
-    return Object.assign({}, val, { _id: res.key.slice(keyPrefix.length) });
-  };
-  return parser;
-}
-
-/* maybe a bit abstract, but maybe we can reuse... */
-
-interface Join<T, U> {
-  readonly key: T;
-  readonly value: U;
-}
-
-function zip<T, U>(keys: readonly T[], values: readonly U[]): readonly Join<T, U>[] {
-  if (keys.length !== values.length) {
-    throw Error("Got " + keys.length + " keys but " + values.length + " values");
-  }
-  return keys.map((key, i) => ({ key: key, value: values[i] }));
 }

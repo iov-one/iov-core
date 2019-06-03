@@ -5,67 +5,6 @@ import { assertNotEmpty, Base64, Base64String, HexString, Integer, IntegerString
 import { createJsonRpcRequest } from "../jsonrpc";
 import * as requests from "../requests";
 
-export class Params {
-  public static encodeAbciInfo(req: requests.AbciInfoRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method);
-  }
-
-  public static encodeAbciQuery(req: requests.AbciQueryRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method, encodeAbciQueryParams(req.params));
-  }
-
-  public static encodeBlock(req: requests.BlockRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method, encodeHeightParam(req.params));
-  }
-
-  public static encodeBlockchain(req: requests.BlockchainRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method, encodeBlockchainRequestParams(req.params));
-  }
-
-  public static encodeBlockResults(req: requests.BlockResultsRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method, encodeHeightParam(req.params));
-  }
-
-  public static encodeBroadcastTx(req: requests.BroadcastTxRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method, encodeBroadcastTxParams(req.params));
-  }
-
-  public static encodeCommit(req: requests.CommitRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method, encodeHeightParam(req.params));
-  }
-
-  public static encodeGenesis(req: requests.GenesisRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method);
-  }
-
-  public static encodeHealth(req: requests.HealthRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method);
-  }
-
-  public static encodeStatus(req: requests.StatusRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method);
-  }
-
-  public static encodeSubscribe(req: requests.SubscribeRequest): JsonRpcRequest {
-    const eventTag = { key: "tm.event", value: req.query.type };
-    const query = requests.buildQuery({ tags: [eventTag], raw: req.query.raw });
-    return createJsonRpcRequest("subscribe", { query: query });
-  }
-
-  public static encodeTx(req: requests.TxRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method, encodeTxParams(req.params));
-  }
-
-  // TODO: encode params for query string???
-  public static encodeTxSearch(req: requests.TxSearchRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method, encodeTxSearchParams(req.params));
-  }
-
-  public static encodeValidators(req: requests.ValidatorsRequest): JsonRpcRequest {
-    return createJsonRpcRequest(req.method, encodeHeightParam(req.params));
-  }
-}
-
 interface HeightParam {
   readonly height?: number;
 }
@@ -139,4 +78,65 @@ function encodeTxSearchParams(params: requests.TxSearchParams): RpcTxSearchParam
     // eslint-disable-next-line @typescript-eslint/camelcase
     per_page: may(Integer.encode, params.per_page),
   };
+}
+
+export class Params {
+  public static encodeAbciInfo(req: requests.AbciInfoRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method);
+  }
+
+  public static encodeAbciQuery(req: requests.AbciQueryRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method, encodeAbciQueryParams(req.params));
+  }
+
+  public static encodeBlock(req: requests.BlockRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method, encodeHeightParam(req.params));
+  }
+
+  public static encodeBlockchain(req: requests.BlockchainRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method, encodeBlockchainRequestParams(req.params));
+  }
+
+  public static encodeBlockResults(req: requests.BlockResultsRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method, encodeHeightParam(req.params));
+  }
+
+  public static encodeBroadcastTx(req: requests.BroadcastTxRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method, encodeBroadcastTxParams(req.params));
+  }
+
+  public static encodeCommit(req: requests.CommitRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method, encodeHeightParam(req.params));
+  }
+
+  public static encodeGenesis(req: requests.GenesisRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method);
+  }
+
+  public static encodeHealth(req: requests.HealthRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method);
+  }
+
+  public static encodeStatus(req: requests.StatusRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method);
+  }
+
+  public static encodeSubscribe(req: requests.SubscribeRequest): JsonRpcRequest {
+    const eventTag = { key: "tm.event", value: req.query.type };
+    const query = requests.buildQuery({ tags: [eventTag], raw: req.query.raw });
+    return createJsonRpcRequest("subscribe", { query: query });
+  }
+
+  public static encodeTx(req: requests.TxRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method, encodeTxParams(req.params));
+  }
+
+  // TODO: encode params for query string???
+  public static encodeTxSearch(req: requests.TxSearchRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method, encodeTxSearchParams(req.params));
+  }
+
+  public static encodeValidators(req: requests.ValidatorsRequest): JsonRpcRequest {
+    return createJsonRpcRequest(req.method, encodeHeightParam(req.params));
+  }
 }

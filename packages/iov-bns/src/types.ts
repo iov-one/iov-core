@@ -128,14 +128,6 @@ export function decodeSignature(signature: codecImpl.crypto.ISignature): Signatu
   }
 }
 
-export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature {
-  return {
-    nonce: asInt53(sig.sequence).toNumber() as Nonce,
-    pubkey: decodePubkey(ensure(sig.pubkey)),
-    signature: decodeSignature(ensure(sig.signature)),
-  };
-}
-
 /**
  * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
  * number.
@@ -168,6 +160,14 @@ export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
     throw new Error("missing " + (msg || "field"));
   }
   return maybe;
+}
+
+export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature {
+  return {
+    nonce: asInt53(sig.sequence).toNumber() as Nonce,
+    pubkey: decodePubkey(ensure(sig.pubkey)),
+    signature: decodeSignature(ensure(sig.signature)),
+  };
 }
 
 // transactions

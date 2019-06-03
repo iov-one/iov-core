@@ -27,6 +27,19 @@ export function decodeHexQuantityNonce(hexString: string): Nonce {
   return value.toNumber() as Nonce;
 }
 
+/**
+ * Takes a hex representation optionally prefixed with 0x and returns an Ethereum-friendly
+ * representation with a prefix.
+ */
+export function toEthereumHex(input: string | Uint8Array): string {
+  const str = typeof input === "string" ? input : Encoding.toHex(input);
+  const match = str.match(/^(?:0x)?(.*)$/);
+  if (!match) {
+    throw new Error("Could not convert to Ethereum hex: invalid input");
+  }
+  return `0x${match[1]}`;
+}
+
 export function encodeQuantity(value: number): string {
   try {
     const checkedValue = new Uint53(value);
@@ -54,19 +67,6 @@ export function normalizeHex(input: string): string {
   } else {
     return unprefixedLower;
   }
-}
-
-/**
- * Takes a hex representation optionally prefixed with 0x and returns an Ethereum-friendly
- * representation with a prefix.
- */
-export function toEthereumHex(input: string | Uint8Array): string {
-  const str = typeof input === "string" ? input : Encoding.toHex(input);
-  const match = str.match(/^(?:0x)?(.*)$/);
-  if (!match) {
-    throw new Error("Could not convert to Ethereum hex: invalid input");
-  }
-  return `0x${match[1]}`;
 }
 
 export function toBcpChainId(numericChainId: number): ChainId {
