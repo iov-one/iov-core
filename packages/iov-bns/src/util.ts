@@ -12,7 +12,6 @@ import {
   isSwapClaimTransaction,
   isSwapOfferTransaction,
   isUnsignedTransaction,
-  LightTransaction,
   Nonce,
   PublicKeyBundle,
   SignableBytes,
@@ -20,6 +19,8 @@ import {
   SwapClaimTransaction,
   SwapOfferTransaction,
   TransactionQuery,
+  UnsignedTransaction,
+  WithCreator,
 } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
@@ -140,15 +141,15 @@ export function indexKey(bucket: string, index: string): Uint8Array {
 }
 
 export function isConfirmedWithSwapOfferTransaction(
-  tx: ConfirmedTransaction<LightTransaction>,
-): tx is ConfirmedTransaction<SwapOfferTransaction> {
+  tx: ConfirmedTransaction<UnsignedTransaction>,
+): tx is ConfirmedTransaction<SwapOfferTransaction & WithCreator> {
   const unsigned = tx.transaction;
   return isUnsignedTransaction(unsigned) && isSwapOfferTransaction(unsigned);
 }
 
 export function isConfirmedWithSwapClaimOrAbortTransaction(
-  tx: ConfirmedTransaction<LightTransaction>,
-): tx is ConfirmedTransaction<SwapClaimTransaction | SwapAbortTransaction> {
+  tx: ConfirmedTransaction<UnsignedTransaction>,
+): tx is ConfirmedTransaction<(SwapClaimTransaction | SwapAbortTransaction) & WithCreator> {
   const unsigned = tx.transaction;
   return isSwapClaimTransaction(unsigned) || isSwapAbortTransaction(unsigned);
 }

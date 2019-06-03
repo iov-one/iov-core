@@ -87,4 +87,19 @@ export declare class BnsConnection implements AtomicSwapConnection {
      * Returns undefined if no product fee is defined
      */
     protected getProductFee(kind: string): Promise<Amount | undefined>;
+    /**
+     * The same as searchTx but with ConfirmedTransaction<UnsignedTransaction> instead of
+     * ConfirmedTransaction<LightTransaction>
+     */
+    private searchTxUnsigned;
+    /**
+     * The same as listenTx but with ConfirmedTransaction<UnsignedTransaction> instead of
+     * ConfirmedTransaction<LightTransaction>
+     */
+    private listenTxUnsigned;
+    /**
+     * The same as liveTx but with ConfirmedTransaction<UnsignedTransaction> instead of
+     * ConfirmedTransaction<LightTransaction>
+     */
+    private liveTxUnsigned;
 }
