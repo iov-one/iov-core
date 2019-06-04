@@ -683,6 +683,17 @@ export class EthereumConnection implements AtomicSwapConnection {
     return Stream.create(producer);
   }
 
+  public async getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction>> {
+    const searchResults = await this.searchTransactionsById(id);
+    if (searchResults.length === 0) {
+      throw new Error("Transaction does not exist");
+    }
+    if (searchResults.length > 1) {
+      throw new Error("More than one transaction exists with this ID");
+    }
+    return searchResults[0];
+  }
+
   public async searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction<LightTransaction>[]> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
@@ -720,7 +731,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     if (query.id !== undefined) {
       throw new Error(
-        "listenTx() is not implemented for ID queries because block heights are not always in sync this would give you unrelyable results. What you probably want to use is liveTx() that will find your transaction ID either in history or in updates.",
+        "listenTx() is not implemented for ID queries because block heights are not always in sync this would give you unreliable results. What you probably want to use is liveTx(), which will find your transaction ID either in history or in updates.",
       );
     } else if (query.sentFromOrTo) {
       const sentFromOrTo = query.sentFromOrTo;

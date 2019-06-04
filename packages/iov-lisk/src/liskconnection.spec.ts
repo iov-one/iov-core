@@ -28,7 +28,7 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Random } from "@iov/crypto";
+import { Ed25519, Random, Sha256 } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
@@ -667,6 +667,57 @@ describe("LiskConnection", () => {
         .postTx(bytesToPost)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/failed with status code 409/i));
+    });
+  });
+
+  describe("getTx", () => {
+    it("can get a transaction by ID", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      // by non-existing ID
+      {
+        const nonExistentId = "98568736528934587" as TransactionId;
+        await connection
+          .getTx(nonExistentId)
+          .then(fail.bind(null, "should not resolve"), error =>
+            expect(error).toMatch(/transaction does not exist/i),
+          );
+      }
+
+      // by existing ID (from lisk/init.sh)
+      {
+        const existingId = "12493173350733478622" as TransactionId;
+        const result = await connection.getTx(existingId);
+        expect(result.height).toBeGreaterThanOrEqual(2);
+        expect(result.height).toBeLessThan(100);
+        expect(result.transactionId).toEqual(existingId);
+        const transaction = result.transaction;
+        if (!isSendTransaction(transaction)) {
+          throw new Error("Unexpected transaction type");
+        }
+        expect(transaction.recipient).toEqual("1349293588603668134L");
+        expect(transaction.amount.quantity).toEqual("10044556677");
+      }
+
+      connection.disconnect();
+    });
+
+    it("can get a transaction by ID and verify its signature", async () => {
+      pendingWithoutLiskDevnet();
+      const connection = await LiskConnection.establish(devnetBase);
+
+      // from lisk/init.sh
+      const existingId = "12493173350733478622" as TransactionId;
+      const { transaction, primarySignature: signature } = await connection.getTx(existingId);
+      const publicKey = transaction.creator.pubkey.data;
+      const signingJob = liskCodec.bytesToSign(transaction, signature.nonce);
+      const txBytes = new Sha256(signingJob.bytes).digest();
+
+      const valid = await Ed25519.verifySignature(signature.signature, txBytes, publicKey);
+      expect(valid).toBe(true);
+
+      connection.disconnect();
     });
   });
 

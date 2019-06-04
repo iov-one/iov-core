@@ -497,6 +497,19 @@ export class BnsConnection implements AtomicSwapConnection {
       .filter(isDefined);
   }
 
+  public async getTx(
+    id: TransactionId,
+  ): Promise<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
+    const searchResults = await this.searchTxUnsigned({ id: id });
+    if (searchResults.length === 0) {
+      throw new Error("Transaction does not exist");
+    }
+    if (searchResults.length > 1) {
+      throw new Error("More than one transaction exists with this ID");
+    }
+    return searchResults[0];
+  }
+
   public async searchTx(
     query: TransactionQuery,
   ): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]> {

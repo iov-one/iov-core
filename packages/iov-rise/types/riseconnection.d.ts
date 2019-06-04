@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, BlockchainConnection, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, BlockchainConnection, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionId, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 /**
  * Encodes the current date and time as a nonce
  */
@@ -21,6 +21,7 @@ export declare class RiseConnection implements BlockchainConnection {
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
+    getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction>>;
     searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]>;
     listenTx(_: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
     liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;

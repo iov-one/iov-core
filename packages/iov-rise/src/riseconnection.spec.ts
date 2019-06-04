@@ -28,7 +28,7 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Random } from "@iov/crypto";
+import { Ed25519, Random, Sha256 } from "@iov/crypto";
 import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
@@ -589,6 +589,56 @@ describe("RiseConnection", () => {
         .postTx(bytesToPost)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/Failed to verify signature/i));
+    });
+  });
+
+  describe("getTx", () => {
+    it("can get a transaction by ID", async () => {
+      pendingWithoutRise();
+      const connection = await RiseConnection.establish(base);
+
+      // by non-existing ID
+      {
+        const nonExistentId = "98568736528934587" as TransactionId;
+        await connection
+          .getTx(nonExistentId)
+          .then(fail.bind(null, "should not resolve"), error =>
+            expect(error).toMatch(/transaction does not exist/i),
+          );
+      }
+
+      // by existing ID (https://texplorer.rise.vision/tx/3662198991872220418)
+      {
+        const existingId = "3662198991872220418" as TransactionId;
+        const result = await connection.getTx(existingId);
+        expect(result.height).toEqual(35237);
+        expect(result.transactionId).toEqual(existingId);
+        const transaction = result.transaction;
+        if (!isSendTransaction(transaction)) {
+          throw new Error("Unexpected transaction type");
+        }
+        expect(transaction.recipient).toEqual("4982634728794354643R");
+        expect(transaction.amount.quantity).toEqual("300000000000");
+      }
+
+      connection.disconnect();
+    });
+
+    it("can get a transaction by ID and verify its signature", async () => {
+      pendingWithoutRise();
+      const connection = await RiseConnection.establish(base);
+
+      // https://texplorer.rise.vision/tx/3662198991872220418
+      const existingId = "3662198991872220418" as TransactionId;
+      const { transaction, primarySignature: signature } = await connection.getTx(existingId);
+      const publicKey = transaction.creator.pubkey.data;
+      const signingJob = riseCodec.bytesToSign(transaction, signature.nonce);
+      const txBytes = new Sha256(signingJob.bytes).digest();
+
+      const valid = await Ed25519.verifySignature(signature.signature, txBytes, publicKey);
+      expect(valid).toBe(true);
+
+      connection.disconnect();
     });
   });
 
