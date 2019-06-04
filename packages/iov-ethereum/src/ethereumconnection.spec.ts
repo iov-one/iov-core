@@ -38,7 +38,7 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Random, Secp256k1 } from "@iov/crypto";
+import { ExtendedSecp256k1Signature, Keccak256, Random, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
@@ -689,6 +689,111 @@ describe("EthereumConnection", () => {
         await postTransaction(profile, mainIdentity, nonce, recipient, connection);
       })().catch(done.fail);
     }, 90_000);
+  });
+
+  describe("getTx", () => {
+    it("can get a transaction by ID", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
+
+      // by non-existing ID
+      {
+        const nonExistentId = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" as TransactionId;
+        await connection
+          .getTx(nonExistentId)
+          .then(fail.bind(null, "should not resolve"), error =>
+            expect(error).toMatch(/transaction does not exist/i),
+          );
+      }
+
+      {
+        const profile = new UserProfile();
+        const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
+        const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
+        const recipient = await randomAddress();
+        const sendTx: SendTransaction & WithCreator = {
+          kind: "bcp/send",
+          creator: mainIdentity,
+          sender: ethereumCodec.identityToAddress(mainIdentity),
+          recipient: recipient,
+          amount: defaultAmount,
+          fee: {
+            gasPrice: testConfig.gasPrice,
+            gasLimit: testConfig.gasLimit,
+          },
+          memo: `Search tx test ${Math.random()}`,
+        };
+        const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+        const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+        const bytesToPost = ethereumCodec.bytesToPost(signed);
+
+        const resultPost = await connection.postTx(bytesToPost);
+        const { transactionId, blockInfo } = resultPost;
+        await blockInfo.waitFor(info => !isBlockInfoPending(info));
+
+        const result = await connection.getTx(transactionId);
+        expect(result.height).toBeGreaterThanOrEqual(2);
+        expect(result.height).toBeLessThan(100);
+        expect(result.transactionId).toEqual(transactionId);
+        const transaction = result.transaction;
+        if (!isSendTransaction(transaction)) {
+          throw new Error("Unexpected transaction type");
+        }
+        expect(transaction.recipient).toEqual(recipient);
+        expect(transaction.amount).toEqual(defaultAmount);
+      }
+
+      connection.disconnect();
+    });
+
+    it("can get a transaction by ID and verify its signature", async () => {
+      pendingWithoutEthereum();
+      const connection = await EthereumConnection.establish(
+        testConfig.baseHttp,
+        testConfig.connectionOptions,
+      );
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
+      const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
+      const recipient = await randomAddress();
+      const sendTx: SendTransaction & WithCreator = {
+        kind: "bcp/send",
+        creator: mainIdentity,
+        sender: ethereumCodec.identityToAddress(mainIdentity),
+        recipient: recipient,
+        amount: defaultAmount,
+        fee: {
+          gasPrice: testConfig.gasPrice,
+          gasLimit: testConfig.gasLimit,
+        },
+        memo: `Search tx test ${Math.random()}`,
+      };
+      const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
+      const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+      const bytesToPost = ethereumCodec.bytesToPost(signed);
+
+      const resultPost = await connection.postTx(bytesToPost);
+      const { transactionId, blockInfo } = resultPost;
+      await blockInfo.waitFor(info => !isBlockInfoPending(info));
+
+      const { transaction, primarySignature: signature } = await connection.getTx(transactionId);
+      const publicKey = transaction.creator.pubkey.data;
+      const signingJob = ethereumCodec.bytesToSign(transaction, signature.nonce);
+      const txBytes = new Keccak256(signingJob.bytes).digest();
+
+      const valid = await Secp256k1.verifySignature(
+        ExtendedSecp256k1Signature.fromFixedLength(signature.signature),
+        txBytes,
+        publicKey,
+      );
+      expect(valid).toBe(true);
+
+      connection.disconnect();
+    });
   });
 
   describe("searchTx", () => {
