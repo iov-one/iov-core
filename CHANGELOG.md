@@ -13,9 +13,11 @@
 - @iov/bcp: Helper methods `isConfirmedTransaction` and `isFailedTransaction`
   now take a type argument that extends`LightTransaction`(`UnsignedTransaction`
   is still the default).
+- @iov/bcp: Add `getTx` method to `BlockchainConnection`.
 - @iov/bns: Add support for multisignature transactions.
 - @iov/bns: Add `CreateMultisignatureTx` and `UpdateMultisignatureTx` types
   along with `Participant`.
+- @iov/bns: Add `getTx` method to `BnsConnection`.
 - @iov/ethereum: Add `createEtherSwapId` and `createErc20SwapId` static methods.
 - @iov/ethereum: Add `SwapIdPrefix` enum.
 - @iov/ethereum: Add `Erc20TokensMap` type.
@@ -23,6 +25,9 @@
   `isErc20ApproveTransaction` helper function.
 - @iov/ethereum: Add support for ERC 20 `approve` transactions.
 - @iov/ethereum: Add support for ERC20 atomic swap transactions.
+- @iov/ethereum: Add `getTx` method to `EthereumConnection`.
+- @iov/lisk: Add `getTx` method to `LiskConnection`.
+- @iov/rise: Add `getTx` method to `RiseConnection`.
 - @iov/socket: Add 10 second timeout to `SocketWrapper`. Value can be configured
   using an optional constructor argument.
 - @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
