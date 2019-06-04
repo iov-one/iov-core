@@ -498,7 +498,6 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public async getTx(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     id: TransactionId,
   ): Promise<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     const searchResults = await this.searchTxUnsigned({ id: id });

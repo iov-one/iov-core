@@ -683,10 +683,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return Stream.create(producer);
   }
 
-  public async getTx(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    id: TransactionId,
-  ): Promise<ConfirmedTransaction<UnsignedTransaction>> {
+  public async getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction>> {
     const searchResults = await this.searchTransactionsById(id);
     if (searchResults.length === 0) {
       throw new Error("Transaction does not exist");

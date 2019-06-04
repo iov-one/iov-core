@@ -306,10 +306,7 @@ export class RiseConnection implements BlockchainConnection {
     throw new Error("Not implemented");
   }
 
-  public async getTx(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    id: TransactionId,
-  ): Promise<ConfirmedTransaction<UnsignedTransaction>> {
+  public async getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction>> {
     const searchResult = await this.searchSingleTransaction(id);
     if (searchResult === undefined) {
       throw new Error("Transaction does not exist");
