@@ -330,8 +330,15 @@ export class LiskConnection implements BlockchainConnection {
   public async getTx(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     id: TransactionId,
-  ): Promise<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
-    throw new Error("Not implemented");
+  ): Promise<ConfirmedTransaction<UnsignedTransaction>> {
+    const searchResults = await this.searchTransactions({ id: id }, undefined, undefined);
+    if (searchResults.length === 0) {
+      throw new Error("Transaction does not exist");
+    }
+    if (searchResults.length > 1) {
+      throw new Error("More than one transaction exists with this ID");
+    }
+    return searchResults[0];
   }
 
   public async searchTx(
