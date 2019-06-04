@@ -727,7 +727,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     if (query.id !== undefined) {
       throw new Error(
-        "listenTx() is not implemented for ID queries because block heights are not always in sync this would give you unrelyable results. What you probably want to use is liveTx() that will find your transaction ID either in history or in updates.",
+        "listenTx() is not implemented for ID queries because block heights are not always in sync this would give you unreliable results. What you probably want to use is liveTx(), which will find your transaction ID either in history or in updates.",
       );
     } else if (query.sentFromOrTo) {
       const sentFromOrTo = query.sentFromOrTo;
