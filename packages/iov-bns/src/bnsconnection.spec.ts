@@ -861,7 +861,7 @@ describe("BnsConnection", () => {
       );
       const participants: readonly Participant[] = [identity, ...otherIdentities].map((id, i) => ({
         address: identityToAddress(id),
-        power: i === 0 ? 5 : 1,
+        weight: i === 0 ? 5 : 1,
       }));
       const tx1 = await connection.withDefaultFee<CreateMultisignatureTx & WithCreator>({
         kind: "bns/create_multisignature_contract",
@@ -889,7 +889,7 @@ describe("BnsConnection", () => {
       expect(firstSearchResultTransaction.participants.length).toEqual(6);
       firstSearchResultTransaction.participants.forEach((participant, i) => {
         expect(participant.address).toEqual(participants[i].address);
-        expect(participant.power).toEqual(participants[i].power);
+        expect(participant.weight).toEqual(participants[i].weight);
       });
       expect(firstSearchResultTransaction.activationThreshold).toEqual(4);
       expect(firstSearchResultTransaction.adminThreshold).toEqual(5);
@@ -900,7 +900,7 @@ describe("BnsConnection", () => {
         [15, 16, 17].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       )).map(id => ({
         address: identityToAddress(id),
-        power: 6,
+        weight: 6,
       }));
       const tx2 = await connection.withDefaultFee<UpdateMultisignatureTx & WithCreator>({
         kind: "bns/update_multisignature_contract",
@@ -929,7 +929,7 @@ describe("BnsConnection", () => {
       expect(secondSearchResultTransaction.participants.length).toEqual(3);
       secondSearchResultTransaction.participants.forEach((participant, i) => {
         expect(participant.address).toEqual(participantsUpdated[i].address);
-        expect(participant.power).toEqual(participantsUpdated[i].power);
+        expect(participant.weight).toEqual(participantsUpdated[i].weight);
       });
       expect(secondSearchResultTransaction.activationThreshold).toEqual(2);
       expect(secondSearchResultTransaction.adminThreshold).toEqual(6);

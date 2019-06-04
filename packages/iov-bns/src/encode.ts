@@ -100,7 +100,7 @@ export function encodeParticipants(
   return participants.map(
     (participant): codecImpl.multisig.IParticipant => ({
       signature: decodeBnsAddress(participant.address).data,
-      weight: participant.power,
+      weight: participant.weight,
     }),
   );
 }

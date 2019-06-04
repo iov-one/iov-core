@@ -125,7 +125,7 @@ export function decodeParticipants(
 
   return participants.map(participant => ({
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    power: participant.weight!,
+    weight: participant.weight!,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     address: encodeBnsAddress(prefix, participant.signature!),
   }));

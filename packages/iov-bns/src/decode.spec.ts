@@ -295,15 +295,15 @@ describe("Decode", () => {
       const participants: readonly Participant[] = [
         {
           address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
-          power: 4,
+          weight: 4,
         },
         {
           address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
-          power: 1,
+          weight: 1,
         },
         {
           address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
-          power: 1,
+          weight: 1,
         },
       ];
       const transactionMessage: codecImpl.app.ITx = {
@@ -341,15 +341,15 @@ describe("Decode", () => {
       const participants: readonly Participant[] = [
         {
           address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
-          power: 4,
+          weight: 4,
         },
         {
           address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
-          power: 1,
+          weight: 1,
         },
         {
           address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
-          power: 1,
+          weight: 1,
         },
       ];
       const transactionMessage: codecImpl.app.ITx = {

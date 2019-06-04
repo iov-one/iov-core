@@ -188,7 +188,7 @@ export interface AddAddressToUsernameTx extends LightTransaction {
 
 export interface Participant {
   readonly address: Address;
-  readonly power: number;
+  readonly weight: number;
 }
 
 export interface CreateMultisignatureTx extends LightTransaction {
