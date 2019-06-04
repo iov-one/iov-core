@@ -263,6 +263,9 @@ export interface BlockchainConnection {
   readonly watchBlockHeaders: () => Stream<BlockHeader>;
 
   // transactions
+  readonly getTx: (
+    id: TransactionId,
+  ) => Promise<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
   readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
   readonly searchTx: (
     query: TransactionQuery,
