@@ -726,7 +726,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const sentFromOrTo = query.sentFromOrTo;
 
       let pollIntervalScraper: NodeJS.Timeout | undefined;
-      const fromScraperProducer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
+      const fromScraperProducer: Producer<ConfirmedTransaction<LightTransaction> | FailedTransaction> = {
         start: async listener => {
           const searchStartHeight = (await this.height()) - 1; // TODO: get current height from scraper
           let minHeight = Math.max(query.minHeight || 0, searchStartHeight);
@@ -831,7 +831,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const sentFromOrTo = query.sentFromOrTo;
 
       let pollIntervalScraper: NodeJS.Timeout | undefined;
-      const fromScraperProducer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
+      const fromScraperProducer: Producer<ConfirmedTransaction<LightTransaction> | FailedTransaction> = {
         start: async listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
@@ -1003,9 +1003,9 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
+  ): Promise<readonly ConfirmedTransaction<LightTransaction>[]> {
     // tslint:disable-next-line:readonly-array
-    const out: ConfirmedTransaction<UnsignedTransaction>[] = [];
+    const out: ConfirmedTransaction<LightTransaction>[] = [];
 
     if (this.scraperApiUrl) {
       const fromScraper = await this.searchSendTransactionsByAddressOnScraper(address, minHeight, maxHeight);
@@ -1028,7 +1028,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
+  ): Promise<readonly ConfirmedTransaction<LightTransaction>[]> {
     if (!this.scraperApiUrl) {
       throw new Error("No scraper API URL specified.");
     }
@@ -1038,7 +1038,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     }
 
     // tslint:disable-next-line:readonly-array
-    const out: ConfirmedTransaction<UnsignedTransaction>[] = [];
+    const out: ConfirmedTransaction<LightTransaction>[] = [];
 
     // API: https://etherscan.io/apis#accounts
     const responseBody = (await axios.get(this.scraperApiUrl, {
@@ -1052,11 +1052,8 @@ export class EthereumConnection implements AtomicSwapConnection {
       },
     })).data;
     if (responseBody.result !== null) {
-      for (const tx of responseBody.result) {
-        if (tx.isError === "0" && tx.txreceipt_status === "1") {
-          // Do an extra query to the node as the scraper result does not contain the
-          // transaction signature, which we need for recovering the signer's pubkey.
-          const transaction = (await this.searchTransactionsById(Parse.transactionId(tx.hash)))[0];
+      for (const transaction of responseBody.result) {
+        if (transaction.isError === "0" && transaction.txreceipt_status === "1") {
           out.push(transaction);
         }
       }
