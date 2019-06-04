@@ -26,6 +26,7 @@ import {
   isConfirmedTransaction,
   isFailedTransaction,
   isPubkeyQuery,
+  LightTransaction,
   Nonce,
   OpenSwap,
   PostableBytes,
@@ -438,10 +439,10 @@ export class BnsConnection implements AtomicSwapConnection {
    */
   public async getSwaps(query: AtomicSwapQuery): Promise<readonly AtomicSwap[]> {
     // we need to combine them all to see all transactions that affect the query
-    const setTxs: readonly ConfirmedTransaction[] = (await this.searchTx({
+    const setTxs: readonly ConfirmedTransaction<UnsignedTransaction>[] = (await this.searchTxUnsigned({
       tags: [bnsSwapQueryTag(query, true)],
     })).filter(isConfirmedTransaction);
-    const delTxs: readonly ConfirmedTransaction[] = (await this.searchTx({
+    const delTxs: readonly ConfirmedTransaction<UnsignedTransaction>[] = (await this.searchTxUnsigned({
       tags: [bnsSwapQueryTag(query, false)],
     })).filter(isConfirmedTransaction);
 
@@ -471,8 +472,12 @@ export class BnsConnection implements AtomicSwapConnection {
    */
   public watchSwaps(query: AtomicSwapQuery): Stream<AtomicSwap> {
     // we need to combine them all to see all transactions that affect the query
-    const setTxs = this.liveTx({ tags: [bnsSwapQueryTag(query, true)] }).filter(isConfirmedTransaction);
-    const delTxs = this.liveTx({ tags: [bnsSwapQueryTag(query, false)] }).filter(isConfirmedTransaction);
+    const setTxs = this.liveTxUnsigned({ tags: [bnsSwapQueryTag(query, true)] }).filter(
+      isConfirmedTransaction,
+    );
+    const delTxs = this.liveTxUnsigned({ tags: [bnsSwapQueryTag(query, false)] }).filter(
+      isConfirmedTransaction,
+    );
 
     const offers: Stream<OpenSwap> = setTxs
       .filter(isConfirmedWithSwapOfferTransaction)
@@ -494,69 +499,18 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public async searchTx(
     query: TransactionQuery,
-  ): Promise<readonly (ConfirmedTransaction | FailedTransaction)[]> {
-    // this will paginate over all transactions, even if multiple pages.
-    // FIXME: consider making a streaming interface here, but that will break clients
-    const res = await this.tmClient.txSearchAll({ query: buildQueryString(query) });
-    const chainId = await this.chainId();
-    const currentHeight = await this.height();
-
-    return res.txs.map(
-      (txResponse): ConfirmedTransaction | FailedTransaction => {
-        const { tx, hash, height, result } = txResponse;
-        const transactionId = Encoding.toHex(hash).toUpperCase() as TransactionId;
-
-        if (result.code === 0) {
-          return {
-            height: height,
-            confirmations: currentHeight - height + 1,
-            transactionId: transactionId,
-            log: result.log,
-            result: result.data,
-            ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
-          };
-        } else {
-          const failed: FailedTransaction = {
-            height: height,
-            transactionId: transactionId,
-            code: result.code,
-            message: result.log,
-          };
-          return failed;
-        }
-      },
-    );
+  ): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]> {
+    return this.searchTxUnsigned(query);
   }
 
   /**
    * A stream of all transactions that match the tags from the present moment on
    */
-  public listenTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
-    const chainId = this.chainId();
-    const rawQuery = buildQueryString(query);
-    return this.tmClient.subscribeTx(rawQuery).map(
-      (transaction): ConfirmedTransaction | FailedTransaction => {
-        const transactionId = Encoding.toHex(transaction.hash).toUpperCase() as TransactionId;
-
-        if (transaction.result.code === 0) {
-          return {
-            height: transaction.height,
-            confirmations: 1, // assuming block height is current height when listening to events
-            transactionId: transactionId,
-            log: transaction.result.log,
-            result: transaction.result.data,
-            ...this.codec.parseBytes(new Uint8Array(transaction.tx) as PostableBytes, chainId),
-          };
-        } else {
-          const failed: FailedTransaction = {
-            height: transaction.height,
-            transactionId: transactionId,
-            code: transaction.result.code,
-            message: transaction.result.log,
-          };
-          return failed;
-        }
-      },
+  public listenTx(
+    query: TransactionQuery,
+  ): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+    return this.listenTxUnsigned(query).map(
+      (transaction): ConfirmedTransaction<LightTransaction> | FailedTransaction => transaction,
     );
   }
 
@@ -566,12 +520,10 @@ export class BnsConnection implements AtomicSwapConnection {
    * It returns a stream starting the array of all existing transactions
    * and then continuing with live feeds
    */
-  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction> {
-    const historyStream = fromListPromise(this.searchTx(query));
-    const updatesStream = this.listenTx(query);
-    const combinedStream = concat(historyStream, updatesStream);
-    const deduplicatedStream = combinedStream.compose(dropDuplicates(ct => ct.transactionId));
-    return deduplicatedStream;
+  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+    return this.liveTxUnsigned(query).map(
+      (transaction): ConfirmedTransaction<LightTransaction> | FailedTransaction => transaction,
+    );
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {
@@ -743,5 +695,94 @@ export class BnsConnection implements AtomicSwapConnection {
         return decodeAmount(x);
       });
     return fees.length > 0 ? fees[0] : undefined;
+  }
+
+  /**
+   * The same as searchTx but with ConfirmedTransaction<UnsignedTransaction> instead of
+   * ConfirmedTransaction<LightTransaction>
+   */
+  private async searchTxUnsigned(
+    query: TransactionQuery,
+  ): Promise<readonly (ConfirmedTransaction<UnsignedTransaction> | FailedTransaction)[]> {
+    // this will paginate over all transactions, even if multiple pages.
+    // FIXME: consider making a streaming interface here, but that will break clients
+    const res = await this.tmClient.txSearchAll({ query: buildQueryString(query) });
+    const chainId = await this.chainId();
+    const currentHeight = await this.height();
+
+    return res.txs.map(
+      (txResponse): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => {
+        const { tx, hash, height, result } = txResponse;
+        const transactionId = Encoding.toHex(hash).toUpperCase() as TransactionId;
+
+        if (result.code === 0) {
+          return {
+            height: height,
+            confirmations: currentHeight - height + 1,
+            transactionId: transactionId,
+            log: result.log,
+            result: result.data,
+            ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
+          };
+        } else {
+          const failed: FailedTransaction = {
+            height: height,
+            transactionId: transactionId,
+            code: result.code,
+            message: result.log,
+          };
+          return failed;
+        }
+      },
+    );
+  }
+
+  /**
+   * The same as listenTx but with ConfirmedTransaction<UnsignedTransaction> instead of
+   * ConfirmedTransaction<LightTransaction>
+   */
+  private listenTxUnsigned(
+    query: TransactionQuery,
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
+    const chainId = this.chainId();
+    const rawQuery = buildQueryString(query);
+    return this.tmClient.subscribeTx(rawQuery).map(
+      (transaction): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => {
+        const transactionId = Encoding.toHex(transaction.hash).toUpperCase() as TransactionId;
+
+        if (transaction.result.code === 0) {
+          return {
+            height: transaction.height,
+            confirmations: 1, // assuming block height is current height when listening to events
+            transactionId: transactionId,
+            log: transaction.result.log,
+            result: transaction.result.data,
+            ...this.codec.parseBytes(new Uint8Array(transaction.tx) as PostableBytes, chainId),
+          };
+        } else {
+          const failed: FailedTransaction = {
+            height: transaction.height,
+            transactionId: transactionId,
+            code: transaction.result.code,
+            message: transaction.result.log,
+          };
+          return failed;
+        }
+      },
+    );
+  }
+
+  /**
+   * The same as liveTx but with ConfirmedTransaction<UnsignedTransaction> instead of
+   * ConfirmedTransaction<LightTransaction>
+   */
+  private liveTxUnsigned(
+    query: TransactionQuery,
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
+    const historyStream = fromListPromise(this.searchTxUnsigned(query));
+    const updatesStream = this.listenTxUnsigned(query);
+    const combinedStream = concat(historyStream, updatesStream);
+    const deduplicatedStream = combinedStream.compose(dropDuplicates(ct => ct.transactionId));
+    return deduplicatedStream;
   }
 }

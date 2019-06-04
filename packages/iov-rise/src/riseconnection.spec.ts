@@ -14,6 +14,7 @@ import {
   isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
+  LightTransaction,
   Nonce,
   PubkeyQuery,
   PublicKeyBundle,
@@ -724,7 +725,7 @@ describe("RiseConnection", () => {
         await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction<SendTransaction & WithCreator>>();
+        const events = new Array<ConfirmedTransaction<SendTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -733,7 +734,7 @@ describe("RiseConnection", () => {
             if (!isSendTransaction(event.transaction)) {
               throw new Error("Unexpected transaction type");
             }
-            events.push(event as ConfirmedTransaction<SendTransaction & WithCreator>);
+            events.push(event as ConfirmedTransaction<SendTransaction>);
 
             if (events.length === 2) {
               // from this test
@@ -787,7 +788,7 @@ describe("RiseConnection", () => {
         await postResult.blockInfo.waitFor(info => info.state !== TransactionState.Pending);
 
         // setup listener after transaction is in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -839,7 +840,7 @@ describe("RiseConnection", () => {
         const transactionId = postResult.transactionId;
 
         // setup listener before transaction is in block
-        const events = new Array<ConfirmedTransaction>();
+        const events = new Array<ConfirmedTransaction<LightTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {

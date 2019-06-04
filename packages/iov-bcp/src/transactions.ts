@@ -125,17 +125,6 @@ export interface FullSignature {
   readonly signature: SignatureBytes;
 }
 
-/** A signable transaction knows how to serialize itself and how to store signatures */
-export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTransaction> {
-  /** transaction is the user request */
-  readonly transaction: T;
-
-  readonly primarySignature: FullSignature;
-
-  /** signatures can be appended as this is signed */
-  readonly otherSignatures: readonly FullSignature[];
-}
-
 /** A codec specific address encoded as a string */
 export type Address = string & As<"address">;
 
@@ -228,6 +217,17 @@ export type UnsignedTransaction = LightTransaction & WithCreator;
 export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
   const transaction = data as UnsignedTransaction;
   return isLightTransaction(transaction) && isIdentity(transaction.creator);
+}
+
+/** A signable transaction knows how to serialize itself and how to store signatures */
+export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction> {
+  /** transaction is the user request */
+  readonly transaction: T;
+
+  readonly primarySignature: FullSignature;
+
+  /** signatures can be appended as this is signed */
+  readonly otherSignatures: readonly FullSignature[];
 }
 
 export interface SendTransaction extends LightTransaction {

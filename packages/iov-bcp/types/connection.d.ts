@@ -3,7 +3,7 @@ import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { ValueAndUpdates } from "@iov/stream";
 import { PostableBytes } from "./codec";
-import { Address, Amount, ChainId, Fee, Nonce, PublicKeyBundle, SignedTransaction, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
+import { Address, Amount, ChainId, Fee, LightTransaction, Nonce, PublicKeyBundle, SignedTransaction, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
 export interface Account {
     readonly address: Address;
     /**
@@ -83,7 +83,7 @@ export interface PostTxResponse {
     /** a human readable debugging log */
     readonly log?: string;
 }
-export interface ConfirmedTransaction<T extends UnsignedTransaction = UnsignedTransaction> extends SignedTransaction<T> {
+export interface ConfirmedTransaction<T extends LightTransaction> extends SignedTransaction<T> {
     readonly height: number;
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
     readonly confirmations: number;
@@ -112,8 +112,8 @@ export interface FailedTransaction {
      */
     readonly message?: string;
 }
-export declare function isConfirmedTransaction(transaction: ConfirmedTransaction | FailedTransaction): transaction is ConfirmedTransaction;
-export declare function isFailedTransaction(transaction: ConfirmedTransaction | FailedTransaction): transaction is FailedTransaction;
+export declare function isConfirmedTransaction<T extends LightTransaction>(transaction: ConfirmedTransaction<T> | FailedTransaction): transaction is ConfirmedTransaction<T>;
+export declare function isFailedTransaction<T extends LightTransaction>(transaction: ConfirmedTransaction<T> | FailedTransaction): transaction is FailedTransaction;
 export interface QueryTag {
     readonly key: string;
     readonly value: string;
@@ -197,16 +197,16 @@ export interface BlockchainConnection {
     readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
     readonly watchBlockHeaders: () => Stream<BlockHeader>;
     readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
-    readonly searchTx: (query: TransactionQuery) => Promise<readonly (ConfirmedTransaction | FailedTransaction)[]>;
+    readonly searchTx: (query: TransactionQuery) => Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]>;
     /**
      * Subscribes to all newly added transactions that match the query
      */
-    readonly listenTx: (query: TransactionQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
+    readonly listenTx: (query: TransactionQuery) => Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
     /**
      * Returns a stream for all historical transactions that match
      * the query, along with all new transactions arriving from listenTx
      */
-    readonly liveTx: (query: TransactionQuery) => Stream<ConfirmedTransaction | FailedTransaction>;
+    readonly liveTx: (query: TransactionQuery) => Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
     readonly getFeeQuote: (tx: UnsignedTransaction) => Promise<Fee>;
     readonly withDefaultFee: <T extends UnsignedTransaction>(tx: T) => Promise<T>;
 }

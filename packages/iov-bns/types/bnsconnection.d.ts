@@ -1,5 +1,5 @@
 import { Stream } from "xstream";
-import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { BnsUsernameNft, BnsUsernamesQuery, Result } from "./types";
 export interface QueryResponse {
     readonly height?: number;
@@ -55,18 +55,18 @@ export declare class BnsConnection implements AtomicSwapConnection {
      * This includes an open swap beind claimed/aborted as well as a new matching swap being offered
      */
     watchSwaps(query: AtomicSwapQuery): Stream<AtomicSwap>;
-    searchTx(query: TransactionQuery): Promise<readonly (ConfirmedTransaction | FailedTransaction)[]>;
+    searchTx(query: TransactionQuery): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]>;
     /**
      * A stream of all transactions that match the tags from the present moment on
      */
-    listenTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
+    listenTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
     /**
      * Does a search and then subscribes to all future changes.
      *
      * It returns a stream starting the array of all existing transactions
      * and then continuing with live feeds
      */
-    liveTx(query: TransactionQuery): Stream<ConfirmedTransaction | FailedTransaction>;
+    liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
     /**
@@ -87,4 +87,19 @@ export declare class BnsConnection implements AtomicSwapConnection {
      * Returns undefined if no product fee is defined
      */
     protected getProductFee(kind: string): Promise<Amount | undefined>;
+    /**
+     * The same as searchTx but with ConfirmedTransaction<UnsignedTransaction> instead of
+     * ConfirmedTransaction<LightTransaction>
+     */
+    private searchTxUnsigned;
+    /**
+     * The same as listenTx but with ConfirmedTransaction<UnsignedTransaction> instead of
+     * ConfirmedTransaction<LightTransaction>
+     */
+    private listenTxUnsigned;
+    /**
+     * The same as liveTx but with ConfirmedTransaction<UnsignedTransaction> instead of
+     * ConfirmedTransaction<LightTransaction>
+     */
+    private liveTxUnsigned;
 }

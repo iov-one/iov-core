@@ -70,14 +70,6 @@ export interface FullSignature {
     readonly pubkey: PublicKeyBundle;
     readonly signature: SignatureBytes;
 }
-/** A signable transaction knows how to serialize itself and how to store signatures */
-export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTransaction> {
-    /** transaction is the user request */
-    readonly transaction: T;
-    readonly primarySignature: FullSignature;
-    /** signatures can be appended as this is signed */
-    readonly otherSignatures: readonly FullSignature[];
-}
 /** A codec specific address encoded as a string */
 export declare type Address = string & As<"address">;
 export interface Amount {
@@ -138,6 +130,14 @@ export interface WithCreator {
 }
 export declare type UnsignedTransaction = LightTransaction & WithCreator;
 export declare function isUnsignedTransaction(data: any): data is UnsignedTransaction;
+/** A signable transaction knows how to serialize itself and how to store signatures */
+export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction> {
+    /** transaction is the user request */
+    readonly transaction: T;
+    readonly primarySignature: FullSignature;
+    /** signatures can be appended as this is signed */
+    readonly otherSignatures: readonly FullSignature[];
+}
 export interface SendTransaction extends LightTransaction {
     readonly kind: "bcp/send";
     readonly amount: Amount;

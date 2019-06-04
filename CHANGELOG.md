@@ -7,6 +7,12 @@
   functions.
 - @iov/bcp: Add `LightTransaction` and `WithCreator` types, and
   `isLightTransaction` helper function.
+- @iov/bcp: `ConfirmedTransaction` and `SignedTransaction` now take a type
+  argument that extends `LightTransaction` (`UnsignedTransaction` is still the
+  default).
+- @iov/bcp: Helper methods `isConfirmedTransaction` and `isFailedTransaction`
+  now take a type argument that extends`LightTransaction`(`UnsignedTransaction`
+  is still the default).
 - @iov/bns: Add support for multisignature transactions.
 - @iov/bns: Add `CreateMultisignatureTx` and `UpdateMultisignatureTx` types
   along with `Participant`.
@@ -40,10 +46,15 @@ Breaking changes
   `UnsignedTransaction` (i.e. they have no `creator` field): `SendTransaction`,
   `SwapOfferTransaction`, `SwapClaimTransaction`, and `SwapAbortTransaction`.
 - @iov/bcp: Add `sender` field to `SendTransaction`.
+- @iov/bcp: `BlockchainConnection` methods `listenTx`, `liveTx` and `searchTx`
+  now all resolve to confirmed `LightTransaction`s instead of
+  `UnsignedTransaction`s.
 - @iov/bns: Remove obsolete types `BnsBlockchainNft`,
   `BnsBlockchainsByChainIdQuery`, `BnsBlockchainsQuery`.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where
   appropriate.
+- @iov/bns: `BnsConnection` methods `listenTx`, `liveTx` and `searchTx` now all
+  resolve to confirmed `LightTransaction`s instead of `UnsignedTransaction`s.
 - @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.
 - @iov/core: Change return type of `SigningServerCore.signAndPost` to
   `TransactionId | null`.
@@ -60,6 +71,9 @@ Breaking changes
   instead of `UnsignedTransaction` (i.e. it has no `creator` field).
 - @iov/ethereum: Remove `wsUrl` from `connectionOptions`. Pass either WS or HTTP
   URLs via `baseUrl` instead.
+- @iov/ethereum: `EthereumConnection` methods `listenTx`, `liveTx` and
+  `searchTx` now all resolve to confirmed `LightTransaction`s instead of
+  `UnsignedTransaction`s.
 - @iov/keycontrol: The `UserProfile` storage format version was bumped to 2.
   Profiles stored in this version can only be opened with IOV-Core 0.14.4 and
   above.
@@ -67,6 +81,12 @@ Breaking changes
   `JsonRpcErrorResponse` is now of type `JsonRpcId`, which can be a string or a
   number.
 - @iov/jsonrpc: Remove `parseJsonRpcResponse` and `parseJsonRpcError`.
+- @iov/lisk: `LiskConnection` methods `listenTx`, `liveTx` and `searchTx` now
+  all resolve to confirmed `LightTransaction`s instead of
+  `UnsignedTransaction`s.
+- @iov/rise: `RiseConnection` methods `listenTx`, `liveTx` and `searchTx` now
+  all resolve to confirmed `LightTransaction`s instead of
+  `UnsignedTransaction`s.
 - @iov/tendermint-rpc: Remove support for Tendermint 0.25.x – 0.28.x.
 - @iov/tendermint-rpc: Rename `v0_27` to `v0_29`, which is now the adaptor for
   0.29.x and 0.30.x.
