@@ -48,7 +48,7 @@ export declare class EthereumConnection implements AtomicSwapConnection {
     getBlockHeader(height: number): Promise<BlockHeader>;
     watchBlockHeaders(): Stream<BlockHeader>;
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
-    getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
+    getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction>>;
     searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction<LightTransaction>[]>;
     listenTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
     liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
