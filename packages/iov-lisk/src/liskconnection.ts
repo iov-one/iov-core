@@ -327,6 +327,13 @@ export class LiskConnection implements BlockchainConnection {
     return Stream.create(producer);
   }
 
+  public async getTx(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    id: TransactionId,
+  ): Promise<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
+    throw new Error("Not implemented");
+  }
+
   public async searchTx(
     query: TransactionQuery,
   ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
