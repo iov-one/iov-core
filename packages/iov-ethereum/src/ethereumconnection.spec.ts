@@ -698,10 +698,9 @@ describe("EthereumConnection", () => {
         testConfig.baseHttp,
         testConfig.connectionOptions,
       );
-      // invalid lenght
-      const invalidHashLenght = "0x1234567890abcdef" as TransactionId;
+      const invalidHashLength = "0x1234567890abcdef" as TransactionId;
       await connection
-        .searchTx({ id: invalidHashLenght })
+        .searchTx({ id: invalidHashLength })
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/Invalid transaction ID format/i));
       connection.disconnect();
