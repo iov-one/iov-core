@@ -36,7 +36,6 @@ describe("bnscodec", () => {
         const prehash = new Sha512(bytes).digest();
         expect(prehash).toEqual(signBytes);
         const pubkey = sig.pubkey.data;
-        // const prehash = new Sha512(bytes).digest();
         const valid = await Ed25519.verifySignature(sig.signature, prehash, pubkey);
         expect(valid).toEqual(true);
         break;
