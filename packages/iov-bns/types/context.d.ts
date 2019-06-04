@@ -19,6 +19,6 @@ export declare class Context {
     constructor(chainData: ChainData);
     wallet(acct: codecImpl.namecoin.IWallet & Keyed): WalletData;
     /** Decode within a Context to have the chain ID available */
-    decodeOpenSwap(swap: codecImpl.escrow.Escrow & Keyed): OpenSwap;
+    decodeOpenSwap(swap: codecImpl.aswap.Swap & Keyed): OpenSwap;
     swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction & WithCreator>): OpenSwap;
 }

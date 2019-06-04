@@ -5,6 +5,7 @@ import {
   Amount,
   ChainId,
   FullSignature,
+  Hash,
   Nonce,
   Preimage,
   SendTransaction,
@@ -37,13 +38,7 @@ import {
   RemoveAddressFromUsernameTx,
   UpdateMultisignatureTx,
 } from "./types";
-import {
-  addressPrefix,
-  encodeBnsAddress,
-  hashFromIdentifier,
-  identityToAddress,
-  isHashIdentifier,
-} from "./util";
+import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromUtf8 } = Encoding;
 
@@ -156,17 +151,17 @@ function parseSendTransaction(
 
 function parseSwapOfferTx(
   base: UnsignedTransaction,
-  msg: codecImpl.escrow.ICreateEscrowMsg,
+  msg: codecImpl.aswap.ICreateSwapMsg,
 ): SwapOfferTransaction & WithCreator {
-  const hashIdentifier = ensure(msg.arbiter, "arbiter");
-  if (!isHashIdentifier(hashIdentifier)) {
-    throw new Error("escrow not controlled by hashlock");
+  const hash = ensure(msg.preimageHash, "preimageHash");
+  if (hash.length !== 32) {
+    throw new Error("Hash must be 32 bytes (sha256)");
   }
   const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
     kind: "bcp/swap_offer",
-    hash: hashFromIdentifier(hashIdentifier),
+    hash: hash as Hash,
     recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
     timeout: { timestamp: asIntegerNumber(ensure(msg.timeout)) },
     amounts: (msg.amount || []).map(decodeAmount),
@@ -175,28 +170,27 @@ function parseSwapOfferTx(
 
 function parseSwapClaimTx(
   base: UnsignedTransaction,
-  msg: codecImpl.escrow.IReturnEscrowMsg,
-  tx: codecImpl.app.ITx,
+  msg: codecImpl.aswap.IReleaseSwapMsg,
 ): SwapClaimTransaction & WithCreator {
   return {
     ...base,
     kind: "bcp/swap_claim",
     swapId: {
-      data: ensure(msg.escrowId) as SwapIdBytes,
+      data: ensure(msg.swapId) as SwapIdBytes,
     },
-    preimage: ensure(tx.preimage) as Preimage,
+    preimage: ensure(msg.preimage) as Preimage,
   };
 }
 
 function parseSwapAbortTransaction(
   base: UnsignedTransaction,
-  msg: codecImpl.escrow.IReturnEscrowMsg,
+  msg: codecImpl.aswap.IReturnSwapMsg,
 ): SwapAbortTransaction & WithCreator {
   return {
     ...base,
     kind: "bcp/swap_abort",
     swapId: {
-      data: ensure(msg.escrowId) as SwapIdBytes,
+      data: ensure(msg.swapId) as SwapIdBytes,
     },
   };
 }
@@ -272,12 +266,12 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
     return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
   } else if (tx.sendMsg) {
     return parseSendTransaction(base, tx.sendMsg);
-  } else if (tx.createEscrowMsg) {
-    return parseSwapOfferTx(base, tx.createEscrowMsg);
-  } else if (tx.releaseEscrowMsg) {
-    return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
-  } else if (tx.returnEscrowMsg) {
-    return parseSwapAbortTransaction(base, tx.returnEscrowMsg);
+  } else if (tx.createSwapMsg) {
+    return parseSwapOfferTx(base, tx.createSwapMsg);
+  } else if (tx.releaseSwapMsg) {
+    return parseSwapClaimTx(base, tx.releaseSwapMsg);
+  } else if (tx.returnSwapMsg) {
+    return parseSwapAbortTransaction(base, tx.returnSwapMsg);
   } else if (tx.issueUsernameNftMsg) {
     return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
   } else if (tx.removeUsernameAddressMsg) {

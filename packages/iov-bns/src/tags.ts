@@ -1,5 +1,6 @@
 import {
   AtomicSwapQuery,
+  isAtomicSwapHashQuery,
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
   isAtomicSwapSenderQuery,
@@ -7,20 +8,22 @@ import {
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { bucketKey, decodeBnsAddress, hashIdentifier, indexKey } from "./util";
+import { bucketKey, decodeBnsAddress, indexKey } from "./util";
 
 export function bnsSwapQueryTag(query: AtomicSwapQuery, set = true): QueryTag {
   let binKey: Uint8Array;
-  const bucket = "esc";
+  // https://github.com/iov-one/weave/blob/v0.15.0/x/aswap/model.go#L15
+  const bucket = "swap";
   if (isAtomicSwapIdQuery(query)) {
     binKey = Uint8Array.from([...bucketKey(bucket), ...query.id.data]);
   } else if (isAtomicSwapSenderQuery(query)) {
-    binKey = Uint8Array.from([...indexKey(bucket, "sender"), ...decodeBnsAddress(query.sender).data]);
+    binKey = Uint8Array.from([...indexKey(bucket, "src"), ...decodeBnsAddress(query.sender).data]);
   } else if (isAtomicSwapRecipientQuery(query)) {
     binKey = Uint8Array.from([...indexKey(bucket, "recipient"), ...decodeBnsAddress(query.recipient).data]);
+  } else if (isAtomicSwapHashQuery(query)) {
+    binKey = Uint8Array.from([...indexKey(bucket, "preimage_hash"), ...query.hash]);
   } else {
-    // if (isQueryBySwapHash(query))
-    binKey = Uint8Array.from([...indexKey(bucket, "arbiter"), ...hashIdentifier(query.hash)]);
+    throw new Error("Unsupported query type");
   }
 
   return {

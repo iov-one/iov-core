@@ -26,7 +26,7 @@ import {
   RemoveAddressFromUsernameTx,
   UpdateMultisignatureTx,
 } from "./types";
-import { decodeBnsAddress, hashIdentifier, identityToAddress } from "./util";
+import { decodeBnsAddress, identityToAddress } from "./util";
 
 const { toUtf8 } = Encoding;
 
@@ -149,10 +149,10 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app
   }
 
   return {
-    createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
+    createSwapMsg: codecImpl.aswap.CreateSwapMsg.create({
       metadata: { schema: 1 },
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
-      arbiter: hashIdentifier(tx.hash),
+      preimageHash: tx.hash,
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: encodeInt(tx.timeout.timestamp),
@@ -163,19 +163,19 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app
 
 function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.app.ITx {
   return {
-    releaseEscrowMsg: codecImpl.escrow.ReleaseEscrowMsg.create({
+    releaseSwapMsg: codecImpl.aswap.ReleaseSwapMsg.create({
       metadata: { schema: 1 },
-      escrowId: tx.swapId.data,
+      swapId: tx.swapId.data,
+      preimage: tx.preimage,
     }),
-    preimage: tx.preimage,
   };
 }
 
 function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.app.ITx {
   return {
-    returnEscrowMsg: codecImpl.escrow.ReturnEscrowMsg.create({
+    returnSwapMsg: codecImpl.aswap.ReturnSwapMsg.create({
       metadata: { schema: 1 },
-      escrowId: tx.swapId.data,
+      swapId: tx.swapId.data,
     }),
   };
 }

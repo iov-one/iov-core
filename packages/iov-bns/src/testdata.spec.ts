@@ -155,7 +155,7 @@ const swapOfferTransaction: SwapOfferTransaction & WithCreator = {
       tokenTicker: "FOO" as TokenTicker,
     },
   ],
-  hash: fromHex("1122334455aabbccddee") as Hash,
+  hash: fromHex("0000001111111122334455aabbccddee0000001111111122334455aabbccddee") as Hash,
 };
 
 export const swapOfferTxJson: SignedTransaction = {

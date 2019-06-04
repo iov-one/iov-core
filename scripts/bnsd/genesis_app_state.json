@@ -48,6 +48,10 @@
   ],
   "initialize_schema": [
     {
+      "pkg": "aswap",
+      "ver": 1
+    },
+    {
       "pkg": "batch",
       "ver": 1
     },

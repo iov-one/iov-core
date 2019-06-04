@@ -17,6 +17,7 @@ import {
   SignableBytes,
   SwapAbortTransaction,
   SwapClaimTransaction,
+  SwapData,
   SwapOfferTransaction,
   TransactionQuery,
   UnsignedTransaction,
@@ -73,9 +74,10 @@ function buildCondition(extension: string, typ: string, id: Uint8Array): Conditi
   return res as Condition;
 }
 
-export function escrowCondition(id: Uint8Array): Condition {
-  // https://github.com/iov-one/weave/blob/v0.13.0/x/escrow/model.go#L90
-  return buildCondition("escrow", "seq", id);
+export function swapCondition(swap: SwapData): Condition {
+  // https://github.com/iov-one/weave/blob/v0.15.0/x/aswap/handler.go#L287
+  const weaveSwapId = new Uint8Array([...swap.id.data, "|".charCodeAt(0), ...swap.hash]);
+  return buildCondition("aswap", "pre_hash", weaveSwapId);
 }
 
 export function conditionToAddress(chainId: ChainId, cond: Condition): Address {
@@ -127,6 +129,7 @@ export function isHashIdentifier(ident: Uint8Array): ident is HashId {
   return arraysEqual(hashIdentifierPrefix, prefix);
 }
 
+// Keep this function alive for https://github.com/iov-one/iov-core/issues/1058
 export function hashFromIdentifier(ident: HashId): Hash {
   return ident.slice(hashIdentifierPrefix.length) as Hash;
 }

@@ -69,11 +69,10 @@ import {
   buildQueryString,
   conditionToAddress,
   decodeBnsAddress,
-  escrowCondition,
-  hashIdentifier,
   identityToAddress,
   isConfirmedWithSwapClaimOrAbortTransaction,
   isConfirmedWithSwapOfferTransaction,
+  swapCondition,
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
@@ -413,22 +412,22 @@ export class BnsConnection implements AtomicSwapConnection {
   public async getSwapsFromState(query: AtomicSwapQuery): Promise<readonly AtomicSwap[]> {
     const doQuery = async (): Promise<QueryResponse> => {
       if (isAtomicSwapIdQuery(query)) {
-        return this.query("/escrows", query.id.data);
+        return this.query("/aswaps", query.id.data);
       } else if (isAtomicSwapSenderQuery(query)) {
-        return this.query("/escrows/sender", decodeBnsAddress(query.sender).data);
+        return this.query("/aswaps/src", decodeBnsAddress(query.sender).data);
       } else if (isAtomicSwapRecipientQuery(query)) {
-        return this.query("/escrows/recipient", decodeBnsAddress(query.recipient).data);
+        return this.query("/aswaps/recipient", decodeBnsAddress(query.recipient).data);
       } else if (isAtomicSwapHashQuery(query)) {
-        return this.query("/escrows/arbiter", hashIdentifier(query.hash));
+        return this.query("/aswaps/preimage_hash", query.hash);
       } else {
         throw new Error("Unexpected type of query");
       }
     };
 
     const res = await doQuery();
-    const parser = createParser(codecImpl.escrow.Escrow, "esc:");
+    const parser = createParser(codecImpl.aswap.Swap, "swap:");
     const data = res.results.map(parser).map(escrow => this.context.decodeOpenSwap(escrow));
-    const withBalance = await Promise.all(data.map(this.updateEscrowBalance.bind(this)));
+    const withBalance = await Promise.all(data.map(s => this.updateSwapAmounts(s)));
     return withBalance;
   }
 
@@ -661,11 +660,11 @@ export class BnsConnection implements AtomicSwapConnection {
 
   // updateEscrowBalance will query for the proper balance and then update the accounts of escrow before
   // returning it. Designed to be used in a map chain.
-  protected async updateEscrowBalance<T extends AtomicSwap>(escrow: T): Promise<T> {
-    const addr = conditionToAddress(this.chainId(), escrowCondition(escrow.data.id.data));
+  protected async updateSwapAmounts<T extends AtomicSwap>(swap: T): Promise<T> {
+    const addr = conditionToAddress(this.chainId(), swapCondition(swap.data));
     const account = await this.getAccount({ address: addr });
     const balance = account ? account.balance : [];
-    return { ...escrow, data: { ...escrow.data, amounts: balance } };
+    return { ...swap, data: { ...swap.data, amounts: balance } };
   }
 
   /**

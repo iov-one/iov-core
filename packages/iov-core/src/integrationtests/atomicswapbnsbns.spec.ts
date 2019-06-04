@@ -138,7 +138,8 @@ class Actor {
       creator: this.bnsIdentity,
       memo: "Take this cash",
       recipient: recipient,
-      timeout: createTimestampTimeout(200),
+      // Reset to something small after https://github.com/iov-one/weave/issues/718
+      timeout: createTimestampTimeout(72 * 3600),
       hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
       amounts: [amount],
     });
@@ -155,7 +156,8 @@ class Actor {
       creator: this.bnsIdentity,
       amounts: [amount],
       recipient: recipient,
-      timeout: createTimestampTimeout(100),
+      // Reset to something small after https://github.com/iov-one/weave/issues/718
+      timeout: createTimestampTimeout(36 * 3600),
       hash: offer.data.hash,
     });
     return this.sendTransaction(transaction);

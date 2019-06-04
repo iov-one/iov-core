@@ -1728,8 +1728,8 @@ describe("BnsConnection", () => {
     const swapOfferPreimage = await AtomicSwapHelpers.createPreimage();
     const swapOfferHash = AtomicSwapHelpers.hashPreimage(swapOfferPreimage);
 
-    // it will live 30 seconds
-    const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);
+    // it will live 48 hours
+    const swapOfferTimeout: SwapTimeout = createTimestampTimeout(48 * 3600);
     const amount = {
       quantity: "123000456000",
       fractionalDigits: 9,
@@ -1878,7 +1878,7 @@ describe("BnsConnection", () => {
     hash: Hash,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
-    const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);
+    const swapOfferTimeout = createTimestampTimeout(48 * 3600);
     const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
       kind: "bcp/swap_offer",
       creator: creator,
@@ -1926,11 +1926,11 @@ describe("BnsConnection", () => {
     const recipientAddr = await randomBnsAddress();
 
     // create the preimages for the three swaps
-    const preimage1 = Encoding.toAscii("the first swap is easy") as Preimage;
+    const preimage1 = await AtomicSwapHelpers.createPreimage();
     const hash1 = AtomicSwapHelpers.hashPreimage(preimage1);
-    const preimage2 = Encoding.toAscii("ze 2nd iS l337 !@!") as Preimage;
+    const preimage2 = await AtomicSwapHelpers.createPreimage();
     const hash2 = AtomicSwapHelpers.hashPreimage(preimage2);
-    const preimage3 = Encoding.toAscii("and this one is a gift.") as Preimage;
+    const preimage3 = await AtomicSwapHelpers.createPreimage();
     const hash3 = AtomicSwapHelpers.hashPreimage(preimage3);
 
     // nothing to start with
