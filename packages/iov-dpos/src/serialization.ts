@@ -25,7 +25,7 @@ export class Serialization {
     // https://github.com/LiskHQ/lisk/blob/v1.0.3/logic/transaction.js#L674
 
     if (timestamp < -2147483648 || timestamp > 2147483647) {
-      throw new Error("Timestemp not in int32 range");
+      throw new Error("Timestamp not in int32 range");
     }
 
     return timestamp;
