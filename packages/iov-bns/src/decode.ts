@@ -118,16 +118,9 @@ export function decodeParticipants(
   maybeParticipants?: codecImpl.multisig.IParticipant[] | null,
 ): readonly Participant[] {
   const participants = ensure(maybeParticipants, "participants");
-  participants.forEach((participant, i) => {
-    ensure(participant.signature, `participants.$${i}.signature`);
-    ensure(participant.weight, `participants.$${i}.weight`);
-  });
-
-  return participants.map(participant => ({
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    weight: participant.weight!,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    address: encodeBnsAddress(prefix, participant.signature!),
+  return participants.map((participant, i) => ({
+    weight: ensure(participant.weight, `participants.$${i}.weight`),
+    address: encodeBnsAddress(prefix, ensure(participant.signature, `participants.$${i}.signature`)),
   }));
 }
 
