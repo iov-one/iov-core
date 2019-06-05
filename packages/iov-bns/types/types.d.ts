@@ -1,8 +1,11 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Address, Algorithm, ChainId, FullSignature, LightTransaction, PublicKeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
+import { Address, Algorithm, Amount, ChainId, FullSignature, LightTransaction, PublicKeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
+export interface CashConfiguration {
+    readonly minimalFee: Amount;
+}
 export interface ChainAddressPair {
     readonly chainId: ChainId;
     readonly address: Address;
@@ -60,7 +63,7 @@ export interface AddAddressToUsernameTx extends LightTransaction {
 }
 export interface Participant {
     readonly address: Address;
-    readonly power: number;
+    readonly weight: number;
 }
 export interface CreateMultisignatureTx extends LightTransaction {
     readonly kind: "bns/create_multisignature_contract";

@@ -3,6 +3,7 @@ import {
   Amount,
   ChainId,
   ConfirmedTransaction,
+  Hash,
   OpenSwap,
   SwapIdBytes,
   SwapOfferTransaction,
@@ -13,13 +14,7 @@ import {
 import { decodeAmount } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { asIntegerNumber, ensure, Keyed } from "./types";
-import {
-  addressPrefix,
-  encodeBnsAddress,
-  hashFromIdentifier,
-  identityToAddress,
-  isHashIdentifier,
-} from "./util";
+import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
 /**
  * All the queries of immutable data we do on initialization to be reused by later calls
@@ -52,11 +47,11 @@ export class Context {
   }
 
   /** Decode within a Context to have the chain ID available */
-  public decodeOpenSwap(swap: codecImpl.escrow.Escrow & Keyed): OpenSwap {
-    if (!isHashIdentifier(swap.arbiter)) {
-      throw new Error("Escrow not controlled by hashlock");
+  public decodeOpenSwap(swap: codecImpl.aswap.Swap & Keyed): OpenSwap {
+    const hash = swap.preimageHash;
+    if (hash.length !== 32) {
+      throw new Error("Hash must be 32 bytes (sha256)");
     }
-    const hash = hashFromIdentifier(swap.arbiter);
 
     return {
       kind: SwapProcessState.Open,
@@ -64,9 +59,9 @@ export class Context {
         id: {
           data: swap._id as SwapIdBytes,
         },
-        sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.sender)),
+        sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.src)),
         recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
-        hash: hash,
+        hash: hash as Hash,
         // amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
         // TODO: read this is a second query
         amounts: [],

@@ -4,6 +4,7 @@ import { As } from "type-tagger";
 import {
   Address,
   Algorithm,
+  Amount,
   ChainId,
   FullSignature,
   isSendTransaction,
@@ -25,12 +26,18 @@ import { Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 
+// config (those are not used outside of @iov/bns)
+
+export interface CashConfiguration {
+  readonly minimalFee: Amount;
+}
+
+// username NFT
+
 export interface ChainAddressPair {
   readonly chainId: ChainId;
   readonly address: Address;
 }
-
-// username NFT
 
 export interface BnsUsernameNft {
   readonly id: string;
@@ -181,7 +188,7 @@ export interface AddAddressToUsernameTx extends LightTransaction {
 
 export interface Participant {
   readonly address: Address;
-  readonly power: number;
+  readonly weight: number;
 }
 
 export interface CreateMultisignatureTx extends LightTransaction {

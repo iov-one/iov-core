@@ -9,15 +9,7 @@ import {
 } from "@iov/bcp";
 import { Bech32, Encoding } from "@iov/encoding";
 
-import {
-  decodeAmount,
-  decodeJsonAmount,
-  decodeNonce,
-  decodeToken,
-  decodeUsernameNft,
-  parseMsg,
-  parseTx,
-} from "./decode";
+import { decodeAmount, decodeNonce, decodeToken, decodeUsernameNft, parseMsg, parseTx } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import {
   chainId,
@@ -182,96 +174,17 @@ describe("Decode", () => {
     });
   });
 
-  describe("decodeJsonAmount", () => {
-    it("can decode strings", () => {
-      const decoded = decodeJsonAmount(`"3.123456789 ASH"`);
-      expect(decoded).toEqual({
-        quantity: "3123456789",
-        fractionalDigits: 9,
-        tokenTicker: "ASH" as TokenTicker,
-      });
-
-      const decoded2 = decodeJsonAmount(`"4IOV"`);
-      expect(decoded2).toEqual({
-        quantity: "4000000000",
-        fractionalDigits: 9,
-        tokenTicker: "IOV" as TokenTicker,
-      });
-
-      const decoded3 = decodeJsonAmount(`"0.0001   CASH"`);
-      expect(decoded3).toEqual({
-        quantity: "100000",
-        fractionalDigits: 9,
-        tokenTicker: "CASH" as TokenTicker,
-      });
-
-      // max decimals
-      const decoded4 = decodeJsonAmount(`"123456.123456789 IOV"`);
-      expect(decoded4).toEqual({
-        quantity: "123456123456789",
-        fractionalDigits: 9,
-        tokenTicker: "IOV" as TokenTicker,
-      });
-    });
-
-    it("rejects invalid strings ", () => {
-      // invalid format
-      expect(() => decodeJsonAmount(`"1,23 ASH"`)).toThrowError();
-      // leading spaces
-      expect(() => decodeJsonAmount(`"   1 ASH"`)).toThrowError();
-      // no whole numbers
-      expect(() => decodeJsonAmount(`".0001   CASH"`)).toThrowError();
-      // too many decimals
-      expect(() => decodeJsonAmount(`"0.1234567890 ASH"`)).toThrowError();
-      // just number
-      expect(() => decodeJsonAmount(`"42.13"`)).toThrowError();
-      // just ticker
-      expect(() => decodeJsonAmount(`"FOO"`)).toThrowError();
-      // wrong order
-      expect(() => decodeJsonAmount(`"ASH 22"`)).toThrowError();
-      // ticker bad size
-      expect(() => decodeJsonAmount(`"0.01 A"`)).toThrowError();
-      // ticker bad size
-      expect(() => decodeJsonAmount(`"0.01 SUPERLONG"`)).toThrowError();
-    });
-
-    it("can decode json objects", () => {
-      const backendAmount = `{ "whole": 1, "fractional": 230000000, "ticker": "ASH" }`;
-      const decoded = decodeJsonAmount(backendAmount);
-      expect(decoded).toEqual({
-        quantity: "1230000000",
-        fractionalDigits: 9,
-        tokenTicker: "ASH" as TokenTicker,
-      });
-    });
-
-    it("can decode json objects with missing fields", () => {
-      const backendAmount = `{ "fractional": 1230, "ticker": "FOO" }`;
-      const decoded = decodeJsonAmount(backendAmount);
-      expect(decoded).toEqual({
-        quantity: "1230",
-        fractionalDigits: 9,
-        tokenTicker: "FOO" as TokenTicker,
-      });
-    });
-
-    it("rejects other data", () => {
-      // string is not json encoded
-      expect(() => decodeJsonAmount("0.01 ASH")).toThrowError();
-    });
-  });
-
   describe("transactions", () => {
     it("decode invalid transaction fails", () => {
       /* tslint:disable-next-line:no-bitwise */
       const badBin = signedTxBin.map((x: number, i: number) => (i % 5 ? x ^ 0x01 : x));
-      expect(codecImpl.app.Tx.decode.bind(null, badBin)).toThrowError();
+      expect(() => codecImpl.app.Tx.decode(badBin)).toThrowError();
     });
 
     // unsigned tx will fail as parsing requires a sig to extract signer
     it("decode unsigned transaction fails", () => {
       const decoded = codecImpl.app.Tx.decode(sendTxBin);
-      expect(parseTx.bind(null, decoded, chainId)).toThrowError(/missing first signature/);
+      expect(() => parseTx(decoded, chainId)).toThrowError(/missing first signature/);
     });
 
     it("decode signed transaction", () => {
@@ -368,29 +281,29 @@ describe("Decode", () => {
       const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
           signature: fromHex("1234567890123456789012345678901234567890"),
-          power: 4,
+          weight: 4,
         },
         {
           signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
-          power: 1,
+          weight: 1,
         },
         {
           signature: fromHex("9999999999999999999999999999999999999999"),
-          power: 1,
+          weight: 1,
         },
       ];
       const participants: readonly Participant[] = [
         {
           address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
-          power: 4,
+          weight: 4,
         },
         {
           address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
-          power: 1,
+          weight: 1,
         },
         {
           address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
-          power: 1,
+          weight: 1,
         },
       ];
       const transactionMessage: codecImpl.app.ITx = {
@@ -414,29 +327,29 @@ describe("Decode", () => {
       const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
           signature: fromHex("1234567890123456789012345678901234567890"),
-          power: 4,
+          weight: 4,
         },
         {
           signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
-          power: 1,
+          weight: 1,
         },
         {
           signature: fromHex("9999999999999999999999999999999999999999"),
-          power: 1,
+          weight: 1,
         },
       ];
       const participants: readonly Participant[] = [
         {
           address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
-          power: 4,
+          weight: 4,
         },
         {
           address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
-          power: 1,
+          weight: 1,
         },
         {
           address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
-          power: 1,
+          weight: 1,
         },
       ];
       const transactionMessage: codecImpl.app.ITx = {

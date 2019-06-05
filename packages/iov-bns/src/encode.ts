@@ -26,7 +26,7 @@ import {
   RemoveAddressFromUsernameTx,
   UpdateMultisignatureTx,
 } from "./types";
-import { decodeBnsAddress, hashIdentifier, identityToAddress } from "./util";
+import { decodeBnsAddress, identityToAddress } from "./util";
 
 const { toUtf8 } = Encoding;
 
@@ -97,10 +97,12 @@ export function encodeParticipants(
   participants: readonly Participant[],
   // tslint:disable-next-line:readonly-array
 ): codecImpl.multisig.IParticipant[] {
-  return participants.map(participant => ({
-    signature: decodeBnsAddress(participant.address).data,
-    power: participant.power,
-  }));
+  return participants.map(
+    (participant): codecImpl.multisig.IParticipant => ({
+      signature: decodeBnsAddress(participant.address).data,
+      weight: participant.weight,
+    }),
+  );
 }
 
 function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.ITx {
@@ -116,6 +118,7 @@ function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.
 function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.app.ITx {
   return {
     createContractMsg: {
+      metadata: { schema: 1 },
       participants: encodeParticipants(tx.participants),
       activationThreshold: tx.activationThreshold,
       adminThreshold: tx.adminThreshold,
@@ -131,6 +134,7 @@ function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.app.
   }
   return {
     sendMsg: codecImpl.cash.SendMsg.create({
+      metadata: { schema: 1 },
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       dest: decodeBnsAddress(tx.recipient).data,
       amount: encodeAmount(tx.amount),
@@ -145,9 +149,10 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app
   }
 
   return {
-    createEscrowMsg: codecImpl.escrow.CreateEscrowMsg.create({
+    createSwapMsg: codecImpl.aswap.CreateSwapMsg.create({
+      metadata: { schema: 1 },
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
-      arbiter: hashIdentifier(tx.hash),
+      preimageHash: tx.hash,
       recipient: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: encodeInt(tx.timeout.timestamp),
@@ -158,17 +163,19 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app
 
 function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.app.ITx {
   return {
-    releaseEscrowMsg: codecImpl.escrow.ReleaseEscrowMsg.create({
-      escrowId: tx.swapId.data,
+    releaseSwapMsg: codecImpl.aswap.ReleaseSwapMsg.create({
+      metadata: { schema: 1 },
+      swapId: tx.swapId.data,
+      preimage: tx.preimage,
     }),
-    preimage: tx.preimage,
   };
 }
 
 function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.app.ITx {
   return {
-    returnEscrowMsg: codecImpl.escrow.ReturnEscrowMsg.create({
-      escrowId: tx.swapId.data,
+    returnSwapMsg: codecImpl.aswap.ReturnSwapMsg.create({
+      metadata: { schema: 1 },
+      swapId: tx.swapId.data,
     }),
   };
 }
@@ -207,6 +214,7 @@ function buildRemoveAddressFromUsernameTx(tx: RemoveAddressFromUsernameTx): code
 function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): codecImpl.app.ITx {
   return {
     updateContractMsg: {
+      metadata: { schema: 1 },
       contractId: tx.contractId,
       participants: encodeParticipants(tx.participants),
       activationThreshold: tx.activationThreshold,

@@ -78,7 +78,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
     protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
-    protected updateEscrowBalance<T extends AtomicSwap>(escrow: T): Promise<T>;
+    protected updateSwapAmounts<T extends AtomicSwap>(swap: T): Promise<T>;
     /**
      * Queries the blockchain for the enforced anti-spam fee
      */

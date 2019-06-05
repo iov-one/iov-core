@@ -46,10 +46,10 @@ import {
   pubJson,
   sendTxBin,
   sendTxJson,
-  sig,
-  signBytes,
+  sendTxSignBytes,
   signedTxBin,
   signedTxJson,
+  signedTxSig,
 } from "./testdata.spec";
 
 const { fromHex, toAscii, toUtf8 } = Encoding;
@@ -331,30 +331,30 @@ describe("Encode", () => {
       const participants: readonly Participant[] = [
         {
           address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
-          power: 4,
+          weight: 4,
         },
         {
           address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
-          power: 1,
+          weight: 1,
         },
         {
           address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
-          power: 1,
+          weight: 1,
         },
       ];
       // tslint:disable-next-line:readonly-array
       const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
           signature: fromHex("1234567890123456789012345678901234567890"),
-          power: 4,
+          weight: 4,
         },
         {
           signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
-          power: 1,
+          weight: 1,
         },
         {
           signature: fromHex("9999999999999999999999999999999999999999"),
-          power: 1,
+          weight: 1,
         },
       ];
       const createMultisignature: CreateMultisignatureTx & WithCreator = {
@@ -374,30 +374,30 @@ describe("Encode", () => {
       const participants: readonly Participant[] = [
         {
           address: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
-          power: 4,
+          weight: 4,
         },
         {
           address: "tiov140x77qfr40x77qfr40x77qfr40x77qfrj4zpp5" as Address,
-          power: 1,
+          weight: 1,
         },
         {
           address: "tiov1nxvenxvenxvenxvenxvenxvenxvenxverxe7mm" as Address,
-          power: 1,
+          weight: 1,
         },
       ];
       // tslint:disable-next-line:readonly-array
       const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
           signature: fromHex("1234567890123456789012345678901234567890"),
-          power: 4,
+          weight: 4,
         },
         {
           signature: fromHex("abcdef0123abcdef0123abcdef0123abcdef0123"),
-          power: 1,
+          weight: 1,
         },
         {
           signature: fromHex("9999999999999999999999999999999999999999"),
-          power: 1,
+          weight: 1,
         },
       ];
       const updateMultisignature: UpdateMultisignatureTx & WithCreator = {
@@ -497,13 +497,13 @@ describe("Ensure crypto", () => {
 
     const tx = buildUnsignedTx(sendTxJson);
     const encoded = codecImpl.app.Tx.encode(tx).finish();
-    const toSign = appendSignBytes(encoded, sendTxJson.creator.chainId, sig.nonce);
+    const toSign = appendSignBytes(encoded, sendTxJson.creator.chainId, signedTxSig.nonce);
     // testvector output already has the sha-512 digest applied
     const prehash = new Sha512(toSign).digest();
-    expect(prehash).toEqual(signBytes);
+    expect(prehash).toEqual(sendTxSignBytes);
 
     // make sure we can validate this signature (our signBytes are correct)
-    const signature = sig.signature;
+    const signature = signedTxSig.signature;
     const valid = await Ed25519.verifySignature(signature, prehash, pubKey);
     expect(valid).toEqual(true);
 

@@ -861,7 +861,7 @@ describe("BnsConnection", () => {
       );
       const participants: readonly Participant[] = [identity, ...otherIdentities].map((id, i) => ({
         address: identityToAddress(id),
-        power: i === 0 ? 5 : 1,
+        weight: i === 0 ? 5 : 1,
       }));
       const tx1 = await connection.withDefaultFee<CreateMultisignatureTx & WithCreator>({
         kind: "bns/create_multisignature_contract",
@@ -889,7 +889,7 @@ describe("BnsConnection", () => {
       expect(firstSearchResultTransaction.participants.length).toEqual(6);
       firstSearchResultTransaction.participants.forEach((participant, i) => {
         expect(participant.address).toEqual(participants[i].address);
-        expect(participant.power).toEqual(participants[i].power);
+        expect(participant.weight).toEqual(participants[i].weight);
       });
       expect(firstSearchResultTransaction.activationThreshold).toEqual(4);
       expect(firstSearchResultTransaction.adminThreshold).toEqual(5);
@@ -900,7 +900,7 @@ describe("BnsConnection", () => {
         [15, 16, 17].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       )).map(id => ({
         address: identityToAddress(id),
-        power: 6,
+        weight: 6,
       }));
       const tx2 = await connection.withDefaultFee<UpdateMultisignatureTx & WithCreator>({
         kind: "bns/update_multisignature_contract",
@@ -929,7 +929,7 @@ describe("BnsConnection", () => {
       expect(secondSearchResultTransaction.participants.length).toEqual(3);
       secondSearchResultTransaction.participants.forEach((participant, i) => {
         expect(participant.address).toEqual(participantsUpdated[i].address);
-        expect(participant.power).toEqual(participantsUpdated[i].power);
+        expect(participant.weight).toEqual(participantsUpdated[i].weight);
       });
       expect(secondSearchResultTransaction.activationThreshold).toEqual(2);
       expect(secondSearchResultTransaction.adminThreshold).toEqual(6);
@@ -1280,9 +1280,9 @@ describe("BnsConnection", () => {
         throw new Error("Expected failed transaction");
       }
       expect(result.height).toBeGreaterThan(initialHeight);
-      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L50
-      expect(result.code).toEqual(12);
-      expect(result.message).toMatch(/insufficient amount/i);
+      // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
+      expect(result.code).toEqual(13);
+      expect(result.message).toMatch(/invalid amount/i);
 
       connection.disconnect();
     });
@@ -1453,9 +1453,9 @@ describe("BnsConnection", () => {
         throw new Error("Expected failed transaction");
       }
       expect(result.height).toBeGreaterThan(initialHeight);
-      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L50
-      expect(result.code).toEqual(12);
-      expect(result.message).toMatch(/insufficient amount/i);
+      // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
+      expect(result.code).toEqual(13);
+      expect(result.message).toMatch(/invalid amount/i);
 
       connection.disconnect();
     });
@@ -1492,9 +1492,9 @@ describe("BnsConnection", () => {
       if (!isFailedTransaction(result)) {
         throw new Error("Expected failed transaction");
       }
-      // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L50
-      expect(result.code).toEqual(12);
-      expect(result.message).toMatch(/insufficient amount/i);
+      // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
+      expect(result.code).toEqual(13);
+      expect(result.message).toMatch(/invalid amount/i);
 
       connection.disconnect();
     });
@@ -1728,8 +1728,8 @@ describe("BnsConnection", () => {
     const swapOfferPreimage = await AtomicSwapHelpers.createPreimage();
     const swapOfferHash = AtomicSwapHelpers.hashPreimage(swapOfferPreimage);
 
-    // it will live 30 seconds
-    const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);
+    // it will live 48 hours
+    const swapOfferTimeout: SwapTimeout = createTimestampTimeout(48 * 3600);
     const amount = {
       quantity: "123000456000",
       fractionalDigits: 9,
@@ -1878,7 +1878,7 @@ describe("BnsConnection", () => {
     hash: Hash,
   ): Promise<PostTxResponse> => {
     // construct a swapOfferTx, sign and post to the chain
-    const swapOfferTimeout: SwapTimeout = createTimestampTimeout(30);
+    const swapOfferTimeout = createTimestampTimeout(48 * 3600);
     const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
       kind: "bcp/swap_offer",
       creator: creator,
@@ -1926,11 +1926,11 @@ describe("BnsConnection", () => {
     const recipientAddr = await randomBnsAddress();
 
     // create the preimages for the three swaps
-    const preimage1 = Encoding.toAscii("the first swap is easy") as Preimage;
+    const preimage1 = await AtomicSwapHelpers.createPreimage();
     const hash1 = AtomicSwapHelpers.hashPreimage(preimage1);
-    const preimage2 = Encoding.toAscii("ze 2nd iS l337 !@!") as Preimage;
+    const preimage2 = await AtomicSwapHelpers.createPreimage();
     const hash2 = AtomicSwapHelpers.hashPreimage(preimage2);
-    const preimage3 = Encoding.toAscii("and this one is a gift.") as Preimage;
+    const preimage3 = await AtomicSwapHelpers.createPreimage();
     const hash3 = AtomicSwapHelpers.hashPreimage(preimage3);
 
     // nothing to start with

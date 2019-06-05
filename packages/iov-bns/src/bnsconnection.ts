@@ -50,7 +50,7 @@ import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tenderm
 
 import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
-import { decodeAmount, decodeJsonAmount, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
+import { decodeAmount, decodeCashConfiguration, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
@@ -69,11 +69,10 @@ import {
   buildQueryString,
   conditionToAddress,
   decodeBnsAddress,
-  escrowCondition,
-  hashIdentifier,
   identityToAddress,
   isConfirmedWithSwapClaimOrAbortTransaction,
   isConfirmedWithSwapOfferTransaction,
+  swapCondition,
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
@@ -413,22 +412,22 @@ export class BnsConnection implements AtomicSwapConnection {
   public async getSwapsFromState(query: AtomicSwapQuery): Promise<readonly AtomicSwap[]> {
     const doQuery = async (): Promise<QueryResponse> => {
       if (isAtomicSwapIdQuery(query)) {
-        return this.query("/escrows", query.id.data);
+        return this.query("/aswaps", query.id.data);
       } else if (isAtomicSwapSenderQuery(query)) {
-        return this.query("/escrows/sender", decodeBnsAddress(query.sender).data);
+        return this.query("/aswaps/src", decodeBnsAddress(query.sender).data);
       } else if (isAtomicSwapRecipientQuery(query)) {
-        return this.query("/escrows/recipient", decodeBnsAddress(query.recipient).data);
+        return this.query("/aswaps/recipient", decodeBnsAddress(query.recipient).data);
       } else if (isAtomicSwapHashQuery(query)) {
-        return this.query("/escrows/arbiter", hashIdentifier(query.hash));
+        return this.query("/aswaps/preimage_hash", query.hash);
       } else {
         throw new Error("Unexpected type of query");
       }
     };
 
     const res = await doQuery();
-    const parser = createParser(codecImpl.escrow.Escrow, "esc:");
+    const parser = createParser(codecImpl.aswap.Swap, "swap:");
     const data = res.results.map(parser).map(escrow => this.context.decodeOpenSwap(escrow));
-    const withBalance = await Promise.all(data.map(this.updateEscrowBalance.bind(this)));
+    const withBalance = await Promise.all(data.map(s => this.updateSwapAmounts(s)));
     return withBalance;
   }
 
@@ -661,24 +660,23 @@ export class BnsConnection implements AtomicSwapConnection {
 
   // updateEscrowBalance will query for the proper balance and then update the accounts of escrow before
   // returning it. Designed to be used in a map chain.
-  protected async updateEscrowBalance<T extends AtomicSwap>(escrow: T): Promise<T> {
-    const addr = conditionToAddress(this.chainId(), escrowCondition(escrow.data.id.data));
+  protected async updateSwapAmounts<T extends AtomicSwap>(swap: T): Promise<T> {
+    const addr = conditionToAddress(this.chainId(), swapCondition(swap.data));
     const account = await this.getAccount({ address: addr });
     const balance = account ? account.balance : [];
-    return { ...escrow, data: { ...escrow.data, amounts: balance } };
+    return { ...swap, data: { ...swap.data, amounts: balance } };
   }
 
   /**
    * Queries the blockchain for the enforced anti-spam fee
    */
   protected async getDefaultFee(): Promise<Amount> {
-    const res = await this.query("/", Encoding.toAscii("gconf:cash:minimal_fee"));
-    if (res.results.length !== 1) {
-      throw new Error("Received unexpected number of fees");
+    const { results } = await this.query("/", Encoding.toAscii("_c:cash"));
+    if (results.length !== 1) {
+      throw new Error(`Unexpected number of results for minimal fee. Expected: 1 Got: ${results.length}`);
     }
-    const data = Encoding.fromAscii(res.results[0].value);
-    const amount = decodeJsonAmount(data);
-    return amount;
+    const { minimalFee } = decodeCashConfiguration(codecImpl.cash.Configuration.decode(results[0].value));
+    return minimalFee;
   }
 
   /**
@@ -691,7 +689,7 @@ export class BnsConnection implements AtomicSwapConnection {
     // TODO: add query handler to msgfee
     const { results } = await this.query("/", Encoding.toAscii(`msgfee:${path}`));
     if (results.length > 1) {
-      throw new Error("Received unexpected number of fees");
+      throw new Error(`Unexpected number of results for product fee. Expected: 0/1 Got: ${results.length}`);
     }
     if (results.length === 0) {
       return undefined;

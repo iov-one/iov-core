@@ -1,1 +1,1 @@
-3c1504ec3f8e2529d6f126436f361188ebbe3b0a (HEAD, tag: v0.14.0) store/iavl: refactor tests (#509)
+01026c0cabefaab2c03f1753aa4fac374d7c23f1 (HEAD, tag: v0.15.0) Merge pull request #630 from iov-one/ruseinov-patch-1-piotr

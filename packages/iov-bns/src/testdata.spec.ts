@@ -21,111 +21,75 @@ import {
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
+import data from "./testdata/bnsd.json";
 import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
 
 const { fromHex } = Encoding;
 
-// ------------------- standard data set ---------------
-//
-// This info came from `bnsd testgen <dir>`.
-// That dumped a number of files in a directory, formatted as the
-// bov blockchain application desires. We import them as strings
-// in this testfile to allow simpler tests in the browser as well.
-
-// Ex: base64 (from json) -> hex
-// ../scripts/jsonbytes testvectors/pub_key.json .Pub.Ed25519
-
-// Ex: bin file -> hex
-// ../scripts/tohex testvectors/pub_key.bin
-// OR
-// cat testvectors/pub_key.bin | ../scripts/tohex
-
-// ./scripts/jsonbytes testvectors/pub_key.json .Pub.Ed25519
 export const pubJson: PublicKeyBundle = {
   algo: Algorithm.Ed25519,
-  data: fromHex("d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e") as PublicKeyBytes,
+  data: fromHex(data.pubkey.ed25519_raw) as PublicKeyBytes,
 };
-// ./scripts/tohex testvectors/pub_key.bin
-export const pubBin = fromHex("0a20d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e");
+
+export const pubBin = fromHex(data.pubkey.bin);
 
 // this private key matches the above public key
-// ./scripts/jsonbytes testvectors/priv_key.json .Priv.Ed25519
 export const privJson: PrivateKeyBundle = {
   algo: Algorithm.Ed25519,
-  data: fromHex(
-    "bc1c072063d5099639190cefbd25284d56f722c1b2eacfc1dff0edeee558c637d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e",
-  ) as PrivateKeyBytes,
+  data: fromHex(data.privkey.ed25519_raw) as PrivateKeyBytes,
 };
-// ./scripts/tohex testvectors/priv_key.bin
-export const privBin = fromHex(
-  "0a40bc1c072063d5099639190cefbd25284d56f722c1b2eacfc1dff0edeee558c637d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e",
-);
+
+export const privBin = fromHex(data.privkey.bin);
 
 // address is calculated by bov for the public key
 // this address is displayed on testgen, or can be read from the message
 // address generated using https://github.com/nym-zone/bech32
-// ADDR=$(./scripts/jsonbytes testvectors/unsigned_tx.json .Sum.SendMsg.src)
-// bech32 -e -h tiov $ADDR
-export const address = "tiov1mkp7tg2qvyp6m3uttw44ju9dhjzk6mdgzcz6yf" as Address;
+export const address = data.address as Address;
 
 export const coinJson: Amount = {
-  quantity: "878001567000",
+  quantity: data.coin.quantity,
   fractionalDigits: 9,
-  tokenTicker: "IOV" as TokenTicker,
+  tokenTicker: data.coin.ticker as TokenTicker,
 };
-export const coinBin = fromHex("08ee061098d25f1a03494f56");
 
-// from: unsigned_tx.{json,bin}
-const amount: Amount = {
-  quantity: "250000000000",
-  fractionalDigits: 9,
-  tokenTicker: "ETH" as TokenTicker,
-};
+export const coinBin = fromHex(data.coin.bin);
+
 export const chainId = "test-123" as ChainId;
 
-// the sender in this tx is the above pubkey, pubkey->address should match
-// recipient address generated using https://github.com/nym-zone/bech32
-// RCPT=$(./scripts/jsonbytes testvectors/unsigned_tx.json .Sum.SendMsg.dest)
-// bech32 -e -h tiov $RCPT
 export const sendTxJson: SendTransaction & WithCreator = {
   kind: "bcp/send",
   creator: {
     chainId: chainId,
     pubkey: pubJson,
   },
-  sender: address,
-  recipient: "tiov1hl846c5pqgaqnp0kje64rx5axj8t2fvqxunqaf" as Address,
-  memo: "Test payment",
-  amount: amount,
+  sender: data.unsigned_tx.sender as Address,
+  recipient: data.unsigned_tx.recipient as Address,
+  memo: data.unsigned_tx.memo,
+  amount: {
+    quantity: data.unsigned_tx.amount.quantity,
+    fractionalDigits: 9,
+    tokenTicker: data.unsigned_tx.amount.ticker as TokenTicker,
+  },
 };
-// ./scripts/tohex testvectors/unsigned_tx.bin
-export const sendTxBin = fromHex(
-  "9a03440a14dd83e5a1406103adc78b5bab5970adbc856d6da81214bfcf5d6281023a0985f69675519a9d348eb525801a0808fa011a03455448220c54657374207061796d656e74",
-);
-// ./scripts/tohex testvectors/unsigned_tx.signbytes
-// this is the sha-512 digest of the sign bytes (ready for signature)
-export const signBytes = fromHex(
-  "eeaef384712ec65e82cde2a126aa4d1950a3b89957da5e8b54d9a21343eb90dcba28122400b358bd8ed577e2d3017be21e249fb7f880870b09d620fe7bcb7dd2",
-);
 
-// from signed_tx.json
-export const sig: FullSignature = {
-  nonce: 17 as Nonce,
+export const sendTxBin = fromHex(data.unsigned_tx.bin);
+
+/** The sha512 of the serialized transaction (ready to be signed) */
+export const sendTxSignBytes = fromHex(data.unsigned_tx.signbytes);
+
+export const signedTxSig: FullSignature = {
+  nonce: Number(data.signed_tx.sig.nonce) as Nonce,
   pubkey: pubJson,
-  // ./scripts/jsonbytes testvectors/signed_tx.json .signatures[0].signature.Sig.Ed25519
-  signature: fromHex(
-    "54376d9b806f41976ba87fc850ebd8654f1d75860dec6251741f4df11aed6de8774429cf3ec432cd5e5527f2df6542198043a3fa839ba99cdf1c754b6668c70d",
-  ) as SignatureBytes,
+  signature: fromHex(data.signed_tx.sig.ed25519_raw) as SignatureBytes,
 };
+
 export const signedTxJson: SignedTransaction = {
   transaction: sendTxJson,
-  primarySignature: sig,
+  primarySignature: signedTxSig,
   otherSignatures: [],
 };
-// ./scripts/tohex testvectors/signed_tx.bin
-export const signedTxBin = fromHex(
-  "126a081112220a20d9046fd4355b366f33619be7ceb27728441ff11b347976b1378c5d7f8fe4d91e22420a4054376d9b806f41976ba87fc850ebd8654f1d75860dec6251741f4df11aed6de8774429cf3ec432cd5e5527f2df6542198043a3fa839ba99cdf1c754b6668c70d9a03440a14dd83e5a1406103adc78b5bab5970adbc856d6da81214bfcf5d6281023a0985f69675519a9d348eb525801a0808fa011a03455448220c54657374207061796d656e74",
-);
+
+export const signedTxBin = fromHex(data.signed_tx.bin);
 
 // ------------------- random data --------------------------
 //
@@ -142,6 +106,7 @@ const sig2: FullSignature = {
     "baddad00cafe00bece8675da9d005f2018b69820673d57f5500ae2728d3e5012a44c786133cd911cc40761cda9ccf9094c1bbe1dc11f2d568cc4998072819a0c",
   ) as SignatureBytes,
 };
+
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 009985cb38847474fe9febfd56ab67e14bcd56f3
 const randomMsg: SendTransaction & WithCreator = {
@@ -150,7 +115,7 @@ const randomMsg: SendTransaction & WithCreator = {
     pubkey: pubJson,
   },
   kind: "bcp/send",
-  sender: address,
+  sender: data.address as Address,
   recipient: "tiov1qzvctjecs368fl5la074d2m8u99u64hn8q7kyn" as Address,
   memo: "One more fix!",
   amount: {
@@ -166,9 +131,10 @@ const randomMsg: SendTransaction & WithCreator = {
     },
   },
 };
+
 export const randomTxJson: SignedTransaction = {
   transaction: randomMsg,
-  primarySignature: sig,
+  primarySignature: signedTxSig,
   otherSignatures: [sig2],
 };
 
@@ -189,7 +155,7 @@ const swapOfferTransaction: SwapOfferTransaction & WithCreator = {
       tokenTicker: "FOO" as TokenTicker,
     },
   ],
-  hash: fromHex("1122334455aabbccddee") as Hash,
+  hash: fromHex("0000001111111122334455aabbccddee0000001111111122334455aabbccddee") as Hash,
 };
 
 export const swapOfferTxJson: SignedTransaction = {
@@ -209,6 +175,7 @@ const swapClaimMsg: SwapClaimTransaction & WithCreator = {
     data: fromHex("1234") as SwapIdBytes,
   },
 };
+
 export const swapClaimTxJson: SignedTransaction = {
   transaction: swapClaimMsg,
   primarySignature: sig2,
@@ -227,6 +194,6 @@ const swapAbort: SwapAbortTransaction & WithCreator = {
 };
 export const swapAbortTxJson: SignedTransaction = {
   transaction: swapAbort,
-  primarySignature: sig,
+  primarySignature: signedTxSig,
   otherSignatures: [],
 };

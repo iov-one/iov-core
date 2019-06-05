@@ -5,6 +5,7 @@ import {
   Amount,
   ChainId,
   FullSignature,
+  Hash,
   Nonce,
   Preimage,
   SendTransaction,
@@ -18,7 +19,7 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 import {
@@ -26,6 +27,7 @@ import {
   asInt53,
   asIntegerNumber,
   BnsUsernameNft,
+  CashConfiguration,
   ChainAddressPair,
   CreateMultisignatureTx,
   decodeFullSig,
@@ -36,13 +38,7 @@ import {
   RemoveAddressFromUsernameTx,
   UpdateMultisignatureTx,
 } from "./types";
-import {
-  addressPrefix,
-  encodeBnsAddress,
-  hashFromIdentifier,
-  identityToAddress,
-  isHashIdentifier,
-} from "./util";
+import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromUtf8 } = Encoding;
 
@@ -104,37 +100,11 @@ export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
   };
 }
 
-// adds zeros to the right as needed to ensure given length
-function rightPadZeros(short: string, length: number): string {
-  if (short.length >= length) {
-    return short;
-  }
-  return short + "0".repeat(length - short.length);
-}
-
-// we only allow up to 9 decimal places
-const humanCoinFormat = new RegExp(/^(\d+)(\.\d{1,9})?\s*([A-Z]{3,4})$/);
-
-export function decodeJsonAmount(json: string): Amount {
-  const data = JSON.parse(json);
-  if (typeof data === "string") {
-    // parse eg. "1.23 IOV"
-    const vals = humanCoinFormat.exec(data);
-    if (vals === null) {
-      throw new Error(`Invalid coin string: ${data}`);
-    }
-    const [, wholeStr, fracString, ticker] = vals;
-    const coin = {
-      whole: Int53.fromString(wholeStr).toNumber(),
-      fractional: fracString ? Int53.fromString(rightPadZeros(fracString.slice(1), 9)).toNumber() : undefined,
-      ticker: ticker as TokenTicker,
-    };
-    return decodeAmount(coin);
-  } else if (typeof data === "object" && data !== null) {
-    // parse a json coin representation
-    return decodeAmount(data as codecImpl.coin.ICoin);
-  }
-  throw new Error("Impossible type for amount json");
+export function decodeCashConfiguration(config: codecImpl.cash.Configuration): CashConfiguration {
+  const minimalFee = decodeAmount(ensure(config.minimalFee, "minimalFee"));
+  return {
+    minimalFee: minimalFee,
+  };
 }
 
 export function decodeParticipants(
@@ -143,16 +113,9 @@ export function decodeParticipants(
   maybeParticipants?: codecImpl.multisig.IParticipant[] | null,
 ): readonly Participant[] {
   const participants = ensure(maybeParticipants, "participants");
-  participants.forEach((participant, i) => {
-    ensure(participant.signature, `participants.$${i}.signature`);
-    ensure(participant.power, `participants.$${i}.power`);
-  });
-
-  return participants.map(participant => ({
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    power: participant.power!,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    address: encodeBnsAddress(prefix, participant.signature!),
+  return participants.map((participant, i) => ({
+    weight: ensure(participant.weight, `participants.$${i}.weight`),
+    address: encodeBnsAddress(prefix, ensure(participant.signature, `participants.$${i}.signature`)),
   }));
 }
 
@@ -188,17 +151,17 @@ function parseSendTransaction(
 
 function parseSwapOfferTx(
   base: UnsignedTransaction,
-  msg: codecImpl.escrow.ICreateEscrowMsg,
+  msg: codecImpl.aswap.ICreateSwapMsg,
 ): SwapOfferTransaction & WithCreator {
-  const hashIdentifier = ensure(msg.arbiter, "arbiter");
-  if (!isHashIdentifier(hashIdentifier)) {
-    throw new Error("escrow not controlled by hashlock");
+  const hash = ensure(msg.preimageHash, "preimageHash");
+  if (hash.length !== 32) {
+    throw new Error("Hash must be 32 bytes (sha256)");
   }
   const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
     kind: "bcp/swap_offer",
-    hash: hashFromIdentifier(hashIdentifier),
+    hash: hash as Hash,
     recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
     timeout: { timestamp: asIntegerNumber(ensure(msg.timeout)) },
     amounts: (msg.amount || []).map(decodeAmount),
@@ -207,28 +170,27 @@ function parseSwapOfferTx(
 
 function parseSwapClaimTx(
   base: UnsignedTransaction,
-  msg: codecImpl.escrow.IReturnEscrowMsg,
-  tx: codecImpl.app.ITx,
+  msg: codecImpl.aswap.IReleaseSwapMsg,
 ): SwapClaimTransaction & WithCreator {
   return {
     ...base,
     kind: "bcp/swap_claim",
     swapId: {
-      data: ensure(msg.escrowId) as SwapIdBytes,
+      data: ensure(msg.swapId) as SwapIdBytes,
     },
-    preimage: ensure(tx.preimage) as Preimage,
+    preimage: ensure(msg.preimage) as Preimage,
   };
 }
 
 function parseSwapAbortTransaction(
   base: UnsignedTransaction,
-  msg: codecImpl.escrow.IReturnEscrowMsg,
+  msg: codecImpl.aswap.IReturnSwapMsg,
 ): SwapAbortTransaction & WithCreator {
   return {
     ...base,
     kind: "bcp/swap_abort",
     swapId: {
-      data: ensure(msg.escrowId) as SwapIdBytes,
+      data: ensure(msg.swapId) as SwapIdBytes,
     },
   };
 }
@@ -304,12 +266,12 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
     return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
   } else if (tx.sendMsg) {
     return parseSendTransaction(base, tx.sendMsg);
-  } else if (tx.createEscrowMsg) {
-    return parseSwapOfferTx(base, tx.createEscrowMsg);
-  } else if (tx.releaseEscrowMsg) {
-    return parseSwapClaimTx(base, tx.releaseEscrowMsg, tx);
-  } else if (tx.returnEscrowMsg) {
-    return parseSwapAbortTransaction(base, tx.returnEscrowMsg);
+  } else if (tx.createSwapMsg) {
+    return parseSwapOfferTx(base, tx.createSwapMsg);
+  } else if (tx.releaseSwapMsg) {
+    return parseSwapClaimTx(base, tx.releaseSwapMsg);
+  } else if (tx.returnSwapMsg) {
+    return parseSwapAbortTransaction(base, tx.returnSwapMsg);
   } else if (tx.issueUsernameNftMsg) {
     return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
   } else if (tx.removeUsernameAddressMsg) {
