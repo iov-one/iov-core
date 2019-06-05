@@ -2,7 +2,7 @@
 
 | Status | Author                    | Created    | Last updated | License   |
 | ------ | ------------------------- | ---------- | ------------ | --------- |
-| Draft  | The document contributors | 2019-05-23 | 2019-05-28   | CC-BY-4.0 |
+| Draft  | The document contributors | 2019-05-23 | 2019-06-05   | CC-BY-4.0 |
 
 ## Abstract
 
@@ -18,7 +18,7 @@ IDs. The BNS just stores chain IDs without interpreting them.
 
 ## Format
 
-A chain ID is a case-sensitive string in the format `^[a-zA-Z0-9_.-]{4,128}$`.
+A chain ID is a case-sensitive string in the format `^[a-zA-Z0-9_.-]{4,32}$`.
 When choosing a new chain ID, the following guildelines should be followed:
 
 1. Choose a chain ID that is long enough to be unique within the blockchain
