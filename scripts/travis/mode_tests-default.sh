@@ -10,67 +10,67 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # shellcheck disable=SC1090
 source "$SCRIPT_DIR/_includes.sh";
 
-#
-# Install
-#
+# #
+# # Install
+# #
 
-# For socketserver
-pip3 install websockets
+# # For socketserver
+# pip3 install websockets
 
-#
-# Start blockchains
-#
+# #
+# # Start blockchains
+# #
 
-# Use Docker if available (currently Linux only)
-if command -v docker > /dev/null ; then
-  fold_start "socketserver-start"
-  ./scripts/socketserver/start.sh
-  export SOCKETSERVER_ENABLED=1
-  fold_end
-
-  fold_start "tendermint-start"
-  ./scripts/tendermint/all_start.sh
-  export TENDERMINT_ENABLED=1
-  fold_end
-
-  fold_start "bnsd-start"
-  ./scripts/bnsd/start.sh
-  export BNSD_ENABLED=1
-  fold_end
-
-  fold_start "lisk-start"
-  ./scripts/lisk/start.sh
-  ./scripts/lisk/init.sh
-  export LISK_ENABLED=1
-  fold_end
-
-  fold_start "ethereum-start"
-  ./scripts/ethereum/start.sh
-  export ETHEREUM_ENABLED=1
-  fold_end
-
-  # Wait until API is ready and run in background because script
-  # takes some time but will be ready before tests start
-  (sleep 5 && ./scripts/ethereum/init.sh ) &
-fi
-
-#
-# Start faucet
-#
-
-# TODO: re-enable once the faucet is updated to this version of iov-core
-# if [[ -n ${BNSD_ENABLED:-} ]]; then
-#   fold_start "faucet-start"
-#   ./scripts/iov_faucet_start.sh
-#   export FAUCET_ENABLED=1
+# # Use Docker if available (currently Linux only)
+# if command -v docker > /dev/null ; then
+#   fold_start "socketserver-start"
+#   ./scripts/socketserver/start.sh
+#   export SOCKETSERVER_ENABLED=1
 #   fold_end
+
+#   fold_start "tendermint-start"
+#   ./scripts/tendermint/all_start.sh
+#   export TENDERMINT_ENABLED=1
+#   fold_end
+
+#   fold_start "bnsd-start"
+#   ./scripts/bnsd/start.sh
+#   export BNSD_ENABLED=1
+#   fold_end
+
+#   fold_start "lisk-start"
+#   ./scripts/lisk/start.sh
+#   ./scripts/lisk/init.sh
+#   export LISK_ENABLED=1
+#   fold_end
+
+#   fold_start "ethereum-start"
+#   ./scripts/ethereum/start.sh
+#   export ETHEREUM_ENABLED=1
+#   fold_end
+
+#   # Wait until API is ready and run in background because script
+#   # takes some time but will be ready before tests start
+#   (sleep 5 && ./scripts/ethereum/init.sh ) &
 # fi
 
-echo "use tendermint? ${TENDERMINT_ENABLED:-no}"
-echo "use bnsd? ${BNSD_ENABLED:-no}"
-echo "use IOV faucet? ${FAUCET_ENABLED:-no}"
-echo "use ethereum? ${ETHEREUM_ENABLED:-no}"
-echo "use Lisk? ${LISK_ENABLED:-no}"
+# #
+# # Start faucet
+# #
+
+# # TODO: re-enable once the faucet is updated to this version of iov-core
+# # if [[ -n ${BNSD_ENABLED:-} ]]; then
+# #   fold_start "faucet-start"
+# #   ./scripts/iov_faucet_start.sh
+# #   export FAUCET_ENABLED=1
+# #   fold_end
+# # fi
+
+# echo "use tendermint? ${TENDERMINT_ENABLED:-no}"
+# echo "use bnsd? ${BNSD_ENABLED:-no}"
+# echo "use IOV faucet? ${FAUCET_ENABLED:-no}"
+# echo "use ethereum? ${ETHEREUM_ENABLED:-no}"
+# echo "use Lisk? ${LISK_ENABLED:-no}"
 
 #
 # Build
@@ -94,31 +94,31 @@ fold_end
 
 export SKIP_BUILD=1
 
-if [[ "$MODE" == "tests-chrome" ]]; then
-  fold_start "test-chrome"
-  yarn run lerna run test-chrome
-  fold_end
-elif [[ "$MODE" == "tests-firefox" ]]; then
-  # A version of Firefox is preinstalled on Linux VMs and can be used via xvfb
-  fold_start "test-firefox"
-  xvfb-run --auto-servernum yarn run lerna run test-firefox
-  fold_end
-else
+# if [[ "$MODE" == "tests-chrome" ]]; then
+#   fold_start "test-chrome"
+#   yarn run lerna run test-chrome
+#   fold_end
+# elif [[ "$MODE" == "tests-firefox" ]]; then
+#   # A version of Firefox is preinstalled on Linux VMs and can be used via xvfb
+#   fold_start "test-firefox"
+#   xvfb-run --auto-servernum yarn run lerna run test-firefox
+#   fold_end
+# else
   #
   # Tests
   #
 
   fold_start "commandline-tests"
-  yarn test
+  yarn test --scope="@iov/core"
   fold_end
 
-  fold_start "iov-cli-selftest"
-  (
-    cd packages/iov-cli
-    yarn test-bin
-  )
-  fold_end
-fi
+  # fold_start "iov-cli-selftest"
+  # (
+  #   cd packages/iov-cli
+  #   yarn test-bin
+  # )
+  # fold_end
+# fi
 
 # fold_start "test-local-cli-installation"
 # (

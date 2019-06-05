@@ -163,5 +163,12 @@ describe("TransactionEncoder", () => {
       expect(restored).toEqual(original);
       expect(isIdentity(restored.creator)).toEqual(true);
     });
+
+    fit("throws an error if too deeply nested", () => {
+      const a: any = {};
+      // tslint:disable-next-line no-object-mutation
+      a.a = a;
+      expect(() => fromJson(a)).toThrowError(/maximum call stack size exceeded/i);
+    });
   });
 });
