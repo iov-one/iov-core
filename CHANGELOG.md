@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.5
+
+- @iov/crypto: Add `EnglishMnemonic.toString`; deprecate `.asString`.
+
 ## 0.14.4
 
 - @iov/ethereum: EthereumConnection now accepts a ws:// url as its baseUrl.
