@@ -21,7 +21,7 @@ import {
   CreateMultisignatureTx,
   isBnsTx,
   Participant,
-  PrivateKeyBundle,
+  PrivkeyBundle,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
   UpdateMultisignatureTx,
@@ -53,7 +53,7 @@ export function encodePubkey(publicKey: PubkeyBundle): codecImpl.crypto.IPublicK
   }
 }
 
-export function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IPrivateKey {
+export function encodePrivkey(privateKey: PrivkeyBundle): codecImpl.crypto.IPrivateKey {
   switch (privateKey.algo) {
     case Algorithm.Ed25519:
       return { ed25519: privateKey.data };

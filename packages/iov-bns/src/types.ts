@@ -86,10 +86,10 @@ export function isBnsUsernamesByChainAndAddressQuery(
 
 // Rest
 
-export type PrivateKeyBytes = Uint8Array & As<"private-key">;
-export interface PrivateKeyBundle {
+export type PrivkeyBytes = Uint8Array & As<"privkey-bytes">;
+export interface PrivkeyBundle {
   readonly algo: Algorithm;
-  readonly data: PrivateKeyBytes;
+  readonly data: PrivkeyBytes;
 }
 
 export interface Result {
@@ -116,11 +116,11 @@ export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBund
   }
 }
 
-export function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle {
+export function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle {
   if (privateKey.ed25519) {
     return {
       algo: Algorithm.Ed25519,
-      data: privateKey.ed25519 as PrivateKeyBytes,
+      data: privateKey.ed25519 as PrivkeyBytes,
     };
   } else {
     throw new Error("Unknown private key algorithm");

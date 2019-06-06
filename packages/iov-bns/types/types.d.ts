@@ -29,10 +29,10 @@ export declare type BnsUsernamesQuery = BnsUsernamesByUsernameQuery | BnsUsernam
 export declare function isBnsUsernamesByUsernameQuery(query: BnsUsernamesQuery): query is BnsUsernamesByUsernameQuery;
 export declare function isBnsUsernamesByOwnerAddressQuery(query: BnsUsernamesQuery): query is BnsUsernamesByOwnerAddressQuery;
 export declare function isBnsUsernamesByChainAndAddressQuery(query: BnsUsernamesQuery): query is BnsUsernamesByChainAndAddressQuery;
-export declare type PrivateKeyBytes = Uint8Array & As<"private-key">;
-export interface PrivateKeyBundle {
+export declare type PrivkeyBytes = Uint8Array & As<"privkey-bytes">;
+export interface PrivkeyBundle {
     readonly algo: Algorithm;
-    readonly data: PrivateKeyBytes;
+    readonly data: PrivkeyBytes;
 }
 export interface Result {
     readonly key: Uint8Array;
@@ -45,7 +45,7 @@ export interface Decoder<T extends {}> {
     readonly decode: (data: Uint8Array) => T;
 }
 export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle;
-export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle;
+export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle;
 export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;
 /**
  * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
