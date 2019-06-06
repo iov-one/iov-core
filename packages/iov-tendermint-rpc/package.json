@@ -1,6 +1,6 @@
 {
   "name": "@iov/tendermint-rpc",
-  "version": "0.14.3",
+  "version": "0.14.4",
   "description": "Codec to encode/decode bns transactions and state objects",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -29,9 +29,9 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/crypto": "^0.14.3",
-    "@iov/encoding": "^0.14.3",
-    "@iov/socket": "^0.14.3",
+    "@iov/crypto": "^0.14.4",
+    "@iov/encoding": "^0.14.4",
+    "@iov/socket": "^0.14.4",
     "axios": "^0.19.0",
     "readonly-date": "^1.0.0",
     "type-tagger": "^1.0.0",
