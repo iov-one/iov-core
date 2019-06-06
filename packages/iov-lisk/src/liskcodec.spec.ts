@@ -6,7 +6,7 @@ import {
   isSendTransaction,
   Nonce,
   PostableBytes,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
@@ -25,7 +25,7 @@ const liskEpochAsUnixTimestamp = 1464109200;
 const defaultCreationTimestamp = 865708731 + liskEpochAsUnixTimestamp;
 const defaultPublicKey = {
   algo: Algorithm.Ed25519,
-  data: fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff") as PublicKeyBytes,
+  data: fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff") as PubkeyBytes,
 };
 const defaultCreator = {
   chainId: liskTestnet,
@@ -46,7 +46,7 @@ describe("liskCodec", () => {
       chainId: liskTestnet,
       pubkey: {
         algo: Algorithm.Ed25519,
-        data: fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184") as PublicKeyBytes,
+        data: fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184") as PubkeyBytes,
       },
     };
     expect(liskCodec.identityToAddress(identity)).toEqual("6076671634347365051L");

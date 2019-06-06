@@ -8,8 +8,8 @@ import {
   Algorithm,
   Amount,
   ChainId,
-  PublicKeyBundle,
-  PublicKeyBytes,
+  PubkeyBundle,
+  PubkeyBytes,
   SwapClaimTransaction,
   SwapId,
   SwapIdBytes,
@@ -28,9 +28,9 @@ describe("AtomicSwapMerger", () => {
 
   it("can process open and close", () => {
     const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
-    const bobPubkey: PublicKeyBundle = {
+    const bobPubkey: PubkeyBundle = {
       algo: Algorithm.Ed25519,
-      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PublicKeyBytes,
+      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PubkeyBytes,
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
     const preimage = fromHex("00110011") as Preimage;
@@ -77,9 +77,9 @@ describe("AtomicSwapMerger", () => {
 
   it("can process open A/B and close B/A", () => {
     const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
-    const bobPubkey: PublicKeyBundle = {
+    const bobPubkey: PubkeyBundle = {
       algo: Algorithm.Ed25519,
-      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PublicKeyBytes,
+      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PubkeyBytes,
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
 
@@ -192,9 +192,9 @@ describe("AtomicSwapMerger", () => {
 
   it("can process open and close in reverse order", () => {
     const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
-    const bobPubkey: PublicKeyBundle = {
+    const bobPubkey: PubkeyBundle = {
       algo: Algorithm.Ed25519,
-      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PublicKeyBytes,
+      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PubkeyBytes,
     };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
     const preimage = fromHex("00110011") as Preimage;

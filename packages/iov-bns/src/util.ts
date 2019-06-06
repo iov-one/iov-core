@@ -13,7 +13,7 @@ import {
   isSwapOfferTransaction,
   isUnsignedTransaction,
   Nonce,
-  PublicKeyBundle,
+  PubkeyBundle,
   SignableBytes,
   SwapAbortTransaction,
   SwapClaimTransaction,
@@ -54,7 +54,7 @@ function algoToPrefix(algo: Algorithm): Uint8Array {
   }
 }
 
-function keyToIdentifier(key: PublicKeyBundle): Uint8Array {
+function keyToIdentifier(key: PubkeyBundle): Uint8Array {
   return Uint8Array.from([...algoToPrefix(key.algo), ...key.data]);
 }
 

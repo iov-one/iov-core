@@ -14,7 +14,7 @@ import {
   isOpenSwap,
   OpenSwap,
   Preimage,
-  PublicKeyBundle,
+  PubkeyBundle,
   SendTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
@@ -95,7 +95,7 @@ class Actor {
     this.receiverIdentity = data.receiverIdentity;
   }
 
-  public async sendTransaction(transaction: UnsignedTransaction, pubkey: PublicKeyBundle): Promise<void> {
+  public async sendTransaction(transaction: UnsignedTransaction, pubkey: PubkeyBundle): Promise<void> {
     const nonce = await this.connection.getNonce({ pubkey: pubkey });
     const signed = await this.profile.signTransaction(transaction, ethereumCodec, nonce);
     const postable = await ethereumCodec.bytesToPost(signed);

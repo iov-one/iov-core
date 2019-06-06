@@ -6,7 +6,7 @@ import {
   isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   TokenTicker,
   TransactionState,
@@ -41,7 +41,7 @@ async function randomBnsAddress(): Promise<Address> {
     chainId: "some-testnet" as ChainId,
     pubkey: {
       algo: Algorithm.Ed25519,
-      data: rawKeypair.pubkey as PublicKeyBytes,
+      data: rawKeypair.pubkey as PubkeyBytes,
     },
   };
   return bnsCodec.identityToAddress(randomIdentity);
@@ -168,7 +168,7 @@ describe("MultiChainSigner", () => {
           algo: Algorithm.Secp256k1,
           data: Encoding.fromHex(
             "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-          ) as PublicKeyBytes,
+          ) as PubkeyBytes,
         },
       };
       const ganacheAddr = signer.identityToAddress(ganacheMainIdentity);

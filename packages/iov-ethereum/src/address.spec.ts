@@ -1,4 +1,4 @@
-import { Algorithm, PublicKeyBundle, PublicKeyBytes } from "@iov/bcp";
+import { Algorithm, PubkeyBundle, PubkeyBytes } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
@@ -125,33 +125,33 @@ describe("address", () => {
   describe("pubkeyToAddress", () => {
     it("derives addresses properly", () => {
       // Test cases from https://github.com/MaiaVictor/eth-lib/blob/master/test/test.js#L56
-      const pubkey: PublicKeyBundle = {
+      const pubkey: PubkeyBundle = {
         algo: Algorithm.Secp256k1,
         data: fromHex(
           "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
-        ) as PublicKeyBytes,
+        ) as PubkeyBytes,
       };
       expect(pubkeyToAddress(pubkey)).toEqual("0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     });
 
     it("throws error for invalid inputs", () => {
-      const pubkeyInvalidAlgo: PublicKeyBundle = {
+      const pubkeyInvalidAlgo: PubkeyBundle = {
         algo: Algorithm.Ed25519,
         data: fromHex(
           "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
-        ) as PublicKeyBytes,
+        ) as PubkeyBytes,
       };
-      const pubkeyInvalidDataLenght: PublicKeyBundle = {
+      const pubkeyInvalidDataLenght: PubkeyBundle = {
         algo: Algorithm.Secp256k1,
         data: fromHex(
           "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff9923",
-        ) as PublicKeyBytes,
+        ) as PubkeyBytes,
       };
-      const pubkeyInvalidDataPrefix: PublicKeyBundle = {
+      const pubkeyInvalidDataPrefix: PubkeyBundle = {
         algo: Algorithm.Secp256k1,
         data: fromHex(
           "074bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
-        ) as PublicKeyBytes,
+        ) as PubkeyBytes,
       };
       expect(() => pubkeyToAddress(pubkeyInvalidAlgo)).toThrowError(/Invalid pubkey data input/);
       expect(() => pubkeyToAddress(pubkeyInvalidDataLenght)).toThrowError(/Invalid pubkey data input/);

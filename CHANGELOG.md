@@ -54,6 +54,10 @@ Breaking changes
 - @iov/bcp: `BlockchainConnection` methods `listenTx`, `liveTx` and `searchTx`
   now all resolve to confirmed `LightTransaction`s instead of
   `UnsignedTransaction`s.
+- @iov/bcp: Rename `PublicKeyBundle`, `isPublicKeyBundle` and
+  `publicKeyBundleEquals` to `PubkeyBundle`, `isPubkeyBundle` and
+  `pubkeyBundleEquals`.
+- @iov/bcp: Rename `PublicKeyBytes` to `PubkeyBytes`.
 - @iov/bns: Remove obsolete types `BnsBlockchainNft`,
   `BnsBlockchainsByChainIdQuery`, `BnsBlockchainsQuery`.
 - @iov/bns: Switch to new `SwapId` type instead of `SwapIdBytes` where

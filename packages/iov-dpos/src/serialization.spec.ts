@@ -5,7 +5,7 @@ import {
   Algorithm,
   ChainId,
   Nonce,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
@@ -33,7 +33,7 @@ const riseTransactionSerializationOptions: TransactionSerializationOptions = {
 };
 const defaultPublicKey = {
   algo: Algorithm.Ed25519,
-  data: fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff") as PublicKeyBytes,
+  data: fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff") as PubkeyBytes,
 };
 const defaultSender = "10645226540143571783";
 const defaultLiskSender = (defaultSender + "L") as Address;

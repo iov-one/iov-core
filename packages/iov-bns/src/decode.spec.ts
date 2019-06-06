@@ -1,12 +1,4 @@
-import {
-  Address,
-  Algorithm,
-  ChainId,
-  Nonce,
-  PublicKeyBytes,
-  TokenTicker,
-  UnsignedTransaction,
-} from "@iov/bcp";
+import { Address, Algorithm, ChainId, Nonce, PubkeyBytes, TokenTicker, UnsignedTransaction } from "@iov/bcp";
 import { Bech32, Encoding } from "@iov/encoding";
 
 import { decodeAmount, decodeNonce, decodeToken, decodeUsernameNft, parseMsg, parseTx } from "./decode";
@@ -201,7 +193,7 @@ describe("Decode", () => {
         chainId: "bns-chain" as ChainId,
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: Encoding.fromHex("aabbccdd") as PublicKeyBytes,
+          data: Encoding.fromHex("aabbccdd") as PubkeyBytes,
         },
       },
     };

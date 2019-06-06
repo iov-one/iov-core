@@ -1,4 +1,4 @@
-import { Address, PublicKeyBundle } from "@iov/bcp";
+import { Address, PubkeyBundle } from "@iov/bcp";
 export declare function isValidAddress(address: string): boolean;
 /**
  * Converts Ethereum address to checksummed address according to EIP-55.
@@ -8,4 +8,4 @@ export declare function isValidAddress(address: string): boolean;
  * @link https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md
  */
 export declare function toChecksummedAddress(address: string | Uint8Array): Address;
-export declare function pubkeyToAddress(pubkey: PublicKeyBundle): Address;
+export declare function pubkeyToAddress(pubkey: PubkeyBundle): Address;

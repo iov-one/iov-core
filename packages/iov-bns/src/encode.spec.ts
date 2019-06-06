@@ -7,7 +7,7 @@ import {
   Hash,
   Identity,
   Nonce,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   SignatureBytes,
   SwapOfferTransaction,
@@ -134,7 +134,7 @@ describe("Encode", () => {
       nonce: 123 as Nonce,
       pubkey: {
         algo: Algorithm.Ed25519,
-        data: fromHex("00aa1122bbddffeeddcc") as PublicKeyBytes,
+        data: fromHex("00aa1122bbddffeeddcc") as PubkeyBytes,
       },
       signature: fromHex("aabbcc22334455") as SignatureBytes,
     };
@@ -151,7 +151,7 @@ describe("Encode", () => {
         algo: Algorithm.Ed25519,
         // Random 32 bytes pubkey. Derived IOV address:
         // tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3 / 6e1114f57410d8e7bcd910a568c9196efc1479e4
-        data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PublicKeyBytes,
+        data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PubkeyBytes,
       },
     };
     const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
@@ -214,7 +214,7 @@ describe("Encode", () => {
         algo: Algorithm.Ed25519,
         // Random 32 bytes pubkey. Derived IOV address:
         // tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3 / 6e1114f57410d8e7bcd910a568c9196efc1479e4
-        data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PublicKeyBytes,
+        data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PubkeyBytes,
       },
     };
     const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;

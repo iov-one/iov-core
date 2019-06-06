@@ -1,4 +1,4 @@
-import { Algorithm, ChainId, PrehashType, PublicKeyBytes, SignableBytes } from "@iov/bcp";
+import { Algorithm, ChainId, PrehashType, PubkeyBytes, SignableBytes } from "@iov/bcp";
 import { Ed25519Keypair, Sha256, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
@@ -44,7 +44,7 @@ describe("Ed25519Wallet", () => {
         chainId: defaultChain,
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: defaultKeypair.pubkey as PublicKeyBytes,
+          data: defaultKeypair.pubkey as PubkeyBytes,
         },
       });
 

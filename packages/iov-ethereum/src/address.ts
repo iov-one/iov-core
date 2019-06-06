@@ -1,4 +1,4 @@
-import { Address, Algorithm, PublicKeyBundle } from "@iov/bcp";
+import { Address, Algorithm, PubkeyBundle } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
@@ -59,7 +59,7 @@ export function toChecksummedAddress(address: string | Uint8Array): Address {
   return checksumAddress as Address;
 }
 
-export function pubkeyToAddress(pubkey: PublicKeyBundle): Address {
+export function pubkeyToAddress(pubkey: PubkeyBundle): Address {
   if (pubkey.algo !== Algorithm.Secp256k1 || pubkey.data.length !== 65 || pubkey.data[0] !== 0x04) {
     throw new Error(`Invalid pubkey data input: ${pubkey}`);
   }

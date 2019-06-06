@@ -7,8 +7,8 @@ import {
   Hash,
   Nonce,
   Preimage,
-  PublicKeyBundle,
-  PublicKeyBytes,
+  PubkeyBundle,
+  PubkeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
@@ -26,9 +26,9 @@ import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
 
 const { fromHex } = Encoding;
 
-export const pubJson: PublicKeyBundle = {
+export const pubJson: PubkeyBundle = {
   algo: Algorithm.Ed25519,
-  data: fromHex(data.pubkey.ed25519_raw) as PublicKeyBytes,
+  data: fromHex(data.pubkey.ed25519_raw) as PubkeyBytes,
 };
 
 export const pubBin = fromHex(data.pubkey.bin);

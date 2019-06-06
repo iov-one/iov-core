@@ -7,7 +7,7 @@ import {
   Identity,
   isBlockInfoPending,
   isIdentity,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   TokenTicker,
   TransactionState,
@@ -33,7 +33,7 @@ async function randomBnsAddress(): Promise<Address> {
     chainId: "some-testnet" as ChainId,
     pubkey: {
       algo: Algorithm.Ed25519,
-      data: rawKeypair.pubkey as PublicKeyBytes,
+      data: rawKeypair.pubkey as PubkeyBytes,
     },
   };
   return bnsCodec.identityToAddress(randomIdentity);

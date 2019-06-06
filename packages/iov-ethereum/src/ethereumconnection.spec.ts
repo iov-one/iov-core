@@ -22,7 +22,7 @@ import {
   Nonce,
   PostTxResponse,
   Preimage,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
@@ -80,7 +80,7 @@ async function randomAddress(): Promise<Address> {
   const keypair = await Secp256k1.makeKeypair(await Random.getBytes(32));
   return pubkeyToAddress({
     algo: Algorithm.Secp256k1,
-    data: keypair.pubkey as PublicKeyBytes,
+    data: keypair.pubkey as PubkeyBytes,
   });
 }
 
@@ -2067,7 +2067,7 @@ describe("EthereumConnection", () => {
         chainId: connection.chainId(),
         pubkey: {
           algo: Algorithm.Secp256k1,
-          data: fromHex("aabbccdd") as PublicKeyBytes,
+          data: fromHex("aabbccdd") as PubkeyBytes,
         },
       };
 
@@ -2105,7 +2105,7 @@ describe("EthereumConnection", () => {
           chainId: connection.chainId(),
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("aabbccdd") as PublicKeyBytes,
+            data: fromHex("aabbccdd") as PubkeyBytes,
           },
         },
       };

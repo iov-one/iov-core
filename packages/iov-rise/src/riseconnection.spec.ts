@@ -16,9 +16,9 @@ import {
   isSendTransaction,
   LightTransaction,
   Nonce,
+  PubkeyBundle,
+  PubkeyBytes,
   PubkeyQuery,
-  PublicKeyBundle,
-  PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
@@ -177,9 +177,9 @@ describe("RiseConnection", () => {
       const query: AccountQuery = { address: "6472030874529564639R" as Address };
       const response = await connection.getAccount(query);
 
-      const expectedPubkey: PublicKeyBundle = {
+      const expectedPubkey: PubkeyBundle = {
         algo: Algorithm.Ed25519,
-        data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
+        data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PubkeyBytes,
       };
       expect(response!.address).toEqual("6472030874529564639R");
       expect(response!.pubkey).toEqual(expectedPubkey);
@@ -191,9 +191,9 @@ describe("RiseConnection", () => {
     it("can get account from pubkey", async () => {
       pendingWithoutRise();
       const connection = await RiseConnection.establish(base);
-      const pubkey: PublicKeyBundle = {
+      const pubkey: PubkeyBundle = {
         algo: Algorithm.Ed25519,
-        data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
+        data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PubkeyBytes,
       };
       const query: AccountQuery = { pubkey: pubkey };
       const response = await connection.getAccount(query);
@@ -242,9 +242,7 @@ describe("RiseConnection", () => {
         const query: PubkeyQuery = {
           pubkey: {
             algo: Algorithm.Ed25519,
-            data: fromHex(
-              "ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735",
-            ) as PublicKeyBytes,
+            data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PubkeyBytes,
           },
         };
         const nonce = await connection.getNonce(query);
@@ -266,7 +264,7 @@ describe("RiseConnection", () => {
       const pubkeyQuery: PubkeyQuery = {
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PublicKeyBytes,
+          data: fromHex("ac681190391fe048d133a60e9b49f7ac0a8b0500b58a9f176b88aee1e79fe735") as PubkeyBytes,
         },
       };
 
@@ -921,7 +919,7 @@ describe("RiseConnection", () => {
         chainId: riseTestnet,
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: fromHex("aabbccdd") as PublicKeyBytes,
+          data: fromHex("aabbccdd") as PubkeyBytes,
         },
       };
 
@@ -954,7 +952,7 @@ describe("RiseConnection", () => {
           chainId: riseTestnet,
           pubkey: {
             algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PublicKeyBytes,
+            data: fromHex("aabbccdd") as PubkeyBytes,
           },
         },
       };

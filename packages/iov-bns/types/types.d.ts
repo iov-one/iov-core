@@ -1,6 +1,6 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Address, Algorithm, Amount, ChainId, FullSignature, LightTransaction, PublicKeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
+import { Address, Algorithm, Amount, ChainId, FullSignature, LightTransaction, PubkeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 export interface CashConfiguration {
@@ -44,7 +44,7 @@ export interface Keyed {
 export interface Decoder<T extends {}> {
     readonly decode: (data: Uint8Array) => T;
 }
-export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle;
+export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle;
 export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle;
 export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;
 /**

@@ -16,9 +16,9 @@ import {
   isSendTransaction,
   LightTransaction,
   Nonce,
+  PubkeyBundle,
+  PubkeyBytes,
   PubkeyQuery,
-  PublicKeyBundle,
-  PublicKeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
@@ -184,9 +184,9 @@ describe("LiskConnection", () => {
       const query: AccountQuery = { address: "1349293588603668134L" as Address };
       const account = await connection.getAccount(query);
 
-      const expectedPubkey: PublicKeyBundle = {
+      const expectedPubkey: PubkeyBundle = {
         algo: Algorithm.Ed25519,
-        data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
+        data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PubkeyBytes,
       };
       expect(account!.address).toEqual("1349293588603668134L");
       expect(account!.pubkey).toEqual(expectedPubkey);
@@ -198,9 +198,9 @@ describe("LiskConnection", () => {
     it("can get account from pubkey", async () => {
       pendingWithoutLiskDevnet();
       const connection = await LiskConnection.establish(devnetBase);
-      const pubkey: PublicKeyBundle = {
+      const pubkey: PubkeyBundle = {
         algo: Algorithm.Ed25519,
-        data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
+        data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PubkeyBytes,
       };
       const query: AccountQuery = { pubkey: pubkey };
       const account = await connection.getAccount(query);
@@ -249,9 +249,7 @@ describe("LiskConnection", () => {
         const query: PubkeyQuery = {
           pubkey: {
             algo: Algorithm.Ed25519,
-            data: fromHex(
-              "e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6",
-            ) as PublicKeyBytes,
+            data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PubkeyBytes,
           },
         };
         const nonce = await connection.getNonce(query);
@@ -273,7 +271,7 @@ describe("LiskConnection", () => {
       const pubkeyQuery: PubkeyQuery = {
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PublicKeyBytes,
+          data: fromHex("e9e00a111875ccd0c2c937d87da18532cf99d011e0e8bfb981638f57427ba2c6") as PubkeyBytes,
         },
       };
 
@@ -1142,7 +1140,7 @@ describe("LiskConnection", () => {
         chainId: dummynetChainId,
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: fromHex("aabbccdd") as PublicKeyBytes,
+          data: fromHex("aabbccdd") as PubkeyBytes,
         },
       };
 
@@ -1173,7 +1171,7 @@ describe("LiskConnection", () => {
           chainId: dummynetChainId,
           pubkey: {
             algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PublicKeyBytes,
+            data: fromHex("aabbccdd") as PubkeyBytes,
           },
         },
       };

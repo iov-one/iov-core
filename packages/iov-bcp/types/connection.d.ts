@@ -3,7 +3,7 @@ import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { ValueAndUpdates } from "@iov/stream";
 import { PostableBytes } from "./codec";
-import { Address, Amount, ChainId, Fee, LightTransaction, Nonce, PublicKeyBundle, SignedTransaction, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
+import { Address, Amount, ChainId, Fee, LightTransaction, Nonce, PubkeyBundle, SignedTransaction, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
 export interface Account {
     readonly address: Address;
     /**
@@ -12,7 +12,7 @@ export interface Account {
      * - Always available if the full pubkey is encoded in the address (e.g. nano, Substrate/Polkadot)
      * - Available after first transaction sent (e.g. Lisk, Tendermint, Ethereum)
      */
-    readonly pubkey?: PublicKeyBundle;
+    readonly pubkey?: PubkeyBundle;
     readonly balance: readonly Amount[];
 }
 export interface Token {
@@ -134,7 +134,7 @@ export interface AddressQuery {
     readonly address: Address;
 }
 export interface PubkeyQuery {
-    readonly pubkey: PublicKeyBundle;
+    readonly pubkey: PubkeyBundle;
 }
 export declare type AccountQuery = AddressQuery | PubkeyQuery;
 export declare function isAddressQuery(query: AccountQuery): query is AddressQuery;

@@ -4,8 +4,8 @@ import {
   Amount,
   ChainId,
   Nonce,
-  PublicKeyBundle,
-  PublicKeyBytes,
+  PubkeyBundle,
+  PubkeyBytes,
   Token,
   TokenTicker,
 } from "@iov/bcp";
@@ -31,7 +31,7 @@ export interface EthereumNetworkConfig {
   readonly accountStates: {
     /** An account with ETH and ERC20 balance */
     readonly default: {
-      readonly pubkey: PublicKeyBundle;
+      readonly pubkey: PubkeyBundle;
       readonly address: Address;
       /** expected balance for the `address` */
       readonly expectedBalance: readonly Amount[];
@@ -46,7 +46,7 @@ export interface EthereumNetworkConfig {
     };
     /** An account not used on this network */
     readonly unused: {
-      readonly pubkey: PublicKeyBundle;
+      readonly pubkey: PubkeyBundle;
       readonly address: Address;
     };
   };
@@ -88,7 +88,7 @@ const local: EthereumNetworkConfig = {
         algo: Algorithm.Secp256k1,
         data: fromHex(
           "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
-        ) as PublicKeyBytes,
+        ) as PubkeyBytes,
       },
       address: "0x0A65766695A712Af41B5cfECAaD217B1a11CB22A" as Address,
       expectedBalance: [
@@ -136,7 +136,7 @@ const local: EthereumNetworkConfig = {
         algo: Algorithm.Secp256k1,
         data: fromHex(
           "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
-        ) as PublicKeyBytes,
+        ) as PubkeyBytes,
       },
       address: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
     },
@@ -223,7 +223,7 @@ const ropsten: EthereumNetworkConfig = {
         algo: Algorithm.Secp256k1,
         data: fromHex(
           "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-        ) as PublicKeyBytes,
+        ) as PubkeyBytes,
       },
       address: "0x88F3b5659075D0E06bB1004BE7b1a7E66F452284" as Address,
       expectedBalance: [
@@ -251,7 +251,7 @@ const ropsten: EthereumNetworkConfig = {
         algo: Algorithm.Secp256k1,
         data: fromHex(
           "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
-        ) as PublicKeyBytes,
+        ) as PubkeyBytes,
       },
       address: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
     },
@@ -296,7 +296,7 @@ const rinkeby: EthereumNetworkConfig = {
         algo: Algorithm.Secp256k1,
         data: fromHex(
           "045a977cdfa082bd486755a440b1e411a14c690fd9ac0bb6d866070f63911c54af75ae8f0f40c7069ce2df65c6facc45902d462f39e8812421502e0216da7ef51e",
-        ) as PublicKeyBytes,
+        ) as PubkeyBytes,
       },
       address: "0x2eF42084759d67CA34aA910DFE22d78bbb66964f" as Address,
       expectedBalance: [
@@ -344,7 +344,7 @@ const rinkeby: EthereumNetworkConfig = {
         algo: Algorithm.Secp256k1,
         data: fromHex(
           "049555be4c5136102e1645f9ce53475b2fed172078de78d3b7d0befed14f5471a077123dd459624055c93f85c0d8f99d9178b79b151f597f714ac759bca9dd3cb1",
-        ) as PublicKeyBytes,
+        ) as PubkeyBytes,
       },
       address: "0x52dF0e01583E12978B0885C5836c9683f22b0618" as Address,
     },

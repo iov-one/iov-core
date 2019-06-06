@@ -21,9 +21,9 @@ import {
   Nonce,
   PostableBytes,
   PostTxResponse,
+  PubkeyBundle,
+  PubkeyBytes,
   PubkeyQuery,
-  PublicKeyBundle,
-  PublicKeyBytes,
   Token,
   TokenTicker,
   TransactionId,
@@ -193,11 +193,11 @@ export class RiseConnection implements BlockchainConnection {
       throw new Error("Unexpected type for .balance property in response");
     }
 
-    const pubkey: PublicKeyBundle | undefined =
+    const pubkey: PubkeyBundle | undefined =
       typeof responsePublicKey === "string" && responsePublicKey
         ? {
             algo: Algorithm.Ed25519,
-            data: Encoding.fromHex(responsePublicKey) as PublicKeyBytes,
+            data: Encoding.fromHex(responsePublicKey) as PubkeyBytes,
           }
         : undefined;
 

@@ -3,7 +3,7 @@ import {
   Amount,
   FullSignature,
   isTimestampTimeout,
-  PublicKeyBundle,
+  PubkeyBundle,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
@@ -44,7 +44,7 @@ function encodeString(data: string | undefined): string | null {
   return data || null;
 }
 
-export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
+export function encodePubkey(publicKey: PubkeyBundle): codecImpl.crypto.IPublicKey {
   switch (publicKey.algo) {
     case Algorithm.Ed25519:
       return { ed25519: publicKey.data };
