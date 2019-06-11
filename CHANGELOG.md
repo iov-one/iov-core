@@ -99,6 +99,11 @@ Breaking changes
 - @iov/tendermint-rpc: Rename `ConsensusParams.blockSize` to `.block` and
   `BlockSizeParams` to `BlockParams`.
 
+## 0.14.5
+
+- @iov/cli: Automatically import `TransactionId` from @iov/bcp.
+- @iov/crypto: Add `EnglishMnemonic.toString`; deprecate `.asString`.
+
 ## 0.14.4
 
 - @iov/ethereum: EthereumConnection now accepts a ws:// url as its baseUrl.

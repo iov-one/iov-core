@@ -106,7 +106,7 @@ export class Slip10Wallet implements Wallet {
     bip39Entropy: Uint8Array,
     cls?: Slip10WalletConstructor,
   ): Slip10Wallet {
-    return this.fromMnemonicWithCurve(curve, Bip39.encode(bip39Entropy).asString(), cls);
+    return this.fromMnemonicWithCurve(curve, Bip39.encode(bip39Entropy).toString(), cls);
   }
 
   // pass in proper class, so we have it available in javascript object, not just in the type definitions.
@@ -366,7 +366,7 @@ export class Slip10Wallet implements Wallet {
   }
 
   public printableSecret(): string {
-    return this.secret.asString();
+    return this.secret.toString();
   }
 
   public serialize(): WalletSerializationString {
@@ -391,7 +391,7 @@ export class Slip10Wallet implements Wallet {
     const out: Slip10WalletSerialization = {
       formatVersion: 2,
       id: this.id,
-      secret: this.secret.asString(),
+      secret: this.secret.toString(),
       curve: this.curve,
       label: this.label.value,
       identities: serializedIdentities,

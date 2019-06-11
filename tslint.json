@@ -10,6 +10,7 @@
     "interface-name": [true, "never-prefix"],
     "max-classes-per-file": false,
     "no-class": false,
+    "no-conditional-assignment": false,
     "no-console": [true, "log"],
     "no-delete": true,
     "no-empty-interface": false,

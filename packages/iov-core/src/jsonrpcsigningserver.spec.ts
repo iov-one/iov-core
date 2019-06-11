@@ -53,6 +53,7 @@ async function randomBnsAddress(): Promise<Address> {
 }
 
 const bnsdUrl = "ws://localhost:23456";
+const bnsChainId = "local-bns-devnet";
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 const bnsdFaucetPath = HdPaths.iov(0);
 const ethereumUrl = "http://localhost:8545";
@@ -113,8 +114,6 @@ describe("JsonRpcSigningServer", () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
-    const bnsConnection = await bnsConnector(bnsdUrl).client();
-
     const server = await makeBnsEthereumSigningServer();
 
     const response = await server.handleUnchecked({
@@ -123,7 +122,7 @@ describe("JsonRpcSigningServer", () => {
       method: "getIdentities",
       params: {
         reason: "string:Who are you?",
-        chainIds: [`string:${bnsConnection.chainId()}`],
+        chainIds: [`string:${bnsChainId}`],
       },
     });
     expect(response.id).toEqual(123);
@@ -134,12 +133,11 @@ describe("JsonRpcSigningServer", () => {
     expect(result).toEqual(jasmine.any(Array));
     expect((result as readonly any[]).length).toEqual(1);
     expect(result[0]).toEqual({
-      chainId: bnsConnection.chainId(),
+      chainId: bnsChainId,
       pubkey: bnsdFaucetPubkey,
     });
 
     server.shutdown();
-    bnsConnection.disconnect();
   });
 
   it("can get ethereum identities", async () => {
@@ -173,8 +171,6 @@ describe("JsonRpcSigningServer", () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
-    const bnsConnection = await bnsConnector(bnsdUrl).client();
-
     const server = await makeBnsEthereumSigningServer();
 
     const response = await server.handleChecked({
@@ -183,7 +179,7 @@ describe("JsonRpcSigningServer", () => {
       method: "getIdentities",
       params: {
         reason: "string:Who are you?",
-        chainIds: [`string:${ethereumChainId}`, `string:${bnsConnection.chainId()}`],
+        chainIds: [`string:${ethereumChainId}`, `string:${bnsChainId}`],
       },
     });
     expect(response.id).toEqual(123);
@@ -194,13 +190,12 @@ describe("JsonRpcSigningServer", () => {
     expect(result).toEqual(jasmine.any(Array));
     expect((result as readonly any[]).length).toEqual(2);
     expect(result[0]).toEqual({
-      chainId: bnsConnection.chainId(),
+      chainId: bnsChainId,
       pubkey: bnsdFaucetPubkey,
     });
     expect(result[1]).toEqual(ganacheSecondIdentity);
 
     server.shutdown();
-    bnsConnection.disconnect();
   });
 
   it("handles signing requests", async () => {
@@ -269,8 +264,6 @@ describe("JsonRpcSigningServer", () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
-    const bnsConnection = await bnsConnector(bnsdUrl).client();
-
     const server = await makeBnsEthereumSigningServer(defaultGetIdentitiesCallback, async () => false);
 
     const identitiesResponse = await server.handleChecked({
@@ -279,7 +272,7 @@ describe("JsonRpcSigningServer", () => {
       method: "getIdentities",
       params: {
         reason: "string:Who are you?",
-        chainIds: [`string:${bnsConnection.chainId()}`],
+        chainIds: [`string:${bnsChainId}`],
       },
     });
     if (isJsonRpcErrorResponse(identitiesResponse)) {
@@ -316,7 +309,6 @@ describe("JsonRpcSigningServer", () => {
     expect(TransactionEncoder.fromJson(signAndPostResponse.result)).toBeNull();
 
     server.shutdown();
-    bnsConnection.disconnect();
   });
 
   it("sends correct error codes", async () => {
@@ -379,8 +371,6 @@ describe("JsonRpcSigningServer", () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
-    const bnsConnection = await bnsConnector(bnsdUrl).client();
-
     const originalRequestMeta = { foo: "bar" };
 
     const server = await makeBnsEthereumSigningServer(async (_1, _2, requestMeta) => {
@@ -397,7 +387,7 @@ describe("JsonRpcSigningServer", () => {
         method: "getIdentities",
         params: {
           reason: "string:Who are you?",
-          chainIds: [`string:${bnsConnection.chainId()}`],
+          chainIds: [`string:${bnsChainId}`],
         },
       },
       originalRequestMeta,
@@ -411,13 +401,12 @@ describe("JsonRpcSigningServer", () => {
         method: "getIdentities",
         params: {
           reason: "string:Who are you?",
-          chainIds: [`string:${bnsConnection.chainId()}`],
+          chainIds: [`string:${bnsChainId}`],
         },
       },
       originalRequestMeta,
     );
 
     server.shutdown();
-    bnsConnection.disconnect();
   });
 });

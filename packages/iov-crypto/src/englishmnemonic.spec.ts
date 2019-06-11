@@ -205,4 +205,13 @@ describe("EnglishMnemonic", () => {
   });
 
   // tslint:enable:no-unused-expression
+
+  describe("toString", () => {
+    it("works", () => {
+      const original =
+        "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+      const mnemonic = new EnglishMnemonic(original);
+      expect(mnemonic.toString()).toEqual(original);
+    });
+  });
 });
