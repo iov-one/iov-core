@@ -24,7 +24,7 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 import {
@@ -62,16 +62,6 @@ export function asIntegerNumber(maybeLong: Long | number | null | undefined): nu
   }
 }
 
-export function asInt53(input: Long | number | null | undefined): Int53 {
-  if (!input) {
-    return new Int53(0);
-  } else if (typeof input === "number") {
-    return new Int53(input);
-  } else {
-    return Int53.fromString(input.toString());
-  }
-}
-
 export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
   if (maybe === null || maybe === undefined) {
     throw new Error("missing " + (msg || "field"));
@@ -100,10 +90,12 @@ export function decodeUsernameNft(
   };
 }
 
+export function decodeNonce(sequence: Long | number | null | undefined): Nonce {
+  return asIntegerNumber(sequence) as Nonce;
+}
+
 export function decodeUserData(userData: codecImpl.sigs.IUserData): { readonly nonce: Nonce } {
-  return {
-    nonce: asInt53(userData.sequence).toNumber() as Nonce,
-  };
+  return { nonce: decodeNonce(userData.sequence) };
 }
 
 export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle {
@@ -138,7 +130,7 @@ export function decodeSignature(signature: codecImpl.crypto.ISignature): Signatu
 
 export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature {
   return {
-    nonce: asInt53(sig.sequence).toNumber() as Nonce,
+    nonce: decodeNonce(sig.sequence),
     pubkey: decodePubkey(ensure(sig.pubkey)),
     signature: decodeSignature(ensure(sig.signature)),
   };

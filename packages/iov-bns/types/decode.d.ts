@@ -1,6 +1,5 @@
 import * as Long from "long";
 import { Amount, ChainId, FullSignature, Nonce, PubkeyBundle, SignatureBytes, SignedTransaction, Token, UnsignedTransaction } from "@iov/bcp";
-import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 import { BnsUsernameNft, CashConfiguration, Keyed, Participant, PrivkeyBundle } from "./types";
 /**
@@ -8,9 +7,9 @@ import { BnsUsernameNft, CashConfiguration, Keyed, Participant, PrivkeyBundle } 
  * number.
  */
 export declare function asIntegerNumber(maybeLong: Long | number | null | undefined): number;
-export declare function asInt53(input: Long | number | null | undefined): Int53;
 export declare function ensure<T>(maybe: T | null | undefined, msg?: string): T;
 export declare function decodeUsernameNft(nft: codecImpl.username.IUsernameToken, registryChainId: ChainId): BnsUsernameNft;
+export declare function decodeNonce(sequence: Long | number | null | undefined): Nonce;
 export declare function decodeUserData(userData: codecImpl.sigs.IUserData): {
     readonly nonce: Nonce;
 };
