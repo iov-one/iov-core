@@ -6,13 +6,11 @@ import {
   Algorithm,
   Amount,
   ChainId,
-  FullSignature,
   isSendTransaction,
   isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
   LightTransaction,
-  Nonce,
   PubkeyBundle,
   PubkeyBytes,
   SendTransaction,
@@ -167,14 +165,6 @@ export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
     throw new Error("missing " + (msg || "field"));
   }
   return maybe;
-}
-
-export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature {
-  return {
-    nonce: asInt53(sig.sequence).toNumber() as Nonce,
-    pubkey: decodePubkey(ensure(sig.pubkey)),
-    signature: decodeSignature(ensure(sig.signature)),
-  };
 }
 
 // transactions

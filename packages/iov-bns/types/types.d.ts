@@ -1,6 +1,6 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Address, Algorithm, Amount, ChainId, FullSignature, LightTransaction, PubkeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
+import { Address, Algorithm, Amount, ChainId, LightTransaction, PubkeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 export interface CashConfiguration {
@@ -54,7 +54,6 @@ export declare function decodeSignature(signature: codecImpl.crypto.ISignature):
 export declare function asIntegerNumber(maybeLong: Long | number | null | undefined): number;
 export declare function asInt53(input: Long | number | null | undefined): Int53;
 export declare function ensure<T>(maybe: T | null | undefined, msg?: string): T;
-export declare function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature;
 export interface AddAddressToUsernameTx extends LightTransaction {
     readonly kind: "bns/add_address_to_username";
     /** the username to be updated, must exist on chain */

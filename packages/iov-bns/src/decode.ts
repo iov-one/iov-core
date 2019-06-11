@@ -30,7 +30,8 @@ import {
   CashConfiguration,
   ChainAddressPair,
   CreateMultisignatureTx,
-  decodeFullSig,
+  decodePubkey,
+  decodeSignature,
   ensure,
   Keyed,
   Participant,
@@ -65,6 +66,14 @@ export function decodeUsernameNft(
 
 export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce {
   return asInt53(acct.sequence).toNumber() as Nonce;
+}
+
+export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature {
+  return {
+    nonce: asInt53(sig.sequence).toNumber() as Nonce,
+    pubkey: decodePubkey(ensure(sig.pubkey)),
+    signature: decodeSignature(ensure(sig.signature)),
+  };
 }
 
 export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token {
