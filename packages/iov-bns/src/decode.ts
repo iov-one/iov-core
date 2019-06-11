@@ -1,14 +1,19 @@
 import BN = require("bn.js");
+import * as Long from "long";
 
 import {
   Address,
+  Algorithm,
   Amount,
   ChainId,
   FullSignature,
   Hash,
   Nonce,
   Preimage,
+  PubkeyBundle,
+  PubkeyBytes,
   SendTransaction,
+  SignatureBytes,
   SignedTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
@@ -24,16 +29,14 @@ import { Encoding } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 import {
   AddAddressToUsernameTx,
-  asInt53,
-  asIntegerNumber,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
   CreateMultisignatureTx,
-  decodeFullSig,
-  ensure,
   Keyed,
   Participant,
+  PrivkeyBundle,
+  PrivkeyBytes,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
   UpdateMultisignatureTx,
@@ -41,6 +44,30 @@ import {
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromUtf8 } = Encoding;
+
+/**
+ * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
+ * number.
+ */
+export function asIntegerNumber(maybeLong: Long | number | null | undefined): number {
+  if (!maybeLong) {
+    return 0;
+  } else if (typeof maybeLong === "number") {
+    if (!Number.isInteger(maybeLong)) {
+      throw new Error("Number is not an integer.");
+    }
+    return maybeLong;
+  } else {
+    return maybeLong.toInt();
+  }
+}
+
+export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
+  if (maybe === null || maybe === undefined) {
+    throw new Error("missing " + (msg || "field"));
+  }
+  return maybe;
+}
 
 export function decodeUsernameNft(
   nft: codecImpl.username.IUsernameToken,
@@ -63,8 +90,50 @@ export function decodeUsernameNft(
   };
 }
 
-export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce {
-  return asInt53(acct.sequence).toNumber() as Nonce;
+export function decodeNonce(sequence: Long | number | null | undefined): Nonce {
+  return asIntegerNumber(sequence) as Nonce;
+}
+
+export function decodeUserData(userData: codecImpl.sigs.IUserData): { readonly nonce: Nonce } {
+  return { nonce: decodeNonce(userData.sequence) };
+}
+
+export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle {
+  if (publicKey.ed25519) {
+    return {
+      algo: Algorithm.Ed25519,
+      data: publicKey.ed25519 as PubkeyBytes,
+    };
+  } else {
+    throw new Error("Unknown public key algorithm");
+  }
+}
+
+export function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle {
+  if (privateKey.ed25519) {
+    return {
+      algo: Algorithm.Ed25519,
+      data: privateKey.ed25519 as PrivkeyBytes,
+    };
+  } else {
+    throw new Error("Unknown private key algorithm");
+  }
+}
+
+export function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes {
+  if (signature.ed25519) {
+    return signature.ed25519 as SignatureBytes;
+  } else {
+    throw new Error("Unknown private key algorithm");
+  }
+}
+
+export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature {
+  return {
+    nonce: decodeNonce(sig.sequence),
+    pubkey: decodePubkey(ensure(sig.pubkey)),
+    signature: decodeSignature(ensure(sig.signature)),
+  };
 }
 
 export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token {

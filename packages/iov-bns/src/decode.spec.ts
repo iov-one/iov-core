@@ -1,7 +1,16 @@
 import { Address, Algorithm, ChainId, Nonce, PubkeyBytes, TokenTicker, UnsignedTransaction } from "@iov/bcp";
 import { Bech32, Encoding } from "@iov/encoding";
 
-import { decodeAmount, decodeNonce, decodeToken, decodeUsernameNft, parseMsg, parseTx } from "./decode";
+import {
+  decodeAmount,
+  decodePrivkey,
+  decodePubkey,
+  decodeToken,
+  decodeUserData,
+  decodeUsernameNft,
+  parseMsg,
+  parseTx,
+} from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import {
   chainId,
@@ -16,8 +25,6 @@ import {
   signedTxBin,
 } from "./testdata.spec";
 import {
-  decodePrivkey,
-  decodePubkey,
   isAddAddressToUsernameTx,
   isCreateMultisignatureTx,
   isRegisterUsernameTx,
@@ -67,16 +74,19 @@ describe("Decode", () => {
     expect(privkey).toEqual(privJson);
   });
 
-  it("has working decodeNonce", () => {
-    const user: codecImpl.sigs.IUserData & Keyed = {
-      _id: fromHex("1234ABCD0000AA0000FFFF0000AA00001234ABCD"),
-      pubkey: {
-        ed25519: fromHex("aabbccdd"),
-      },
-      sequence: 7,
-    };
-    const nonce = decodeNonce(user);
-    expect(nonce).toEqual(7 as Nonce);
+  describe("decodeUserData", () => {
+    it("works", () => {
+      const userData: codecImpl.sigs.IUserData = {
+        pubkey: {
+          ed25519: fromHex("aabbccdd"),
+        },
+        sequence: 7,
+      };
+      const decoded = decodeUserData(userData);
+      expect(decoded).toEqual({
+        nonce: 7 as Nonce,
+      });
+    });
   });
 
   it("has working decodeToken", () => {

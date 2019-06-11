@@ -50,13 +50,19 @@ import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tenderm
 
 import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";
-import { decodeAmount, decodeCashConfiguration, decodeNonce, decodeToken, decodeUsernameNft } from "./decode";
+import {
+  decodeAmount,
+  decodeCashConfiguration,
+  decodePubkey,
+  decodeToken,
+  decodeUserData,
+  decodeUsernameNft,
+} from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
   BnsUsernameNft,
   BnsUsernamesQuery,
-  decodePubkey,
   Decoder,
   isBnsTx,
   isBnsUsernamesByChainAndAddressQuery,
@@ -376,7 +382,10 @@ export class BnsConnection implements AtomicSwapConnection {
       : query.address;
     const response = await this.query("/auth", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.sigs.UserData, "sigs:");
-    const nonces = response.results.map(parser).map(decodeNonce);
+    const nonces = response.results
+      .map(parser)
+      .map(decodeUserData)
+      .map(user => user.nonce);
 
     switch (nonces.length) {
       case 0:

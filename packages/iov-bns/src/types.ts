@@ -1,4 +1,3 @@
-import * as Long from "long";
 import { As } from "type-tagger";
 
 import {
@@ -6,25 +5,16 @@ import {
   Algorithm,
   Amount,
   ChainId,
-  FullSignature,
   isSendTransaction,
   isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
   LightTransaction,
-  Nonce,
-  PubkeyBundle,
-  PubkeyBytes,
   SendTransaction,
-  SignatureBytes,
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
 } from "@iov/bcp";
-
-import { Int53 } from "@iov/encoding";
-
-import * as codecImpl from "./generated/codecimpl";
 
 // config (those are not used outside of @iov/bns)
 
@@ -103,78 +93,6 @@ export interface Keyed {
 
 export interface Decoder<T extends {}> {
   readonly decode: (data: Uint8Array) => T;
-}
-
-export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle {
-  if (publicKey.ed25519) {
-    return {
-      algo: Algorithm.Ed25519,
-      data: publicKey.ed25519 as PubkeyBytes,
-    };
-  } else {
-    throw new Error("Unknown public key algorithm");
-  }
-}
-
-export function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle {
-  if (privateKey.ed25519) {
-    return {
-      algo: Algorithm.Ed25519,
-      data: privateKey.ed25519 as PrivkeyBytes,
-    };
-  } else {
-    throw new Error("Unknown private key algorithm");
-  }
-}
-
-export function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes {
-  if (signature.ed25519) {
-    return signature.ed25519 as SignatureBytes;
-  } else {
-    throw new Error("Unknown private key algorithm");
-  }
-}
-
-/**
- * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
- * number.
- */
-export function asIntegerNumber(maybeLong: Long | number | null | undefined): number {
-  if (!maybeLong) {
-    return 0;
-  } else if (typeof maybeLong === "number") {
-    if (!Number.isInteger(maybeLong)) {
-      throw new Error("Number is not an integer.");
-    }
-    return maybeLong;
-  } else {
-    return maybeLong.toInt();
-  }
-}
-
-export function asInt53(input: Long | number | null | undefined): Int53 {
-  if (!input) {
-    return new Int53(0);
-  } else if (typeof input === "number") {
-    return new Int53(input);
-  } else {
-    return Int53.fromString(input.toString());
-  }
-}
-
-export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
-  if (maybe === null || maybe === undefined) {
-    throw new Error("missing " + (msg || "field"));
-  }
-  return maybe;
-}
-
-export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature {
-  return {
-    nonce: asInt53(sig.sequence).toNumber() as Nonce,
-    pubkey: decodePubkey(ensure(sig.pubkey)),
-    signature: decodeSignature(ensure(sig.signature)),
-  };
 }
 
 // transactions

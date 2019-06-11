@@ -11,9 +11,9 @@ import {
   WithCreator,
 } from "@iov/bcp";
 
-import { decodeAmount } from "./decode";
+import { asIntegerNumber, decodeAmount, ensure } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
-import { asIntegerNumber, ensure, Keyed } from "./types";
+import { Keyed } from "./types";
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
 /**

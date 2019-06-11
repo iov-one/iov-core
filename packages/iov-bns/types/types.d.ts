@@ -1,8 +1,5 @@
-import * as Long from "long";
 import { As } from "type-tagger";
-import { Address, Algorithm, Amount, ChainId, FullSignature, LightTransaction, PubkeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
-import { Int53 } from "@iov/encoding";
-import * as codecImpl from "./generated/codecimpl";
+import { Address, Algorithm, Amount, ChainId, LightTransaction, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
 export interface CashConfiguration {
     readonly minimalFee: Amount;
 }
@@ -44,17 +41,6 @@ export interface Keyed {
 export interface Decoder<T extends {}> {
     readonly decode: (data: Uint8Array) => T;
 }
-export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle;
-export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle;
-export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;
-/**
- * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
- * number.
- */
-export declare function asIntegerNumber(maybeLong: Long | number | null | undefined): number;
-export declare function asInt53(input: Long | number | null | undefined): Int53;
-export declare function ensure<T>(maybe: T | null | undefined, msg?: string): T;
-export declare function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature;
 export interface AddAddressToUsernameTx extends LightTransaction {
     readonly kind: "bns/add_address_to_username";
     /** the username to be updated, must exist on chain */
