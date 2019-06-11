@@ -38,12 +38,12 @@ import { Bip39, Random } from '@iov/crypto';
 
 // 16 bytes -> 12 word phrase
 const entropy16 = await Random.getBytes(16);
-const mnemonic12 = Bip39.encode(entropy16).asString();
+const mnemonic12 = Bip39.encode(entropy16).toString();
 console.log(mnemonic12);
 
 // 32 bytes -> 24 word phrase
 const entropy32 = await Random.getBytes(32);
-const mnemonic24 = Bip39.encode(entropy32).asString();
+const mnemonic24 = Bip39.encode(entropy32).toString();
 console.log(mnemonic24);
 ```
 

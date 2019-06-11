@@ -18,13 +18,13 @@ export class Bip39 {
   }
 
   public static decode(mnemonic: EnglishMnemonic): Uint8Array {
-    return Encoding.fromHex(bip39.mnemonicToEntropy(mnemonic.asString()));
+    return Encoding.fromHex(bip39.mnemonicToEntropy(mnemonic.toString()));
   }
 
   public static async mnemonicToSeed(mnemonic: EnglishMnemonic, password?: string): Promise<Uint8Array> {
     // reimplementation of bip39.mnemonicToSeed using the asynchonous
     // interface of https://www.npmjs.com/package/pbkdf2
-    const mnemonicBytes = Buffer.from(unorm.nfkd(mnemonic.asString()), "utf8");
+    const mnemonicBytes = Buffer.from(unorm.nfkd(mnemonic.toString()), "utf8");
     const salt = "mnemonic" + (password ? unorm.nfkd(password) : "");
     const saltBytes = Buffer.from(salt, "utf8");
     return this.pbkdf2(mnemonicBytes, saltBytes, 2048, 64, "sha512");
