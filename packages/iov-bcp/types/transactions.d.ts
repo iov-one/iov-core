@@ -4,28 +4,28 @@ export declare enum Algorithm {
     Ed25519 = "ed25519",
     Secp256k1 = "secp256k1"
 }
-export declare type PublicKeyBytes = Uint8Array & As<"public-key">;
-export interface PublicKeyBundle {
+export declare type PubkeyBytes = Uint8Array & As<"pubkey-bytes">;
+export interface PubkeyBundle {
     readonly algo: Algorithm;
-    readonly data: PublicKeyBytes;
+    readonly data: PubkeyBytes;
 }
-export declare function isPublicKeyBundle(data: any): data is PublicKeyBundle;
+export declare function isPubkeyBundle(data: any): data is PubkeyBundle;
 /**
- * Compares two objects that conform to the PublicKeyBundle interface for equality.
+ * Compares two objects that conform to the PubkeyBundle interface for equality.
  *
  * This can also be used to compare pairs of derived types in which case all
- * non-PublicKeyBundle fields are ignored.
+ * non-PubkeyBundle fields are ignored.
  *
  * @param left the left hand side of the comparison
  * @param right the right hand side of the comparison
  */
-export declare function publicKeyBundleEquals(left: PublicKeyBundle, right: PublicKeyBundle): boolean;
+export declare function pubkeyBundleEquals(left: PubkeyBundle, right: PubkeyBundle): boolean;
 /** Used to differentiate a blockchain. Should be alphanumeric or -_/ and unique */
 export declare type ChainId = string & As<"chain-id">;
 /** a public key we can identify with on a blockchain */
 export interface Identity {
     readonly chainId: ChainId;
-    readonly pubkey: PublicKeyBundle;
+    readonly pubkey: PubkeyBundle;
 }
 export declare function isIdentity(data: any): data is Identity;
 /**
@@ -67,7 +67,7 @@ export interface SigningJob {
 }
 export interface FullSignature {
     readonly nonce: Nonce;
-    readonly pubkey: PublicKeyBundle;
+    readonly pubkey: PubkeyBundle;
     readonly signature: SignatureBytes;
 }
 /** A codec specific address encoded as a string */

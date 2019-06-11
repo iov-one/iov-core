@@ -1,8 +1,8 @@
-import { Amount, FullSignature, PublicKeyBundle, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
+import { Amount, FullSignature, PubkeyBundle, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
 import * as codecImpl from "./generated/codecimpl";
-import { Participant, PrivateKeyBundle } from "./types";
-export declare function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey;
-export declare function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IPrivateKey;
+import { Participant, PrivkeyBundle } from "./types";
+export declare function encodePubkey(publicKey: PubkeyBundle): codecImpl.crypto.IPublicKey;
+export declare function encodePrivkey(privateKey: PrivkeyBundle): codecImpl.crypto.IPrivateKey;
 export declare function encodeAmount(amount: Amount): codecImpl.coin.ICoin;
 export declare function encodeFullSignature(fullSignature: FullSignature): codecImpl.sigs.IStdSignature;
 export declare function encodeParticipants(participants: readonly Participant[]): codecImpl.multisig.IParticipant[];

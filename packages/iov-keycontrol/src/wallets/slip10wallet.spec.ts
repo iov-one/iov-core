@@ -1,4 +1,4 @@
-import { Algorithm, ChainId, PrehashType, PublicKeyBytes, SignableBytes } from "@iov/bcp";
+import { Algorithm, ChainId, PrehashType, PubkeyBytes, SignableBytes } from "@iov/bcp";
 import { Sha256, Sha512, Slip10Curve, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
@@ -94,7 +94,7 @@ describe("Slip10Wallet", () => {
           algo: Algorithm.Secp256k1,
           data: fromHex(
             "0488557bc34cf8229fc40cffe464344e946bf5c46257e820ea1632f3acbeaa723b40a47bc4015a9b5a89c3ba22dd271ea672526d735cc619a709a65d2201bc079f",
-          ) as PublicKeyBytes,
+          ) as PubkeyBytes,
         },
       });
 
@@ -124,7 +124,7 @@ describe("Slip10Wallet", () => {
         chainId: defaultChain,
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: fromHex("e3726830a0b60cb5f52c844cffcd4eed65eba5c155e89b26411562724e71e544") as PublicKeyBytes,
+          data: fromHex("e3726830a0b60cb5f52c844cffcd4eed65eba5c155e89b26411562724e71e544") as PubkeyBytes,
         },
       });
 

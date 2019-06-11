@@ -7,8 +7,8 @@ import {
   Hash,
   Nonce,
   Preimage,
-  PublicKeyBundle,
-  PublicKeyBytes,
+  PubkeyBundle,
+  PubkeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
@@ -22,21 +22,21 @@ import {
 import { Encoding } from "@iov/encoding";
 
 import data from "./testdata/bnsd.json";
-import { PrivateKeyBundle, PrivateKeyBytes } from "./types";
+import { PrivkeyBundle, PrivkeyBytes } from "./types";
 
 const { fromHex } = Encoding;
 
-export const pubJson: PublicKeyBundle = {
+export const pubJson: PubkeyBundle = {
   algo: Algorithm.Ed25519,
-  data: fromHex(data.pubkey.ed25519_raw) as PublicKeyBytes,
+  data: fromHex(data.pubkey.ed25519_raw) as PubkeyBytes,
 };
 
 export const pubBin = fromHex(data.pubkey.bin);
 
 // this private key matches the above public key
-export const privJson: PrivateKeyBundle = {
+export const privJson: PrivkeyBundle = {
   algo: Algorithm.Ed25519,
-  data: fromHex(data.privkey.ed25519_raw) as PrivateKeyBytes,
+  data: fromHex(data.privkey.ed25519_raw) as PrivkeyBytes,
 };
 
 export const privBin = fromHex(data.privkey.bin);

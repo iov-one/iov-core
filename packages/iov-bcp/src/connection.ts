@@ -12,7 +12,7 @@ import {
   Fee,
   LightTransaction,
   Nonce,
-  PublicKeyBundle,
+  PubkeyBundle,
   SignedTransaction,
   TokenTicker,
   TransactionId,
@@ -27,7 +27,7 @@ export interface Account {
    * - Always available if the full pubkey is encoded in the address (e.g. nano, Substrate/Polkadot)
    * - Available after first transaction sent (e.g. Lisk, Tendermint, Ethereum)
    */
-  readonly pubkey?: PublicKeyBundle;
+  readonly pubkey?: PubkeyBundle;
   readonly balance: readonly Amount[];
 }
 
@@ -183,7 +183,7 @@ export interface AddressQuery {
 }
 
 export interface PubkeyQuery {
-  readonly pubkey: PublicKeyBundle;
+  readonly pubkey: PubkeyBundle;
 }
 
 export type AccountQuery = AddressQuery | PubkeyQuery;

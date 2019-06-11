@@ -9,7 +9,7 @@ import {
   Nonce,
   PostableBytes,
   PrehashType,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   SignableBytes,
   SignatureBytes,
@@ -751,7 +751,7 @@ describe("UserProfile", () => {
 
     const fakeIdentity = {
       chainId: "ethereum" as ChainId,
-      pubkey: { algo: Algorithm.Ed25519, data: new Uint8Array([0xaa]) as PublicKeyBytes },
+      pubkey: { algo: Algorithm.Ed25519, data: new Uint8Array([0xaa]) as PubkeyBytes },
     };
     const fakeTransaction: SendTransaction & WithCreator = {
       kind: "bcp/send",

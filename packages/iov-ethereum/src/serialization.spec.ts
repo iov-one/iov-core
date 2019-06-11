@@ -8,7 +8,7 @@ import {
   Identity,
   Nonce,
   Preimage,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
@@ -56,7 +56,7 @@ const defaultPublicKey = {
   algo: Algorithm.Secp256k1,
   data: fromHex(
     "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
-  ) as PublicKeyBytes,
+  ) as PubkeyBytes,
 };
 const defaultCreator: Identity = {
   chainId: "ethereum-eip155-5777" as ChainId,
@@ -187,7 +187,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes, // unused for serialization
+            data: fromHex("") as PubkeyBytes, // unused for serialization
           },
         },
         amount: {
@@ -232,7 +232,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes, // unused for serialization
+            data: fromHex("") as PubkeyBytes, // unused for serialization
           },
         },
         amount: {
@@ -274,7 +274,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes, // unused for serialization
+            data: fromHex("") as PubkeyBytes, // unused for serialization
           },
         },
         amounts: [
@@ -322,7 +322,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes, // unused for serialization
+            data: fromHex("") as PubkeyBytes, // unused for serialization
           },
         },
         fee: {
@@ -359,7 +359,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes, // unused for serialization
+            data: fromHex("") as PubkeyBytes, // unused for serialization
           },
         },
         fee: {
@@ -395,7 +395,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes, // unused for serialization
+            data: fromHex("") as PubkeyBytes, // unused for serialization
           },
         },
         amounts: [
@@ -443,7 +443,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes, // unused for serialization
+            data: fromHex("") as PubkeyBytes, // unused for serialization
           },
         },
         fee: {
@@ -480,7 +480,7 @@ describe("Serialization", () => {
           chainId: "ethereum-eip155-1" as ChainId,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: fromHex("") as PublicKeyBytes, // unused for serialization
+            data: fromHex("") as PubkeyBytes, // unused for serialization
           },
         },
         fee: {
@@ -523,7 +523,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-0" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+              data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
             },
           },
           amount: {
@@ -546,7 +546,7 @@ describe("Serialization", () => {
           nonce: 0 as Nonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
           },
           signature: new ExtendedSecp256k1Signature(
             fromHex("48b55bfa915ac795c431978d8a6a992b628d557da5ff759b307d495a36649353"),
@@ -575,7 +575,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes, // unused for serialization
+              data: fromHex("") as PubkeyBytes, // unused for serialization
             },
           },
           amount: {
@@ -598,7 +598,7 @@ describe("Serialization", () => {
           nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
           },
           signature: new ExtendedSecp256k1Signature(
             fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
@@ -634,7 +634,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes, // unused for serialization
+              data: fromHex("") as PubkeyBytes, // unused for serialization
             },
           },
           amounts: [
@@ -666,7 +666,7 @@ describe("Serialization", () => {
           nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
           },
           signature: new ExtendedSecp256k1Signature(
             fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
@@ -696,7 +696,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes, // unused for serialization
+              data: fromHex("") as PubkeyBytes, // unused for serialization
             },
           },
           fee: {
@@ -717,7 +717,7 @@ describe("Serialization", () => {
           nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
           },
           signature: new ExtendedSecp256k1Signature(
             fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
@@ -747,7 +747,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes, // unused for serialization
+              data: fromHex("") as PubkeyBytes, // unused for serialization
             },
           },
           fee: {
@@ -767,7 +767,7 @@ describe("Serialization", () => {
           nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
           },
           signature: new ExtendedSecp256k1Signature(
             fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
@@ -797,7 +797,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes, // unused for serialization
+              data: fromHex("") as PubkeyBytes, // unused for serialization
             },
           },
           amounts: [
@@ -829,7 +829,7 @@ describe("Serialization", () => {
           nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
           },
           signature: new ExtendedSecp256k1Signature(
             fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
@@ -859,7 +859,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes, // unused for serialization
+              data: fromHex("") as PubkeyBytes, // unused for serialization
             },
           },
           fee: {
@@ -880,7 +880,7 @@ describe("Serialization", () => {
           nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
           },
           signature: new ExtendedSecp256k1Signature(
             fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
@@ -910,7 +910,7 @@ describe("Serialization", () => {
             chainId: "ethereum-eip155-1" as ChainId,
             pubkey: {
               algo: Algorithm.Secp256k1,
-              data: fromHex("") as PublicKeyBytes, // unused for serialization
+              data: fromHex("") as PubkeyBytes, // unused for serialization
             },
           },
           fee: {
@@ -930,7 +930,7 @@ describe("Serialization", () => {
           nonce: defaultNonce,
           pubkey: {
             algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PublicKeyBytes, // unused for serialization
+            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
           },
           signature: new ExtendedSecp256k1Signature(
             fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),

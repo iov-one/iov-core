@@ -40,7 +40,7 @@ export function main(originalArgs: readonly string[]): void {
         "Algorithm",
         "ChainId",
         "Nonce",
-        "PublicKeyBytes",
+        "PubkeyBytes",
         "SendTransaction",
         "TokenTicker",
         "TransactionId",

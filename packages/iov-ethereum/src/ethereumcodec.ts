@@ -12,7 +12,7 @@ import {
   PostableBytes,
   PrehashType,
   Preimage,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   SignableBytes,
   SignatureBytes,
@@ -155,7 +155,7 @@ export class EthereumCodec implements TxCodec {
       encodeQuantity(chain.chainId),
     );
     const messageHash = new Keccak256(message).digest();
-    const signerPubkey = Secp256k1.recoverPubkey(signature, messageHash) as PublicKeyBytes;
+    const signerPubkey = Secp256k1.recoverPubkey(signature, messageHash) as PubkeyBytes;
     const creator = {
       chainId: chainId,
       pubkey: {

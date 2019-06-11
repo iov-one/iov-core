@@ -3,7 +3,7 @@ import {
   Algorithm,
   ChainId,
   isIdentity,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   TokenTicker,
   WithCreator,
@@ -139,7 +139,7 @@ describe("TransactionEncoder", () => {
           chainId: "testchain" as ChainId,
           pubkey: {
             algo: Algorithm.Ed25519,
-            data: Encoding.fromHex("aabbccdd") as PublicKeyBytes,
+            data: Encoding.fromHex("aabbccdd") as PubkeyBytes,
           },
         },
         memo: "Hello hello",

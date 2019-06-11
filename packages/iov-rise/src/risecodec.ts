@@ -9,7 +9,7 @@ import {
   Nonce,
   PostableBytes,
   PrehashType,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   SignableBytes,
   SignatureBytes,
@@ -101,7 +101,7 @@ export const riseCodec: TxCodec = {
    */
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
-    const senderPublicKey = Encoding.fromHex(json.senderPublicKey) as PublicKeyBytes;
+    const senderPublicKey = Encoding.fromHex(json.senderPublicKey) as PubkeyBytes;
 
     let unsignedTransaction: UnsignedTransaction;
     switch (json.type) {

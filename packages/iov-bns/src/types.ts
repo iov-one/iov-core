@@ -13,8 +13,8 @@ import {
   isSwapOfferTransaction,
   LightTransaction,
   Nonce,
-  PublicKeyBundle,
-  PublicKeyBytes,
+  PubkeyBundle,
+  PubkeyBytes,
   SendTransaction,
   SignatureBytes,
   SwapAbortTransaction,
@@ -86,10 +86,10 @@ export function isBnsUsernamesByChainAndAddressQuery(
 
 // Rest
 
-export type PrivateKeyBytes = Uint8Array & As<"private-key">;
-export interface PrivateKeyBundle {
+export type PrivkeyBytes = Uint8Array & As<"privkey-bytes">;
+export interface PrivkeyBundle {
   readonly algo: Algorithm;
-  readonly data: PrivateKeyBytes;
+  readonly data: PrivkeyBytes;
 }
 
 export interface Result {
@@ -105,22 +105,22 @@ export interface Decoder<T extends {}> {
   readonly decode: (data: Uint8Array) => T;
 }
 
-export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PublicKeyBundle {
+export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle {
   if (publicKey.ed25519) {
     return {
       algo: Algorithm.Ed25519,
-      data: publicKey.ed25519 as PublicKeyBytes,
+      data: publicKey.ed25519 as PubkeyBytes,
     };
   } else {
     throw new Error("Unknown public key algorithm");
   }
 }
 
-export function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivateKeyBundle {
+export function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle {
   if (privateKey.ed25519) {
     return {
       algo: Algorithm.Ed25519,
-      data: privateKey.ed25519 as PrivateKeyBytes,
+      data: privateKey.ed25519 as PrivkeyBytes,
     };
   } else {
     throw new Error("Unknown private key algorithm");

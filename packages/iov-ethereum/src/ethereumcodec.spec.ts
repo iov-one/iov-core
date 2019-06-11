@@ -4,7 +4,7 @@ import {
   ChainId,
   Nonce,
   PostableBytes,
-  PublicKeyBytes,
+  PubkeyBytes,
   SignatureBytes,
   TokenTicker,
 } from "@iov/bcp";
@@ -45,7 +45,7 @@ describe("ethereumCodec", () => {
       };
       const expectedPubkey = fromHex(
         "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
-      ) as PublicKeyBytes;
+      ) as PubkeyBytes;
 
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
       expect(ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId)).toEqual({
@@ -112,7 +112,7 @@ describe("ethereumCodec", () => {
       };
       const expectedPubkey = fromHex(
         "040b8b6f82e7226d21991dd6b1a7de357cebfc42ccb95678404d8e2b54cc3be187b17a50ef833884df318aa7def070585c92a185272b8cb8b61ba916d993435c87",
-      ) as PublicKeyBytes;
+      ) as PubkeyBytes;
 
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
@@ -195,7 +195,7 @@ describe("ethereumCodec", () => {
       };
       const expectedPubkey = fromHex(
         "040b8b6f82e7226d21991dd6b1a7de357cebfc42ccb95678404d8e2b54cc3be187b17a50ef833884df318aa7def070585c92a185272b8cb8b61ba916d993435c87",
-      ) as PublicKeyBytes;
+      ) as PubkeyBytes;
 
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
@@ -266,7 +266,7 @@ describe("ethereumCodec", () => {
       };
       const expectedPubkey = fromHex(
         "043e82ebc5dd773720677229f4eedcb61dbb131533ce0a4206e3788a92b70224505ef120ca98418d3657c891d0cd74cb15dca10f94a3ffd7a7f65bc99e1138b5c2",
-      ) as PublicKeyBytes;
+      ) as PubkeyBytes;
 
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
@@ -345,7 +345,7 @@ describe("ethereumCodec", () => {
       };
       const expectedPubkey = fromHex(
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-      ) as PublicKeyBytes;
+      ) as PubkeyBytes;
       const expectedSwapId = {
         prefix: SwapIdPrefix.Ether,
         data: fromHex("5cecbb0814d20c1f6221fdec0c2902172182d1b2f3212957f947e4cea398ebe6"),
@@ -425,7 +425,7 @@ describe("ethereumCodec", () => {
       };
       const expectedPubkey = fromHex(
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-      ) as PublicKeyBytes;
+      ) as PubkeyBytes;
       const expectedSwapId = {
         prefix: SwapIdPrefix.Ether,
         data: fromHex("069446e5b7469d5301212de56f17a8786bee70d9bf4c072e99fcfb2c4d9f5242"),
@@ -492,7 +492,7 @@ describe("ethereumCodec", () => {
       };
       const expectedPubkey = fromHex(
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-      ) as PublicKeyBytes;
+      ) as PubkeyBytes;
       const expectedSwapId = {
         prefix: SwapIdPrefix.Ether,
         data: fromHex("a7679de779f2df7fde7617a9cdd013c8dbf5701aa158173d9c615766a212d243"),
@@ -558,7 +558,7 @@ describe("ethereumCodec", () => {
       };
       const expectedPubkey = fromHex(
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-      ) as PublicKeyBytes;
+      ) as PubkeyBytes;
       const expectedSwapId = {
         prefix: SwapIdPrefix.Erc20,
         data: fromHex("c42b0efc99bb1726bb429b5a4ccf7b4b236c54027eb15cd5c24761f8adf8def3"),
@@ -652,7 +652,7 @@ describe("ethereumCodec", () => {
       };
       const expectedPubkey = fromHex(
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-      ) as PublicKeyBytes;
+      ) as PubkeyBytes;
       const expectedSwapId = {
         prefix: SwapIdPrefix.Erc20,
         data: fromHex("94d53ea2d55dc86e65e44fcb473fb58dbbc00eab27f414d1b280af26222a995c"),
@@ -733,7 +733,7 @@ describe("ethereumCodec", () => {
       };
       const expectedPubkey = fromHex(
         "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
-      ) as PublicKeyBytes;
+      ) as PubkeyBytes;
       const expectedSwapId = {
         prefix: SwapIdPrefix.Erc20,
         data: fromHex("144c07a765cd2435882edbc334218b1678b2c5773284bf715ba766f97ee4f2fd"),

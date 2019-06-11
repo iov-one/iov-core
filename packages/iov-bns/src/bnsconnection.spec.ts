@@ -24,8 +24,8 @@ import {
   Nonce,
   PostTxResponse,
   Preimage,
-  PublicKeyBundle,
-  PublicKeyBytes,
+  PubkeyBundle,
+  PubkeyBytes,
   SendTransaction,
   SwapClaimTransaction,
   SwapId,
@@ -114,9 +114,9 @@ describe("BnsConnection", () => {
   // bech32 -e -h tiov 010101020202030303040404050505050A0A0A0A
   const unusedAddress = "tiov1qyqszqszqgpsxqcyqszq2pg9q59q5zs2fx9n6s" as Address;
 
-  const unusedPubkey: PublicKeyBundle = {
+  const unusedPubkey: PubkeyBundle = {
     algo: Algorithm.Ed25519,
-    data: fromHex("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") as PublicKeyBytes,
+    data: fromHex("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") as PubkeyBytes,
   };
 
   // The first IOV key (m/44'/234'/0') generated from this mnemonic produces the address
@@ -2044,7 +2044,7 @@ describe("BnsConnection", () => {
           chainId: connection.chainId(),
           pubkey: {
             algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PublicKeyBytes,
+            data: fromHex("aabbccdd") as PubkeyBytes,
           },
         },
         recipient: await randomBnsAddress(),
@@ -2074,7 +2074,7 @@ describe("BnsConnection", () => {
           chainId: connection.chainId(),
           pubkey: {
             algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PublicKeyBytes,
+            data: fromHex("aabbccdd") as PubkeyBytes,
           },
         },
         addresses: [
@@ -2108,7 +2108,7 @@ describe("BnsConnection", () => {
           chainId: connection.chainId(),
           pubkey: {
             algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PublicKeyBytes,
+            data: fromHex("aabbccdd") as PubkeyBytes,
           },
         },
       };

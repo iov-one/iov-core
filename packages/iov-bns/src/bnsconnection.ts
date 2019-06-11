@@ -31,8 +31,8 @@ import {
   OpenSwap,
   PostableBytes,
   PostTxResponse,
+  PubkeyBundle,
   PubkeyQuery,
-  PublicKeyBundle,
   SwapAbortTransaction,
   SwapClaimTransaction,
   Token,
@@ -353,7 +353,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
     const walletAddress = walletData.address;
 
-    let pubkey: PublicKeyBundle | undefined;
+    let pubkey: PubkeyBundle | undefined;
     if (isPubkeyQuery(query)) {
       pubkey = query.pubkey;
     } else {

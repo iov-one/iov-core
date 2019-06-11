@@ -6,7 +6,7 @@ import {
   ChainId,
   Identity,
   PrehashType,
-  PublicKeyBytes,
+  PubkeyBytes,
   SignableBytes,
   SignatureBytes,
 } from "@iov/bcp";
@@ -151,7 +151,7 @@ export class Slip10Wallet implements Wallet {
     }
   }
 
-  private static buildIdentity(curve: Slip10Curve, chainId: ChainId, bytes: PublicKeyBytes): Identity {
+  private static buildIdentity(curve: Slip10Curve, chainId: ChainId, bytes: PubkeyBytes): Identity {
     if (!chainId) {
       throw new Error("Got empty chain ID when tying to build a local identity.");
     }
@@ -224,7 +224,7 @@ export class Slip10Wallet implements Wallet {
       const identity = Slip10Wallet.buildIdentity(
         this.curve,
         record.localIdentity.chainId as ChainId,
-        Encoding.fromHex(record.localIdentity.pubkey.data) as PublicKeyBytes,
+        Encoding.fromHex(record.localIdentity.pubkey.data) as PubkeyBytes,
       );
 
       const privkeyPath: readonly Slip10RawIndex[] = record.privkeyPath.map(n => new Slip10RawIndex(n));
@@ -252,18 +252,18 @@ export class Slip10Wallet implements Wallet {
     const seed = await Bip39.mnemonicToSeed(this.secret);
     const derivationResult = Slip10.derivePath(this.curve, seed, path);
 
-    let pubkeyBytes: PublicKeyBytes;
+    let pubkeyBytes: PubkeyBytes;
     switch (this.curve) {
       case Slip10Curve.Ed25519:
         {
           const keypair = await Ed25519.makeKeypair(derivationResult.privkey);
-          pubkeyBytes = keypair.pubkey as PublicKeyBytes;
+          pubkeyBytes = keypair.pubkey as PubkeyBytes;
         }
         break;
       case Slip10Curve.Secp256k1:
         {
           const keypair = await Secp256k1.makeKeypair(derivationResult.privkey);
-          pubkeyBytes = keypair.pubkey as PublicKeyBytes;
+          pubkeyBytes = keypair.pubkey as PubkeyBytes;
         }
         break;
       default:

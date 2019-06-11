@@ -8,33 +8,33 @@ export enum Algorithm {
   Secp256k1 = "secp256k1",
 }
 
-export type PublicKeyBytes = Uint8Array & As<"public-key">;
+export type PubkeyBytes = Uint8Array & As<"pubkey-bytes">;
 
-export interface PublicKeyBundle {
+export interface PubkeyBundle {
   readonly algo: Algorithm;
-  readonly data: PublicKeyBytes;
+  readonly data: PubkeyBytes;
 }
 
-export function isPublicKeyBundle(data: any): data is PublicKeyBundle {
+export function isPubkeyBundle(data: any): data is PubkeyBundle {
   return (
     typeof data === "object" &&
     data !== null &&
-    ((data as PublicKeyBundle).algo === Algorithm.Ed25519 ||
-      (data as PublicKeyBundle).algo === Algorithm.Secp256k1) &&
-    (data as PublicKeyBundle).data instanceof Uint8Array
+    ((data as PubkeyBundle).algo === Algorithm.Ed25519 ||
+      (data as PubkeyBundle).algo === Algorithm.Secp256k1) &&
+    (data as PubkeyBundle).data instanceof Uint8Array
   );
 }
 
 /**
- * Compares two objects that conform to the PublicKeyBundle interface for equality.
+ * Compares two objects that conform to the PubkeyBundle interface for equality.
  *
  * This can also be used to compare pairs of derived types in which case all
- * non-PublicKeyBundle fields are ignored.
+ * non-PubkeyBundle fields are ignored.
  *
  * @param left the left hand side of the comparison
  * @param right the right hand side of the comparison
  */
-export function publicKeyBundleEquals(left: PublicKeyBundle, right: PublicKeyBundle): boolean {
+export function pubkeyBundleEquals(left: PubkeyBundle, right: PubkeyBundle): boolean {
   return (
     left.algo === right.algo &&
     left.data.length === right.data.length &&
@@ -48,7 +48,7 @@ export type ChainId = string & As<"chain-id">;
 /** a public key we can identify with on a blockchain */
 export interface Identity {
   readonly chainId: ChainId;
-  readonly pubkey: PublicKeyBundle;
+  readonly pubkey: PubkeyBundle;
 }
 
 export function isIdentity(data: any): data is Identity {
@@ -56,7 +56,7 @@ export function isIdentity(data: any): data is Identity {
     typeof data === "object" &&
     data !== null &&
     typeof (data as Identity).chainId === "string" &&
-    isPublicKeyBundle((data as Identity).pubkey)
+    isPubkeyBundle((data as Identity).pubkey)
   );
 }
 
@@ -68,7 +68,7 @@ export function isIdentity(data: any): data is Identity {
  * @param right the right hand side of the comparison
  */
 export function identityEquals(left: Identity, right: Identity): boolean {
-  return left.chainId === right.chainId && publicKeyBundleEquals(left.pubkey, right.pubkey);
+  return left.chainId === right.chainId && pubkeyBundleEquals(left.pubkey, right.pubkey);
 }
 
 export type SignatureBytes = Uint8Array & As<"signature">;
@@ -121,7 +121,7 @@ export interface SigningJob {
 // I figure string if this will be json dumped, but maybe less efficient
 export interface FullSignature {
   readonly nonce: Nonce;
-  readonly pubkey: PublicKeyBundle;
+  readonly pubkey: PubkeyBundle;
   readonly signature: SignatureBytes;
 }
 

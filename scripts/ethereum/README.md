@@ -69,7 +69,7 @@ for (const path of paths) {
   const { pubkey } = await Secp256k1.makeKeypair(privkey);
   const address = ethereumPubkeyToAddress({
     algo: Algorithm.Secp256k1,
-    data: pubkey as PublicKeyBytes,
+    data: pubkey as PubkeyBytes,
   });
   console.log(`0x${toHex(privkey)},0x${toHex(pubkey)},${address}`);
 }

@@ -6,8 +6,8 @@ import {
   Identity,
   isConfirmedTransaction,
   isIdentity,
-  PublicKeyBundle,
-  PublicKeyBytes,
+  PubkeyBundle,
+  PubkeyBytes,
   SendTransaction,
   TokenTicker,
   TransactionId,
@@ -46,7 +46,7 @@ async function randomBnsAddress(): Promise<Address> {
     chainId: "some-testnet" as ChainId,
     pubkey: {
       algo: Algorithm.Ed25519,
-      data: rawKeypair.pubkey as PublicKeyBytes,
+      data: rawKeypair.pubkey as PubkeyBytes,
     },
   };
   return bnsCodec.identityToAddress(randomIdentity);
@@ -89,9 +89,9 @@ async function makeBnsEthereumSigningServer(
 }
 
 describe("JsonRpcSigningServer", () => {
-  const bnsdFaucetPubkey: PublicKeyBundle = {
+  const bnsdFaucetPubkey: PubkeyBundle = {
     algo: Algorithm.Ed25519,
-    data: fromHex("418f88ff4876d33a3d6e2a17d0fe0e78dc3cb5e4b42c6c156ed1b8bfce5d46d1") as PublicKeyBytes,
+    data: fromHex("418f88ff4876d33a3d6e2a17d0fe0e78dc3cb5e4b42c6c156ed1b8bfce5d46d1") as PubkeyBytes,
   };
 
   const ganacheSecondIdentity: Identity = {
@@ -100,7 +100,7 @@ describe("JsonRpcSigningServer", () => {
       algo: Algorithm.Secp256k1,
       data: Encoding.fromHex(
         "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
-      ) as PublicKeyBytes,
+      ) as PubkeyBytes,
     },
   };
 

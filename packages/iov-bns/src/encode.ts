@@ -3,7 +3,7 @@ import {
   Amount,
   FullSignature,
   isTimestampTimeout,
-  PublicKeyBundle,
+  PubkeyBundle,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
@@ -21,7 +21,7 @@ import {
   CreateMultisignatureTx,
   isBnsTx,
   Participant,
-  PrivateKeyBundle,
+  PrivkeyBundle,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
   UpdateMultisignatureTx,
@@ -44,7 +44,7 @@ function encodeString(data: string | undefined): string | null {
   return data || null;
 }
 
-export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPublicKey {
+export function encodePubkey(publicKey: PubkeyBundle): codecImpl.crypto.IPublicKey {
   switch (publicKey.algo) {
     case Algorithm.Ed25519:
       return { ed25519: publicKey.data };
@@ -53,7 +53,7 @@ export function encodePubkey(publicKey: PublicKeyBundle): codecImpl.crypto.IPubl
   }
 }
 
-export function encodePrivkey(privateKey: PrivateKeyBundle): codecImpl.crypto.IPrivateKey {
+export function encodePrivkey(privateKey: PrivkeyBundle): codecImpl.crypto.IPrivateKey {
   switch (privateKey.algo) {
     case Algorithm.Ed25519:
       return { ed25519: privateKey.data };

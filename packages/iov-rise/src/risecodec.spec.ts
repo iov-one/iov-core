@@ -6,7 +6,7 @@ import {
   isSendTransaction,
   Nonce,
   PostableBytes,
-  PublicKeyBytes,
+  PubkeyBytes,
   SendTransaction,
   SignatureBytes,
   SignedTransaction,
@@ -25,7 +25,7 @@ const riseEpochAsUnixTimestamp = 1464109200;
 const defaultCreationTimestamp = 865708731 + riseEpochAsUnixTimestamp;
 const defaultPublicKey = {
   algo: Algorithm.Ed25519,
-  data: fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff") as PublicKeyBytes,
+  data: fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff") as PubkeyBytes,
 };
 const defaultCreator = {
   chainId: riseTestnet,
@@ -46,7 +46,7 @@ describe("riseCodec", () => {
       chainId: riseTestnet,
       pubkey: {
         algo: Algorithm.Ed25519,
-        data: fromHex("34770ce843a01d975773ba2557b6643b32fe088818d343df2c32cbb89b286b3f") as PublicKeyBytes,
+        data: fromHex("34770ce843a01d975773ba2557b6643b32fe088818d343df2c32cbb89b286b3f") as PubkeyBytes,
       },
     };
     expect(riseCodec.identityToAddress(identity)).toEqual("10145108642177909005R");

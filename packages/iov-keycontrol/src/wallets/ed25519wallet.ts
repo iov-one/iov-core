@@ -6,7 +6,7 @@ import {
   ChainId,
   Identity,
   PrehashType,
-  PublicKeyBytes,
+  PubkeyBytes,
   SignableBytes,
   SignatureBytes,
 } from "@iov/bcp";
@@ -104,7 +104,7 @@ export class Ed25519Wallet implements Wallet {
     }
   }
 
-  private static buildIdentity(chainId: ChainId, bytes: PublicKeyBytes): Identity {
+  private static buildIdentity(chainId: ChainId, bytes: PubkeyBytes): Identity {
     if (!chainId) {
       throw new Error("Got empty chain ID when tying to build a local identity.");
     }
@@ -157,7 +157,7 @@ export class Ed25519Wallet implements Wallet {
         }
         const identity = Ed25519Wallet.buildIdentity(
           record.localIdentity.chainId as ChainId,
-          keypair.pubkey as PublicKeyBytes,
+          keypair.pubkey as PubkeyBytes,
         );
         identities.push(identity);
         privkeys.set(Ed25519Wallet.identityId(identity), keypair);
@@ -184,7 +184,7 @@ export class Ed25519Wallet implements Wallet {
       throw new Error("Ed25519.createIdentity requires a keypair argument");
     }
     const keypair = options;
-    return Ed25519Wallet.buildIdentity(chainId, keypair.pubkey as PublicKeyBytes);
+    return Ed25519Wallet.buildIdentity(chainId, keypair.pubkey as PubkeyBytes);
   }
 
   public async createIdentity(chainId: ChainId, options: unknown): Promise<Identity> {
@@ -193,7 +193,7 @@ export class Ed25519Wallet implements Wallet {
     }
     const keypair = options;
 
-    const newIdentity = Ed25519Wallet.buildIdentity(chainId, keypair.pubkey as PublicKeyBytes);
+    const newIdentity = Ed25519Wallet.buildIdentity(chainId, keypair.pubkey as PubkeyBytes);
     const newIdentityId = Ed25519Wallet.identityId(newIdentity);
 
     if (this.identities.find(i => Ed25519Wallet.identityId(i) === newIdentityId)) {
