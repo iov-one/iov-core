@@ -43,15 +43,7 @@ export interface BnsUsernamesByOwnerAddressQuery {
   readonly owner: Address;
 }
 
-export interface BnsUsernamesByChainAndAddressQuery {
-  readonly chain: ChainId;
-  readonly address: Address;
-}
-
-export type BnsUsernamesQuery =
-  | BnsUsernamesByUsernameQuery
-  | BnsUsernamesByOwnerAddressQuery
-  | BnsUsernamesByChainAndAddressQuery;
+export type BnsUsernamesQuery = BnsUsernamesByUsernameQuery | BnsUsernamesByOwnerAddressQuery;
 
 export function isBnsUsernamesByUsernameQuery(
   query: BnsUsernamesQuery,
@@ -63,15 +55,6 @@ export function isBnsUsernamesByOwnerAddressQuery(
   query: BnsUsernamesQuery,
 ): query is BnsUsernamesByOwnerAddressQuery {
   return typeof (query as BnsUsernamesByOwnerAddressQuery).owner !== "undefined";
-}
-
-export function isBnsUsernamesByChainAndAddressQuery(
-  query: BnsUsernamesQuery,
-): query is BnsUsernamesByChainAndAddressQuery {
-  return (
-    typeof (query as BnsUsernamesByChainAndAddressQuery).chain !== "undefined" &&
-    typeof (query as BnsUsernamesByChainAndAddressQuery).address !== "undefined"
-  );
 }
 
 // Rest

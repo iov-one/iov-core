@@ -65,6 +65,9 @@ Breaking changes
 - @iov/bns: `BnsConnection` methods `listenTx`, `liveTx` and `searchTx` now all
   resolve to confirmed `LightTransaction`s instead of `UnsignedTransaction`s.
 - @iov/bns: Remove support for weave 0.14.x; add support for weave 0.16.x.
+- @iov/bns: Remove `BnsUsernamesByChainAndAddressQuery` and
+  `isBnsUsernamesByChainAndAddressQuery`, since reverse lookup is not supported
+  anymore.
 - @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.
 - @iov/core: Change return type of `SigningServerCore.signAndPost` to
   `TransactionId | null`.
