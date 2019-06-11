@@ -90,6 +90,8 @@ function makeSimpleMessagingConnection(
 
 describe("signingservice.worker", () => {
   const bnsdUrl = "ws://localhost:23456";
+  const bnsChainId = "local-bns-devnet";
+
   const signingserviceKarmaUrl = "/base/dist/web/signingservice.worker.js";
   // time to wait until service is initialized and connected to chain
   const signingserviceBootTime = 2_000;
@@ -121,8 +123,6 @@ describe("signingservice.worker", () => {
     pendingWithoutEthereum();
     pendingWithoutWorker();
 
-    const bnsConnection = await bnsConnector(bnsdUrl).client();
-
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
@@ -133,7 +133,7 @@ describe("signingservice.worker", () => {
       method: "getIdentities",
       params: {
         reason: "string:Who are you?",
-        chainIds: [`string:${bnsConnection.chainId()}`],
+        chainIds: [`string:${bnsChainId}`],
       },
     });
     expect(response.id).toEqual(123);
@@ -141,12 +141,11 @@ describe("signingservice.worker", () => {
     expect(result).toEqual(jasmine.any(Array));
     expect((result as readonly any[]).length).toEqual(1);
     expect(result[0]).toEqual({
-      chainId: bnsConnection.chainId(),
+      chainId: bnsChainId,
       pubkey: bnsdFaucetPubkey,
     });
 
     worker.terminate();
-    bnsConnection.disconnect();
   });
 
   it("can get ethereum identities", async () => {
@@ -181,8 +180,6 @@ describe("signingservice.worker", () => {
     pendingWithoutEthereum();
     pendingWithoutWorker();
 
-    const bnsConnection = await bnsConnector(bnsdUrl).client();
-
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);
 
@@ -193,7 +190,7 @@ describe("signingservice.worker", () => {
       method: "getIdentities",
       params: {
         reason: "string:Who are you?",
-        chainIds: [`string:${ganacheChainId}`, `string:${bnsConnection.chainId()}`],
+        chainIds: [`string:${ganacheChainId}`, `string:${bnsChainId}`],
       },
     });
     expect(response.id).toEqual(123);
@@ -202,13 +199,12 @@ describe("signingservice.worker", () => {
     expect(result).toEqual(jasmine.any(Array));
     expect((result as readonly any[]).length).toEqual(2);
     expect(result[0]).toEqual({
-      chainId: bnsConnection.chainId(),
+      chainId: bnsChainId,
       pubkey: bnsdFaucetPubkey,
     });
     expect(result[1]).toEqual(ganacheSecondIdentity);
 
     worker.terminate();
-    bnsConnection.disconnect();
   });
 
   it("handles signing requests", async () => {
