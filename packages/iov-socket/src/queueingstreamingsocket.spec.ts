@@ -74,7 +74,6 @@ describe("QueueingStreamingSocket", () => {
 
       requests.forEach(request => socket.queueRequest(request));
 
-      socket.reconnect();
       socket.events.subscribe({
         next: event => {
           expect(event.data).toEqual(requests[eventsSeen++]);
@@ -85,6 +84,7 @@ describe("QueueingStreamingSocket", () => {
           }
         },
       });
+      socket.reconnect();
     });
   });
 });

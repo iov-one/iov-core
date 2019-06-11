@@ -9,7 +9,7 @@ import { StreamingSocket } from "./streamingsocket";
  */
 export class QueueingStreamingSocket {
   public connected: Promise<void>;
-  public events: Stream<SocketWrapperMessageEvent>;
+  public readonly events: Stream<SocketWrapperMessageEvent>;
 
   private readonly url: string;
   private readonly timeout: number;
@@ -37,7 +37,7 @@ export class QueueingStreamingSocket {
 
   public reconnect(): void {
     this.socket = new StreamingSocket(this.url, this.timeout);
-    this.events = this.socket.events;
+    this.events.imitate(this.socket.events);
     this.connected = this.socket.connected.then(() => this.processQueue());
     this.connect();
   }

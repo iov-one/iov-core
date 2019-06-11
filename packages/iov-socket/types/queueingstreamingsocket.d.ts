@@ -5,7 +5,7 @@ import { SocketWrapperMessageEvent } from "./socketwrapper";
  */
 export declare class QueueingStreamingSocket {
     connected: Promise<void>;
-    events: Stream<SocketWrapperMessageEvent>;
+    readonly events: Stream<SocketWrapperMessageEvent>;
     private readonly url;
     private readonly timeout;
     private readonly queue;
