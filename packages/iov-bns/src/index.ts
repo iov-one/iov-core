@@ -6,6 +6,9 @@ export {
   // helpers
   ChainAddressPair,
   Participant,
+  // Governance
+  Elector,
+  Electorate,
   // NFTs
   BnsUsernamesByOwnerQuery,
   BnsUsernamesByUsernameQuery,

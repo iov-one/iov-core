@@ -3,6 +3,7 @@ import { Bech32, Encoding } from "@iov/encoding";
 
 import {
   decodeAmount,
+  decodeElectorate,
   decodePrivkey,
   decodePubkey,
   decodeToken,
@@ -177,6 +178,53 @@ describe("Decode", () => {
         };
         expect(() => decodeAmount(backendAmount)).toThrowError(/`fractional` must not be negative/i);
       }
+    });
+  });
+
+  describe("decodeElectorate", () => {
+    it("works", () => {
+      const electorate: codecImpl.gov.IElectorate = {
+        metadata: { schema: 1 },
+        version: 3,
+        admin: fromHex("5555556688770011001100110011001100110011"),
+        title: "A committee",
+        electors: [
+          {
+            address: fromHex("1111111111111111111111111111111111111111"),
+            weight: 1,
+          },
+          {
+            address: fromHex("2222222222222222222222222222222222222222"),
+            weight: 2,
+          },
+          {
+            address: fromHex("3333333333333333333333333333333333333333"),
+            weight: 3,
+          },
+        ],
+        totalElectorateWeight: 6,
+      };
+
+      expect(decodeElectorate("tiov", electorate)).toEqual({
+        version: 3,
+        admin: "tiov124242e5gwuqpzqq3qqgsqygqzyqpzqq350k5np" as Address,
+        title: "A committee",
+        electors: [
+          {
+            address: "tiov1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3scsw6l" as Address,
+            weight: 1,
+          },
+          {
+            address: "tiov1yg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zl94gjg" as Address,
+            weight: 2,
+          },
+          {
+            address: "tiov1xvenxvenxvenxvenxvenxvenxvenxvendmz486" as Address,
+            weight: 3,
+          },
+        ],
+        totalWeight: 6,
+      });
     });
   });
 

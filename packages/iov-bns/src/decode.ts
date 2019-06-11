@@ -34,6 +34,8 @@ import {
   ChainAddressPair,
   CreateEscrowTx,
   CreateMultisignatureTx,
+  Elector,
+  Electorate,
   Keyed,
   Participant,
   PrivkeyBundle,
@@ -48,6 +50,11 @@ import {
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromUtf8 } = Encoding;
+
+function decodeString(input: string | null | undefined): string {
+  // weave encodes empty strings as null
+  return input || "";
+}
 
 /**
  * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
@@ -190,6 +197,25 @@ export function decodeParticipants(
     weight: ensure(participant.weight, `participants.$${i}.weight`),
     address: encodeBnsAddress(prefix, ensure(participant.signature, `participants.$${i}.signature`)),
   }));
+}
+
+export function decodeElectorate(prefix: "iov" | "tiov", electorate: codecImpl.gov.IElectorate): Electorate {
+  const electors = ensure(electorate.electors).map(
+    (elector, i): Elector => {
+      return {
+        address: encodeBnsAddress(prefix, ensure(elector.address, `electors.$${i}.address`)),
+        weight: ensure(elector.weight, `electors.$${i}.weight`),
+      };
+    },
+  );
+
+  return {
+    version: asIntegerNumber(ensure(electorate.version, "version")),
+    admin: encodeBnsAddress(prefix, ensure(electorate.admin, "admin")),
+    title: decodeString(electorate.title),
+    electors: electors,
+    totalWeight: asIntegerNumber(electorate.totalElectorateWeight),
+  };
 }
 
 // Token sends

@@ -3,6 +3,19 @@ import { Address, Algorithm, Amount, ChainId, LightTransaction, SendTransaction,
 export interface CashConfiguration {
     readonly minimalFee: Amount;
 }
+export interface Elector {
+    readonly address: Address;
+    /** The voting weight of this elector. Max value is 65535 (2^16-1). */
+    readonly weight: number;
+}
+export interface Electorate {
+    readonly version: number;
+    readonly admin: Address;
+    readonly title: string;
+    readonly electors: readonly Elector[];
+    /** Sum of all electors' weights */
+    readonly totalWeight: number;
+}
 export interface ChainAddressPair {
     readonly chainId: ChainId;
     readonly address: Address;
