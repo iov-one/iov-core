@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.5
+
+- @iov/cli: Automatically import `TransactionId` from @iov/bcp.
+
 ## 0.14.4
 
 - @iov/ethereum: EthereumConnection now accepts a ws:// url as its baseUrl.
