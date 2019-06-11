@@ -1,7 +1,5 @@
-import * as Long from "long";
 import { As } from "type-tagger";
 import { Address, Algorithm, Amount, ChainId, LightTransaction, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
-import { Int53 } from "@iov/encoding";
 export interface CashConfiguration {
     readonly minimalFee: Amount;
 }
@@ -43,13 +41,6 @@ export interface Keyed {
 export interface Decoder<T extends {}> {
     readonly decode: (data: Uint8Array) => T;
 }
-/**
- * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
- * number.
- */
-export declare function asIntegerNumber(maybeLong: Long | number | null | undefined): number;
-export declare function asInt53(input: Long | number | null | undefined): Int53;
-export declare function ensure<T>(maybe: T | null | undefined, msg?: string): T;
 export interface AddAddressToUsernameTx extends LightTransaction {
     readonly kind: "bns/add_address_to_username";
     /** the username to be updated, must exist on chain */

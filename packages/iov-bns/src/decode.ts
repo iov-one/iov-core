@@ -1,4 +1,5 @@
 import BN = require("bn.js");
+import * as Long from "long";
 
 import {
   Address,
@@ -23,18 +24,15 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 import {
   AddAddressToUsernameTx,
-  asInt53,
-  asIntegerNumber,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
   CreateMultisignatureTx,
-  ensure,
   Keyed,
   Participant,
   PrivkeyBundle,
@@ -46,6 +44,40 @@ import {
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromUtf8 } = Encoding;
+
+/**
+ * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
+ * number.
+ */
+export function asIntegerNumber(maybeLong: Long | number | null | undefined): number {
+  if (!maybeLong) {
+    return 0;
+  } else if (typeof maybeLong === "number") {
+    if (!Number.isInteger(maybeLong)) {
+      throw new Error("Number is not an integer.");
+    }
+    return maybeLong;
+  } else {
+    return maybeLong.toInt();
+  }
+}
+
+export function asInt53(input: Long | number | null | undefined): Int53 {
+  if (!input) {
+    return new Int53(0);
+  } else if (typeof input === "number") {
+    return new Int53(input);
+  } else {
+    return Int53.fromString(input.toString());
+  }
+}
+
+export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
+  if (maybe === null || maybe === undefined) {
+    throw new Error("missing " + (msg || "field"));
+  }
+  return maybe;
+}
 
 export function decodeUsernameNft(
   nft: codecImpl.username.IUsernameToken,
