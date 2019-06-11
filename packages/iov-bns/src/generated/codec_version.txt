@@ -1,1 +1,1 @@
-01026c0cabefaab2c03f1753aa4fac374d7c23f1 (HEAD, tag: v0.15.0) Merge pull request #630 from iov-one/ruseinov-patch-1-piotr
+7b38cf4be9d3bea44b76454f4b941120c2d00f22 (HEAD, tag: v0.16.0, origin/key) Update CHANGELOG.md (#734)

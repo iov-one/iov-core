@@ -232,7 +232,6 @@ $root.app = (function() {
          * @interface ITx
          * @property {cash.IFeeInfo|null} [fees] Tx fees
          * @property {Array.<sigs.IStdSignature>|null} [signatures] Tx signatures
-         * @property {Uint8Array|null} [preimage] Preimage for hashlock.
          * @property {Array.<Uint8Array>|null} [multisig] ID of a multisig contract.
          * @property {cash.ISendMsg|null} [sendMsg] Tx sendMsg
          * @property {escrow.ICreateEscrowMsg|null} [createEscrowMsg] Tx createEscrowMsg
@@ -243,7 +242,8 @@ $root.app = (function() {
          * @property {multisig.IUpdateContractMsg|null} [updateContractMsg] Tx updateContractMsg
          * @property {validators.ISetValidatorsMsg|null} [setValidatorsMsg] Tx setValidatorsMsg
          * @property {currency.INewTokenInfoMsg|null} [newTokenInfoMsg] Tx newTokenInfoMsg
-         * @property {nft.IAddApprovalMsg|null} [addApprovalMsg] BatchMsg batch_msg = 60;
+         * @property {app.IBatchMsg|null} [batchMsg] Tx batchMsg
+         * @property {nft.IAddApprovalMsg|null} [addApprovalMsg] Tx addApprovalMsg
          * @property {nft.IRemoveApprovalMsg|null} [removeApprovalMsg] Tx removeApprovalMsg
          * @property {username.IIssueTokenMsg|null} [issueUsernameNftMsg] Tx issueUsernameNftMsg
          * @property {username.IAddChainAddressMsg|null} [addUsernameAddressNftMsg] Tx addUsernameAddressNftMsg
@@ -255,12 +255,18 @@ $root.app = (function() {
          * @property {aswap.ICreateSwapMsg|null} [createSwapMsg] Tx createSwapMsg
          * @property {aswap.IReleaseSwapMsg|null} [releaseSwapMsg] Tx releaseSwapMsg
          * @property {aswap.IReturnSwapMsg|null} [returnSwapMsg] Tx returnSwapMsg
+         * @property {gov.ICreateProposalMsg|null} [createProposalMsg] Tx createProposalMsg
+         * @property {gov.IDeleteProposalMsg|null} [deleteProposalMsg] Tx deleteProposalMsg
+         * @property {gov.IVoteMsg|null} [voteMsg] Tx voteMsg
+         * @property {gov.ITallyMsg|null} [tallyMsg] Tx tallyMsg
+         * @property {gov.IUpdateElectorateMsg|null} [updateElectorateMsg] Tx updateElectorateMsg
+         * @property {gov.IUpdateElectionRuleMsg|null} [updateElectionRuleMsg] Tx updateElectionRuleMsg
          */
 
         /**
          * Constructs a new Tx.
          * @memberof app
-         * @classdesc clarity).
+         * @classdesc old fields got deprecated. This is done to maintain binary compatibility.
          * @implements ITx
          * @constructor
          * @param {app.ITx=} [properties] Properties to set
@@ -289,14 +295,6 @@ $root.app = (function() {
          * @instance
          */
         Tx.prototype.signatures = $util.emptyArray;
-
-        /**
-         * Preimage for hashlock.
-         * @member {Uint8Array} preimage
-         * @memberof app.Tx
-         * @instance
-         */
-        Tx.prototype.preimage = $util.newBuffer([]);
 
         /**
          * ID of a multisig contract.
@@ -379,7 +377,15 @@ $root.app = (function() {
         Tx.prototype.newTokenInfoMsg = null;
 
         /**
-         * BatchMsg batch_msg = 60;
+         * Tx batchMsg.
+         * @member {app.IBatchMsg|null|undefined} batchMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.batchMsg = null;
+
+        /**
+         * Tx addApprovalMsg.
          * @member {nft.IAddApprovalMsg|null|undefined} addApprovalMsg
          * @memberof app.Tx
          * @instance
@@ -474,17 +480,65 @@ $root.app = (function() {
          */
         Tx.prototype.returnSwapMsg = null;
 
+        /**
+         * Tx createProposalMsg.
+         * @member {gov.ICreateProposalMsg|null|undefined} createProposalMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.createProposalMsg = null;
+
+        /**
+         * Tx deleteProposalMsg.
+         * @member {gov.IDeleteProposalMsg|null|undefined} deleteProposalMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.deleteProposalMsg = null;
+
+        /**
+         * Tx voteMsg.
+         * @member {gov.IVoteMsg|null|undefined} voteMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.voteMsg = null;
+
+        /**
+         * Tx tallyMsg.
+         * @member {gov.ITallyMsg|null|undefined} tallyMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.tallyMsg = null;
+
+        /**
+         * Tx updateElectorateMsg.
+         * @member {gov.IUpdateElectorateMsg|null|undefined} updateElectorateMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.updateElectorateMsg = null;
+
+        /**
+         * Tx updateElectionRuleMsg.
+         * @member {gov.IUpdateElectionRuleMsg|null|undefined} updateElectionRuleMsg
+         * @memberof app.Tx
+         * @instance
+         */
+        Tx.prototype.updateElectionRuleMsg = null;
+
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * msg is a sum type over all allowed messages on this chain.
-         * @member {"sendMsg"|"createEscrowMsg"|"releaseEscrowMsg"|"returnEscrowMsg"|"updateEscrowMsg"|"createContractMsg"|"updateContractMsg"|"setValidatorsMsg"|"newTokenInfoMsg"|"addApprovalMsg"|"removeApprovalMsg"|"issueUsernameNftMsg"|"addUsernameAddressNftMsg"|"removeUsernameAddressMsg"|"newRevenueMsg"|"distributeMsg"|"resetRevenueMsg"|"upgradeSchemaMsg"|"createSwapMsg"|"releaseSwapMsg"|"returnSwapMsg"|undefined} sum
+         * @member {"sendMsg"|"createEscrowMsg"|"releaseEscrowMsg"|"returnEscrowMsg"|"updateEscrowMsg"|"createContractMsg"|"updateContractMsg"|"setValidatorsMsg"|"newTokenInfoMsg"|"batchMsg"|"addApprovalMsg"|"removeApprovalMsg"|"issueUsernameNftMsg"|"addUsernameAddressNftMsg"|"removeUsernameAddressMsg"|"newRevenueMsg"|"distributeMsg"|"resetRevenueMsg"|"upgradeSchemaMsg"|"createSwapMsg"|"releaseSwapMsg"|"returnSwapMsg"|"createProposalMsg"|"deleteProposalMsg"|"voteMsg"|"tallyMsg"|"updateElectorateMsg"|"updateElectionRuleMsg"|undefined} sum
          * @memberof app.Tx
          * @instance
          */
         Object.defineProperty(Tx.prototype, "sum", {
-            get: $util.oneOfGetter($oneOfFields = ["sendMsg", "createEscrowMsg", "releaseEscrowMsg", "returnEscrowMsg", "updateEscrowMsg", "createContractMsg", "updateContractMsg", "setValidatorsMsg", "newTokenInfoMsg", "addApprovalMsg", "removeApprovalMsg", "issueUsernameNftMsg", "addUsernameAddressNftMsg", "removeUsernameAddressMsg", "newRevenueMsg", "distributeMsg", "resetRevenueMsg", "upgradeSchemaMsg", "createSwapMsg", "releaseSwapMsg", "returnSwapMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["sendMsg", "createEscrowMsg", "releaseEscrowMsg", "returnEscrowMsg", "updateEscrowMsg", "createContractMsg", "updateContractMsg", "setValidatorsMsg", "newTokenInfoMsg", "batchMsg", "addApprovalMsg", "removeApprovalMsg", "issueUsernameNftMsg", "addUsernameAddressNftMsg", "removeUsernameAddressMsg", "newRevenueMsg", "distributeMsg", "resetRevenueMsg", "upgradeSchemaMsg", "createSwapMsg", "releaseSwapMsg", "returnSwapMsg", "createProposalMsg", "deleteProposalMsg", "voteMsg", "tallyMsg", "updateElectorateMsg", "updateElectionRuleMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -517,8 +571,6 @@ $root.app = (function() {
             if (message.signatures != null && message.signatures.length)
                 for (var i = 0; i < message.signatures.length; ++i)
                     $root.sigs.StdSignature.encode(message.signatures[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-            if (message.preimage != null && message.hasOwnProperty("preimage"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.preimage);
             if (message.multisig != null && message.multisig.length)
                 for (var i = 0; i < message.multisig.length; ++i)
                     writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.multisig[i]);
@@ -540,6 +592,8 @@ $root.app = (function() {
                 $root.validators.SetValidatorsMsg.encode(message.setValidatorsMsg, writer.uint32(/* id 58, wireType 2 =*/466).fork()).ldelim();
             if (message.newTokenInfoMsg != null && message.hasOwnProperty("newTokenInfoMsg"))
                 $root.currency.NewTokenInfoMsg.encode(message.newTokenInfoMsg, writer.uint32(/* id 59, wireType 2 =*/474).fork()).ldelim();
+            if (message.batchMsg != null && message.hasOwnProperty("batchMsg"))
+                $root.app.BatchMsg.encode(message.batchMsg, writer.uint32(/* id 60, wireType 2 =*/482).fork()).ldelim();
             if (message.addApprovalMsg != null && message.hasOwnProperty("addApprovalMsg"))
                 $root.nft.AddApprovalMsg.encode(message.addApprovalMsg, writer.uint32(/* id 61, wireType 2 =*/490).fork()).ldelim();
             if (message.removeApprovalMsg != null && message.hasOwnProperty("removeApprovalMsg"))
@@ -564,6 +618,18 @@ $root.app = (function() {
                 $root.aswap.ReleaseSwapMsg.encode(message.releaseSwapMsg, writer.uint32(/* id 71, wireType 2 =*/570).fork()).ldelim();
             if (message.returnSwapMsg != null && message.hasOwnProperty("returnSwapMsg"))
                 $root.aswap.ReturnSwapMsg.encode(message.returnSwapMsg, writer.uint32(/* id 72, wireType 2 =*/578).fork()).ldelim();
+            if (message.createProposalMsg != null && message.hasOwnProperty("createProposalMsg"))
+                $root.gov.CreateProposalMsg.encode(message.createProposalMsg, writer.uint32(/* id 73, wireType 2 =*/586).fork()).ldelim();
+            if (message.deleteProposalMsg != null && message.hasOwnProperty("deleteProposalMsg"))
+                $root.gov.DeleteProposalMsg.encode(message.deleteProposalMsg, writer.uint32(/* id 74, wireType 2 =*/594).fork()).ldelim();
+            if (message.voteMsg != null && message.hasOwnProperty("voteMsg"))
+                $root.gov.VoteMsg.encode(message.voteMsg, writer.uint32(/* id 75, wireType 2 =*/602).fork()).ldelim();
+            if (message.tallyMsg != null && message.hasOwnProperty("tallyMsg"))
+                $root.gov.TallyMsg.encode(message.tallyMsg, writer.uint32(/* id 76, wireType 2 =*/610).fork()).ldelim();
+            if (message.updateElectorateMsg != null && message.hasOwnProperty("updateElectorateMsg"))
+                $root.gov.UpdateElectorateMsg.encode(message.updateElectorateMsg, writer.uint32(/* id 77, wireType 2 =*/618).fork()).ldelim();
+            if (message.updateElectionRuleMsg != null && message.hasOwnProperty("updateElectionRuleMsg"))
+                $root.gov.UpdateElectionRuleMsg.encode(message.updateElectionRuleMsg, writer.uint32(/* id 78, wireType 2 =*/626).fork()).ldelim();
             return writer;
         };
 
@@ -606,9 +672,6 @@ $root.app = (function() {
                         message.signatures = [];
                     message.signatures.push($root.sigs.StdSignature.decode(reader, reader.uint32()));
                     break;
-                case 3:
-                    message.preimage = reader.bytes();
-                    break;
                 case 4:
                     if (!(message.multisig && message.multisig.length))
                         message.multisig = [];
@@ -640,6 +703,9 @@ $root.app = (function() {
                     break;
                 case 59:
                     message.newTokenInfoMsg = $root.currency.NewTokenInfoMsg.decode(reader, reader.uint32());
+                    break;
+                case 60:
+                    message.batchMsg = $root.app.BatchMsg.decode(reader, reader.uint32());
                     break;
                 case 61:
                     message.addApprovalMsg = $root.nft.AddApprovalMsg.decode(reader, reader.uint32());
@@ -676,6 +742,24 @@ $root.app = (function() {
                     break;
                 case 72:
                     message.returnSwapMsg = $root.aswap.ReturnSwapMsg.decode(reader, reader.uint32());
+                    break;
+                case 73:
+                    message.createProposalMsg = $root.gov.CreateProposalMsg.decode(reader, reader.uint32());
+                    break;
+                case 74:
+                    message.deleteProposalMsg = $root.gov.DeleteProposalMsg.decode(reader, reader.uint32());
+                    break;
+                case 75:
+                    message.voteMsg = $root.gov.VoteMsg.decode(reader, reader.uint32());
+                    break;
+                case 76:
+                    message.tallyMsg = $root.gov.TallyMsg.decode(reader, reader.uint32());
+                    break;
+                case 77:
+                    message.updateElectorateMsg = $root.gov.UpdateElectorateMsg.decode(reader, reader.uint32());
+                    break;
+                case 78:
+                    message.updateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -727,9 +811,6 @@ $root.app = (function() {
                         return "signatures." + error;
                 }
             }
-            if (message.preimage != null && message.hasOwnProperty("preimage"))
-                if (!(message.preimage && typeof message.preimage.length === "number" || $util.isString(message.preimage)))
-                    return "preimage: buffer expected";
             if (message.multisig != null && message.hasOwnProperty("multisig")) {
                 if (!Array.isArray(message.multisig))
                     return "multisig: array expected";
@@ -823,6 +904,16 @@ $root.app = (function() {
                     var error = $root.currency.NewTokenInfoMsg.verify(message.newTokenInfoMsg);
                     if (error)
                         return "newTokenInfoMsg." + error;
+                }
+            }
+            if (message.batchMsg != null && message.hasOwnProperty("batchMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.app.BatchMsg.verify(message.batchMsg);
+                    if (error)
+                        return "batchMsg." + error;
                 }
             }
             if (message.addApprovalMsg != null && message.hasOwnProperty("addApprovalMsg")) {
@@ -945,6 +1036,66 @@ $root.app = (function() {
                         return "returnSwapMsg." + error;
                 }
             }
+            if (message.createProposalMsg != null && message.hasOwnProperty("createProposalMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.gov.CreateProposalMsg.verify(message.createProposalMsg);
+                    if (error)
+                        return "createProposalMsg." + error;
+                }
+            }
+            if (message.deleteProposalMsg != null && message.hasOwnProperty("deleteProposalMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.gov.DeleteProposalMsg.verify(message.deleteProposalMsg);
+                    if (error)
+                        return "deleteProposalMsg." + error;
+                }
+            }
+            if (message.voteMsg != null && message.hasOwnProperty("voteMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.gov.VoteMsg.verify(message.voteMsg);
+                    if (error)
+                        return "voteMsg." + error;
+                }
+            }
+            if (message.tallyMsg != null && message.hasOwnProperty("tallyMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.gov.TallyMsg.verify(message.tallyMsg);
+                    if (error)
+                        return "tallyMsg." + error;
+                }
+            }
+            if (message.updateElectorateMsg != null && message.hasOwnProperty("updateElectorateMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.gov.UpdateElectorateMsg.verify(message.updateElectorateMsg);
+                    if (error)
+                        return "updateElectorateMsg." + error;
+                }
+            }
+            if (message.updateElectionRuleMsg != null && message.hasOwnProperty("updateElectionRuleMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.gov.UpdateElectionRuleMsg.verify(message.updateElectionRuleMsg);
+                    if (error)
+                        return "updateElectionRuleMsg." + error;
+                }
+            }
             return null;
         };
 
@@ -975,11 +1126,6 @@ $root.app = (function() {
                     message.signatures[i] = $root.sigs.StdSignature.fromObject(object.signatures[i]);
                 }
             }
-            if (object.preimage != null)
-                if (typeof object.preimage === "string")
-                    $util.base64.decode(object.preimage, message.preimage = $util.newBuffer($util.base64.length(object.preimage)), 0);
-                else if (object.preimage.length)
-                    message.preimage = object.preimage;
             if (object.multisig) {
                 if (!Array.isArray(object.multisig))
                     throw TypeError(".app.Tx.multisig: array expected");
@@ -1034,6 +1180,11 @@ $root.app = (function() {
                 if (typeof object.newTokenInfoMsg !== "object")
                     throw TypeError(".app.Tx.newTokenInfoMsg: object expected");
                 message.newTokenInfoMsg = $root.currency.NewTokenInfoMsg.fromObject(object.newTokenInfoMsg);
+            }
+            if (object.batchMsg != null) {
+                if (typeof object.batchMsg !== "object")
+                    throw TypeError(".app.Tx.batchMsg: object expected");
+                message.batchMsg = $root.app.BatchMsg.fromObject(object.batchMsg);
             }
             if (object.addApprovalMsg != null) {
                 if (typeof object.addApprovalMsg !== "object")
@@ -1095,6 +1246,36 @@ $root.app = (function() {
                     throw TypeError(".app.Tx.returnSwapMsg: object expected");
                 message.returnSwapMsg = $root.aswap.ReturnSwapMsg.fromObject(object.returnSwapMsg);
             }
+            if (object.createProposalMsg != null) {
+                if (typeof object.createProposalMsg !== "object")
+                    throw TypeError(".app.Tx.createProposalMsg: object expected");
+                message.createProposalMsg = $root.gov.CreateProposalMsg.fromObject(object.createProposalMsg);
+            }
+            if (object.deleteProposalMsg != null) {
+                if (typeof object.deleteProposalMsg !== "object")
+                    throw TypeError(".app.Tx.deleteProposalMsg: object expected");
+                message.deleteProposalMsg = $root.gov.DeleteProposalMsg.fromObject(object.deleteProposalMsg);
+            }
+            if (object.voteMsg != null) {
+                if (typeof object.voteMsg !== "object")
+                    throw TypeError(".app.Tx.voteMsg: object expected");
+                message.voteMsg = $root.gov.VoteMsg.fromObject(object.voteMsg);
+            }
+            if (object.tallyMsg != null) {
+                if (typeof object.tallyMsg !== "object")
+                    throw TypeError(".app.Tx.tallyMsg: object expected");
+                message.tallyMsg = $root.gov.TallyMsg.fromObject(object.tallyMsg);
+            }
+            if (object.updateElectorateMsg != null) {
+                if (typeof object.updateElectorateMsg !== "object")
+                    throw TypeError(".app.Tx.updateElectorateMsg: object expected");
+                message.updateElectorateMsg = $root.gov.UpdateElectorateMsg.fromObject(object.updateElectorateMsg);
+            }
+            if (object.updateElectionRuleMsg != null) {
+                if (typeof object.updateElectionRuleMsg !== "object")
+                    throw TypeError(".app.Tx.updateElectionRuleMsg: object expected");
+                message.updateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.fromObject(object.updateElectionRuleMsg);
+            }
             return message;
         };
 
@@ -1115,16 +1296,8 @@ $root.app = (function() {
                 object.signatures = [];
                 object.multisig = [];
             }
-            if (options.defaults) {
+            if (options.defaults)
                 object.fees = null;
-                if (options.bytes === String)
-                    object.preimage = "";
-                else {
-                    object.preimage = [];
-                    if (options.bytes !== Array)
-                        object.preimage = $util.newBuffer(object.preimage);
-                }
-            }
             if (message.fees != null && message.hasOwnProperty("fees"))
                 object.fees = $root.cash.FeeInfo.toObject(message.fees, options);
             if (message.signatures && message.signatures.length) {
@@ -1132,8 +1305,6 @@ $root.app = (function() {
                 for (var j = 0; j < message.signatures.length; ++j)
                     object.signatures[j] = $root.sigs.StdSignature.toObject(message.signatures[j], options);
             }
-            if (message.preimage != null && message.hasOwnProperty("preimage"))
-                object.preimage = options.bytes === String ? $util.base64.encode(message.preimage, 0, message.preimage.length) : options.bytes === Array ? Array.prototype.slice.call(message.preimage) : message.preimage;
             if (message.multisig && message.multisig.length) {
                 object.multisig = [];
                 for (var j = 0; j < message.multisig.length; ++j)
@@ -1183,6 +1354,11 @@ $root.app = (function() {
                 object.newTokenInfoMsg = $root.currency.NewTokenInfoMsg.toObject(message.newTokenInfoMsg, options);
                 if (options.oneofs)
                     object.sum = "newTokenInfoMsg";
+            }
+            if (message.batchMsg != null && message.hasOwnProperty("batchMsg")) {
+                object.batchMsg = $root.app.BatchMsg.toObject(message.batchMsg, options);
+                if (options.oneofs)
+                    object.sum = "batchMsg";
             }
             if (message.addApprovalMsg != null && message.hasOwnProperty("addApprovalMsg")) {
                 object.addApprovalMsg = $root.nft.AddApprovalMsg.toObject(message.addApprovalMsg, options);
@@ -1244,6 +1420,36 @@ $root.app = (function() {
                 if (options.oneofs)
                     object.sum = "returnSwapMsg";
             }
+            if (message.createProposalMsg != null && message.hasOwnProperty("createProposalMsg")) {
+                object.createProposalMsg = $root.gov.CreateProposalMsg.toObject(message.createProposalMsg, options);
+                if (options.oneofs)
+                    object.sum = "createProposalMsg";
+            }
+            if (message.deleteProposalMsg != null && message.hasOwnProperty("deleteProposalMsg")) {
+                object.deleteProposalMsg = $root.gov.DeleteProposalMsg.toObject(message.deleteProposalMsg, options);
+                if (options.oneofs)
+                    object.sum = "deleteProposalMsg";
+            }
+            if (message.voteMsg != null && message.hasOwnProperty("voteMsg")) {
+                object.voteMsg = $root.gov.VoteMsg.toObject(message.voteMsg, options);
+                if (options.oneofs)
+                    object.sum = "voteMsg";
+            }
+            if (message.tallyMsg != null && message.hasOwnProperty("tallyMsg")) {
+                object.tallyMsg = $root.gov.TallyMsg.toObject(message.tallyMsg, options);
+                if (options.oneofs)
+                    object.sum = "tallyMsg";
+            }
+            if (message.updateElectorateMsg != null && message.hasOwnProperty("updateElectorateMsg")) {
+                object.updateElectorateMsg = $root.gov.UpdateElectorateMsg.toObject(message.updateElectorateMsg, options);
+                if (options.oneofs)
+                    object.sum = "updateElectorateMsg";
+            }
+            if (message.updateElectionRuleMsg != null && message.hasOwnProperty("updateElectionRuleMsg")) {
+                object.updateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.toObject(message.updateElectionRuleMsg, options);
+                if (options.oneofs)
+                    object.sum = "updateElectionRuleMsg";
+            }
             return object;
         };
 
@@ -1259,6 +1465,2279 @@ $root.app = (function() {
         };
 
         return Tx;
+    })();
+
+    app.BatchMsg = (function() {
+
+        /**
+         * Properties of a BatchMsg.
+         * @memberof app
+         * @interface IBatchMsg
+         * @property {Array.<app.BatchMsg.IUnion>|null} [messages] BatchMsg messages
+         */
+
+        /**
+         * Constructs a new BatchMsg.
+         * @memberof app
+         * @classdesc BatchMsg encapsulates multiple messages to support batch transaction
+         * @implements IBatchMsg
+         * @constructor
+         * @param {app.IBatchMsg=} [properties] Properties to set
+         */
+        function BatchMsg(properties) {
+            this.messages = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * BatchMsg messages.
+         * @member {Array.<app.BatchMsg.IUnion>} messages
+         * @memberof app.BatchMsg
+         * @instance
+         */
+        BatchMsg.prototype.messages = $util.emptyArray;
+
+        /**
+         * Creates a new BatchMsg instance using the specified properties.
+         * @function create
+         * @memberof app.BatchMsg
+         * @static
+         * @param {app.IBatchMsg=} [properties] Properties to set
+         * @returns {app.BatchMsg} BatchMsg instance
+         */
+        BatchMsg.create = function create(properties) {
+            return new BatchMsg(properties);
+        };
+
+        /**
+         * Encodes the specified BatchMsg message. Does not implicitly {@link app.BatchMsg.verify|verify} messages.
+         * @function encode
+         * @memberof app.BatchMsg
+         * @static
+         * @param {app.IBatchMsg} message BatchMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        BatchMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.messages != null && message.messages.length)
+                for (var i = 0; i < message.messages.length; ++i)
+                    $root.app.BatchMsg.Union.encode(message.messages[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified BatchMsg message, length delimited. Does not implicitly {@link app.BatchMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof app.BatchMsg
+         * @static
+         * @param {app.IBatchMsg} message BatchMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        BatchMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a BatchMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof app.BatchMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {app.BatchMsg} BatchMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        BatchMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.app.BatchMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message.messages && message.messages.length))
+                        message.messages = [];
+                    message.messages.push($root.app.BatchMsg.Union.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a BatchMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof app.BatchMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {app.BatchMsg} BatchMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        BatchMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a BatchMsg message.
+         * @function verify
+         * @memberof app.BatchMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        BatchMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.messages != null && message.hasOwnProperty("messages")) {
+                if (!Array.isArray(message.messages))
+                    return "messages: array expected";
+                for (var i = 0; i < message.messages.length; ++i) {
+                    var error = $root.app.BatchMsg.Union.verify(message.messages[i]);
+                    if (error)
+                        return "messages." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a BatchMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof app.BatchMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {app.BatchMsg} BatchMsg
+         */
+        BatchMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.app.BatchMsg)
+                return object;
+            var message = new $root.app.BatchMsg();
+            if (object.messages) {
+                if (!Array.isArray(object.messages))
+                    throw TypeError(".app.BatchMsg.messages: array expected");
+                message.messages = [];
+                for (var i = 0; i < object.messages.length; ++i) {
+                    if (typeof object.messages[i] !== "object")
+                        throw TypeError(".app.BatchMsg.messages: object expected");
+                    message.messages[i] = $root.app.BatchMsg.Union.fromObject(object.messages[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a BatchMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof app.BatchMsg
+         * @static
+         * @param {app.BatchMsg} message BatchMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        BatchMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.messages = [];
+            if (message.messages && message.messages.length) {
+                object.messages = [];
+                for (var j = 0; j < message.messages.length; ++j)
+                    object.messages[j] = $root.app.BatchMsg.Union.toObject(message.messages[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this BatchMsg to JSON.
+         * @function toJSON
+         * @memberof app.BatchMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        BatchMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        BatchMsg.Union = (function() {
+
+            /**
+             * Properties of an Union.
+             * @memberof app.BatchMsg
+             * @interface IUnion
+             * @property {cash.ISendMsg|null} [sendMsg] Union sendMsg
+             * @property {escrow.ICreateEscrowMsg|null} [createEscrowMsg] Union createEscrowMsg
+             * @property {escrow.IReleaseEscrowMsg|null} [releaseEscrowMsg] Union releaseEscrowMsg
+             * @property {escrow.IReturnEscrowMsg|null} [returnEscrowMsg] Union returnEscrowMsg
+             * @property {escrow.IUpdateEscrowPartiesMsg|null} [updateEscrowMsg] Union updateEscrowMsg
+             * @property {multisig.ICreateContractMsg|null} [createContractMsg] Union createContractMsg
+             * @property {multisig.IUpdateContractMsg|null} [updateContractMsg] Union updateContractMsg
+             * @property {validators.ISetValidatorsMsg|null} [setValidatorsMsg] Union setValidatorsMsg
+             * @property {currency.INewTokenInfoMsg|null} [newTokenInfoMsg] Union newTokenInfoMsg
+             * @property {nft.IAddApprovalMsg|null} [addApprovalMsg] No recursive batches!
+             * @property {nft.IRemoveApprovalMsg|null} [removeApprovalMsg] Union removeApprovalMsg
+             * @property {username.IIssueTokenMsg|null} [issueUsernameNftMsg] Union issueUsernameNftMsg
+             * @property {username.IAddChainAddressMsg|null} [addUsernameAddressNftMsg] Union addUsernameAddressNftMsg
+             * @property {username.IRemoveChainAddressMsg|null} [removeUsernameAddressMsg] Union removeUsernameAddressMsg
+             * @property {distribution.INewRevenueMsg|null} [newRevenueMsg] Union newRevenueMsg
+             * @property {distribution.IDistributeMsg|null} [distributeMsg] Union distributeMsg
+             * @property {distribution.IResetRevenueMsg|null} [resetRevenueMsg] Union resetRevenueMsg
+             */
+
+            /**
+             * Constructs a new Union.
+             * @memberof app.BatchMsg
+             * @classdesc Represents an Union.
+             * @implements IUnion
+             * @constructor
+             * @param {app.BatchMsg.IUnion=} [properties] Properties to set
+             */
+            function Union(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * Union sendMsg.
+             * @member {cash.ISendMsg|null|undefined} sendMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.sendMsg = null;
+
+            /**
+             * Union createEscrowMsg.
+             * @member {escrow.ICreateEscrowMsg|null|undefined} createEscrowMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.createEscrowMsg = null;
+
+            /**
+             * Union releaseEscrowMsg.
+             * @member {escrow.IReleaseEscrowMsg|null|undefined} releaseEscrowMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.releaseEscrowMsg = null;
+
+            /**
+             * Union returnEscrowMsg.
+             * @member {escrow.IReturnEscrowMsg|null|undefined} returnEscrowMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.returnEscrowMsg = null;
+
+            /**
+             * Union updateEscrowMsg.
+             * @member {escrow.IUpdateEscrowPartiesMsg|null|undefined} updateEscrowMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.updateEscrowMsg = null;
+
+            /**
+             * Union createContractMsg.
+             * @member {multisig.ICreateContractMsg|null|undefined} createContractMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.createContractMsg = null;
+
+            /**
+             * Union updateContractMsg.
+             * @member {multisig.IUpdateContractMsg|null|undefined} updateContractMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.updateContractMsg = null;
+
+            /**
+             * Union setValidatorsMsg.
+             * @member {validators.ISetValidatorsMsg|null|undefined} setValidatorsMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.setValidatorsMsg = null;
+
+            /**
+             * Union newTokenInfoMsg.
+             * @member {currency.INewTokenInfoMsg|null|undefined} newTokenInfoMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.newTokenInfoMsg = null;
+
+            /**
+             * No recursive batches!
+             * @member {nft.IAddApprovalMsg|null|undefined} addApprovalMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.addApprovalMsg = null;
+
+            /**
+             * Union removeApprovalMsg.
+             * @member {nft.IRemoveApprovalMsg|null|undefined} removeApprovalMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.removeApprovalMsg = null;
+
+            /**
+             * Union issueUsernameNftMsg.
+             * @member {username.IIssueTokenMsg|null|undefined} issueUsernameNftMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.issueUsernameNftMsg = null;
+
+            /**
+             * Union addUsernameAddressNftMsg.
+             * @member {username.IAddChainAddressMsg|null|undefined} addUsernameAddressNftMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.addUsernameAddressNftMsg = null;
+
+            /**
+             * Union removeUsernameAddressMsg.
+             * @member {username.IRemoveChainAddressMsg|null|undefined} removeUsernameAddressMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.removeUsernameAddressMsg = null;
+
+            /**
+             * Union newRevenueMsg.
+             * @member {distribution.INewRevenueMsg|null|undefined} newRevenueMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.newRevenueMsg = null;
+
+            /**
+             * Union distributeMsg.
+             * @member {distribution.IDistributeMsg|null|undefined} distributeMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.distributeMsg = null;
+
+            /**
+             * Union resetRevenueMsg.
+             * @member {distribution.IResetRevenueMsg|null|undefined} resetRevenueMsg
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Union.prototype.resetRevenueMsg = null;
+
+            // OneOf field names bound to virtual getters and setters
+            var $oneOfFields;
+
+            /**
+             * Union sum.
+             * @member {"sendMsg"|"createEscrowMsg"|"releaseEscrowMsg"|"returnEscrowMsg"|"updateEscrowMsg"|"createContractMsg"|"updateContractMsg"|"setValidatorsMsg"|"newTokenInfoMsg"|"addApprovalMsg"|"removeApprovalMsg"|"issueUsernameNftMsg"|"addUsernameAddressNftMsg"|"removeUsernameAddressMsg"|"newRevenueMsg"|"distributeMsg"|"resetRevenueMsg"|undefined} sum
+             * @memberof app.BatchMsg.Union
+             * @instance
+             */
+            Object.defineProperty(Union.prototype, "sum", {
+                get: $util.oneOfGetter($oneOfFields = ["sendMsg", "createEscrowMsg", "releaseEscrowMsg", "returnEscrowMsg", "updateEscrowMsg", "createContractMsg", "updateContractMsg", "setValidatorsMsg", "newTokenInfoMsg", "addApprovalMsg", "removeApprovalMsg", "issueUsernameNftMsg", "addUsernameAddressNftMsg", "removeUsernameAddressMsg", "newRevenueMsg", "distributeMsg", "resetRevenueMsg"]),
+                set: $util.oneOfSetter($oneOfFields)
+            });
+
+            /**
+             * Creates a new Union instance using the specified properties.
+             * @function create
+             * @memberof app.BatchMsg.Union
+             * @static
+             * @param {app.BatchMsg.IUnion=} [properties] Properties to set
+             * @returns {app.BatchMsg.Union} Union instance
+             */
+            Union.create = function create(properties) {
+                return new Union(properties);
+            };
+
+            /**
+             * Encodes the specified Union message. Does not implicitly {@link app.BatchMsg.Union.verify|verify} messages.
+             * @function encode
+             * @memberof app.BatchMsg.Union
+             * @static
+             * @param {app.BatchMsg.IUnion} message Union message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            Union.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.sendMsg != null && message.hasOwnProperty("sendMsg"))
+                    $root.cash.SendMsg.encode(message.sendMsg, writer.uint32(/* id 51, wireType 2 =*/410).fork()).ldelim();
+                if (message.createEscrowMsg != null && message.hasOwnProperty("createEscrowMsg"))
+                    $root.escrow.CreateEscrowMsg.encode(message.createEscrowMsg, writer.uint32(/* id 52, wireType 2 =*/418).fork()).ldelim();
+                if (message.releaseEscrowMsg != null && message.hasOwnProperty("releaseEscrowMsg"))
+                    $root.escrow.ReleaseEscrowMsg.encode(message.releaseEscrowMsg, writer.uint32(/* id 53, wireType 2 =*/426).fork()).ldelim();
+                if (message.returnEscrowMsg != null && message.hasOwnProperty("returnEscrowMsg"))
+                    $root.escrow.ReturnEscrowMsg.encode(message.returnEscrowMsg, writer.uint32(/* id 54, wireType 2 =*/434).fork()).ldelim();
+                if (message.updateEscrowMsg != null && message.hasOwnProperty("updateEscrowMsg"))
+                    $root.escrow.UpdateEscrowPartiesMsg.encode(message.updateEscrowMsg, writer.uint32(/* id 55, wireType 2 =*/442).fork()).ldelim();
+                if (message.createContractMsg != null && message.hasOwnProperty("createContractMsg"))
+                    $root.multisig.CreateContractMsg.encode(message.createContractMsg, writer.uint32(/* id 56, wireType 2 =*/450).fork()).ldelim();
+                if (message.updateContractMsg != null && message.hasOwnProperty("updateContractMsg"))
+                    $root.multisig.UpdateContractMsg.encode(message.updateContractMsg, writer.uint32(/* id 57, wireType 2 =*/458).fork()).ldelim();
+                if (message.setValidatorsMsg != null && message.hasOwnProperty("setValidatorsMsg"))
+                    $root.validators.SetValidatorsMsg.encode(message.setValidatorsMsg, writer.uint32(/* id 58, wireType 2 =*/466).fork()).ldelim();
+                if (message.newTokenInfoMsg != null && message.hasOwnProperty("newTokenInfoMsg"))
+                    $root.currency.NewTokenInfoMsg.encode(message.newTokenInfoMsg, writer.uint32(/* id 59, wireType 2 =*/474).fork()).ldelim();
+                if (message.addApprovalMsg != null && message.hasOwnProperty("addApprovalMsg"))
+                    $root.nft.AddApprovalMsg.encode(message.addApprovalMsg, writer.uint32(/* id 61, wireType 2 =*/490).fork()).ldelim();
+                if (message.removeApprovalMsg != null && message.hasOwnProperty("removeApprovalMsg"))
+                    $root.nft.RemoveApprovalMsg.encode(message.removeApprovalMsg, writer.uint32(/* id 62, wireType 2 =*/498).fork()).ldelim();
+                if (message.issueUsernameNftMsg != null && message.hasOwnProperty("issueUsernameNftMsg"))
+                    $root.username.IssueTokenMsg.encode(message.issueUsernameNftMsg, writer.uint32(/* id 63, wireType 2 =*/506).fork()).ldelim();
+                if (message.addUsernameAddressNftMsg != null && message.hasOwnProperty("addUsernameAddressNftMsg"))
+                    $root.username.AddChainAddressMsg.encode(message.addUsernameAddressNftMsg, writer.uint32(/* id 64, wireType 2 =*/514).fork()).ldelim();
+                if (message.removeUsernameAddressMsg != null && message.hasOwnProperty("removeUsernameAddressMsg"))
+                    $root.username.RemoveChainAddressMsg.encode(message.removeUsernameAddressMsg, writer.uint32(/* id 65, wireType 2 =*/522).fork()).ldelim();
+                if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg"))
+                    $root.distribution.NewRevenueMsg.encode(message.newRevenueMsg, writer.uint32(/* id 66, wireType 2 =*/530).fork()).ldelim();
+                if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg"))
+                    $root.distribution.DistributeMsg.encode(message.distributeMsg, writer.uint32(/* id 67, wireType 2 =*/538).fork()).ldelim();
+                if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg"))
+                    $root.distribution.ResetRevenueMsg.encode(message.resetRevenueMsg, writer.uint32(/* id 68, wireType 2 =*/546).fork()).ldelim();
+                return writer;
+            };
+
+            /**
+             * Encodes the specified Union message, length delimited. Does not implicitly {@link app.BatchMsg.Union.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof app.BatchMsg.Union
+             * @static
+             * @param {app.BatchMsg.IUnion} message Union message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            Union.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes an Union message from the specified reader or buffer.
+             * @function decode
+             * @memberof app.BatchMsg.Union
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {app.BatchMsg.Union} Union
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            Union.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.app.BatchMsg.Union();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 51:
+                        message.sendMsg = $root.cash.SendMsg.decode(reader, reader.uint32());
+                        break;
+                    case 52:
+                        message.createEscrowMsg = $root.escrow.CreateEscrowMsg.decode(reader, reader.uint32());
+                        break;
+                    case 53:
+                        message.releaseEscrowMsg = $root.escrow.ReleaseEscrowMsg.decode(reader, reader.uint32());
+                        break;
+                    case 54:
+                        message.returnEscrowMsg = $root.escrow.ReturnEscrowMsg.decode(reader, reader.uint32());
+                        break;
+                    case 55:
+                        message.updateEscrowMsg = $root.escrow.UpdateEscrowPartiesMsg.decode(reader, reader.uint32());
+                        break;
+                    case 56:
+                        message.createContractMsg = $root.multisig.CreateContractMsg.decode(reader, reader.uint32());
+                        break;
+                    case 57:
+                        message.updateContractMsg = $root.multisig.UpdateContractMsg.decode(reader, reader.uint32());
+                        break;
+                    case 58:
+                        message.setValidatorsMsg = $root.validators.SetValidatorsMsg.decode(reader, reader.uint32());
+                        break;
+                    case 59:
+                        message.newTokenInfoMsg = $root.currency.NewTokenInfoMsg.decode(reader, reader.uint32());
+                        break;
+                    case 61:
+                        message.addApprovalMsg = $root.nft.AddApprovalMsg.decode(reader, reader.uint32());
+                        break;
+                    case 62:
+                        message.removeApprovalMsg = $root.nft.RemoveApprovalMsg.decode(reader, reader.uint32());
+                        break;
+                    case 63:
+                        message.issueUsernameNftMsg = $root.username.IssueTokenMsg.decode(reader, reader.uint32());
+                        break;
+                    case 64:
+                        message.addUsernameAddressNftMsg = $root.username.AddChainAddressMsg.decode(reader, reader.uint32());
+                        break;
+                    case 65:
+                        message.removeUsernameAddressMsg = $root.username.RemoveChainAddressMsg.decode(reader, reader.uint32());
+                        break;
+                    case 66:
+                        message.newRevenueMsg = $root.distribution.NewRevenueMsg.decode(reader, reader.uint32());
+                        break;
+                    case 67:
+                        message.distributeMsg = $root.distribution.DistributeMsg.decode(reader, reader.uint32());
+                        break;
+                    case 68:
+                        message.resetRevenueMsg = $root.distribution.ResetRevenueMsg.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes an Union message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof app.BatchMsg.Union
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {app.BatchMsg.Union} Union
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            Union.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies an Union message.
+             * @function verify
+             * @memberof app.BatchMsg.Union
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            Union.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                var properties = {};
+                if (message.sendMsg != null && message.hasOwnProperty("sendMsg")) {
+                    properties.sum = 1;
+                    {
+                        var error = $root.cash.SendMsg.verify(message.sendMsg);
+                        if (error)
+                            return "sendMsg." + error;
+                    }
+                }
+                if (message.createEscrowMsg != null && message.hasOwnProperty("createEscrowMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.escrow.CreateEscrowMsg.verify(message.createEscrowMsg);
+                        if (error)
+                            return "createEscrowMsg." + error;
+                    }
+                }
+                if (message.releaseEscrowMsg != null && message.hasOwnProperty("releaseEscrowMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.escrow.ReleaseEscrowMsg.verify(message.releaseEscrowMsg);
+                        if (error)
+                            return "releaseEscrowMsg." + error;
+                    }
+                }
+                if (message.returnEscrowMsg != null && message.hasOwnProperty("returnEscrowMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.escrow.ReturnEscrowMsg.verify(message.returnEscrowMsg);
+                        if (error)
+                            return "returnEscrowMsg." + error;
+                    }
+                }
+                if (message.updateEscrowMsg != null && message.hasOwnProperty("updateEscrowMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.escrow.UpdateEscrowPartiesMsg.verify(message.updateEscrowMsg);
+                        if (error)
+                            return "updateEscrowMsg." + error;
+                    }
+                }
+                if (message.createContractMsg != null && message.hasOwnProperty("createContractMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.multisig.CreateContractMsg.verify(message.createContractMsg);
+                        if (error)
+                            return "createContractMsg." + error;
+                    }
+                }
+                if (message.updateContractMsg != null && message.hasOwnProperty("updateContractMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.multisig.UpdateContractMsg.verify(message.updateContractMsg);
+                        if (error)
+                            return "updateContractMsg." + error;
+                    }
+                }
+                if (message.setValidatorsMsg != null && message.hasOwnProperty("setValidatorsMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.validators.SetValidatorsMsg.verify(message.setValidatorsMsg);
+                        if (error)
+                            return "setValidatorsMsg." + error;
+                    }
+                }
+                if (message.newTokenInfoMsg != null && message.hasOwnProperty("newTokenInfoMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.currency.NewTokenInfoMsg.verify(message.newTokenInfoMsg);
+                        if (error)
+                            return "newTokenInfoMsg." + error;
+                    }
+                }
+                if (message.addApprovalMsg != null && message.hasOwnProperty("addApprovalMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.nft.AddApprovalMsg.verify(message.addApprovalMsg);
+                        if (error)
+                            return "addApprovalMsg." + error;
+                    }
+                }
+                if (message.removeApprovalMsg != null && message.hasOwnProperty("removeApprovalMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.nft.RemoveApprovalMsg.verify(message.removeApprovalMsg);
+                        if (error)
+                            return "removeApprovalMsg." + error;
+                    }
+                }
+                if (message.issueUsernameNftMsg != null && message.hasOwnProperty("issueUsernameNftMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.username.IssueTokenMsg.verify(message.issueUsernameNftMsg);
+                        if (error)
+                            return "issueUsernameNftMsg." + error;
+                    }
+                }
+                if (message.addUsernameAddressNftMsg != null && message.hasOwnProperty("addUsernameAddressNftMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.username.AddChainAddressMsg.verify(message.addUsernameAddressNftMsg);
+                        if (error)
+                            return "addUsernameAddressNftMsg." + error;
+                    }
+                }
+                if (message.removeUsernameAddressMsg != null && message.hasOwnProperty("removeUsernameAddressMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.username.RemoveChainAddressMsg.verify(message.removeUsernameAddressMsg);
+                        if (error)
+                            return "removeUsernameAddressMsg." + error;
+                    }
+                }
+                if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.distribution.NewRevenueMsg.verify(message.newRevenueMsg);
+                        if (error)
+                            return "newRevenueMsg." + error;
+                    }
+                }
+                if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.distribution.DistributeMsg.verify(message.distributeMsg);
+                        if (error)
+                            return "distributeMsg." + error;
+                    }
+                }
+                if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.distribution.ResetRevenueMsg.verify(message.resetRevenueMsg);
+                        if (error)
+                            return "resetRevenueMsg." + error;
+                    }
+                }
+                return null;
+            };
+
+            /**
+             * Creates an Union message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof app.BatchMsg.Union
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {app.BatchMsg.Union} Union
+             */
+            Union.fromObject = function fromObject(object) {
+                if (object instanceof $root.app.BatchMsg.Union)
+                    return object;
+                var message = new $root.app.BatchMsg.Union();
+                if (object.sendMsg != null) {
+                    if (typeof object.sendMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.sendMsg: object expected");
+                    message.sendMsg = $root.cash.SendMsg.fromObject(object.sendMsg);
+                }
+                if (object.createEscrowMsg != null) {
+                    if (typeof object.createEscrowMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.createEscrowMsg: object expected");
+                    message.createEscrowMsg = $root.escrow.CreateEscrowMsg.fromObject(object.createEscrowMsg);
+                }
+                if (object.releaseEscrowMsg != null) {
+                    if (typeof object.releaseEscrowMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.releaseEscrowMsg: object expected");
+                    message.releaseEscrowMsg = $root.escrow.ReleaseEscrowMsg.fromObject(object.releaseEscrowMsg);
+                }
+                if (object.returnEscrowMsg != null) {
+                    if (typeof object.returnEscrowMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.returnEscrowMsg: object expected");
+                    message.returnEscrowMsg = $root.escrow.ReturnEscrowMsg.fromObject(object.returnEscrowMsg);
+                }
+                if (object.updateEscrowMsg != null) {
+                    if (typeof object.updateEscrowMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.updateEscrowMsg: object expected");
+                    message.updateEscrowMsg = $root.escrow.UpdateEscrowPartiesMsg.fromObject(object.updateEscrowMsg);
+                }
+                if (object.createContractMsg != null) {
+                    if (typeof object.createContractMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.createContractMsg: object expected");
+                    message.createContractMsg = $root.multisig.CreateContractMsg.fromObject(object.createContractMsg);
+                }
+                if (object.updateContractMsg != null) {
+                    if (typeof object.updateContractMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.updateContractMsg: object expected");
+                    message.updateContractMsg = $root.multisig.UpdateContractMsg.fromObject(object.updateContractMsg);
+                }
+                if (object.setValidatorsMsg != null) {
+                    if (typeof object.setValidatorsMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.setValidatorsMsg: object expected");
+                    message.setValidatorsMsg = $root.validators.SetValidatorsMsg.fromObject(object.setValidatorsMsg);
+                }
+                if (object.newTokenInfoMsg != null) {
+                    if (typeof object.newTokenInfoMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.newTokenInfoMsg: object expected");
+                    message.newTokenInfoMsg = $root.currency.NewTokenInfoMsg.fromObject(object.newTokenInfoMsg);
+                }
+                if (object.addApprovalMsg != null) {
+                    if (typeof object.addApprovalMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.addApprovalMsg: object expected");
+                    message.addApprovalMsg = $root.nft.AddApprovalMsg.fromObject(object.addApprovalMsg);
+                }
+                if (object.removeApprovalMsg != null) {
+                    if (typeof object.removeApprovalMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.removeApprovalMsg: object expected");
+                    message.removeApprovalMsg = $root.nft.RemoveApprovalMsg.fromObject(object.removeApprovalMsg);
+                }
+                if (object.issueUsernameNftMsg != null) {
+                    if (typeof object.issueUsernameNftMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.issueUsernameNftMsg: object expected");
+                    message.issueUsernameNftMsg = $root.username.IssueTokenMsg.fromObject(object.issueUsernameNftMsg);
+                }
+                if (object.addUsernameAddressNftMsg != null) {
+                    if (typeof object.addUsernameAddressNftMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.addUsernameAddressNftMsg: object expected");
+                    message.addUsernameAddressNftMsg = $root.username.AddChainAddressMsg.fromObject(object.addUsernameAddressNftMsg);
+                }
+                if (object.removeUsernameAddressMsg != null) {
+                    if (typeof object.removeUsernameAddressMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.removeUsernameAddressMsg: object expected");
+                    message.removeUsernameAddressMsg = $root.username.RemoveChainAddressMsg.fromObject(object.removeUsernameAddressMsg);
+                }
+                if (object.newRevenueMsg != null) {
+                    if (typeof object.newRevenueMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.newRevenueMsg: object expected");
+                    message.newRevenueMsg = $root.distribution.NewRevenueMsg.fromObject(object.newRevenueMsg);
+                }
+                if (object.distributeMsg != null) {
+                    if (typeof object.distributeMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.distributeMsg: object expected");
+                    message.distributeMsg = $root.distribution.DistributeMsg.fromObject(object.distributeMsg);
+                }
+                if (object.resetRevenueMsg != null) {
+                    if (typeof object.resetRevenueMsg !== "object")
+                        throw TypeError(".app.BatchMsg.Union.resetRevenueMsg: object expected");
+                    message.resetRevenueMsg = $root.distribution.ResetRevenueMsg.fromObject(object.resetRevenueMsg);
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from an Union message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof app.BatchMsg.Union
+             * @static
+             * @param {app.BatchMsg.Union} message Union
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            Union.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (message.sendMsg != null && message.hasOwnProperty("sendMsg")) {
+                    object.sendMsg = $root.cash.SendMsg.toObject(message.sendMsg, options);
+                    if (options.oneofs)
+                        object.sum = "sendMsg";
+                }
+                if (message.createEscrowMsg != null && message.hasOwnProperty("createEscrowMsg")) {
+                    object.createEscrowMsg = $root.escrow.CreateEscrowMsg.toObject(message.createEscrowMsg, options);
+                    if (options.oneofs)
+                        object.sum = "createEscrowMsg";
+                }
+                if (message.releaseEscrowMsg != null && message.hasOwnProperty("releaseEscrowMsg")) {
+                    object.releaseEscrowMsg = $root.escrow.ReleaseEscrowMsg.toObject(message.releaseEscrowMsg, options);
+                    if (options.oneofs)
+                        object.sum = "releaseEscrowMsg";
+                }
+                if (message.returnEscrowMsg != null && message.hasOwnProperty("returnEscrowMsg")) {
+                    object.returnEscrowMsg = $root.escrow.ReturnEscrowMsg.toObject(message.returnEscrowMsg, options);
+                    if (options.oneofs)
+                        object.sum = "returnEscrowMsg";
+                }
+                if (message.updateEscrowMsg != null && message.hasOwnProperty("updateEscrowMsg")) {
+                    object.updateEscrowMsg = $root.escrow.UpdateEscrowPartiesMsg.toObject(message.updateEscrowMsg, options);
+                    if (options.oneofs)
+                        object.sum = "updateEscrowMsg";
+                }
+                if (message.createContractMsg != null && message.hasOwnProperty("createContractMsg")) {
+                    object.createContractMsg = $root.multisig.CreateContractMsg.toObject(message.createContractMsg, options);
+                    if (options.oneofs)
+                        object.sum = "createContractMsg";
+                }
+                if (message.updateContractMsg != null && message.hasOwnProperty("updateContractMsg")) {
+                    object.updateContractMsg = $root.multisig.UpdateContractMsg.toObject(message.updateContractMsg, options);
+                    if (options.oneofs)
+                        object.sum = "updateContractMsg";
+                }
+                if (message.setValidatorsMsg != null && message.hasOwnProperty("setValidatorsMsg")) {
+                    object.setValidatorsMsg = $root.validators.SetValidatorsMsg.toObject(message.setValidatorsMsg, options);
+                    if (options.oneofs)
+                        object.sum = "setValidatorsMsg";
+                }
+                if (message.newTokenInfoMsg != null && message.hasOwnProperty("newTokenInfoMsg")) {
+                    object.newTokenInfoMsg = $root.currency.NewTokenInfoMsg.toObject(message.newTokenInfoMsg, options);
+                    if (options.oneofs)
+                        object.sum = "newTokenInfoMsg";
+                }
+                if (message.addApprovalMsg != null && message.hasOwnProperty("addApprovalMsg")) {
+                    object.addApprovalMsg = $root.nft.AddApprovalMsg.toObject(message.addApprovalMsg, options);
+                    if (options.oneofs)
+                        object.sum = "addApprovalMsg";
+                }
+                if (message.removeApprovalMsg != null && message.hasOwnProperty("removeApprovalMsg")) {
+                    object.removeApprovalMsg = $root.nft.RemoveApprovalMsg.toObject(message.removeApprovalMsg, options);
+                    if (options.oneofs)
+                        object.sum = "removeApprovalMsg";
+                }
+                if (message.issueUsernameNftMsg != null && message.hasOwnProperty("issueUsernameNftMsg")) {
+                    object.issueUsernameNftMsg = $root.username.IssueTokenMsg.toObject(message.issueUsernameNftMsg, options);
+                    if (options.oneofs)
+                        object.sum = "issueUsernameNftMsg";
+                }
+                if (message.addUsernameAddressNftMsg != null && message.hasOwnProperty("addUsernameAddressNftMsg")) {
+                    object.addUsernameAddressNftMsg = $root.username.AddChainAddressMsg.toObject(message.addUsernameAddressNftMsg, options);
+                    if (options.oneofs)
+                        object.sum = "addUsernameAddressNftMsg";
+                }
+                if (message.removeUsernameAddressMsg != null && message.hasOwnProperty("removeUsernameAddressMsg")) {
+                    object.removeUsernameAddressMsg = $root.username.RemoveChainAddressMsg.toObject(message.removeUsernameAddressMsg, options);
+                    if (options.oneofs)
+                        object.sum = "removeUsernameAddressMsg";
+                }
+                if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg")) {
+                    object.newRevenueMsg = $root.distribution.NewRevenueMsg.toObject(message.newRevenueMsg, options);
+                    if (options.oneofs)
+                        object.sum = "newRevenueMsg";
+                }
+                if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg")) {
+                    object.distributeMsg = $root.distribution.DistributeMsg.toObject(message.distributeMsg, options);
+                    if (options.oneofs)
+                        object.sum = "distributeMsg";
+                }
+                if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg")) {
+                    object.resetRevenueMsg = $root.distribution.ResetRevenueMsg.toObject(message.resetRevenueMsg, options);
+                    if (options.oneofs)
+                        object.sum = "resetRevenueMsg";
+                }
+                return object;
+            };
+
+            /**
+             * Converts this Union to JSON.
+             * @function toJSON
+             * @memberof app.BatchMsg.Union
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            Union.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return Union;
+        })();
+
+        return BatchMsg;
+    })();
+
+    app.ProposalOptions = (function() {
+
+        /**
+         * Properties of a ProposalOptions.
+         * @memberof app
+         * @interface IProposalOptions
+         * @property {cash.ISendMsg|null} [sendMsg] ProposalOptions sendMsg
+         * @property {escrow.IReleaseEscrowMsg|null} [releaseEscrowMsg] ProposalOptions releaseEscrowMsg
+         * @property {escrow.IUpdateEscrowPartiesMsg|null} [updateEscrowMsg] ProposalOptions updateEscrowMsg
+         * @property {validators.ISetValidatorsMsg|null} [setValidatorsMsg] ProposalOptions setValidatorsMsg
+         * @property {app.IProposalBatchMsg|null} [batchMsg] ProposalOptions batchMsg
+         * @property {distribution.INewRevenueMsg|null} [newRevenueMsg] ProposalOptions newRevenueMsg
+         * @property {distribution.IDistributeMsg|null} [distributeMsg] ProposalOptions distributeMsg
+         * @property {distribution.IResetRevenueMsg|null} [resetRevenueMsg] ProposalOptions resetRevenueMsg
+         * @property {migration.IUpgradeSchemaMsg|null} [upgradeSchemaMsg] ProposalOptions upgradeSchemaMsg
+         * @property {gov.IUpdateElectorateMsg|null} [updateElectorateMsg] ProposalOptions updateElectorateMsg
+         * @property {gov.IUpdateElectionRuleMsg|null} [updateElectionRuleMsg] ProposalOptions updateElectionRuleMsg
+         * @property {gov.ITextResolutionMsg|null} [textResolutionMsg] ProposalOptions textResolutionMsg
+         */
+
+        /**
+         * Constructs a new ProposalOptions.
+         * @memberof app
+         * @classdesc Trimmed down somewhat arbitrary to what is believed to be reasonable
+         * @implements IProposalOptions
+         * @constructor
+         * @param {app.IProposalOptions=} [properties] Properties to set
+         */
+        function ProposalOptions(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ProposalOptions sendMsg.
+         * @member {cash.ISendMsg|null|undefined} sendMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.sendMsg = null;
+
+        /**
+         * ProposalOptions releaseEscrowMsg.
+         * @member {escrow.IReleaseEscrowMsg|null|undefined} releaseEscrowMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.releaseEscrowMsg = null;
+
+        /**
+         * ProposalOptions updateEscrowMsg.
+         * @member {escrow.IUpdateEscrowPartiesMsg|null|undefined} updateEscrowMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.updateEscrowMsg = null;
+
+        /**
+         * ProposalOptions setValidatorsMsg.
+         * @member {validators.ISetValidatorsMsg|null|undefined} setValidatorsMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.setValidatorsMsg = null;
+
+        /**
+         * ProposalOptions batchMsg.
+         * @member {app.IProposalBatchMsg|null|undefined} batchMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.batchMsg = null;
+
+        /**
+         * ProposalOptions newRevenueMsg.
+         * @member {distribution.INewRevenueMsg|null|undefined} newRevenueMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.newRevenueMsg = null;
+
+        /**
+         * ProposalOptions distributeMsg.
+         * @member {distribution.IDistributeMsg|null|undefined} distributeMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.distributeMsg = null;
+
+        /**
+         * ProposalOptions resetRevenueMsg.
+         * @member {distribution.IResetRevenueMsg|null|undefined} resetRevenueMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.resetRevenueMsg = null;
+
+        /**
+         * ProposalOptions upgradeSchemaMsg.
+         * @member {migration.IUpgradeSchemaMsg|null|undefined} upgradeSchemaMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.upgradeSchemaMsg = null;
+
+        /**
+         * ProposalOptions updateElectorateMsg.
+         * @member {gov.IUpdateElectorateMsg|null|undefined} updateElectorateMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.updateElectorateMsg = null;
+
+        /**
+         * ProposalOptions updateElectionRuleMsg.
+         * @member {gov.IUpdateElectionRuleMsg|null|undefined} updateElectionRuleMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.updateElectionRuleMsg = null;
+
+        /**
+         * ProposalOptions textResolutionMsg.
+         * @member {gov.ITextResolutionMsg|null|undefined} textResolutionMsg
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.textResolutionMsg = null;
+
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+
+        /**
+         * ProposalOptions option.
+         * @member {"sendMsg"|"releaseEscrowMsg"|"updateEscrowMsg"|"setValidatorsMsg"|"batchMsg"|"newRevenueMsg"|"distributeMsg"|"resetRevenueMsg"|"upgradeSchemaMsg"|"updateElectorateMsg"|"updateElectionRuleMsg"|"textResolutionMsg"|undefined} option
+         * @memberof app.ProposalOptions
+         * @instance
+         */
+        Object.defineProperty(ProposalOptions.prototype, "option", {
+            get: $util.oneOfGetter($oneOfFields = ["sendMsg", "releaseEscrowMsg", "updateEscrowMsg", "setValidatorsMsg", "batchMsg", "newRevenueMsg", "distributeMsg", "resetRevenueMsg", "upgradeSchemaMsg", "updateElectorateMsg", "updateElectionRuleMsg", "textResolutionMsg"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * Creates a new ProposalOptions instance using the specified properties.
+         * @function create
+         * @memberof app.ProposalOptions
+         * @static
+         * @param {app.IProposalOptions=} [properties] Properties to set
+         * @returns {app.ProposalOptions} ProposalOptions instance
+         */
+        ProposalOptions.create = function create(properties) {
+            return new ProposalOptions(properties);
+        };
+
+        /**
+         * Encodes the specified ProposalOptions message. Does not implicitly {@link app.ProposalOptions.verify|verify} messages.
+         * @function encode
+         * @memberof app.ProposalOptions
+         * @static
+         * @param {app.IProposalOptions} message ProposalOptions message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProposalOptions.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.sendMsg != null && message.hasOwnProperty("sendMsg"))
+                $root.cash.SendMsg.encode(message.sendMsg, writer.uint32(/* id 51, wireType 2 =*/410).fork()).ldelim();
+            if (message.releaseEscrowMsg != null && message.hasOwnProperty("releaseEscrowMsg"))
+                $root.escrow.ReleaseEscrowMsg.encode(message.releaseEscrowMsg, writer.uint32(/* id 53, wireType 2 =*/426).fork()).ldelim();
+            if (message.updateEscrowMsg != null && message.hasOwnProperty("updateEscrowMsg"))
+                $root.escrow.UpdateEscrowPartiesMsg.encode(message.updateEscrowMsg, writer.uint32(/* id 55, wireType 2 =*/442).fork()).ldelim();
+            if (message.setValidatorsMsg != null && message.hasOwnProperty("setValidatorsMsg"))
+                $root.validators.SetValidatorsMsg.encode(message.setValidatorsMsg, writer.uint32(/* id 58, wireType 2 =*/466).fork()).ldelim();
+            if (message.batchMsg != null && message.hasOwnProperty("batchMsg"))
+                $root.app.ProposalBatchMsg.encode(message.batchMsg, writer.uint32(/* id 60, wireType 2 =*/482).fork()).ldelim();
+            if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg"))
+                $root.distribution.NewRevenueMsg.encode(message.newRevenueMsg, writer.uint32(/* id 66, wireType 2 =*/530).fork()).ldelim();
+            if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg"))
+                $root.distribution.DistributeMsg.encode(message.distributeMsg, writer.uint32(/* id 67, wireType 2 =*/538).fork()).ldelim();
+            if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg"))
+                $root.distribution.ResetRevenueMsg.encode(message.resetRevenueMsg, writer.uint32(/* id 68, wireType 2 =*/546).fork()).ldelim();
+            if (message.upgradeSchemaMsg != null && message.hasOwnProperty("upgradeSchemaMsg"))
+                $root.migration.UpgradeSchemaMsg.encode(message.upgradeSchemaMsg, writer.uint32(/* id 69, wireType 2 =*/554).fork()).ldelim();
+            if (message.updateElectorateMsg != null && message.hasOwnProperty("updateElectorateMsg"))
+                $root.gov.UpdateElectorateMsg.encode(message.updateElectorateMsg, writer.uint32(/* id 77, wireType 2 =*/618).fork()).ldelim();
+            if (message.updateElectionRuleMsg != null && message.hasOwnProperty("updateElectionRuleMsg"))
+                $root.gov.UpdateElectionRuleMsg.encode(message.updateElectionRuleMsg, writer.uint32(/* id 78, wireType 2 =*/626).fork()).ldelim();
+            if (message.textResolutionMsg != null && message.hasOwnProperty("textResolutionMsg"))
+                $root.gov.TextResolutionMsg.encode(message.textResolutionMsg, writer.uint32(/* id 79, wireType 2 =*/634).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ProposalOptions message, length delimited. Does not implicitly {@link app.ProposalOptions.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof app.ProposalOptions
+         * @static
+         * @param {app.IProposalOptions} message ProposalOptions message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProposalOptions.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ProposalOptions message from the specified reader or buffer.
+         * @function decode
+         * @memberof app.ProposalOptions
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {app.ProposalOptions} ProposalOptions
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProposalOptions.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.app.ProposalOptions();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 51:
+                    message.sendMsg = $root.cash.SendMsg.decode(reader, reader.uint32());
+                    break;
+                case 53:
+                    message.releaseEscrowMsg = $root.escrow.ReleaseEscrowMsg.decode(reader, reader.uint32());
+                    break;
+                case 55:
+                    message.updateEscrowMsg = $root.escrow.UpdateEscrowPartiesMsg.decode(reader, reader.uint32());
+                    break;
+                case 58:
+                    message.setValidatorsMsg = $root.validators.SetValidatorsMsg.decode(reader, reader.uint32());
+                    break;
+                case 60:
+                    message.batchMsg = $root.app.ProposalBatchMsg.decode(reader, reader.uint32());
+                    break;
+                case 66:
+                    message.newRevenueMsg = $root.distribution.NewRevenueMsg.decode(reader, reader.uint32());
+                    break;
+                case 67:
+                    message.distributeMsg = $root.distribution.DistributeMsg.decode(reader, reader.uint32());
+                    break;
+                case 68:
+                    message.resetRevenueMsg = $root.distribution.ResetRevenueMsg.decode(reader, reader.uint32());
+                    break;
+                case 69:
+                    message.upgradeSchemaMsg = $root.migration.UpgradeSchemaMsg.decode(reader, reader.uint32());
+                    break;
+                case 77:
+                    message.updateElectorateMsg = $root.gov.UpdateElectorateMsg.decode(reader, reader.uint32());
+                    break;
+                case 78:
+                    message.updateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.decode(reader, reader.uint32());
+                    break;
+                case 79:
+                    message.textResolutionMsg = $root.gov.TextResolutionMsg.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ProposalOptions message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof app.ProposalOptions
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {app.ProposalOptions} ProposalOptions
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProposalOptions.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ProposalOptions message.
+         * @function verify
+         * @memberof app.ProposalOptions
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ProposalOptions.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            var properties = {};
+            if (message.sendMsg != null && message.hasOwnProperty("sendMsg")) {
+                properties.option = 1;
+                {
+                    var error = $root.cash.SendMsg.verify(message.sendMsg);
+                    if (error)
+                        return "sendMsg." + error;
+                }
+            }
+            if (message.releaseEscrowMsg != null && message.hasOwnProperty("releaseEscrowMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.escrow.ReleaseEscrowMsg.verify(message.releaseEscrowMsg);
+                    if (error)
+                        return "releaseEscrowMsg." + error;
+                }
+            }
+            if (message.updateEscrowMsg != null && message.hasOwnProperty("updateEscrowMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.escrow.UpdateEscrowPartiesMsg.verify(message.updateEscrowMsg);
+                    if (error)
+                        return "updateEscrowMsg." + error;
+                }
+            }
+            if (message.setValidatorsMsg != null && message.hasOwnProperty("setValidatorsMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.validators.SetValidatorsMsg.verify(message.setValidatorsMsg);
+                    if (error)
+                        return "setValidatorsMsg." + error;
+                }
+            }
+            if (message.batchMsg != null && message.hasOwnProperty("batchMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.app.ProposalBatchMsg.verify(message.batchMsg);
+                    if (error)
+                        return "batchMsg." + error;
+                }
+            }
+            if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.distribution.NewRevenueMsg.verify(message.newRevenueMsg);
+                    if (error)
+                        return "newRevenueMsg." + error;
+                }
+            }
+            if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.distribution.DistributeMsg.verify(message.distributeMsg);
+                    if (error)
+                        return "distributeMsg." + error;
+                }
+            }
+            if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.distribution.ResetRevenueMsg.verify(message.resetRevenueMsg);
+                    if (error)
+                        return "resetRevenueMsg." + error;
+                }
+            }
+            if (message.upgradeSchemaMsg != null && message.hasOwnProperty("upgradeSchemaMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.migration.UpgradeSchemaMsg.verify(message.upgradeSchemaMsg);
+                    if (error)
+                        return "upgradeSchemaMsg." + error;
+                }
+            }
+            if (message.updateElectorateMsg != null && message.hasOwnProperty("updateElectorateMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.gov.UpdateElectorateMsg.verify(message.updateElectorateMsg);
+                    if (error)
+                        return "updateElectorateMsg." + error;
+                }
+            }
+            if (message.updateElectionRuleMsg != null && message.hasOwnProperty("updateElectionRuleMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.gov.UpdateElectionRuleMsg.verify(message.updateElectionRuleMsg);
+                    if (error)
+                        return "updateElectionRuleMsg." + error;
+                }
+            }
+            if (message.textResolutionMsg != null && message.hasOwnProperty("textResolutionMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.gov.TextResolutionMsg.verify(message.textResolutionMsg);
+                    if (error)
+                        return "textResolutionMsg." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ProposalOptions message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof app.ProposalOptions
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {app.ProposalOptions} ProposalOptions
+         */
+        ProposalOptions.fromObject = function fromObject(object) {
+            if (object instanceof $root.app.ProposalOptions)
+                return object;
+            var message = new $root.app.ProposalOptions();
+            if (object.sendMsg != null) {
+                if (typeof object.sendMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.sendMsg: object expected");
+                message.sendMsg = $root.cash.SendMsg.fromObject(object.sendMsg);
+            }
+            if (object.releaseEscrowMsg != null) {
+                if (typeof object.releaseEscrowMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.releaseEscrowMsg: object expected");
+                message.releaseEscrowMsg = $root.escrow.ReleaseEscrowMsg.fromObject(object.releaseEscrowMsg);
+            }
+            if (object.updateEscrowMsg != null) {
+                if (typeof object.updateEscrowMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.updateEscrowMsg: object expected");
+                message.updateEscrowMsg = $root.escrow.UpdateEscrowPartiesMsg.fromObject(object.updateEscrowMsg);
+            }
+            if (object.setValidatorsMsg != null) {
+                if (typeof object.setValidatorsMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.setValidatorsMsg: object expected");
+                message.setValidatorsMsg = $root.validators.SetValidatorsMsg.fromObject(object.setValidatorsMsg);
+            }
+            if (object.batchMsg != null) {
+                if (typeof object.batchMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.batchMsg: object expected");
+                message.batchMsg = $root.app.ProposalBatchMsg.fromObject(object.batchMsg);
+            }
+            if (object.newRevenueMsg != null) {
+                if (typeof object.newRevenueMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.newRevenueMsg: object expected");
+                message.newRevenueMsg = $root.distribution.NewRevenueMsg.fromObject(object.newRevenueMsg);
+            }
+            if (object.distributeMsg != null) {
+                if (typeof object.distributeMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.distributeMsg: object expected");
+                message.distributeMsg = $root.distribution.DistributeMsg.fromObject(object.distributeMsg);
+            }
+            if (object.resetRevenueMsg != null) {
+                if (typeof object.resetRevenueMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.resetRevenueMsg: object expected");
+                message.resetRevenueMsg = $root.distribution.ResetRevenueMsg.fromObject(object.resetRevenueMsg);
+            }
+            if (object.upgradeSchemaMsg != null) {
+                if (typeof object.upgradeSchemaMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.upgradeSchemaMsg: object expected");
+                message.upgradeSchemaMsg = $root.migration.UpgradeSchemaMsg.fromObject(object.upgradeSchemaMsg);
+            }
+            if (object.updateElectorateMsg != null) {
+                if (typeof object.updateElectorateMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.updateElectorateMsg: object expected");
+                message.updateElectorateMsg = $root.gov.UpdateElectorateMsg.fromObject(object.updateElectorateMsg);
+            }
+            if (object.updateElectionRuleMsg != null) {
+                if (typeof object.updateElectionRuleMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.updateElectionRuleMsg: object expected");
+                message.updateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.fromObject(object.updateElectionRuleMsg);
+            }
+            if (object.textResolutionMsg != null) {
+                if (typeof object.textResolutionMsg !== "object")
+                    throw TypeError(".app.ProposalOptions.textResolutionMsg: object expected");
+                message.textResolutionMsg = $root.gov.TextResolutionMsg.fromObject(object.textResolutionMsg);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ProposalOptions message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof app.ProposalOptions
+         * @static
+         * @param {app.ProposalOptions} message ProposalOptions
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ProposalOptions.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (message.sendMsg != null && message.hasOwnProperty("sendMsg")) {
+                object.sendMsg = $root.cash.SendMsg.toObject(message.sendMsg, options);
+                if (options.oneofs)
+                    object.option = "sendMsg";
+            }
+            if (message.releaseEscrowMsg != null && message.hasOwnProperty("releaseEscrowMsg")) {
+                object.releaseEscrowMsg = $root.escrow.ReleaseEscrowMsg.toObject(message.releaseEscrowMsg, options);
+                if (options.oneofs)
+                    object.option = "releaseEscrowMsg";
+            }
+            if (message.updateEscrowMsg != null && message.hasOwnProperty("updateEscrowMsg")) {
+                object.updateEscrowMsg = $root.escrow.UpdateEscrowPartiesMsg.toObject(message.updateEscrowMsg, options);
+                if (options.oneofs)
+                    object.option = "updateEscrowMsg";
+            }
+            if (message.setValidatorsMsg != null && message.hasOwnProperty("setValidatorsMsg")) {
+                object.setValidatorsMsg = $root.validators.SetValidatorsMsg.toObject(message.setValidatorsMsg, options);
+                if (options.oneofs)
+                    object.option = "setValidatorsMsg";
+            }
+            if (message.batchMsg != null && message.hasOwnProperty("batchMsg")) {
+                object.batchMsg = $root.app.ProposalBatchMsg.toObject(message.batchMsg, options);
+                if (options.oneofs)
+                    object.option = "batchMsg";
+            }
+            if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg")) {
+                object.newRevenueMsg = $root.distribution.NewRevenueMsg.toObject(message.newRevenueMsg, options);
+                if (options.oneofs)
+                    object.option = "newRevenueMsg";
+            }
+            if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg")) {
+                object.distributeMsg = $root.distribution.DistributeMsg.toObject(message.distributeMsg, options);
+                if (options.oneofs)
+                    object.option = "distributeMsg";
+            }
+            if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg")) {
+                object.resetRevenueMsg = $root.distribution.ResetRevenueMsg.toObject(message.resetRevenueMsg, options);
+                if (options.oneofs)
+                    object.option = "resetRevenueMsg";
+            }
+            if (message.upgradeSchemaMsg != null && message.hasOwnProperty("upgradeSchemaMsg")) {
+                object.upgradeSchemaMsg = $root.migration.UpgradeSchemaMsg.toObject(message.upgradeSchemaMsg, options);
+                if (options.oneofs)
+                    object.option = "upgradeSchemaMsg";
+            }
+            if (message.updateElectorateMsg != null && message.hasOwnProperty("updateElectorateMsg")) {
+                object.updateElectorateMsg = $root.gov.UpdateElectorateMsg.toObject(message.updateElectorateMsg, options);
+                if (options.oneofs)
+                    object.option = "updateElectorateMsg";
+            }
+            if (message.updateElectionRuleMsg != null && message.hasOwnProperty("updateElectionRuleMsg")) {
+                object.updateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.toObject(message.updateElectionRuleMsg, options);
+                if (options.oneofs)
+                    object.option = "updateElectionRuleMsg";
+            }
+            if (message.textResolutionMsg != null && message.hasOwnProperty("textResolutionMsg")) {
+                object.textResolutionMsg = $root.gov.TextResolutionMsg.toObject(message.textResolutionMsg, options);
+                if (options.oneofs)
+                    object.option = "textResolutionMsg";
+            }
+            return object;
+        };
+
+        /**
+         * Converts this ProposalOptions to JSON.
+         * @function toJSON
+         * @memberof app.ProposalOptions
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ProposalOptions.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ProposalOptions;
+    })();
+
+    app.ProposalBatchMsg = (function() {
+
+        /**
+         * Properties of a ProposalBatchMsg.
+         * @memberof app
+         * @interface IProposalBatchMsg
+         * @property {Array.<app.ProposalBatchMsg.IUnion>|null} [messages] ProposalBatchMsg messages
+         */
+
+        /**
+         * Constructs a new ProposalBatchMsg.
+         * @memberof app
+         * @classdesc Represents a ProposalBatchMsg.
+         * @implements IProposalBatchMsg
+         * @constructor
+         * @param {app.IProposalBatchMsg=} [properties] Properties to set
+         */
+        function ProposalBatchMsg(properties) {
+            this.messages = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ProposalBatchMsg messages.
+         * @member {Array.<app.ProposalBatchMsg.IUnion>} messages
+         * @memberof app.ProposalBatchMsg
+         * @instance
+         */
+        ProposalBatchMsg.prototype.messages = $util.emptyArray;
+
+        /**
+         * Creates a new ProposalBatchMsg instance using the specified properties.
+         * @function create
+         * @memberof app.ProposalBatchMsg
+         * @static
+         * @param {app.IProposalBatchMsg=} [properties] Properties to set
+         * @returns {app.ProposalBatchMsg} ProposalBatchMsg instance
+         */
+        ProposalBatchMsg.create = function create(properties) {
+            return new ProposalBatchMsg(properties);
+        };
+
+        /**
+         * Encodes the specified ProposalBatchMsg message. Does not implicitly {@link app.ProposalBatchMsg.verify|verify} messages.
+         * @function encode
+         * @memberof app.ProposalBatchMsg
+         * @static
+         * @param {app.IProposalBatchMsg} message ProposalBatchMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProposalBatchMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.messages != null && message.messages.length)
+                for (var i = 0; i < message.messages.length; ++i)
+                    $root.app.ProposalBatchMsg.Union.encode(message.messages[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ProposalBatchMsg message, length delimited. Does not implicitly {@link app.ProposalBatchMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof app.ProposalBatchMsg
+         * @static
+         * @param {app.IProposalBatchMsg} message ProposalBatchMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProposalBatchMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ProposalBatchMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof app.ProposalBatchMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {app.ProposalBatchMsg} ProposalBatchMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProposalBatchMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.app.ProposalBatchMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message.messages && message.messages.length))
+                        message.messages = [];
+                    message.messages.push($root.app.ProposalBatchMsg.Union.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ProposalBatchMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof app.ProposalBatchMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {app.ProposalBatchMsg} ProposalBatchMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProposalBatchMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ProposalBatchMsg message.
+         * @function verify
+         * @memberof app.ProposalBatchMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ProposalBatchMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.messages != null && message.hasOwnProperty("messages")) {
+                if (!Array.isArray(message.messages))
+                    return "messages: array expected";
+                for (var i = 0; i < message.messages.length; ++i) {
+                    var error = $root.app.ProposalBatchMsg.Union.verify(message.messages[i]);
+                    if (error)
+                        return "messages." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ProposalBatchMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof app.ProposalBatchMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {app.ProposalBatchMsg} ProposalBatchMsg
+         */
+        ProposalBatchMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.app.ProposalBatchMsg)
+                return object;
+            var message = new $root.app.ProposalBatchMsg();
+            if (object.messages) {
+                if (!Array.isArray(object.messages))
+                    throw TypeError(".app.ProposalBatchMsg.messages: array expected");
+                message.messages = [];
+                for (var i = 0; i < object.messages.length; ++i) {
+                    if (typeof object.messages[i] !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.messages: object expected");
+                    message.messages[i] = $root.app.ProposalBatchMsg.Union.fromObject(object.messages[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ProposalBatchMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof app.ProposalBatchMsg
+         * @static
+         * @param {app.ProposalBatchMsg} message ProposalBatchMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ProposalBatchMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.messages = [];
+            if (message.messages && message.messages.length) {
+                object.messages = [];
+                for (var j = 0; j < message.messages.length; ++j)
+                    object.messages[j] = $root.app.ProposalBatchMsg.Union.toObject(message.messages[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this ProposalBatchMsg to JSON.
+         * @function toJSON
+         * @memberof app.ProposalBatchMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ProposalBatchMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        ProposalBatchMsg.Union = (function() {
+
+            /**
+             * Properties of an Union.
+             * @memberof app.ProposalBatchMsg
+             * @interface IUnion
+             * @property {cash.ISendMsg|null} [sendMsg] Union sendMsg
+             * @property {escrow.IReleaseEscrowMsg|null} [releaseEscrowMsg] Union releaseEscrowMsg
+             * @property {escrow.IUpdateEscrowPartiesMsg|null} [updateEscrowMsg] Union updateEscrowMsg
+             * @property {validators.ISetValidatorsMsg|null} [setValidatorsMsg] Union setValidatorsMsg
+             * @property {distribution.INewRevenueMsg|null} [newRevenueMsg] no recursive batches
+             * @property {distribution.IDistributeMsg|null} [distributeMsg] Union distributeMsg
+             * @property {distribution.IResetRevenueMsg|null} [resetRevenueMsg] Union resetRevenueMsg
+             * @property {gov.IUpdateElectorateMsg|null} [updateElectorateMsg] don't allow UpgradeSchema as part of a batch, as effects are too confusing
+             * @property {gov.IUpdateElectionRuleMsg|null} [updateElectionRuleMsg] Union updateElectionRuleMsg
+             * @property {gov.ITextResolutionMsg|null} [textResolutionMsg] Union textResolutionMsg
+             */
+
+            /**
+             * Constructs a new Union.
+             * @memberof app.ProposalBatchMsg
+             * @classdesc Represents an Union.
+             * @implements IUnion
+             * @constructor
+             * @param {app.ProposalBatchMsg.IUnion=} [properties] Properties to set
+             */
+            function Union(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * Union sendMsg.
+             * @member {cash.ISendMsg|null|undefined} sendMsg
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.sendMsg = null;
+
+            /**
+             * Union releaseEscrowMsg.
+             * @member {escrow.IReleaseEscrowMsg|null|undefined} releaseEscrowMsg
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.releaseEscrowMsg = null;
+
+            /**
+             * Union updateEscrowMsg.
+             * @member {escrow.IUpdateEscrowPartiesMsg|null|undefined} updateEscrowMsg
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.updateEscrowMsg = null;
+
+            /**
+             * Union setValidatorsMsg.
+             * @member {validators.ISetValidatorsMsg|null|undefined} setValidatorsMsg
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.setValidatorsMsg = null;
+
+            /**
+             * no recursive batches
+             * @member {distribution.INewRevenueMsg|null|undefined} newRevenueMsg
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.newRevenueMsg = null;
+
+            /**
+             * Union distributeMsg.
+             * @member {distribution.IDistributeMsg|null|undefined} distributeMsg
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.distributeMsg = null;
+
+            /**
+             * Union resetRevenueMsg.
+             * @member {distribution.IResetRevenueMsg|null|undefined} resetRevenueMsg
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.resetRevenueMsg = null;
+
+            /**
+             * don't allow UpgradeSchema as part of a batch, as effects are too confusing
+             * @member {gov.IUpdateElectorateMsg|null|undefined} updateElectorateMsg
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.updateElectorateMsg = null;
+
+            /**
+             * Union updateElectionRuleMsg.
+             * @member {gov.IUpdateElectionRuleMsg|null|undefined} updateElectionRuleMsg
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.updateElectionRuleMsg = null;
+
+            /**
+             * Union textResolutionMsg.
+             * @member {gov.ITextResolutionMsg|null|undefined} textResolutionMsg
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.textResolutionMsg = null;
+
+            // OneOf field names bound to virtual getters and setters
+            var $oneOfFields;
+
+            /**
+             * Union sum.
+             * @member {"sendMsg"|"releaseEscrowMsg"|"updateEscrowMsg"|"setValidatorsMsg"|"newRevenueMsg"|"distributeMsg"|"resetRevenueMsg"|"updateElectorateMsg"|"updateElectionRuleMsg"|"textResolutionMsg"|undefined} sum
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             */
+            Object.defineProperty(Union.prototype, "sum", {
+                get: $util.oneOfGetter($oneOfFields = ["sendMsg", "releaseEscrowMsg", "updateEscrowMsg", "setValidatorsMsg", "newRevenueMsg", "distributeMsg", "resetRevenueMsg", "updateElectorateMsg", "updateElectionRuleMsg", "textResolutionMsg"]),
+                set: $util.oneOfSetter($oneOfFields)
+            });
+
+            /**
+             * Creates a new Union instance using the specified properties.
+             * @function create
+             * @memberof app.ProposalBatchMsg.Union
+             * @static
+             * @param {app.ProposalBatchMsg.IUnion=} [properties] Properties to set
+             * @returns {app.ProposalBatchMsg.Union} Union instance
+             */
+            Union.create = function create(properties) {
+                return new Union(properties);
+            };
+
+            /**
+             * Encodes the specified Union message. Does not implicitly {@link app.ProposalBatchMsg.Union.verify|verify} messages.
+             * @function encode
+             * @memberof app.ProposalBatchMsg.Union
+             * @static
+             * @param {app.ProposalBatchMsg.IUnion} message Union message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            Union.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.sendMsg != null && message.hasOwnProperty("sendMsg"))
+                    $root.cash.SendMsg.encode(message.sendMsg, writer.uint32(/* id 51, wireType 2 =*/410).fork()).ldelim();
+                if (message.releaseEscrowMsg != null && message.hasOwnProperty("releaseEscrowMsg"))
+                    $root.escrow.ReleaseEscrowMsg.encode(message.releaseEscrowMsg, writer.uint32(/* id 53, wireType 2 =*/426).fork()).ldelim();
+                if (message.updateEscrowMsg != null && message.hasOwnProperty("updateEscrowMsg"))
+                    $root.escrow.UpdateEscrowPartiesMsg.encode(message.updateEscrowMsg, writer.uint32(/* id 55, wireType 2 =*/442).fork()).ldelim();
+                if (message.setValidatorsMsg != null && message.hasOwnProperty("setValidatorsMsg"))
+                    $root.validators.SetValidatorsMsg.encode(message.setValidatorsMsg, writer.uint32(/* id 58, wireType 2 =*/466).fork()).ldelim();
+                if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg"))
+                    $root.distribution.NewRevenueMsg.encode(message.newRevenueMsg, writer.uint32(/* id 66, wireType 2 =*/530).fork()).ldelim();
+                if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg"))
+                    $root.distribution.DistributeMsg.encode(message.distributeMsg, writer.uint32(/* id 67, wireType 2 =*/538).fork()).ldelim();
+                if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg"))
+                    $root.distribution.ResetRevenueMsg.encode(message.resetRevenueMsg, writer.uint32(/* id 68, wireType 2 =*/546).fork()).ldelim();
+                if (message.updateElectorateMsg != null && message.hasOwnProperty("updateElectorateMsg"))
+                    $root.gov.UpdateElectorateMsg.encode(message.updateElectorateMsg, writer.uint32(/* id 77, wireType 2 =*/618).fork()).ldelim();
+                if (message.updateElectionRuleMsg != null && message.hasOwnProperty("updateElectionRuleMsg"))
+                    $root.gov.UpdateElectionRuleMsg.encode(message.updateElectionRuleMsg, writer.uint32(/* id 78, wireType 2 =*/626).fork()).ldelim();
+                if (message.textResolutionMsg != null && message.hasOwnProperty("textResolutionMsg"))
+                    $root.gov.TextResolutionMsg.encode(message.textResolutionMsg, writer.uint32(/* id 79, wireType 2 =*/634).fork()).ldelim();
+                return writer;
+            };
+
+            /**
+             * Encodes the specified Union message, length delimited. Does not implicitly {@link app.ProposalBatchMsg.Union.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof app.ProposalBatchMsg.Union
+             * @static
+             * @param {app.ProposalBatchMsg.IUnion} message Union message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            Union.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes an Union message from the specified reader or buffer.
+             * @function decode
+             * @memberof app.ProposalBatchMsg.Union
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {app.ProposalBatchMsg.Union} Union
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            Union.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.app.ProposalBatchMsg.Union();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 51:
+                        message.sendMsg = $root.cash.SendMsg.decode(reader, reader.uint32());
+                        break;
+                    case 53:
+                        message.releaseEscrowMsg = $root.escrow.ReleaseEscrowMsg.decode(reader, reader.uint32());
+                        break;
+                    case 55:
+                        message.updateEscrowMsg = $root.escrow.UpdateEscrowPartiesMsg.decode(reader, reader.uint32());
+                        break;
+                    case 58:
+                        message.setValidatorsMsg = $root.validators.SetValidatorsMsg.decode(reader, reader.uint32());
+                        break;
+                    case 66:
+                        message.newRevenueMsg = $root.distribution.NewRevenueMsg.decode(reader, reader.uint32());
+                        break;
+                    case 67:
+                        message.distributeMsg = $root.distribution.DistributeMsg.decode(reader, reader.uint32());
+                        break;
+                    case 68:
+                        message.resetRevenueMsg = $root.distribution.ResetRevenueMsg.decode(reader, reader.uint32());
+                        break;
+                    case 77:
+                        message.updateElectorateMsg = $root.gov.UpdateElectorateMsg.decode(reader, reader.uint32());
+                        break;
+                    case 78:
+                        message.updateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.decode(reader, reader.uint32());
+                        break;
+                    case 79:
+                        message.textResolutionMsg = $root.gov.TextResolutionMsg.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes an Union message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof app.ProposalBatchMsg.Union
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {app.ProposalBatchMsg.Union} Union
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            Union.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies an Union message.
+             * @function verify
+             * @memberof app.ProposalBatchMsg.Union
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            Union.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                var properties = {};
+                if (message.sendMsg != null && message.hasOwnProperty("sendMsg")) {
+                    properties.sum = 1;
+                    {
+                        var error = $root.cash.SendMsg.verify(message.sendMsg);
+                        if (error)
+                            return "sendMsg." + error;
+                    }
+                }
+                if (message.releaseEscrowMsg != null && message.hasOwnProperty("releaseEscrowMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.escrow.ReleaseEscrowMsg.verify(message.releaseEscrowMsg);
+                        if (error)
+                            return "releaseEscrowMsg." + error;
+                    }
+                }
+                if (message.updateEscrowMsg != null && message.hasOwnProperty("updateEscrowMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.escrow.UpdateEscrowPartiesMsg.verify(message.updateEscrowMsg);
+                        if (error)
+                            return "updateEscrowMsg." + error;
+                    }
+                }
+                if (message.setValidatorsMsg != null && message.hasOwnProperty("setValidatorsMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.validators.SetValidatorsMsg.verify(message.setValidatorsMsg);
+                        if (error)
+                            return "setValidatorsMsg." + error;
+                    }
+                }
+                if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.distribution.NewRevenueMsg.verify(message.newRevenueMsg);
+                        if (error)
+                            return "newRevenueMsg." + error;
+                    }
+                }
+                if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.distribution.DistributeMsg.verify(message.distributeMsg);
+                        if (error)
+                            return "distributeMsg." + error;
+                    }
+                }
+                if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.distribution.ResetRevenueMsg.verify(message.resetRevenueMsg);
+                        if (error)
+                            return "resetRevenueMsg." + error;
+                    }
+                }
+                if (message.updateElectorateMsg != null && message.hasOwnProperty("updateElectorateMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.gov.UpdateElectorateMsg.verify(message.updateElectorateMsg);
+                        if (error)
+                            return "updateElectorateMsg." + error;
+                    }
+                }
+                if (message.updateElectionRuleMsg != null && message.hasOwnProperty("updateElectionRuleMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.gov.UpdateElectionRuleMsg.verify(message.updateElectionRuleMsg);
+                        if (error)
+                            return "updateElectionRuleMsg." + error;
+                    }
+                }
+                if (message.textResolutionMsg != null && message.hasOwnProperty("textResolutionMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.gov.TextResolutionMsg.verify(message.textResolutionMsg);
+                        if (error)
+                            return "textResolutionMsg." + error;
+                    }
+                }
+                return null;
+            };
+
+            /**
+             * Creates an Union message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof app.ProposalBatchMsg.Union
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {app.ProposalBatchMsg.Union} Union
+             */
+            Union.fromObject = function fromObject(object) {
+                if (object instanceof $root.app.ProposalBatchMsg.Union)
+                    return object;
+                var message = new $root.app.ProposalBatchMsg.Union();
+                if (object.sendMsg != null) {
+                    if (typeof object.sendMsg !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.Union.sendMsg: object expected");
+                    message.sendMsg = $root.cash.SendMsg.fromObject(object.sendMsg);
+                }
+                if (object.releaseEscrowMsg != null) {
+                    if (typeof object.releaseEscrowMsg !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.Union.releaseEscrowMsg: object expected");
+                    message.releaseEscrowMsg = $root.escrow.ReleaseEscrowMsg.fromObject(object.releaseEscrowMsg);
+                }
+                if (object.updateEscrowMsg != null) {
+                    if (typeof object.updateEscrowMsg !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.Union.updateEscrowMsg: object expected");
+                    message.updateEscrowMsg = $root.escrow.UpdateEscrowPartiesMsg.fromObject(object.updateEscrowMsg);
+                }
+                if (object.setValidatorsMsg != null) {
+                    if (typeof object.setValidatorsMsg !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.Union.setValidatorsMsg: object expected");
+                    message.setValidatorsMsg = $root.validators.SetValidatorsMsg.fromObject(object.setValidatorsMsg);
+                }
+                if (object.newRevenueMsg != null) {
+                    if (typeof object.newRevenueMsg !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.Union.newRevenueMsg: object expected");
+                    message.newRevenueMsg = $root.distribution.NewRevenueMsg.fromObject(object.newRevenueMsg);
+                }
+                if (object.distributeMsg != null) {
+                    if (typeof object.distributeMsg !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.Union.distributeMsg: object expected");
+                    message.distributeMsg = $root.distribution.DistributeMsg.fromObject(object.distributeMsg);
+                }
+                if (object.resetRevenueMsg != null) {
+                    if (typeof object.resetRevenueMsg !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.Union.resetRevenueMsg: object expected");
+                    message.resetRevenueMsg = $root.distribution.ResetRevenueMsg.fromObject(object.resetRevenueMsg);
+                }
+                if (object.updateElectorateMsg != null) {
+                    if (typeof object.updateElectorateMsg !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.Union.updateElectorateMsg: object expected");
+                    message.updateElectorateMsg = $root.gov.UpdateElectorateMsg.fromObject(object.updateElectorateMsg);
+                }
+                if (object.updateElectionRuleMsg != null) {
+                    if (typeof object.updateElectionRuleMsg !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.Union.updateElectionRuleMsg: object expected");
+                    message.updateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.fromObject(object.updateElectionRuleMsg);
+                }
+                if (object.textResolutionMsg != null) {
+                    if (typeof object.textResolutionMsg !== "object")
+                        throw TypeError(".app.ProposalBatchMsg.Union.textResolutionMsg: object expected");
+                    message.textResolutionMsg = $root.gov.TextResolutionMsg.fromObject(object.textResolutionMsg);
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from an Union message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof app.ProposalBatchMsg.Union
+             * @static
+             * @param {app.ProposalBatchMsg.Union} message Union
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            Union.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (message.sendMsg != null && message.hasOwnProperty("sendMsg")) {
+                    object.sendMsg = $root.cash.SendMsg.toObject(message.sendMsg, options);
+                    if (options.oneofs)
+                        object.sum = "sendMsg";
+                }
+                if (message.releaseEscrowMsg != null && message.hasOwnProperty("releaseEscrowMsg")) {
+                    object.releaseEscrowMsg = $root.escrow.ReleaseEscrowMsg.toObject(message.releaseEscrowMsg, options);
+                    if (options.oneofs)
+                        object.sum = "releaseEscrowMsg";
+                }
+                if (message.updateEscrowMsg != null && message.hasOwnProperty("updateEscrowMsg")) {
+                    object.updateEscrowMsg = $root.escrow.UpdateEscrowPartiesMsg.toObject(message.updateEscrowMsg, options);
+                    if (options.oneofs)
+                        object.sum = "updateEscrowMsg";
+                }
+                if (message.setValidatorsMsg != null && message.hasOwnProperty("setValidatorsMsg")) {
+                    object.setValidatorsMsg = $root.validators.SetValidatorsMsg.toObject(message.setValidatorsMsg, options);
+                    if (options.oneofs)
+                        object.sum = "setValidatorsMsg";
+                }
+                if (message.newRevenueMsg != null && message.hasOwnProperty("newRevenueMsg")) {
+                    object.newRevenueMsg = $root.distribution.NewRevenueMsg.toObject(message.newRevenueMsg, options);
+                    if (options.oneofs)
+                        object.sum = "newRevenueMsg";
+                }
+                if (message.distributeMsg != null && message.hasOwnProperty("distributeMsg")) {
+                    object.distributeMsg = $root.distribution.DistributeMsg.toObject(message.distributeMsg, options);
+                    if (options.oneofs)
+                        object.sum = "distributeMsg";
+                }
+                if (message.resetRevenueMsg != null && message.hasOwnProperty("resetRevenueMsg")) {
+                    object.resetRevenueMsg = $root.distribution.ResetRevenueMsg.toObject(message.resetRevenueMsg, options);
+                    if (options.oneofs)
+                        object.sum = "resetRevenueMsg";
+                }
+                if (message.updateElectorateMsg != null && message.hasOwnProperty("updateElectorateMsg")) {
+                    object.updateElectorateMsg = $root.gov.UpdateElectorateMsg.toObject(message.updateElectorateMsg, options);
+                    if (options.oneofs)
+                        object.sum = "updateElectorateMsg";
+                }
+                if (message.updateElectionRuleMsg != null && message.hasOwnProperty("updateElectionRuleMsg")) {
+                    object.updateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.toObject(message.updateElectionRuleMsg, options);
+                    if (options.oneofs)
+                        object.sum = "updateElectionRuleMsg";
+                }
+                if (message.textResolutionMsg != null && message.hasOwnProperty("textResolutionMsg")) {
+                    object.textResolutionMsg = $root.gov.TextResolutionMsg.toObject(message.textResolutionMsg, options);
+                    if (options.oneofs)
+                        object.sum = "textResolutionMsg";
+                }
+                return object;
+            };
+
+            /**
+             * Converts this Union to JSON.
+             * @function toJSON
+             * @memberof app.ProposalBatchMsg.Union
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            Union.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return Union;
+        })();
+
+        return ProposalBatchMsg;
     })();
 
     return app;
@@ -1279,6 +3758,7 @@ $root.username = (function() {
          * Properties of a UsernameToken.
          * @memberof username
          * @interface IUsernameToken
+         * @property {weave.IMetadata|null} [metadata] UsernameToken metadata
          * @property {nft.INonFungibleToken|null} [base] UsernameToken base
          * @property {username.ITokenDetails|null} [details] UsernameToken details
          */
@@ -1297,6 +3777,14 @@ $root.username = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * UsernameToken metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof username.UsernameToken
+         * @instance
+         */
+        UsernameToken.prototype.metadata = null;
 
         /**
          * UsernameToken base.
@@ -1338,10 +3826,12 @@ $root.username = (function() {
         UsernameToken.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.base != null && message.hasOwnProperty("base"))
-                $root.nft.NonFungibleToken.encode(message.base, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.nft.NonFungibleToken.encode(message.base, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.details != null && message.hasOwnProperty("details"))
-                $root.username.TokenDetails.encode(message.details, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.username.TokenDetails.encode(message.details, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -1377,9 +3867,12 @@ $root.username = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.base = $root.nft.NonFungibleToken.decode(reader, reader.uint32());
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
+                    message.base = $root.nft.NonFungibleToken.decode(reader, reader.uint32());
+                    break;
+                case 3:
                     message.details = $root.username.TokenDetails.decode(reader, reader.uint32());
                     break;
                 default:
@@ -1417,6 +3910,11 @@ $root.username = (function() {
         UsernameToken.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.base != null && message.hasOwnProperty("base")) {
                 var error = $root.nft.NonFungibleToken.verify(message.base);
                 if (error)
@@ -1442,6 +3940,11 @@ $root.username = (function() {
             if (object instanceof $root.username.UsernameToken)
                 return object;
             var message = new $root.username.UsernameToken();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".username.UsernameToken.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.base != null) {
                 if (typeof object.base !== "object")
                     throw TypeError(".username.UsernameToken.base: object expected");
@@ -1469,9 +3972,12 @@ $root.username = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 object.base = null;
                 object.details = null;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.base != null && message.hasOwnProperty("base"))
                 object.base = $root.nft.NonFungibleToken.toObject(message.base, options);
             if (message.details != null && message.hasOwnProperty("details"))
@@ -1926,6 +4432,7 @@ $root.username = (function() {
          * Properties of an IssueTokenMsg.
          * @memberof username
          * @interface IIssueTokenMsg
+         * @property {weave.IMetadata|null} [metadata] IssueTokenMsg metadata
          * @property {Uint8Array|null} [id] IssueTokenMsg id
          * @property {Uint8Array|null} [owner] IssueTokenMsg owner
          * @property {Array.<nft.IActionApprovals>|null} [approvals] IssueTokenMsg approvals
@@ -1947,6 +4454,14 @@ $root.username = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * IssueTokenMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof username.IssueTokenMsg
+         * @instance
+         */
+        IssueTokenMsg.prototype.metadata = null;
 
         /**
          * IssueTokenMsg id.
@@ -2004,15 +4519,17 @@ $root.username = (function() {
         IssueTokenMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
             if (message.owner != null && message.hasOwnProperty("owner"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.owner);
             if (message.approvals != null && message.approvals.length)
                 for (var i = 0; i < message.approvals.length; ++i)
-                    $root.nft.ActionApprovals.encode(message.approvals[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                    $root.nft.ActionApprovals.encode(message.approvals[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.details != null && message.hasOwnProperty("details"))
-                $root.username.TokenDetails.encode(message.details, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.username.TokenDetails.encode(message.details, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             return writer;
         };
 
@@ -2048,17 +4565,20 @@ $root.username = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.id = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.owner = reader.bytes();
+                    message.id = reader.bytes();
                     break;
                 case 3:
+                    message.owner = reader.bytes();
+                    break;
+                case 4:
                     if (!(message.approvals && message.approvals.length))
                         message.approvals = [];
                     message.approvals.push($root.nft.ActionApprovals.decode(reader, reader.uint32()));
                     break;
-                case 4:
+                case 5:
                     message.details = $root.username.TokenDetails.decode(reader, reader.uint32());
                     break;
                 default:
@@ -2096,6 +4616,11 @@ $root.username = (function() {
         IssueTokenMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.id != null && message.hasOwnProperty("id"))
                 if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
                     return "id: buffer expected";
@@ -2131,6 +4656,11 @@ $root.username = (function() {
             if (object instanceof $root.username.IssueTokenMsg)
                 return object;
             var message = new $root.username.IssueTokenMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".username.IssueTokenMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.id != null)
                 if (typeof object.id === "string")
                     $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
@@ -2175,6 +4705,7 @@ $root.username = (function() {
             if (options.arrays || options.defaults)
                 object.approvals = [];
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.id = "";
                 else {
@@ -2191,6 +4722,8 @@ $root.username = (function() {
                 }
                 object.details = null;
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.id != null && message.hasOwnProperty("id"))
                 object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.owner != null && message.hasOwnProperty("owner"))
@@ -2225,6 +4758,7 @@ $root.username = (function() {
          * Properties of an AddChainAddressMsg.
          * @memberof username
          * @interface IAddChainAddressMsg
+         * @property {weave.IMetadata|null} [metadata] AddChainAddressMsg metadata
          * @property {Uint8Array|null} [usernameId] AddChainAddressMsg usernameId
          * @property {Uint8Array|null} [blockchainId] AddChainAddressMsg blockchainId
          * @property {string|null} [address] AddChainAddressMsg address
@@ -2244,6 +4778,14 @@ $root.username = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * AddChainAddressMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof username.AddChainAddressMsg
+         * @instance
+         */
+        AddChainAddressMsg.prototype.metadata = null;
 
         /**
          * AddChainAddressMsg usernameId.
@@ -2293,12 +4835,14 @@ $root.username = (function() {
         AddChainAddressMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.usernameId != null && message.hasOwnProperty("usernameId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.usernameId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.usernameId);
             if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.blockchainId);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.blockchainId);
             if (message.address != null && message.hasOwnProperty("address"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.address);
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.address);
             return writer;
         };
 
@@ -2334,12 +4878,15 @@ $root.username = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.usernameId = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.blockchainId = reader.bytes();
+                    message.usernameId = reader.bytes();
                     break;
                 case 3:
+                    message.blockchainId = reader.bytes();
+                    break;
+                case 4:
                     message.address = reader.string();
                     break;
                 default:
@@ -2377,6 +4924,11 @@ $root.username = (function() {
         AddChainAddressMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.usernameId != null && message.hasOwnProperty("usernameId"))
                 if (!(message.usernameId && typeof message.usernameId.length === "number" || $util.isString(message.usernameId)))
                     return "usernameId: buffer expected";
@@ -2401,6 +4953,11 @@ $root.username = (function() {
             if (object instanceof $root.username.AddChainAddressMsg)
                 return object;
             var message = new $root.username.AddChainAddressMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".username.AddChainAddressMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.usernameId != null)
                 if (typeof object.usernameId === "string")
                     $util.base64.decode(object.usernameId, message.usernameId = $util.newBuffer($util.base64.length(object.usernameId)), 0);
@@ -2430,6 +4987,7 @@ $root.username = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.usernameId = "";
                 else {
@@ -2446,6 +5004,8 @@ $root.username = (function() {
                 }
                 object.address = "";
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.usernameId != null && message.hasOwnProperty("usernameId"))
                 object.usernameId = options.bytes === String ? $util.base64.encode(message.usernameId, 0, message.usernameId.length) : options.bytes === Array ? Array.prototype.slice.call(message.usernameId) : message.usernameId;
             if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
@@ -2475,6 +5035,7 @@ $root.username = (function() {
          * Properties of a RemoveChainAddressMsg.
          * @memberof username
          * @interface IRemoveChainAddressMsg
+         * @property {weave.IMetadata|null} [metadata] RemoveChainAddressMsg metadata
          * @property {Uint8Array|null} [usernameId] RemoveChainAddressMsg usernameId
          * @property {Uint8Array|null} [blockchainId] RemoveChainAddressMsg blockchainId
          * @property {string|null} [address] RemoveChainAddressMsg address
@@ -2494,6 +5055,14 @@ $root.username = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
+        /**
+         * RemoveChainAddressMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof username.RemoveChainAddressMsg
+         * @instance
+         */
+        RemoveChainAddressMsg.prototype.metadata = null;
 
         /**
          * RemoveChainAddressMsg usernameId.
@@ -2543,12 +5112,14 @@ $root.username = (function() {
         RemoveChainAddressMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.usernameId != null && message.hasOwnProperty("usernameId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.usernameId);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.usernameId);
             if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.blockchainId);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.blockchainId);
             if (message.address != null && message.hasOwnProperty("address"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.address);
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.address);
             return writer;
         };
 
@@ -2584,12 +5155,15 @@ $root.username = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.usernameId = reader.bytes();
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.blockchainId = reader.bytes();
+                    message.usernameId = reader.bytes();
                     break;
                 case 3:
+                    message.blockchainId = reader.bytes();
+                    break;
+                case 4:
                     message.address = reader.string();
                     break;
                 default:
@@ -2627,6 +5201,11 @@ $root.username = (function() {
         RemoveChainAddressMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
             if (message.usernameId != null && message.hasOwnProperty("usernameId"))
                 if (!(message.usernameId && typeof message.usernameId.length === "number" || $util.isString(message.usernameId)))
                     return "usernameId: buffer expected";
@@ -2651,6 +5230,11 @@ $root.username = (function() {
             if (object instanceof $root.username.RemoveChainAddressMsg)
                 return object;
             var message = new $root.username.RemoveChainAddressMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".username.RemoveChainAddressMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
             if (object.usernameId != null)
                 if (typeof object.usernameId === "string")
                     $util.base64.decode(object.usernameId, message.usernameId = $util.newBuffer($util.base64.length(object.usernameId)), 0);
@@ -2680,6 +5264,7 @@ $root.username = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
+                object.metadata = null;
                 if (options.bytes === String)
                     object.usernameId = "";
                 else {
@@ -2696,6 +5281,8 @@ $root.username = (function() {
                 }
                 object.address = "";
             }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.usernameId != null && message.hasOwnProperty("usernameId"))
                 object.usernameId = options.bytes === String ? $util.base64.encode(message.usernameId, 0, message.usernameId.length) : options.bytes === Array ? Array.prototype.slice.call(message.usernameId) : message.usernameId;
             if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
@@ -7154,7 +9741,6 @@ $root.cash = (function() {
          * Properties of a FeeInfo.
          * @memberof cash
          * @interface IFeeInfo
-         * @property {weave.IMetadata|null} [metadata] FeeInfo metadata
          * @property {Uint8Array|null} [payer] FeeInfo payer
          * @property {coin.ICoin|null} [fees] FeeInfo fees
          */
@@ -7173,14 +9759,6 @@ $root.cash = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
-
-        /**
-         * FeeInfo metadata.
-         * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof cash.FeeInfo
-         * @instance
-         */
-        FeeInfo.prototype.metadata = null;
 
         /**
          * FeeInfo payer.
@@ -7222,8 +9800,6 @@ $root.cash = (function() {
         FeeInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.metadata != null && message.hasOwnProperty("metadata"))
-                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.payer != null && message.hasOwnProperty("payer"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.payer);
             if (message.fees != null && message.hasOwnProperty("fees"))
@@ -7262,9 +9838,6 @@ $root.cash = (function() {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
-                case 1:
-                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
-                    break;
                 case 2:
                     message.payer = reader.bytes();
                     break;
@@ -7306,11 +9879,6 @@ $root.cash = (function() {
         FeeInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.metadata != null && message.hasOwnProperty("metadata")) {
-                var error = $root.weave.Metadata.verify(message.metadata);
-                if (error)
-                    return "metadata." + error;
-            }
             if (message.payer != null && message.hasOwnProperty("payer"))
                 if (!(message.payer && typeof message.payer.length === "number" || $util.isString(message.payer)))
                     return "payer: buffer expected";
@@ -7334,11 +9902,6 @@ $root.cash = (function() {
             if (object instanceof $root.cash.FeeInfo)
                 return object;
             var message = new $root.cash.FeeInfo();
-            if (object.metadata != null) {
-                if (typeof object.metadata !== "object")
-                    throw TypeError(".cash.FeeInfo.metadata: object expected");
-                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
-            }
             if (object.payer != null)
                 if (typeof object.payer === "string")
                     $util.base64.decode(object.payer, message.payer = $util.newBuffer($util.base64.length(object.payer)), 0);
@@ -7366,7 +9929,6 @@ $root.cash = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
-                object.metadata = null;
                 if (options.bytes === String)
                     object.payer = "";
                 else {
@@ -7376,8 +9938,6 @@ $root.cash = (function() {
                 }
                 object.fees = null;
             }
-            if (message.metadata != null && message.hasOwnProperty("metadata"))
-                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.payer != null && message.hasOwnProperty("payer"))
                 object.payer = options.bytes === String ? $util.base64.encode(message.payer, 0, message.payer.length) : options.bytes === Array ? Array.prototype.slice.call(message.payer) : message.payer;
             if (message.fees != null && message.hasOwnProperty("fees"))
@@ -9598,7 +12158,7 @@ $root.escrow = (function() {
         /**
          * Constructs a new Escrow.
          * @memberof escrow
-         * @classdesc an HTLC ;)
+         * @classdesc Upon timeout, they will be returned to the sender.
          * @implements IEscrow
          * @constructor
          * @param {escrow.IEscrow=} [properties] Properties to set
@@ -11146,7 +13706,6 @@ $root.gov = (function() {
          * @property {string|null} [title] Human readable title.
          * @property {Array.<gov.IElector>|null} [electors] Elector defines a list of all signatures that are allowed to participate in a vote
          * @property {number|Long|null} [totalElectorateWeight] TotalElectorateWeight is the sum of all electors weights.
-         * @property {orm.IVersionedIDRef|null} [updateElectionRuleRef] UpdateElectionRuleRef reference the rule to update this electorate.
          */
 
         /**
@@ -11214,14 +13773,6 @@ $root.gov = (function() {
         Electorate.prototype.totalElectorateWeight = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
 
         /**
-         * UpdateElectionRuleRef reference the rule to update this electorate.
-         * @member {orm.IVersionedIDRef|null|undefined} updateElectionRuleRef
-         * @memberof gov.Electorate
-         * @instance
-         */
-        Electorate.prototype.updateElectionRuleRef = null;
-
-        /**
          * Creates a new Electorate instance using the specified properties.
          * @function create
          * @memberof gov.Electorate
@@ -11258,8 +13809,6 @@ $root.gov = (function() {
                     $root.gov.Elector.encode(message.electors[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.totalElectorateWeight != null && message.hasOwnProperty("totalElectorateWeight"))
                 writer.uint32(/* id 6, wireType 0 =*/48).uint64(message.totalElectorateWeight);
-            if (message.updateElectionRuleRef != null && message.hasOwnProperty("updateElectionRuleRef"))
-                $root.orm.VersionedIDRef.encode(message.updateElectionRuleRef, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             return writer;
         };
 
@@ -11313,9 +13862,6 @@ $root.gov = (function() {
                     break;
                 case 6:
                     message.totalElectorateWeight = reader.uint64();
-                    break;
-                case 7:
-                    message.updateElectionRuleRef = $root.orm.VersionedIDRef.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -11378,11 +13924,6 @@ $root.gov = (function() {
             if (message.totalElectorateWeight != null && message.hasOwnProperty("totalElectorateWeight"))
                 if (!$util.isInteger(message.totalElectorateWeight) && !(message.totalElectorateWeight && $util.isInteger(message.totalElectorateWeight.low) && $util.isInteger(message.totalElectorateWeight.high)))
                     return "totalElectorateWeight: integer|Long expected";
-            if (message.updateElectionRuleRef != null && message.hasOwnProperty("updateElectionRuleRef")) {
-                var error = $root.orm.VersionedIDRef.verify(message.updateElectionRuleRef);
-                if (error)
-                    return "updateElectionRuleRef." + error;
-            }
             return null;
         };
 
@@ -11431,11 +13972,6 @@ $root.gov = (function() {
                     message.totalElectorateWeight = object.totalElectorateWeight;
                 else if (typeof object.totalElectorateWeight === "object")
                     message.totalElectorateWeight = new $util.LongBits(object.totalElectorateWeight.low >>> 0, object.totalElectorateWeight.high >>> 0).toNumber(true);
-            if (object.updateElectionRuleRef != null) {
-                if (typeof object.updateElectionRuleRef !== "object")
-                    throw TypeError(".gov.Electorate.updateElectionRuleRef: object expected");
-                message.updateElectionRuleRef = $root.orm.VersionedIDRef.fromObject(object.updateElectionRuleRef);
-            }
             return message;
         };
 
@@ -11470,7 +14006,6 @@ $root.gov = (function() {
                     object.totalElectorateWeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.totalElectorateWeight = options.longs === String ? "0" : 0;
-                object.updateElectionRuleRef = null;
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -11490,8 +14025,6 @@ $root.gov = (function() {
                     object.totalElectorateWeight = options.longs === String ? String(message.totalElectorateWeight) : message.totalElectorateWeight;
                 else
                     object.totalElectorateWeight = options.longs === String ? $util.Long.prototype.toString.call(message.totalElectorateWeight) : options.longs === Number ? new $util.LongBits(message.totalElectorateWeight.low >>> 0, message.totalElectorateWeight.high >>> 0).toNumber(true) : message.totalElectorateWeight;
-            if (message.updateElectionRuleRef != null && message.hasOwnProperty("updateElectionRuleRef"))
-                object.updateElectionRuleRef = $root.orm.VersionedIDRef.toObject(message.updateElectionRuleRef, options);
             return object;
         };
 
@@ -11735,10 +14268,11 @@ $root.gov = (function() {
          * @memberof gov
          * @interface IElectionRule
          * @property {weave.IMetadata|null} [metadata] ElectionRule metadata
-         * @property {number|null} [version] Document version
-         * @property {Uint8Array|null} [admin] Admin is the address that is allowed ot modify an existing election rule.
+         * @property {number|null} [version] Document version.
+         * @property {Uint8Array|null} [admin] Admin is the address that is allowed to modify an existing election rule.
+         * @property {Uint8Array|null} [electorateId] ElectorateID references the electorate using this rule (without version, as changing electorate changes the rule).
          * @property {string|null} [title] Human readable title.
-         * @property {number|null} [votingPeriodHours] Duration how long the voting period will take place.
+         * @property {number|null} [votingPeriod] Duration in seconds of how long the voting period will take place.
          * @property {gov.IFraction|null} [threshold] of the eligible voters.
          * @property {gov.IFraction|null} [quorum] of the eligible voters.
          */
@@ -11767,7 +14301,7 @@ $root.gov = (function() {
         ElectionRule.prototype.metadata = null;
 
         /**
-         * Document version
+         * Document version.
          * @member {number} version
          * @memberof gov.ElectionRule
          * @instance
@@ -11775,12 +14309,20 @@ $root.gov = (function() {
         ElectionRule.prototype.version = 0;
 
         /**
-         * Admin is the address that is allowed ot modify an existing election rule.
+         * Admin is the address that is allowed to modify an existing election rule.
          * @member {Uint8Array} admin
          * @memberof gov.ElectionRule
          * @instance
          */
         ElectionRule.prototype.admin = $util.newBuffer([]);
+
+        /**
+         * ElectorateID references the electorate using this rule (without version, as changing electorate changes the rule).
+         * @member {Uint8Array} electorateId
+         * @memberof gov.ElectionRule
+         * @instance
+         */
+        ElectionRule.prototype.electorateId = $util.newBuffer([]);
 
         /**
          * Human readable title.
@@ -11791,12 +14333,12 @@ $root.gov = (function() {
         ElectionRule.prototype.title = "";
 
         /**
-         * Duration how long the voting period will take place.
-         * @member {number} votingPeriodHours
+         * Duration in seconds of how long the voting period will take place.
+         * @member {number} votingPeriod
          * @memberof gov.ElectionRule
          * @instance
          */
-        ElectionRule.prototype.votingPeriodHours = 0;
+        ElectionRule.prototype.votingPeriod = 0;
 
         /**
          * of the eligible voters.
@@ -11844,14 +14386,16 @@ $root.gov = (function() {
                 writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.version);
             if (message.admin != null && message.hasOwnProperty("admin"))
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.admin);
+            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.electorateId);
             if (message.title != null && message.hasOwnProperty("title"))
-                writer.uint32(/* id 4, wireType 2 =*/34).string(message.title);
-            if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
-                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.votingPeriodHours);
+                writer.uint32(/* id 5, wireType 2 =*/42).string(message.title);
+            if (message.votingPeriod != null && message.hasOwnProperty("votingPeriod"))
+                writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.votingPeriod);
             if (message.threshold != null && message.hasOwnProperty("threshold"))
-                $root.gov.Fraction.encode(message.threshold, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                $root.gov.Fraction.encode(message.threshold, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             if (message.quorum != null && message.hasOwnProperty("quorum"))
-                $root.gov.Fraction.encode(message.quorum, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                $root.gov.Fraction.encode(message.quorum, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
             return writer;
         };
 
@@ -11896,15 +14440,18 @@ $root.gov = (function() {
                     message.admin = reader.bytes();
                     break;
                 case 4:
-                    message.title = reader.string();
+                    message.electorateId = reader.bytes();
                     break;
                 case 5:
-                    message.votingPeriodHours = reader.uint32();
+                    message.title = reader.string();
                     break;
                 case 6:
-                    message.threshold = $root.gov.Fraction.decode(reader, reader.uint32());
+                    message.votingPeriod = reader.uint32();
                     break;
                 case 7:
+                    message.threshold = $root.gov.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 8:
                     message.quorum = $root.gov.Fraction.decode(reader, reader.uint32());
                     break;
                 default:
@@ -11953,12 +14500,15 @@ $root.gov = (function() {
             if (message.admin != null && message.hasOwnProperty("admin"))
                 if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
                     return "admin: buffer expected";
+            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
+                if (!(message.electorateId && typeof message.electorateId.length === "number" || $util.isString(message.electorateId)))
+                    return "electorateId: buffer expected";
             if (message.title != null && message.hasOwnProperty("title"))
                 if (!$util.isString(message.title))
                     return "title: string expected";
-            if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
-                if (!$util.isInteger(message.votingPeriodHours))
-                    return "votingPeriodHours: integer expected";
+            if (message.votingPeriod != null && message.hasOwnProperty("votingPeriod"))
+                if (!$util.isInteger(message.votingPeriod))
+                    return "votingPeriod: integer expected";
             if (message.threshold != null && message.hasOwnProperty("threshold")) {
                 var error = $root.gov.Fraction.verify(message.threshold);
                 if (error)
@@ -11996,10 +14546,15 @@ $root.gov = (function() {
                     $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
                 else if (object.admin.length)
                     message.admin = object.admin;
+            if (object.electorateId != null)
+                if (typeof object.electorateId === "string")
+                    $util.base64.decode(object.electorateId, message.electorateId = $util.newBuffer($util.base64.length(object.electorateId)), 0);
+                else if (object.electorateId.length)
+                    message.electorateId = object.electorateId;
             if (object.title != null)
                 message.title = String(object.title);
-            if (object.votingPeriodHours != null)
-                message.votingPeriodHours = object.votingPeriodHours >>> 0;
+            if (object.votingPeriod != null)
+                message.votingPeriod = object.votingPeriod >>> 0;
             if (object.threshold != null) {
                 if (typeof object.threshold !== "object")
                     throw TypeError(".gov.ElectionRule.threshold: object expected");
@@ -12036,8 +14591,15 @@ $root.gov = (function() {
                     if (options.bytes !== Array)
                         object.admin = $util.newBuffer(object.admin);
                 }
+                if (options.bytes === String)
+                    object.electorateId = "";
+                else {
+                    object.electorateId = [];
+                    if (options.bytes !== Array)
+                        object.electorateId = $util.newBuffer(object.electorateId);
+                }
                 object.title = "";
-                object.votingPeriodHours = 0;
+                object.votingPeriod = 0;
                 object.threshold = null;
                 object.quorum = null;
             }
@@ -12047,10 +14609,12 @@ $root.gov = (function() {
                 object.version = message.version;
             if (message.admin != null && message.hasOwnProperty("admin"))
                 object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
+            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
+                object.electorateId = options.bytes === String ? $util.base64.encode(message.electorateId, 0, message.electorateId.length) : options.bytes === Array ? Array.prototype.slice.call(message.electorateId) : message.electorateId;
             if (message.title != null && message.hasOwnProperty("title"))
                 object.title = message.title;
-            if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
-                object.votingPeriodHours = message.votingPeriodHours;
+            if (message.votingPeriod != null && message.hasOwnProperty("votingPeriod"))
+                object.votingPeriod = message.votingPeriod;
             if (message.threshold != null && message.hasOwnProperty("threshold"))
                 object.threshold = $root.gov.Fraction.toObject(message.threshold, options);
             if (message.quorum != null && message.hasOwnProperty("quorum"))
@@ -12282,374 +14846,6 @@ $root.gov = (function() {
         return Fraction;
     })();
 
-    gov.TextProposalPayload = (function() {
-
-        /**
-         * Properties of a TextProposalPayload.
-         * @memberof gov
-         * @interface ITextProposalPayload
-         */
-
-        /**
-         * Constructs a new TextProposalPayload.
-         * @memberof gov
-         * @classdesc A text form proposal for an on-chain governance process.
-         * @implements ITextProposalPayload
-         * @constructor
-         * @param {gov.ITextProposalPayload=} [properties] Properties to set
-         */
-        function TextProposalPayload(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * Creates a new TextProposalPayload instance using the specified properties.
-         * @function create
-         * @memberof gov.TextProposalPayload
-         * @static
-         * @param {gov.ITextProposalPayload=} [properties] Properties to set
-         * @returns {gov.TextProposalPayload} TextProposalPayload instance
-         */
-        TextProposalPayload.create = function create(properties) {
-            return new TextProposalPayload(properties);
-        };
-
-        /**
-         * Encodes the specified TextProposalPayload message. Does not implicitly {@link gov.TextProposalPayload.verify|verify} messages.
-         * @function encode
-         * @memberof gov.TextProposalPayload
-         * @static
-         * @param {gov.ITextProposalPayload} message TextProposalPayload message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        TextProposalPayload.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified TextProposalPayload message, length delimited. Does not implicitly {@link gov.TextProposalPayload.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof gov.TextProposalPayload
-         * @static
-         * @param {gov.ITextProposalPayload} message TextProposalPayload message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        TextProposalPayload.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a TextProposalPayload message from the specified reader or buffer.
-         * @function decode
-         * @memberof gov.TextProposalPayload
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {gov.TextProposalPayload} TextProposalPayload
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        TextProposalPayload.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.TextProposalPayload();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a TextProposalPayload message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof gov.TextProposalPayload
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {gov.TextProposalPayload} TextProposalPayload
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        TextProposalPayload.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a TextProposalPayload message.
-         * @function verify
-         * @memberof gov.TextProposalPayload
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        TextProposalPayload.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            return null;
-        };
-
-        /**
-         * Creates a TextProposalPayload message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof gov.TextProposalPayload
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {gov.TextProposalPayload} TextProposalPayload
-         */
-        TextProposalPayload.fromObject = function fromObject(object) {
-            if (object instanceof $root.gov.TextProposalPayload)
-                return object;
-            return new $root.gov.TextProposalPayload();
-        };
-
-        /**
-         * Creates a plain object from a TextProposalPayload message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof gov.TextProposalPayload
-         * @static
-         * @param {gov.TextProposalPayload} message TextProposalPayload
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        TextProposalPayload.toObject = function toObject() {
-            return {};
-        };
-
-        /**
-         * Converts this TextProposalPayload to JSON.
-         * @function toJSON
-         * @memberof gov.TextProposalPayload
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        TextProposalPayload.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return TextProposalPayload;
-    })();
-
-    gov.ElectorateUpdatePayload = (function() {
-
-        /**
-         * Properties of an ElectorateUpdatePayload.
-         * @memberof gov
-         * @interface IElectorateUpdatePayload
-         * @property {Array.<gov.IElector>|null} [diffElectors] with weight=0.
-         */
-
-        /**
-         * Constructs a new ElectorateUpdatePayload.
-         * @memberof gov
-         * @classdesc Represents an ElectorateUpdatePayload.
-         * @implements IElectorateUpdatePayload
-         * @constructor
-         * @param {gov.IElectorateUpdatePayload=} [properties] Properties to set
-         */
-        function ElectorateUpdatePayload(properties) {
-            this.diffElectors = [];
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * with weight=0.
-         * @member {Array.<gov.IElector>} diffElectors
-         * @memberof gov.ElectorateUpdatePayload
-         * @instance
-         */
-        ElectorateUpdatePayload.prototype.diffElectors = $util.emptyArray;
-
-        /**
-         * Creates a new ElectorateUpdatePayload instance using the specified properties.
-         * @function create
-         * @memberof gov.ElectorateUpdatePayload
-         * @static
-         * @param {gov.IElectorateUpdatePayload=} [properties] Properties to set
-         * @returns {gov.ElectorateUpdatePayload} ElectorateUpdatePayload instance
-         */
-        ElectorateUpdatePayload.create = function create(properties) {
-            return new ElectorateUpdatePayload(properties);
-        };
-
-        /**
-         * Encodes the specified ElectorateUpdatePayload message. Does not implicitly {@link gov.ElectorateUpdatePayload.verify|verify} messages.
-         * @function encode
-         * @memberof gov.ElectorateUpdatePayload
-         * @static
-         * @param {gov.IElectorateUpdatePayload} message ElectorateUpdatePayload message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        ElectorateUpdatePayload.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.diffElectors != null && message.diffElectors.length)
-                for (var i = 0; i < message.diffElectors.length; ++i)
-                    $root.gov.Elector.encode(message.diffElectors[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified ElectorateUpdatePayload message, length delimited. Does not implicitly {@link gov.ElectorateUpdatePayload.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof gov.ElectorateUpdatePayload
-         * @static
-         * @param {gov.IElectorateUpdatePayload} message ElectorateUpdatePayload message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        ElectorateUpdatePayload.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes an ElectorateUpdatePayload message from the specified reader or buffer.
-         * @function decode
-         * @memberof gov.ElectorateUpdatePayload
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {gov.ElectorateUpdatePayload} ElectorateUpdatePayload
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        ElectorateUpdatePayload.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.ElectorateUpdatePayload();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    if (!(message.diffElectors && message.diffElectors.length))
-                        message.diffElectors = [];
-                    message.diffElectors.push($root.gov.Elector.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes an ElectorateUpdatePayload message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof gov.ElectorateUpdatePayload
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {gov.ElectorateUpdatePayload} ElectorateUpdatePayload
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        ElectorateUpdatePayload.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies an ElectorateUpdatePayload message.
-         * @function verify
-         * @memberof gov.ElectorateUpdatePayload
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        ElectorateUpdatePayload.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.diffElectors != null && message.hasOwnProperty("diffElectors")) {
-                if (!Array.isArray(message.diffElectors))
-                    return "diffElectors: array expected";
-                for (var i = 0; i < message.diffElectors.length; ++i) {
-                    var error = $root.gov.Elector.verify(message.diffElectors[i]);
-                    if (error)
-                        return "diffElectors." + error;
-                }
-            }
-            return null;
-        };
-
-        /**
-         * Creates an ElectorateUpdatePayload message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof gov.ElectorateUpdatePayload
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {gov.ElectorateUpdatePayload} ElectorateUpdatePayload
-         */
-        ElectorateUpdatePayload.fromObject = function fromObject(object) {
-            if (object instanceof $root.gov.ElectorateUpdatePayload)
-                return object;
-            var message = new $root.gov.ElectorateUpdatePayload();
-            if (object.diffElectors) {
-                if (!Array.isArray(object.diffElectors))
-                    throw TypeError(".gov.ElectorateUpdatePayload.diffElectors: array expected");
-                message.diffElectors = [];
-                for (var i = 0; i < object.diffElectors.length; ++i) {
-                    if (typeof object.diffElectors[i] !== "object")
-                        throw TypeError(".gov.ElectorateUpdatePayload.diffElectors: object expected");
-                    message.diffElectors[i] = $root.gov.Elector.fromObject(object.diffElectors[i]);
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from an ElectorateUpdatePayload message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof gov.ElectorateUpdatePayload
-         * @static
-         * @param {gov.ElectorateUpdatePayload} message ElectorateUpdatePayload
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        ElectorateUpdatePayload.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.arrays || options.defaults)
-                object.diffElectors = [];
-            if (message.diffElectors && message.diffElectors.length) {
-                object.diffElectors = [];
-                for (var j = 0; j < message.diffElectors.length; ++j)
-                    object.diffElectors[j] = $root.gov.Elector.toObject(message.diffElectors[j], options);
-            }
-            return object;
-        };
-
-        /**
-         * Converts this ElectorateUpdatePayload to JSON.
-         * @function toJSON
-         * @memberof gov.ElectorateUpdatePayload
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        ElectorateUpdatePayload.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return ElectorateUpdatePayload;
-    })();
-
     gov.Proposal = (function() {
 
         /**
@@ -12658,6 +14854,7 @@ $root.gov = (function() {
          * @interface IProposal
          * @property {weave.IMetadata|null} [metadata] Proposal metadata
          * @property {string|null} [title] Human readable title.
+         * @property {Uint8Array|null} [rawOption] Content of the proposal. Protobuf encoded, app-specific decoded must be passed in constructor
          * @property {string|null} [description] Description of the proposal in text form.
          * @property {orm.IVersionedIDRef|null} [electionRuleRef] ElectionRuleRef is a reference to the election rule
          * @property {orm.IVersionedIDRef|null} [electorateRef] Reference to the electorate to define the group of possible voters.
@@ -12668,15 +14865,13 @@ $root.gov = (function() {
          * @property {gov.ITallyResult|null} [voteState] Result of the election. Contains intermediate tally results while voting period is open.
          * @property {gov.Proposal.Status|null} [status] Status represents the high level position in the life cycle of the proposal. Initial value is submitted.
          * @property {gov.Proposal.Result|null} [result] Result is the final result based on the votes and election rule. Initial value is Undefined.
-         * @property {gov.Proposal.Type|null} [type] Proposal type
-         * @property {gov.ITextProposalPayload|null} [textDetails] Proposal textDetails
-         * @property {gov.IElectorateUpdatePayload|null} [electorateUpdateDetails] Proposal electorateUpdateDetails
+         * @property {gov.Proposal.ExecutorResult|null} [executorResult] Result is the final result based on the votes and election rule. Initial value is Undefined.
          */
 
         /**
          * Constructs a new Proposal.
          * @memberof gov
-         * @classdesc A generic proposal for an on-chain governance process.
+         * @classdesc (what is being voted on)
          * @implements IProposal
          * @constructor
          * @param {gov.IProposal=} [properties] Properties to set
@@ -12703,6 +14898,14 @@ $root.gov = (function() {
          * @instance
          */
         Proposal.prototype.title = "";
+
+        /**
+         * Content of the proposal. Protobuf encoded, app-specific decoded must be passed in constructor
+         * @member {Uint8Array} rawOption
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.rawOption = $util.newBuffer([]);
 
         /**
          * Description of the proposal in text form.
@@ -12785,42 +14988,12 @@ $root.gov = (function() {
         Proposal.prototype.result = 0;
 
         /**
-         * Proposal type.
-         * @member {gov.Proposal.Type} type
+         * Result is the final result based on the votes and election rule. Initial value is Undefined.
+         * @member {gov.Proposal.ExecutorResult} executorResult
          * @memberof gov.Proposal
          * @instance
          */
-        Proposal.prototype.type = 0;
-
-        /**
-         * Proposal textDetails.
-         * @member {gov.ITextProposalPayload|null|undefined} textDetails
-         * @memberof gov.Proposal
-         * @instance
-         */
-        Proposal.prototype.textDetails = null;
-
-        /**
-         * Proposal electorateUpdateDetails.
-         * @member {gov.IElectorateUpdatePayload|null|undefined} electorateUpdateDetails
-         * @memberof gov.Proposal
-         * @instance
-         */
-        Proposal.prototype.electorateUpdateDetails = null;
-
-        // OneOf field names bound to virtual getters and setters
-        var $oneOfFields;
-
-        /**
-         * details
-         * @member {"textDetails"|"electorateUpdateDetails"|undefined} details
-         * @memberof gov.Proposal
-         * @instance
-         */
-        Object.defineProperty(Proposal.prototype, "details", {
-            get: $util.oneOfGetter($oneOfFields = ["textDetails", "electorateUpdateDetails"]),
-            set: $util.oneOfSetter($oneOfFields)
-        });
+        Proposal.prototype.executorResult = 0;
 
         /**
          * Creates a new Proposal instance using the specified properties.
@@ -12850,32 +15023,30 @@ $root.gov = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.title != null && message.hasOwnProperty("title"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.title);
+            if (message.rawOption != null && message.hasOwnProperty("rawOption"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.rawOption);
             if (message.description != null && message.hasOwnProperty("description"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.description);
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.description);
             if (message.electionRuleRef != null && message.hasOwnProperty("electionRuleRef"))
-                $root.orm.VersionedIDRef.encode(message.electionRuleRef, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.orm.VersionedIDRef.encode(message.electionRuleRef, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.electorateRef != null && message.hasOwnProperty("electorateRef"))
-                $root.orm.VersionedIDRef.encode(message.electorateRef, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                $root.orm.VersionedIDRef.encode(message.electorateRef, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
             if (message.votingStartTime != null && message.hasOwnProperty("votingStartTime"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.votingStartTime);
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.votingStartTime);
             if (message.votingEndTime != null && message.hasOwnProperty("votingEndTime"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.votingEndTime);
+                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.votingEndTime);
             if (message.submissionTime != null && message.hasOwnProperty("submissionTime"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.submissionTime);
+                writer.uint32(/* id 9, wireType 0 =*/72).int64(message.submissionTime);
             if (message.author != null && message.hasOwnProperty("author"))
-                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.author);
+                writer.uint32(/* id 10, wireType 2 =*/82).bytes(message.author);
             if (message.voteState != null && message.hasOwnProperty("voteState"))
-                $root.gov.TallyResult.encode(message.voteState, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                $root.gov.TallyResult.encode(message.voteState, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
             if (message.status != null && message.hasOwnProperty("status"))
-                writer.uint32(/* id 11, wireType 0 =*/88).int32(message.status);
+                writer.uint32(/* id 12, wireType 0 =*/96).int32(message.status);
             if (message.result != null && message.hasOwnProperty("result"))
-                writer.uint32(/* id 12, wireType 0 =*/96).int32(message.result);
-            if (message.type != null && message.hasOwnProperty("type"))
-                writer.uint32(/* id 13, wireType 0 =*/104).int32(message.type);
-            if (message.textDetails != null && message.hasOwnProperty("textDetails"))
-                $root.gov.TextProposalPayload.encode(message.textDetails, writer.uint32(/* id 50, wireType 2 =*/402).fork()).ldelim();
-            if (message.electorateUpdateDetails != null && message.hasOwnProperty("electorateUpdateDetails"))
-                $root.gov.ElectorateUpdatePayload.encode(message.electorateUpdateDetails, writer.uint32(/* id 51, wireType 2 =*/410).fork()).ldelim();
+                writer.uint32(/* id 13, wireType 0 =*/104).int32(message.result);
+            if (message.executorResult != null && message.hasOwnProperty("executorResult"))
+                writer.uint32(/* id 14, wireType 0 =*/112).int32(message.executorResult);
             return writer;
         };
 
@@ -12917,43 +15088,40 @@ $root.gov = (function() {
                     message.title = reader.string();
                     break;
                 case 3:
-                    message.description = reader.string();
+                    message.rawOption = reader.bytes();
                     break;
                 case 4:
-                    message.electionRuleRef = $root.orm.VersionedIDRef.decode(reader, reader.uint32());
+                    message.description = reader.string();
                     break;
                 case 5:
-                    message.electorateRef = $root.orm.VersionedIDRef.decode(reader, reader.uint32());
+                    message.electionRuleRef = $root.orm.VersionedIDRef.decode(reader, reader.uint32());
                     break;
                 case 6:
-                    message.votingStartTime = reader.int64();
+                    message.electorateRef = $root.orm.VersionedIDRef.decode(reader, reader.uint32());
                     break;
                 case 7:
-                    message.votingEndTime = reader.int64();
+                    message.votingStartTime = reader.int64();
                     break;
                 case 8:
-                    message.submissionTime = reader.int64();
+                    message.votingEndTime = reader.int64();
                     break;
                 case 9:
-                    message.author = reader.bytes();
+                    message.submissionTime = reader.int64();
                     break;
                 case 10:
-                    message.voteState = $root.gov.TallyResult.decode(reader, reader.uint32());
+                    message.author = reader.bytes();
                     break;
                 case 11:
-                    message.status = reader.int32();
+                    message.voteState = $root.gov.TallyResult.decode(reader, reader.uint32());
                     break;
                 case 12:
-                    message.result = reader.int32();
+                    message.status = reader.int32();
                     break;
                 case 13:
-                    message.type = reader.int32();
+                    message.result = reader.int32();
                     break;
-                case 50:
-                    message.textDetails = $root.gov.TextProposalPayload.decode(reader, reader.uint32());
-                    break;
-                case 51:
-                    message.electorateUpdateDetails = $root.gov.ElectorateUpdatePayload.decode(reader, reader.uint32());
+                case 14:
+                    message.executorResult = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -12990,7 +15158,6 @@ $root.gov = (function() {
         Proposal.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            var properties = {};
             if (message.metadata != null && message.hasOwnProperty("metadata")) {
                 var error = $root.weave.Metadata.verify(message.metadata);
                 if (error)
@@ -12999,6 +15166,9 @@ $root.gov = (function() {
             if (message.title != null && message.hasOwnProperty("title"))
                 if (!$util.isString(message.title))
                     return "title: string expected";
+            if (message.rawOption != null && message.hasOwnProperty("rawOption"))
+                if (!(message.rawOption && typeof message.rawOption.length === "number" || $util.isString(message.rawOption)))
+                    return "rawOption: buffer expected";
             if (message.description != null && message.hasOwnProperty("description"))
                 if (!$util.isString(message.description))
                     return "description: string expected";
@@ -13049,33 +15219,16 @@ $root.gov = (function() {
                 case 3:
                     break;
                 }
-            if (message.type != null && message.hasOwnProperty("type"))
-                switch (message.type) {
+            if (message.executorResult != null && message.hasOwnProperty("executorResult"))
+                switch (message.executorResult) {
                 default:
-                    return "type: enum value expected";
+                    return "executorResult: enum value expected";
                 case 0:
                 case 1:
                 case 2:
+                case 3:
                     break;
                 }
-            if (message.textDetails != null && message.hasOwnProperty("textDetails")) {
-                properties.details = 1;
-                {
-                    var error = $root.gov.TextProposalPayload.verify(message.textDetails);
-                    if (error)
-                        return "textDetails." + error;
-                }
-            }
-            if (message.electorateUpdateDetails != null && message.hasOwnProperty("electorateUpdateDetails")) {
-                if (properties.details === 1)
-                    return "details: multiple values";
-                properties.details = 1;
-                {
-                    var error = $root.gov.ElectorateUpdatePayload.verify(message.electorateUpdateDetails);
-                    if (error)
-                        return "electorateUpdateDetails." + error;
-                }
-            }
             return null;
         };
 
@@ -13098,6 +15251,11 @@ $root.gov = (function() {
             }
             if (object.title != null)
                 message.title = String(object.title);
+            if (object.rawOption != null)
+                if (typeof object.rawOption === "string")
+                    $util.base64.decode(object.rawOption, message.rawOption = $util.newBuffer($util.base64.length(object.rawOption)), 0);
+                else if (object.rawOption.length)
+                    message.rawOption = object.rawOption;
             if (object.description != null)
                 message.description = String(object.description);
             if (object.electionRuleRef != null) {
@@ -13183,29 +15341,23 @@ $root.gov = (function() {
                 message.result = 3;
                 break;
             }
-            switch (object.type) {
-            case "PROPOSAL_TYPE_INVALID":
+            switch (object.executorResult) {
+            case "PROPOSAL_EXECUTOR_RESULT_INVALID":
             case 0:
-                message.type = 0;
+                message.executorResult = 0;
                 break;
-            case "PROPOSAL_TYPE_TEXT":
+            case "PROPOSAL_EXECUTOR_RESULT_NOT_RUN":
             case 1:
-                message.type = 1;
+                message.executorResult = 1;
                 break;
-            case "PROPOSAL_TYPE_UPDATE_ELECTORATE":
+            case "PROPOSAL_EXECUTOR_RESULT_SUCCESS":
             case 2:
-                message.type = 2;
+                message.executorResult = 2;
                 break;
-            }
-            if (object.textDetails != null) {
-                if (typeof object.textDetails !== "object")
-                    throw TypeError(".gov.Proposal.textDetails: object expected");
-                message.textDetails = $root.gov.TextProposalPayload.fromObject(object.textDetails);
-            }
-            if (object.electorateUpdateDetails != null) {
-                if (typeof object.electorateUpdateDetails !== "object")
-                    throw TypeError(".gov.Proposal.electorateUpdateDetails: object expected");
-                message.electorateUpdateDetails = $root.gov.ElectorateUpdatePayload.fromObject(object.electorateUpdateDetails);
+            case "PROPOSAL_EXECUTOR_RESULT_FAILURE":
+            case 3:
+                message.executorResult = 3;
+                break;
             }
             return message;
         };
@@ -13226,6 +15378,13 @@ $root.gov = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 object.title = "";
+                if (options.bytes === String)
+                    object.rawOption = "";
+                else {
+                    object.rawOption = [];
+                    if (options.bytes !== Array)
+                        object.rawOption = $util.newBuffer(object.rawOption);
+                }
                 object.description = "";
                 object.electionRuleRef = null;
                 object.electorateRef = null;
@@ -13254,12 +15413,14 @@ $root.gov = (function() {
                 object.voteState = null;
                 object.status = options.enums === String ? "PROPOSAL_STATUS_INVALID" : 0;
                 object.result = options.enums === String ? "PROPOSAL_RESULT_INVALID" : 0;
-                object.type = options.enums === String ? "PROPOSAL_TYPE_INVALID" : 0;
+                object.executorResult = options.enums === String ? "PROPOSAL_EXECUTOR_RESULT_INVALID" : 0;
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.title != null && message.hasOwnProperty("title"))
                 object.title = message.title;
+            if (message.rawOption != null && message.hasOwnProperty("rawOption"))
+                object.rawOption = options.bytes === String ? $util.base64.encode(message.rawOption, 0, message.rawOption.length) : options.bytes === Array ? Array.prototype.slice.call(message.rawOption) : message.rawOption;
             if (message.description != null && message.hasOwnProperty("description"))
                 object.description = message.description;
             if (message.electionRuleRef != null && message.hasOwnProperty("electionRuleRef"))
@@ -13289,18 +15450,8 @@ $root.gov = (function() {
                 object.status = options.enums === String ? $root.gov.Proposal.Status[message.status] : message.status;
             if (message.result != null && message.hasOwnProperty("result"))
                 object.result = options.enums === String ? $root.gov.Proposal.Result[message.result] : message.result;
-            if (message.type != null && message.hasOwnProperty("type"))
-                object.type = options.enums === String ? $root.gov.Proposal.Type[message.type] : message.type;
-            if (message.textDetails != null && message.hasOwnProperty("textDetails")) {
-                object.textDetails = $root.gov.TextProposalPayload.toObject(message.textDetails, options);
-                if (options.oneofs)
-                    object.details = "textDetails";
-            }
-            if (message.electorateUpdateDetails != null && message.hasOwnProperty("electorateUpdateDetails")) {
-                object.electorateUpdateDetails = $root.gov.ElectorateUpdatePayload.toObject(message.electorateUpdateDetails, options);
-                if (options.oneofs)
-                    object.details = "electorateUpdateDetails";
-            }
+            if (message.executorResult != null && message.hasOwnProperty("executorResult"))
+                object.executorResult = options.enums === String ? $root.gov.Proposal.ExecutorResult[message.executorResult] : message.executorResult;
             return object;
         };
 
@@ -13352,22 +15503,297 @@ $root.gov = (function() {
         })();
 
         /**
-         * Type enum.
-         * @name gov.Proposal.Type
+         * ExecutorResult enum.
+         * @name gov.Proposal.ExecutorResult
          * @enum {string}
-         * @property {number} PROPOSAL_TYPE_INVALID=0 None is invalid and not allowed
-         * @property {number} PROPOSAL_TYPE_TEXT=1 Text
-         * @property {number} PROPOSAL_TYPE_UPDATE_ELECTORATE=2 UpdateElectorate
+         * @property {number} PROPOSAL_EXECUTOR_RESULT_INVALID=0 An empty value is not allowed
+         * @property {number} PROPOSAL_EXECUTOR_RESULT_NOT_RUN=1 We have not yet run the executor
+         * @property {number} PROPOSAL_EXECUTOR_RESULT_SUCCESS=2 The executor was successful and proposed action updated state
+         * @property {number} PROPOSAL_EXECUTOR_RESULT_FAILURE=3 The executor returned an error and proposed action didn't update state
          */
-        Proposal.Type = (function() {
+        Proposal.ExecutorResult = (function() {
             var valuesById = {}, values = Object.create(valuesById);
-            values[valuesById[0] = "PROPOSAL_TYPE_INVALID"] = 0;
-            values[valuesById[1] = "PROPOSAL_TYPE_TEXT"] = 1;
-            values[valuesById[2] = "PROPOSAL_TYPE_UPDATE_ELECTORATE"] = 2;
+            values[valuesById[0] = "PROPOSAL_EXECUTOR_RESULT_INVALID"] = 0;
+            values[valuesById[1] = "PROPOSAL_EXECUTOR_RESULT_NOT_RUN"] = 1;
+            values[valuesById[2] = "PROPOSAL_EXECUTOR_RESULT_SUCCESS"] = 2;
+            values[valuesById[3] = "PROPOSAL_EXECUTOR_RESULT_FAILURE"] = 3;
             return values;
         })();
 
         return Proposal;
+    })();
+
+    gov.Resolution = (function() {
+
+        /**
+         * Properties of a Resolution.
+         * @memberof gov
+         * @interface IResolution
+         * @property {weave.IMetadata|null} [metadata] Resolution metadata
+         * @property {Uint8Array|null} [proposalId] Resolution proposalId
+         * @property {orm.IVersionedIDRef|null} [electorateRef] Resolution electorateRef
+         * @property {string|null} [resolution] Resolution resolution
+         */
+
+        /**
+         * Constructs a new Resolution.
+         * @memberof gov
+         * @classdesc Resolution contains TextResolution and an electorate reference.
+         * @implements IResolution
+         * @constructor
+         * @param {gov.IResolution=} [properties] Properties to set
+         */
+        function Resolution(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Resolution metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.Resolution
+         * @instance
+         */
+        Resolution.prototype.metadata = null;
+
+        /**
+         * Resolution proposalId.
+         * @member {Uint8Array} proposalId
+         * @memberof gov.Resolution
+         * @instance
+         */
+        Resolution.prototype.proposalId = $util.newBuffer([]);
+
+        /**
+         * Resolution electorateRef.
+         * @member {orm.IVersionedIDRef|null|undefined} electorateRef
+         * @memberof gov.Resolution
+         * @instance
+         */
+        Resolution.prototype.electorateRef = null;
+
+        /**
+         * Resolution resolution.
+         * @member {string} resolution
+         * @memberof gov.Resolution
+         * @instance
+         */
+        Resolution.prototype.resolution = "";
+
+        /**
+         * Creates a new Resolution instance using the specified properties.
+         * @function create
+         * @memberof gov.Resolution
+         * @static
+         * @param {gov.IResolution=} [properties] Properties to set
+         * @returns {gov.Resolution} Resolution instance
+         */
+        Resolution.create = function create(properties) {
+            return new Resolution(properties);
+        };
+
+        /**
+         * Encodes the specified Resolution message. Does not implicitly {@link gov.Resolution.verify|verify} messages.
+         * @function encode
+         * @memberof gov.Resolution
+         * @static
+         * @param {gov.IResolution} message Resolution message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Resolution.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.proposalId != null && message.hasOwnProperty("proposalId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.proposalId);
+            if (message.electorateRef != null && message.hasOwnProperty("electorateRef"))
+                $root.orm.VersionedIDRef.encode(message.electorateRef, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.resolution != null && message.hasOwnProperty("resolution"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.resolution);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Resolution message, length delimited. Does not implicitly {@link gov.Resolution.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof gov.Resolution
+         * @static
+         * @param {gov.IResolution} message Resolution message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Resolution.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Resolution message from the specified reader or buffer.
+         * @function decode
+         * @memberof gov.Resolution
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {gov.Resolution} Resolution
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Resolution.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.Resolution();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.proposalId = reader.bytes();
+                    break;
+                case 3:
+                    message.electorateRef = $root.orm.VersionedIDRef.decode(reader, reader.uint32());
+                    break;
+                case 4:
+                    message.resolution = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Resolution message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof gov.Resolution
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {gov.Resolution} Resolution
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Resolution.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Resolution message.
+         * @function verify
+         * @memberof gov.Resolution
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Resolution.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.proposalId != null && message.hasOwnProperty("proposalId"))
+                if (!(message.proposalId && typeof message.proposalId.length === "number" || $util.isString(message.proposalId)))
+                    return "proposalId: buffer expected";
+            if (message.electorateRef != null && message.hasOwnProperty("electorateRef")) {
+                var error = $root.orm.VersionedIDRef.verify(message.electorateRef);
+                if (error)
+                    return "electorateRef." + error;
+            }
+            if (message.resolution != null && message.hasOwnProperty("resolution"))
+                if (!$util.isString(message.resolution))
+                    return "resolution: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a Resolution message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof gov.Resolution
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {gov.Resolution} Resolution
+         */
+        Resolution.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.Resolution)
+                return object;
+            var message = new $root.gov.Resolution();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.Resolution.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.proposalId != null)
+                if (typeof object.proposalId === "string")
+                    $util.base64.decode(object.proposalId, message.proposalId = $util.newBuffer($util.base64.length(object.proposalId)), 0);
+                else if (object.proposalId.length)
+                    message.proposalId = object.proposalId;
+            if (object.electorateRef != null) {
+                if (typeof object.electorateRef !== "object")
+                    throw TypeError(".gov.Resolution.electorateRef: object expected");
+                message.electorateRef = $root.orm.VersionedIDRef.fromObject(object.electorateRef);
+            }
+            if (object.resolution != null)
+                message.resolution = String(object.resolution);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Resolution message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof gov.Resolution
+         * @static
+         * @param {gov.Resolution} message Resolution
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Resolution.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.proposalId = "";
+                else {
+                    object.proposalId = [];
+                    if (options.bytes !== Array)
+                        object.proposalId = $util.newBuffer(object.proposalId);
+                }
+                object.electorateRef = null;
+                object.resolution = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.proposalId != null && message.hasOwnProperty("proposalId"))
+                object.proposalId = options.bytes === String ? $util.base64.encode(message.proposalId, 0, message.proposalId.length) : options.bytes === Array ? Array.prototype.slice.call(message.proposalId) : message.proposalId;
+            if (message.electorateRef != null && message.hasOwnProperty("electorateRef"))
+                object.electorateRef = $root.orm.VersionedIDRef.toObject(message.electorateRef, options);
+            if (message.resolution != null && message.hasOwnProperty("resolution"))
+                object.resolution = message.resolution;
+            return object;
+        };
+
+        /**
+         * Converts this Resolution to JSON.
+         * @function toJSON
+         * @memberof gov.Resolution
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Resolution.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Resolution;
     })();
 
     gov.TallyResult = (function() {
@@ -13748,7 +16174,7 @@ $root.gov = (function() {
         /**
          * Constructs a new Vote.
          * @memberof gov
-         * @classdesc Vote combines the elector and their voted option to archive them. The proposalID and address is stored within the key.
+         * @classdesc The proposalID and address is stored within the key.
          * @implements IVote
          * @constructor
          * @param {gov.IVote=} [properties] Properties to set
@@ -13999,30 +16425,30 @@ $root.gov = (function() {
         return Vote;
     })();
 
-    gov.CreateTextProposalMsg = (function() {
+    gov.CreateProposalMsg = (function() {
 
         /**
-         * Properties of a CreateTextProposalMsg.
+         * Properties of a CreateProposalMsg.
          * @memberof gov
-         * @interface ICreateTextProposalMsg
-         * @property {weave.IMetadata|null} [metadata] CreateTextProposalMsg metadata
+         * @interface ICreateProposalMsg
+         * @property {weave.IMetadata|null} [metadata] CreateProposalMsg metadata
          * @property {string|null} [title] Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$`
+         * @property {Uint8Array|null} [rawOption] Content of the proposal. Protobuf encoded, app-specific decoded must be passed in handler constructor
          * @property {string|null} [description] Human readable description with 3 to 5000 chars.
          * @property {Uint8Array|null} [electionRuleId] ElectionRuleID is a reference to the election rule
-         * @property {Uint8Array|null} [electorateId] ElectorateID is the reference to the electorate to define the group of possible voters.
          * @property {number|Long|null} [startTime] Unix timestamp when the proposal starts. Must be in the future.
          * @property {Uint8Array|null} [author] When not set it will default to the main signer.
          */
 
         /**
-         * Constructs a new CreateTextProposalMsg.
+         * Constructs a new CreateProposalMsg.
          * @memberof gov
-         * @classdesc CreateTextProposalMsg creates a new governance proposal.
-         * @implements ICreateTextProposalMsg
+         * @classdesc (what is being voted on)
+         * @implements ICreateProposalMsg
          * @constructor
-         * @param {gov.ICreateTextProposalMsg=} [properties] Properties to set
+         * @param {gov.ICreateProposalMsg=} [properties] Properties to set
          */
-        function CreateTextProposalMsg(properties) {
+        function CreateProposalMsg(properties) {
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -14030,95 +16456,95 @@ $root.gov = (function() {
         }
 
         /**
-         * CreateTextProposalMsg metadata.
+         * CreateProposalMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @instance
          */
-        CreateTextProposalMsg.prototype.metadata = null;
+        CreateProposalMsg.prototype.metadata = null;
 
         /**
          * Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$`
          * @member {string} title
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @instance
          */
-        CreateTextProposalMsg.prototype.title = "";
+        CreateProposalMsg.prototype.title = "";
+
+        /**
+         * Content of the proposal. Protobuf encoded, app-specific decoded must be passed in handler constructor
+         * @member {Uint8Array} rawOption
+         * @memberof gov.CreateProposalMsg
+         * @instance
+         */
+        CreateProposalMsg.prototype.rawOption = $util.newBuffer([]);
 
         /**
          * Human readable description with 3 to 5000 chars.
          * @member {string} description
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @instance
          */
-        CreateTextProposalMsg.prototype.description = "";
+        CreateProposalMsg.prototype.description = "";
 
         /**
          * ElectionRuleID is a reference to the election rule
          * @member {Uint8Array} electionRuleId
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @instance
          */
-        CreateTextProposalMsg.prototype.electionRuleId = $util.newBuffer([]);
-
-        /**
-         * ElectorateID is the reference to the electorate to define the group of possible voters.
-         * @member {Uint8Array} electorateId
-         * @memberof gov.CreateTextProposalMsg
-         * @instance
-         */
-        CreateTextProposalMsg.prototype.electorateId = $util.newBuffer([]);
+        CreateProposalMsg.prototype.electionRuleId = $util.newBuffer([]);
 
         /**
          * Unix timestamp when the proposal starts. Must be in the future.
          * @member {number|Long} startTime
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @instance
          */
-        CreateTextProposalMsg.prototype.startTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        CreateProposalMsg.prototype.startTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
          * When not set it will default to the main signer.
          * @member {Uint8Array} author
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @instance
          */
-        CreateTextProposalMsg.prototype.author = $util.newBuffer([]);
+        CreateProposalMsg.prototype.author = $util.newBuffer([]);
 
         /**
-         * Creates a new CreateTextProposalMsg instance using the specified properties.
+         * Creates a new CreateProposalMsg instance using the specified properties.
          * @function create
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @static
-         * @param {gov.ICreateTextProposalMsg=} [properties] Properties to set
-         * @returns {gov.CreateTextProposalMsg} CreateTextProposalMsg instance
+         * @param {gov.ICreateProposalMsg=} [properties] Properties to set
+         * @returns {gov.CreateProposalMsg} CreateProposalMsg instance
          */
-        CreateTextProposalMsg.create = function create(properties) {
-            return new CreateTextProposalMsg(properties);
+        CreateProposalMsg.create = function create(properties) {
+            return new CreateProposalMsg(properties);
         };
 
         /**
-         * Encodes the specified CreateTextProposalMsg message. Does not implicitly {@link gov.CreateTextProposalMsg.verify|verify} messages.
+         * Encodes the specified CreateProposalMsg message. Does not implicitly {@link gov.CreateProposalMsg.verify|verify} messages.
          * @function encode
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @static
-         * @param {gov.ICreateTextProposalMsg} message CreateTextProposalMsg message or plain object to encode
+         * @param {gov.ICreateProposalMsg} message CreateProposalMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        CreateTextProposalMsg.encode = function encode(message, writer) {
+        CreateProposalMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.title != null && message.hasOwnProperty("title"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.title);
+            if (message.rawOption != null && message.hasOwnProperty("rawOption"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.rawOption);
             if (message.description != null && message.hasOwnProperty("description"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.description);
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.description);
             if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.electionRuleId);
-            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.electorateId);
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.electionRuleId);
             if (message.startTime != null && message.hasOwnProperty("startTime"))
                 writer.uint32(/* id 6, wireType 0 =*/48).int64(message.startTime);
             if (message.author != null && message.hasOwnProperty("author"))
@@ -14127,33 +16553,33 @@ $root.gov = (function() {
         };
 
         /**
-         * Encodes the specified CreateTextProposalMsg message, length delimited. Does not implicitly {@link gov.CreateTextProposalMsg.verify|verify} messages.
+         * Encodes the specified CreateProposalMsg message, length delimited. Does not implicitly {@link gov.CreateProposalMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @static
-         * @param {gov.ICreateTextProposalMsg} message CreateTextProposalMsg message or plain object to encode
+         * @param {gov.ICreateProposalMsg} message CreateProposalMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        CreateTextProposalMsg.encodeDelimited = function encodeDelimited(message, writer) {
+        CreateProposalMsg.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a CreateTextProposalMsg message from the specified reader or buffer.
+         * Decodes a CreateProposalMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {gov.CreateTextProposalMsg} CreateTextProposalMsg
+         * @returns {gov.CreateProposalMsg} CreateProposalMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        CreateTextProposalMsg.decode = function decode(reader, length) {
+        CreateProposalMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.CreateTextProposalMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.CreateProposalMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -14164,13 +16590,13 @@ $root.gov = (function() {
                     message.title = reader.string();
                     break;
                 case 3:
-                    message.description = reader.string();
+                    message.rawOption = reader.bytes();
                     break;
                 case 4:
-                    message.electionRuleId = reader.bytes();
+                    message.description = reader.string();
                     break;
                 case 5:
-                    message.electorateId = reader.bytes();
+                    message.electionRuleId = reader.bytes();
                     break;
                 case 6:
                     message.startTime = reader.int64();
@@ -14187,30 +16613,30 @@ $root.gov = (function() {
         };
 
         /**
-         * Decodes a CreateTextProposalMsg message from the specified reader or buffer, length delimited.
+         * Decodes a CreateProposalMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {gov.CreateTextProposalMsg} CreateTextProposalMsg
+         * @returns {gov.CreateProposalMsg} CreateProposalMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        CreateTextProposalMsg.decodeDelimited = function decodeDelimited(reader) {
+        CreateProposalMsg.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a CreateTextProposalMsg message.
+         * Verifies a CreateProposalMsg message.
          * @function verify
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        CreateTextProposalMsg.verify = function verify(message) {
+        CreateProposalMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.metadata != null && message.hasOwnProperty("metadata")) {
@@ -14221,15 +16647,15 @@ $root.gov = (function() {
             if (message.title != null && message.hasOwnProperty("title"))
                 if (!$util.isString(message.title))
                     return "title: string expected";
+            if (message.rawOption != null && message.hasOwnProperty("rawOption"))
+                if (!(message.rawOption && typeof message.rawOption.length === "number" || $util.isString(message.rawOption)))
+                    return "rawOption: buffer expected";
             if (message.description != null && message.hasOwnProperty("description"))
                 if (!$util.isString(message.description))
                     return "description: string expected";
             if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
                 if (!(message.electionRuleId && typeof message.electionRuleId.length === "number" || $util.isString(message.electionRuleId)))
                     return "electionRuleId: buffer expected";
-            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
-                if (!(message.electorateId && typeof message.electorateId.length === "number" || $util.isString(message.electorateId)))
-                    return "electorateId: buffer expected";
             if (message.startTime != null && message.hasOwnProperty("startTime"))
                 if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
                     return "startTime: integer|Long expected";
@@ -14240,24 +16666,29 @@ $root.gov = (function() {
         };
 
         /**
-         * Creates a CreateTextProposalMsg message from a plain object. Also converts values to their respective internal types.
+         * Creates a CreateProposalMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {gov.CreateTextProposalMsg} CreateTextProposalMsg
+         * @returns {gov.CreateProposalMsg} CreateProposalMsg
          */
-        CreateTextProposalMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.gov.CreateTextProposalMsg)
+        CreateProposalMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.CreateProposalMsg)
                 return object;
-            var message = new $root.gov.CreateTextProposalMsg();
+            var message = new $root.gov.CreateProposalMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".gov.CreateTextProposalMsg.metadata: object expected");
+                    throw TypeError(".gov.CreateProposalMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.title != null)
                 message.title = String(object.title);
+            if (object.rawOption != null)
+                if (typeof object.rawOption === "string")
+                    $util.base64.decode(object.rawOption, message.rawOption = $util.newBuffer($util.base64.length(object.rawOption)), 0);
+                else if (object.rawOption.length)
+                    message.rawOption = object.rawOption;
             if (object.description != null)
                 message.description = String(object.description);
             if (object.electionRuleId != null)
@@ -14265,11 +16696,6 @@ $root.gov = (function() {
                     $util.base64.decode(object.electionRuleId, message.electionRuleId = $util.newBuffer($util.base64.length(object.electionRuleId)), 0);
                 else if (object.electionRuleId.length)
                     message.electionRuleId = object.electionRuleId;
-            if (object.electorateId != null)
-                if (typeof object.electorateId === "string")
-                    $util.base64.decode(object.electorateId, message.electorateId = $util.newBuffer($util.base64.length(object.electorateId)), 0);
-                else if (object.electorateId.length)
-                    message.electorateId = object.electorateId;
             if (object.startTime != null)
                 if ($util.Long)
                     (message.startTime = $util.Long.fromValue(object.startTime)).unsigned = false;
@@ -14288,21 +16714,28 @@ $root.gov = (function() {
         };
 
         /**
-         * Creates a plain object from a CreateTextProposalMsg message. Also converts values to other types if specified.
+         * Creates a plain object from a CreateProposalMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @static
-         * @param {gov.CreateTextProposalMsg} message CreateTextProposalMsg
+         * @param {gov.CreateProposalMsg} message CreateProposalMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        CreateTextProposalMsg.toObject = function toObject(message, options) {
+        CreateProposalMsg.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             var object = {};
             if (options.defaults) {
                 object.metadata = null;
                 object.title = "";
+                if (options.bytes === String)
+                    object.rawOption = "";
+                else {
+                    object.rawOption = [];
+                    if (options.bytes !== Array)
+                        object.rawOption = $util.newBuffer(object.rawOption);
+                }
                 object.description = "";
                 if (options.bytes === String)
                     object.electionRuleId = "";
@@ -14311,13 +16744,6 @@ $root.gov = (function() {
                     if (options.bytes !== Array)
                         object.electionRuleId = $util.newBuffer(object.electionRuleId);
                 }
-                if (options.bytes === String)
-                    object.electorateId = "";
-                else {
-                    object.electorateId = [];
-                    if (options.bytes !== Array)
-                        object.electorateId = $util.newBuffer(object.electorateId);
-                }
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
                     object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -14335,12 +16761,12 @@ $root.gov = (function() {
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.title != null && message.hasOwnProperty("title"))
                 object.title = message.title;
+            if (message.rawOption != null && message.hasOwnProperty("rawOption"))
+                object.rawOption = options.bytes === String ? $util.base64.encode(message.rawOption, 0, message.rawOption.length) : options.bytes === Array ? Array.prototype.slice.call(message.rawOption) : message.rawOption;
             if (message.description != null && message.hasOwnProperty("description"))
                 object.description = message.description;
             if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
                 object.electionRuleId = options.bytes === String ? $util.base64.encode(message.electionRuleId, 0, message.electionRuleId.length) : options.bytes === Array ? Array.prototype.slice.call(message.electionRuleId) : message.electionRuleId;
-            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
-                object.electorateId = options.bytes === String ? $util.base64.encode(message.electorateId, 0, message.electorateId.length) : options.bytes === Array ? Array.prototype.slice.call(message.electorateId) : message.electorateId;
             if (message.startTime != null && message.hasOwnProperty("startTime"))
                 if (typeof message.startTime === "number")
                     object.startTime = options.longs === String ? String(message.startTime) : message.startTime;
@@ -14352,396 +16778,17 @@ $root.gov = (function() {
         };
 
         /**
-         * Converts this CreateTextProposalMsg to JSON.
+         * Converts this CreateProposalMsg to JSON.
          * @function toJSON
-         * @memberof gov.CreateTextProposalMsg
+         * @memberof gov.CreateProposalMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        CreateTextProposalMsg.prototype.toJSON = function toJSON() {
+        CreateProposalMsg.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
-        return CreateTextProposalMsg;
-    })();
-
-    gov.CreateElectorateUpdateProposalMsg = (function() {
-
-        /**
-         * Properties of a CreateElectorateUpdateProposalMsg.
-         * @memberof gov
-         * @interface ICreateElectorateUpdateProposalMsg
-         * @property {weave.IMetadata|null} [metadata] CreateElectorateUpdateProposalMsg metadata
-         * @property {string|null} [title] Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$`
-         * @property {string|null} [description] Human readable description with 3 to 5000 chars.
-         * @property {Uint8Array|null} [electorateId] ElectorateID is the reference to the electorate that defines the group of possible voters.
-         * @property {number|Long|null} [startTime] Unix timestamp when the proposal starts. Must be in the future.
-         * @property {Uint8Array|null} [author] When not set it will default to the main signer.
-         * @property {Array.<gov.IElector>|null} [diffElectors] with weight=0.
-         */
-
-        /**
-         * Constructs a new CreateElectorateUpdateProposalMsg.
-         * @memberof gov
-         * @classdesc CreateElectorateUpdateProposalMsg creates a new governance proposal to update an electorate.
-         * @implements ICreateElectorateUpdateProposalMsg
-         * @constructor
-         * @param {gov.ICreateElectorateUpdateProposalMsg=} [properties] Properties to set
-         */
-        function CreateElectorateUpdateProposalMsg(properties) {
-            this.diffElectors = [];
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * CreateElectorateUpdateProposalMsg metadata.
-         * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @instance
-         */
-        CreateElectorateUpdateProposalMsg.prototype.metadata = null;
-
-        /**
-         * Human readable title. Must match `^[a-zA-Z0-9 _.-]{4,128}$`
-         * @member {string} title
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @instance
-         */
-        CreateElectorateUpdateProposalMsg.prototype.title = "";
-
-        /**
-         * Human readable description with 3 to 5000 chars.
-         * @member {string} description
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @instance
-         */
-        CreateElectorateUpdateProposalMsg.prototype.description = "";
-
-        /**
-         * ElectorateID is the reference to the electorate that defines the group of possible voters.
-         * @member {Uint8Array} electorateId
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @instance
-         */
-        CreateElectorateUpdateProposalMsg.prototype.electorateId = $util.newBuffer([]);
-
-        /**
-         * Unix timestamp when the proposal starts. Must be in the future.
-         * @member {number|Long} startTime
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @instance
-         */
-        CreateElectorateUpdateProposalMsg.prototype.startTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * When not set it will default to the main signer.
-         * @member {Uint8Array} author
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @instance
-         */
-        CreateElectorateUpdateProposalMsg.prototype.author = $util.newBuffer([]);
-
-        /**
-         * with weight=0.
-         * @member {Array.<gov.IElector>} diffElectors
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @instance
-         */
-        CreateElectorateUpdateProposalMsg.prototype.diffElectors = $util.emptyArray;
-
-        /**
-         * Creates a new CreateElectorateUpdateProposalMsg instance using the specified properties.
-         * @function create
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @static
-         * @param {gov.ICreateElectorateUpdateProposalMsg=} [properties] Properties to set
-         * @returns {gov.CreateElectorateUpdateProposalMsg} CreateElectorateUpdateProposalMsg instance
-         */
-        CreateElectorateUpdateProposalMsg.create = function create(properties) {
-            return new CreateElectorateUpdateProposalMsg(properties);
-        };
-
-        /**
-         * Encodes the specified CreateElectorateUpdateProposalMsg message. Does not implicitly {@link gov.CreateElectorateUpdateProposalMsg.verify|verify} messages.
-         * @function encode
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @static
-         * @param {gov.ICreateElectorateUpdateProposalMsg} message CreateElectorateUpdateProposalMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        CreateElectorateUpdateProposalMsg.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.metadata != null && message.hasOwnProperty("metadata"))
-                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.title != null && message.hasOwnProperty("title"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.title);
-            if (message.description != null && message.hasOwnProperty("description"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.description);
-            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.electorateId);
-            if (message.startTime != null && message.hasOwnProperty("startTime"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.startTime);
-            if (message.author != null && message.hasOwnProperty("author"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.author);
-            if (message.diffElectors != null && message.diffElectors.length)
-                for (var i = 0; i < message.diffElectors.length; ++i)
-                    $root.gov.Elector.encode(message.diffElectors[i], writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified CreateElectorateUpdateProposalMsg message, length delimited. Does not implicitly {@link gov.CreateElectorateUpdateProposalMsg.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @static
-         * @param {gov.ICreateElectorateUpdateProposalMsg} message CreateElectorateUpdateProposalMsg message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        CreateElectorateUpdateProposalMsg.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a CreateElectorateUpdateProposalMsg message from the specified reader or buffer.
-         * @function decode
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {gov.CreateElectorateUpdateProposalMsg} CreateElectorateUpdateProposalMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        CreateElectorateUpdateProposalMsg.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.CreateElectorateUpdateProposalMsg();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.title = reader.string();
-                    break;
-                case 3:
-                    message.description = reader.string();
-                    break;
-                case 4:
-                    message.electorateId = reader.bytes();
-                    break;
-                case 5:
-                    message.startTime = reader.int64();
-                    break;
-                case 6:
-                    message.author = reader.bytes();
-                    break;
-                case 7:
-                    if (!(message.diffElectors && message.diffElectors.length))
-                        message.diffElectors = [];
-                    message.diffElectors.push($root.gov.Elector.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a CreateElectorateUpdateProposalMsg message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {gov.CreateElectorateUpdateProposalMsg} CreateElectorateUpdateProposalMsg
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        CreateElectorateUpdateProposalMsg.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a CreateElectorateUpdateProposalMsg message.
-         * @function verify
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        CreateElectorateUpdateProposalMsg.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.metadata != null && message.hasOwnProperty("metadata")) {
-                var error = $root.weave.Metadata.verify(message.metadata);
-                if (error)
-                    return "metadata." + error;
-            }
-            if (message.title != null && message.hasOwnProperty("title"))
-                if (!$util.isString(message.title))
-                    return "title: string expected";
-            if (message.description != null && message.hasOwnProperty("description"))
-                if (!$util.isString(message.description))
-                    return "description: string expected";
-            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
-                if (!(message.electorateId && typeof message.electorateId.length === "number" || $util.isString(message.electorateId)))
-                    return "electorateId: buffer expected";
-            if (message.startTime != null && message.hasOwnProperty("startTime"))
-                if (!$util.isInteger(message.startTime) && !(message.startTime && $util.isInteger(message.startTime.low) && $util.isInteger(message.startTime.high)))
-                    return "startTime: integer|Long expected";
-            if (message.author != null && message.hasOwnProperty("author"))
-                if (!(message.author && typeof message.author.length === "number" || $util.isString(message.author)))
-                    return "author: buffer expected";
-            if (message.diffElectors != null && message.hasOwnProperty("diffElectors")) {
-                if (!Array.isArray(message.diffElectors))
-                    return "diffElectors: array expected";
-                for (var i = 0; i < message.diffElectors.length; ++i) {
-                    var error = $root.gov.Elector.verify(message.diffElectors[i]);
-                    if (error)
-                        return "diffElectors." + error;
-                }
-            }
-            return null;
-        };
-
-        /**
-         * Creates a CreateElectorateUpdateProposalMsg message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {gov.CreateElectorateUpdateProposalMsg} CreateElectorateUpdateProposalMsg
-         */
-        CreateElectorateUpdateProposalMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.gov.CreateElectorateUpdateProposalMsg)
-                return object;
-            var message = new $root.gov.CreateElectorateUpdateProposalMsg();
-            if (object.metadata != null) {
-                if (typeof object.metadata !== "object")
-                    throw TypeError(".gov.CreateElectorateUpdateProposalMsg.metadata: object expected");
-                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
-            }
-            if (object.title != null)
-                message.title = String(object.title);
-            if (object.description != null)
-                message.description = String(object.description);
-            if (object.electorateId != null)
-                if (typeof object.electorateId === "string")
-                    $util.base64.decode(object.electorateId, message.electorateId = $util.newBuffer($util.base64.length(object.electorateId)), 0);
-                else if (object.electorateId.length)
-                    message.electorateId = object.electorateId;
-            if (object.startTime != null)
-                if ($util.Long)
-                    (message.startTime = $util.Long.fromValue(object.startTime)).unsigned = false;
-                else if (typeof object.startTime === "string")
-                    message.startTime = parseInt(object.startTime, 10);
-                else if (typeof object.startTime === "number")
-                    message.startTime = object.startTime;
-                else if (typeof object.startTime === "object")
-                    message.startTime = new $util.LongBits(object.startTime.low >>> 0, object.startTime.high >>> 0).toNumber();
-            if (object.author != null)
-                if (typeof object.author === "string")
-                    $util.base64.decode(object.author, message.author = $util.newBuffer($util.base64.length(object.author)), 0);
-                else if (object.author.length)
-                    message.author = object.author;
-            if (object.diffElectors) {
-                if (!Array.isArray(object.diffElectors))
-                    throw TypeError(".gov.CreateElectorateUpdateProposalMsg.diffElectors: array expected");
-                message.diffElectors = [];
-                for (var i = 0; i < object.diffElectors.length; ++i) {
-                    if (typeof object.diffElectors[i] !== "object")
-                        throw TypeError(".gov.CreateElectorateUpdateProposalMsg.diffElectors: object expected");
-                    message.diffElectors[i] = $root.gov.Elector.fromObject(object.diffElectors[i]);
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a CreateElectorateUpdateProposalMsg message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @static
-         * @param {gov.CreateElectorateUpdateProposalMsg} message CreateElectorateUpdateProposalMsg
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        CreateElectorateUpdateProposalMsg.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.arrays || options.defaults)
-                object.diffElectors = [];
-            if (options.defaults) {
-                object.metadata = null;
-                object.title = "";
-                object.description = "";
-                if (options.bytes === String)
-                    object.electorateId = "";
-                else {
-                    object.electorateId = [];
-                    if (options.bytes !== Array)
-                        object.electorateId = $util.newBuffer(object.electorateId);
-                }
-                if ($util.Long) {
-                    var long = new $util.Long(0, 0, false);
-                    object.startTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.startTime = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.author = "";
-                else {
-                    object.author = [];
-                    if (options.bytes !== Array)
-                        object.author = $util.newBuffer(object.author);
-                }
-            }
-            if (message.metadata != null && message.hasOwnProperty("metadata"))
-                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
-            if (message.title != null && message.hasOwnProperty("title"))
-                object.title = message.title;
-            if (message.description != null && message.hasOwnProperty("description"))
-                object.description = message.description;
-            if (message.electorateId != null && message.hasOwnProperty("electorateId"))
-                object.electorateId = options.bytes === String ? $util.base64.encode(message.electorateId, 0, message.electorateId.length) : options.bytes === Array ? Array.prototype.slice.call(message.electorateId) : message.electorateId;
-            if (message.startTime != null && message.hasOwnProperty("startTime"))
-                if (typeof message.startTime === "number")
-                    object.startTime = options.longs === String ? String(message.startTime) : message.startTime;
-                else
-                    object.startTime = options.longs === String ? $util.Long.prototype.toString.call(message.startTime) : options.longs === Number ? new $util.LongBits(message.startTime.low >>> 0, message.startTime.high >>> 0).toNumber() : message.startTime;
-            if (message.author != null && message.hasOwnProperty("author"))
-                object.author = options.bytes === String ? $util.base64.encode(message.author, 0, message.author.length) : options.bytes === Array ? Array.prototype.slice.call(message.author) : message.author;
-            if (message.diffElectors && message.diffElectors.length) {
-                object.diffElectors = [];
-                for (var j = 0; j < message.diffElectors.length; ++j)
-                    object.diffElectors[j] = $root.gov.Elector.toObject(message.diffElectors[j], options);
-            }
-            return object;
-        };
-
-        /**
-         * Converts this CreateElectorateUpdateProposalMsg to JSON.
-         * @function toJSON
-         * @memberof gov.CreateElectorateUpdateProposalMsg
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        CreateElectorateUpdateProposalMsg.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return CreateElectorateUpdateProposalMsg;
+        return CreateProposalMsg;
     })();
 
     gov.DeleteProposalMsg = (function() {
@@ -14751,7 +16798,7 @@ $root.gov = (function() {
          * @memberof gov
          * @interface IDeleteProposalMsg
          * @property {weave.IMetadata|null} [metadata] DeleteProposalMsg metadata
-         * @property {Uint8Array|null} [id] ID is the unique identifier of the proposal to delete
+         * @property {Uint8Array|null} [proposalId] ProposalID is the unique identifier of the proposal to delete
          */
 
         /**
@@ -14778,12 +16825,12 @@ $root.gov = (function() {
         DeleteProposalMsg.prototype.metadata = null;
 
         /**
-         * ID is the unique identifier of the proposal to delete
-         * @member {Uint8Array} id
+         * ProposalID is the unique identifier of the proposal to delete
+         * @member {Uint8Array} proposalId
          * @memberof gov.DeleteProposalMsg
          * @instance
          */
-        DeleteProposalMsg.prototype.id = $util.newBuffer([]);
+        DeleteProposalMsg.prototype.proposalId = $util.newBuffer([]);
 
         /**
          * Creates a new DeleteProposalMsg instance using the specified properties.
@@ -14811,8 +16858,8 @@ $root.gov = (function() {
                 writer = $Writer.create();
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.id != null && message.hasOwnProperty("id"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
+            if (message.proposalId != null && message.hasOwnProperty("proposalId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.proposalId);
             return writer;
         };
 
@@ -14851,7 +16898,7 @@ $root.gov = (function() {
                     message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.id = reader.bytes();
+                    message.proposalId = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -14893,9 +16940,9 @@ $root.gov = (function() {
                 if (error)
                     return "metadata." + error;
             }
-            if (message.id != null && message.hasOwnProperty("id"))
-                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
-                    return "id: buffer expected";
+            if (message.proposalId != null && message.hasOwnProperty("proposalId"))
+                if (!(message.proposalId && typeof message.proposalId.length === "number" || $util.isString(message.proposalId)))
+                    return "proposalId: buffer expected";
             return null;
         };
 
@@ -14916,11 +16963,11 @@ $root.gov = (function() {
                     throw TypeError(".gov.DeleteProposalMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
-            if (object.id != null)
-                if (typeof object.id === "string")
-                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
-                else if (object.id.length)
-                    message.id = object.id;
+            if (object.proposalId != null)
+                if (typeof object.proposalId === "string")
+                    $util.base64.decode(object.proposalId, message.proposalId = $util.newBuffer($util.base64.length(object.proposalId)), 0);
+                else if (object.proposalId.length)
+                    message.proposalId = object.proposalId;
             return message;
         };
 
@@ -14940,17 +16987,17 @@ $root.gov = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 if (options.bytes === String)
-                    object.id = "";
+                    object.proposalId = "";
                 else {
-                    object.id = [];
+                    object.proposalId = [];
                     if (options.bytes !== Array)
-                        object.id = $util.newBuffer(object.id);
+                        object.proposalId = $util.newBuffer(object.proposalId);
                 }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
-            if (message.id != null && message.hasOwnProperty("id"))
-                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+            if (message.proposalId != null && message.hasOwnProperty("proposalId"))
+                object.proposalId = options.bytes === String ? $util.base64.encode(message.proposalId, 0, message.proposalId.length) : options.bytes === Array ? Array.prototype.slice.call(message.proposalId) : message.proposalId;
             return object;
         };
 
@@ -15510,6 +17557,221 @@ $root.gov = (function() {
         return TallyMsg;
     })();
 
+    gov.TextResolutionMsg = (function() {
+
+        /**
+         * Properties of a TextResolutionMsg.
+         * @memberof gov
+         * @interface ITextResolutionMsg
+         * @property {weave.IMetadata|null} [metadata] TextResolutionMsg metadata
+         * @property {string|null} [resolution] TextResolutionMsg resolution
+         */
+
+        /**
+         * Constructs a new TextResolutionMsg.
+         * @memberof gov
+         * @classdesc with a reference to the electorate that approved it
+         * @implements ITextResolutionMsg
+         * @constructor
+         * @param {gov.ITextResolutionMsg=} [properties] Properties to set
+         */
+        function TextResolutionMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * TextResolutionMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof gov.TextResolutionMsg
+         * @instance
+         */
+        TextResolutionMsg.prototype.metadata = null;
+
+        /**
+         * TextResolutionMsg resolution.
+         * @member {string} resolution
+         * @memberof gov.TextResolutionMsg
+         * @instance
+         */
+        TextResolutionMsg.prototype.resolution = "";
+
+        /**
+         * Creates a new TextResolutionMsg instance using the specified properties.
+         * @function create
+         * @memberof gov.TextResolutionMsg
+         * @static
+         * @param {gov.ITextResolutionMsg=} [properties] Properties to set
+         * @returns {gov.TextResolutionMsg} TextResolutionMsg instance
+         */
+        TextResolutionMsg.create = function create(properties) {
+            return new TextResolutionMsg(properties);
+        };
+
+        /**
+         * Encodes the specified TextResolutionMsg message. Does not implicitly {@link gov.TextResolutionMsg.verify|verify} messages.
+         * @function encode
+         * @memberof gov.TextResolutionMsg
+         * @static
+         * @param {gov.ITextResolutionMsg} message TextResolutionMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        TextResolutionMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.resolution != null && message.hasOwnProperty("resolution"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.resolution);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified TextResolutionMsg message, length delimited. Does not implicitly {@link gov.TextResolutionMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof gov.TextResolutionMsg
+         * @static
+         * @param {gov.ITextResolutionMsg} message TextResolutionMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        TextResolutionMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a TextResolutionMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof gov.TextResolutionMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {gov.TextResolutionMsg} TextResolutionMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        TextResolutionMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.TextResolutionMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.resolution = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a TextResolutionMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof gov.TextResolutionMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {gov.TextResolutionMsg} TextResolutionMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        TextResolutionMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a TextResolutionMsg message.
+         * @function verify
+         * @memberof gov.TextResolutionMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        TextResolutionMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.resolution != null && message.hasOwnProperty("resolution"))
+                if (!$util.isString(message.resolution))
+                    return "resolution: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a TextResolutionMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof gov.TextResolutionMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {gov.TextResolutionMsg} TextResolutionMsg
+         */
+        TextResolutionMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.TextResolutionMsg)
+                return object;
+            var message = new $root.gov.TextResolutionMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".gov.TextResolutionMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.resolution != null)
+                message.resolution = String(object.resolution);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a TextResolutionMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof gov.TextResolutionMsg
+         * @static
+         * @param {gov.TextResolutionMsg} message TextResolutionMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        TextResolutionMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.resolution = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.resolution != null && message.hasOwnProperty("resolution"))
+                object.resolution = message.resolution;
+            return object;
+        };
+
+        /**
+         * Converts this TextResolutionMsg to JSON.
+         * @function toJSON
+         * @memberof gov.TextResolutionMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        TextResolutionMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return TextResolutionMsg;
+    })();
+
     gov.UpdateElectorateMsg = (function() {
 
         /**
@@ -15786,7 +18048,7 @@ $root.gov = (function() {
          * @interface IUpdateElectionRuleMsg
          * @property {weave.IMetadata|null} [metadata] UpdateElectionRuleMsg metadata
          * @property {Uint8Array|null} [electionRuleId] ElectionRuleID is a reference to the election rule
-         * @property {number|null} [votingPeriodHours] Duration how long the voting period will take place.
+         * @property {number|null} [votingPeriod] Duration in seconds of how long the voting period will take place.
          * @property {gov.IFraction|null} [threshold] of the eligible voters.
          */
 
@@ -15822,12 +18084,12 @@ $root.gov = (function() {
         UpdateElectionRuleMsg.prototype.electionRuleId = $util.newBuffer([]);
 
         /**
-         * Duration how long the voting period will take place.
-         * @member {number} votingPeriodHours
+         * Duration in seconds of how long the voting period will take place.
+         * @member {number} votingPeriod
          * @memberof gov.UpdateElectionRuleMsg
          * @instance
          */
-        UpdateElectionRuleMsg.prototype.votingPeriodHours = 0;
+        UpdateElectionRuleMsg.prototype.votingPeriod = 0;
 
         /**
          * of the eligible voters.
@@ -15865,8 +18127,8 @@ $root.gov = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.electionRuleId);
-            if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.votingPeriodHours);
+            if (message.votingPeriod != null && message.hasOwnProperty("votingPeriod"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.votingPeriod);
             if (message.threshold != null && message.hasOwnProperty("threshold"))
                 $root.gov.Fraction.encode(message.threshold, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             return writer;
@@ -15910,7 +18172,7 @@ $root.gov = (function() {
                     message.electionRuleId = reader.bytes();
                     break;
                 case 3:
-                    message.votingPeriodHours = reader.uint32();
+                    message.votingPeriod = reader.uint32();
                     break;
                 case 4:
                     message.threshold = $root.gov.Fraction.decode(reader, reader.uint32());
@@ -15958,9 +18220,9 @@ $root.gov = (function() {
             if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
                 if (!(message.electionRuleId && typeof message.electionRuleId.length === "number" || $util.isString(message.electionRuleId)))
                     return "electionRuleId: buffer expected";
-            if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
-                if (!$util.isInteger(message.votingPeriodHours))
-                    return "votingPeriodHours: integer expected";
+            if (message.votingPeriod != null && message.hasOwnProperty("votingPeriod"))
+                if (!$util.isInteger(message.votingPeriod))
+                    return "votingPeriod: integer expected";
             if (message.threshold != null && message.hasOwnProperty("threshold")) {
                 var error = $root.gov.Fraction.verify(message.threshold);
                 if (error)
@@ -15991,8 +18253,8 @@ $root.gov = (function() {
                     $util.base64.decode(object.electionRuleId, message.electionRuleId = $util.newBuffer($util.base64.length(object.electionRuleId)), 0);
                 else if (object.electionRuleId.length)
                     message.electionRuleId = object.electionRuleId;
-            if (object.votingPeriodHours != null)
-                message.votingPeriodHours = object.votingPeriodHours >>> 0;
+            if (object.votingPeriod != null)
+                message.votingPeriod = object.votingPeriod >>> 0;
             if (object.threshold != null) {
                 if (typeof object.threshold !== "object")
                     throw TypeError(".gov.UpdateElectionRuleMsg.threshold: object expected");
@@ -16023,15 +18285,15 @@ $root.gov = (function() {
                     if (options.bytes !== Array)
                         object.electionRuleId = $util.newBuffer(object.electionRuleId);
                 }
-                object.votingPeriodHours = 0;
+                object.votingPeriod = 0;
                 object.threshold = null;
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.electionRuleId != null && message.hasOwnProperty("electionRuleId"))
                 object.electionRuleId = options.bytes === String ? $util.base64.encode(message.electionRuleId, 0, message.electionRuleId.length) : options.bytes === Array ? Array.prototype.slice.call(message.electionRuleId) : message.electionRuleId;
-            if (message.votingPeriodHours != null && message.hasOwnProperty("votingPeriodHours"))
-                object.votingPeriodHours = message.votingPeriodHours;
+            if (message.votingPeriod != null && message.hasOwnProperty("votingPeriod"))
+                object.votingPeriod = message.votingPeriod;
             if (message.threshold != null && message.hasOwnProperty("threshold"))
                 object.threshold = $root.gov.Fraction.toObject(message.threshold, options);
             return object;
@@ -16049,6 +18311,285 @@ $root.gov = (function() {
         };
 
         return UpdateElectionRuleMsg;
+    })();
+
+    gov.ProposalOptions = (function() {
+
+        /**
+         * Properties of a ProposalOptions.
+         * @memberof gov
+         * @interface IProposalOptions
+         * @property {gov.ITextResolutionMsg|null} [text] ProposalOptions text
+         * @property {gov.IUpdateElectorateMsg|null} [electorate] ProposalOptions electorate
+         * @property {gov.IUpdateElectionRuleMsg|null} [rule] ProposalOptions rule
+         */
+
+        /**
+         * Constructs a new ProposalOptions.
+         * @memberof gov
+         * @classdesc and handlers, but an application can reference messages from any package.
+         * @implements IProposalOptions
+         * @constructor
+         * @param {gov.IProposalOptions=} [properties] Properties to set
+         */
+        function ProposalOptions(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ProposalOptions text.
+         * @member {gov.ITextResolutionMsg|null|undefined} text
+         * @memberof gov.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.text = null;
+
+        /**
+         * ProposalOptions electorate.
+         * @member {gov.IUpdateElectorateMsg|null|undefined} electorate
+         * @memberof gov.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.electorate = null;
+
+        /**
+         * ProposalOptions rule.
+         * @member {gov.IUpdateElectionRuleMsg|null|undefined} rule
+         * @memberof gov.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.rule = null;
+
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+
+        /**
+         * ProposalOptions option.
+         * @member {"text"|"electorate"|"rule"|undefined} option
+         * @memberof gov.ProposalOptions
+         * @instance
+         */
+        Object.defineProperty(ProposalOptions.prototype, "option", {
+            get: $util.oneOfGetter($oneOfFields = ["text", "electorate", "rule"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * Creates a new ProposalOptions instance using the specified properties.
+         * @function create
+         * @memberof gov.ProposalOptions
+         * @static
+         * @param {gov.IProposalOptions=} [properties] Properties to set
+         * @returns {gov.ProposalOptions} ProposalOptions instance
+         */
+        ProposalOptions.create = function create(properties) {
+            return new ProposalOptions(properties);
+        };
+
+        /**
+         * Encodes the specified ProposalOptions message. Does not implicitly {@link gov.ProposalOptions.verify|verify} messages.
+         * @function encode
+         * @memberof gov.ProposalOptions
+         * @static
+         * @param {gov.IProposalOptions} message ProposalOptions message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProposalOptions.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.text != null && message.hasOwnProperty("text"))
+                $root.gov.TextResolutionMsg.encode(message.text, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.electorate != null && message.hasOwnProperty("electorate"))
+                $root.gov.UpdateElectorateMsg.encode(message.electorate, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.rule != null && message.hasOwnProperty("rule"))
+                $root.gov.UpdateElectionRuleMsg.encode(message.rule, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ProposalOptions message, length delimited. Does not implicitly {@link gov.ProposalOptions.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof gov.ProposalOptions
+         * @static
+         * @param {gov.IProposalOptions} message ProposalOptions message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProposalOptions.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ProposalOptions message from the specified reader or buffer.
+         * @function decode
+         * @memberof gov.ProposalOptions
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {gov.ProposalOptions} ProposalOptions
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProposalOptions.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.gov.ProposalOptions();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.text = $root.gov.TextResolutionMsg.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.electorate = $root.gov.UpdateElectorateMsg.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.rule = $root.gov.UpdateElectionRuleMsg.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ProposalOptions message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof gov.ProposalOptions
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {gov.ProposalOptions} ProposalOptions
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProposalOptions.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ProposalOptions message.
+         * @function verify
+         * @memberof gov.ProposalOptions
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ProposalOptions.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            var properties = {};
+            if (message.text != null && message.hasOwnProperty("text")) {
+                properties.option = 1;
+                {
+                    var error = $root.gov.TextResolutionMsg.verify(message.text);
+                    if (error)
+                        return "text." + error;
+                }
+            }
+            if (message.electorate != null && message.hasOwnProperty("electorate")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.gov.UpdateElectorateMsg.verify(message.electorate);
+                    if (error)
+                        return "electorate." + error;
+                }
+            }
+            if (message.rule != null && message.hasOwnProperty("rule")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.gov.UpdateElectionRuleMsg.verify(message.rule);
+                    if (error)
+                        return "rule." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ProposalOptions message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof gov.ProposalOptions
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {gov.ProposalOptions} ProposalOptions
+         */
+        ProposalOptions.fromObject = function fromObject(object) {
+            if (object instanceof $root.gov.ProposalOptions)
+                return object;
+            var message = new $root.gov.ProposalOptions();
+            if (object.text != null) {
+                if (typeof object.text !== "object")
+                    throw TypeError(".gov.ProposalOptions.text: object expected");
+                message.text = $root.gov.TextResolutionMsg.fromObject(object.text);
+            }
+            if (object.electorate != null) {
+                if (typeof object.electorate !== "object")
+                    throw TypeError(".gov.ProposalOptions.electorate: object expected");
+                message.electorate = $root.gov.UpdateElectorateMsg.fromObject(object.electorate);
+            }
+            if (object.rule != null) {
+                if (typeof object.rule !== "object")
+                    throw TypeError(".gov.ProposalOptions.rule: object expected");
+                message.rule = $root.gov.UpdateElectionRuleMsg.fromObject(object.rule);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ProposalOptions message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof gov.ProposalOptions
+         * @static
+         * @param {gov.ProposalOptions} message ProposalOptions
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ProposalOptions.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (message.text != null && message.hasOwnProperty("text")) {
+                object.text = $root.gov.TextResolutionMsg.toObject(message.text, options);
+                if (options.oneofs)
+                    object.option = "text";
+            }
+            if (message.electorate != null && message.hasOwnProperty("electorate")) {
+                object.electorate = $root.gov.UpdateElectorateMsg.toObject(message.electorate, options);
+                if (options.oneofs)
+                    object.option = "electorate";
+            }
+            if (message.rule != null && message.hasOwnProperty("rule")) {
+                object.rule = $root.gov.UpdateElectionRuleMsg.toObject(message.rule, options);
+                if (options.oneofs)
+                    object.option = "rule";
+            }
+            return object;
+        };
+
+        /**
+         * Converts this ProposalOptions to JSON.
+         * @function toJSON
+         * @memberof gov.ProposalOptions
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ProposalOptions.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ProposalOptions;
     })();
 
     return gov;
@@ -21882,7 +24423,6 @@ $root.sigs = (function() {
          * Properties of a StdSignature.
          * @memberof sigs
          * @interface IStdSignature
-         * @property {weave.IMetadata|null} [metadata] StdSignature metadata
          * @property {number|Long|null} [sequence] StdSignature sequence
          * @property {crypto.IPublicKey|null} [pubkey] StdSignature pubkey
          * @property {crypto.ISignature|null} [signature] Removed Address, Pubkey is more powerful
@@ -21902,14 +24442,6 @@ $root.sigs = (function() {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
-
-        /**
-         * StdSignature metadata.
-         * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof sigs.StdSignature
-         * @instance
-         */
-        StdSignature.prototype.metadata = null;
 
         /**
          * StdSignature sequence.
@@ -21959,8 +24491,6 @@ $root.sigs = (function() {
         StdSignature.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.metadata != null && message.hasOwnProperty("metadata"))
-                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.sequence != null && message.hasOwnProperty("sequence"))
                 writer.uint32(/* id 2, wireType 0 =*/16).int64(message.sequence);
             if (message.pubkey != null && message.hasOwnProperty("pubkey"))
@@ -22001,9 +24531,6 @@ $root.sigs = (function() {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
-                case 1:
-                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
-                    break;
                 case 2:
                     message.sequence = reader.int64();
                     break;
@@ -22048,11 +24575,6 @@ $root.sigs = (function() {
         StdSignature.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.metadata != null && message.hasOwnProperty("metadata")) {
-                var error = $root.weave.Metadata.verify(message.metadata);
-                if (error)
-                    return "metadata." + error;
-            }
             if (message.sequence != null && message.hasOwnProperty("sequence"))
                 if (!$util.isInteger(message.sequence) && !(message.sequence && $util.isInteger(message.sequence.low) && $util.isInteger(message.sequence.high)))
                     return "sequence: integer|Long expected";
@@ -22081,11 +24603,6 @@ $root.sigs = (function() {
             if (object instanceof $root.sigs.StdSignature)
                 return object;
             var message = new $root.sigs.StdSignature();
-            if (object.metadata != null) {
-                if (typeof object.metadata !== "object")
-                    throw TypeError(".sigs.StdSignature.metadata: object expected");
-                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
-            }
             if (object.sequence != null)
                 if ($util.Long)
                     (message.sequence = $util.Long.fromValue(object.sequence)).unsigned = false;
@@ -22122,7 +24639,6 @@ $root.sigs = (function() {
                 options = {};
             var object = {};
             if (options.defaults) {
-                object.metadata = null;
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
                     object.sequence = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -22131,8 +24647,6 @@ $root.sigs = (function() {
                 object.pubkey = null;
                 object.signature = null;
             }
-            if (message.metadata != null && message.hasOwnProperty("metadata"))
-                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.sequence != null && message.hasOwnProperty("sequence"))
                 if (typeof message.sequence === "number")
                     object.sequence = options.longs === String ? String(message.sequence) : message.sequence;
