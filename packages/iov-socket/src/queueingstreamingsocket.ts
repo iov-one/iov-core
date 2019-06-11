@@ -3,6 +3,8 @@ import { Stream } from "xstream";
 // tslint:disable-next-line:no-submodule-imports
 import concat from "xstream/extra/concat";
 
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+
 import { SocketWrapperMessageEvent } from "./socketwrapper";
 import { StreamingSocket } from "./streamingsocket";
 
@@ -10,10 +12,18 @@ function wrapStream<T>(stream: Stream<T>): Stream<T> {
   return concat(stream.replaceError(Stream.never), Stream.never());
 }
 
+export enum ConnectionStatus {
+  Unconnected,
+  Connecting,
+  Connected,
+  Disconnected,
+}
+
 /**
  * A wrapper around StreamingSocket that can queue requests.
  */
 export class QueueingStreamingSocket {
+  public readonly connectionStatus: ValueAndUpdates<ConnectionStatus>;
   public readonly events: Stream<SocketWrapperMessageEvent>;
 
   private readonly url: string;
@@ -23,19 +33,27 @@ export class QueueingStreamingSocket {
   private isProcessingQueue = false;
   private timeoutIndex = 0;
   private processQueueTimeout: NodeJS.Timeout | null = null;
+  private connectionStatusProducer: DefaultValueProducer<ConnectionStatus>;
 
   public constructor(url: string, timeout: number = 10_000) {
     this.url = url;
     this.timeout = timeout;
     this.socket = new StreamingSocket(this.url, this.timeout);
     this.events = wrapStream(this.socket.events);
+
+    this.connectionStatusProducer = new DefaultValueProducer<ConnectionStatus>(ConnectionStatus.Unconnected);
+    this.connectionStatus = new ValueAndUpdates(this.connectionStatusProducer);
+    // tslint:disable-next-line:no-floating-promises
+    this.socket.connected.then(() => this.connectionStatusProducer.update(ConnectionStatus.Connected));
   }
 
   public connect(): void {
+    this.connectionStatusProducer.update(ConnectionStatus.Connecting);
     this.socket.connect();
   }
 
   public disconnect(): void {
+    this.connectionStatusProducer.update(ConnectionStatus.Disconnected);
     this.socket.disconnect();
   }
 
@@ -43,7 +61,9 @@ export class QueueingStreamingSocket {
     this.socket = new StreamingSocket(this.url, this.timeout);
     this.events.imitate(wrapStream(this.socket.events));
     // tslint:disable-next-line:no-floating-promises
-    this.socket.connected.then(() => this.processQueue());
+    this.socket.connected
+      .then(() => this.connectionStatusProducer.update(ConnectionStatus.Connected))
+      .then(() => this.processQueue());
     this.connect();
   }
 
