@@ -11,18 +11,13 @@ import {
   isSwapClaimTransaction,
   isSwapOfferTransaction,
   LightTransaction,
-  PubkeyBundle,
-  PubkeyBytes,
   SendTransaction,
-  SignatureBytes,
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
 } from "@iov/bcp";
 
 import { Int53 } from "@iov/encoding";
-
-import * as codecImpl from "./generated/codecimpl";
 
 // config (those are not used outside of @iov/bns)
 
@@ -101,36 +96,6 @@ export interface Keyed {
 
 export interface Decoder<T extends {}> {
   readonly decode: (data: Uint8Array) => T;
-}
-
-export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle {
-  if (publicKey.ed25519) {
-    return {
-      algo: Algorithm.Ed25519,
-      data: publicKey.ed25519 as PubkeyBytes,
-    };
-  } else {
-    throw new Error("Unknown public key algorithm");
-  }
-}
-
-export function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle {
-  if (privateKey.ed25519) {
-    return {
-      algo: Algorithm.Ed25519,
-      data: privateKey.ed25519 as PrivkeyBytes,
-    };
-  } else {
-    throw new Error("Unknown private key algorithm");
-  }
-}
-
-export function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes {
-  if (signature.ed25519) {
-    return signature.ed25519 as SignatureBytes;
-  } else {
-    throw new Error("Unknown private key algorithm");
-  }
 }
 
 /**

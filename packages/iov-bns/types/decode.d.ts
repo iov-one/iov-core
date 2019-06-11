@@ -1,8 +1,11 @@
-import { Amount, ChainId, FullSignature, Nonce, SignedTransaction, Token, UnsignedTransaction } from "@iov/bcp";
+import { Amount, ChainId, FullSignature, Nonce, PubkeyBundle, SignatureBytes, SignedTransaction, Token, UnsignedTransaction } from "@iov/bcp";
 import * as codecImpl from "./generated/codecimpl";
-import { BnsUsernameNft, CashConfiguration, Keyed, Participant } from "./types";
+import { BnsUsernameNft, CashConfiguration, Keyed, Participant, PrivkeyBundle } from "./types";
 export declare function decodeUsernameNft(nft: codecImpl.username.IUsernameToken, registryChainId: ChainId): BnsUsernameNft;
 export declare function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce;
+export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle;
+export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle;
+export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;
 export declare function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature;
 export declare function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token;
 export declare function decodeAmount(coin: codecImpl.coin.ICoin): Amount;

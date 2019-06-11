@@ -1,8 +1,7 @@
 import * as Long from "long";
 import { As } from "type-tagger";
-import { Address, Algorithm, Amount, ChainId, LightTransaction, PubkeyBundle, SendTransaction, SignatureBytes, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
+import { Address, Algorithm, Amount, ChainId, LightTransaction, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
-import * as codecImpl from "./generated/codecimpl";
 export interface CashConfiguration {
     readonly minimalFee: Amount;
 }
@@ -44,9 +43,6 @@ export interface Keyed {
 export interface Decoder<T extends {}> {
     readonly decode: (data: Uint8Array) => T;
 }
-export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle;
-export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle;
-export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;
 /**
  * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
  * number.

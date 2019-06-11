@@ -2,13 +2,17 @@ import BN = require("bn.js");
 
 import {
   Address,
+  Algorithm,
   Amount,
   ChainId,
   FullSignature,
   Hash,
   Nonce,
   Preimage,
+  PubkeyBundle,
+  PubkeyBytes,
   SendTransaction,
+  SignatureBytes,
   SignedTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
@@ -30,11 +34,11 @@ import {
   CashConfiguration,
   ChainAddressPair,
   CreateMultisignatureTx,
-  decodePubkey,
-  decodeSignature,
   ensure,
   Keyed,
   Participant,
+  PrivkeyBundle,
+  PrivkeyBytes,
   RegisterUsernameTx,
   RemoveAddressFromUsernameTx,
   UpdateMultisignatureTx,
@@ -66,6 +70,36 @@ export function decodeUsernameNft(
 
 export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce {
   return asInt53(acct.sequence).toNumber() as Nonce;
+}
+
+export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle {
+  if (publicKey.ed25519) {
+    return {
+      algo: Algorithm.Ed25519,
+      data: publicKey.ed25519 as PubkeyBytes,
+    };
+  } else {
+    throw new Error("Unknown public key algorithm");
+  }
+}
+
+export function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle {
+  if (privateKey.ed25519) {
+    return {
+      algo: Algorithm.Ed25519,
+      data: privateKey.ed25519 as PrivkeyBytes,
+    };
+  } else {
+    throw new Error("Unknown private key algorithm");
+  }
+}
+
+export function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes {
+  if (signature.ed25519) {
+    return signature.ed25519 as SignatureBytes;
+  } else {
+    throw new Error("Unknown private key algorithm");
+  }
 }
 
 export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature {

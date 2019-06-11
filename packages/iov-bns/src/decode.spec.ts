@@ -1,7 +1,16 @@
 import { Address, Algorithm, ChainId, Nonce, PubkeyBytes, TokenTicker, UnsignedTransaction } from "@iov/bcp";
 import { Bech32, Encoding } from "@iov/encoding";
 
-import { decodeAmount, decodeNonce, decodeToken, decodeUsernameNft, parseMsg, parseTx } from "./decode";
+import {
+  decodeAmount,
+  decodeNonce,
+  decodePrivkey,
+  decodePubkey,
+  decodeToken,
+  decodeUsernameNft,
+  parseMsg,
+  parseTx,
+} from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import {
   chainId,
@@ -16,8 +25,6 @@ import {
   signedTxBin,
 } from "./testdata.spec";
 import {
-  decodePrivkey,
-  decodePubkey,
   isAddAddressToUsernameTx,
   isCreateMultisignatureTx,
   isRegisterUsernameTx,
