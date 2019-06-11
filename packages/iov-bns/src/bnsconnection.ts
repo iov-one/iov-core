@@ -143,23 +143,6 @@ function zip<T, U>(keys: readonly T[], values: readonly U[]): readonly Join<T, U
   return keys.map((key, i) => ({ key: key, value: values[i] }));
 }
 
-/**
- * Performs a query
- *
- * This is pulled out to be used in static initialzers as well
- */
-async function performQuery(
-  tmClient: TendermintClient,
-  path: string,
-  data: Uint8Array,
-): Promise<QueryResponse> {
-  const response = await tmClient.abciQuery({ path: path, data: data });
-  const keys = codecImpl.app.ResultSet.decode(response.key).results;
-  const values = codecImpl.app.ResultSet.decode(response.value).results;
-  const results: readonly Result[] = zip(keys, values);
-  return { height: response.height, results: results };
-}
-
 /* Various helpers for parsing the results of querying abci */
 
 export interface QueryResponse {
@@ -660,7 +643,11 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {
-    return performQuery(this.tmClient, path, data);
+    const response = await this.tmClient.abciQuery({ path: path, data: data });
+    const keys = codecImpl.app.ResultSet.decode(response.key).results;
+    const values = codecImpl.app.ResultSet.decode(response.value).results;
+    const results: readonly Result[] = zip(keys, values);
+    return { height: response.height, results: results };
   }
 
   // updateEscrowBalance will query for the proper balance and then update the accounts of escrow before
