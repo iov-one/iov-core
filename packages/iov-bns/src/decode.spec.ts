@@ -3,10 +3,10 @@ import { Bech32, Encoding } from "@iov/encoding";
 
 import {
   decodeAmount,
-  decodeNonce,
   decodePrivkey,
   decodePubkey,
   decodeToken,
+  decodeUserData,
   decodeUsernameNft,
   parseMsg,
   parseTx,
@@ -74,16 +74,19 @@ describe("Decode", () => {
     expect(privkey).toEqual(privJson);
   });
 
-  it("has working decodeNonce", () => {
-    const user: codecImpl.sigs.IUserData & Keyed = {
-      _id: fromHex("1234ABCD0000AA0000FFFF0000AA00001234ABCD"),
-      pubkey: {
-        ed25519: fromHex("aabbccdd"),
-      },
-      sequence: 7,
-    };
-    const nonce = decodeNonce(user);
-    expect(nonce).toEqual(7 as Nonce);
+  describe("decodeUserData", () => {
+    it("works", () => {
+      const userData: codecImpl.sigs.IUserData = {
+        pubkey: {
+          ed25519: fromHex("aabbccdd"),
+        },
+        sequence: 7,
+      };
+      const decoded = decodeUserData(userData);
+      expect(decoded).toEqual({
+        nonce: 7 as Nonce,
+      });
+    });
   });
 
   it("has working decodeToken", () => {

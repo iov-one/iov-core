@@ -11,7 +11,9 @@ export declare function asIntegerNumber(maybeLong: Long | number | null | undefi
 export declare function asInt53(input: Long | number | null | undefined): Int53;
 export declare function ensure<T>(maybe: T | null | undefined, msg?: string): T;
 export declare function decodeUsernameNft(nft: codecImpl.username.IUsernameToken, registryChainId: ChainId): BnsUsernameNft;
-export declare function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce;
+export declare function decodeUserData(userData: codecImpl.sigs.IUserData): {
+    readonly nonce: Nonce;
+};
 export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle;
 export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle;
 export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;

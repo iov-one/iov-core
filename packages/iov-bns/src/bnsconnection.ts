@@ -53,9 +53,9 @@ import { ChainData, Context } from "./context";
 import {
   decodeAmount,
   decodeCashConfiguration,
-  decodeNonce,
   decodePubkey,
   decodeToken,
+  decodeUserData,
   decodeUsernameNft,
 } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
@@ -382,7 +382,10 @@ export class BnsConnection implements AtomicSwapConnection {
       : query.address;
     const response = await this.query("/auth", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.sigs.UserData, "sigs:");
-    const nonces = response.results.map(parser).map(decodeNonce);
+    const nonces = response.results
+      .map(parser)
+      .map(decodeUserData)
+      .map(user => user.nonce);
 
     switch (nonces.length) {
       case 0:

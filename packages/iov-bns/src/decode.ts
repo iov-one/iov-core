@@ -100,8 +100,10 @@ export function decodeUsernameNft(
   };
 }
 
-export function decodeNonce(acct: codecImpl.sigs.IUserData & Keyed): Nonce {
-  return asInt53(acct.sequence).toNumber() as Nonce;
+export function decodeUserData(userData: codecImpl.sigs.IUserData): { readonly nonce: Nonce } {
+  return {
+    nonce: asInt53(userData.sequence).toNumber() as Nonce,
+  };
 }
 
 export function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): PubkeyBundle {
