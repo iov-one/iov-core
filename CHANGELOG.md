@@ -68,6 +68,8 @@ Breaking changes
 - @iov/bns: Remove `BnsUsernamesByChainAndAddressQuery` and
   `isBnsUsernamesByChainAndAddressQuery`, since reverse lookup is not supported
   anymore.
+- @iov/bns: Rename `BnsUsernamesByOwnerAddressQuery` to
+  `BnsUsernamesByOwnerQuery`.
 - @iov/core: Remove `JsRpcSigningServer` and all related JS-RPC types.
 - @iov/core: Change return type of `SigningServerCore.signAndPost` to
   `TransactionId | null`.

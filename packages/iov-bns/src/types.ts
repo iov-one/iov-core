@@ -39,11 +39,11 @@ export interface BnsUsernamesByUsernameQuery {
   readonly username: string;
 }
 
-export interface BnsUsernamesByOwnerAddressQuery {
+export interface BnsUsernamesByOwnerQuery {
   readonly owner: Address;
 }
 
-export type BnsUsernamesQuery = BnsUsernamesByUsernameQuery | BnsUsernamesByOwnerAddressQuery;
+export type BnsUsernamesQuery = BnsUsernamesByUsernameQuery | BnsUsernamesByOwnerQuery;
 
 export function isBnsUsernamesByUsernameQuery(
   query: BnsUsernamesQuery,
@@ -51,10 +51,8 @@ export function isBnsUsernamesByUsernameQuery(
   return typeof (query as BnsUsernamesByUsernameQuery).username !== "undefined";
 }
 
-export function isBnsUsernamesByOwnerAddressQuery(
-  query: BnsUsernamesQuery,
-): query is BnsUsernamesByOwnerAddressQuery {
-  return typeof (query as BnsUsernamesByOwnerAddressQuery).owner !== "undefined";
+export function isBnsUsernamesByOwnerQuery(query: BnsUsernamesQuery): query is BnsUsernamesByOwnerQuery {
+  return typeof (query as BnsUsernamesByOwnerQuery).owner !== "undefined";
 }
 
 // Rest

@@ -7,7 +7,7 @@ export {
   ChainAddressPair,
   Participant,
   // NFTs
-  BnsUsernamesByOwnerAddressQuery,
+  BnsUsernamesByOwnerQuery,
   BnsUsernamesByUsernameQuery,
   BnsUsernamesQuery,
   BnsUsernameNft,

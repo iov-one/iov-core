@@ -65,7 +65,7 @@ import {
   BnsUsernamesQuery,
   Decoder,
   isBnsTx,
-  isBnsUsernamesByOwnerAddressQuery,
+  isBnsUsernamesByOwnerQuery,
   isBnsUsernamesByUsernameQuery,
   Keyed,
   Result,
@@ -631,7 +631,7 @@ export class BnsConnection implements AtomicSwapConnection {
     let results: readonly Result[];
     if (isBnsUsernamesByUsernameQuery(query)) {
       results = (await this.query("/nft/usernames", toUtf8(query.username))).results;
-    } else if (isBnsUsernamesByOwnerAddressQuery(query)) {
+    } else if (isBnsUsernamesByOwnerQuery(query)) {
       const rawAddress = decodeBnsAddress(query.owner).data;
       results = (await this.query("/nft/usernames/owner", rawAddress)).results;
     } else {
