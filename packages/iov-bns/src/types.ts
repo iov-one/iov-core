@@ -39,19 +39,11 @@ export interface BnsUsernamesByUsernameQuery {
   readonly username: string;
 }
 
-export interface BnsUsernamesByOwnerAddressQuery {
+export interface BnsUsernamesByOwnerQuery {
   readonly owner: Address;
 }
 
-export interface BnsUsernamesByChainAndAddressQuery {
-  readonly chain: ChainId;
-  readonly address: Address;
-}
-
-export type BnsUsernamesQuery =
-  | BnsUsernamesByUsernameQuery
-  | BnsUsernamesByOwnerAddressQuery
-  | BnsUsernamesByChainAndAddressQuery;
+export type BnsUsernamesQuery = BnsUsernamesByUsernameQuery | BnsUsernamesByOwnerQuery;
 
 export function isBnsUsernamesByUsernameQuery(
   query: BnsUsernamesQuery,
@@ -59,19 +51,8 @@ export function isBnsUsernamesByUsernameQuery(
   return typeof (query as BnsUsernamesByUsernameQuery).username !== "undefined";
 }
 
-export function isBnsUsernamesByOwnerAddressQuery(
-  query: BnsUsernamesQuery,
-): query is BnsUsernamesByOwnerAddressQuery {
-  return typeof (query as BnsUsernamesByOwnerAddressQuery).owner !== "undefined";
-}
-
-export function isBnsUsernamesByChainAndAddressQuery(
-  query: BnsUsernamesQuery,
-): query is BnsUsernamesByChainAndAddressQuery {
-  return (
-    typeof (query as BnsUsernamesByChainAndAddressQuery).chain !== "undefined" &&
-    typeof (query as BnsUsernamesByChainAndAddressQuery).address !== "undefined"
-  );
+export function isBnsUsernamesByOwnerQuery(query: BnsUsernamesQuery): query is BnsUsernamesByOwnerQuery {
+  return typeof (query as BnsUsernamesByOwnerQuery).owner !== "undefined";
 }
 
 // Rest

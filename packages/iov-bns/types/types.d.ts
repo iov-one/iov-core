@@ -15,17 +15,12 @@ export interface BnsUsernameNft {
 export interface BnsUsernamesByUsernameQuery {
     readonly username: string;
 }
-export interface BnsUsernamesByOwnerAddressQuery {
+export interface BnsUsernamesByOwnerQuery {
     readonly owner: Address;
 }
-export interface BnsUsernamesByChainAndAddressQuery {
-    readonly chain: ChainId;
-    readonly address: Address;
-}
-export declare type BnsUsernamesQuery = BnsUsernamesByUsernameQuery | BnsUsernamesByOwnerAddressQuery | BnsUsernamesByChainAndAddressQuery;
+export declare type BnsUsernamesQuery = BnsUsernamesByUsernameQuery | BnsUsernamesByOwnerQuery;
 export declare function isBnsUsernamesByUsernameQuery(query: BnsUsernamesQuery): query is BnsUsernamesByUsernameQuery;
-export declare function isBnsUsernamesByOwnerAddressQuery(query: BnsUsernamesQuery): query is BnsUsernamesByOwnerAddressQuery;
-export declare function isBnsUsernamesByChainAndAddressQuery(query: BnsUsernamesQuery): query is BnsUsernamesByChainAndAddressQuery;
+export declare function isBnsUsernamesByOwnerQuery(query: BnsUsernamesQuery): query is BnsUsernamesByOwnerQuery;
 export declare type PrivkeyBytes = Uint8Array & As<"privkey-bytes">;
 export interface PrivkeyBundle {
     readonly algo: Algorithm;
