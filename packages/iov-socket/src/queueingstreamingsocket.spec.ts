@@ -56,8 +56,35 @@ describe("QueueingStreamingSocket", () => {
 
       requests.forEach(request => socket.queueRequest(request));
       setTimeout(() => {
+        expect(socket.getQueueLength()).toEqual(3);
         socket.connect();
       }, 5_000);
+    });
+  });
+
+  describe("reconnect", () => {
+    it("can reconnect and process remaining queue", done => {
+      pendingWithoutSocketServer();
+      const socket = new QueueingStreamingSocket(socketServerUrl);
+      const requests: readonly string[] = ["request 1", "request 2", "request 3"];
+      let eventsSeen = 0;
+
+      socket.connect();
+      socket.disconnect();
+
+      requests.forEach(request => socket.queueRequest(request));
+
+      socket.reconnect();
+      socket.events.subscribe({
+        next: event => {
+          expect(event.data).toEqual(requests[eventsSeen++]);
+          if (eventsSeen === requests.length) {
+            expect(socket.getQueueLength()).toEqual(0);
+            socket.disconnect();
+            done();
+          }
+        },
+      });
     });
   });
 });
