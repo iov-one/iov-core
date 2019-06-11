@@ -1,5 +1,5 @@
-// tslint:disable:readonly-array readonly-keyword no-object-mutation
-import { Listener, Stream } from "xstream";
+// tslint:disable:no-object-mutation readonly-array readonly-keyword
+import { Stream } from "xstream";
 
 import { SocketWrapperMessageEvent } from "./socketwrapper";
 import { StreamingSocket } from "./streamingsocket";
@@ -8,20 +8,23 @@ import { StreamingSocket } from "./streamingsocket";
  * A wrapper around StreamingSocket that can queue requests.
  */
 export class QueueingStreamingSocket {
-  public readonly connected: Promise<void>;
-  public readonly events: Stream<SocketWrapperMessageEvent>;
+  public connected: Promise<void>;
+  public events: Stream<SocketWrapperMessageEvent>;
 
-  private errorProducerListener: Listener<Error> | undefined;
-  private readonly socket: StreamingSocket;
+  private readonly url: string;
+  private readonly timeout: number;
   private readonly queue: string[] = [];
+  private socket: StreamingSocket;
   private isProcessingQueue = false;
   private timeoutIndex = 0;
   private processQueueTimeout: NodeJS.Timeout | null = null;
 
   public constructor(url: string, timeout: number = 10_000) {
-    this.socket = new StreamingSocket(url, timeout);
-    this.connected = this.socket.connected;
+    this.url = url;
+    this.timeout = timeout;
+    this.socket = new StreamingSocket(this.url, this.timeout);
     this.events = this.socket.events;
+    this.connected = this.socket.connected;
   }
 
   public connect(): void {
@@ -30,6 +33,13 @@ export class QueueingStreamingSocket {
 
   public disconnect(): void {
     this.socket.disconnect();
+  }
+
+  public reconnect(): void {
+    this.socket = new StreamingSocket(this.url, this.timeout);
+    this.events = this.socket.events;
+    this.connected = this.socket.connected.then(() => this.processQueue());
+    this.connect();
   }
 
   public getQueueLength(): number {
