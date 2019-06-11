@@ -1782,6 +1782,38 @@ describe("BnsConnection", () => {
     });
   });
 
+  describe("getElectorates", () => {
+    it("can query electorates set in genesis", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const electorates = await connection.getElectorates();
+      expect(electorates.length).toEqual(2);
+      expect(electorates[0]).toEqual({
+        version: 1,
+        admin: "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address,
+        title: "Default electorate",
+        electors: [
+          {
+            address: "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address,
+            weight: 9,
+          },
+          {
+            address: "tiov12shyht3pvvacvyee36w5844jkfh5s0mf4gszp9" as Address,
+            weight: 10,
+          },
+          {
+            address: "tiov18mgvcwg4339w40ktv0hmmln80ttvza2n6hjaxh" as Address,
+            weight: 11,
+          },
+        ],
+        totalWeight: 30,
+      });
+
+      connection.disconnect();
+    });
+  });
+
   describe("getUsernames", () => {
     it("can query usernames by name or owner", async () => {
       pendingWithoutBnsd();
