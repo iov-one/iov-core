@@ -51,11 +51,6 @@ import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromUtf8 } = Encoding;
 
-function decodeString(input: string | null | undefined): string {
-  // weave encodes empty strings as null
-  return input || "";
-}
-
 /**
  * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
  * number.
@@ -215,7 +210,7 @@ export function decodeElectorate(prefix: "iov" | "tiov", electorate: codecImpl.g
   return {
     version: asIntegerNumber(ensure(electorate.version, "version")),
     admin: encodeBnsAddress(prefix, ensure(electorate.admin, "admin")),
-    title: decodeString(electorate.title),
+    title: ensure(electorate.title, "title"), // must not be an empty string
     electors: electors,
     totalWeight: asIntegerNumber(electorate.totalElectorateWeight),
   };
