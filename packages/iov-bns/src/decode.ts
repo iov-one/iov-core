@@ -200,14 +200,17 @@ export function decodeParticipants(
 }
 
 export function decodeElectorate(prefix: "iov" | "tiov", electorate: codecImpl.gov.IElectorate): Electorate {
-  const electors = ensure(electorate.electors).map(
-    (elector, i): Elector => {
-      return {
-        address: encodeBnsAddress(prefix, ensure(elector.address, `electors.$${i}.address`)),
-        weight: ensure(elector.weight, `electors.$${i}.weight`),
-      };
-    },
-  );
+  // tslint:disable-next-line: readonly-keyword
+  const electors: { [index: string]: Elector } = {};
+
+  ensure(electorate.electors).forEach((elector, i) => {
+    const address = encodeBnsAddress(prefix, ensure(elector.address, `electors.$${i}.address`));
+    // tslint:disable-next-line: no-object-mutation
+    electors[address] = {
+      address: encodeBnsAddress(prefix, ensure(elector.address, `electors.$${i}.address`)),
+      weight: ensure(elector.weight, `electors.$${i}.weight`),
+    };
+  });
 
   return {
     version: asIntegerNumber(ensure(electorate.version, "version")),

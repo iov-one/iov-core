@@ -35,7 +35,8 @@ export interface Electorate {
   readonly version: number;
   readonly admin: Address;
   readonly title: string;
-  readonly electors: readonly Elector[];
+  /** An unordered map from address to elector */
+  readonly electors: { readonly [index: string]: Elector };
   /** Sum of all electors' weights */
   readonly totalWeight: number;
 }
