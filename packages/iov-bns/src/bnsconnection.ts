@@ -150,23 +150,24 @@ export interface QueryResponse {
   readonly results: readonly Result[];
 }
 
-function createParser<T extends {}>(decoder: Decoder<T>, keyPrefix: string): (res: Result) => T & Keyed {
-  const parser = (res: Result): T & Keyed => {
-    const keyPrefixAsAscii = toAscii(keyPrefix);
-    if (!keyPrefixAsAscii.every((byte, i) => byte === res.key[i])) {
+function createParser<T extends {}>(decoder: Decoder<T>, keyPrefix: string): (result: Result) => T & Keyed {
+  const keyPrefixAsAscii = toAscii(keyPrefix);
+
+  function parseResult({ key, value }: Result): T & Keyed {
+    if (!keyPrefixAsAscii.every((byte, i) => byte === key[i])) {
       throw new Error(
         "Result does not start with expected prefix. " +
-          `Expected prefix '${keyPrefix}' (0x${toHex(keyPrefixAsAscii)}) in 0x${toHex(res.key)}`,
+          `Expected prefix '${keyPrefix}' (0x${toHex(keyPrefixAsAscii)}) in 0x${toHex(key)}`,
       );
     }
 
-    const val: T = decoder.decode(res.value);
-    // bug: https://github.com/Microsoft/TypeScript/issues/13557
-    // workaround from: https://github.com/OfficeDev/office-ui-fabric-react/blob/1dbfc5ee7c38e982282f13ef92884538e7226169/packages/foundation/src/createComponent.tsx#L62-L64
-    // tslint:disable-next-line:prefer-object-spread
-    return Object.assign({}, val, { _id: res.key.slice(keyPrefix.length) });
-  };
-  return parser;
+    const decoded = decoder.decode(value);
+    return {
+      ...decoded,
+      _id: key.slice(keyPrefix.length),
+    };
+  }
+  return parseResult;
 }
 
 /**
