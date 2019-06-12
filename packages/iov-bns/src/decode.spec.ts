@@ -3,6 +3,7 @@ import { Bech32, Encoding } from "@iov/encoding";
 
 import {
   decodeAmount,
+  decodeElectionRule,
   decodeElectorate,
   decodePrivkey,
   decodePubkey,
@@ -226,6 +227,42 @@ describe("Decode", () => {
           },
         },
         totalWeight: 6,
+      });
+    });
+  });
+
+  describe("decodeElectionRule", () => {
+    it("works", () => {
+      const rule: codecImpl.gov.IElectionRule = {
+        metadata: { schema: 1 },
+        version: 3,
+        admin: fromHex("5555556688770011001100110011001100110011"),
+        electorateId: fromHex("000007"),
+        title: "This is how it works",
+        votingPeriod: 11223344556677,
+        threshold: {
+          numerator: 1,
+          denominator: 2,
+        },
+        quorum: {
+          numerator: 3,
+          denominator: 4,
+        },
+      };
+      expect(decodeElectionRule("tiov", rule)).toEqual({
+        version: 3,
+        admin: "tiov124242e5gwuqpzqq3qqgsqygqzyqpzqq350k5np" as Address,
+        electorateId: 7,
+        title: "This is how it works",
+        votingPeriod: 11223344556677,
+        threshold: {
+          numerator: 1,
+          denominator: 2,
+        },
+        quorum: {
+          numerator: 3,
+          denominator: 4,
+        },
       });
     });
   });

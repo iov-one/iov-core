@@ -1,7 +1,7 @@
 import * as Long from "long";
 import { Amount, ChainId, FullSignature, Nonce, PubkeyBundle, SignatureBytes, SignedTransaction, Token, UnsignedTransaction } from "@iov/bcp";
 import * as codecImpl from "./generated/codecimpl";
-import { BnsUsernameNft, CashConfiguration, Electorate, Keyed, Participant, PrivkeyBundle } from "./types";
+import { BnsUsernameNft, CashConfiguration, ElectionRule, Electorate, Keyed, Participant, PrivkeyBundle } from "./types";
 /**
  * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
  * number.
@@ -22,5 +22,6 @@ export declare function decodeAmount(coin: codecImpl.coin.ICoin): Amount;
 export declare function decodeCashConfiguration(config: codecImpl.cash.Configuration): CashConfiguration;
 export declare function decodeParticipants(prefix: "iov" | "tiov", maybeParticipants?: codecImpl.multisig.IParticipant[] | null): readonly Participant[];
 export declare function decodeElectorate(prefix: "iov" | "tiov", electorate: codecImpl.gov.IElectorate & Keyed): Electorate;
+export declare function decodeElectionRule(prefix: "iov" | "tiov", rule: codecImpl.gov.IElectionRule): ElectionRule;
 export declare function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction;
 export declare function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction;

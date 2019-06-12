@@ -53,6 +53,7 @@ import { ChainData, Context } from "./context";
 import {
   decodeAmount,
   decodeCashConfiguration,
+  decodeElectionRule,
   decodeElectorate,
   decodePubkey,
   decodeToken,
@@ -65,6 +66,7 @@ import {
   BnsUsernameNft,
   BnsUsernamesQuery,
   Decoder,
+  ElectionRule,
   Electorate,
   isBnsTx,
   isBnsUsernamesByOwnerQuery,
@@ -617,6 +619,13 @@ export class BnsConnection implements AtomicSwapConnection {
     const parser = createParser(codecImpl.gov.Electorate, "electorate:");
     const electorates = results.map(parser).map(electorate => decodeElectorate("tiov", electorate));
     return electorates;
+  }
+
+  public async getElectionRules(): Promise<readonly ElectionRule[]> {
+    const results = (await this.query("/electionRules?prefix", new Uint8Array([]))).results;
+    const parser = createParser(codecImpl.gov.ElectionRule, "electnrule:");
+    const rules = results.map(parser).map(rule => decodeElectionRule("tiov", rule));
+    return rules;
   }
 
   public async getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]> {

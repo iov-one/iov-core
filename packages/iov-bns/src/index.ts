@@ -9,6 +9,8 @@ export {
   // Governance
   Elector,
   Electorate,
+  Fraction,
+  ElectionRule,
   // NFTs
   BnsUsernamesByOwnerQuery,
   BnsUsernamesByUsernameQuery,

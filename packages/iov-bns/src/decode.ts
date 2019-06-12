@@ -34,8 +34,10 @@ import {
   ChainAddressPair,
   CreateEscrowTx,
   CreateMultisignatureTx,
+  ElectionRule,
   Elector,
   Electorate,
+  Fraction,
   Keyed,
   Participant,
   PrivkeyBundle,
@@ -236,6 +238,28 @@ export function decodeElectorate(
     title: ensure(electorate.title, "title"), // must not be an empty string
     electors: electors,
     totalWeight: asIntegerNumber(electorate.totalElectorateWeight),
+  };
+}
+
+function decodeFraction(fraction: codecImpl.gov.IFraction): Fraction {
+  const numerator = asIntegerNumber(fraction.numerator);
+  const denominator = asIntegerNumber(fraction.denominator);
+  if (denominator === 0) {
+    throw new Error("Denominator must not be 0");
+  }
+  return { numerator: numerator, denominator: denominator };
+}
+
+export function decodeElectionRule(prefix: "iov" | "tiov", rule: codecImpl.gov.IElectionRule): ElectionRule {
+  const electorateId = new BN(ensure(rule.electorateId, "electorateId"));
+  return {
+    version: asIntegerNumber(ensure(rule.version, "version")),
+    admin: encodeBnsAddress(prefix, ensure(rule.admin, "admin")),
+    electorateId: electorateId.toNumber(),
+    title: ensure(rule.title, "title"), // must not be an empty string
+    votingPeriod: asIntegerNumber(ensure(rule.votingPeriod, "votingPeriod")),
+    threshold: decodeFraction(ensure(rule.threshold, "threshold")),
+    quorum: rule.quorum ? decodeFraction(rule.quorum) : null,
   };
 }
 

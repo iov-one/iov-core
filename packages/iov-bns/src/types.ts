@@ -42,6 +42,23 @@ export interface Electorate {
   readonly totalWeight: number;
 }
 
+export interface Fraction {
+  readonly numerator: number;
+  readonly denominator: number;
+}
+
+export interface ElectionRule {
+  readonly version: number;
+  readonly admin: Address;
+  /** The electorate used by this (ID without version, as changing electorate changes the rule) */
+  readonly electorateId: number;
+  readonly title: string;
+  /** Voting period in seconds */
+  readonly votingPeriod: number;
+  readonly threshold: Fraction;
+  readonly quorum: Fraction | null;
+}
+
 // username NFT
 
 export interface ChainAddressPair {

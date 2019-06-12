@@ -1815,6 +1815,45 @@ describe("BnsConnection", () => {
     });
   });
 
+  describe("getElectionRules", () => {
+    it("can query election rules set in genesis", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const rules = await connection.getElectionRules();
+      expect(rules.length).toEqual(2);
+      expect(rules[0]).toEqual({
+        version: 1,
+        admin: "tiov1a4kh67w979r4w7h0t7t7glqcxdmnjt2k66gk0c" as Address,
+        electorateId: 1,
+        title: "fooo",
+        votingPeriod: 1 * 3600,
+        threshold: {
+          numerator: 2,
+          denominator: 3,
+        },
+        quorum: null,
+      });
+      expect(rules[1]).toEqual({
+        version: 1,
+        admin: "tiov1g3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyj522p5" as Address,
+        electorateId: 2,
+        title: "barr",
+        votingPeriod: 2 * 3600,
+        threshold: {
+          numerator: 1,
+          denominator: 2,
+        },
+        quorum: {
+          numerator: 2,
+          denominator: 3,
+        },
+      });
+
+      connection.disconnect();
+    });
+  });
+
   describe("getUsernames", () => {
     it("can query usernames by name or owner", async () => {
       pendingWithoutBnsd();
