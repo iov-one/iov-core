@@ -4,7 +4,6 @@ import { SocketWrapperMessageEvent } from "./socketwrapper";
  * A wrapper around StreamingSocket that can queue requests.
  */
 export declare class QueueingStreamingSocket {
-    connected: Promise<void>;
     readonly events: Stream<SocketWrapperMessageEvent>;
     private readonly url;
     private readonly timeout;

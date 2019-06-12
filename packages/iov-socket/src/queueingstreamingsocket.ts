@@ -8,7 +8,6 @@ import { StreamingSocket } from "./streamingsocket";
  * A wrapper around StreamingSocket that can queue requests.
  */
 export class QueueingStreamingSocket {
-  public connected: Promise<void>;
   public readonly events: Stream<SocketWrapperMessageEvent>;
 
   private readonly url: string;
@@ -23,8 +22,7 @@ export class QueueingStreamingSocket {
     this.url = url;
     this.timeout = timeout;
     this.socket = new StreamingSocket(this.url, this.timeout);
-    this.events = this.socket.events;
-    this.connected = this.socket.connected;
+    this.events = this.socket.events.replaceError(Stream.never);
   }
 
   public connect(): void {
@@ -37,8 +35,9 @@ export class QueueingStreamingSocket {
 
   public reconnect(): void {
     this.socket = new StreamingSocket(this.url, this.timeout);
-    this.events.imitate(this.socket.events);
-    this.connected = this.socket.connected.then(() => this.processQueue());
+    this.events.imitate(this.socket.events.replaceError(Stream.never));
+    // tslint:disable-next-line:no-floating-promises
+    this.socket.connected.then(() => this.processQueue());
     this.connect();
   }
 
