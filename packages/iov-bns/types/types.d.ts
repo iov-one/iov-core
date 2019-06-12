@@ -9,6 +9,7 @@ export interface Elector {
     readonly weight: number;
 }
 export interface Electorate {
+    readonly id: number;
     readonly version: number;
     readonly admin: Address;
     readonly title: string;

@@ -184,7 +184,7 @@ describe("Decode", () => {
   describe("decodeElectorate", () => {
     it("works", () => {
       const electorate: codecImpl.gov.IElectorate & Keyed = {
-        _id: fromHex("aabbddffeeccbbaa1100dd"),
+        _id: fromHex("220800000000000000052801"),
         metadata: { schema: 1 },
         version: 3,
         admin: fromHex("5555556688770011001100110011001100110011"),
@@ -207,6 +207,7 @@ describe("Decode", () => {
       };
 
       expect(decodeElectorate("tiov", electorate)).toEqual({
+        id: 5,
         version: 3,
         admin: "tiov124242e5gwuqpzqq3qqgsqygqzyqpzqq350k5np" as Address,
         title: "A committee",

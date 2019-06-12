@@ -1790,6 +1790,7 @@ describe("BnsConnection", () => {
       const electorates = await connection.getElectorates();
       expect(electorates.length).toEqual(2);
       expect(electorates[0]).toEqual({
+        id: 1,
         version: 1,
         admin: "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address,
         title: "Default electorate",

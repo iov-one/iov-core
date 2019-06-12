@@ -198,8 +198,6 @@ export function decodeElectorate(
   prefix: "iov" | "tiov",
   electorate: codecImpl.gov.IElectorate & Keyed,
 ): Electorate {
-  // The ID in electorate._id is available but not needed at the moment
-
   // tslint:disable-next-line: readonly-keyword
   const electors: { [index: string]: Elector } = {};
 
@@ -212,7 +210,27 @@ export function decodeElectorate(
     };
   });
 
+  // Electorate ID format (23 bytes). The first 11 bytes are cut by the parser,
+  // so we have 12 bytes, which is a protobuf encoded (id, version) pair:
+  // https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#orm.VersionedIDRef
+  //
+  // 656c6563746f726174653a220800000000000000012801
+  // 656c6563746f726174653a220800000000000000022801
+  // ----------------------------------------------
+  //  e l e c t o r a t e : ? ? ? ? ? ? ? ? ? ? ? ?
+  //
+  // $ echo 220800000000000000022801 | xxd -r -p | protoc --decode_raw
+  // 4: "\000\000\000\000\000\000\000\002"
+  // 5: 1
+  //
+  // So we have a 8-bytes ID and a uint32 version.
+  if (electorate._id.length !== 12) {
+    throw new Error("Got unexpected ID length");
+  }
+  const id = new BN(electorate._id.slice(2, 10));
+
   return {
+    id: id.toNumber(),
     version: asIntegerNumber(ensure(electorate.version, "version")),
     admin: encodeBnsAddress(prefix, ensure(electorate.admin, "admin")),
     title: ensure(electorate.title, "title"), // must not be an empty string
