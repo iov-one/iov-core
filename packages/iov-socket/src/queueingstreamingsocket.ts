@@ -1,8 +1,14 @@
 // tslint:disable:no-object-mutation readonly-array readonly-keyword
 import { Stream } from "xstream";
+// tslint:disable-next-line:no-submodule-imports
+import concat from "xstream/extra/concat";
 
 import { SocketWrapperMessageEvent } from "./socketwrapper";
 import { StreamingSocket } from "./streamingsocket";
+
+function wrapStream<T>(stream: Stream<T>): Stream<T> {
+  return concat(stream.replaceError(Stream.never), Stream.never());
+}
 
 /**
  * A wrapper around StreamingSocket that can queue requests.
@@ -22,7 +28,7 @@ export class QueueingStreamingSocket {
     this.url = url;
     this.timeout = timeout;
     this.socket = new StreamingSocket(this.url, this.timeout);
-    this.events = this.socket.events.replaceError(Stream.never);
+    this.events = wrapStream(this.socket.events);
   }
 
   public connect(): void {
@@ -35,7 +41,7 @@ export class QueueingStreamingSocket {
 
   public reconnect(): void {
     this.socket = new StreamingSocket(this.url, this.timeout);
-    this.events.imitate(this.socket.events.replaceError(Stream.never));
+    this.events.imitate(wrapStream(this.socket.events));
     // tslint:disable-next-line:no-floating-promises
     this.socket.connected.then(() => this.processQueue());
     this.connect();
