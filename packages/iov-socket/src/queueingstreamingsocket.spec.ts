@@ -71,7 +71,7 @@ describe("QueueingStreamingSocket", () => {
             done();
           }
         },
-        complete: done.fail,
+        complete: () => done.fail("Stream completed"),
       });
 
       socket.connect();
@@ -101,6 +101,13 @@ describe("QueueingStreamingSocket", () => {
           }
         },
       });
+      socket.reconnect();
+    });
+
+    it("notifies on reconnection via a callback", done => {
+      pendingWithoutSocketServer();
+      const socket = new QueueingStreamingSocket(socketServerUrl, undefined, done);
+
       socket.reconnect();
     });
   });

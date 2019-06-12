@@ -21,7 +21,8 @@ export declare class QueueingStreamingSocket {
     private timeoutIndex;
     private processQueueTimeout;
     private connectionStatusProducer;
-    constructor(url: string, timeout?: number);
+    private reconnectedHandler?;
+    constructor(url: string, timeout?: number, reconnectedHandler?: () => void);
     connect(): void;
     disconnect(): void;
     reconnect(): void;

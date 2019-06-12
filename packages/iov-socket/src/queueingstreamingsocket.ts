@@ -34,13 +34,15 @@ export class QueueingStreamingSocket {
   private timeoutIndex = 0;
   private processQueueTimeout: NodeJS.Timeout | null = null;
   private connectionStatusProducer: DefaultValueProducer<ConnectionStatus>;
+  private reconnectedHandler?: () => void;
 
-  public constructor(url: string, timeout: number = 10_000) {
+  public constructor(url: string, timeout: number = 10_000, reconnectedHandler?: () => void) {
     this.url = url;
     this.timeout = timeout;
     this.socket = new StreamingSocket(this.url, this.timeout);
     this.events = wrapStream(this.socket.events);
 
+    this.reconnectedHandler = reconnectedHandler;
     this.connectionStatusProducer = new DefaultValueProducer<ConnectionStatus>(ConnectionStatus.Unconnected);
     this.connectionStatus = new ValueAndUpdates(this.connectionStatusProducer);
     // tslint:disable-next-line:no-floating-promises
@@ -62,7 +64,12 @@ export class QueueingStreamingSocket {
     this.events.imitate(wrapStream(this.socket.events));
     // tslint:disable-next-line:no-floating-promises
     this.socket.connected
-      .then(() => this.connectionStatusProducer.update(ConnectionStatus.Connected))
+      .then(() => {
+        this.connectionStatusProducer.update(ConnectionStatus.Connected);
+        if (this.reconnectedHandler) {
+          this.reconnectedHandler();
+        }
+      })
       .then(() => this.processQueue());
     this.connect();
   }
