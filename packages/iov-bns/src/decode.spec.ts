@@ -30,6 +30,7 @@ import {
   isAddAddressToUsernameTx,
   isCreateEscrowTx,
   isCreateMultisignatureTx,
+  isCreateProposalTx,
   isRegisterUsernameTx,
   isReleaseEscrowTx,
   isRemoveAddressFromUsernameTx,
@@ -562,6 +563,19 @@ describe("Decode", () => {
       expect(parsed.sender).toEqual(defaultSender);
       expect(parsed.arbiter).toEqual(defaultArbiter);
       expect(parsed.recipient).toEqual(defaultRecipient);
+    });
+
+    it("works for CreateProposal", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        createProposalMsg: {
+          title: "This will happen next",
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.title).toEqual("This will happen next");
     });
   });
 });

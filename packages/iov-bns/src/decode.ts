@@ -34,6 +34,7 @@ import {
   ChainAddressPair,
   CreateEscrowTx,
   CreateMultisignatureTx,
+  CreateProposalTx,
   ElectionRule,
   Elector,
   Electorate,
@@ -413,6 +414,8 @@ function parseUpdateMultisignatureTx(
   };
 }
 
+// Escrows
+
 function parseCreateEscrowTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.ICreateEscrowMsg,
@@ -468,6 +471,19 @@ function parseUpdateEscrowPartiesTx(
   };
 }
 
+// Governance
+
+function parseCreateProposalTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.gov.ICreateProposalMsg,
+): CreateProposalTx & WithCreator {
+  return {
+    ...base,
+    kind: "bns/create_proposal",
+    title: ensure(msg.title, "title"),
+  };
+}
+
 export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction {
   // Token sends
   if (tx.sendMsg) return parseSendTransaction(base, tx.sendMsg);
@@ -491,6 +507,9 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
   if (tx.releaseEscrowMsg) return parseReleaseEscrowTx(base, tx.releaseEscrowMsg);
   if (tx.returnEscrowMsg) return parseReturnEscrowTx(base, tx.returnEscrowMsg);
   if (tx.updateEscrowMsg) return parseUpdateEscrowPartiesTx(base, tx.updateEscrowMsg);
+
+  // Governance
+  if (tx.createProposalMsg) return parseCreateProposalTx(base, tx.createProposalMsg);
 
   throw new Error("unknown message type in transaction");
 }

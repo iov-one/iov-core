@@ -136,5 +136,10 @@ export interface UpdateEscrowPartiesTx extends LightTransaction {
     readonly recipient?: Address;
 }
 export declare function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is UpdateEscrowPartiesTx;
-export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx;
+export interface CreateProposalTx extends LightTransaction {
+    readonly kind: "bns/create_proposal";
+    readonly title: string;
+}
+export declare function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx;
+export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx | CreateProposalTx;
 export declare function isBnsTx(transaction: LightTransaction): transaction is BnsTx;

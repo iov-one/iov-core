@@ -224,6 +224,17 @@ export function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is UpdateEscro
   return tx.kind === "bns/update_escrow_parties";
 }
 
+// Transactions: Governance
+
+export interface CreateProposalTx extends LightTransaction {
+  readonly kind: "bns/create_proposal";
+  readonly title: string;
+}
+
+export function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx {
+  return transaction.kind === "bns/create_proposal";
+}
+
 // Transactions: BNS
 
 export type BnsTx =
@@ -244,7 +255,9 @@ export type BnsTx =
   | CreateEscrowTx
   | ReleaseEscrowTx
   | ReturnEscrowTx
-  | UpdateEscrowPartiesTx;
+  | UpdateEscrowPartiesTx
+  // BNS: Governance
+  | CreateProposalTx;
 
 export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
   if (
