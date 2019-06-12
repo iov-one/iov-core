@@ -331,25 +331,23 @@ function parseUpdateMultisignatureTx(
 }
 
 export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction {
-  if (tx.addUsernameAddressNftMsg) {
-    return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
-  } else if (tx.sendMsg) {
-    return parseSendTransaction(base, tx.sendMsg);
-  } else if (tx.createSwapMsg) {
-    return parseSwapOfferTx(base, tx.createSwapMsg);
-  } else if (tx.releaseSwapMsg) {
-    return parseSwapClaimTx(base, tx.releaseSwapMsg);
-  } else if (tx.returnSwapMsg) {
-    return parseSwapAbortTransaction(base, tx.returnSwapMsg);
-  } else if (tx.issueUsernameNftMsg) {
-    return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
-  } else if (tx.removeUsernameAddressMsg) {
-    return parseRemoveAddressFromUsernameTx(base, tx.removeUsernameAddressMsg);
-  } else if (tx.createContractMsg) {
-    return parseCreateMultisignatureTx(base, tx.createContractMsg);
-  } else if (tx.updateContractMsg) {
-    return parseUpdateMultisignatureTx(base, tx.updateContractMsg);
-  }
+  // Tokens sends
+  if (tx.sendMsg) return parseSendTransaction(base, tx.sendMsg);
+
+  // Atomic swaps
+  if (tx.createSwapMsg) return parseSwapOfferTx(base, tx.createSwapMsg);
+  if (tx.releaseSwapMsg) return parseSwapClaimTx(base, tx.releaseSwapMsg);
+  if (tx.returnSwapMsg) return parseSwapAbortTransaction(base, tx.returnSwapMsg);
+
+  // Usernames
+  if (tx.issueUsernameNftMsg) return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
+  if (tx.addUsernameAddressNftMsg) return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
+  if (tx.removeUsernameAddressMsg) return parseRemoveAddressFromUsernameTx(base, tx.removeUsernameAddressMsg);
+
+  // Multisig contracts
+  if (tx.createContractMsg) return parseCreateMultisignatureTx(base, tx.createContractMsg);
+  if (tx.updateContractMsg) return parseUpdateMultisignatureTx(base, tx.updateContractMsg);
+
   throw new Error("unknown message type in transaction");
 }
 

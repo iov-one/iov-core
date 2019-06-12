@@ -6,6 +6,7 @@
     "array-type": [true, "array"],
     "callable-types": false,
     "comment-format": [true, "check-space"],
+    "curly": false,
     "deprecation": true,
     "interface-name": [true, "never-prefix"],
     "max-classes-per-file": false,
@@ -33,7 +34,8 @@
     "promise-function-async": true,
     "readonly-array": true,
     "readonly-keyword": true,
-    "typedef": [true, "call-signature"]
+    "typedef": [true, "call-signature"],
+    "variable-name": [true, "check-format", "allow-leading-underscore"]
   },
   "rulesDirectory": []
 }
