@@ -194,7 +194,12 @@ export function decodeParticipants(
   }));
 }
 
-export function decodeElectorate(prefix: "iov" | "tiov", electorate: codecImpl.gov.IElectorate): Electorate {
+export function decodeElectorate(
+  prefix: "iov" | "tiov",
+  electorate: codecImpl.gov.IElectorate & Keyed,
+): Electorate {
+  // The ID in electorate._id is available but not needed at the moment
+
   // tslint:disable-next-line: readonly-keyword
   const electors: { [index: string]: Elector } = {};
 

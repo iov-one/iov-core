@@ -183,7 +183,8 @@ describe("Decode", () => {
 
   describe("decodeElectorate", () => {
     it("works", () => {
-      const electorate: codecImpl.gov.IElectorate = {
+      const electorate: codecImpl.gov.IElectorate & Keyed = {
+        _id: fromHex("aabbddffeeccbbaa1100dd"),
         metadata: { schema: 1 },
         version: 3,
         admin: fromHex("5555556688770011001100110011001100110011"),

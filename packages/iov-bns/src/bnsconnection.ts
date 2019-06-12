@@ -614,9 +614,8 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public async getElectorates(): Promise<readonly Electorate[]> {
     const results = (await this.query("/electorates?prefix", new Uint8Array([]))).results;
-    const electorates = results.map(result =>
-      decodeElectorate("tiov", codecImpl.gov.Electorate.decode(result.value)),
-    );
+    const parser = createParser(codecImpl.gov.Electorate, "electorate:");
+    const electorates = results.map(parser).map(electorate => decodeElectorate("tiov", electorate));
     return electorates;
   }
 
