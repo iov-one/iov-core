@@ -60,6 +60,26 @@ describe("QueueingStreamingSocket", () => {
   });
 
   describe("reconnect", () => {
+    it("does not emit a completed event when disconnected", done => {
+      pendingWithoutSocketServer();
+      const request = "request";
+      const socket = new QueueingStreamingSocket(socketServerUrl);
+      socket.events.subscribe({
+        next: ({ data }) => {
+          if (data === request) {
+            socket.disconnect();
+            done();
+          }
+        },
+        complete: done.fail,
+      });
+
+      socket.connect();
+      socket.disconnect();
+      socket.reconnect();
+      socket.queueRequest(request);
+    });
+
     it("can reconnect and process remaining queue", done => {
       pendingWithoutSocketServer();
       const socket = new QueueingStreamingSocket(socketServerUrl);
