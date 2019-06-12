@@ -48,9 +48,7 @@ export class TsRepl {
      */
     const replEvalWrapper = async (
       code: string,
-      // tslint:disable-next-line:variable-name
       _context: any,
-      // tslint:disable-next-line:variable-name
       _filename: string,
       callback: (err: Error | null, result?: any) => any,
     ): Promise<void> => {

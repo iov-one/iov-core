@@ -33,7 +33,8 @@
     "promise-function-async": true,
     "readonly-array": true,
     "readonly-keyword": true,
-    "typedef": [true, "call-signature"]
+    "typedef": [true, "call-signature"],
+    "variable-name": [true, "check-format", "allow-leading-underscore"]
   },
   "rulesDirectory": []
 }
