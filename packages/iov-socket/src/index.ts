@@ -1,3 +1,4 @@
+export { ConnectionStatus, QueueingStreamingSocket } from "./queueingstreamingsocket";
 export {
   SocketWrapper,
   SocketWrapperCloseEvent,

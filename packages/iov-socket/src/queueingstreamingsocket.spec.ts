@@ -1,4 +1,4 @@
-import { QueueingStreamingSocket } from "./queueingstreamingsocket";
+import { ConnectionStatus, QueueingStreamingSocket } from "./queueingstreamingsocket";
 
 function pendingWithoutSocketServer(): void {
   if (!process.env.SOCKETSERVER_ENABLED) {
@@ -102,6 +102,47 @@ describe("QueueingStreamingSocket", () => {
         },
       });
       socket.reconnect();
+    });
+  });
+
+  describe("connectionStatus", () => {
+    it("exposes connection status", done => {
+      pendingWithoutSocketServer();
+      const socket = new QueueingStreamingSocket(socketServerUrl);
+      let statusChangesSeen = 0;
+      socket.connectionStatus.updates.subscribe({
+        next: status => {
+          switch (statusChangesSeen++) {
+            case 0:
+              expect(status).toEqual(ConnectionStatus.Unconnected);
+              break;
+            case 1:
+            case 4:
+              expect(status).toEqual(ConnectionStatus.Connecting);
+              break;
+            case 2:
+            case 5:
+              expect(status).toEqual(ConnectionStatus.Connected);
+              break;
+            case 3:
+            case 6:
+              expect(status).toEqual(ConnectionStatus.Disconnected);
+              break;
+            default:
+              done.fail("Got too many status changes");
+          }
+          if (statusChangesSeen === 7) {
+            done();
+          }
+        },
+      });
+
+      socket.connect();
+      setTimeout(() => {
+        socket.disconnect();
+        socket.reconnect();
+        setTimeout(() => socket.disconnect(), 1000);
+      }, 1000);
     });
   });
 });

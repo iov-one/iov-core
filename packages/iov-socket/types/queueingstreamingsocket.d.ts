@@ -1,9 +1,17 @@
 import { Stream } from "xstream";
+import { ValueAndUpdates } from "@iov/stream";
 import { SocketWrapperMessageEvent } from "./socketwrapper";
+export declare enum ConnectionStatus {
+    Unconnected = 0,
+    Connecting = 1,
+    Connected = 2,
+    Disconnected = 3
+}
 /**
  * A wrapper around StreamingSocket that can queue requests.
  */
 export declare class QueueingStreamingSocket {
+    readonly connectionStatus: ValueAndUpdates<ConnectionStatus>;
     readonly events: Stream<SocketWrapperMessageEvent>;
     private readonly url;
     private readonly timeout;
@@ -12,6 +20,7 @@ export declare class QueueingStreamingSocket {
     private isProcessingQueue;
     private timeoutIndex;
     private processQueueTimeout;
+    private connectionStatusProducer;
     constructor(url: string, timeout?: number);
     connect(): void;
     disconnect(): void;
