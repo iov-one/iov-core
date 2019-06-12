@@ -331,7 +331,7 @@ function parseUpdateMultisignatureTx(
 }
 
 export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction {
-  // Tokens sends
+  // Token sends
   if (tx.sendMsg) return parseSendTransaction(base, tx.sendMsg);
 
   // Atomic swaps
