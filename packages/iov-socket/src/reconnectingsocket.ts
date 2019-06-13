@@ -46,7 +46,7 @@ export class ReconnectingSocket {
     this.connectionStatus = this.socket.connectionStatus;
     this.connectionStatus.updates.subscribe({
       next: status => {
-        if (this.unconnected && status === ConnectionStatus.Connected) {
+        if (status === ConnectionStatus.Connected) {
           this.unconnected = false;
           this.timeoutIndex = 0;
         }
