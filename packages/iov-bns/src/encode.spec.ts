@@ -31,6 +31,7 @@ import {
   AddAddressToUsernameTx,
   CreateEscrowTx,
   CreateMultisignatureTx,
+  CreateProposalTx,
   Participant,
   RegisterUsernameTx,
   ReleaseEscrowTx,
@@ -526,6 +527,19 @@ describe("Encode", () => {
         arbiter: defaultArbiter,
       };
       expect(() => buildMsg(updateEscrowParties)).toThrowError(/only one party can be updated at a time/i);
+    });
+
+    it("works for CreateProposalTx", () => {
+      const createProposal: CreateProposalTx & WithCreator = {
+        kind: "bns/create_proposal",
+        creator: defaultCreator,
+        title: "Why not try this?",
+      };
+      const msg = buildMsg(createProposal).createProposalMsg!;
+      expect(msg).toEqual({
+        metadata: { schema: 1 },
+        title: "Why not try this?",
+      });
     });
 
     it("encodes unset and empty memo the same way", () => {
