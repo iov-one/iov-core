@@ -229,6 +229,9 @@ export function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is UpdateEscro
 export interface CreateProposalTx extends LightTransaction {
   readonly kind: "bns/create_proposal";
   readonly title: string;
+  readonly description: string;
+  /** The author of the proposal must be included in the list of transaction signers. */
+  readonly author: Address;
 }
 
 export function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx {

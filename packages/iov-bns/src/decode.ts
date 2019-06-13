@@ -477,10 +477,13 @@ function parseCreateProposalTx(
   base: UnsignedTransaction,
   msg: codecImpl.gov.ICreateProposalMsg,
 ): CreateProposalTx & WithCreator {
+  const prefix = addressPrefix(base.creator.chainId);
   return {
     ...base,
     kind: "bns/create_proposal",
     title: ensure(msg.title, "title"),
+    description: ensure(msg.description, "description"),
+    author: encodeBnsAddress(prefix, ensure(msg.author, "author")),
   };
 }
 

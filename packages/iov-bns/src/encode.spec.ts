@@ -534,11 +534,15 @@ describe("Encode", () => {
         kind: "bns/create_proposal",
         creator: defaultCreator,
         title: "Why not try this?",
+        description: "foo bar",
+        author: defaultSender,
       };
       const msg = buildMsg(createProposal).createProposalMsg!;
       expect(msg).toEqual({
         metadata: { schema: 1 },
         title: "Why not try this?",
+        description: "foo bar",
+        author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
       });
     });
 

@@ -139,6 +139,9 @@ export declare function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is Upd
 export interface CreateProposalTx extends LightTransaction {
     readonly kind: "bns/create_proposal";
     readonly title: string;
+    readonly description: string;
+    /** The author of the proposal must be included in the list of transaction signers. */
+    readonly author: Address;
 }
 export declare function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx;
 export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx | CreateProposalTx;

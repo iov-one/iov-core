@@ -569,6 +569,8 @@ describe("Decode", () => {
       const transactionMessage: codecImpl.app.ITx = {
         createProposalMsg: {
           title: "This will happen next",
+          description: "foo bar",
+          author: Encoding.fromHex("0011223344556677889900112233445566778899"),
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
@@ -576,6 +578,8 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.title).toEqual("This will happen next");
+      expect(parsed.description).toEqual("foo bar");
+      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
     });
   });
 });

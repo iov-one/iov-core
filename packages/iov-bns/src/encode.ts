@@ -294,6 +294,8 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
     createProposalMsg: {
       metadata: { schema: 1 },
       title: tx.title,
+      description: tx.description,
+      author: decodeBnsAddress(tx.author).data,
     },
   };
 }
