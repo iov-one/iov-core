@@ -143,16 +143,18 @@ export function isUpdateMultisignatureTx(tx: LightTransaction): tx is UpdateMult
 // Transactions: BNS
 
 export type BnsTx =
-  // BCP
+  // BCP: Token sends
   | SendTransaction
+  // BCP: Atomic swaps
   | SwapOfferTransaction
   | SwapClaimTransaction
   | SwapAbortTransaction
-  // BNS
-  | AddAddressToUsernameTx
-  | CreateMultisignatureTx
+  // BNS: Usernames
   | RegisterUsernameTx
+  | AddAddressToUsernameTx
   | RemoveAddressFromUsernameTx
+  // BNS: Multisignature contracts
+  | CreateMultisignatureTx
   | UpdateMultisignatureTx;
 
 export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
