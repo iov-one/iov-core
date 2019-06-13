@@ -105,26 +105,7 @@ export function encodeParticipants(
   );
 }
 
-function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.ITx {
-  return {
-    addUsernameAddressNftMsg: {
-      usernameId: toUtf8(tx.username),
-      blockchainId: toUtf8(tx.payload.chainId),
-      address: tx.payload.address,
-    },
-  };
-}
-
-function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.app.ITx {
-  return {
-    createContractMsg: {
-      metadata: { schema: 1 },
-      participants: encodeParticipants(tx.participants),
-      activationThreshold: tx.activationThreshold,
-      adminThreshold: tx.adminThreshold,
-    },
-  };
-}
+// Token sends
 
 function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.app.ITx {
   const { prefix: prefix1, data: data1 } = decodeBnsAddress(identityToAddress(tx.creator));
@@ -142,6 +123,8 @@ function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.app.
     }),
   };
 }
+
+// Atomic swaps
 
 function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app.ITx {
   if (!isTimestampTimeout(tx.timeout)) {
@@ -180,6 +163,8 @@ function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.app.ITx 
   };
 }
 
+// Usernames
+
 function buildRegisterUsernameTx(tx: RegisterUsernameTx & WithCreator): codecImpl.app.ITx {
   const chainAddresses = tx.addresses.map(
     (pair): codecImpl.username.IChainAddress => {
@@ -201,12 +186,35 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx & WithCreator): codecImp
   };
 }
 
+function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.ITx {
+  return {
+    addUsernameAddressNftMsg: {
+      usernameId: toUtf8(tx.username),
+      blockchainId: toUtf8(tx.payload.chainId),
+      address: tx.payload.address,
+    },
+  };
+}
+
 function buildRemoveAddressFromUsernameTx(tx: RemoveAddressFromUsernameTx): codecImpl.app.ITx {
   return {
     removeUsernameAddressMsg: {
       usernameId: toUtf8(tx.username),
       blockchainId: toUtf8(tx.payload.chainId),
       address: tx.payload.address,
+    },
+  };
+}
+
+// Multisignature contracts
+
+function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.app.ITx {
+  return {
+    createContractMsg: {
+      metadata: { schema: 1 },
+      participants: encodeParticipants(tx.participants),
+      activationThreshold: tx.activationThreshold,
+      adminThreshold: tx.adminThreshold,
     },
   };
 }
@@ -229,24 +237,29 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
   }
 
   switch (tx.kind) {
-    // BCP
+    // Token sends
     case "bcp/send":
       return buildSendTransaction(tx);
+
+    // Atomic swaps
     case "bcp/swap_offer":
       return buildSwapOfferTx(tx);
     case "bcp/swap_claim":
       return buildSwapClaimTx(tx);
     case "bcp/swap_abort":
       return buildSwapAbortTransaction(tx);
-    // BNS
-    case "bns/add_address_to_username":
-      return buildAddAddressToUsernameTx(tx);
-    case "bns/create_multisignature_contract":
-      return buildCreateMultisignatureTx(tx);
+
+    // Usernames
     case "bns/register_username":
       return buildRegisterUsernameTx(tx);
+    case "bns/add_address_to_username":
+      return buildAddAddressToUsernameTx(tx);
     case "bns/remove_address_from_username":
       return buildRemoveAddressFromUsernameTx(tx);
+
+    // Multisignature contracts
+    case "bns/create_multisignature_contract":
+      return buildCreateMultisignatureTx(tx);
     case "bns/update_multisignature_contract":
       return buildUpdateMultisignatureTx(tx);
 
