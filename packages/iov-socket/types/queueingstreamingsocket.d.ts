@@ -18,8 +18,6 @@ export declare class QueueingStreamingSocket {
     private readonly queue;
     private socket;
     private isProcessingQueue;
-    private timeoutIndex;
-    private processQueueTimeout;
     private eventProducerListener;
     private connectionStatusProducer;
     private reconnectedHandler?;
