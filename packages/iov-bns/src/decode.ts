@@ -188,20 +188,7 @@ export function decodeParticipants(
   }));
 }
 
-function parseAddAddressToUsernameTx(
-  base: UnsignedTransaction,
-  msg: codecImpl.username.IAddChainAddressMsg,
-): AddAddressToUsernameTx & WithCreator {
-  return {
-    ...base,
-    kind: "bns/add_address_to_username",
-    username: fromUtf8(ensure(msg.usernameId, "usernameId")),
-    payload: {
-      chainId: fromUtf8(ensure(msg.blockchainId, "blockchainId")) as ChainId,
-      address: ensure(msg.address, "address") as Address,
-    },
-  };
-}
+// Token sends
 
 function parseSendTransaction(
   base: UnsignedTransaction,
@@ -217,6 +204,8 @@ function parseSendTransaction(
     memo: msg.memo || undefined,
   };
 }
+
+// Atomic swaps
 
 function parseSwapOfferTx(
   base: UnsignedTransaction,
@@ -264,6 +253,8 @@ function parseSwapAbortTransaction(
   };
 }
 
+// Usernames
+
 function parseRegisterUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.IIssueTokenMsg,
@@ -286,6 +277,21 @@ function parseRegisterUsernameTx(
   };
 }
 
+function parseAddAddressToUsernameTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.username.IAddChainAddressMsg,
+): AddAddressToUsernameTx & WithCreator {
+  return {
+    ...base,
+    kind: "bns/add_address_to_username",
+    username: fromUtf8(ensure(msg.usernameId, "usernameId")),
+    payload: {
+      chainId: fromUtf8(ensure(msg.blockchainId, "blockchainId")) as ChainId,
+      address: ensure(msg.address, "address") as Address,
+    },
+  };
+}
+
 function parseRemoveAddressFromUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.IRemoveChainAddressMsg,
@@ -300,6 +306,8 @@ function parseRemoveAddressFromUsernameTx(
     },
   };
 }
+
+// Multisignature contracts
 
 function parseCreateMultisignatureTx(
   base: UnsignedTransaction,
