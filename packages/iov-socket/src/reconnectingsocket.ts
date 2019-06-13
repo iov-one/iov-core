@@ -10,6 +10,11 @@ import { SocketWrapperMessageEvent } from "./socketwrapper";
  * A wrapper around QueueingStreamingSocket that reconnects automatically.
  */
 export class ReconnectingSocket {
+  /** Starts with a 0.1 second timeout, then doubles every attempt with a maximum timeout of 5 seconds. */
+  private static calculateTimeout(index: number): number {
+    return Math.min(2 ** index * 100, 5_000);
+  }
+
   public readonly connectionStatus: ValueAndUpdates<ConnectionStatus>;
   public readonly events: Stream<SocketWrapperMessageEvent>;
 
@@ -49,10 +54,10 @@ export class ReconnectingSocket {
           if (this.reconnectTimeout) {
             clearTimeout(this.reconnectTimeout);
           }
-          if (this.timeoutIndex <= 13) {
-            // Starts with a 0.1 second timeout, then doubles every attempt with a maximum timeout of about 14 minutes.
-            this.reconnectTimeout = setTimeout(() => this.socket.reconnect(), 2 ** this.timeoutIndex++ * 100);
-          }
+          this.reconnectTimeout = setTimeout(
+            () => this.socket.reconnect(),
+            ReconnectingSocket.calculateTimeout(this.timeoutIndex++),
+          );
         }
       },
     });
