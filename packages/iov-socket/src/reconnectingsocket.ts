@@ -53,6 +53,7 @@ export class ReconnectingSocket {
         if (status === ConnectionStatus.Disconnected) {
           if (this.reconnectTimeout) {
             clearTimeout(this.reconnectTimeout);
+            this.reconnectTimeout = null;
           }
           this.reconnectTimeout = setTimeout(
             () => this.socket.reconnect(),
