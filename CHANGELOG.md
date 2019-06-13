@@ -32,7 +32,7 @@
   using an optional constructor argument.
 - @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
   configured using an optional constructor argument.
-- @iov/socket: Add `QueueingStreamingSocket` class.
+- @iov/socket: Add `QueueingStreamingSocket` and `ReconnectingSocket` class.
 - @iov/tendermint-rpc: Add support for Tendermint 0.30.x. and 0.31.x
 
 Breaking changes
