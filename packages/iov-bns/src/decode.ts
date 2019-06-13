@@ -344,7 +344,7 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
   if (tx.addUsernameAddressNftMsg) return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
   if (tx.removeUsernameAddressMsg) return parseRemoveAddressFromUsernameTx(base, tx.removeUsernameAddressMsg);
 
-  // Multisig contracts
+  // Multisignature contracts
   if (tx.createContractMsg) return parseCreateMultisignatureTx(base, tx.createContractMsg);
   if (tx.updateContractMsg) return parseUpdateMultisignatureTx(base, tx.updateContractMsg);
 
