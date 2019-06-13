@@ -76,7 +76,17 @@ export interface Decoder<T extends {}> {
   readonly decode: (data: Uint8Array) => T;
 }
 
-// transactions
+// Transactions: Usernames
+
+export interface RegisterUsernameTx extends LightTransaction {
+  readonly kind: "bns/register_username";
+  readonly username: string;
+  readonly addresses: readonly ChainAddressPair[];
+}
+
+export function isRegisterUsernameTx(tx: LightTransaction): tx is RegisterUsernameTx {
+  return tx.kind === "bns/register_username";
+}
 
 export interface AddAddressToUsernameTx extends LightTransaction {
   readonly kind: "bns/add_address_to_username";
@@ -84,6 +94,23 @@ export interface AddAddressToUsernameTx extends LightTransaction {
   readonly username: string;
   readonly payload: ChainAddressPair;
 }
+
+export function isAddAddressToUsernameTx(tx: LightTransaction): tx is AddAddressToUsernameTx {
+  return tx.kind === "bns/add_address_to_username";
+}
+
+export interface RemoveAddressFromUsernameTx extends LightTransaction {
+  readonly kind: "bns/remove_address_from_username";
+  /** the username to be updated, must exist on chain */
+  readonly username: string;
+  readonly payload: ChainAddressPair;
+}
+
+export function isRemoveAddressFromUsernameTx(tx: LightTransaction): tx is RemoveAddressFromUsernameTx {
+  return tx.kind === "bns/remove_address_from_username";
+}
+
+// Transactions: Multisignature contracts
 
 export interface Participant {
   readonly address: Address;
@@ -97,17 +124,8 @@ export interface CreateMultisignatureTx extends LightTransaction {
   readonly adminThreshold: number;
 }
 
-export interface RegisterUsernameTx extends LightTransaction {
-  readonly kind: "bns/register_username";
-  readonly username: string;
-  readonly addresses: readonly ChainAddressPair[];
-}
-
-export interface RemoveAddressFromUsernameTx extends LightTransaction {
-  readonly kind: "bns/remove_address_from_username";
-  /** the username to be updated, must exist on chain */
-  readonly username: string;
-  readonly payload: ChainAddressPair;
+export function isCreateMultisignatureTx(tx: LightTransaction): tx is CreateMultisignatureTx {
+  return tx.kind === "bns/create_multisignature_contract";
 }
 
 export interface UpdateMultisignatureTx extends LightTransaction {
@@ -118,17 +136,25 @@ export interface UpdateMultisignatureTx extends LightTransaction {
   readonly adminThreshold: number;
 }
 
+export function isUpdateMultisignatureTx(tx: LightTransaction): tx is UpdateMultisignatureTx {
+  return tx.kind === "bns/update_multisignature_contract";
+}
+
+// Transactions: BNS
+
 export type BnsTx =
-  // BCP
+  // BCP: Token sends
   | SendTransaction
+  // BCP: Atomic swaps
   | SwapOfferTransaction
   | SwapClaimTransaction
   | SwapAbortTransaction
-  // BNS
-  | AddAddressToUsernameTx
-  | CreateMultisignatureTx
+  // BNS: Usernames
   | RegisterUsernameTx
+  | AddAddressToUsernameTx
   | RemoveAddressFromUsernameTx
+  // BNS: Multisignature contracts
+  | CreateMultisignatureTx
   | UpdateMultisignatureTx;
 
 export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
@@ -142,32 +168,4 @@ export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
   }
 
   return transaction.kind.startsWith("bns/");
-}
-
-export function isAddAddressToUsernameTx(
-  transaction: LightTransaction,
-): transaction is AddAddressToUsernameTx {
-  return isBnsTx(transaction) && transaction.kind === "bns/add_address_to_username";
-}
-
-export function isCreateMultisignatureTx(
-  transaction: LightTransaction,
-): transaction is CreateMultisignatureTx {
-  return isBnsTx(transaction) && transaction.kind === "bns/create_multisignature_contract";
-}
-
-export function isRegisterUsernameTx(transaction: LightTransaction): transaction is RegisterUsernameTx {
-  return isBnsTx(transaction) && transaction.kind === "bns/register_username";
-}
-
-export function isRemoveAddressFromUsernameTx(
-  transaction: LightTransaction,
-): transaction is RemoveAddressFromUsernameTx {
-  return isBnsTx(transaction) && transaction.kind === "bns/remove_address_from_username";
-}
-
-export function isUpdateMultisignatureTx(
-  transaction: LightTransaction,
-): transaction is UpdateMultisignatureTx {
-  return isBnsTx(transaction) && transaction.kind === "bns/update_multisignature_contract";
 }
