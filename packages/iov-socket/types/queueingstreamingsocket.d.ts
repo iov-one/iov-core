@@ -20,6 +20,7 @@ export declare class QueueingStreamingSocket {
     private isProcessingQueue;
     private timeoutIndex;
     private processQueueTimeout;
+    private eventProducerListener;
     private connectionStatusProducer;
     private reconnectedHandler?;
     constructor(url: string, timeout?: number, reconnectedHandler?: () => void);
