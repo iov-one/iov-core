@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 require("source-map-support").install();
+const defaultSpecReporterConfig = require("../../jasmine-spec-reporter.config.json");
 
 // setup Jasmine
 const Jasmine = require("jasmine");
@@ -17,7 +18,7 @@ jasmine.jasmine.DEFAULT_TIMEOUT_INTERVAL = 15 * 1000;
 
 // setup reporter
 const { SpecReporter } = require("jasmine-spec-reporter");
-const reporter = new SpecReporter({});
+const reporter = new SpecReporter({ ...defaultSpecReporterConfig });
 
 // initialize and execute
 jasmine.env.clearReporters();
