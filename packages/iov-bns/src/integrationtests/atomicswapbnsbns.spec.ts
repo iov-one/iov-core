@@ -11,6 +11,7 @@ import {
   isBlockInfoPending,
   isBlockInfoSucceeded,
   isClaimedSwap,
+  PostTxResponse,
   Preimage,
   SendTransaction,
   SwapClaimTransaction,
@@ -22,11 +23,9 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { bnsConnector } from "@iov/bns";
+import { bnsCodec, BnsConnection } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
-
-import { MultiChainSigner } from "../multichainsigner";
 
 const CASH = "CASH" as TokenTicker;
 const BASH = "BASH" as TokenTicker;
@@ -47,7 +46,7 @@ function pendingWithoutBnsd(): void {
 }
 
 interface ActorData {
-  readonly signer: MultiChainSigner;
+  readonly profile: UserProfile;
   readonly bnsConnection: AtomicSwapConnection;
   readonly bnsIdentity: Identity;
 }
@@ -56,14 +55,13 @@ class Actor {
   public static async create(mnemonic: string, hdPath: readonly Slip10RawIndex[]): Promise<Actor> {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
-    const signer = new MultiChainSigner(profile);
 
-    const bnsConnection = (await signer.addChain(bnsConnector("ws://localhost:23456"))).connection;
+    const bnsConnection = await BnsConnection.establish("ws://localhost:23456");
 
     const bnsIdentity = await profile.createIdentity(wallet.id, bnsConnection.chainId(), hdPath);
 
     return new Actor({
-      signer: signer,
+      profile: profile,
       bnsConnection: bnsConnection as AtomicSwapConnection,
       bnsIdentity: bnsIdentity,
     });
@@ -71,16 +69,16 @@ class Actor {
 
   public readonly bnsIdentity: Identity;
   public get bnsAddress(): Address {
-    return this.signer.identityToAddress(this.bnsIdentity);
+    return bnsCodec.identityToAddress(this.bnsIdentity);
   }
 
-  private readonly signer: MultiChainSigner;
+  private readonly profile: UserProfile;
   private readonly bnsConnection: AtomicSwapConnection;
   // tslint:disable-next-line:readonly-keyword
   private preimage: Preimage | undefined;
 
   public constructor(data: ActorData) {
-    this.signer = data.signer;
+    this.profile = data.profile;
     this.bnsConnection = data.bnsConnection;
     this.bnsIdentity = data.bnsIdentity;
   }
@@ -111,8 +109,17 @@ class Actor {
     this.preimage = await AtomicSwapHelpers.createPreimage();
   }
 
+  public async signAndPost(transaction: UnsignedTransaction): Promise<PostTxResponse> {
+    const nonce = await this.bnsConnection.getNonce({ pubkey: transaction.creator.pubkey });
+
+    const signed = await this.profile.signTransaction(transaction, bnsCodec, nonce);
+    const txBytes = bnsCodec.bytesToPost(signed);
+    const post = await this.bnsConnection.postTx(txBytes);
+    return post;
+  }
+
   public async sendTransaction(transaction: UnsignedTransaction): Promise<Uint8Array | undefined> {
-    const post = await this.signer.signAndPost(transaction);
+    const post = await this.signAndPost(transaction);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");
