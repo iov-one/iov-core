@@ -238,7 +238,8 @@ describe("Decode", () => {
 
   describe("decodeElectionRule", () => {
     it("works", () => {
-      const rule: codecImpl.gov.IElectionRule = {
+      const rule: codecImpl.gov.IElectionRule & Keyed = {
+        _id: fromHex("220800000000000000022801"),
         metadata: { schema: 1 },
         version: 3,
         admin: fromHex("5555556688770011001100110011001100110011"),
@@ -255,6 +256,7 @@ describe("Decode", () => {
         },
       };
       expect(decodeElectionRule("tiov", rule)).toEqual({
+        id: fromHex("0000000000000002"),
         version: 3,
         admin: "tiov124242e5gwuqpzqq3qqgsqygqzyqpzqq350k5np" as Address,
         electorateId: 7,

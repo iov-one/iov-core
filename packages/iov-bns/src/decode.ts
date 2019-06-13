@@ -83,6 +83,13 @@ export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
   return maybe;
 }
 
+function decodeVersionedId(versionedId: codecImpl.orm.IVersionedIDRef): VersionedId {
+  return {
+    id: ensure(versionedId.id, "id"),
+    version: ensure(versionedId.version, "version"),
+  };
+}
+
 export function decodeUsernameNft(
   nft: codecImpl.username.IUsernameToken,
   registryChainId: ChainId,
@@ -256,9 +263,14 @@ function decodeFraction(fraction: codecImpl.gov.IFraction): Fraction {
   return { numerator: numerator, denominator: denominator };
 }
 
-export function decodeElectionRule(prefix: "iov" | "tiov", rule: codecImpl.gov.IElectionRule): ElectionRule {
+export function decodeElectionRule(
+  prefix: "iov" | "tiov",
+  rule: codecImpl.gov.IElectionRule & Keyed,
+): ElectionRule {
+  const { id } = decodeVersionedId(codecImpl.orm.VersionedIDRef.decode(rule._id));
   const electorateId = new BN(ensure(rule.electorateId, "electorateId"));
   return {
+    id: id,
     version: asIntegerNumber(ensure(rule.version, "version")),
     admin: encodeBnsAddress(prefix, ensure(rule.admin, "admin")),
     electorateId: electorateId.toNumber(),
@@ -312,13 +324,6 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
     default:
       throw new Error("Received unknown value for proposal status");
   }
-}
-
-function decodeVersionedId(versionedId: codecImpl.orm.IVersionedIDRef): VersionedId {
-  return {
-    id: ensure(versionedId.id, "id"),
-    version: ensure(versionedId.version, "version"),
-  };
 }
 
 export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal): Proposal {

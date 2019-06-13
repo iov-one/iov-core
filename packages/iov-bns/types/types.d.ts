@@ -25,6 +25,7 @@ export interface Fraction {
     readonly denominator: number;
 }
 export interface ElectionRule {
+    readonly id: Uint8Array;
     readonly version: number;
     readonly admin: Address;
     /** The electorate used by this (ID without version, as changing electorate changes the rule) */

@@ -1823,6 +1823,7 @@ describe("BnsConnection", () => {
       const rules = await connection.getElectionRules();
       expect(rules.length).toEqual(2);
       expect(rules[0]).toEqual({
+        id: fromHex("0000000000000001"),
         version: 1,
         admin: "tiov1a4kh67w979r4w7h0t7t7glqcxdmnjt2k66gk0c" as Address,
         electorateId: 1,
@@ -1835,6 +1836,7 @@ describe("BnsConnection", () => {
         quorum: null,
       });
       expect(rules[1]).toEqual({
+        id: fromHex("0000000000000002"),
         version: 1,
         admin: "tiov1g3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyj522p5" as Address,
         electorateId: 2,
