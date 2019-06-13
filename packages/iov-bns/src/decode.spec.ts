@@ -279,7 +279,12 @@ describe("Decode", () => {
       const proposal: codecImpl.gov.IProposal = {
         metadata: { schema: 1 },
         title: "This will happen next",
-        rawOption: fromHex("bbccbbccbbccbbcc"),
+        rawOption: codecImpl.app.ProposalOptions.encode({
+          textResolutionMsg: {
+            metadata: { schema: 1 },
+            resolution: "la la la",
+          },
+        }).finish(),
         description: "foo bar",
         electionRuleRef: {
           id: fromHex("aabbaabbccddbbff"),
@@ -300,7 +305,7 @@ describe("Decode", () => {
 
       expect(decodeProposal("tiov", proposal)).toEqual({
         title: "This will happen next",
-        rawOption: fromHex("bbccbbccbbccbbcc"),
+        option: "la la la",
         description: "foo bar",
         electionRule: {
           id: fromHex("aabbaabbccddbbff"),
@@ -622,7 +627,12 @@ describe("Decode", () => {
       const transactionMessage: codecImpl.app.ITx = {
         createProposalMsg: {
           title: "This will happen next",
-          rawOption: fromHex("bbccbbccbbccbbcc"),
+          rawOption: codecImpl.app.ProposalOptions.encode({
+            textResolutionMsg: {
+              metadata: { schema: 1 },
+              resolution: "la la la",
+            },
+          }).finish(),
           description: "foo bar",
           electionRuleId: Encoding.fromHex("aabbaabbccddbbff"),
           startTime: 42424242,
@@ -634,7 +644,7 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.rawOption).toEqual(fromHex("bbccbbccbbccbbcc"));
+      expect(parsed.option).toEqual("la la la");
       expect(parsed.description).toEqual("foo bar");
       expect(parsed.electionRuleId).toEqual(Encoding.fromHex("aabbaabbccddbbff"));
       expect(parsed.startTime).toEqual(42424242);

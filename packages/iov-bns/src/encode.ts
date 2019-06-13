@@ -290,11 +290,19 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.app.IT
 // Governance
 
 function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
+  const rawOption = codecImpl.app.ProposalOptions.encode({
+    // TODO: support other resolution types
+    textResolutionMsg: {
+      metadata: { schema: 1 },
+      resolution: tx.option,
+    },
+  }).finish();
+
   return {
     createProposalMsg: {
       metadata: { schema: 1 },
       title: tx.title,
-      rawOption: tx.rawOption,
+      rawOption: rawOption,
       description: tx.description,
       electionRuleId: tx.electionRuleId,
       startTime: tx.startTime,

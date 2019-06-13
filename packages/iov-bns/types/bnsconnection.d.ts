@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionId, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
-import { BnsUsernameNft, BnsUsernamesQuery, ElectionRule, Electorate, Result } from "./types";
+import { BnsUsernameNft, BnsUsernamesQuery, ElectionRule, Electorate, Proposal, Result } from "./types";
 export interface QueryResponse {
     readonly height?: number;
     readonly results: readonly Result[];
@@ -76,6 +76,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
     watchAccount(query: AccountQuery): Stream<Account | undefined>;
     getElectorates(): Promise<readonly Electorate[]>;
     getElectionRules(): Promise<readonly ElectionRule[]>;
+    getProposals(): Promise<readonly Proposal[]>;
     getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]>;
     getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
     withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;

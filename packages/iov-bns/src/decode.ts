@@ -45,6 +45,7 @@ import {
   PrivkeyBytes,
   Proposal,
   ProposalExecutorResult,
+  ProposalOption,
   ProposalResult,
   ProposalStatus,
   RegisterUsernameTx,
@@ -58,6 +59,11 @@ import {
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromUtf8 } = Encoding;
+
+function decodeString(input: string | null | undefined): string {
+  // weave encodes empty strings as null
+  return input || "";
+}
 
 /**
  * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
@@ -308,10 +314,20 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
   }
 }
 
+function decodeRawProposalOption(rawOption: Uint8Array): ProposalOption {
+  const po = codecImpl.app.ProposalOptions.decode(rawOption);
+  // TODO: support other resolution types
+  let out: ProposalOption;
+  if (po.textResolutionMsg) out = decodeString(po.textResolutionMsg.resolution);
+  else throw new Error("Unsupported ProposalOptions");
+
+  return out;
+}
+
 export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal): Proposal {
   return {
     title: ensure(proposal.title, "title"),
-    rawOption: ensure(proposal.rawOption, "rawOption"),
+    option: decodeRawProposalOption(ensure(proposal.rawOption, "rawOption")),
     description: ensure(proposal.description, "description"),
     electionRule: decodeVersionedId(ensure(proposal.electionRuleRef, "electionRuleRef")),
     electorate: decodeVersionedId(ensure(proposal.electorateRef, "electorateRef")),
@@ -543,7 +559,7 @@ function parseCreateProposalTx(
     ...base,
     kind: "bns/create_proposal",
     title: ensure(msg.title, "title"),
-    rawOption: ensure(msg.rawOption, "rawOption"),
+    option: decodeRawProposalOption(ensure(msg.rawOption, "rawOption")),
     description: ensure(msg.description, "description"),
     electionRuleId: ensure(msg.electionRuleId, "electionRuleId"),
     startTime: asIntegerNumber(ensure(msg.startTime, "startTime")),

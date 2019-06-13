@@ -83,10 +83,13 @@ export enum ProposalStatus {
   Withdrawn,
 }
 
+/** Union type for possible options */
+export type ProposalOption = string;
+
 export interface Proposal {
   readonly title: string;
   /** The transaction to be executed when the proposal is accepted */
-  readonly rawOption: Uint8Array;
+  readonly option: ProposalOption;
   readonly description: string;
   readonly electionRule: VersionedId;
   readonly electorate: VersionedId;
@@ -274,7 +277,7 @@ export interface CreateProposalTx extends LightTransaction {
   readonly kind: "bns/create_proposal";
   readonly title: string;
   /** The transaction to be executed when the proposal is accepted */
-  readonly rawOption: Uint8Array;
+  readonly option: ProposalOption;
   readonly description: string;
   readonly electionRuleId: Uint8Array;
   /** Unix timestamp when the proposal starts */

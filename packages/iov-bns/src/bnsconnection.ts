@@ -55,6 +55,7 @@ import {
   decodeCashConfiguration,
   decodeElectionRule,
   decodeElectorate,
+  decodeProposal,
   decodePubkey,
   decodeToken,
   decodeUserData,
@@ -72,6 +73,7 @@ import {
   isBnsUsernamesByOwnerQuery,
   isBnsUsernamesByUsernameQuery,
   Keyed,
+  Proposal,
   Result,
 } from "./types";
 import {
@@ -626,6 +628,14 @@ export class BnsConnection implements AtomicSwapConnection {
     const parser = createParser(codecImpl.gov.ElectionRule, "electnrule:");
     const rules = results.map(parser).map(rule => decodeElectionRule("tiov", rule));
     return rules;
+  }
+
+  public async getProposals(): Promise<readonly Proposal[]> {
+    // TODO: Change path to /proposals once https://github.com/iov-one/weave/issues/810 is resolved
+    const results = (await this.query("/proposal?prefix", new Uint8Array([]))).results;
+    const parser = createParser(codecImpl.gov.Proposal, "proposal:");
+    const proposals = results.map(parser).map(rule => decodeProposal("tiov", rule));
+    return proposals;
   }
 
   public async getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]> {

@@ -534,7 +534,7 @@ describe("Encode", () => {
         kind: "bns/create_proposal",
         creator: defaultCreator,
         title: "Why not try this?",
-        rawOption: fromHex("bbccbbccbbccbbcc"),
+        option: "la la la",
         description: "foo bar",
         electionRuleId: fromHex("0011221122112200"),
         startTime: 1122334455,
@@ -544,7 +544,12 @@ describe("Encode", () => {
       expect(msg).toEqual({
         metadata: { schema: 1 },
         title: "Why not try this?",
-        rawOption: fromHex("bbccbbccbbccbbcc"),
+        rawOption: codecImpl.app.ProposalOptions.encode({
+          textResolutionMsg: {
+            metadata: { schema: 1 },
+            resolution: "la la la",
+          },
+        }).finish(),
         description: "foo bar",
         electionRuleId: fromHex("0011221122112200"),
         startTime: 1122334455,

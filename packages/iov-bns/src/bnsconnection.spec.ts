@@ -52,6 +52,7 @@ import {
   AddAddressToUsernameTx,
   CreateEscrowTx,
   CreateMultisignatureTx,
+  CreateProposalTx,
   isCreateEscrowTx,
   isCreateMultisignatureTx,
   isRegisterUsernameTx,
@@ -1851,6 +1852,64 @@ describe("BnsConnection", () => {
           denominator: 3,
         },
       });
+
+      connection.disconnect();
+    });
+  });
+
+  describe("getProposals", () => {
+    it("can get list of proposals", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const proposals = await connection.getProposals(); // empty list for fresh chains
+      expect(proposals.length).toBeGreaterThanOrEqual(0);
+      connection.disconnect();
+    });
+
+    it("can create a proposal and find it in list", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = connection.chainId();
+
+      const { profile, faucet: author } = await userProfileWithFaucet(chainId);
+      const authorAddress = identityToAddress(author);
+
+      const someElectionRule = (await connection.getElectionRules()).find(() => true);
+      if (!someElectionRule) {
+        throw new Error("No election rule found");
+      }
+      const startTime = Math.floor(Date.now() / 1000) + 3;
+
+      const title = `Hello ${Math.random()}`;
+      const description = `Hello ${Math.random()}`;
+      const option = `The winner is Alice ${Math.random()}`;
+
+      const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
+        kind: "bns/create_proposal",
+        creator: author,
+        title: title,
+        description: description,
+        author: authorAddress,
+        electionRuleId: someElectionRule.id,
+        option: option,
+        startTime: startTime,
+      });
+
+      const nonce = await connection.getNonce({ pubkey: author.pubkey });
+      const signed = await profile.signTransaction(createProposal, bnsCodec, nonce);
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+
+      const proposals = await connection.getProposals();
+      expect(proposals.length).toBeGreaterThanOrEqual(1);
+
+      const myProposal = proposals.find(p => p.author === authorAddress && p.votingStartTime === startTime);
+      expect(myProposal).toBeDefined();
+      expect(myProposal!.title).toEqual(title);
+      expect(myProposal!.description).toEqual(description);
+      expect(myProposal!.option).toEqual(option);
 
       connection.disconnect();
     });
