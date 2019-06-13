@@ -482,7 +482,10 @@ function parseCreateProposalTx(
     ...base,
     kind: "bns/create_proposal",
     title: ensure(msg.title, "title"),
+    rawOption: ensure(msg.rawOption, "rawOption"),
     description: ensure(msg.description, "description"),
+    electionRuleId: ensure(msg.electionRuleId, "electionRuleId"),
+    startTime: asIntegerNumber(ensure(msg.startTime, "startTime")),
     author: encodeBnsAddress(prefix, ensure(msg.author, "author")),
   };
 }

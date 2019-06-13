@@ -139,7 +139,12 @@ export declare function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is Upd
 export interface CreateProposalTx extends LightTransaction {
     readonly kind: "bns/create_proposal";
     readonly title: string;
+    /** The transaction to be executed when the proposal is accepted */
+    readonly rawOption: Uint8Array;
     readonly description: string;
+    readonly electionRuleId: Uint8Array;
+    /** Unix timestamp when the proposal starts */
+    readonly startTime: number;
     /** The author of the proposal must be included in the list of transaction signers. */
     readonly author: Address;
 }

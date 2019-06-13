@@ -294,7 +294,10 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
     createProposalMsg: {
       metadata: { schema: 1 },
       title: tx.title,
+      rawOption: tx.rawOption,
       description: tx.description,
+      electionRuleId: tx.electionRuleId,
+      startTime: tx.startTime,
       author: decodeBnsAddress(tx.author).data,
     },
   };

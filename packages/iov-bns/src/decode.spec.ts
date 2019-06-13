@@ -569,7 +569,10 @@ describe("Decode", () => {
       const transactionMessage: codecImpl.app.ITx = {
         createProposalMsg: {
           title: "This will happen next",
+          rawOption: fromHex("bbccbbccbbccbbcc"),
           description: "foo bar",
+          electionRuleId: Encoding.fromHex("aabbaabbccddbbff"),
+          startTime: 42424242,
           author: Encoding.fromHex("0011223344556677889900112233445566778899"),
         },
       };
@@ -578,7 +581,10 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.title).toEqual("This will happen next");
+      expect(parsed.rawOption).toEqual(fromHex("bbccbbccbbccbbcc"));
       expect(parsed.description).toEqual("foo bar");
+      expect(parsed.electionRuleId).toEqual(Encoding.fromHex("aabbaabbccddbbff"));
+      expect(parsed.startTime).toEqual(42424242);
       expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
     });
   });
