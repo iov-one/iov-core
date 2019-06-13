@@ -237,11 +237,11 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
   }
 
   switch (tx.kind) {
-    // Token sends
+    // BCP: Token sends
     case "bcp/send":
       return buildSendTransaction(tx);
 
-    // Atomic swaps
+    // BCP: Atomic swaps
     case "bcp/swap_offer":
       return buildSwapOfferTx(tx);
     case "bcp/swap_claim":
@@ -249,7 +249,7 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     case "bcp/swap_abort":
       return buildSwapAbortTransaction(tx);
 
-    // Usernames
+    // BNS: Usernames
     case "bns/register_username":
       return buildRegisterUsernameTx(tx);
     case "bns/add_address_to_username":
@@ -257,7 +257,7 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     case "bns/remove_address_from_username":
       return buildRemoveAddressFromUsernameTx(tx);
 
-    // Multisignature contracts
+    // BNS: Multisignature contracts
     case "bns/create_multisignature_contract":
       return buildCreateMultisignatureTx(tx);
     case "bns/update_multisignature_contract":
