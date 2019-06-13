@@ -25,8 +25,6 @@ export class QueueingStreamingSocket {
   private readonly queue: string[] = [];
   private socket: StreamingSocket;
   private isProcessingQueue = false;
-  private timeoutIndex = 0;
-  private processQueueTimeout: NodeJS.Timeout | null = null;
   private eventProducerListener: Listener<SocketWrapperMessageEvent> | undefined;
   private connectionStatusProducer: DefaultValueProducer<ConnectionStatus>;
   private reconnectedHandler?: () => void;
@@ -58,7 +56,10 @@ export class QueueingStreamingSocket {
     this.connectionStatusProducer.update(ConnectionStatus.Connecting);
     // tslint:disable-next-line:no-floating-promises
     this.socket.connected.then(
-      () => this.connectionStatusProducer.update(ConnectionStatus.Connected),
+      async () => {
+        this.connectionStatusProducer.update(ConnectionStatus.Connected);
+        return this.processQueue();
+      },
       () => this.connectionStatusProducer.update(ConnectionStatus.Disconnected),
     );
     this.socket.connect();
@@ -79,13 +80,11 @@ export class QueueingStreamingSocket {
       error: () => this.connectionStatusProducer.update(ConnectionStatus.Disconnected),
     });
     // tslint:disable-next-line:no-floating-promises
-    this.socket.connected
-      .then(() => {
-        if (this.reconnectedHandler) {
-          this.reconnectedHandler();
-        }
-      })
-      .then(() => this.processQueue());
+    this.socket.connected.then(() => {
+      if (this.reconnectedHandler) {
+        this.reconnectedHandler();
+      }
+    });
     this.connect();
   }
 
@@ -105,24 +104,16 @@ export class QueueingStreamingSocket {
       return;
     }
     this.isProcessingQueue = true;
-    if (this.processQueueTimeout) {
-      clearTimeout(this.processQueueTimeout);
-    }
 
     let request: string | undefined;
     while ((request = this.queue.shift())) {
       try {
         await this.socket.send(request);
-        this.timeoutIndex = 0;
         this.isProcessingQueue = false;
       } catch (error) {
-        // Probably the connection is down; try again in a bit.
+        // Probably the connection is down; will try again automatically when reconnected.
         this.queue.unshift(request);
         this.isProcessingQueue = false;
-        if (this.timeoutIndex <= 13) {
-          // Starts with a 0.1 second timeout, then doubles every attempt with a maximum timeout of about 14 minutes.
-          this.processQueueTimeout = setTimeout(() => this.processQueue(), 2 ** this.timeoutIndex++ * 100);
-        }
         return;
       }
     }
