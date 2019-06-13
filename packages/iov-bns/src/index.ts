@@ -11,6 +11,11 @@ export {
   Electorate,
   Fraction,
   ElectionRule,
+  VersionedId,
+  ProposalExecutorResult,
+  ProposalResult,
+  ProposalStatus,
+  Proposal,
   // NFTs
   BnsUsernamesByOwnerQuery,
   BnsUsernamesByUsernameQuery,

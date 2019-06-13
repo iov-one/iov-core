@@ -59,6 +59,49 @@ export interface ElectionRule {
   readonly quorum: Fraction | null;
 }
 
+export interface VersionedId {
+  readonly id: Uint8Array;
+  readonly version: number;
+}
+
+export enum ProposalExecutorResult {
+  NotRun,
+  Succeeded,
+  Failed,
+}
+
+export enum ProposalResult {
+  Undefined,
+  Accepted,
+  Rejected,
+}
+
+export enum ProposalStatus {
+  Submitted,
+  Closed,
+  Withdrawn,
+}
+
+export interface Proposal {
+  readonly title: string;
+  /** The transaction to be executed when the proposal is accepted */
+  readonly rawOption: Uint8Array;
+  readonly description: string;
+  readonly electionRule: VersionedId;
+  readonly electorate: VersionedId;
+  /** Time when the voting on this proposal starts (Unix timestamp) */
+  readonly votingStartTime: number;
+  /** Time when the voting on this proposal starts (Unix timestamp) */
+  readonly votingEndTime: number;
+  /** Time of the block where the proposal was added to the chain (Unix timestamp) */
+  readonly submissionTime: number;
+  /** The author of the proposal must be included in the list of transaction signers. */
+  readonly author: Address;
+  readonly status: ProposalStatus;
+  readonly result: ProposalResult;
+  readonly executorResult: ProposalExecutorResult;
+}
+
 // username NFT
 
 export interface ChainAddressPair {

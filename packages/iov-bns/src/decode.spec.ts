@@ -6,6 +6,7 @@ import {
   decodeElectionRule,
   decodeElectorate,
   decodePrivkey,
+  decodeProposal,
   decodePubkey,
   decodeToken,
   decodeUserData,
@@ -39,6 +40,9 @@ import {
   isUpdateMultisignatureTx,
   Keyed,
   Participant,
+  ProposalExecutorResult,
+  ProposalResult,
+  ProposalStatus,
 } from "./types";
 
 const { fromHex, toUtf8 } = Encoding;
@@ -264,6 +268,53 @@ describe("Decode", () => {
           numerator: 3,
           denominator: 4,
         },
+      });
+    });
+  });
+
+  describe("decodeProposal", () => {
+    it("works", () => {
+      const proposal: codecImpl.gov.IProposal = {
+        metadata: { schema: 1 },
+        title: "This will happen next",
+        rawOption: fromHex("bbccbbccbbccbbcc"),
+        description: "foo bar",
+        electionRuleRef: {
+          id: fromHex("aabbaabbccddbbff"),
+          version: 28,
+        },
+        electorateRef: {
+          id: fromHex("0011001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: fromHex("0011223344556677889900112233445566778899"),
+        status: codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED,
+        result: codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED,
+        executorResult: codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN,
+      };
+
+      expect(decodeProposal("tiov", proposal)).toEqual({
+        title: "This will happen next",
+        rawOption: fromHex("bbccbbccbbccbbcc"),
+        description: "foo bar",
+        electionRule: {
+          id: fromHex("aabbaabbccddbbff"),
+          version: 28,
+        },
+        electorate: {
+          id: fromHex("0011001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+        status: ProposalStatus.Submitted,
+        result: ProposalResult.Undefined,
+        executorResult: ProposalExecutorResult.NotRun,
       });
     });
   });

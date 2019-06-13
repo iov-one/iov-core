@@ -35,6 +35,44 @@ export interface ElectionRule {
     readonly threshold: Fraction;
     readonly quorum: Fraction | null;
 }
+export interface VersionedId {
+    readonly id: Uint8Array;
+    readonly version: number;
+}
+export declare enum ProposalExecutorResult {
+    NotRun = 0,
+    Succeeded = 1,
+    Failed = 2
+}
+export declare enum ProposalResult {
+    Undefined = 0,
+    Accepted = 1,
+    Rejected = 2
+}
+export declare enum ProposalStatus {
+    Submitted = 0,
+    Closed = 1,
+    Withdrawn = 2
+}
+export interface Proposal {
+    readonly title: string;
+    /** The transaction to be executed when the proposal is accepted */
+    readonly rawOption: Uint8Array;
+    readonly description: string;
+    readonly electionRule: VersionedId;
+    readonly electorate: VersionedId;
+    /** Time when the voting on this proposal starts (Unix timestamp) */
+    readonly votingStartTime: number;
+    /** Time when the voting on this proposal starts (Unix timestamp) */
+    readonly votingEndTime: number;
+    /** Time of the block where the proposal was added to the chain (Unix timestamp) */
+    readonly submissionTime: number;
+    /** The author of the proposal must be included in the list of transaction signers. */
+    readonly author: Address;
+    readonly status: ProposalStatus;
+    readonly result: ProposalResult;
+    readonly executorResult: ProposalExecutorResult;
+}
 export interface ChainAddressPair {
     readonly chainId: ChainId;
     readonly address: Address;

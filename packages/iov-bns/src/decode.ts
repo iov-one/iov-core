@@ -43,12 +43,17 @@ import {
   Participant,
   PrivkeyBundle,
   PrivkeyBytes,
+  Proposal,
+  ProposalExecutorResult,
+  ProposalResult,
+  ProposalStatus,
   RegisterUsernameTx,
   ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  VersionedId,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
@@ -261,6 +266,75 @@ export function decodeElectionRule(prefix: "iov" | "tiov", rule: codecImpl.gov.I
     votingPeriod: asIntegerNumber(ensure(rule.votingPeriod, "votingPeriod")),
     threshold: decodeFraction(ensure(rule.threshold, "threshold")),
     quorum: rule.quorum ? decodeFraction(rule.quorum) : null,
+  };
+}
+
+function decodeProposalExecutorResult(result: codecImpl.gov.Proposal.ExecutorResult): ProposalExecutorResult {
+  switch (result) {
+    case codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_INVALID:
+      throw new Error("PROPOSAL_EXECUTOR_RESULT_INVALID is not allowed");
+    case codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN:
+      return ProposalExecutorResult.NotRun;
+    case codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_SUCCESS:
+      return ProposalExecutorResult.Succeeded;
+    case codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_FAILURE:
+      return ProposalExecutorResult.Failed;
+    default:
+      throw new Error("Received unknown value for proposal executor result");
+  }
+}
+
+function decodeProposalResult(result: codecImpl.gov.Proposal.Result): ProposalResult {
+  switch (result) {
+    case codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_INVALID:
+      throw new Error("PROPOSAL_RESULT_INVALID is not allowed");
+    case codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED:
+      return ProposalResult.Undefined;
+    case codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_ACCEPTED:
+      return ProposalResult.Accepted;
+    case codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_REJECTED:
+      return ProposalResult.Rejected;
+    default:
+      throw new Error("Received unknown value for proposal result");
+  }
+}
+
+function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalStatus {
+  switch (status) {
+    case codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_INVALID:
+      throw new Error("PROPOSAL_STATUS_INVALID is not allowed");
+    case codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED:
+      return ProposalStatus.Submitted;
+    case codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_CLOSED:
+      return ProposalStatus.Closed;
+    case codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_WITHDRAWN:
+      return ProposalStatus.Withdrawn;
+    default:
+      throw new Error("Received unknown value for proposal status");
+  }
+}
+
+function decodeVersionedId(versionedId: codecImpl.orm.IVersionedIDRef): VersionedId {
+  return {
+    id: ensure(versionedId.id, "id"),
+    version: ensure(versionedId.version, "version"),
+  };
+}
+
+export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal): Proposal {
+  return {
+    title: ensure(proposal.title, "title"),
+    rawOption: ensure(proposal.rawOption, "rawOption"),
+    description: ensure(proposal.description, "description"),
+    electionRule: decodeVersionedId(ensure(proposal.electionRuleRef, "electionRuleRef")),
+    electorate: decodeVersionedId(ensure(proposal.electorateRef, "electorateRef")),
+    votingStartTime: asIntegerNumber(ensure(proposal.votingStartTime, "votinStartTime")),
+    votingEndTime: asIntegerNumber(ensure(proposal.votingEndTime, "votingEndTime")),
+    submissionTime: asIntegerNumber(ensure(proposal.submissionTime, "submissionTime")),
+    author: encodeBnsAddress(prefix, ensure(proposal.author, "author")),
+    status: decodeProposalStatus(ensure(proposal.status, "status")),
+    result: decodeProposalResult(ensure(proposal.result, "result")),
+    executorResult: decodeProposalExecutorResult(ensure(proposal.executorResult, "executorResult")),
   };
 }
 
