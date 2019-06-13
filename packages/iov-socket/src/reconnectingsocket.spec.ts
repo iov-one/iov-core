@@ -1,10 +1,29 @@
-import { exec } from "child_process";
+import assert from "assert";
 
 import { ReconnectingSocket } from "./reconnectingsocket";
+
+let exec: (command: string, callback: (error: null | (Error & { readonly code: number })) => void) => void;
+
+try {
+  // tslint:disable-next-line:no-var-requires
+  exec = require("child_process").exec;
+  assert.strict(typeof exec === "function");
+  // tslint:disable-next-line:no-object-mutation
+  process.env.CHILD_PROCESS_AVAILABLE = "true";
+} catch {
+  // tslint:disable-next-line:no-object-mutation
+  process.env.CHILD_PROCESS_AVAILABLE = "false";
+}
 
 function pendingWithoutSocketServer(): void {
   if (!process.env.SOCKETSERVER_ENABLED) {
     pending("Set SOCKETSERVER_ENABLED to enable socket tests");
+  }
+}
+
+function pendingWithoutChildProcess(): void {
+  if (process.env.CHILD_PROCESS_AVAILABLE !== "true") {
+    pending("Run test in an environment which supports child processes to enable socket tests");
   }
 }
 
@@ -68,6 +87,7 @@ describe("ReconnectingSocket", () => {
     const stopServer = `${dirPath}stop.sh`;
 
     it("automatically reconnects if no connection can be established at init", done => {
+      pendingWithoutChildProcess();
       pendingWithoutSocketServer();
 
       exec(stopServer, stopError => {
@@ -109,6 +129,7 @@ describe("ReconnectingSocket", () => {
     });
 
     it("automatically reconnects if the connection is broken off", done => {
+      pendingWithoutChildProcess();
       pendingWithoutSocketServer();
 
       const socket = new ReconnectingSocket(socketServerUrl);
