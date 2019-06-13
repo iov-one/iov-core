@@ -6,6 +6,8 @@ import { SocketWrapperMessageEvent } from "./socketwrapper";
  * A wrapper around QueueingStreamingSocket that reconnects automatically.
  */
 export declare class ReconnectingSocket {
+    /** Starts with a 0.1 second timeout, then doubles every attempt with a maximum timeout of 5 seconds. */
+    private static calculateTimeout;
     readonly connectionStatus: ValueAndUpdates<ConnectionStatus>;
     readonly events: Stream<SocketWrapperMessageEvent>;
     private readonly socket;
