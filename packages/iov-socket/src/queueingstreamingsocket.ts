@@ -100,7 +100,7 @@ export class QueueingStreamingSocket {
   }
 
   private async processQueue(): Promise<void> {
-    if (this.isProcessingQueue) {
+    if (this.isProcessingQueue || this.connectionStatus.value !== ConnectionStatus.Connected) {
       return;
     }
     this.isProcessingQueue = true;
