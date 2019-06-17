@@ -160,17 +160,24 @@ describe("ReconnectingSocket", () => {
               done.fail(stopError);
             }
 
-            requests.slice(1).forEach(request => socket.queueRequest(request));
+            // TODO: This timeout is here to avoid an edge case where if a request
+            // is sent just as a disconnection occurs, then the websocket’s `send`
+            // method may not error even though the request is never sent.
+            // Ideally we would have a way to cover this edge case and the timeout
+            // would not be necessary for this test to pass.
+            setTimeout(() => {
+              requests.slice(1).forEach(request => socket.queueRequest(request));
 
-            setTimeout(
-              () =>
-                exec(startServer, startError => {
-                  if (startError) {
-                    done.fail(startError);
-                  }
-                }),
-              2000,
-            );
+              setTimeout(
+                () =>
+                  exec(startServer, startError => {
+                    if (startError) {
+                      done.fail(startError);
+                    }
+                  }),
+                2000,
+              );
+            }, 2000);
           }),
         1000,
       );
