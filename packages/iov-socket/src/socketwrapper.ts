@@ -151,20 +151,29 @@ export class SocketWrapper {
   }
 
   public async send(data: string): Promise<void> {
-    if (!this.socket) {
-      throw new Error("Socket undefined. This must be called after connecting.");
-    }
+    return new Promise(async (resolve, reject) => {
+      if (!this.socket) {
+        throw new Error("Socket undefined. This must be called after connecting.");
+      }
 
-    if (this.closed) {
-      throw new Error("Socket was closed, so no data can be sent anymore.");
-    }
+      if (this.closed) {
+        throw new Error("Socket was closed, so no data can be sent anymore.");
+      }
 
-    // this exception should be thrown by send() automatically according to
-    // https://developer.mozilla.org/de/docs/Web/API/WebSocket#send() but it does not work in browsers
-    if (this.socket.readyState !== WebSocket.OPEN) {
-      throw new Error("Websocket is not open");
-    }
-    this.socket.send(data);
+      // this exception should be thrown by send() automatically according to
+      // https://developer.mozilla.org/de/docs/Web/API/WebSocket#send() but it does not work in browsers
+      if (this.socket.readyState !== WebSocket.OPEN) {
+        throw new Error("Websocket is not open");
+      }
+
+      if ((global as any).window === undefined) {
+        this.socket.send(data, err => (err ? reject(err) : resolve()));
+      } else {
+        // Browser websocket send method does not accept a callback
+        this.socket.send(data);
+        resolve();
+      }
+    });
   }
 
   /**
