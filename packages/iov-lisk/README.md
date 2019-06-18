@@ -20,7 +20,11 @@ import { Ed25519Wallet } from "@iov/core";
 import { passphraseToKeypair, liskCodec, liskConnector } from "@iov/lisk";
 
 const wallet = new Ed25519Wallet();
-const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
+const mainIdentity = await wallet.createIdentity(
+  await passphraseToKeypair(
+    "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+  ),
+);
 
 const profile = new UserProfile();
 profile.addWallet(wallet);
@@ -44,7 +48,7 @@ const sendTx: SendTransaction = {
     whole: 1,
     fractional: 44550000,
     tokenTicker: "LSK" as TokenTicker,
-  }
+  },
 };
 
 console.log("Writing to blockchain. This may take a while …");
@@ -61,10 +65,14 @@ for Lisk manually, i.e. without the help of @iov/core.
 import { Ed25519Wallet } from "@iov/core";
 import { passphraseToKeypair, generateNonce, liskCodec } from "@iov/lisk";
 
-const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
+const liskTestnet = "lisk-da3ed6a454" as ChainId;
 
 const wallet = new Ed25519Wallet();
-const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("oxygen fall sure lava energy veteran enroll frown question detail include maximum"));
+const mainIdentity = await wallet.createIdentity(
+  await passphraseToKeypair(
+    "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
+  ),
+);
 
 const recipientAddress = "6076671634347365051L" as Address;
 
@@ -77,12 +85,17 @@ const sendTx: SendTransaction = {
     whole: 1,
     fractional: 44550000,
     tokenTicker: "LSK" as TokenTicker,
-  }
+  },
 };
 
 const nonce = generateNonce();
 const signingJob = liskCodec.bytesToSign(sendTx, nonce);
-const signature = await wallet.createTransactionSignature(mainIdentity, signingJob.bytes, signingJob.prehashType, liskTestnet);
+const signature = await wallet.createTransactionSignature(
+  mainIdentity,
+  signingJob.bytes,
+  signingJob.prehashType,
+  liskTestnet,
+);
 
 const signedTransaction = {
   transaction: sendTx,
@@ -107,18 +120,18 @@ software implementation of the the Lisk wallet on Ledger or Trezor.
 
 ### Address discovery
 
-The following code snipped shows how to implement address discovery.
+The following code snippet shows how to implement address discovery.
 
 ```ts
 import { Ed25519HdWallet } from "@iov/core";
 import { Slip10RawIndex } from "@iov/crypto";
 import { liskCodec, LiskConnection } from "@iov/lisk";
 
-const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
+const liskTestnet = "lisk-da3ed6a454" as ChainId;
 
 async function deriveAddress(wallet, a): Promise<Address> {
   // 44'/134'/a' (see https://github.com/trezor/trezor-core/tree/master/docs/coins)
-  const path = [Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(134), Slip10RawIndex.hardened(a)]
+  const path = [Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(134), Slip10RawIndex.hardened(a)];
   const pubkey = (await wallet.createIdentity(path)).pubkey;
   return liskCodec.keyToAddress(pubkey);
 }
@@ -129,7 +142,9 @@ async function getBalance(searchAddress: Address): Promise<any> {
   return response.data.length > 0 ? response.data[0].balance[0] : undefined;
 }
 
-const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
+const wallet = Ed25519HdWallet.fromMnemonic(
+  "tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral",
+);
 
 // from https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit
 const gapLimit = 20;
@@ -138,7 +153,7 @@ let currentGapSize = 0;
 for (let a = 0; currentGapSize < gapLimit; a++) {
   const address = await deriveAddress(wallet, a);
   const balance = await getBalance(address);
-  const balanceString = balance ? `${balance.whole + balance.fractional/100000000} LSK` : "unknown";
+  const balanceString = balance ? `${balance.whole + balance.fractional / 100000000} LSK` : "unknown";
   console.log(`${a}: ${address} (${balanceString})`);
 
   if (balance) {

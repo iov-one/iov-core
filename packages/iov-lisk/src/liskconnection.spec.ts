@@ -55,10 +55,10 @@ async function randomAddress(): Promise<Address> {
 describe("LiskConnection", () => {
   // a network that does not exist used for non-networking tests
   const dummynetBase = "https://my-host.tld:12345";
-  const dummynetChainId = "f0b96e79655665abbe95b7a7f626036eb20244ead279e5f972e87cbfd77daa09" as ChainId;
+  const dummynetChainId = "lisk-f0b96e7965" as ChainId;
   // a local devnet
   const devnetBase = "http://localhost:4000";
-  const devnetChainId = "198f2b61a8eb95fbeed58b8216780b68f697f26b849acf00c8c93bb9b24f783d" as ChainId;
+  const devnetChainId = "lisk-198f2b61a8" as ChainId;
   const devnetDefaultRecipient = "2222222L" as Address; // random address with no keypair
   const devnetDefaultKeypair = Derivation.passphraseToKeypair(
     "wagon stock borrow episode laundry kitten salute link globe zero feed marble",

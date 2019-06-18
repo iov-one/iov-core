@@ -20,7 +20,7 @@ import { liskCodec } from "./liskcodec";
 const { fromHex } = Encoding;
 
 // use nethash as chain ID
-const liskTestnet = "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba" as ChainId;
+const liskTestnet = "lisk-da3ed6a454" as ChainId;
 const liskEpochAsUnixTimestamp = 1464109200;
 const defaultCreationTimestamp = 865708731 + liskEpochAsUnixTimestamp;
 const defaultPublicKey = {
