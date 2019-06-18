@@ -24,7 +24,7 @@ const defaultCreationDate = new ReadonlyDate((865708731 + epochAsUnixTimestamp) 
 const zeroNonce = 0 as Nonce;
 // use nethash as chain ID
 const liskTestnet = "lisk-da3ed6a454" as ChainId;
-const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
+const riseTestnet = "rise-296dc9a4d1" as ChainId;
 const liskTransactionSerializationOptions: TransactionSerializationOptions = {
   maxMemoLength: 64,
 };

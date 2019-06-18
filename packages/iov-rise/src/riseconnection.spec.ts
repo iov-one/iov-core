@@ -38,7 +38,7 @@ import { riseCodec } from "./risecodec";
 import { generateNonce, RiseConnection } from "./riseconnection";
 
 const { fromHex } = Encoding;
-const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
+const riseTestnet = "rise-296dc9a4d1" as ChainId;
 
 function pendingWithoutRise(): void {
   if (!process.env.RISE_ENABLED) {
