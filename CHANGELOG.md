@@ -18,6 +18,9 @@
 - @iov/bns: Add `CreateMultisignatureTx` and `UpdateMultisignatureTx` types
   along with `Participant`.
 - @iov/bns: Add `getTx` method to `BnsConnection`.
+- @iov/bns: Add support for escrow transactions.
+- @iov/bns: Add `CreateEscrowTx`, `ReleaseEscrowTx`, `ReturnEscrowTx` and
+  `UpdateEscrowPartiesTx` types.
 - @iov/ethereum: Add `createEtherSwapId` and `createErc20SwapId` static methods.
 - @iov/ethereum: Add `SwapIdPrefix` enum.
 - @iov/ethereum: Add `Erc20TokensMap` type.
