@@ -32,13 +32,17 @@ import {
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
+  CreateEscrowTx,
   CreateMultisignatureTx,
   Keyed,
   Participant,
   PrivkeyBundle,
   PrivkeyBytes,
   RegisterUsernameTx,
+  ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
+  ReturnEscrowTx,
+  UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
@@ -221,7 +225,7 @@ function parseSwapOfferTx(
     kind: "bcp/swap_offer",
     hash: hash as Hash,
     recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
-    timeout: { timestamp: asIntegerNumber(ensure(msg.timeout)) },
+    timeout: { timestamp: asIntegerNumber(ensure(msg.timeout, "timeout")) },
     amounts: (msg.amount || []).map(decodeAmount),
   };
 }
@@ -338,6 +342,61 @@ function parseUpdateMultisignatureTx(
   };
 }
 
+function parseCreateEscrowTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.escrow.ICreateEscrowMsg,
+): CreateEscrowTx & WithCreator {
+  const prefix = addressPrefix(base.creator.chainId);
+  return {
+    ...base,
+    kind: "bns/create_escrow",
+    sender: encodeBnsAddress(prefix, ensure(msg.src, "src")),
+    arbiter: encodeBnsAddress(prefix, ensure(msg.arbiter, "arbiter")),
+    recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
+    amounts: ensure(msg.amount, "amount").map(decodeAmount),
+    timeout: { timestamp: asIntegerNumber(ensure(msg.timeout, "timeout")) },
+    memo: msg.memo !== null ? msg.memo : undefined,
+  };
+}
+
+function parseReleaseEscrowTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.escrow.IReleaseEscrowMsg,
+): ReleaseEscrowTx & WithCreator {
+  return {
+    ...base,
+    kind: "bns/release_escrow",
+    escrowId: ensure(msg.escrowId, "escrowId"),
+    amounts: ensure(msg.amount, "amount").map(decodeAmount),
+  };
+}
+
+function parseReturnEscrowTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.escrow.IReturnEscrowMsg,
+): ReturnEscrowTx & WithCreator {
+  return {
+    ...base,
+    kind: "bns/return_escrow",
+    escrowId: ensure(msg.escrowId, "escrowId"),
+  };
+}
+
+function parseUpdateEscrowPartiesTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.escrow.IUpdateEscrowPartiesMsg,
+): UpdateEscrowPartiesTx & WithCreator {
+  const prefix = addressPrefix(base.creator.chainId);
+  return {
+    ...base,
+    kind: "bns/update_escrow_parties",
+    escrowId: ensure(msg.escrowId, "escrowId"),
+    sender: msg.sender ? encodeBnsAddress(prefix, msg.sender) : undefined,
+    arbiter: msg.arbiter ? encodeBnsAddress(prefix, msg.arbiter) : undefined,
+    recipient: msg.recipient ? encodeBnsAddress(prefix, msg.recipient) : undefined,
+  };
+}
+
 export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction {
   // Token sends
   if (tx.sendMsg) return parseSendTransaction(base, tx.sendMsg);
@@ -355,6 +414,12 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
   // Multisignature contracts
   if (tx.createContractMsg) return parseCreateMultisignatureTx(base, tx.createContractMsg);
   if (tx.updateContractMsg) return parseUpdateMultisignatureTx(base, tx.updateContractMsg);
+
+  // Escrows
+  if (tx.createEscrowMsg) return parseCreateEscrowTx(base, tx.createEscrowMsg);
+  if (tx.releaseEscrowMsg) return parseReleaseEscrowTx(base, tx.releaseEscrowMsg);
+  if (tx.returnEscrowMsg) return parseReturnEscrowTx(base, tx.returnEscrowMsg);
+  if (tx.updateEscrowMsg) return parseUpdateEscrowPartiesTx(base, tx.updateEscrowMsg);
 
   throw new Error("unknown message type in transaction");
 }
