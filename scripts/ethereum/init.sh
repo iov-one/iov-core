@@ -8,5 +8,5 @@ export GANACHE_PORT="8545"
 DOCKER_HOST_IP=$(docker run --rm alpine ip route | awk 'NR==1 {print $3}')
 
 (
-  docker run --read-only --rm "iov1/ethereum-deployment:manual" "ws://$DOCKER_HOST_IP:$GANACHE_PORT/ws"
+  docker run --read-only --rm "iov1/ethereum-deployment:latest" "ws://$DOCKER_HOST_IP:$GANACHE_PORT/ws"
 )
