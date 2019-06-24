@@ -100,9 +100,13 @@ Breaking changes
 - @iov/lisk: `LiskConnection` methods `listenTx`, `liveTx` and `searchTx` now
   all resolve to confirmed `LightTransaction`s instead of
   `UnsignedTransaction`s.
+- @iov/lisk: Switch to new chain ID format: `lisk-%s` where `%s` is the first 10
+  hex-digits of the nethash.
 - @iov/rise: `RiseConnection` methods `listenTx`, `liveTx` and `searchTx` now
   all resolve to confirmed `LightTransaction`s instead of
   `UnsignedTransaction`s.
+- @iov/rise: Switch to new chain ID format: `rise-%s` where `%s` is the first 10
+  hex-digits of the nethash.
 - @iov/tendermint-rpc: Remove support for Tendermint 0.25.x – 0.28.x.
 - @iov/tendermint-rpc: Rename `v0_27` to `v0_29`, which is now the adaptor for
   0.29.x and 0.30.x.

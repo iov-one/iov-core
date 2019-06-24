@@ -65,7 +65,7 @@ async function loadChainId(baseUrl: string): Promise<ChainId> {
   const url = checkAndNormalizeUrl(baseUrl) + "/api/node/constants";
   const result = await axios.get(url);
   const responseBody = result.data;
-  return responseBody.data.nethash;
+  return `lisk-${responseBody.data.nethash.slice(0, 10)}` as ChainId;
 }
 
 export class LiskConnection implements BlockchainConnection {
@@ -80,8 +80,10 @@ export class LiskConnection implements BlockchainConnection {
   public constructor(baseUrl: string, chainId: ChainId) {
     this.baseUrl = checkAndNormalizeUrl(baseUrl);
 
-    if (!chainId.match(/^[a-f0-9]{64}$/)) {
-      throw new Error("The chain ID must be a Lisk nethash, encoded as 64 lower-case hex characters.");
+    if (!chainId.match(/^lisk-[a-f0-9]{10}$/)) {
+      throw new Error(
+        "The chain ID must be a Lisk nethash, encoded as `lisk-%s` where `%s` is the 10-digit hex-encoded prefix of the relevant nethash.",
+      );
     }
     this.myChainId = chainId;
   }

@@ -20,7 +20,9 @@ import { Ed25519Wallet } from "@iov/core";
 import { passphraseToKeypair, riseCodec, riseConnector } from "@iov/rise";
 
 const wallet = new Ed25519Wallet();
-const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
+const mainIdentity = await wallet.createIdentity(
+  await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"),
+);
 
 const profile = new UserProfile();
 profile.addWallet(wallet);
@@ -44,12 +46,14 @@ const sendTx: SendTransaction = {
     whole: 1,
     fractional: 44550000,
     tokenTicker: "RISE" as TokenTicker,
-  }
+  },
 };
 
 console.log("Sending transaction into the network blockchain …");
 const response = await signer.signAndPost(sendTx);
-console.log(`Wait a few seconds and visit https://texplorer.rise.vision/tx/${Encoding.fromAscii(response.data.txid)}`);
+console.log(
+  `Wait a few seconds and visit https://texplorer.rise.vision/tx/${Encoding.fromAscii(response.data.txid)}`,
+);
 ```
 
 ### The manual way
@@ -61,10 +65,12 @@ for RISE manually, i.e. without the help of @iov/core.
 import { Ed25519Wallet } from "@iov/core";
 import { passphraseToKeypair, generateNonce, riseCodec } from "@iov/rise";
 
-const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
+const riseTestnet = "rise-296dc9a4d1" as ChainId;
 
 const wallet = new Ed25519Wallet();
-const mainIdentity = await wallet.createIdentity(await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"));
+const mainIdentity = await wallet.createIdentity(
+  await passphraseToKeypair("squeeze frog deposit chase sudden clutch fortune spring tone have snow column"),
+);
 const mainAddress = riseCodec.identityToAddress(mainIdentity);
 
 const recipientAddress = "10145108642177909005R" as Address;
@@ -77,12 +83,17 @@ const sendTx: SendTransaction = {
     whole: 1,
     fractional: 44550000,
     tokenTicker: "RISE" as TokenTicker,
-  }
+  },
 };
 
 const nonce = generateNonce();
 const signingJob = riseCodec.bytesToSign(sendTx, nonce);
-const signature = await wallet.createTransactionSignature(mainIdentity, signingJob.bytes, signingJob.prehashType, riseTestnet);
+const signature = await wallet.createTransactionSignature(
+  mainIdentity,
+  signingJob.bytes,
+  signingJob.prehashType,
+  riseTestnet,
+);
 
 const signedTransaction = {
   transaction: sendTx,
@@ -113,13 +124,13 @@ The following code snipped shows how to implement address discovery.
 import { Slip10RawIndex } from "@iov/crypto";
 import { riseCodec, RiseConnection } from "@iov/rise";
 
-const riseTestnet = "e90d39ac200c495b97deb6d9700745177c7fc4aa80a404108ec820cbeced054c" as ChainId;
+const riseTestnet = "rise-296dc9a4d1" as ChainId;
 
 async function deriveAddress(wallet, a): Promise<Address> {
   // 44'/1120'/a'
   // (see https://github.com/trezor/trezor-core/tree/master/docs/coins for account based derivation
   // paths and https://github.com/satoshilabs/slips/blob/master/slip-0044.md for RISE coin type)
-  const path = [Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(1120), Slip10RawIndex.hardened(a)]
+  const path = [Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(1120), Slip10RawIndex.hardened(a)];
   const identity = await wallet.createIdentity(path);
   return riseCodec.identityToAddress(identity);
 }
@@ -130,7 +141,9 @@ async function getBalance(searchAddress: Address): Promise<any> {
   return response.data.length > 0 ? response.data[0].balance[0] : undefined;
 }
 
-const wallet = Ed25519HdWallet.fromMnemonic("tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral");
+const wallet = Ed25519HdWallet.fromMnemonic(
+  "tell fresh liquid vital machine rhythm uncle tomato grow room vacuum neutral",
+);
 
 // from https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit
 const gapLimit = 20;
@@ -139,7 +152,7 @@ let currentGapSize = 0;
 for (let a = 0; currentGapSize < gapLimit; a++) {
   const address = await deriveAddress(wallet, a);
   const balance = await getBalance(address);
-  const balanceString = balance ? `${balance.whole + balance.fractional/100000000} RISE` : "unknown";
+  const balanceString = balance ? `${balance.whole + balance.fractional / 100000000} RISE` : "unknown";
   console.log(`${a}: ${address} (${balanceString})`);
 
   if (balance) {
