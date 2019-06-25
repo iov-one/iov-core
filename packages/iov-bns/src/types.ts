@@ -55,7 +55,13 @@ export interface ElectionRule {
   readonly id: Uint8Array;
   readonly version: number;
   readonly admin: Address;
-  /** The electorate used by this (ID without version, as changing electorate changes the rule) */
+  /**
+   * The eligible voters in this rule.
+   *
+   * This is an unversioned ID (see `id` field in weave's VersionedIDRef), meaning the
+   * electorate can change over time without changing this ID. When a poposal with this
+   * rule is created, the latest version of the electorate will be used.
+   */
   readonly electorateId: number;
   readonly title: string;
   /** Voting period in seconds */
@@ -92,7 +98,12 @@ export type ProposalOption = string;
 
 export interface Proposal {
   readonly title: string;
-  /** The transaction to be executed when the proposal is accepted */
+  /**
+   * The transaction to be executed when the proposal is accepted
+   *
+   * This is one of the actions from
+   * https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#app.ProposalOptions
+   */
   readonly option: ProposalOption;
   readonly description: string;
   readonly electionRule: VersionedId;
@@ -280,7 +291,12 @@ export function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is UpdateEscro
 export interface CreateProposalTx extends LightTransaction {
   readonly kind: "bns/create_proposal";
   readonly title: string;
-  /** The transaction to be executed when the proposal is accepted */
+  /**
+   * The transaction to be executed when the proposal is accepted
+   *
+   * This is one of the actions from
+   * https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#app.ProposalOptions
+   */
   readonly option: ProposalOption;
   readonly description: string;
   readonly electionRuleId: Uint8Array;
