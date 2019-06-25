@@ -1,5 +1,5 @@
 import { As } from "type-tagger";
-import { Address, Algorithm, Amount, ChainId, LightTransaction, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction } from "@iov/bcp";
+import { Address, Algorithm, Amount, ChainId, LightTransaction, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TimestampTimeout } from "@iov/bcp";
 export interface CashConfiguration {
     readonly minimalFee: Amount;
 }
@@ -75,5 +75,34 @@ export interface UpdateMultisignatureTx extends LightTransaction {
     readonly adminThreshold: number;
 }
 export declare function isUpdateMultisignatureTx(tx: LightTransaction): tx is UpdateMultisignatureTx;
-export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx;
+export interface CreateEscrowTx extends LightTransaction {
+    readonly kind: "bns/create_escrow";
+    readonly sender: Address;
+    readonly arbiter: Address;
+    readonly recipient: Address;
+    readonly amounts: readonly Amount[];
+    readonly timeout: TimestampTimeout;
+    readonly memo?: string;
+}
+export declare function isCreateEscrowTx(tx: LightTransaction): tx is CreateEscrowTx;
+export interface ReleaseEscrowTx extends LightTransaction {
+    readonly kind: "bns/release_escrow";
+    readonly escrowId: Uint8Array;
+    readonly amounts: readonly Amount[];
+}
+export declare function isReleaseEscrowTx(tx: LightTransaction): tx is ReleaseEscrowTx;
+export interface ReturnEscrowTx extends LightTransaction {
+    readonly kind: "bns/return_escrow";
+    readonly escrowId: Uint8Array;
+}
+export declare function isReturnEscrowTx(tx: LightTransaction): tx is ReturnEscrowTx;
+export interface UpdateEscrowPartiesTx extends LightTransaction {
+    readonly kind: "bns/update_escrow_parties";
+    readonly escrowId: Uint8Array;
+    readonly sender?: Address;
+    readonly arbiter?: Address;
+    readonly recipient?: Address;
+}
+export declare function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is UpdateEscrowPartiesTx;
+export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx;
 export declare function isBnsTx(transaction: LightTransaction): transaction is BnsTx;

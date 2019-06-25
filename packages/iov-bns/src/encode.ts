@@ -18,12 +18,16 @@ import { Encoding, Int53 } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 import {
   AddAddressToUsernameTx,
+  CreateEscrowTx,
   CreateMultisignatureTx,
   isBnsTx,
   Participant,
   PrivkeyBundle,
   RegisterUsernameTx,
+  ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
+  ReturnEscrowTx,
+  UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
 } from "./types";
 import { decodeBnsAddress, identityToAddress } from "./util";
@@ -231,6 +235,55 @@ function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): codecImpl.app.
   };
 }
 
+function buildCreateEscrowTx(tx: CreateEscrowTx): codecImpl.app.ITx {
+  return {
+    createEscrowMsg: {
+      metadata: { schema: 1 },
+      src: decodeBnsAddress(tx.sender).data,
+      arbiter: decodeBnsAddress(tx.arbiter).data,
+      recipient: decodeBnsAddress(tx.recipient).data,
+      amount: tx.amounts.map(encodeAmount),
+      timeout: encodeInt(tx.timeout.timestamp),
+      memo: encodeString(tx.memo),
+    },
+  };
+}
+
+function buildReleaseEscrowTx(tx: ReleaseEscrowTx): codecImpl.app.ITx {
+  return {
+    releaseEscrowMsg: {
+      metadata: { schema: 1 },
+      escrowId: tx.escrowId,
+      amount: tx.amounts.map(encodeAmount),
+    },
+  };
+}
+
+function buildReturnEscrowTx(tx: ReturnEscrowTx): codecImpl.app.ITx {
+  return {
+    returnEscrowMsg: {
+      metadata: { schema: 1 },
+      escrowId: tx.escrowId,
+    },
+  };
+}
+
+function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.app.ITx {
+  const numPartiesToUpdate = [tx.sender, tx.arbiter, tx.recipient].filter(Boolean).length;
+  if (numPartiesToUpdate !== 1) {
+    throw new Error(`Only one party can be updated at a time, got ${numPartiesToUpdate}`);
+  }
+  return {
+    updateEscrowMsg: {
+      metadata: { schema: 1 },
+      escrowId: tx.escrowId,
+      sender: tx.sender && decodeBnsAddress(tx.sender).data,
+      arbiter: tx.arbiter && decodeBnsAddress(tx.arbiter).data,
+      recipient: tx.recipient && decodeBnsAddress(tx.recipient).data,
+    },
+  };
+}
+
 export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
   if (!isBnsTx(tx)) {
     throw new Error("Transaction is not a BNS transaction");
@@ -262,6 +315,16 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
       return buildCreateMultisignatureTx(tx);
     case "bns/update_multisignature_contract":
       return buildUpdateMultisignatureTx(tx);
+
+    // BNS: Escrow
+    case "bns/create_escrow":
+      return buildCreateEscrowTx(tx);
+    case "bns/release_escrow":
+      return buildReleaseEscrowTx(tx);
+    case "bns/return_escrow":
+      return buildReturnEscrowTx(tx);
+    case "bns/update_escrow_parties":
+      return buildUpdateEscrowPartiesTx(tx);
 
     default:
       throw new Error("Received transaction of unsupported kind.");

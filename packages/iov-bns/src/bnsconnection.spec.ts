@@ -50,13 +50,21 @@ import { BnsConnection } from "./bnsconnection";
 import { bnsSwapQueryTag } from "./tags";
 import {
   AddAddressToUsernameTx,
+  CreateEscrowTx,
   CreateMultisignatureTx,
+  isCreateEscrowTx,
   isCreateMultisignatureTx,
   isRegisterUsernameTx,
+  isReleaseEscrowTx,
+  isReturnEscrowTx,
+  isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
   Participant,
   RegisterUsernameTx,
+  ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
+  ReturnEscrowTx,
+  UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
 } from "./types";
 import { encodeBnsAddress, identityToAddress } from "./util";
@@ -934,6 +942,280 @@ describe("BnsConnection", () => {
       expect(secondSearchResultTransaction.activationThreshold).toEqual(2);
       expect(secondSearchResultTransaction.adminThreshold).toEqual(6);
       expect(contractId).toBeDefined();
+
+      connection.disconnect();
+    });
+
+    it("can create and release an escrow", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const [sender, recipient, arbiter] = await Promise.all(
+        [0, 10, 20].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+      );
+      const [senderAddress, recipientAddress, arbiterAddress] = [sender, recipient, arbiter].map(
+        identityToAddress,
+      );
+      const timeout = {
+        timestamp: Math.floor(Date.now() / 1000) + 3000,
+      };
+      const memo = "testing 123";
+
+      // we need funds to pay the fees
+      await sendTokensFromFaucet(connection, senderAddress, registerAmount);
+      await sendTokensFromFaucet(connection, arbiterAddress, registerAmount);
+
+      // Create escrow
+      const tx1 = await connection.withDefaultFee<CreateEscrowTx & WithCreator>({
+        kind: "bns/create_escrow",
+        creator: sender,
+        sender: senderAddress,
+        arbiter: arbiterAddress,
+        recipient: recipientAddress,
+        amounts: [defaultAmount],
+        timeout: timeout,
+        memo: memo,
+      });
+      const nonce1 = await connection.getNonce({ pubkey: sender.pubkey });
+      const signed1 = await profile.signTransaction(tx1, bnsCodec, nonce1);
+      const txBytes1 = bnsCodec.bytesToPost(signed1);
+      const response1 = await connection.postTx(txBytes1);
+      const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo1.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find transaction1
+      const searchResult1 = (await connection.searchTx({ signedBy: senderAddress })).filter(
+        isConfirmedTransaction,
+      );
+      expect(searchResult1.length).toEqual(1);
+      const { result: escrowId, transaction: firstSearchResultTransaction } = searchResult1[0];
+      if (!isCreateEscrowTx(firstSearchResultTransaction)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(firstSearchResultTransaction.sender).toEqual(senderAddress);
+      expect(firstSearchResultTransaction.recipient).toEqual(recipientAddress);
+      expect(firstSearchResultTransaction.arbiter).toEqual(arbiterAddress);
+      expect(firstSearchResultTransaction.amounts).toEqual([defaultAmount]);
+      expect(firstSearchResultTransaction.timeout).toEqual(timeout);
+      expect(firstSearchResultTransaction.memo).toEqual(memo);
+      expect(escrowId).toBeDefined();
+
+      // Release escrow
+      const tx2 = await connection.withDefaultFee<ReleaseEscrowTx & WithCreator>({
+        kind: "bns/release_escrow",
+        creator: arbiter,
+        escrowId: escrowId!,
+        amounts: [defaultAmount],
+      });
+      const nonce2 = await connection.getNonce({ pubkey: arbiter.pubkey });
+      const signed2 = await profile.signTransaction(tx2, bnsCodec, nonce2);
+      const txBytes2 = bnsCodec.bytesToPost(signed2);
+      const response2 = await connection.postTx(txBytes2);
+      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find transaction1
+      const searchResult2 = (await connection.searchTx({ signedBy: arbiterAddress })).filter(
+        isConfirmedTransaction,
+      );
+      expect(searchResult2.length).toEqual(1);
+      const { transaction: secondSearchResultTransaction } = searchResult2[0];
+      if (!isReleaseEscrowTx(secondSearchResultTransaction)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(secondSearchResultTransaction.escrowId).toEqual(escrowId!);
+      expect(secondSearchResultTransaction.amounts).toEqual([defaultAmount]);
+
+      connection.disconnect();
+    });
+
+    it("can create and return an escrow", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const [sender, recipient, arbiter] = await Promise.all(
+        [0, 10, 20].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+      );
+      const [senderAddress, recipientAddress, arbiterAddress] = [sender, recipient, arbiter].map(
+        identityToAddress,
+      );
+      const timeout = {
+        timestamp: Math.floor(Date.now() / 1000) + 3,
+      };
+      const memo = "testing 123";
+
+      // we need funds to pay the fees
+      await sendTokensFromFaucet(connection, senderAddress, registerAmount);
+      await sendTokensFromFaucet(connection, arbiterAddress, registerAmount);
+
+      // Create escrow
+      const tx1 = await connection.withDefaultFee<CreateEscrowTx & WithCreator>({
+        kind: "bns/create_escrow",
+        creator: sender,
+        sender: senderAddress,
+        arbiter: arbiterAddress,
+        recipient: recipientAddress,
+        amounts: [defaultAmount],
+        timeout: timeout,
+        memo: memo,
+      });
+      const nonce1 = await connection.getNonce({ pubkey: sender.pubkey });
+      const signed1 = await profile.signTransaction(tx1, bnsCodec, nonce1);
+      const txBytes1 = bnsCodec.bytesToPost(signed1);
+      const response1 = await connection.postTx(txBytes1);
+      const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo1.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find transaction1
+      const searchResult1 = (await connection.searchTx({ signedBy: senderAddress })).filter(
+        isConfirmedTransaction,
+      );
+      expect(searchResult1.length).toEqual(1);
+      const { result: escrowId, transaction: firstSearchResultTransaction } = searchResult1[0];
+      if (!isCreateEscrowTx(firstSearchResultTransaction)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(firstSearchResultTransaction.sender).toEqual(senderAddress);
+      expect(firstSearchResultTransaction.recipient).toEqual(recipientAddress);
+      expect(firstSearchResultTransaction.arbiter).toEqual(arbiterAddress);
+      expect(firstSearchResultTransaction.amounts).toEqual([defaultAmount]);
+      expect(firstSearchResultTransaction.timeout).toEqual(timeout);
+      expect(firstSearchResultTransaction.memo).toEqual(memo);
+      expect(escrowId).toBeDefined();
+
+      // Wait for timeout to pass
+      await sleep(7000);
+
+      // Return escrow
+      const tx2 = await connection.withDefaultFee<ReturnEscrowTx & WithCreator>({
+        kind: "bns/return_escrow",
+        creator: arbiter,
+        escrowId: escrowId!,
+      });
+      const nonce2 = await connection.getNonce({ pubkey: arbiter.pubkey });
+      const signed2 = await profile.signTransaction(tx2, bnsCodec, nonce2);
+      const txBytes2 = bnsCodec.bytesToPost(signed2);
+      const response2 = await connection.postTx(txBytes2);
+      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find transaction1
+      const searchResult2 = (await connection.searchTx({ signedBy: arbiterAddress })).filter(
+        isConfirmedTransaction,
+      );
+      expect(searchResult2.length).toEqual(1);
+      const { transaction: secondSearchResultTransaction } = searchResult2[0];
+      if (!isReturnEscrowTx(secondSearchResultTransaction)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(secondSearchResultTransaction.escrowId).toEqual(escrowId!);
+
+      connection.disconnect();
+    });
+
+    it("can create and update an escrow", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const [sender, recipient, arbiter, newArbiter] = await Promise.all(
+        [0, 10, 20, 21].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+      );
+      const [senderAddress, recipientAddress, arbiterAddress, newArbiterAddress] = [
+        sender,
+        recipient,
+        arbiter,
+        newArbiter,
+      ].map(identityToAddress);
+      const timeout = {
+        timestamp: Math.floor(Date.now() / 1000) + 3000,
+      };
+      const memo = "testing 123";
+
+      // we need funds to pay the fees
+      await sendTokensFromFaucet(connection, senderAddress, registerAmount);
+      await sendTokensFromFaucet(connection, arbiterAddress, registerAmount);
+
+      // Create escrow
+      const tx1 = await connection.withDefaultFee<CreateEscrowTx & WithCreator>({
+        kind: "bns/create_escrow",
+        creator: sender,
+        sender: senderAddress,
+        arbiter: arbiterAddress,
+        recipient: recipientAddress,
+        amounts: [defaultAmount],
+        timeout: timeout,
+        memo: memo,
+      });
+      const nonce1 = await connection.getNonce({ pubkey: sender.pubkey });
+      const signed1 = await profile.signTransaction(tx1, bnsCodec, nonce1);
+      const txBytes1 = bnsCodec.bytesToPost(signed1);
+      const response1 = await connection.postTx(txBytes1);
+      const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo1.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find transaction1
+      const searchResult1 = (await connection.searchTx({ signedBy: senderAddress })).filter(
+        isConfirmedTransaction,
+      );
+      expect(searchResult1.length).toEqual(1);
+      const { result: escrowId, transaction: firstSearchResultTransaction } = searchResult1[0];
+      if (!isCreateEscrowTx(firstSearchResultTransaction)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(firstSearchResultTransaction.sender).toEqual(senderAddress);
+      expect(firstSearchResultTransaction.recipient).toEqual(recipientAddress);
+      expect(firstSearchResultTransaction.arbiter).toEqual(arbiterAddress);
+      expect(firstSearchResultTransaction.amounts).toEqual([defaultAmount]);
+      expect(firstSearchResultTransaction.timeout).toEqual(timeout);
+      expect(firstSearchResultTransaction.memo).toEqual(memo);
+      expect(escrowId).toBeDefined();
+
+      // Update escrow
+      const tx2 = await connection.withDefaultFee<UpdateEscrowPartiesTx & WithCreator>({
+        kind: "bns/update_escrow_parties",
+        creator: arbiter,
+        escrowId: escrowId!,
+        arbiter: newArbiterAddress,
+      });
+      const nonce2 = await connection.getNonce({ pubkey: arbiter.pubkey });
+      const signed2 = await profile.signTransaction(tx2, bnsCodec, nonce2);
+      const txBytes2 = bnsCodec.bytesToPost(signed2);
+      const response2 = await connection.postTx(txBytes2);
+      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find transaction1
+      const searchResult2 = (await connection.searchTx({ signedBy: arbiterAddress })).filter(
+        isConfirmedTransaction,
+      );
+      expect(searchResult2.length).toEqual(1);
+      const { transaction: secondSearchResultTransaction } = searchResult2[0];
+      if (!isUpdateEscrowPartiesTx(secondSearchResultTransaction)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(secondSearchResultTransaction.escrowId).toEqual(escrowId!);
+      expect(secondSearchResultTransaction.arbiter).toEqual(newArbiterAddress);
 
       connection.disconnect();
     });

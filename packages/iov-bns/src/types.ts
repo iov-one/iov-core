@@ -14,6 +14,7 @@ import {
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
+  TimestampTimeout,
 } from "@iov/bcp";
 
 // config (those are not used outside of @iov/bns)
@@ -140,6 +141,53 @@ export function isUpdateMultisignatureTx(tx: LightTransaction): tx is UpdateMult
   return tx.kind === "bns/update_multisignature_contract";
 }
 
+// Transactions: Escrows
+
+export interface CreateEscrowTx extends LightTransaction {
+  readonly kind: "bns/create_escrow";
+  readonly sender: Address;
+  readonly arbiter: Address;
+  readonly recipient: Address;
+  readonly amounts: readonly Amount[];
+  readonly timeout: TimestampTimeout;
+  readonly memo?: string;
+}
+
+export function isCreateEscrowTx(tx: LightTransaction): tx is CreateEscrowTx {
+  return tx.kind === "bns/create_escrow";
+}
+
+export interface ReleaseEscrowTx extends LightTransaction {
+  readonly kind: "bns/release_escrow";
+  readonly escrowId: Uint8Array;
+  readonly amounts: readonly Amount[];
+}
+
+export function isReleaseEscrowTx(tx: LightTransaction): tx is ReleaseEscrowTx {
+  return tx.kind === "bns/release_escrow";
+}
+
+export interface ReturnEscrowTx extends LightTransaction {
+  readonly kind: "bns/return_escrow";
+  readonly escrowId: Uint8Array;
+}
+
+export function isReturnEscrowTx(tx: LightTransaction): tx is ReturnEscrowTx {
+  return tx.kind === "bns/return_escrow";
+}
+
+export interface UpdateEscrowPartiesTx extends LightTransaction {
+  readonly kind: "bns/update_escrow_parties";
+  readonly escrowId: Uint8Array;
+  readonly sender?: Address;
+  readonly arbiter?: Address;
+  readonly recipient?: Address;
+}
+
+export function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is UpdateEscrowPartiesTx {
+  return tx.kind === "bns/update_escrow_parties";
+}
+
 // Transactions: BNS
 
 export type BnsTx =
@@ -155,7 +203,12 @@ export type BnsTx =
   | RemoveAddressFromUsernameTx
   // BNS: Multisignature contracts
   | CreateMultisignatureTx
-  | UpdateMultisignatureTx;
+  | UpdateMultisignatureTx
+  // BNS: Escrows
+  | CreateEscrowTx
+  | ReleaseEscrowTx
+  | ReturnEscrowTx
+  | UpdateEscrowPartiesTx;
 
 export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
   if (

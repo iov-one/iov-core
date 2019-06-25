@@ -29,10 +29,14 @@ import {
 import * as codecImpl from "./generated/codecimpl";
 import {
   AddAddressToUsernameTx,
+  CreateEscrowTx,
   CreateMultisignatureTx,
   Participant,
   RegisterUsernameTx,
+  ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
+  ReturnEscrowTx,
+  UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
 } from "./types";
 import { appendSignBytes } from "./util";
@@ -219,11 +223,13 @@ describe("Encode", () => {
     };
     const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
     const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
+    const defaultArbiter = "tiov17yp0mh3yxwv6yxx386mxyfzlqnhe6q58edka6r" as Address;
     const defaultAmount: Amount = {
       quantity: "1000000001",
       fractionalDigits: 9,
       tokenTicker: "CASH" as TokenTicker,
     };
+    const defaultEscrowId = fromHex("0000000000000004");
 
     it("works for SendTransaction", () => {
       const transaction: SendTransaction & WithCreator = {
@@ -413,6 +419,113 @@ describe("Encode", () => {
       expect(msg.participants).toEqual(iParticipants);
       expect(msg.activationThreshold).toEqual(3);
       expect(msg.adminThreshold).toEqual(4);
+    });
+
+    it("works for CreateEscrowTx", () => {
+      const timeout = {
+        timestamp: new Date().valueOf(),
+      };
+      const memo = "testing 123";
+      const createEscrow: CreateEscrowTx & WithCreator = {
+        kind: "bns/create_escrow",
+        creator: defaultCreator,
+        sender: defaultSender,
+        arbiter: defaultArbiter,
+        recipient: defaultRecipient,
+        amounts: [defaultAmount],
+        timeout: timeout,
+        memo: memo,
+      };
+      const msg = buildMsg(createEscrow).createEscrowMsg!;
+
+      expect(msg.metadata).toEqual({ schema: 1 });
+      expect(msg.src).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
+      expect(msg.arbiter).toEqual(fromHex("f102fdde243399a218d13eb662245f04ef9d0287"));
+      expect(msg.recipient).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
+      expect(msg.amount!.length).toEqual(1);
+      expect(msg.amount![0].whole).toEqual(1);
+      expect(msg.amount![0].fractional).toEqual(1);
+      expect(msg.amount![0].ticker).toEqual("CASH");
+      expect(msg.timeout).toEqual(timeout.timestamp);
+      expect(msg.memo).toEqual(memo);
+    });
+
+    it("works for ReleaseEscrowTx", () => {
+      const releaseEscrow: ReleaseEscrowTx & WithCreator = {
+        kind: "bns/release_escrow",
+        creator: defaultCreator,
+        escrowId: defaultEscrowId,
+        amounts: [defaultAmount],
+      };
+      const msg = buildMsg(releaseEscrow).releaseEscrowMsg!;
+
+      expect(msg.metadata).toEqual({ schema: 1 });
+      expect(msg.escrowId).toEqual(defaultEscrowId);
+      expect(msg.amount!.length).toEqual(1);
+      expect(msg.amount![0].whole).toEqual(1);
+      expect(msg.amount![0].fractional).toEqual(1);
+      expect(msg.amount![0].ticker).toEqual("CASH");
+    });
+
+    it("works for ReturnEscrowTx", () => {
+      const returnEscrow: ReturnEscrowTx & WithCreator = {
+        kind: "bns/return_escrow",
+        creator: defaultCreator,
+        escrowId: defaultEscrowId,
+      };
+      const msg = buildMsg(returnEscrow).returnEscrowMsg!;
+
+      expect(msg.metadata).toEqual({ schema: 1 });
+      expect(msg.escrowId).toEqual(defaultEscrowId);
+    });
+
+    it("works for UpdateEscrowPartiesTx", () => {
+      const updateEscrowSender: UpdateEscrowPartiesTx & WithCreator = {
+        kind: "bns/update_escrow_parties",
+        creator: defaultCreator,
+        escrowId: defaultEscrowId,
+        sender: defaultSender,
+      };
+      const msg1 = buildMsg(updateEscrowSender).updateEscrowMsg!;
+
+      expect(msg1.metadata).toEqual({ schema: 1 });
+      expect(msg1.escrowId).toEqual(defaultEscrowId);
+      expect(msg1.sender).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
+
+      const updateEscrowRecipient: UpdateEscrowPartiesTx & WithCreator = {
+        kind: "bns/update_escrow_parties",
+        creator: defaultCreator,
+        escrowId: defaultEscrowId,
+        recipient: defaultRecipient,
+      };
+      const msg2 = buildMsg(updateEscrowRecipient).updateEscrowMsg!;
+
+      expect(msg2.metadata).toEqual({ schema: 1 });
+      expect(msg2.escrowId).toEqual(defaultEscrowId);
+      expect(msg2.recipient).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
+
+      const updateEscrowArbiter: UpdateEscrowPartiesTx & WithCreator = {
+        kind: "bns/update_escrow_parties",
+        creator: defaultCreator,
+        escrowId: defaultEscrowId,
+        arbiter: defaultArbiter,
+      };
+      const msg3 = buildMsg(updateEscrowArbiter).updateEscrowMsg!;
+
+      expect(msg3.metadata).toEqual({ schema: 1 });
+      expect(msg3.escrowId).toEqual(defaultEscrowId);
+      expect(msg3.arbiter).toEqual(fromHex("f102fdde243399a218d13eb662245f04ef9d0287"));
+    });
+
+    it("only updates one party at a time", () => {
+      const updateEscrowParties: UpdateEscrowPartiesTx & WithCreator = {
+        kind: "bns/update_escrow_parties",
+        creator: defaultCreator,
+        escrowId: defaultEscrowId,
+        sender: defaultSender,
+        arbiter: defaultArbiter,
+      };
+      expect(() => buildMsg(updateEscrowParties)).toThrowError(/only one party can be updated at a time/i);
     });
 
     it("encodes unset and empty memo the same way", () => {

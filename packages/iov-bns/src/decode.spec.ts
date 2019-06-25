@@ -26,9 +26,13 @@ import {
 } from "./testdata.spec";
 import {
   isAddAddressToUsernameTx,
+  isCreateEscrowTx,
   isCreateMultisignatureTx,
   isRegisterUsernameTx,
+  isReleaseEscrowTx,
   isRemoveAddressFromUsernameTx,
+  isReturnEscrowTx,
+  isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
   Keyed,
   Participant,
@@ -208,6 +212,11 @@ describe("Decode", () => {
       },
     };
 
+    const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
+    const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
+    const defaultArbiter = "tiov17yp0mh3yxwv6yxx386mxyfzlqnhe6q58edka6r" as Address;
+    const defaultEscrowId = fromHex("0000000000000004");
+
     it("works for AddAddressToUsername", () => {
       const transactionMessage: codecImpl.app.ITx = {
         addUsernameAddressNftMsg: {
@@ -370,6 +379,102 @@ describe("Decode", () => {
       expect(parsed.participants).toEqual(participants);
       expect(parsed.activationThreshold).toEqual(2);
       expect(parsed.adminThreshold).toEqual(3);
+    });
+
+    it("works for CreateEscrow", () => {
+      const timeout = 1560940182424;
+      const memo = "testing 123";
+      const transactionMessage: codecImpl.app.ITx = {
+        createEscrowMsg: {
+          src: Encoding.fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          arbiter: Encoding.fromHex("f102fdde243399a218d13eb662245f04ef9d0287"),
+          recipient: Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+          amount: [
+            {
+              whole: 3,
+              fractional: 123456789,
+              ticker: "ASH",
+            },
+          ],
+          timeout: timeout,
+          memo: memo,
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateEscrowTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.sender).toEqual(defaultSender);
+      expect(parsed.arbiter).toEqual(defaultArbiter);
+      expect(parsed.recipient).toEqual(defaultRecipient);
+      expect(parsed.amounts).toEqual([
+        {
+          quantity: "3123456789",
+          fractionalDigits: 9,
+          tokenTicker: "ASH" as TokenTicker,
+        },
+      ]);
+      expect(parsed.timeout.timestamp).toEqual(timeout);
+      expect(parsed.memo).toEqual(memo);
+    });
+
+    it("works for ReleaseEscrow", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        releaseEscrowMsg: {
+          escrowId: defaultEscrowId,
+          amount: [
+            {
+              whole: 3,
+              fractional: 123456789,
+              ticker: "ASH",
+            },
+          ],
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isReleaseEscrowTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.escrowId).toEqual(defaultEscrowId);
+      expect(parsed.amounts).toEqual([
+        {
+          quantity: "3123456789",
+          fractionalDigits: 9,
+          tokenTicker: "ASH" as TokenTicker,
+        },
+      ]);
+    });
+
+    it("works for ReturnEscrow", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        returnEscrowMsg: {
+          escrowId: defaultEscrowId,
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isReturnEscrowTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.escrowId).toEqual(defaultEscrowId);
+    });
+
+    it("works for UpdateEscrowParties", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        updateEscrowMsg: {
+          escrowId: defaultEscrowId,
+          sender: Encoding.fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          arbiter: Encoding.fromHex("f102fdde243399a218d13eb662245f04ef9d0287"),
+          recipient: Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isUpdateEscrowPartiesTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.escrowId).toEqual(defaultEscrowId);
+      expect(parsed.sender).toEqual(defaultSender);
+      expect(parsed.arbiter).toEqual(defaultArbiter);
+      expect(parsed.recipient).toEqual(defaultRecipient);
     });
   });
 });
