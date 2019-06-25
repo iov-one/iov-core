@@ -143,23 +143,6 @@ function zip<T, U>(keys: readonly T[], values: readonly U[]): readonly Join<T, U
   return keys.map((key, i) => ({ key: key, value: values[i] }));
 }
 
-/**
- * Performs a query
- *
- * This is pulled out to be used in static initialzers as well
- */
-async function performQuery(
-  tmClient: TendermintClient,
-  path: string,
-  data: Uint8Array,
-): Promise<QueryResponse> {
-  const response = await tmClient.abciQuery({ path: path, data: data });
-  const keys = codecImpl.app.ResultSet.decode(response.key).results;
-  const values = codecImpl.app.ResultSet.decode(response.value).results;
-  const results: readonly Result[] = zip(keys, values);
-  return { height: response.height, results: results };
-}
-
 /* Various helpers for parsing the results of querying abci */
 
 export interface QueryResponse {
@@ -167,23 +150,24 @@ export interface QueryResponse {
   readonly results: readonly Result[];
 }
 
-function createParser<T extends {}>(decoder: Decoder<T>, keyPrefix: string): (res: Result) => T & Keyed {
-  const parser = (res: Result): T & Keyed => {
-    const keyPrefixAsAscii = toAscii(keyPrefix);
-    if (!keyPrefixAsAscii.every((byte, i) => byte === res.key[i])) {
+function createParser<T extends {}>(decoder: Decoder<T>, keyPrefix: string): (result: Result) => T & Keyed {
+  const keyPrefixAsAscii = toAscii(keyPrefix);
+
+  function parseResult({ key, value }: Result): T & Keyed {
+    if (!keyPrefixAsAscii.every((byte, i) => byte === key[i])) {
       throw new Error(
         "Result does not start with expected prefix. " +
-          `Expected prefix '${keyPrefix}' (0x${toHex(keyPrefixAsAscii)}) in 0x${toHex(res.key)}`,
+          `Expected prefix '${keyPrefix}' (0x${toHex(keyPrefixAsAscii)}) in 0x${toHex(key)}`,
       );
     }
 
-    const val: T = decoder.decode(res.value);
-    // bug: https://github.com/Microsoft/TypeScript/issues/13557
-    // workaround from: https://github.com/OfficeDev/office-ui-fabric-react/blob/1dbfc5ee7c38e982282f13ef92884538e7226169/packages/foundation/src/createComponent.tsx#L62-L64
-    // tslint:disable-next-line:prefer-object-spread
-    return Object.assign({}, val, { _id: res.key.slice(keyPrefix.length) });
-  };
-  return parser;
+    const decoded = decoder.decode(value);
+    return {
+      ...decoded,
+      _id: key.slice(keyPrefix.length),
+    };
+  }
+  return parseResult;
 }
 
 /**
@@ -660,7 +644,11 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {
-    return performQuery(this.tmClient, path, data);
+    const response = await this.tmClient.abciQuery({ path: path, data: data });
+    const keys = codecImpl.app.ResultSet.decode(response.key).results;
+    const values = codecImpl.app.ResultSet.decode(response.value).results;
+    const results: readonly Result[] = zip(keys, values);
+    return { height: response.height, results: results };
   }
 
   // updateEscrowBalance will query for the proper balance and then update the accounts of escrow before
