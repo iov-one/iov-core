@@ -109,9 +109,8 @@ describe("ReconnectingSocket", () => {
           },
           complete: () => {
             // Make sure we don't get a completion unexpectedly
-            if (eventsSeen === requests.length) {
-              done();
-            }
+            expect(eventsSeen).toEqual(requests.length);
+            done();
           },
         });
 
@@ -146,9 +145,8 @@ describe("ReconnectingSocket", () => {
         },
         complete: () => {
           // Make sure we don't get a completion unexpectedly
-          if (eventsSeen === requests.length) {
-            done();
-          }
+          expect(eventsSeen).toEqual(requests.length);
+          done();
         },
       });
 
