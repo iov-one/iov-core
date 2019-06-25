@@ -314,10 +314,10 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
 }
 
 function decodeRawProposalOption(rawOption: Uint8Array): ProposalOption {
-  const po = codecImpl.app.ProposalOptions.decode(rawOption);
+  const option = codecImpl.app.ProposalOptions.decode(rawOption);
   // TODO: support other resolution types
   let out: ProposalOption;
-  if (po.textResolutionMsg) out = decodeString(po.textResolutionMsg.resolution);
+  if (option.textResolutionMsg) out = decodeString(option.textResolutionMsg.resolution);
   else throw new Error("Unsupported ProposalOptions");
 
   return out;
