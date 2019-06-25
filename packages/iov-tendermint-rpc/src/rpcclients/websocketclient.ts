@@ -9,7 +9,7 @@ import {
   JsonRpcSuccessResponse,
   parseJsonRpcResponse2,
 } from "@iov/jsonrpc";
-import { SocketWrapperMessageEvent, StreamingSocket } from "@iov/socket";
+import { ConnectionStatus, ReconnectingSocket, SocketWrapperMessageEvent } from "@iov/socket";
 import { firstEvent } from "@iov/stream";
 
 import { hasProtocol, RpcStreamingClient, SubscriptionEvent } from "./rpcclient";
@@ -30,12 +30,12 @@ function toJsonRpcResponse(message: SocketWrapperMessageEvent): JsonRpcResponse 
 
 class RpcEventProducer implements Producer<SubscriptionEvent> {
   private readonly request: JsonRpcRequest;
-  private readonly socket: StreamingSocket;
+  private readonly socket: ReconnectingSocket;
 
   private running: boolean = false;
   private subscriptions: Subscription[] = [];
 
-  public constructor(request: JsonRpcRequest, socket: StreamingSocket) {
+  public constructor(request: JsonRpcRequest, socket: ReconnectingSocket) {
     this.request = request;
     this.socket = socket;
   }
@@ -43,7 +43,7 @@ class RpcEventProducer implements Producer<SubscriptionEvent> {
   /**
    * Implementation of Producer.start
    */
-  public async start(listener: Listener<SubscriptionEvent>): Promise<void> {
+  public start(listener: Listener<SubscriptionEvent>): void {
     if (this.running) {
       throw Error("Already started. Please stop first before restarting.");
     }
@@ -51,11 +51,7 @@ class RpcEventProducer implements Producer<SubscriptionEvent> {
 
     this.connectToClient(listener);
 
-    await this.socket.connected.then(async () => {
-      await this.socket.send(JSON.stringify(this.request)).catch(error => {
-        listener.error(error);
-      });
-    });
+    this.socket.queueRequest(JSON.stringify(this.request));
   }
 
   /**
@@ -67,9 +63,13 @@ class RpcEventProducer implements Producer<SubscriptionEvent> {
   public stop(): void {
     this.running = false;
     // Tell the server we are done in order to save resources. We cannot wait for the result.
-    // This may fail when socket connection is not open, thus ignore errors in send
+    // This may fail when socket connection is not open, thus ignore errors in queueRequest
     const endRequest: JsonRpcRequest = { ...this.request, method: "unsubscribe" };
-    this.socket.send(JSON.stringify(endRequest)).catch(_ => 0);
+    try {
+      this.socket.queueRequest(JSON.stringify(endRequest));
+    } catch (error) {
+      if (!error.match(/socket has disconnected/i)) throw error;
+    }
   }
 
   protected connectToClient(listener: Listener<SubscriptionEvent>): void {
@@ -130,7 +130,7 @@ class RpcEventProducer implements Producer<SubscriptionEvent> {
 
 export class WebsocketClient implements RpcStreamingClient {
   private readonly url: string;
-  private readonly socket: StreamingSocket;
+  private readonly socket: ReconnectingSocket;
   /** Same events as in socket.events but in the format we need */
   private readonly jsonRpcResponseStream: Stream<JsonRpcResponse>;
 
@@ -150,7 +150,7 @@ export class WebsocketClient implements RpcStreamingClient {
     const cleanBaseUrl = hasProtocol(baseUrl) ? baseUrl : "ws://" + baseUrl;
     this.url = cleanBaseUrl + path;
 
-    this.socket = new StreamingSocket(this.url);
+    this.socket = new ReconnectingSocket(this.url);
 
     const errorSubscription = this.socket.events.subscribe({
       error: error => {
@@ -166,10 +166,9 @@ export class WebsocketClient implements RpcStreamingClient {
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse> {
     const pendingResponse = this.responseForRequestId(request.id);
-    await this.socket.connected;
-    const pendingSend = this.socket.send(JSON.stringify(request));
+    this.socket.queueRequest(JSON.stringify(request));
 
-    const response = (await Promise.all([pendingResponse, pendingSend]))[0];
+    const response = await pendingResponse;
     if (isJsonRpcErrorResponse(response)) {
       throw new Error(JSON.stringify(response.error));
     }
@@ -200,7 +199,7 @@ export class WebsocketClient implements RpcStreamingClient {
    * so this should be required for testing purposes only.
    */
   public async connected(): Promise<void> {
-    return this.socket.connected;
+    await this.socket.connectionStatus.waitFor(ConnectionStatus.Connected);
   }
 
   public disconnect(): void {
