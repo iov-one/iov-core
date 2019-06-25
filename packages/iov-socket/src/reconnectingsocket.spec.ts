@@ -83,10 +83,10 @@ describe("ReconnectingSocket", () => {
   });
 
   describe("reconnection", () => {
-    const dirPath = "../../scripts/socketserver/";
+    const dirPath = "../../scripts/socketserver";
     const PKILL_NO_PROCESSES_MATCHED = 1;
-    const startServer = `${dirPath}start.sh`;
-    const stopServer = `${dirPath}stop.sh`;
+    const startServer = `${dirPath}/start.sh`;
+    const stopServer = `${dirPath}/stop.sh`;
 
     it("automatically reconnects if no connection can be established at init", done => {
       pendingWithoutChildProcess();
