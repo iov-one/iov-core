@@ -59,7 +59,7 @@ export interface ElectionRule {
    * The eligible voters in this rule.
    *
    * This is an unversioned ID (see `id` field in weave's VersionedIDRef), meaning the
-   * electorate can change over time without changing this ID. When a poposal with this
+   * electorate can change over time without changing this ID. When a proposal with this
    * rule is created, the latest version of the electorate will be used.
    */
   readonly electorateId: number;
