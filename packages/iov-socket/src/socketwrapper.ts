@@ -151,7 +151,7 @@ export class SocketWrapper {
   }
 
   public async send(data: string): Promise<void> {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (!this.socket) {
         throw new Error("Socket undefined. This must be called after connecting.");
       }
