@@ -1796,18 +1796,9 @@ describe("BnsConnection", () => {
         admin: "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address,
         title: "Default electorate",
         electors: {
-          tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea: {
-            address: "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address,
-            weight: 9,
-          },
-          tiov12shyht3pvvacvyee36w5844jkfh5s0mf4gszp9: {
-            address: "tiov12shyht3pvvacvyee36w5844jkfh5s0mf4gszp9" as Address,
-            weight: 10,
-          },
-          tiov18mgvcwg4339w40ktv0hmmln80ttvza2n6hjaxh: {
-            address: "tiov18mgvcwg4339w40ktv0hmmln80ttvza2n6hjaxh" as Address,
-            weight: 11,
-          },
+          tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea: { weight: 9 },
+          tiov12shyht3pvvacvyee36w5844jkfh5s0mf4gszp9: { weight: 10 },
+          tiov18mgvcwg4339w40ktv0hmmln80ttvza2n6hjaxh: { weight: 11 },
         },
         totalWeight: 30,
       });

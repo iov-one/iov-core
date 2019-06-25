@@ -7,7 +7,8 @@ export {
   ChainAddressPair,
   Participant,
   // Governance
-  Elector,
+  ElectorProperties,
+  Electors,
   Electorate,
   Fraction,
   ElectionRule,

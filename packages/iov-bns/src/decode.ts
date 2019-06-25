@@ -36,8 +36,8 @@ import {
   CreateMultisignatureTx,
   CreateProposalTx,
   ElectionRule,
-  Elector,
   Electorate,
+  ElectorProperties,
   Fraction,
   Keyed,
   Participant,
@@ -222,12 +222,11 @@ export function decodeElectorate(
   const { id } = decodeVersionedId(codecImpl.orm.VersionedIDRef.decode(electorate._id));
 
   // tslint:disable-next-line: readonly-keyword
-  const electors: { [index: string]: Elector } = {};
+  const electors: { [index: string]: ElectorProperties } = {};
   ensure(electorate.electors).forEach((elector, i) => {
     const address = encodeBnsAddress(prefix, ensure(elector.address, `electors.$${i}.address`));
     // tslint:disable-next-line: no-object-mutation
     electors[address] = {
-      address: encodeBnsAddress(prefix, ensure(elector.address, `electors.$${i}.address`)),
       weight: ensure(elector.weight, `electors.$${i}.weight`),
     };
   });

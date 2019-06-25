@@ -218,18 +218,9 @@ describe("Decode", () => {
         admin: "tiov124242e5gwuqpzqq3qqgsqygqzyqpzqq350k5np" as Address,
         title: "A committee",
         electors: {
-          tiov1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3scsw6l: {
-            address: "tiov1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3scsw6l" as Address,
-            weight: 1,
-          },
-          tiov1yg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zl94gjg: {
-            address: "tiov1yg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zl94gjg" as Address,
-            weight: 2,
-          },
-          tiov1xvenxvenxvenxvenxvenxvenxvenxvendmz486: {
-            address: "tiov1xvenxvenxvenxvenxvenxvenxvenxvendmz486" as Address,
-            weight: 3,
-          },
+          tiov1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3scsw6l: { weight: 1 },
+          tiov1yg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zl94gjg: { weight: 2 },
+          tiov1xvenxvenxvenxvenxvenxvenxvenxvendmz486: { weight: 3 },
         },
         totalWeight: 6,
       });

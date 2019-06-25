@@ -3,20 +3,21 @@ import { Address, Algorithm, Amount, ChainId, LightTransaction, SendTransaction,
 export interface CashConfiguration {
     readonly minimalFee: Amount;
 }
-export interface Elector {
-    readonly address: Address;
+/** Like Elector from the backend but without the addess field */
+export interface ElectorProperties {
     /** The voting weight of this elector. Max value is 65535 (2^16-1). */
     readonly weight: number;
+}
+/** An unordered map from elector address to remaining properies */
+export interface Electors {
+    readonly [index: string]: ElectorProperties;
 }
 export interface Electorate {
     readonly id: number;
     readonly version: number;
     readonly admin: Address;
     readonly title: string;
-    /** An unordered map from address to elector */
-    readonly electors: {
-        readonly [index: string]: Elector;
-    };
+    readonly electors: Electors;
     /** Sum of all electors' weights */
     readonly totalWeight: number;
 }
