@@ -6,16 +6,15 @@ import { ReconnectingSocket } from "./reconnectingsocket";
 type Exec = (command: string, callback: (error: null | (Error & { readonly code: number })) => void) => void;
 
 let exec: Exec | undefined;
+let childProcessAvailable: boolean;
 
 try {
   // tslint:disable-next-line:no-var-requires
   exec = require("child_process").exec;
   assert.strict(typeof exec === "function");
-  // tslint:disable-next-line:no-object-mutation
-  process.env.CHILD_PROCESS_AVAILABLE = "true";
+  childProcessAvailable = true;
 } catch {
-  // tslint:disable-next-line:no-object-mutation
-  process.env.CHILD_PROCESS_AVAILABLE = "false";
+  childProcessAvailable = false;
 }
 
 function pendingWithoutSocketServer(): void {
@@ -25,7 +24,7 @@ function pendingWithoutSocketServer(): void {
 }
 
 function pendingWithoutChildProcess(): void {
-  if (process.env.CHILD_PROCESS_AVAILABLE !== "true") {
+  if (!childProcessAvailable) {
     pending("Run test in an environment which supports child processes to enable socket tests");
   }
 }
