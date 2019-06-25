@@ -2,7 +2,10 @@ import assert from "assert";
 
 import { ReconnectingSocket } from "./reconnectingsocket";
 
-let exec: (command: string, callback: (error: null | (Error & { readonly code: number })) => void) => void;
+/** @see https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback */
+type Exec = (command: string, callback: (error: null | (Error & { readonly code: number })) => void) => void;
+
+let exec: Exec | undefined;
 
 try {
   // tslint:disable-next-line:no-var-requires
@@ -90,7 +93,7 @@ describe("ReconnectingSocket", () => {
       pendingWithoutChildProcess();
       pendingWithoutSocketServer();
 
-      exec(stopServer, stopError => {
+      exec!(stopServer, stopError => {
         if (stopError && stopError.code !== PKILL_NO_PROCESSES_MATCHED) {
           done.fail(stopError);
         }
@@ -118,7 +121,7 @@ describe("ReconnectingSocket", () => {
 
         setTimeout(
           () =>
-            exec(startServer, startError => {
+            exec!(startServer, startError => {
               if (startError) {
                 done.fail(startError);
               }
@@ -155,7 +158,7 @@ describe("ReconnectingSocket", () => {
 
       setTimeout(
         () =>
-          exec(stopServer, stopError => {
+          exec!(stopServer, stopError => {
             if (stopError && stopError.code !== PKILL_NO_PROCESSES_MATCHED) {
               done.fail(stopError);
             }
@@ -170,7 +173,7 @@ describe("ReconnectingSocket", () => {
 
               setTimeout(
                 () =>
-                  exec(startServer, startError => {
+                  exec!(startServer, startError => {
                     if (startError) {
                       done.fail(startError);
                     }
