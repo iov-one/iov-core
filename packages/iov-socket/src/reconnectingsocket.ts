@@ -76,8 +76,9 @@ export class ReconnectingSocket {
       throw new Error("Cannot disconnect: socket has not yet connected");
     }
     this.socket.disconnect();
-    if (!this.eventProducerListener) throw new Error("xxxNo event producer listener set");
-    this.eventProducerListener.complete();
+    if (this.eventProducerListener) {
+      this.eventProducerListener.complete();
+    }
   }
 
   public queueRequest(request: string): void {
