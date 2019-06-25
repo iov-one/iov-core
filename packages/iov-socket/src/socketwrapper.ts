@@ -1,6 +1,14 @@
 // tslint:disable:readonly-keyword no-object-mutation
 import WebSocket from "isomorphic-ws";
 
+function environmentIsNodeJs(): boolean {
+  return (
+    typeof process !== "undefined" &&
+    typeof process.versions !== "undefined" &&
+    typeof process.versions.node !== "undefined"
+  );
+}
+
 export interface SocketWrapperCloseEvent {
   readonly wasClean: boolean;
   readonly code: number;
@@ -166,7 +174,7 @@ export class SocketWrapper {
         throw new Error("Websocket is not open");
       }
 
-      if ((global as any).window === undefined) {
+      if (environmentIsNodeJs()) {
         this.socket.send(data, err => (err ? reject(err) : resolve()));
       } else {
         // Browser websocket send method does not accept a callback
