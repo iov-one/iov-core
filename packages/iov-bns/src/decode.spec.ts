@@ -3,7 +3,10 @@ import { Bech32, Encoding } from "@iov/encoding";
 
 import {
   decodeAmount,
+  decodeElectionRule,
+  decodeElectorate,
   decodePrivkey,
+  decodeProposal,
   decodePubkey,
   decodeToken,
   decodeUserData,
@@ -28,6 +31,7 @@ import {
   isAddAddressToUsernameTx,
   isCreateEscrowTx,
   isCreateMultisignatureTx,
+  isCreateProposalTx,
   isRegisterUsernameTx,
   isReleaseEscrowTx,
   isRemoveAddressFromUsernameTx,
@@ -36,6 +40,9 @@ import {
   isUpdateMultisignatureTx,
   Keyed,
   Participant,
+  ProposalExecutorResult,
+  ProposalResult,
+  ProposalStatus,
 } from "./types";
 
 const { fromHex, toUtf8 } = Encoding;
@@ -177,6 +184,136 @@ describe("Decode", () => {
         };
         expect(() => decodeAmount(backendAmount)).toThrowError(/`fractional` must not be negative/i);
       }
+    });
+  });
+
+  describe("decodeElectorate", () => {
+    it("works", () => {
+      const electorate: codecImpl.gov.IElectorate & Keyed = {
+        _id: fromHex("220800000000000000052801"),
+        metadata: { schema: 1 },
+        version: 3,
+        admin: fromHex("5555556688770011001100110011001100110011"),
+        title: "A committee",
+        electors: [
+          {
+            address: fromHex("1111111111111111111111111111111111111111"),
+            weight: 1,
+          },
+          {
+            address: fromHex("2222222222222222222222222222222222222222"),
+            weight: 2,
+          },
+          {
+            address: fromHex("3333333333333333333333333333333333333333"),
+            weight: 3,
+          },
+        ],
+        totalElectorateWeight: 6,
+      };
+
+      expect(decodeElectorate("tiov", electorate)).toEqual({
+        id: 5,
+        version: 3,
+        admin: "tiov124242e5gwuqpzqq3qqgsqygqzyqpzqq350k5np" as Address,
+        title: "A committee",
+        electors: {
+          tiov1zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3scsw6l: { weight: 1 },
+          tiov1yg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zl94gjg: { weight: 2 },
+          tiov1xvenxvenxvenxvenxvenxvenxvenxvendmz486: { weight: 3 },
+        },
+        totalWeight: 6,
+      });
+    });
+  });
+
+  describe("decodeElectionRule", () => {
+    it("works", () => {
+      const rule: codecImpl.gov.IElectionRule & Keyed = {
+        _id: fromHex("220800000000000000022801"),
+        metadata: { schema: 1 },
+        version: 3,
+        admin: fromHex("5555556688770011001100110011001100110011"),
+        electorateId: fromHex("000007"),
+        title: "This is how it works",
+        votingPeriod: 11223344556677,
+        threshold: {
+          numerator: 1,
+          denominator: 2,
+        },
+        quorum: {
+          numerator: 3,
+          denominator: 4,
+        },
+      };
+      expect(decodeElectionRule("tiov", rule)).toEqual({
+        id: fromHex("0000000000000002"),
+        version: 3,
+        admin: "tiov124242e5gwuqpzqq3qqgsqygqzyqpzqq350k5np" as Address,
+        electorateId: 7,
+        title: "This is how it works",
+        votingPeriod: 11223344556677,
+        threshold: {
+          numerator: 1,
+          denominator: 2,
+        },
+        quorum: {
+          numerator: 3,
+          denominator: 4,
+        },
+      });
+    });
+  });
+
+  describe("decodeProposal", () => {
+    it("works", () => {
+      const proposal: codecImpl.gov.IProposal = {
+        metadata: { schema: 1 },
+        title: "This will happen next",
+        rawOption: codecImpl.app.ProposalOptions.encode({
+          textResolutionMsg: {
+            metadata: { schema: 1 },
+            resolution: "la la la",
+          },
+        }).finish(),
+        description: "foo bar",
+        electionRuleRef: {
+          id: fromHex("aabbaabbccddbbff"),
+          version: 28,
+        },
+        electorateRef: {
+          id: fromHex("0011001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: fromHex("0011223344556677889900112233445566778899"),
+        status: codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED,
+        result: codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED,
+        executorResult: codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN,
+      };
+
+      expect(decodeProposal("tiov", proposal)).toEqual({
+        title: "This will happen next",
+        option: "la la la",
+        description: "foo bar",
+        electionRule: {
+          id: fromHex("aabbaabbccddbbff"),
+          version: 28,
+        },
+        electorate: {
+          id: fromHex("0011001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+        status: ProposalStatus.Submitted,
+        result: ProposalResult.Undefined,
+        executorResult: ProposalExecutorResult.NotRun,
+      });
     });
   });
 
@@ -475,6 +612,34 @@ describe("Decode", () => {
       expect(parsed.sender).toEqual(defaultSender);
       expect(parsed.arbiter).toEqual(defaultArbiter);
       expect(parsed.recipient).toEqual(defaultRecipient);
+    });
+
+    it("works for CreateProposal", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        createProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.app.ProposalOptions.encode({
+            textResolutionMsg: {
+              metadata: { schema: 1 },
+              resolution: "la la la",
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: Encoding.fromHex("aabbaabbccddbbff"),
+          startTime: 42424242,
+          author: Encoding.fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.title).toEqual("This will happen next");
+      expect(parsed.option).toEqual("la la la");
+      expect(parsed.description).toEqual("foo bar");
+      expect(parsed.electionRuleId).toEqual(Encoding.fromHex("aabbaabbccddbbff"));
+      expect(parsed.startTime).toEqual(42424242);
+      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
     });
   });
 });

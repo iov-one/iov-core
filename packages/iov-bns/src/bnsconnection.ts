@@ -53,6 +53,9 @@ import { ChainData, Context } from "./context";
 import {
   decodeAmount,
   decodeCashConfiguration,
+  decodeElectionRule,
+  decodeElectorate,
+  decodeProposal,
   decodePubkey,
   decodeToken,
   decodeUserData,
@@ -64,10 +67,13 @@ import {
   BnsUsernameNft,
   BnsUsernamesQuery,
   Decoder,
+  ElectionRule,
+  Electorate,
   isBnsTx,
   isBnsUsernamesByOwnerQuery,
   isBnsUsernamesByUsernameQuery,
   Keyed,
+  Proposal,
   Result,
 } from "./types";
 import {
@@ -608,6 +614,28 @@ export class BnsConnection implements AtomicSwapConnection {
         .map(() => Stream.fromPromise(this.getAccount(query)))
         .flatten(),
     );
+  }
+
+  public async getElectorates(): Promise<readonly Electorate[]> {
+    const results = (await this.query("/electorates?prefix", new Uint8Array([]))).results;
+    const parser = createParser(codecImpl.gov.Electorate, "electorate:");
+    const electorates = results.map(parser).map(electorate => decodeElectorate("tiov", electorate));
+    return electorates;
+  }
+
+  public async getElectionRules(): Promise<readonly ElectionRule[]> {
+    const results = (await this.query("/electionRules?prefix", new Uint8Array([]))).results;
+    const parser = createParser(codecImpl.gov.ElectionRule, "electnrule:");
+    const rules = results.map(parser).map(rule => decodeElectionRule("tiov", rule));
+    return rules;
+  }
+
+  public async getProposals(): Promise<readonly Proposal[]> {
+    // TODO: Change path to /proposals once https://github.com/iov-one/weave/issues/810 is resolved
+    const results = (await this.query("/proposal?prefix", new Uint8Array([]))).results;
+    const parser = createParser(codecImpl.gov.Proposal, "proposal:");
+    const proposals = results.map(parser).map(rule => decodeProposal("tiov", rule));
+    return proposals;
   }
 
   public async getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]> {

@@ -20,6 +20,7 @@ import {
   AddAddressToUsernameTx,
   CreateEscrowTx,
   CreateMultisignatureTx,
+  CreateProposalTx,
   isBnsTx,
   Participant,
   PrivkeyBundle,
@@ -235,6 +236,8 @@ function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): codecImpl.app.
   };
 }
 
+// Escrows
+
 function buildCreateEscrowTx(tx: CreateEscrowTx): codecImpl.app.ITx {
   return {
     createEscrowMsg: {
@@ -284,6 +287,30 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.app.IT
   };
 }
 
+// Governance
+
+function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
+  const rawOption = codecImpl.app.ProposalOptions.encode({
+    // TODO: support other resolution types
+    textResolutionMsg: {
+      metadata: { schema: 1 },
+      resolution: tx.option,
+    },
+  }).finish();
+
+  return {
+    createProposalMsg: {
+      metadata: { schema: 1 },
+      title: tx.title,
+      rawOption: rawOption,
+      description: tx.description,
+      electionRuleId: tx.electionRuleId,
+      startTime: tx.startTime,
+      author: decodeBnsAddress(tx.author).data,
+    },
+  };
+}
+
 export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
   if (!isBnsTx(tx)) {
     throw new Error("Transaction is not a BNS transaction");
@@ -316,7 +343,7 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     case "bns/update_multisignature_contract":
       return buildUpdateMultisignatureTx(tx);
 
-    // BNS: Escrow
+    // BNS: Escrows
     case "bns/create_escrow":
       return buildCreateEscrowTx(tx);
     case "bns/release_escrow":
@@ -325,6 +352,10 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
       return buildReturnEscrowTx(tx);
     case "bns/update_escrow_parties":
       return buildUpdateEscrowPartiesTx(tx);
+
+    // BNS: Governance
+    case "bns/create_proposal":
+      return buildCreateProposalTx(tx);
 
     default:
       throw new Error("Received transaction of unsupported kind.");

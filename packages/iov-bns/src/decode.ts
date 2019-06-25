@@ -34,20 +34,36 @@ import {
   ChainAddressPair,
   CreateEscrowTx,
   CreateMultisignatureTx,
+  CreateProposalTx,
+  ElectionRule,
+  Electorate,
+  ElectorProperties,
+  Fraction,
   Keyed,
   Participant,
   PrivkeyBundle,
   PrivkeyBytes,
+  Proposal,
+  ProposalExecutorResult,
+  ProposalOption,
+  ProposalResult,
+  ProposalStatus,
   RegisterUsernameTx,
   ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  VersionedId,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromUtf8 } = Encoding;
+
+function decodeString(input: string | null | undefined): string {
+  // weave encodes empty strings as null
+  return input || "";
+}
 
 /**
  * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
@@ -71,6 +87,13 @@ export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
     throw new Error("missing " + (msg || "field"));
   }
   return maybe;
+}
+
+function decodeVersionedId(versionedId: codecImpl.orm.IVersionedIDRef): VersionedId {
+  return {
+    id: ensure(versionedId.id, "id"),
+    version: ensure(versionedId.version, "version"),
+  };
 }
 
 export function decodeUsernameNft(
@@ -190,6 +213,131 @@ export function decodeParticipants(
     weight: ensure(participant.weight, `participants.$${i}.weight`),
     address: encodeBnsAddress(prefix, ensure(participant.signature, `participants.$${i}.signature`)),
   }));
+}
+
+export function decodeElectorate(
+  prefix: "iov" | "tiov",
+  electorate: codecImpl.gov.IElectorate & Keyed,
+): Electorate {
+  const { id } = decodeVersionedId(codecImpl.orm.VersionedIDRef.decode(electorate._id));
+
+  // tslint:disable-next-line: readonly-keyword
+  const electors: { [index: string]: ElectorProperties } = {};
+  ensure(electorate.electors).forEach((elector, i) => {
+    const address = encodeBnsAddress(prefix, ensure(elector.address, `electors.$${i}.address`));
+    // tslint:disable-next-line: no-object-mutation
+    electors[address] = {
+      weight: ensure(elector.weight, `electors.$${i}.weight`),
+    };
+  });
+
+  return {
+    id: new BN(id).toNumber(),
+    version: asIntegerNumber(ensure(electorate.version, "version")),
+    admin: encodeBnsAddress(prefix, ensure(electorate.admin, "admin")),
+    title: ensure(electorate.title, "title"), // must not be an empty string
+    electors: electors,
+    totalWeight: asIntegerNumber(electorate.totalElectorateWeight),
+  };
+}
+
+function decodeFraction(fraction: codecImpl.gov.IFraction): Fraction {
+  const numerator = asIntegerNumber(fraction.numerator);
+  const denominator = asIntegerNumber(fraction.denominator);
+  if (denominator === 0) {
+    throw new Error("Denominator must not be 0");
+  }
+  return { numerator: numerator, denominator: denominator };
+}
+
+export function decodeElectionRule(
+  prefix: "iov" | "tiov",
+  rule: codecImpl.gov.IElectionRule & Keyed,
+): ElectionRule {
+  const { id } = decodeVersionedId(codecImpl.orm.VersionedIDRef.decode(rule._id));
+  const electorateId = new BN(ensure(rule.electorateId, "electorateId"));
+  return {
+    id: id,
+    version: asIntegerNumber(ensure(rule.version, "version")),
+    admin: encodeBnsAddress(prefix, ensure(rule.admin, "admin")),
+    electorateId: electorateId.toNumber(),
+    title: ensure(rule.title, "title"), // must not be an empty string
+    votingPeriod: asIntegerNumber(ensure(rule.votingPeriod, "votingPeriod")),
+    threshold: decodeFraction(ensure(rule.threshold, "threshold")),
+    quorum: rule.quorum ? decodeFraction(rule.quorum) : null,
+  };
+}
+
+function decodeProposalExecutorResult(result: codecImpl.gov.Proposal.ExecutorResult): ProposalExecutorResult {
+  switch (result) {
+    case codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_INVALID:
+      throw new Error("PROPOSAL_EXECUTOR_RESULT_INVALID is not allowed");
+    case codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN:
+      return ProposalExecutorResult.NotRun;
+    case codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_SUCCESS:
+      return ProposalExecutorResult.Succeeded;
+    case codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_FAILURE:
+      return ProposalExecutorResult.Failed;
+    default:
+      throw new Error("Received unknown value for proposal executor result");
+  }
+}
+
+function decodeProposalResult(result: codecImpl.gov.Proposal.Result): ProposalResult {
+  switch (result) {
+    case codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_INVALID:
+      throw new Error("PROPOSAL_RESULT_INVALID is not allowed");
+    case codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED:
+      return ProposalResult.Undefined;
+    case codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_ACCEPTED:
+      return ProposalResult.Accepted;
+    case codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_REJECTED:
+      return ProposalResult.Rejected;
+    default:
+      throw new Error("Received unknown value for proposal result");
+  }
+}
+
+function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalStatus {
+  switch (status) {
+    case codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_INVALID:
+      throw new Error("PROPOSAL_STATUS_INVALID is not allowed");
+    case codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED:
+      return ProposalStatus.Submitted;
+    case codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_CLOSED:
+      return ProposalStatus.Closed;
+    case codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_WITHDRAWN:
+      return ProposalStatus.Withdrawn;
+    default:
+      throw new Error("Received unknown value for proposal status");
+  }
+}
+
+function decodeRawProposalOption(rawOption: Uint8Array): ProposalOption {
+  const option = codecImpl.app.ProposalOptions.decode(rawOption);
+  // TODO: support other resolution types
+  let out: ProposalOption;
+  if (option.textResolutionMsg) out = decodeString(option.textResolutionMsg.resolution);
+  else throw new Error("Unsupported ProposalOptions");
+
+  return out;
+}
+
+export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal): Proposal {
+  return {
+    title: ensure(proposal.title, "title"),
+    option: decodeRawProposalOption(ensure(proposal.rawOption, "rawOption")),
+    description: ensure(proposal.description, "description"),
+    electionRule: decodeVersionedId(ensure(proposal.electionRuleRef, "electionRuleRef")),
+    electorate: decodeVersionedId(ensure(proposal.electorateRef, "electorateRef")),
+    votingStartTime: asIntegerNumber(ensure(proposal.votingStartTime, "votinStartTime")),
+    votingEndTime: asIntegerNumber(ensure(proposal.votingEndTime, "votingEndTime")),
+    submissionTime: asIntegerNumber(ensure(proposal.submissionTime, "submissionTime")),
+    author: encodeBnsAddress(prefix, ensure(proposal.author, "author")),
+    status: decodeProposalStatus(ensure(proposal.status, "status")),
+    result: decodeProposalResult(ensure(proposal.result, "result")),
+    executorResult: decodeProposalExecutorResult(ensure(proposal.executorResult, "executorResult")),
+  };
 }
 
 // Token sends
@@ -342,6 +490,8 @@ function parseUpdateMultisignatureTx(
   };
 }
 
+// Escrows
+
 function parseCreateEscrowTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.ICreateEscrowMsg,
@@ -397,6 +547,25 @@ function parseUpdateEscrowPartiesTx(
   };
 }
 
+// Governance
+
+function parseCreateProposalTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.gov.ICreateProposalMsg,
+): CreateProposalTx & WithCreator {
+  const prefix = addressPrefix(base.creator.chainId);
+  return {
+    ...base,
+    kind: "bns/create_proposal",
+    title: ensure(msg.title, "title"),
+    option: decodeRawProposalOption(ensure(msg.rawOption, "rawOption")),
+    description: ensure(msg.description, "description"),
+    electionRuleId: ensure(msg.electionRuleId, "electionRuleId"),
+    startTime: asIntegerNumber(ensure(msg.startTime, "startTime")),
+    author: encodeBnsAddress(prefix, ensure(msg.author, "author")),
+  };
+}
+
 export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction {
   // Token sends
   if (tx.sendMsg) return parseSendTransaction(base, tx.sendMsg);
@@ -420,6 +589,9 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
   if (tx.releaseEscrowMsg) return parseReleaseEscrowTx(base, tx.releaseEscrowMsg);
   if (tx.returnEscrowMsg) return parseReturnEscrowTx(base, tx.returnEscrowMsg);
   if (tx.updateEscrowMsg) return parseUpdateEscrowPartiesTx(base, tx.updateEscrowMsg);
+
+  // Governance
+  if (tx.createProposalMsg) return parseCreateProposalTx(base, tx.createProposalMsg);
 
   throw new Error("unknown message type in transaction");
 }

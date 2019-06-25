@@ -23,9 +23,11 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { bnsCodec, BnsConnection } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+
+import { bnsCodec } from "../bnscodec";
+import { BnsConnection } from "../bnsconnection";
 
 const CASH = "CASH" as TokenTicker;
 const BASH = "BASH" as TokenTicker;

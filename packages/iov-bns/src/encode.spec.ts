@@ -31,6 +31,7 @@ import {
   AddAddressToUsernameTx,
   CreateEscrowTx,
   CreateMultisignatureTx,
+  CreateProposalTx,
   Participant,
   RegisterUsernameTx,
   ReleaseEscrowTx,
@@ -526,6 +527,34 @@ describe("Encode", () => {
         arbiter: defaultArbiter,
       };
       expect(() => buildMsg(updateEscrowParties)).toThrowError(/only one party can be updated at a time/i);
+    });
+
+    it("works for CreateProposalTx", () => {
+      const createProposal: CreateProposalTx & WithCreator = {
+        kind: "bns/create_proposal",
+        creator: defaultCreator,
+        title: "Why not try this?",
+        option: "la la la",
+        description: "foo bar",
+        electionRuleId: fromHex("0011221122112200"),
+        startTime: 1122334455,
+        author: defaultSender,
+      };
+      const msg = buildMsg(createProposal).createProposalMsg!;
+      expect(msg).toEqual({
+        metadata: { schema: 1 },
+        title: "Why not try this?",
+        rawOption: codecImpl.app.ProposalOptions.encode({
+          textResolutionMsg: {
+            metadata: { schema: 1 },
+            resolution: "la la la",
+          },
+        }).finish(),
+        description: "foo bar",
+        electionRuleId: fromHex("0011221122112200"),
+        startTime: 1122334455,
+        author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+      });
     });
 
     it("encodes unset and empty memo the same way", () => {

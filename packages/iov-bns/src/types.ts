@@ -23,6 +23,104 @@ export interface CashConfiguration {
   readonly minimalFee: Amount;
 }
 
+// Governance
+
+/** Like Elector from the backend but without the address field */
+export interface ElectorProperties {
+  /** The voting weight of this elector. Max value is 65535 (2^16-1). */
+  readonly weight: number;
+}
+
+/** An unordered map from elector address to remaining properies */
+export interface Electors {
+  readonly [index: string]: ElectorProperties;
+}
+
+export interface Electorate {
+  readonly id: number;
+  readonly version: number;
+  readonly admin: Address;
+  readonly title: string;
+  readonly electors: Electors;
+  /** Sum of all electors' weights */
+  readonly totalWeight: number;
+}
+
+export interface Fraction {
+  readonly numerator: number;
+  readonly denominator: number;
+}
+
+export interface ElectionRule {
+  readonly id: Uint8Array;
+  readonly version: number;
+  readonly admin: Address;
+  /**
+   * The eligible voters in this rule.
+   *
+   * This is an unversioned ID (see `id` field in weave's VersionedIDRef), meaning the
+   * electorate can change over time without changing this ID. When a proposal with this
+   * rule is created, the latest version of the electorate will be used.
+   */
+  readonly electorateId: number;
+  readonly title: string;
+  /** Voting period in seconds */
+  readonly votingPeriod: number;
+  readonly threshold: Fraction;
+  readonly quorum: Fraction | null;
+}
+
+export interface VersionedId {
+  readonly id: Uint8Array;
+  readonly version: number;
+}
+
+export enum ProposalExecutorResult {
+  NotRun,
+  Succeeded,
+  Failed,
+}
+
+export enum ProposalResult {
+  Undefined,
+  Accepted,
+  Rejected,
+}
+
+export enum ProposalStatus {
+  Submitted,
+  Closed,
+  Withdrawn,
+}
+
+/** Union type for possible options */
+export type ProposalOption = string;
+
+export interface Proposal {
+  readonly title: string;
+  /**
+   * The transaction to be executed when the proposal is accepted
+   *
+   * This is one of the actions from
+   * https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#app.ProposalOptions
+   */
+  readonly option: ProposalOption;
+  readonly description: string;
+  readonly electionRule: VersionedId;
+  readonly electorate: VersionedId;
+  /** Time when the voting on this proposal starts (Unix timestamp) */
+  readonly votingStartTime: number;
+  /** Time when the voting on this proposal starts (Unix timestamp) */
+  readonly votingEndTime: number;
+  /** Time of the block where the proposal was added to the chain (Unix timestamp) */
+  readonly submissionTime: number;
+  /** The author of the proposal must be included in the list of transaction signers. */
+  readonly author: Address;
+  readonly status: ProposalStatus;
+  readonly result: ProposalResult;
+  readonly executorResult: ProposalExecutorResult;
+}
+
 // username NFT
 
 export interface ChainAddressPair {
@@ -188,6 +286,30 @@ export function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is UpdateEscro
   return tx.kind === "bns/update_escrow_parties";
 }
 
+// Transactions: Governance
+
+export interface CreateProposalTx extends LightTransaction {
+  readonly kind: "bns/create_proposal";
+  readonly title: string;
+  /**
+   * The transaction to be executed when the proposal is accepted
+   *
+   * This is one of the actions from
+   * https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#app.ProposalOptions
+   */
+  readonly option: ProposalOption;
+  readonly description: string;
+  readonly electionRuleId: Uint8Array;
+  /** Unix timestamp when the proposal starts */
+  readonly startTime: number;
+  /** The author of the proposal must be included in the list of transaction signers. */
+  readonly author: Address;
+}
+
+export function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx {
+  return transaction.kind === "bns/create_proposal";
+}
+
 // Transactions: BNS
 
 export type BnsTx =
@@ -208,7 +330,9 @@ export type BnsTx =
   | CreateEscrowTx
   | ReleaseEscrowTx
   | ReturnEscrowTx
-  | UpdateEscrowPartiesTx;
+  | UpdateEscrowPartiesTx
+  // BNS: Governance
+  | CreateProposalTx;
 
 export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
   if (

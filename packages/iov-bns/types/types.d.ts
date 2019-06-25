@@ -3,6 +3,91 @@ import { Address, Algorithm, Amount, ChainId, LightTransaction, SendTransaction,
 export interface CashConfiguration {
     readonly minimalFee: Amount;
 }
+/** Like Elector from the backend but without the address field */
+export interface ElectorProperties {
+    /** The voting weight of this elector. Max value is 65535 (2^16-1). */
+    readonly weight: number;
+}
+/** An unordered map from elector address to remaining properies */
+export interface Electors {
+    readonly [index: string]: ElectorProperties;
+}
+export interface Electorate {
+    readonly id: number;
+    readonly version: number;
+    readonly admin: Address;
+    readonly title: string;
+    readonly electors: Electors;
+    /** Sum of all electors' weights */
+    readonly totalWeight: number;
+}
+export interface Fraction {
+    readonly numerator: number;
+    readonly denominator: number;
+}
+export interface ElectionRule {
+    readonly id: Uint8Array;
+    readonly version: number;
+    readonly admin: Address;
+    /**
+     * The eligible voters in this rule.
+     *
+     * This is an unversioned ID (see `id` field in weave's VersionedIDRef), meaning the
+     * electorate can change over time without changing this ID. When a proposal with this
+     * rule is created, the latest version of the electorate will be used.
+     */
+    readonly electorateId: number;
+    readonly title: string;
+    /** Voting period in seconds */
+    readonly votingPeriod: number;
+    readonly threshold: Fraction;
+    readonly quorum: Fraction | null;
+}
+export interface VersionedId {
+    readonly id: Uint8Array;
+    readonly version: number;
+}
+export declare enum ProposalExecutorResult {
+    NotRun = 0,
+    Succeeded = 1,
+    Failed = 2
+}
+export declare enum ProposalResult {
+    Undefined = 0,
+    Accepted = 1,
+    Rejected = 2
+}
+export declare enum ProposalStatus {
+    Submitted = 0,
+    Closed = 1,
+    Withdrawn = 2
+}
+/** Union type for possible options */
+export declare type ProposalOption = string;
+export interface Proposal {
+    readonly title: string;
+    /**
+     * The transaction to be executed when the proposal is accepted
+     *
+     * This is one of the actions from
+     * https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#app.ProposalOptions
+     */
+    readonly option: ProposalOption;
+    readonly description: string;
+    readonly electionRule: VersionedId;
+    readonly electorate: VersionedId;
+    /** Time when the voting on this proposal starts (Unix timestamp) */
+    readonly votingStartTime: number;
+    /** Time when the voting on this proposal starts (Unix timestamp) */
+    readonly votingEndTime: number;
+    /** Time of the block where the proposal was added to the chain (Unix timestamp) */
+    readonly submissionTime: number;
+    /** The author of the proposal must be included in the list of transaction signers. */
+    readonly author: Address;
+    readonly status: ProposalStatus;
+    readonly result: ProposalResult;
+    readonly executorResult: ProposalExecutorResult;
+}
 export interface ChainAddressPair {
     readonly chainId: ChainId;
     readonly address: Address;
@@ -104,5 +189,23 @@ export interface UpdateEscrowPartiesTx extends LightTransaction {
     readonly recipient?: Address;
 }
 export declare function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is UpdateEscrowPartiesTx;
-export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx;
+export interface CreateProposalTx extends LightTransaction {
+    readonly kind: "bns/create_proposal";
+    readonly title: string;
+    /**
+     * The transaction to be executed when the proposal is accepted
+     *
+     * This is one of the actions from
+     * https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#app.ProposalOptions
+     */
+    readonly option: ProposalOption;
+    readonly description: string;
+    readonly electionRuleId: Uint8Array;
+    /** Unix timestamp when the proposal starts */
+    readonly startTime: number;
+    /** The author of the proposal must be included in the list of transaction signers. */
+    readonly author: Address;
+}
+export declare function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx;
+export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx | CreateProposalTx;
 export declare function isBnsTx(transaction: LightTransaction): transaction is BnsTx;
