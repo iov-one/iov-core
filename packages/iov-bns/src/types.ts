@@ -310,6 +310,16 @@ export function isCreateProposalTx(transaction: LightTransaction): transaction i
   return transaction.kind === "bns/create_proposal";
 }
 
+export interface VoteTx extends LightTransaction {
+  readonly kind: "bns/vote";
+  readonly proposalId: Uint8Array;
+}
+
+export interface TallyTx extends LightTransaction {
+  readonly kind: "bns/tally";
+  readonly proposalId: Uint8Array;
+}
+
 // Transactions: BNS
 
 export type BnsTx =
@@ -332,7 +342,9 @@ export type BnsTx =
   | ReturnEscrowTx
   | UpdateEscrowPartiesTx
   // BNS: Governance
-  | CreateProposalTx;
+  | CreateProposalTx
+  | VoteTx
+  | TallyTx;
 
 export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
   if (

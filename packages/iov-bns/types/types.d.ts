@@ -207,5 +207,13 @@ export interface CreateProposalTx extends LightTransaction {
     readonly author: Address;
 }
 export declare function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx;
-export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx | CreateProposalTx;
+export interface VoteTx extends LightTransaction {
+    readonly kind: "bns/vote";
+    readonly proposalId: Uint8Array;
+}
+export interface TallyTx extends LightTransaction {
+    readonly kind: "bns/tally";
+    readonly proposalId: Uint8Array;
+}
+export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx | CreateProposalTx | VoteTx | TallyTx;
 export declare function isBnsTx(transaction: LightTransaction): transaction is BnsTx;
