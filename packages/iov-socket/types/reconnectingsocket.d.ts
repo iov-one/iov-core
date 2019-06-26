@@ -13,6 +13,7 @@ export declare class ReconnectingSocket {
     private readonly socket;
     private eventProducerListener;
     private unconnected;
+    private disconnected;
     private timeoutIndex;
     private reconnectTimeout;
     constructor(url: string, timeout?: number, reconnectedHandler?: () => void);

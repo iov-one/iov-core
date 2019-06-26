@@ -21,6 +21,7 @@ export class ReconnectingSocket {
   private readonly socket: QueueingStreamingSocket;
   private eventProducerListener: Listener<SocketWrapperMessageEvent> | undefined;
   private unconnected: boolean = true;
+  private disconnected: boolean = false;
   private timeoutIndex = 0;
   private reconnectTimeout: NodeJS.Timeout | null = null;
 
@@ -81,9 +82,13 @@ export class ReconnectingSocket {
     if (this.eventProducerListener) {
       this.eventProducerListener.complete();
     }
+    this.disconnected = true;
   }
 
   public queueRequest(request: string): void {
+    if (this.disconnected) {
+      throw new Error("Cannot queue request: socket has disconnected");
+    }
     this.socket.queueRequest(request);
   }
 }
