@@ -736,7 +736,6 @@ describe("EthereumConnection", () => {
 
         const result = await connection.getTx(transactionId);
         expect(result.height).toBeGreaterThanOrEqual(2);
-        expect(result.height).toBeLessThan(100);
         expect(result.transactionId).toEqual(transactionId);
         const transaction = result.transaction;
         if (!isSendTransaction(transaction)) {

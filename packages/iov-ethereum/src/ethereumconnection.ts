@@ -638,7 +638,7 @@ export class EthereumConnection implements AtomicSwapConnection {
             params: [subscriptionId],
           },
           // Calling unsubscribe() and disconnect() leads to this stop callback being
-          // called after disconneting (due to the async nature of xstream's Producer
+          // called after disconnecting (due to the async nature of xstream's Producer
           // stop callbacks). Thus we may not be able to send eth_unsubscribe anymore.
           true,
         );

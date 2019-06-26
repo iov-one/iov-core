@@ -80,6 +80,15 @@ describe("ReconnectingSocket", () => {
         done();
       }, 1000);
     });
+
+    it("can disconnect without waiting for open", () => {
+      pendingWithoutSocketServer();
+      const socket = new ReconnectingSocket(socketServerUrl);
+      expect(() => {
+        socket.connect();
+        socket.disconnect();
+      }).not.toThrow();
+    });
   });
 
   describe("reconnection", () => {

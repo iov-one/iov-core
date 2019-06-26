@@ -21,6 +21,7 @@ export class ReconnectingSocket {
   private readonly socket: QueueingStreamingSocket;
   private eventProducerListener: Listener<SocketWrapperMessageEvent> | undefined;
   private unconnected: boolean = true;
+  private disconnected: boolean = false;
   private timeoutIndex = 0;
   private reconnectTimeout: NodeJS.Timeout | null = null;
 
@@ -34,12 +35,14 @@ export class ReconnectingSocket {
     this.socket = new QueueingStreamingSocket(url, timeout, reconnectedHandler);
     this.socket.events.subscribe({
       next: event => {
-        if (!this.eventProducerListener) throw new Error("No event producer listener set");
-        this.eventProducerListener.next(event);
+        if (this.eventProducerListener) {
+          this.eventProducerListener.next(event);
+        }
       },
       error: error => {
-        if (!this.eventProducerListener) throw new Error("No event producer listener set");
-        this.eventProducerListener.error(error);
+        if (this.eventProducerListener) {
+          this.eventProducerListener.error(error);
+        }
       },
     });
 
@@ -47,7 +50,6 @@ export class ReconnectingSocket {
     this.connectionStatus.updates.subscribe({
       next: status => {
         if (status === ConnectionStatus.Connected) {
-          this.unconnected = false;
           this.timeoutIndex = 0;
         }
         if (status === ConnectionStatus.Disconnected) {
@@ -69,6 +71,7 @@ export class ReconnectingSocket {
       throw new Error("Cannot connect: socket has already connected");
     }
     this.socket.connect();
+    this.unconnected = false;
   }
 
   public disconnect(): void {
@@ -76,11 +79,16 @@ export class ReconnectingSocket {
       throw new Error("Cannot disconnect: socket has not yet connected");
     }
     this.socket.disconnect();
-    if (!this.eventProducerListener) throw new Error("xxxNo event producer listener set");
-    this.eventProducerListener.complete();
+    if (this.eventProducerListener) {
+      this.eventProducerListener.complete();
+    }
+    this.disconnected = true;
   }
 
   public queueRequest(request: string): void {
+    if (this.disconnected) {
+      throw new Error("Cannot queue request: socket has disconnected");
+    }
     this.socket.queueRequest(request);
   }
 }

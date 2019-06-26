@@ -181,7 +181,7 @@ describe("WebsocketClient", () => {
     await client
       .execute(createJsonRpcRequest(Method.Health))
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/is not open/i));
+      .catch(error => expect(error).toMatch(/socket has disconnected/i));
   });
 
   it("fails when listening to a disconnected client", done => {
@@ -197,14 +197,8 @@ describe("WebsocketClient", () => {
 
       const query = "tm.event='NewBlockHeader'";
       const req = createJsonRpcRequest("subscribe", { query: query });
-      client.listen(req).subscribe({
-        error: error => {
-          expect(error.toString()).toMatch(/is not open/);
-          done();
-        },
-        next: () => done.fail("No event expected"),
-        complete: () => done.fail("Must not complete"),
-      });
+      expect(() => client.listen(req).subscribe({})).toThrowError(/socket has disconnected/i);
+      done();
     })().catch(done.fail);
   });
 
