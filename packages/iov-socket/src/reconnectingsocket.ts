@@ -47,7 +47,6 @@ export class ReconnectingSocket {
     this.connectionStatus.updates.subscribe({
       next: status => {
         if (status === ConnectionStatus.Connected) {
-          this.unconnected = false;
           this.timeoutIndex = 0;
         }
         if (status === ConnectionStatus.Disconnected) {
@@ -69,6 +68,7 @@ export class ReconnectingSocket {
       throw new Error("Cannot connect: socket has already connected");
     }
     this.socket.connect();
+    this.unconnected = false;
   }
 
   public disconnect(): void {
