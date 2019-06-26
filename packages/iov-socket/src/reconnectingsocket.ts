@@ -34,12 +34,14 @@ export class ReconnectingSocket {
     this.socket = new QueueingStreamingSocket(url, timeout, reconnectedHandler);
     this.socket.events.subscribe({
       next: event => {
-        if (!this.eventProducerListener) throw new Error("No event producer listener set");
-        this.eventProducerListener.next(event);
+        if (this.eventProducerListener) {
+          this.eventProducerListener.next(event);
+        }
       },
       error: error => {
-        if (!this.eventProducerListener) throw new Error("No event producer listener set");
-        this.eventProducerListener.error(error);
+        if (this.eventProducerListener) {
+          this.eventProducerListener.error(error);
+        }
       },
     });
 
