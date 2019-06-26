@@ -72,12 +72,8 @@ import { encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromHex, toHex } = Encoding;
 
-function skipTests(): boolean {
-  return !process.env.BNSD_ENABLED;
-}
-
 function pendingWithoutBnsd(): void {
-  if (skipTests()) {
+  if (!process.env.BNSD_ENABLED) {
     pending("Set BNSD_ENABLED to enable bnsd-based tests");
   }
 }
