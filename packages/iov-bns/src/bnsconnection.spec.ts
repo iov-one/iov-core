@@ -61,6 +61,8 @@ import {
   isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
   Participant,
+  ProposalResult,
+  ProposalStatus,
   RegisterUsernameTx,
   ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
@@ -1266,7 +1268,24 @@ describe("BnsConnection", () => {
         proposalId = toHex(blockInfo.result).toUpperCase();
       }
 
+      {
+        // Election submitted, voting period not yet started
+        const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
+        expect(proposal.status).toEqual(ProposalStatus.Submitted);
+        expect(proposal.votingStartTime).toBeGreaterThan(Date.now() / 1000);
+        expect(proposal.result).toEqual(ProposalResult.Undefined);
+      }
+
       await sleep(6_000);
+
+      {
+        // Election submitted, voting period started
+        const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
+        expect(proposal.status).toEqual(ProposalStatus.Submitted);
+        expect(proposal.votingStartTime).toBeLessThan(Date.now() / 1000);
+        expect(proposal.votingEndTime).toBeGreaterThan(Date.now() / 1000);
+        expect(proposal.result).toEqual(ProposalResult.Undefined);
+      }
 
       {
         const voteForProposal = await connection.withDefaultFee<VoteTx & WithCreator>({
@@ -1284,6 +1303,14 @@ describe("BnsConnection", () => {
       await sleep(5_000);
 
       {
+        // Election voting period ended but not yet tallyed
+        const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
+        expect(proposal.status).toEqual(ProposalStatus.Submitted);
+        expect(proposal.votingEndTime).toBeLessThan(Date.now() / 1000);
+        expect(proposal.result).toEqual(ProposalResult.Undefined);
+      }
+
+      {
         const tallyVotes = await connection.withDefaultFee<TallyTx & WithCreator>({
           kind: "bns/tally",
           creator: author,
@@ -1295,13 +1322,12 @@ describe("BnsConnection", () => {
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       }
 
-      // expect(proposals.length).toBeGreaterThanOrEqual(1);
-
-      // const myProposal = proposals.find(p => p.author === authorAddress && p.votingStartTime === startTime);
-      // expect(myProposal).toBeDefined();
-      // expect(myProposal!.title).toEqual(title);
-      // expect(myProposal!.description).toEqual(description);
-      // expect(myProposal!.option).toEqual(option);
+      {
+        // Election ended and accepted
+        const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
+        expect(proposal.status).toEqual(ProposalStatus.Closed);
+        expect(proposal.result).toEqual(ProposalResult.Accepted);
+      }
 
       connection.disconnect();
     }, 30_000);
