@@ -52,9 +52,12 @@ import {
   ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
+  TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   VersionedId,
+  VoteOption,
+  VoteTx,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
@@ -566,6 +569,38 @@ function parseCreateProposalTx(
   };
 }
 
+function decodeVoteOption(option: codecImpl.gov.VoteOption): VoteOption {
+  switch (option) {
+    case codecImpl.gov.VoteOption.VOTE_OPTION_INVALID:
+      throw new Error("VOTE_OPTION_INVALID is not allowed");
+    case codecImpl.gov.VoteOption.VOTE_OPTION_YES:
+      return VoteOption.Yes;
+    case codecImpl.gov.VoteOption.VOTE_OPTION_NO:
+      return VoteOption.No;
+    case codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN:
+      return VoteOption.Abstain;
+    default:
+      throw new Error("Received unknown value for vote option");
+  }
+}
+
+function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): VoteTx & WithCreator {
+  return {
+    ...base,
+    kind: "bns/vote",
+    proposalId: ensure(msg.proposalId, "proposalId"),
+    selection: decodeVoteOption(ensure(msg.selected, "selected")),
+  };
+}
+
+function parseTallyTx(base: UnsignedTransaction, msg: codecImpl.gov.ITallyMsg): TallyTx & WithCreator {
+  return {
+    ...base,
+    kind: "bns/tally",
+    proposalId: ensure(msg.proposalId, "proposalId"),
+  };
+}
+
 export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction {
   // Token sends
   if (tx.sendMsg) return parseSendTransaction(base, tx.sendMsg);
@@ -592,6 +627,8 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
 
   // Governance
   if (tx.createProposalMsg) return parseCreateProposalTx(base, tx.createProposalMsg);
+  if (tx.voteMsg) return parseVoteTx(base, tx.voteMsg);
+  if (tx.tallyMsg) return parseTallyTx(base, tx.tallyMsg);
 
   throw new Error("unknown message type in transaction");
 }

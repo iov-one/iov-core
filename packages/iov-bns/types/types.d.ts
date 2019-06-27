@@ -62,6 +62,11 @@ export declare enum ProposalStatus {
     Closed = 1,
     Withdrawn = 2
 }
+export declare enum VoteOption {
+    Yes = 0,
+    No = 1,
+    Abstain = 2
+}
 /** Union type for possible options */
 export declare type ProposalOption = string;
 export interface Proposal {
@@ -210,10 +215,13 @@ export declare function isCreateProposalTx(transaction: LightTransaction): trans
 export interface VoteTx extends LightTransaction {
     readonly kind: "bns/vote";
     readonly proposalId: Uint8Array;
+    readonly selection: VoteOption;
 }
+export declare function isVoteTx(transaction: LightTransaction): transaction is VoteTx;
 export interface TallyTx extends LightTransaction {
     readonly kind: "bns/tally";
     readonly proposalId: Uint8Array;
 }
+export declare function isTallyTx(transaction: LightTransaction): transaction is TallyTx;
 export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx | CreateProposalTx | VoteTx | TallyTx;
 export declare function isBnsTx(transaction: LightTransaction): transaction is BnsTx;

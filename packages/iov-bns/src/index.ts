@@ -32,6 +32,11 @@ export {
   ProposalResult,
   ProposalStatus,
   Proposal,
+  VoteOption,
+  VoteTx,
+  isVoteTx,
+  TallyTx,
+  isTallyTx,
   // transactions
   BnsTx,
   isBnsTx,

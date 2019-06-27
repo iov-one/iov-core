@@ -68,6 +68,7 @@ import {
   TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  VoteOption,
   VoteTx,
 } from "./types";
 import { encodeBnsAddress, identityToAddress } from "./util";
@@ -1219,7 +1220,7 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
-    fit("can create and vote on a proposal", async () => {
+    it("can create and vote on a proposal", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
@@ -1272,6 +1273,7 @@ describe("BnsConnection", () => {
           kind: "bns/vote",
           creator: author,
           proposalId: proposalId,
+          selection: VoteOption.Yes,
         });
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
         const signed = await profile.signTransaction(voteForProposal, bnsCodec, nonce);

@@ -93,6 +93,12 @@ export enum ProposalStatus {
   Withdrawn,
 }
 
+export enum VoteOption {
+  Yes,
+  No,
+  Abstain,
+}
+
 /** Union type for possible options */
 export type ProposalOption = string;
 
@@ -313,11 +319,20 @@ export function isCreateProposalTx(transaction: LightTransaction): transaction i
 export interface VoteTx extends LightTransaction {
   readonly kind: "bns/vote";
   readonly proposalId: Uint8Array;
+  readonly selection: VoteOption;
+}
+
+export function isVoteTx(transaction: LightTransaction): transaction is VoteTx {
+  return transaction.kind === "bns/vote";
 }
 
 export interface TallyTx extends LightTransaction {
   readonly kind: "bns/tally";
   readonly proposalId: Uint8Array;
+}
+
+export function isTallyTx(transaction: LightTransaction): transaction is TallyTx {
+  return transaction.kind === "bns/tally";
 }
 
 // Transactions: BNS

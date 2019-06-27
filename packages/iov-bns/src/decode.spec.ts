@@ -36,13 +36,16 @@ import {
   isReleaseEscrowTx,
   isRemoveAddressFromUsernameTx,
   isReturnEscrowTx,
+  isTallyTx,
   isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
+  isVoteTx,
   Keyed,
   Participant,
   ProposalExecutorResult,
   ProposalResult,
   ProposalStatus,
+  VoteOption,
 } from "./types";
 
 const { fromHex, toUtf8 } = Encoding;
@@ -656,6 +659,36 @@ describe("Decode", () => {
       expect(parsed.electionRuleId).toEqual(Encoding.fromHex("aabbaabbccddbbff"));
       expect(parsed.startTime).toEqual(42424242);
       expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+    });
+
+    it("works for VoteTx", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        voteMsg: {
+          metadata: { schema: 1 },
+          proposalId: fromHex("aabbaabbddeeffffaa"),
+          selected: codecImpl.gov.VoteOption.VOTE_OPTION_YES,
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isVoteTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.selection).toEqual(VoteOption.Yes);
+      expect(parsed.proposalId).toEqual(fromHex("aabbaabbddeeffffaa"));
+    });
+
+    it("works for TallyTx", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        tallyMsg: {
+          metadata: { schema: 1 },
+          proposalId: fromHex("aabbaabbddeeffffaa"),
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isTallyTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.proposalId).toEqual(fromHex("aabbaabbddeeffffaa"));
     });
   });
 });
