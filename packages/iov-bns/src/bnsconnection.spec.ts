@@ -65,8 +65,10 @@ import {
   ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
+  TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  VoteTx,
 } from "./types";
 import { encodeBnsAddress, identityToAddress } from "./util";
 
@@ -1216,6 +1218,78 @@ describe("BnsConnection", () => {
 
       connection.disconnect();
     });
+
+    fit("can create and vote on a proposal", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = connection.chainId();
+
+      const { profile, faucet: author } = await userProfileWithFaucet(chainId);
+      const authorAddress = identityToAddress(author);
+
+      const someElectionRule = (await connection.getElectionRules()).find(
+        // Dictatorship electorate
+        ({ electorateId }) => electorateId === 2,
+      );
+      if (!someElectionRule) {
+        throw new Error("No election rule found");
+      }
+      const startTime = Math.floor(Date.now() / 1000) + 3;
+
+      const title = `Hello ${Math.random()}`;
+      const description = `Hello ${Math.random()}`;
+      const option = `The winner is Alice ${Math.random()}`;
+
+      const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
+        kind: "bns/create_proposal",
+        creator: author,
+        title: title,
+        description: description,
+        author: authorAddress,
+        electionRuleId: someElectionRule.id,
+        option: option,
+        startTime: startTime,
+      });
+
+      const nonce1 = await connection.getNonce({ pubkey: author.pubkey });
+      const signed1 = await profile.signTransaction(createProposal, bnsCodec, nonce1);
+      const response1 = await connection.postTx(bnsCodec.bytesToPost(signed1));
+      await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const proposalId = (response1.blockInfo.value as BlockInfoSucceeded).result!;
+
+      await sleep(6_000);
+
+      const voteForProposal = await connection.withDefaultFee<VoteTx & WithCreator>({
+        kind: "bns/vote",
+        creator: author,
+        proposalId: proposalId,
+      });
+      const nonce2 = await connection.getNonce({ pubkey: author.pubkey });
+      const signed2 = await profile.signTransaction(voteForProposal, bnsCodec, nonce2);
+      const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
+      await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+
+      await sleep(5_000);
+
+      const tallyVotes = await connection.withDefaultFee<TallyTx & WithCreator>({
+        kind: "bns/tally",
+        creator: author,
+        proposalId: proposalId,
+      });
+      const nonce3 = await connection.getNonce({ pubkey: author.pubkey });
+      const signed3 = await profile.signTransaction(tallyVotes, bnsCodec, nonce3);
+      const response3 = await connection.postTx(bnsCodec.bytesToPost(signed3));
+      await response3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      // expect(proposals.length).toBeGreaterThanOrEqual(1);
+
+      // const myProposal = proposals.find(p => p.author === authorAddress && p.votingStartTime === startTime);
+      // expect(myProposal).toBeDefined();
+      // expect(myProposal!.title).toEqual(title);
+      // expect(myProposal!.description).toEqual(description);
+      // expect(myProposal!.option).toEqual(option);
+
+      connection.disconnect();
+    }, 30_000);
   });
 
   describe("getTx", () => {
