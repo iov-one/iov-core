@@ -18,7 +18,9 @@ export {
   // Multisignature contracts
   Participant,
   CreateMultisignatureTx,
+  isCreateMultisignatureTx,
   UpdateMultisignatureTx,
+  isUpdateMultisignatureTx,
   // Governance
   ElectorProperties,
   Electors,
