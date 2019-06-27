@@ -354,7 +354,17 @@ describe("Decode", () => {
     const defaultArbiter = "tiov17yp0mh3yxwv6yxx386mxyfzlqnhe6q58edka6r" as Address;
     const defaultEscrowId = fromHex("0000000000000004");
 
-    it("works for AddAddressToUsername", () => {
+    // Token sends
+
+    // TODO: add missing tests here
+
+    // Atomic swaps
+
+    // TODO: add missing tests here
+
+    // Usernames
+
+    it("works for AddAddressToUsernameTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         addUsernameAddressNftMsg: {
           usernameId: toUtf8("alice"),
@@ -371,7 +381,7 @@ describe("Decode", () => {
       expect(parsed.payload.address).toEqual("0xAABB001122DD");
     });
 
-    it("works for RegisterUsername", () => {
+    it("works for RegisterUsernameTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         issueUsernameNftMsg: {
           id: Encoding.toAscii("bobby"),
@@ -407,7 +417,7 @@ describe("Decode", () => {
       });
     });
 
-    it("works for RemoveAddressFromUsername", () => {
+    it("works for RemoveAddressFromUsernameTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         removeUsernameAddressMsg: {
           usernameId: toUtf8("alice"),
@@ -424,7 +434,9 @@ describe("Decode", () => {
       expect(parsed.payload.address).toEqual("0xAABB001122DD");
     });
 
-    it("works for CreateMultisignature", () => {
+    // Multisignature contracts
+
+    it("works for CreateMultisignatureTx", () => {
       // tslint:disable-next-line:readonly-array
       const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
@@ -470,7 +482,7 @@ describe("Decode", () => {
       expect(parsed.adminThreshold).toEqual(3);
     });
 
-    it("works for UpdateMultisignature", () => {
+    it("works for UpdateMultisignatureTx", () => {
       // tslint:disable-next-line:readonly-array
       const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
@@ -518,7 +530,9 @@ describe("Decode", () => {
       expect(parsed.adminThreshold).toEqual(3);
     });
 
-    it("works for CreateEscrow", () => {
+    // Escrows
+
+    it("works for CreateEscrowTx", () => {
       const timeout = 1560940182424;
       const memo = "testing 123";
       const transactionMessage: codecImpl.app.ITx = {
@@ -555,7 +569,7 @@ describe("Decode", () => {
       expect(parsed.memo).toEqual(memo);
     });
 
-    it("works for ReleaseEscrow", () => {
+    it("works for ReleaseEscrowTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         releaseEscrowMsg: {
           escrowId: defaultEscrowId,
@@ -582,7 +596,7 @@ describe("Decode", () => {
       ]);
     });
 
-    it("works for ReturnEscrow", () => {
+    it("works for ReturnEscrowTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         returnEscrowMsg: {
           escrowId: defaultEscrowId,
@@ -595,7 +609,7 @@ describe("Decode", () => {
       expect(parsed.escrowId).toEqual(defaultEscrowId);
     });
 
-    it("works for UpdateEscrowParties", () => {
+    it("works for UpdateEscrowPartiesTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         updateEscrowMsg: {
           escrowId: defaultEscrowId,
@@ -614,7 +628,9 @@ describe("Decode", () => {
       expect(parsed.recipient).toEqual(defaultRecipient);
     });
 
-    it("works for CreateProposal", () => {
+    // Governance
+
+    it("works for CreateProposalTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         createProposalMsg: {
           title: "This will happen next",
