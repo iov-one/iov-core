@@ -28,10 +28,10 @@ import {
   ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
+  TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   VoteTx,
-  TallyTx,
 } from "./types";
 import { decodeBnsAddress, identityToAddress } from "./util";
 
