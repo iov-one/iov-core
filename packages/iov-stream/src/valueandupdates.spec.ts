@@ -81,8 +81,8 @@ describe("ValueAndUpdates", () => {
         expect(value).toEqual(123);
         done();
       },
-      complete: () => fail(".updates stream must not complete"),
-      error: e => fail(e),
+      complete: () => done.fail(".updates stream must not complete"),
+      error: e => done.fail(e),
     };
 
     const listener1: Listener<number> = {
@@ -90,8 +90,8 @@ describe("ValueAndUpdates", () => {
         expect(value).toEqual(123);
         vau.updates.addListener(listener2);
       },
-      complete: () => fail(".updates stream must not complete"),
-      error: e => fail(e),
+      complete: () => done.fail(".updates stream must not complete"),
+      error: e => done.fail(e),
     };
 
     vau.updates.addListener(listener1);
@@ -107,8 +107,8 @@ describe("ValueAndUpdates", () => {
         expect(value).toEqual(99);
         done();
       },
-      complete: () => fail(".updates stream must not complete"),
-      error: e => fail(e),
+      complete: () => done.fail(".updates stream must not complete"),
+      error: e => done.fail(e),
     };
 
     const listener1: Listener<number> = {
@@ -116,8 +116,8 @@ describe("ValueAndUpdates", () => {
         expect(value).toEqual(99);
         vau.updates.addListener(listener2);
       },
-      complete: () => fail(".updates stream must not complete"),
-      error: e => fail(e),
+      complete: () => done.fail(".updates stream must not complete"),
+      error: e => done.fail(e),
     };
 
     vau.updates.addListener(listener1);
@@ -140,8 +140,8 @@ describe("ValueAndUpdates", () => {
           done();
         }
       },
-      complete: () => fail(".updates stream must not complete"),
-      error: e => fail(e),
+      complete: () => done.fail(".updates stream must not complete"),
+      error: e => done.fail(e),
     });
 
     setTimeout(() => producer.update(22), 10);
