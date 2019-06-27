@@ -48,6 +48,9 @@ export class ValueAndUpdates<T> {
           subscription.unsubscribe();
           reject("Update stream completed without expected value");
         },
+        error: error => {
+          reject(error);
+        },
       });
     });
   }

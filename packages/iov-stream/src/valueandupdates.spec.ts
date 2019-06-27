@@ -196,4 +196,15 @@ describe("ValueAndUpdates", () => {
       expect(result).toEqual(33);
     }
   });
+
+  describe("waitFor", () => {
+    it("propagates error from stream", async () => {
+      const producer = new DefaultValueProducer(1);
+      const vau = new ValueAndUpdates(producer);
+      setTimeout(() => producer.error(new Error("something went wrong")), 10);
+      await vau
+        .waitFor(3)
+        .then(() => fail("must not resolve"), error => expect(error).toMatch(/something went wrong/));
+    });
+  });
 });
