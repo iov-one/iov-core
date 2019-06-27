@@ -1239,47 +1239,60 @@ describe("BnsConnection", () => {
       const title = `Hello ${Math.random()}`;
       const description = `Hello ${Math.random()}`;
       const option = `The winner is Alice ${Math.random()}`;
+      let proposalId: Uint8Array;
 
-      const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
-        kind: "bns/create_proposal",
-        creator: author,
-        title: title,
-        description: description,
-        author: authorAddress,
-        electionRuleId: someElectionRule.id,
-        option: option,
-        startTime: startTime,
-      });
-
-      const nonce1 = await connection.getNonce({ pubkey: author.pubkey });
-      const signed1 = await profile.signTransaction(createProposal, bnsCodec, nonce1);
-      const response1 = await connection.postTx(bnsCodec.bytesToPost(signed1));
-      await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
-      const proposalId = (response1.blockInfo.value as BlockInfoSucceeded).result!;
+      {
+        const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
+          kind: "bns/create_proposal",
+          creator: author,
+          title: title,
+          description: description,
+          author: authorAddress,
+          electionRuleId: someElectionRule.id,
+          option: option,
+          startTime: startTime,
+        });
+        const nonce = await connection.getNonce({ pubkey: author.pubkey });
+        const signed = await profile.signTransaction(createProposal, bnsCodec, nonce);
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo)) {
+          throw new Error("Transaction did not succeed");
+        }
+        if (!blockInfo.result) {
+          throw new Error("Transaction result missing");
+        }
+        proposalId = blockInfo.result;
+      }
 
       await sleep(6_000);
 
-      const voteForProposal = await connection.withDefaultFee<VoteTx & WithCreator>({
-        kind: "bns/vote",
-        creator: author,
-        proposalId: proposalId,
-      });
-      const nonce2 = await connection.getNonce({ pubkey: author.pubkey });
-      const signed2 = await profile.signTransaction(voteForProposal, bnsCodec, nonce2);
-      const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
-      await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      {
+        const voteForProposal = await connection.withDefaultFee<VoteTx & WithCreator>({
+          kind: "bns/vote",
+          creator: author,
+          proposalId: proposalId,
+        });
+        const nonce = await connection.getNonce({ pubkey: author.pubkey });
+        const signed = await profile.signTransaction(voteForProposal, bnsCodec, nonce);
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
 
       await sleep(5_000);
 
-      const tallyVotes = await connection.withDefaultFee<TallyTx & WithCreator>({
-        kind: "bns/tally",
-        creator: author,
-        proposalId: proposalId,
-      });
-      const nonce3 = await connection.getNonce({ pubkey: author.pubkey });
-      const signed3 = await profile.signTransaction(tallyVotes, bnsCodec, nonce3);
-      const response3 = await connection.postTx(bnsCodec.bytesToPost(signed3));
-      await response3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      {
+        const tallyVotes = await connection.withDefaultFee<TallyTx & WithCreator>({
+          kind: "bns/tally",
+          creator: author,
+          proposalId: proposalId,
+        });
+        const nonce = await connection.getNonce({ pubkey: author.pubkey });
+        const signed = await profile.signTransaction(tallyVotes, bnsCodec, nonce);
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+
       // expect(proposals.length).toBeGreaterThanOrEqual(1);
 
       // const myProposal = proposals.find(p => p.author === authorAddress && p.votingStartTime === startTime);
