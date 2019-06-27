@@ -317,7 +317,7 @@ function buildVoteTx(tx: VoteTx): codecImpl.app.ITx {
   return {
     voteMsg: {
       metadata: { schema: 1 },
-      proposalId: tx.proposalId,
+      proposalId: Encoding.fromHex(tx.proposalId),
       selected: 1,
     },
   };
@@ -327,7 +327,7 @@ function buildTallyTx(tx: TallyTx): codecImpl.app.ITx {
   return {
     tallyMsg: {
       metadata: { schema: 1 },
-      proposalId: tx.proposalId,
+      proposalId: Encoding.fromHex(tx.proposalId),
     },
   };
 }

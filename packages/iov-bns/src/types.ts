@@ -103,6 +103,8 @@ export enum VoteOption {
 export type ProposalOption = string;
 
 export interface Proposal {
+  /** Uppercase hex representation of the proposal ID */
+  readonly id: string;
   readonly title: string;
   /**
    * The transaction to be executed when the proposal is accepted
@@ -318,7 +320,8 @@ export function isCreateProposalTx(transaction: LightTransaction): transaction i
 
 export interface VoteTx extends LightTransaction {
   readonly kind: "bns/vote";
-  readonly proposalId: Uint8Array;
+  /** Uppercase hex representation of the proposal ID */
+  readonly proposalId: string;
   readonly selection: VoteOption;
 }
 
@@ -328,7 +331,8 @@ export function isVoteTx(transaction: LightTransaction): transaction is VoteTx {
 
 export interface TallyTx extends LightTransaction {
   readonly kind: "bns/tally";
-  readonly proposalId: Uint8Array;
+  /** Uppercase hex representation of the proposal ID */
+  readonly proposalId: string;
 }
 
 export function isTallyTx(transaction: LightTransaction): transaction is TallyTx {

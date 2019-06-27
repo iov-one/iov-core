@@ -270,7 +270,8 @@ describe("Decode", () => {
 
   describe("decodeProposal", () => {
     it("works", () => {
-      const proposal: codecImpl.gov.IProposal = {
+      const proposal: codecImpl.gov.IProposal & Keyed = {
+        _id: fromHex("001100220033aabb"),
         metadata: { schema: 1 },
         title: "This will happen next",
         rawOption: codecImpl.app.ProposalOptions.encode({
@@ -298,6 +299,7 @@ describe("Decode", () => {
       };
 
       expect(decodeProposal("tiov", proposal)).toEqual({
+        id: "001100220033AABB",
         title: "This will happen next",
         option: "la la la",
         description: "foo bar",
@@ -674,7 +676,7 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.selection).toEqual(VoteOption.Yes);
-      expect(parsed.proposalId).toEqual(fromHex("aabbaabbddeeffffaa"));
+      expect(parsed.proposalId).toEqual("AABBAABBDDEEFFFFAA");
     });
 
     it("works for TallyTx", () => {
@@ -688,7 +690,7 @@ describe("Decode", () => {
       if (!isTallyTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.proposalId).toEqual(fromHex("aabbaabbddeeffffaa"));
+      expect(parsed.proposalId).toEqual("AABBAABBDDEEFFFFAA");
     });
   });
 });

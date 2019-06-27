@@ -326,8 +326,9 @@ function decodeRawProposalOption(rawOption: Uint8Array): ProposalOption {
   return out;
 }
 
-export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal): Proposal {
+export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal & Keyed): Proposal {
   return {
+    id: Encoding.toHex(proposal._id).toUpperCase(),
     title: ensure(proposal.title, "title"),
     option: decodeRawProposalOption(ensure(proposal.rawOption, "rawOption")),
     description: ensure(proposal.description, "description"),
@@ -588,7 +589,7 @@ function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): Vo
   return {
     ...base,
     kind: "bns/vote",
-    proposalId: ensure(msg.proposalId, "proposalId"),
+    proposalId: Encoding.toHex(ensure(msg.proposalId, "proposalId")).toUpperCase(),
     selection: decodeVoteOption(ensure(msg.selected, "selected")),
   };
 }
@@ -597,7 +598,7 @@ function parseTallyTx(base: UnsignedTransaction, msg: codecImpl.gov.ITallyMsg): 
   return {
     ...base,
     kind: "bns/tally",
-    proposalId: ensure(msg.proposalId, "proposalId"),
+    proposalId: Encoding.toHex(ensure(msg.proposalId, "proposalId")).toUpperCase(),
   };
 }
 

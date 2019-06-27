@@ -70,6 +70,8 @@ export declare enum VoteOption {
 /** Union type for possible options */
 export declare type ProposalOption = string;
 export interface Proposal {
+    /** Uppercase hex representation of the proposal ID */
+    readonly id: string;
     readonly title: string;
     /**
      * The transaction to be executed when the proposal is accepted
@@ -214,13 +216,15 @@ export interface CreateProposalTx extends LightTransaction {
 export declare function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx;
 export interface VoteTx extends LightTransaction {
     readonly kind: "bns/vote";
-    readonly proposalId: Uint8Array;
+    /** Uppercase hex representation of the proposal ID */
+    readonly proposalId: string;
     readonly selection: VoteOption;
 }
 export declare function isVoteTx(transaction: LightTransaction): transaction is VoteTx;
 export interface TallyTx extends LightTransaction {
     readonly kind: "bns/tally";
-    readonly proposalId: Uint8Array;
+    /** Uppercase hex representation of the proposal ID */
+    readonly proposalId: string;
 }
 export declare function isTallyTx(transaction: LightTransaction): transaction is TallyTx;
 export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx | CreateProposalTx | VoteTx | TallyTx;

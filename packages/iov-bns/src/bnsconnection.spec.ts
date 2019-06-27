@@ -1240,7 +1240,7 @@ describe("BnsConnection", () => {
       const title = `Hello ${Math.random()}`;
       const description = `Hello ${Math.random()}`;
       const option = `The winner is Alice ${Math.random()}`;
-      let proposalId: Uint8Array;
+      let proposalId: string;
 
       {
         const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
@@ -1263,7 +1263,7 @@ describe("BnsConnection", () => {
         if (!blockInfo.result) {
           throw new Error("Transaction result missing");
         }
-        proposalId = blockInfo.result;
+        proposalId = toHex(blockInfo.result).toUpperCase();
       }
 
       await sleep(6_000);
