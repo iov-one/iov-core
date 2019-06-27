@@ -37,8 +37,11 @@ import {
   ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
+  TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  VoteOption,
+  VoteTx,
 } from "./types";
 import { appendSignBytes } from "./util";
 
@@ -564,6 +567,34 @@ describe("Encode", () => {
         electionRuleId: fromHex("0011221122112200"),
         startTime: 1122334455,
         author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+      });
+    });
+
+    it("works for VoteTx", () => {
+      const vote: VoteTx & WithCreator = {
+        kind: "bns/vote",
+        creator: defaultCreator,
+        proposalId: "AABBAABB22",
+        selection: VoteOption.Abstain,
+      };
+      const msg = buildMsg(vote).voteMsg!;
+      expect(msg).toEqual({
+        metadata: { schema: 1 },
+        proposalId: fromHex("AABBAABB22"),
+        selected: codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN,
+      });
+    });
+
+    it("works for TallyTx", () => {
+      const vote: TallyTx & WithCreator = {
+        kind: "bns/tally",
+        creator: defaultCreator,
+        proposalId: "AABBAABB22",
+      };
+      const msg = buildMsg(vote).tallyMsg!;
+      expect(msg).toEqual({
+        metadata: { schema: 1 },
+        proposalId: fromHex("AABBAABB22"),
       });
     });
 

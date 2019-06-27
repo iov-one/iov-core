@@ -31,6 +31,7 @@ import {
   TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  VoteOption,
   VoteTx,
 } from "./types";
 import { decodeBnsAddress, identityToAddress } from "./util";
@@ -313,12 +314,23 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
   };
 }
 
+function encodeVoteOption(option: VoteOption): codecImpl.gov.VoteOption {
+  switch (option) {
+    case VoteOption.Yes:
+      return codecImpl.gov.VoteOption.VOTE_OPTION_YES;
+    case VoteOption.No:
+      return codecImpl.gov.VoteOption.VOTE_OPTION_NO;
+    case VoteOption.Abstain:
+      return codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN;
+  }
+}
+
 function buildVoteTx(tx: VoteTx): codecImpl.app.ITx {
   return {
     voteMsg: {
       metadata: { schema: 1 },
       proposalId: Encoding.fromHex(tx.proposalId),
-      selected: 1,
+      selected: encodeVoteOption(tx.selection),
     },
   };
 }
