@@ -327,6 +327,7 @@ function decodeRawProposalOption(rawOption: Uint8Array): ProposalOption {
 }
 
 export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal & Keyed): Proposal {
+  const voteState = ensure(proposal.voteState, "voteState");
   return {
     id: Encoding.toHex(proposal._id).toUpperCase(),
     title: ensure(proposal.title, "title"),
@@ -338,6 +339,12 @@ export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.I
     votingEndTime: asIntegerNumber(ensure(proposal.votingEndTime, "votingEndTime")),
     submissionTime: asIntegerNumber(ensure(proposal.submissionTime, "submissionTime")),
     author: encodeBnsAddress(prefix, ensure(proposal.author, "author")),
+    state: {
+      totalYes: asIntegerNumber(voteState.totalYes),
+      totalNo: asIntegerNumber(voteState.totalNo),
+      totalAbstain: asIntegerNumber(voteState.totalAbstain),
+      totalElectorateWeight: asIntegerNumber(voteState.totalElectorateWeight),
+    },
     status: decodeProposalStatus(ensure(proposal.status, "status")),
     result: decodeProposalResult(ensure(proposal.result, "result")),
     executorResult: decodeProposalExecutorResult(ensure(proposal.executorResult, "executorResult")),

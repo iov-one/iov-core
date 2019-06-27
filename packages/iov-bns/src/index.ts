@@ -31,6 +31,7 @@ export {
   ProposalExecutorResult,
   ProposalResult,
   ProposalStatus,
+  TallyResult,
   Proposal,
   VoteOption,
   VoteTx,

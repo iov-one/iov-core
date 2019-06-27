@@ -1272,8 +1272,11 @@ describe("BnsConnection", () => {
       {
         // Election submitted, voting period not yet started
         const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
-        expect(proposal.status).toEqual(ProposalStatus.Submitted);
         expect(proposal.votingStartTime).toBeGreaterThan(Date.now() / 1000);
+        expect(proposal.state.totalYes).toEqual(0);
+        expect(proposal.state.totalNo).toEqual(0);
+        expect(proposal.state.totalAbstain).toEqual(0);
+        expect(proposal.status).toEqual(ProposalStatus.Submitted);
         expect(proposal.result).toEqual(ProposalResult.Undefined);
         expect(proposal.executorResult).toEqual(ProposalExecutorResult.NotRun);
       }
@@ -1283,9 +1286,12 @@ describe("BnsConnection", () => {
       {
         // Election submitted, voting period started
         const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
-        expect(proposal.status).toEqual(ProposalStatus.Submitted);
         expect(proposal.votingStartTime).toBeLessThan(Date.now() / 1000);
         expect(proposal.votingEndTime).toBeGreaterThan(Date.now() / 1000);
+        expect(proposal.state.totalYes).toEqual(0);
+        expect(proposal.state.totalNo).toEqual(0);
+        expect(proposal.state.totalAbstain).toEqual(0);
+        expect(proposal.status).toEqual(ProposalStatus.Submitted);
         expect(proposal.result).toEqual(ProposalResult.Undefined);
         expect(proposal.executorResult).toEqual(ProposalExecutorResult.NotRun);
       }
@@ -1308,8 +1314,11 @@ describe("BnsConnection", () => {
       {
         // Election voting period ended but not yet tallyed
         const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
-        expect(proposal.status).toEqual(ProposalStatus.Submitted);
         expect(proposal.votingEndTime).toBeLessThan(Date.now() / 1000);
+        expect(proposal.state.totalYes).toEqual(1);
+        expect(proposal.state.totalNo).toEqual(0);
+        expect(proposal.state.totalAbstain).toEqual(0);
+        expect(proposal.status).toEqual(ProposalStatus.Submitted);
         expect(proposal.result).toEqual(ProposalResult.Undefined);
         expect(proposal.executorResult).toEqual(ProposalExecutorResult.NotRun);
       }
@@ -1329,6 +1338,9 @@ describe("BnsConnection", () => {
       {
         // Election ended and accepted
         const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
+        expect(proposal.state.totalYes).toEqual(1);
+        expect(proposal.state.totalNo).toEqual(0);
+        expect(proposal.state.totalAbstain).toEqual(0);
         expect(proposal.status).toEqual(ProposalStatus.Closed);
         expect(proposal.result).toEqual(ProposalResult.Accepted);
         expect(proposal.executorResult).toEqual(ProposalExecutorResult.Succeeded);

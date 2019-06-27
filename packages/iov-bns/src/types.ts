@@ -99,6 +99,13 @@ export enum VoteOption {
   Abstain,
 }
 
+export interface TallyResult {
+  readonly totalYes: number;
+  readonly totalNo: number;
+  readonly totalAbstain: number;
+  readonly totalElectorateWeight: number;
+}
+
 /** Union type for possible options */
 export type ProposalOption = string;
 
@@ -124,6 +131,7 @@ export interface Proposal {
   readonly submissionTime: number;
   /** The author of the proposal must be included in the list of transaction signers. */
   readonly author: Address;
+  readonly state: TallyResult;
   readonly status: ProposalStatus;
   readonly result: ProposalResult;
   readonly executorResult: ProposalExecutorResult;
