@@ -61,6 +61,7 @@ import {
   isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
   Participant,
+  ProposalExecutorResult,
   ProposalResult,
   ProposalStatus,
   RegisterUsernameTx,
@@ -1274,6 +1275,7 @@ describe("BnsConnection", () => {
         expect(proposal.status).toEqual(ProposalStatus.Submitted);
         expect(proposal.votingStartTime).toBeGreaterThan(Date.now() / 1000);
         expect(proposal.result).toEqual(ProposalResult.Undefined);
+        expect(proposal.executorResult).toEqual(ProposalExecutorResult.NotRun);
       }
 
       await sleep(6_000);
@@ -1285,6 +1287,7 @@ describe("BnsConnection", () => {
         expect(proposal.votingStartTime).toBeLessThan(Date.now() / 1000);
         expect(proposal.votingEndTime).toBeGreaterThan(Date.now() / 1000);
         expect(proposal.result).toEqual(ProposalResult.Undefined);
+        expect(proposal.executorResult).toEqual(ProposalExecutorResult.NotRun);
       }
 
       {
@@ -1308,6 +1311,7 @@ describe("BnsConnection", () => {
         expect(proposal.status).toEqual(ProposalStatus.Submitted);
         expect(proposal.votingEndTime).toBeLessThan(Date.now() / 1000);
         expect(proposal.result).toEqual(ProposalResult.Undefined);
+        expect(proposal.executorResult).toEqual(ProposalExecutorResult.NotRun);
       }
 
       {
@@ -1327,6 +1331,7 @@ describe("BnsConnection", () => {
         const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
         expect(proposal.status).toEqual(ProposalStatus.Closed);
         expect(proposal.result).toEqual(ProposalResult.Accepted);
+        expect(proposal.executorResult).toEqual(ProposalExecutorResult.Succeeded);
       }
 
       connection.disconnect();
