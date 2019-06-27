@@ -76,7 +76,7 @@
       {
         "admin": "4444444444444444444444444444444444444444",
         "title": "barr",
-        "voting_period": "2h",
+        "voting_period": "5s",
         "threshold": {
           "numerator": 1,
           "denominator": 2

@@ -1829,7 +1829,7 @@ describe("BnsConnection", () => {
         admin: "tiov1g3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyj522p5" as Address,
         electorateId: 2,
         title: "barr",
-        votingPeriod: 2 * 3600,
+        votingPeriod: 5,
         threshold: {
           numerator: 1,
           denominator: 2,
