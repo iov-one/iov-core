@@ -232,6 +232,8 @@ describe("Encode", () => {
     };
     const defaultEscrowId = fromHex("0000000000000004");
 
+    // Token sends
+
     it("works for SendTransaction", () => {
       const transaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
@@ -267,6 +269,8 @@ describe("Encode", () => {
       };
       expect(() => buildMsg(transaction)).toThrowError(/sender and creator do not match/i);
     });
+
+    // Usernames
 
     it("works for AddAddressToUsernameTx", () => {
       const addAddress: AddAddressToUsernameTx & WithCreator = {
@@ -333,6 +337,8 @@ describe("Encode", () => {
       expect(msg.blockchainId).toEqual(toUtf8("other-land"));
       expect(msg.address).toEqual("865765858O");
     });
+
+    // Multisignature contracts
 
     it("works for CreateMultisignatureTx", () => {
       const participants: readonly Participant[] = [
@@ -421,6 +427,8 @@ describe("Encode", () => {
       expect(msg.activationThreshold).toEqual(3);
       expect(msg.adminThreshold).toEqual(4);
     });
+
+    // Escrows
 
     it("works for CreateEscrowTx", () => {
       const timeout = {
@@ -529,6 +537,8 @@ describe("Encode", () => {
       expect(() => buildMsg(updateEscrowParties)).toThrowError(/only one party can be updated at a time/i);
     });
 
+    // Governance
+
     it("works for CreateProposalTx", () => {
       const createProposal: CreateProposalTx & WithCreator = {
         kind: "bns/create_proposal",
@@ -556,6 +566,8 @@ describe("Encode", () => {
         author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
       });
     });
+
+    // Other
 
     it("encodes unset and empty memo the same way", () => {
       {
