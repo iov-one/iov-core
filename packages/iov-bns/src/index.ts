@@ -14,8 +14,12 @@ export {
   BnsUsernamesQuery,
   BnsUsernameNft,
   RegisterUsernameTx,
+  isRegisterUsernameTx,
   AddAddressToUsernameTx,
+  isAddAddressToUsernameTx,
   RemoveAddressFromUsernameTx,
+  isRemoveAddressFromUsernameTx,
   // transactions
   BnsTx,
+  isBnsTx,
 } from "./types";
