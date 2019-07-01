@@ -2,6 +2,8 @@
 
 ## 0.14.5
 
+- @iov/bns: Export `isBnsTx`, `isRegisterUsernameTx`,
+  `isAddAddressToUsernameTx`, `isRemoveAddressFromUsernameTx`.
 - @iov/cli: Automatically import `TransactionId` from @iov/bcp.
 - @iov/crypto: Add `EnglishMnemonic.toString`; deprecate `.asString`.
 

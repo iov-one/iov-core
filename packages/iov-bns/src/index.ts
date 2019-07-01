@@ -3,9 +3,8 @@ export { bnsConnector } from "./bnsconnector";
 export { BnsConnection } from "./bnsconnection";
 export { bnsSwapQueryTag } from "./tags";
 export {
-  // helpers
+  // Usernames
   ChainAddressPair,
-  // NFTs
   BnsBlockchainNft,
   BnsBlockchainsByChainIdQuery,
   BnsBlockchainsQuery,
@@ -14,9 +13,13 @@ export {
   BnsUsernamesByUsernameQuery,
   BnsUsernamesQuery,
   BnsUsernameNft,
+  RegisterUsernameTx,
+  isRegisterUsernameTx,
+  AddAddressToUsernameTx,
+  isAddAddressToUsernameTx,
+  RemoveAddressFromUsernameTx,
+  isRemoveAddressFromUsernameTx,
   // transactions
   BnsTx,
-  AddAddressToUsernameTx,
-  RegisterUsernameTx,
-  RemoveAddressFromUsernameTx,
+  isBnsTx,
 } from "./types";
