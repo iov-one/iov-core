@@ -3,9 +3,22 @@ export { bnsConnector } from "./bnsconnector";
 export { BnsConnection } from "./bnsconnection";
 export { bnsSwapQueryTag } from "./tags";
 export {
-  // helpers
+  // Usernames
   ChainAddressPair,
+  BnsUsernamesByOwnerQuery,
+  BnsUsernamesByUsernameQuery,
+  BnsUsernamesQuery,
+  BnsUsernameNft,
+  RegisterUsernameTx,
+  isRegisterUsernameTx,
+  AddAddressToUsernameTx,
+  isAddAddressToUsernameTx,
+  RemoveAddressFromUsernameTx,
+  isRemoveAddressFromUsernameTx,
+  // Multisignature contracts
   Participant,
+  CreateMultisignatureTx,
+  UpdateMultisignatureTx,
   // Governance
   ElectorProperties,
   Electors,
@@ -17,16 +30,7 @@ export {
   ProposalResult,
   ProposalStatus,
   Proposal,
-  // NFTs
-  BnsUsernamesByOwnerQuery,
-  BnsUsernamesByUsernameQuery,
-  BnsUsernamesQuery,
-  BnsUsernameNft,
   // transactions
   BnsTx,
-  AddAddressToUsernameTx,
-  CreateMultisignatureTx,
-  RegisterUsernameTx,
-  RemoveAddressFromUsernameTx,
-  UpdateMultisignatureTx,
+  isBnsTx,
 } from "./types";
