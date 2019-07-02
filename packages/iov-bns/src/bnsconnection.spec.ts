@@ -1312,7 +1312,7 @@ describe("BnsConnection", () => {
       await sleep(5_000);
 
       {
-        // Election voting period ended but not yet tallyed
+        // Election voting period ended but not yet tallied
         const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
         expect(proposal.votingEndTime).toBeLessThan(Date.now() / 1000);
         expect(proposal.state.totalYes).toEqual(1);
