@@ -36,13 +36,16 @@ import {
   isReleaseEscrowTx,
   isRemoveAddressFromUsernameTx,
   isReturnEscrowTx,
+  isTallyTx,
   isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
+  isVoteTx,
   Keyed,
   Participant,
   ProposalExecutorResult,
   ProposalResult,
   ProposalStatus,
+  VoteOption,
 } from "./types";
 
 const { fromHex, toUtf8 } = Encoding;
@@ -267,7 +270,8 @@ describe("Decode", () => {
 
   describe("decodeProposal", () => {
     it("works", () => {
-      const proposal: codecImpl.gov.IProposal = {
+      const proposal: codecImpl.gov.IProposal & Keyed = {
+        _id: fromHex("001100220033aabb"),
         metadata: { schema: 1 },
         title: "This will happen next",
         rawOption: codecImpl.app.ProposalOptions.encode({
@@ -289,14 +293,21 @@ describe("Decode", () => {
         votingEndTime: 42424243,
         submissionTime: 3003,
         author: fromHex("0011223344556677889900112233445566778899"),
+        voteState: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
         status: codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED,
         result: codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED,
         executorResult: codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN,
       };
 
       expect(decodeProposal("tiov", proposal)).toEqual({
+        id: "001100220033AABB",
         title: "This will happen next",
-        option: "la la la",
+        action: { resolution: "la la la" },
         description: "foo bar",
         electionRule: {
           id: fromHex("aabbaabbccddbbff"),
@@ -310,6 +321,12 @@ describe("Decode", () => {
         votingEndTime: 42424243,
         submissionTime: 3003,
         author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+        state: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
         status: ProposalStatus.Submitted,
         result: ProposalResult.Undefined,
         executorResult: ProposalExecutorResult.NotRun,
@@ -354,7 +371,17 @@ describe("Decode", () => {
     const defaultArbiter = "tiov17yp0mh3yxwv6yxx386mxyfzlqnhe6q58edka6r" as Address;
     const defaultEscrowId = fromHex("0000000000000004");
 
-    it("works for AddAddressToUsername", () => {
+    // Token sends
+
+    // TODO: add missing tests here
+
+    // Atomic swaps
+
+    // TODO: add missing tests here
+
+    // Usernames
+
+    it("works for AddAddressToUsernameTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         addUsernameAddressNftMsg: {
           usernameId: toUtf8("alice"),
@@ -371,7 +398,7 @@ describe("Decode", () => {
       expect(parsed.payload.address).toEqual("0xAABB001122DD");
     });
 
-    it("works for RegisterUsername", () => {
+    it("works for RegisterUsernameTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         issueUsernameNftMsg: {
           id: Encoding.toAscii("bobby"),
@@ -407,7 +434,7 @@ describe("Decode", () => {
       });
     });
 
-    it("works for RemoveAddressFromUsername", () => {
+    it("works for RemoveAddressFromUsernameTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         removeUsernameAddressMsg: {
           usernameId: toUtf8("alice"),
@@ -424,7 +451,9 @@ describe("Decode", () => {
       expect(parsed.payload.address).toEqual("0xAABB001122DD");
     });
 
-    it("works for CreateMultisignature", () => {
+    // Multisignature contracts
+
+    it("works for CreateMultisignatureTx", () => {
       // tslint:disable-next-line:readonly-array
       const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
@@ -470,7 +499,7 @@ describe("Decode", () => {
       expect(parsed.adminThreshold).toEqual(3);
     });
 
-    it("works for UpdateMultisignature", () => {
+    it("works for UpdateMultisignatureTx", () => {
       // tslint:disable-next-line:readonly-array
       const iParticipants: codecImpl.multisig.IParticipant[] = [
         {
@@ -518,7 +547,9 @@ describe("Decode", () => {
       expect(parsed.adminThreshold).toEqual(3);
     });
 
-    it("works for CreateEscrow", () => {
+    // Escrows
+
+    it("works for CreateEscrowTx", () => {
       const timeout = 1560940182424;
       const memo = "testing 123";
       const transactionMessage: codecImpl.app.ITx = {
@@ -555,7 +586,7 @@ describe("Decode", () => {
       expect(parsed.memo).toEqual(memo);
     });
 
-    it("works for ReleaseEscrow", () => {
+    it("works for ReleaseEscrowTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         releaseEscrowMsg: {
           escrowId: defaultEscrowId,
@@ -582,7 +613,7 @@ describe("Decode", () => {
       ]);
     });
 
-    it("works for ReturnEscrow", () => {
+    it("works for ReturnEscrowTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         returnEscrowMsg: {
           escrowId: defaultEscrowId,
@@ -595,7 +626,7 @@ describe("Decode", () => {
       expect(parsed.escrowId).toEqual(defaultEscrowId);
     });
 
-    it("works for UpdateEscrowParties", () => {
+    it("works for UpdateEscrowPartiesTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         updateEscrowMsg: {
           escrowId: defaultEscrowId,
@@ -614,7 +645,9 @@ describe("Decode", () => {
       expect(parsed.recipient).toEqual(defaultRecipient);
     });
 
-    it("works for CreateProposal", () => {
+    // Governance
+
+    it("works for CreateProposalTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         createProposalMsg: {
           title: "This will happen next",
@@ -635,11 +668,41 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.option).toEqual("la la la");
+      expect(parsed.action).toEqual({ resolution: "la la la" });
       expect(parsed.description).toEqual("foo bar");
       expect(parsed.electionRuleId).toEqual(Encoding.fromHex("aabbaabbccddbbff"));
       expect(parsed.startTime).toEqual(42424242);
       expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+    });
+
+    it("works for VoteTx", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        voteMsg: {
+          metadata: { schema: 1 },
+          proposalId: fromHex("aabbaabbddeeffffaa"),
+          selected: codecImpl.gov.VoteOption.VOTE_OPTION_YES,
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isVoteTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.selection).toEqual(VoteOption.Yes);
+      expect(parsed.proposalId).toEqual("AABBAABBDDEEFFFFAA");
+    });
+
+    it("works for TallyTx", () => {
+      const transactionMessage: codecImpl.app.ITx = {
+        tallyMsg: {
+          metadata: { schema: 1 },
+          proposalId: fromHex("aabbaabbddeeffffaa"),
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isTallyTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.proposalId).toEqual("AABBAABBDDEEFFFFAA");
     });
   });
 });

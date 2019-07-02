@@ -93,10 +93,33 @@ export enum ProposalStatus {
   Withdrawn,
 }
 
-/** Union type for possible options */
-export type ProposalOption = string;
+export enum VoteOption {
+  Yes,
+  No,
+  Abstain,
+}
+
+export interface TallyResult {
+  readonly totalYes: number;
+  readonly totalNo: number;
+  readonly totalAbstain: number;
+  readonly totalElectorateWeight: number;
+}
+
+export interface CreateTextResolution {
+  readonly resolution: string;
+}
+
+export function isCreateTextResolution(action: ProposalAction): action is CreateTextResolution {
+  return typeof action.resolution === "string";
+}
+
+/** The action to be executed when the proposal is accepted */
+export type ProposalAction = CreateTextResolution;
 
 export interface Proposal {
+  /** Uppercase hex representation of the proposal ID */
+  readonly id: string;
   readonly title: string;
   /**
    * The transaction to be executed when the proposal is accepted
@@ -104,7 +127,7 @@ export interface Proposal {
    * This is one of the actions from
    * https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#app.ProposalOptions
    */
-  readonly option: ProposalOption;
+  readonly action: ProposalAction;
   readonly description: string;
   readonly electionRule: VersionedId;
   readonly electorate: VersionedId;
@@ -116,6 +139,7 @@ export interface Proposal {
   readonly submissionTime: number;
   /** The author of the proposal must be included in the list of transaction signers. */
   readonly author: Address;
+  readonly state: TallyResult;
   readonly status: ProposalStatus;
   readonly result: ProposalResult;
   readonly executorResult: ProposalExecutorResult;
@@ -297,7 +321,7 @@ export interface CreateProposalTx extends LightTransaction {
    * This is one of the actions from
    * https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#app.ProposalOptions
    */
-  readonly option: ProposalOption;
+  readonly action: ProposalAction;
   readonly description: string;
   readonly electionRuleId: Uint8Array;
   /** Unix timestamp when the proposal starts */
@@ -308,6 +332,27 @@ export interface CreateProposalTx extends LightTransaction {
 
 export function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx {
   return transaction.kind === "bns/create_proposal";
+}
+
+export interface VoteTx extends LightTransaction {
+  readonly kind: "bns/vote";
+  /** Uppercase hex representation of the proposal ID */
+  readonly proposalId: string;
+  readonly selection: VoteOption;
+}
+
+export function isVoteTx(transaction: LightTransaction): transaction is VoteTx {
+  return transaction.kind === "bns/vote";
+}
+
+export interface TallyTx extends LightTransaction {
+  readonly kind: "bns/tally";
+  /** Uppercase hex representation of the proposal ID */
+  readonly proposalId: string;
+}
+
+export function isTallyTx(transaction: LightTransaction): transaction is TallyTx {
+  return transaction.kind === "bns/tally";
 }
 
 // Transactions: BNS
@@ -332,7 +377,9 @@ export type BnsTx =
   | ReturnEscrowTx
   | UpdateEscrowPartiesTx
   // BNS: Governance
-  | CreateProposalTx;
+  | CreateProposalTx
+  | VoteTx
+  | TallyTx;
 
 export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
   if (

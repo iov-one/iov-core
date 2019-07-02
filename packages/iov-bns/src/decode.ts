@@ -44,17 +44,20 @@ import {
   PrivkeyBundle,
   PrivkeyBytes,
   Proposal,
+  ProposalAction,
   ProposalExecutorResult,
-  ProposalOption,
   ProposalResult,
   ProposalStatus,
   RegisterUsernameTx,
   ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
+  TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   VersionedId,
+  VoteOption,
+  VoteTx,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
@@ -313,20 +316,22 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
   }
 }
 
-function decodeRawProposalOption(rawOption: Uint8Array): ProposalOption {
+function decodeRawProposalOption(rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.app.ProposalOptions.decode(rawOption);
   // TODO: support other resolution types
-  let out: ProposalOption;
-  if (option.textResolutionMsg) out = decodeString(option.textResolutionMsg.resolution);
+  let out: ProposalAction;
+  if (option.textResolutionMsg) out = { resolution: decodeString(option.textResolutionMsg.resolution) };
   else throw new Error("Unsupported ProposalOptions");
 
   return out;
 }
 
-export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal): Proposal {
+export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal & Keyed): Proposal {
+  const voteState = ensure(proposal.voteState, "voteState");
   return {
+    id: Encoding.toHex(proposal._id).toUpperCase(),
     title: ensure(proposal.title, "title"),
-    option: decodeRawProposalOption(ensure(proposal.rawOption, "rawOption")),
+    action: decodeRawProposalOption(ensure(proposal.rawOption, "rawOption")),
     description: ensure(proposal.description, "description"),
     electionRule: decodeVersionedId(ensure(proposal.electionRuleRef, "electionRuleRef")),
     electorate: decodeVersionedId(ensure(proposal.electorateRef, "electorateRef")),
@@ -334,6 +339,12 @@ export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.I
     votingEndTime: asIntegerNumber(ensure(proposal.votingEndTime, "votingEndTime")),
     submissionTime: asIntegerNumber(ensure(proposal.submissionTime, "submissionTime")),
     author: encodeBnsAddress(prefix, ensure(proposal.author, "author")),
+    state: {
+      totalYes: asIntegerNumber(voteState.totalYes),
+      totalNo: asIntegerNumber(voteState.totalNo),
+      totalAbstain: asIntegerNumber(voteState.totalAbstain),
+      totalElectorateWeight: asIntegerNumber(voteState.totalElectorateWeight),
+    },
     status: decodeProposalStatus(ensure(proposal.status, "status")),
     result: decodeProposalResult(ensure(proposal.result, "result")),
     executorResult: decodeProposalExecutorResult(ensure(proposal.executorResult, "executorResult")),
@@ -558,11 +569,43 @@ function parseCreateProposalTx(
     ...base,
     kind: "bns/create_proposal",
     title: ensure(msg.title, "title"),
-    option: decodeRawProposalOption(ensure(msg.rawOption, "rawOption")),
+    action: decodeRawProposalOption(ensure(msg.rawOption, "rawOption")),
     description: ensure(msg.description, "description"),
     electionRuleId: ensure(msg.electionRuleId, "electionRuleId"),
     startTime: asIntegerNumber(ensure(msg.startTime, "startTime")),
     author: encodeBnsAddress(prefix, ensure(msg.author, "author")),
+  };
+}
+
+function decodeVoteOption(option: codecImpl.gov.VoteOption): VoteOption {
+  switch (option) {
+    case codecImpl.gov.VoteOption.VOTE_OPTION_INVALID:
+      throw new Error("VOTE_OPTION_INVALID is not allowed");
+    case codecImpl.gov.VoteOption.VOTE_OPTION_YES:
+      return VoteOption.Yes;
+    case codecImpl.gov.VoteOption.VOTE_OPTION_NO:
+      return VoteOption.No;
+    case codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN:
+      return VoteOption.Abstain;
+    default:
+      throw new Error("Received unknown value for vote option");
+  }
+}
+
+function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): VoteTx & WithCreator {
+  return {
+    ...base,
+    kind: "bns/vote",
+    proposalId: Encoding.toHex(ensure(msg.proposalId, "proposalId")).toUpperCase(),
+    selection: decodeVoteOption(ensure(msg.selected, "selected")),
+  };
+}
+
+function parseTallyTx(base: UnsignedTransaction, msg: codecImpl.gov.ITallyMsg): TallyTx & WithCreator {
+  return {
+    ...base,
+    kind: "bns/tally",
+    proposalId: Encoding.toHex(ensure(msg.proposalId, "proposalId")).toUpperCase(),
   };
 }
 
@@ -592,6 +635,8 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): Unsi
 
   // Governance
   if (tx.createProposalMsg) return parseCreateProposalTx(base, tx.createProposalMsg);
+  if (tx.voteMsg) return parseVoteTx(base, tx.voteMsg);
+  if (tx.tallyMsg) return parseTallyTx(base, tx.tallyMsg);
 
   throw new Error("unknown message type in transaction");
 }

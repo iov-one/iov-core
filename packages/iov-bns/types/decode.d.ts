@@ -23,6 +23,6 @@ export declare function decodeCashConfiguration(config: codecImpl.cash.Configura
 export declare function decodeParticipants(prefix: "iov" | "tiov", maybeParticipants?: codecImpl.multisig.IParticipant[] | null): readonly Participant[];
 export declare function decodeElectorate(prefix: "iov" | "tiov", electorate: codecImpl.gov.IElectorate & Keyed): Electorate;
 export declare function decodeElectionRule(prefix: "iov" | "tiov", rule: codecImpl.gov.IElectionRule & Keyed): ElectionRule;
-export declare function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal): Proposal;
+export declare function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal & Keyed): Proposal;
 export declare function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction;
 export declare function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction;

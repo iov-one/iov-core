@@ -22,14 +22,18 @@ import {
   CreateMultisignatureTx,
   CreateProposalTx,
   isBnsTx,
+  isCreateTextResolution,
   Participant,
   PrivkeyBundle,
   RegisterUsernameTx,
   ReleaseEscrowTx,
   RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
+  TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  VoteOption,
+  VoteTx,
 } from "./types";
 import { decodeBnsAddress, identityToAddress } from "./util";
 
@@ -290,23 +294,57 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.app.IT
 // Governance
 
 function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
-  const rawOption = codecImpl.app.ProposalOptions.encode({
-    // TODO: support other resolution types
-    textResolutionMsg: {
-      metadata: { schema: 1 },
-      resolution: tx.option,
-    },
-  }).finish();
+  let option: codecImpl.app.IProposalOptions;
+  if (isCreateTextResolution(tx.action)) {
+    option = {
+      textResolutionMsg: {
+        metadata: { schema: 1 },
+        resolution: tx.action.resolution,
+      },
+    };
+  } else {
+    throw new Error("Got unsupported type of ProposalOption");
+  }
 
   return {
     createProposalMsg: {
       metadata: { schema: 1 },
       title: tx.title,
-      rawOption: rawOption,
+      rawOption: codecImpl.app.ProposalOptions.encode(option).finish(),
       description: tx.description,
       electionRuleId: tx.electionRuleId,
       startTime: tx.startTime,
       author: decodeBnsAddress(tx.author).data,
+    },
+  };
+}
+
+function encodeVoteOption(option: VoteOption): codecImpl.gov.VoteOption {
+  switch (option) {
+    case VoteOption.Yes:
+      return codecImpl.gov.VoteOption.VOTE_OPTION_YES;
+    case VoteOption.No:
+      return codecImpl.gov.VoteOption.VOTE_OPTION_NO;
+    case VoteOption.Abstain:
+      return codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN;
+  }
+}
+
+function buildVoteTx(tx: VoteTx): codecImpl.app.ITx {
+  return {
+    voteMsg: {
+      metadata: { schema: 1 },
+      proposalId: Encoding.fromHex(tx.proposalId),
+      selected: encodeVoteOption(tx.selection),
+    },
+  };
+}
+
+function buildTallyTx(tx: TallyTx): codecImpl.app.ITx {
+  return {
+    tallyMsg: {
+      metadata: { schema: 1 },
+      proposalId: Encoding.fromHex(tx.proposalId),
     },
   };
 }
@@ -356,6 +394,10 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     // BNS: Governance
     case "bns/create_proposal":
       return buildCreateProposalTx(tx);
+    case "bns/vote":
+      return buildVoteTx(tx);
+    case "bns/tally":
+      return buildTallyTx(tx);
 
     default:
       throw new Error("Received transaction of unsupported kind.");
