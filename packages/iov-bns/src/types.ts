@@ -114,7 +114,7 @@ export function isCreateTextResolution(option: ProposalOption): option is Create
   return typeof option.resolution === "string";
 }
 
-/** Union type for possible options. Any option is ony action that will be executed when the proposal is accepted */
+/** The action to be executed when the proposal is accepted */
 export type ProposalOption = CreateTextResolution;
 
 export interface Proposal {

@@ -77,7 +77,7 @@ export interface CreateTextResolution {
     readonly resolution: string;
 }
 export declare function isCreateTextResolution(option: ProposalOption): option is CreateTextResolution;
-/** Union type for possible options. Any option is ony action that will be executed when the proposal is accepted */
+/** The action to be executed when the proposal is accepted */
 export declare type ProposalOption = CreateTextResolution;
 export interface Proposal {
     /** Uppercase hex representation of the proposal ID */
