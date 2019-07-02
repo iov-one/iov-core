@@ -36,6 +36,8 @@
 - @iov/socket: Add 10 second timeout to `StreamingSocket`. Value can be
   configured using an optional constructor argument.
 - @iov/socket: Add `QueueingStreamingSocket` and `ReconnectingSocket` class.
+- @iov/stream: `ValueAndUpdates.waitFor` now rejects the promise if the
+  underlying stream emits an error before the search value was found.
 - @iov/tendermint-rpc: Add support for Tendermint 0.30.x. and 0.31.x
 
 Breaking changes

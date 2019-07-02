@@ -68,7 +68,11 @@ class RpcEventProducer implements Producer<SubscriptionEvent> {
     try {
       this.socket.queueRequest(JSON.stringify(endRequest));
     } catch (error) {
-      if (!error.match(/socket has disconnected/i)) throw error;
+      if (error instanceof Error && error.message.match(/socket has disconnected/i)) {
+        // ignore
+      } else {
+        throw error;
+      }
     }
   }
 

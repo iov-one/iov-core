@@ -81,8 +81,8 @@ describe("ValueAndUpdates", () => {
         expect(value).toEqual(123);
         done();
       },
-      complete: () => fail(".updates stream must not complete"),
-      error: e => fail(e),
+      complete: () => done.fail(".updates stream must not complete"),
+      error: e => done.fail(e),
     };
 
     const listener1: Listener<number> = {
@@ -90,8 +90,8 @@ describe("ValueAndUpdates", () => {
         expect(value).toEqual(123);
         vau.updates.addListener(listener2);
       },
-      complete: () => fail(".updates stream must not complete"),
-      error: e => fail(e),
+      complete: () => done.fail(".updates stream must not complete"),
+      error: e => done.fail(e),
     };
 
     vau.updates.addListener(listener1);
@@ -107,8 +107,8 @@ describe("ValueAndUpdates", () => {
         expect(value).toEqual(99);
         done();
       },
-      complete: () => fail(".updates stream must not complete"),
-      error: e => fail(e),
+      complete: () => done.fail(".updates stream must not complete"),
+      error: e => done.fail(e),
     };
 
     const listener1: Listener<number> = {
@@ -116,8 +116,8 @@ describe("ValueAndUpdates", () => {
         expect(value).toEqual(99);
         vau.updates.addListener(listener2);
       },
-      complete: () => fail(".updates stream must not complete"),
-      error: e => fail(e),
+      complete: () => done.fail(".updates stream must not complete"),
+      error: e => done.fail(e),
     };
 
     vau.updates.addListener(listener1);
@@ -140,8 +140,8 @@ describe("ValueAndUpdates", () => {
           done();
         }
       },
-      complete: () => fail(".updates stream must not complete"),
-      error: e => fail(e),
+      complete: () => done.fail(".updates stream must not complete"),
+      error: e => done.fail(e),
     });
 
     setTimeout(() => producer.update(22), 10);
@@ -195,5 +195,16 @@ describe("ValueAndUpdates", () => {
       const result = await vau.waitFor(v => v > 30);
       expect(result).toEqual(33);
     }
+  });
+
+  describe("waitFor", () => {
+    it("propagates error from stream", async () => {
+      const producer = new DefaultValueProducer(1);
+      const vau = new ValueAndUpdates(producer);
+      setTimeout(() => producer.error(new Error("something went wrong")), 10);
+      await vau
+        .waitFor(3)
+        .then(() => fail("must not resolve"), error => expect(error).toMatch(/something went wrong/));
+    });
   });
 });
