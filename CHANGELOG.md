@@ -21,6 +21,9 @@
 - @iov/bns: Add support for escrow transactions.
 - @iov/bns: Add `CreateEscrowTx`, `ReleaseEscrowTx`, `ReturnEscrowTx` and
   `UpdateEscrowPartiesTx` types.
+- @iov/bns: Add support for governance functionality: add `CreateProposalTx`,
+  `VoteTx`, `TallyTx` and related types as well as
+  `BnsConnection.getElectorates`, `.getElectionRules`, `.getProposals`.
 - @iov/ethereum: Add `createEtherSwapId` and `createErc20SwapId` static methods.
 - @iov/ethereum: Add `SwapIdPrefix` enum.
 - @iov/ethereum: Add `Erc20TokensMap` type.
