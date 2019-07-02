@@ -53,6 +53,7 @@ import {
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
+  CreateTextResolution,
   isCreateEscrowTx,
   isCreateMultisignatureTx,
   isRegisterUsernameTx,
@@ -1242,7 +1243,7 @@ describe("BnsConnection", () => {
 
       const title = `Hello ${Math.random()}`;
       const description = `Hello ${Math.random()}`;
-      const option = `The winner is Alice ${Math.random()}`;
+      const option: CreateTextResolution = { resolution: `The winner is Alice ${Math.random()}` };
       let proposalId: string;
 
       {
@@ -2001,7 +2002,7 @@ describe("BnsConnection", () => {
 
       const title = `Hello ${Math.random()}`;
       const description = `Hello ${Math.random()}`;
-      const option = `The winner is Alice ${Math.random()}`;
+      const option: CreateTextResolution = { resolution: `The winner is Alice ${Math.random()}` };
 
       const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
         kind: "bns/create_proposal",

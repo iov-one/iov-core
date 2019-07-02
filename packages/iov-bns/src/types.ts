@@ -106,8 +106,16 @@ export interface TallyResult {
   readonly totalElectorateWeight: number;
 }
 
-/** Union type for possible options */
-export type ProposalOption = string;
+export interface CreateTextResolution {
+  readonly resolution: string;
+}
+
+export function isCreateTextResolution(option: ProposalOption): option is CreateTextResolution {
+  return typeof option.resolution === "string";
+}
+
+/** Union type for possible options. Any option is ony action that will be executed when the proposal is accepted */
+export type ProposalOption = CreateTextResolution;
 
 export interface Proposal {
   /** Uppercase hex representation of the proposal ID */

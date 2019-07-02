@@ -320,7 +320,7 @@ function decodeRawProposalOption(rawOption: Uint8Array): ProposalOption {
   const option = codecImpl.app.ProposalOptions.decode(rawOption);
   // TODO: support other resolution types
   let out: ProposalOption;
-  if (option.textResolutionMsg) out = decodeString(option.textResolutionMsg.resolution);
+  if (option.textResolutionMsg) out = { resolution: decodeString(option.textResolutionMsg.resolution) };
   else throw new Error("Unsupported ProposalOptions");
 
   return out;

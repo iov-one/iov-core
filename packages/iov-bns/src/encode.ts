@@ -22,6 +22,7 @@ import {
   CreateMultisignatureTx,
   CreateProposalTx,
   isBnsTx,
+  isCreateTextResolution,
   Participant,
   PrivkeyBundle,
   RegisterUsernameTx,
@@ -293,19 +294,23 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.app.IT
 // Governance
 
 function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
-  const rawOption = codecImpl.app.ProposalOptions.encode({
-    // TODO: support other resolution types
-    textResolutionMsg: {
-      metadata: { schema: 1 },
-      resolution: tx.option,
-    },
-  }).finish();
+  let option: codecImpl.app.IProposalOptions;
+  if (isCreateTextResolution(tx.option)) {
+    option = {
+      textResolutionMsg: {
+        metadata: { schema: 1 },
+        resolution: tx.option.resolution,
+      },
+    };
+  } else {
+    throw new Error("Got unsupported type of ProposalOption");
+  }
 
   return {
     createProposalMsg: {
       metadata: { schema: 1 },
       title: tx.title,
-      rawOption: rawOption,
+      rawOption: codecImpl.app.ProposalOptions.encode(option).finish(),
       description: tx.description,
       electionRuleId: tx.electionRuleId,
       startTime: tx.startTime,
