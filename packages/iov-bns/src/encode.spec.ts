@@ -547,7 +547,7 @@ describe("Encode", () => {
         kind: "bns/create_proposal",
         creator: defaultCreator,
         title: "Why not try this?",
-        option: { resolution: "la la la" },
+        action: { resolution: "la la la" },
         description: "foo bar",
         electionRuleId: fromHex("0011221122112200"),
         startTime: 1122334455,

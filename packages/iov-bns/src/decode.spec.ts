@@ -307,7 +307,7 @@ describe("Decode", () => {
       expect(decodeProposal("tiov", proposal)).toEqual({
         id: "001100220033AABB",
         title: "This will happen next",
-        option: { resolution: "la la la" },
+        action: { resolution: "la la la" },
         description: "foo bar",
         electionRule: {
           id: fromHex("aabbaabbccddbbff"),
@@ -668,7 +668,7 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.option).toEqual({ resolution: "la la la" });
+      expect(parsed.action).toEqual({ resolution: "la la la" });
       expect(parsed.description).toEqual("foo bar");
       expect(parsed.electionRuleId).toEqual(Encoding.fromHex("aabbaabbccddbbff"));
       expect(parsed.startTime).toEqual(42424242);

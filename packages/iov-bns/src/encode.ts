@@ -295,11 +295,11 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.app.IT
 
 function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
   let option: codecImpl.app.IProposalOptions;
-  if (isCreateTextResolution(tx.option)) {
+  if (isCreateTextResolution(tx.action)) {
     option = {
       textResolutionMsg: {
         metadata: { schema: 1 },
-        resolution: tx.option.resolution,
+        resolution: tx.action.resolution,
       },
     };
   } else {

@@ -44,8 +44,8 @@ import {
   PrivkeyBundle,
   PrivkeyBytes,
   Proposal,
+  ProposalAction,
   ProposalExecutorResult,
-  ProposalOption,
   ProposalResult,
   ProposalStatus,
   RegisterUsernameTx,
@@ -316,10 +316,10 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
   }
 }
 
-function decodeRawProposalOption(rawOption: Uint8Array): ProposalOption {
+function decodeRawProposalOption(rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.app.ProposalOptions.decode(rawOption);
   // TODO: support other resolution types
-  let out: ProposalOption;
+  let out: ProposalAction;
   if (option.textResolutionMsg) out = { resolution: decodeString(option.textResolutionMsg.resolution) };
   else throw new Error("Unsupported ProposalOptions");
 
@@ -331,7 +331,7 @@ export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.I
   return {
     id: Encoding.toHex(proposal._id).toUpperCase(),
     title: ensure(proposal.title, "title"),
-    option: decodeRawProposalOption(ensure(proposal.rawOption, "rawOption")),
+    action: decodeRawProposalOption(ensure(proposal.rawOption, "rawOption")),
     description: ensure(proposal.description, "description"),
     electionRule: decodeVersionedId(ensure(proposal.electionRuleRef, "electionRuleRef")),
     electorate: decodeVersionedId(ensure(proposal.electorateRef, "electorateRef")),
@@ -569,7 +569,7 @@ function parseCreateProposalTx(
     ...base,
     kind: "bns/create_proposal",
     title: ensure(msg.title, "title"),
-    option: decodeRawProposalOption(ensure(msg.rawOption, "rawOption")),
+    action: decodeRawProposalOption(ensure(msg.rawOption, "rawOption")),
     description: ensure(msg.description, "description"),
     electionRuleId: ensure(msg.electionRuleId, "electionRuleId"),
     startTime: asIntegerNumber(ensure(msg.startTime, "startTime")),

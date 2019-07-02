@@ -1243,7 +1243,7 @@ describe("BnsConnection", () => {
 
       const title = `Hello ${Math.random()}`;
       const description = `Hello ${Math.random()}`;
-      const option: CreateTextResolution = { resolution: `The winner is Alice ${Math.random()}` };
+      const action: CreateTextResolution = { resolution: `The winner is Alice ${Math.random()}` };
       let proposalId: string;
 
       {
@@ -1254,7 +1254,7 @@ describe("BnsConnection", () => {
           description: description,
           author: authorAddress,
           electionRuleId: someElectionRule.id,
-          option: option,
+          action: action,
           startTime: startTime,
         });
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
@@ -2002,7 +2002,7 @@ describe("BnsConnection", () => {
 
       const title = `Hello ${Math.random()}`;
       const description = `Hello ${Math.random()}`;
-      const option: CreateTextResolution = { resolution: `The winner is Alice ${Math.random()}` };
+      const action: CreateTextResolution = { resolution: `The winner is Alice ${Math.random()}` };
 
       const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
         kind: "bns/create_proposal",
@@ -2011,7 +2011,7 @@ describe("BnsConnection", () => {
         description: description,
         author: authorAddress,
         electionRuleId: someElectionRule.id,
-        option: option,
+        action: action,
         startTime: startTime,
       });
 
@@ -2029,7 +2029,7 @@ describe("BnsConnection", () => {
       expect(myProposal).toBeDefined();
       expect(myProposal!.title).toEqual(title);
       expect(myProposal!.description).toEqual(description);
-      expect(myProposal!.option).toEqual(option);
+      expect(myProposal!.action).toEqual(action);
 
       connection.disconnect();
     });

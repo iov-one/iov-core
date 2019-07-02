@@ -76,9 +76,9 @@ export interface TallyResult {
 export interface CreateTextResolution {
     readonly resolution: string;
 }
-export declare function isCreateTextResolution(option: ProposalOption): option is CreateTextResolution;
+export declare function isCreateTextResolution(action: ProposalAction): action is CreateTextResolution;
 /** The action to be executed when the proposal is accepted */
-export declare type ProposalOption = CreateTextResolution;
+export declare type ProposalAction = CreateTextResolution;
 export interface Proposal {
     /** Uppercase hex representation of the proposal ID */
     readonly id: string;
@@ -89,7 +89,7 @@ export interface Proposal {
      * This is one of the actions from
      * https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#app.ProposalOptions
      */
-    readonly option: ProposalOption;
+    readonly action: ProposalAction;
     readonly description: string;
     readonly electionRule: VersionedId;
     readonly electorate: VersionedId;
@@ -216,7 +216,7 @@ export interface CreateProposalTx extends LightTransaction {
      * This is one of the actions from
      * https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#app.ProposalOptions
      */
-    readonly option: ProposalOption;
+    readonly action: ProposalAction;
     readonly description: string;
     readonly electionRuleId: Uint8Array;
     /** Unix timestamp when the proposal starts */
