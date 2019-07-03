@@ -250,7 +250,7 @@ describe("Decode", () => {
         },
       };
       expect(decodeElectionRule("tiov", rule)).toEqual({
-        id: fromHex("0000000000000002"),
+        id: 2,
         version: 3,
         admin: "tiov124242e5gwuqpzqq3qqgsqygqzyqpzqq350k5np" as Address,
         electorateId: 7,
@@ -282,11 +282,11 @@ describe("Decode", () => {
         }).finish(),
         description: "foo bar",
         electionRuleRef: {
-          id: fromHex("aabbaabbccddbbff"),
+          id: fromHex("aabbccddbbff"),
           version: 28,
         },
         electorateRef: {
-          id: fromHex("0011001100110011aabb"),
+          id: fromHex("001100110011aabb"),
           version: 3,
         },
         votingStartTime: 42424242,
@@ -305,16 +305,16 @@ describe("Decode", () => {
       };
 
       expect(decodeProposal("tiov", proposal)).toEqual({
-        id: "001100220033AABB",
+        id: 4785220636355259,
         title: "This will happen next",
         action: { resolution: "la la la" },
         description: "foo bar",
         electionRule: {
-          id: fromHex("aabbaabbccddbbff"),
+          id: 187723572689919,
           version: 28,
         },
         electorate: {
-          id: fromHex("0011001100110011aabb"),
+          id: 4785147619683003,
           version: 3,
         },
         votingStartTime: 42424242,
@@ -658,7 +658,7 @@ describe("Decode", () => {
             },
           }).finish(),
           description: "foo bar",
-          electionRuleId: Encoding.fromHex("aabbaabbccddbbff"),
+          electionRuleId: Encoding.fromHex("bbccddbbff"),
           startTime: 42424242,
           author: Encoding.fromHex("0011223344556677889900112233445566778899"),
         },
@@ -670,7 +670,7 @@ describe("Decode", () => {
       expect(parsed.title).toEqual("This will happen next");
       expect(parsed.action).toEqual({ resolution: "la la la" });
       expect(parsed.description).toEqual("foo bar");
-      expect(parsed.electionRuleId).toEqual(Encoding.fromHex("aabbaabbccddbbff"));
+      expect(parsed.electionRuleId).toEqual(806595967999);
       expect(parsed.startTime).toEqual(42424242);
       expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
     });
@@ -679,7 +679,7 @@ describe("Decode", () => {
       const transactionMessage: codecImpl.app.ITx = {
         voteMsg: {
           metadata: { schema: 1 },
-          proposalId: fromHex("aabbaabbddeeffffaa"),
+          proposalId: fromHex("aabbddeeffff"),
           selected: codecImpl.gov.VoteOption.VOTE_OPTION_YES,
         },
       };
@@ -688,21 +688,21 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.selection).toEqual(VoteOption.Yes);
-      expect(parsed.proposalId).toEqual("AABBAABBDDEEFFFFAA");
+      expect(parsed.proposalId).toEqual(187723859034111);
     });
 
     it("works for TallyTx", () => {
       const transactionMessage: codecImpl.app.ITx = {
         tallyMsg: {
           metadata: { schema: 1 },
-          proposalId: fromHex("aabbaabbddeeffffaa"),
+          proposalId: fromHex("aabbddeeffff"),
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
       if (!isTallyTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.proposalId).toEqual("AABBAABBDDEEFFFFAA");
+      expect(parsed.proposalId).toEqual(187723859034111);
     });
   });
 });
