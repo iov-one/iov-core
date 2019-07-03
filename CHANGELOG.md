@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.16.0
+
+Breaking changes
+
+- @iov/bns: `ElectionRule`, `Proposal` and `VersionedId` all use numeric IDs now
+  to conform with `Electorate`.
+
 ## 0.15.1
 
 - @iov/bns: Export `CreateProposalTx` and `isCreateProposalTx`.
