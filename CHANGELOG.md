@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.1
+
+- @iov/bns: Export `CreateProposalTx` and `isCreateProposalTx`.
+
 ## 0.15.0
 
 - @iov/bcp: Add `isSwapTransaction` helper function.
