@@ -15,6 +15,7 @@ import {
 } from "@iov/bns";
 
 import { CommitteeId, ProposalOptions, ProposalType } from "./proposals";
+import { groupByCallback, maxWithComparatorCallback } from "./utils";
 
 // TODO: Constants to be finalised once the committees are actually on-chain
 export const COMMITTEE_IDS = {
@@ -55,18 +56,9 @@ export class Governor {
       throw new Error("No election rule found for electorate");
     }
 
-    return filteredRules.reduce(
-      (rules, rule) => {
-        const existing = rules.find(({ id }) => id === rule.id);
-        if (existing && rule.version > existing.version) {
-          const existingIndex = rules.indexOf(existing);
-          rules.splice(existingIndex, 1, rule);
-          return rules;
-        }
-        return [...rules, rule];
-      },
-      // tslint:disable-next-line:readonly-array
-      [] as ElectionRule[],
+    const groupedRules = groupByCallback(filteredRules, rule => rule.id);
+    return groupedRules.map(group =>
+      maxWithComparatorCallback(group.values, (rule1, rule2) => rule1.version - rule2.version),
     );
   }
 
