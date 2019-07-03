@@ -58,13 +58,12 @@ fi
 # Start faucet
 #
 
-# TODO: re-enable once the faucet is updated to this version of iov-core
-# if [[ -n ${BNSD_ENABLED:-} ]]; then
-#   fold_start "faucet-start"
-#   ./scripts/iov_faucet_start.sh
-#   export FAUCET_ENABLED=1
-#   fold_end
-# fi
+if [[ -n ${BNSD_ENABLED:-} ]]; then
+  fold_start "faucet-start"
+  ./scripts/iov_faucet_start.sh
+  export FAUCET_ENABLED=1
+  fold_end
+fi
 
 echo "use tendermint? ${TENDERMINT_ENABLED:-no}"
 echo "use bnsd? ${BNSD_ENABLED:-no}"
