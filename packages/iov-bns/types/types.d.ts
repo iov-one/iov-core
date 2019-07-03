@@ -26,7 +26,7 @@ export interface Fraction {
     readonly denominator: number;
 }
 export interface ElectionRule {
-    readonly id: Uint8Array;
+    readonly id: number;
     readonly version: number;
     readonly admin: Address;
     /**
@@ -44,7 +44,7 @@ export interface ElectionRule {
     readonly quorum: Fraction | null;
 }
 export interface VersionedId {
-    readonly id: Uint8Array;
+    readonly id: number;
     readonly version: number;
 }
 export declare enum ProposalExecutorResult {
@@ -80,8 +80,7 @@ export declare function isCreateTextResolution(action: ProposalAction): action i
 /** The action to be executed when the proposal is accepted */
 export declare type ProposalAction = CreateTextResolution;
 export interface Proposal {
-    /** Uppercase hex representation of the proposal ID */
-    readonly id: string;
+    readonly id: number;
     readonly title: string;
     /**
      * The transaction to be executed when the proposal is accepted
@@ -218,7 +217,7 @@ export interface CreateProposalTx extends LightTransaction {
      */
     readonly action: ProposalAction;
     readonly description: string;
-    readonly electionRuleId: Uint8Array;
+    readonly electionRuleId: number;
     /** Unix timestamp when the proposal starts */
     readonly startTime: number;
     /** The author of the proposal must be included in the list of transaction signers. */
@@ -227,15 +226,13 @@ export interface CreateProposalTx extends LightTransaction {
 export declare function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx;
 export interface VoteTx extends LightTransaction {
     readonly kind: "bns/vote";
-    /** Uppercase hex representation of the proposal ID */
-    readonly proposalId: string;
+    readonly proposalId: number;
     readonly selection: VoteOption;
 }
 export declare function isVoteTx(transaction: LightTransaction): transaction is VoteTx;
 export interface TallyTx extends LightTransaction {
     readonly kind: "bns/tally";
-    /** Uppercase hex representation of the proposal ID */
-    readonly proposalId: string;
+    readonly proposalId: number;
 }
 export declare function isTallyTx(transaction: LightTransaction): transaction is TallyTx;
 export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx | CreateProposalTx | VoteTx | TallyTx;
