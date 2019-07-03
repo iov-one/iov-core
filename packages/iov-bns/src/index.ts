@@ -34,6 +34,8 @@ export {
   TallyResult,
   Proposal,
   VoteOption,
+  CreateProposalTx,
+  isCreateProposalTx,
   VoteTx,
   isVoteTx,
   TallyTx,
