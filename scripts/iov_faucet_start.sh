@@ -8,7 +8,6 @@ FAUCET_VERSION="v0.5.0"
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/faucet_start.XXXXXXXXX")
 LOGFILE="$TMP_DIR/faucet.log"
 
-docker pull "alpine"
 DOCKER_HOST_IP=$(docker run --rm alpine ip route | awk 'NR==1 {print $3}')
 
 BLOCKCHAIN_URL="ws://$DOCKER_HOST_IP:23456"
