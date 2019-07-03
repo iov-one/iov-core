@@ -1,3 +1,5 @@
+import BN = require("bn.js");
+
 import {
   Algorithm,
   Amount,
@@ -112,6 +114,10 @@ export function encodeParticipants(
       weight: participant.weight,
     }),
   );
+}
+
+function encodeNumericId(id: number): Uint8Array {
+  return new BN(id).toArrayLike(Uint8Array, "be", 8);
 }
 
 // Token sends
@@ -312,7 +318,7 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
       title: tx.title,
       rawOption: codecImpl.app.ProposalOptions.encode(option).finish(),
       description: tx.description,
-      electionRuleId: tx.electionRuleId,
+      electionRuleId: encodeNumericId(tx.electionRuleId),
       startTime: tx.startTime,
       author: decodeBnsAddress(tx.author).data,
     },
@@ -334,7 +340,7 @@ function buildVoteTx(tx: VoteTx): codecImpl.app.ITx {
   return {
     voteMsg: {
       metadata: { schema: 1 },
-      proposalId: Encoding.fromHex(tx.proposalId),
+      proposalId: encodeNumericId(tx.proposalId),
       selected: encodeVoteOption(tx.selection),
     },
   };
@@ -344,7 +350,7 @@ function buildTallyTx(tx: TallyTx): codecImpl.app.ITx {
   return {
     tallyMsg: {
       metadata: { schema: 1 },
-      proposalId: Encoding.fromHex(tx.proposalId),
+      proposalId: encodeNumericId(tx.proposalId),
     },
   };
 }

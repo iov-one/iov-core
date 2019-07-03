@@ -92,9 +92,13 @@ export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
   return maybe;
 }
 
+function decodeNumericId(id: Uint8Array): number {
+  return new BN(id).toNumber();
+}
+
 function decodeVersionedId(versionedId: codecImpl.orm.IVersionedIDRef): VersionedId {
   return {
-    id: ensure(versionedId.id, "id"),
+    id: decodeNumericId(ensure(versionedId.id, "id")),
     version: ensure(versionedId.version, "version"),
   };
 }
@@ -235,7 +239,7 @@ export function decodeElectorate(
   });
 
   return {
-    id: new BN(id).toNumber(),
+    id: id,
     version: asIntegerNumber(ensure(electorate.version, "version")),
     admin: encodeBnsAddress(prefix, ensure(electorate.admin, "admin")),
     title: ensure(electorate.title, "title"), // must not be an empty string
@@ -258,12 +262,11 @@ export function decodeElectionRule(
   rule: codecImpl.gov.IElectionRule & Keyed,
 ): ElectionRule {
   const { id } = decodeVersionedId(codecImpl.orm.VersionedIDRef.decode(rule._id));
-  const electorateId = new BN(ensure(rule.electorateId, "electorateId"));
   return {
     id: id,
     version: asIntegerNumber(ensure(rule.version, "version")),
     admin: encodeBnsAddress(prefix, ensure(rule.admin, "admin")),
-    electorateId: electorateId.toNumber(),
+    electorateId: decodeNumericId(ensure(rule.electorateId, "electorateId")),
     title: ensure(rule.title, "title"), // must not be an empty string
     votingPeriod: asIntegerNumber(ensure(rule.votingPeriod, "votingPeriod")),
     threshold: decodeFraction(ensure(rule.threshold, "threshold")),
@@ -329,7 +332,7 @@ function decodeRawProposalOption(rawOption: Uint8Array): ProposalAction {
 export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal & Keyed): Proposal {
   const voteState = ensure(proposal.voteState, "voteState");
   return {
-    id: Encoding.toHex(proposal._id).toUpperCase(),
+    id: decodeNumericId(proposal._id),
     title: ensure(proposal.title, "title"),
     action: decodeRawProposalOption(ensure(proposal.rawOption, "rawOption")),
     description: ensure(proposal.description, "description"),
@@ -571,7 +574,7 @@ function parseCreateProposalTx(
     title: ensure(msg.title, "title"),
     action: decodeRawProposalOption(ensure(msg.rawOption, "rawOption")),
     description: ensure(msg.description, "description"),
-    electionRuleId: ensure(msg.electionRuleId, "electionRuleId"),
+    electionRuleId: decodeNumericId(ensure(msg.electionRuleId, "electionRuleId")),
     startTime: asIntegerNumber(ensure(msg.startTime, "startTime")),
     author: encodeBnsAddress(prefix, ensure(msg.author, "author")),
   };
@@ -596,7 +599,7 @@ function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): Vo
   return {
     ...base,
     kind: "bns/vote",
-    proposalId: Encoding.toHex(ensure(msg.proposalId, "proposalId")).toUpperCase(),
+    proposalId: decodeNumericId(ensure(msg.proposalId, "proposalId")),
     selection: decodeVoteOption(ensure(msg.selected, "selected")),
   };
 }
@@ -605,7 +608,7 @@ function parseTallyTx(base: UnsignedTransaction, msg: codecImpl.gov.ITallyMsg): 
   return {
     ...base,
     kind: "bns/tally",
-    proposalId: Encoding.toHex(ensure(msg.proposalId, "proposalId")).toUpperCase(),
+    proposalId: decodeNumericId(ensure(msg.proposalId, "proposalId")),
   };
 }
 

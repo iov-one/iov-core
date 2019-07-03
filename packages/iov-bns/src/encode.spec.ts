@@ -549,7 +549,7 @@ describe("Encode", () => {
         title: "Why not try this?",
         action: { resolution: "la la la" },
         description: "foo bar",
-        electionRuleId: fromHex("0011221122112200"),
+        electionRuleId: 4822531585417728,
         startTime: 1122334455,
         author: defaultSender,
       };
@@ -574,13 +574,13 @@ describe("Encode", () => {
       const vote: VoteTx & WithCreator = {
         kind: "bns/vote",
         creator: defaultCreator,
-        proposalId: "AABBAABB22",
+        proposalId: 733292968738,
         selection: VoteOption.Abstain,
       };
       const msg = buildMsg(vote).voteMsg!;
       expect(msg).toEqual({
         metadata: { schema: 1 },
-        proposalId: fromHex("AABBAABB22"),
+        proposalId: Uint8Array.from([0, 0, 0, ...fromHex("AABBAABB22")]),
         selected: codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN,
       });
     });
@@ -589,12 +589,12 @@ describe("Encode", () => {
       const vote: TallyTx & WithCreator = {
         kind: "bns/tally",
         creator: defaultCreator,
-        proposalId: "AABBAABB22",
+        proposalId: 733292968738,
       };
       const msg = buildMsg(vote).tallyMsg!;
       expect(msg).toEqual({
         metadata: { schema: 1 },
-        proposalId: fromHex("AABBAABB22"),
+        proposalId: Uint8Array.from([0, 0, 0, ...fromHex("AABBAABB22")]),
       });
     });
 
