@@ -689,13 +689,12 @@ describe("BnsConnection", () => {
       const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
-        targets: [{ chainId: "foobar" as ChainId, address: address }],
         username: username,
+        targets: [{ chainId: "foobar" as ChainId, address: address }],
       });
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(registration, bnsCodec, nonce);
-      const txBytes = bnsCodec.bytesToPost(signed);
-      const response = await connection.postTx(txBytes);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
