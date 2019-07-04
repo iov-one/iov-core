@@ -713,6 +713,49 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
+    it("can register a username with empty list of targets", async () => {
+      pending("Currently not supported by the blockchain, see https://github.com/iov-one/weave/issues/857");
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create and send registration
+      const username = `testuser_${Math.random()}*iov`;
+      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
+        kind: "bns/register_username",
+        creator: identity,
+        username: username,
+        targets: [],
+      });
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(registration, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find registration transaction
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(isConfirmedTransaction);
+      expect(searchResult.length).toEqual(1);
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      if (!isRegisterUsernameTx(firstSearchResultTransaction)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(firstSearchResultTransaction.username).toEqual(username);
+      expect(firstSearchResultTransaction.targets.length).toEqual(0);
+
+      connection.disconnect();
+    });
+
     it("can add address to username and remove again", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
