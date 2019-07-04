@@ -190,6 +190,12 @@ function encodeChainAddressPair(pair: ChainAddressPair): codecImpl.username.IBlo
 }
 
 function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.bnsd.ITx {
+  if (!tx.username.endsWith("*iov")) {
+    throw new Error(
+      "Starting with IOV-Core 0.16, the username property needs to be a full human readable address, including the namespace suffix (e.g. '*iov').",
+    );
+  }
+
   return {
     usernameRegisterTokenMsg: {
       metadata: { schema: 1 },

@@ -685,7 +685,7 @@ describe("BnsConnection", () => {
       await sendTokensFromFaucet(connection, address, registerAmount);
 
       // Create and send registration
-      const username = `testuser_${Math.random()}`;
+      const username = `testuser_${Math.random()}*iov`;
       const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
@@ -727,7 +727,7 @@ describe("BnsConnection", () => {
       await sendTokensFromFaucet(connection, myAddress, registerAmount);
 
       // Create and send registration
-      const username = `testuser_${Math.random()}`;
+      const username = `testuser_${Math.random()}*iov`;
       const usernameRegistration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
@@ -2035,7 +2035,7 @@ describe("BnsConnection", () => {
       await sendTokensFromFaucet(connection, identityAddress, registerAmount);
 
       // Register username
-      const username = `testuser_${Math.random()}`;
+      const username = `testuser_${Math.random()}*iov`;
       const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
@@ -2062,7 +2062,7 @@ describe("BnsConnection", () => {
 
       // Query by non-existing name
       {
-        const results = await connection.getUsernames({ username: "user_we_dont_have" });
+        const results = await connection.getUsernames({ username: "user_we_dont_have*iov" });
         expect(results.length).toEqual(0);
       }
 

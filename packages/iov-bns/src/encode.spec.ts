@@ -295,7 +295,7 @@ describe("Encode", () => {
       const registerUsername: RegisterUsernameTx & WithCreator = {
         kind: "bns/register_username",
         creator: defaultCreator,
-        username: "alice",
+        username: "alice*iov",
         targets: [
           {
             chainId: "chain1" as ChainId,
@@ -312,7 +312,7 @@ describe("Encode", () => {
         ],
       };
       const msg = buildMsg(registerUsername).usernameRegisterTokenMsg!;
-      expect(msg.username).toEqual("alice");
+      expect(msg.username).toEqual("alice*iov");
       expect(msg.targets).toBeDefined();
       expect(msg.targets!.length).toEqual(3);
       expect(msg.targets![0].blockchainId).toEqual("chain1");

@@ -17,6 +17,7 @@ Breaking changes
   favour of the new `UpdateTargetsOfUsernameTx`.
 - @iov/bns: Rename `BnsUsernameNft.addresses` to `.targets`.
 - @iov/bns: Rename `RegisterUsernameTx.addresses` to `.targets`.
+- @iov/bns: `RegisterUsernameTx.username` now has to include a \*iov suffix.
 
 ## 0.15.1
 
