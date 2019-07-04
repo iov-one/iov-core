@@ -639,18 +639,18 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public async getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]> {
-    // https://github.com/iov-one/weave/blob/v0.9.2/x/nft/username/handler_test.go#L207
     let results: readonly Result[];
     if (isBnsUsernamesByUsernameQuery(query)) {
-      results = (await this.query("/nft/usernames", toUtf8(query.username))).results;
+      results = (await this.query("/usernames", toUtf8(query.username))).results;
     } else if (isBnsUsernamesByOwnerQuery(query)) {
-      const rawAddress = decodeBnsAddress(query.owner).data;
-      results = (await this.query("/nft/usernames/owner", rawAddress)).results;
+      throw new Error(
+        "Querying usernames by owner is not supported right now. See https://github.com/iov-one/weave/issues/858",
+      );
     } else {
       throw new Error("Unsupported query");
     }
 
-    const parser = createParser(codecImpl.username.Token, "usrnft:");
+    const parser = createParser(codecImpl.username.Token, "tokens:");
     const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId()));
     return nfts;
   }

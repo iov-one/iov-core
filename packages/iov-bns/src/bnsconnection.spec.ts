@@ -2027,7 +2027,7 @@ describe("BnsConnection", () => {
   });
 
   describe("getUsernames", () => {
-    it("can query usernames by name or owner", async () => {
+    it("can query usernames by name", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId();
@@ -2069,6 +2069,37 @@ describe("BnsConnection", () => {
       {
         const results = await connection.getUsernames({ username: "user_we_dont_have*iov" });
         expect(results.length).toEqual(0);
+      }
+
+      connection.disconnect();
+    });
+
+    it("can query usernames owner", async () => {
+      pending("Not supported right now, see https://github.com/iov-one/weave/issues/858");
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+      const identityAddress = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, identityAddress, registerAmount);
+
+      // Register username
+      const username = `testuser_${Math.random()}*iov`;
+      const targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
+      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
+        kind: "bns/register_username",
+        creator: identity,
+        username: username,
+        targets: targets,
+      });
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(registration, bnsCodec, nonce);
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       }
 
       // Query by existing owner
