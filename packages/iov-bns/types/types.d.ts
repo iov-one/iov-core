@@ -68,8 +68,8 @@ export declare enum VoteOption {
     Abstain = 2
 }
 export declare enum ActionKind {
-    CreateTextResolution = 0,
-    UpdateElectorate = 1
+    CreateTextResolution = "create_text_resolution",
+    UpdateElectorate = "update_electorate"
 }
 export interface TallyResult {
     readonly totalYes: number;

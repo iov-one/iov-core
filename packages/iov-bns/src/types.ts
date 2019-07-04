@@ -100,8 +100,8 @@ export enum VoteOption {
 }
 
 export enum ActionKind {
-  CreateTextResolution,
-  UpdateElectorate,
+  CreateTextResolution = "create_text_resolution",
+  UpdateElectorate = "update_electorate",
 }
 
 export interface TallyResult {
