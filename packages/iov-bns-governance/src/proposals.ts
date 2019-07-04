@@ -1,10 +1,9 @@
 import { ReadonlyDate } from "readonly-date";
-import { As } from "type-tagger";
 
 import { Address, Amount } from "@iov/bcp";
 import { Fraction } from "@iov/bns";
 
-export type CommitteeId = number & As<"committee">;
+import { CommitteeId } from "./committees";
 
 export enum ProposalType {
   AddCommitteeMember,
@@ -18,7 +17,7 @@ export enum ProposalType {
   AmendProtocol,
 }
 
-export interface CommonProposalOptions {
+interface CommonProposalOptions {
   readonly type: ProposalType;
   readonly title?: string;
   readonly description: string;

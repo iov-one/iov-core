@@ -4,7 +4,6 @@ import { Address, Identity, WithCreator } from "@iov/bcp";
 import {
   bnsCodec,
   BnsConnection,
-  BnsTx,
   CreateProposalTx,
   ElectionRule,
   Electorate,
@@ -61,7 +60,7 @@ export class Governor {
     });
   }
 
-  public async createProposalTx(options: ProposalOptions): Promise<BnsTx & WithCreator> {
+  public async buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithCreator> {
     switch (options.type) {
       case ProposalType.AmendProtocol:
         return this.connection.withDefaultFee<CreateProposalTx & WithCreator>({
@@ -81,7 +80,7 @@ export class Governor {
     }
   }
 
-  public async createVoteTx(proposalId: number, selection: VoteOption): Promise<BnsTx & WithCreator> {
+  public async buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx & WithCreator> {
     return this.connection.withDefaultFee<VoteTx & WithCreator>({
       kind: "bns/vote",
       creator: this.identity,
@@ -90,7 +89,7 @@ export class Governor {
     });
   }
 
-  public async createTallyTx(proposalId: number): Promise<BnsTx & WithCreator> {
+  public async buildTallyTx(proposalId: number): Promise<TallyTx & WithCreator> {
     return this.connection.withDefaultFee<TallyTx & WithCreator>({
       kind: "bns/tally",
       creator: this.identity,

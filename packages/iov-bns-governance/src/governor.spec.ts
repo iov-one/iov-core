@@ -4,8 +4,9 @@ import { Address, Identity, TokenTicker } from "@iov/bcp";
 import { bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 
+import { CommitteeId } from "./committees";
 import { Governor } from "./governor";
-import { CommitteeId, ProposalType } from "./proposals";
+import { ProposalType } from "./proposals";
 
 function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {
@@ -115,14 +116,14 @@ describe("Governor", () => {
     });
   });
 
-  describe("createProposalTx", () => {
+  describe("buildCreateProposalTx", () => {
     it("throws an error for unsupported proposal types", async () => {
       pendingWithoutBnsd();
       const options = await getConnectionAndIdentity();
       const governor = new Governor(options);
 
       await governor
-        .createProposalTx({
+        .buildCreateProposalTx({
           type: ProposalType.AddCommitteeMember,
           description: "Change something",
           startTime: new ReadonlyDate(1562164525898),
@@ -143,7 +144,7 @@ describe("Governor", () => {
       const options = await getConnectionAndIdentity();
       const governor = new Governor(options);
 
-      const tx = await governor.createProposalTx({
+      const tx = await governor.buildCreateProposalTx({
         type: ProposalType.AmendProtocol,
         text: "Switch to Proof-of-Work",
         description: "Proposal to change consensus algorithm to POW",
@@ -178,7 +179,7 @@ describe("Governor", () => {
       const options = await getConnectionAndIdentity();
       const governor = new Governor(options);
 
-      const tx = await governor.createProposalTx({
+      const tx = await governor.buildCreateProposalTx({
         type: ProposalType.AmendProtocol,
         text: "Switch to Proof-of-Work",
         title: "Custom title",
@@ -186,19 +187,19 @@ describe("Governor", () => {
         startTime: new ReadonlyDate(1562164525898),
         electionRuleId: 1,
       });
-      expect((tx as any).title).toEqual("Custom title");
+      expect(tx.title).toEqual("Custom title");
 
       options.connection.disconnect();
     });
   });
 
-  describe("createVoteTx", () => {
+  describe("buildVoteTx", () => {
     it("can create a Vote transaction", async () => {
       pendingWithoutBnsd();
       const options = await getConnectionAndIdentity();
       const governor = new Governor(options);
 
-      const tx = await governor.createVoteTx(5, VoteOption.Yes);
+      const tx = await governor.buildVoteTx(5, VoteOption.Yes);
       expect(tx).toEqual({
         kind: "bns/vote",
         creator: options.identity,
@@ -217,13 +218,13 @@ describe("Governor", () => {
     });
   });
 
-  describe("createTallyTx", () => {
+  describe("buildTallyTx", () => {
     it("can create a Tally transaction", async () => {
       pendingWithoutBnsd();
       const options = await getConnectionAndIdentity();
       const governor = new Governor(options);
 
-      const tx = await governor.createTallyTx(5);
+      const tx = await governor.buildTallyTx(5);
       expect(tx).toEqual({
         kind: "bns/tally",
         creator: options.identity,
