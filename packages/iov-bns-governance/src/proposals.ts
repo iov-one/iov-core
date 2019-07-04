@@ -29,6 +29,7 @@ export interface AddCommitteeMemberOptions extends CommonProposalOptions {
   readonly type: ProposalType.AddCommitteeMember;
   readonly committee: CommitteeId;
   readonly address: Address;
+  readonly weight: number;
 }
 
 export interface RemoveCommitteeMemberOptions extends CommonProposalOptions {
