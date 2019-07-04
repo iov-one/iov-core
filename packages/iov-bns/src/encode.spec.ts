@@ -28,6 +28,7 @@ import {
 } from "./encode";
 import * as codecImpl from "./generated/codecimpl";
 import {
+  ActionKind,
   AddAddressToUsernameTx,
   CreateEscrowTx,
   CreateMultisignatureTx,
@@ -542,31 +543,71 @@ describe("Encode", () => {
 
     // Governance
 
-    it("works for CreateProposalTx", () => {
-      const createProposal: CreateProposalTx & WithCreator = {
-        kind: "bns/create_proposal",
-        creator: defaultCreator,
-        title: "Why not try this?",
-        action: { resolution: "la la la" },
-        description: "foo bar",
-        electionRuleId: 4822531585417728,
-        startTime: 1122334455,
-        author: defaultSender,
-      };
-      const msg = buildMsg(createProposal).createProposalMsg!;
-      expect(msg).toEqual({
-        metadata: { schema: 1 },
-        title: "Why not try this?",
-        rawOption: codecImpl.app.ProposalOptions.encode({
-          textResolutionMsg: {
-            metadata: { schema: 1 },
+    describe("CreateProposalTx", () => {
+      it("works for CreateProposalTx with CreateTextResolution action", () => {
+        const createProposal: CreateProposalTx & WithCreator = {
+          kind: "bns/create_proposal",
+          creator: defaultCreator,
+          title: "Why not try this?",
+          action: {
+            kind: ActionKind.CreateTextResolution,
             resolution: "la la la",
           },
-        }).finish(),
-        description: "foo bar",
-        electionRuleId: fromHex("0011221122112200"),
-        startTime: 1122334455,
-        author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          description: "foo bar",
+          electionRuleId: 4822531585417728,
+          startTime: 1122334455,
+          author: defaultSender,
+        };
+        const msg = buildMsg(createProposal).createProposalMsg!;
+        expect(msg).toEqual({
+          metadata: { schema: 1 },
+          title: "Why not try this?",
+          rawOption: codecImpl.app.ProposalOptions.encode({
+            textResolutionMsg: {
+              metadata: { schema: 1 },
+              resolution: "la la la",
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("0011221122112200"),
+          startTime: 1122334455,
+          author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+        });
+      });
+
+      it("works for CreateProposalTx with UpdateElectorate action", () => {
+        const createProposal: CreateProposalTx & WithCreator = {
+          kind: "bns/create_proposal",
+          creator: defaultCreator,
+          title: "Why not try this?",
+          action: {
+            kind: ActionKind.UpdateElectorate,
+            electorateId: 5,
+            diffElectors: {
+              [defaultSender]: { weight: 8 },
+            },
+          },
+          description: "foo bar",
+          electionRuleId: 4822531585417728,
+          startTime: 1122334455,
+          author: defaultSender,
+        };
+        const msg = buildMsg(createProposal).createProposalMsg!;
+        expect(msg).toEqual({
+          metadata: { schema: 1 },
+          title: "Why not try this?",
+          rawOption: codecImpl.app.ProposalOptions.encode({
+            updateElectorateMsg: {
+              metadata: { schema: 1 },
+              electorateId: fromHex("0000000000000005"),
+              diffElectors: [{ address: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"), weight: 8 }],
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("0011221122112200"),
+          startTime: 1122334455,
+          author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+        });
       });
     });
 

@@ -28,6 +28,7 @@ import { Encoding } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 import {
+  ActionKind,
   AddAddressToUsernameTx,
   BnsUsernameNft,
   CashConfiguration,
@@ -38,6 +39,7 @@ import {
   ElectionRule,
   Electorate,
   ElectorProperties,
+  Electors,
   Fraction,
   Keyed,
   Participant,
@@ -274,6 +276,17 @@ export function decodeElectionRule(
   };
 }
 
+function decodeElectors(prefix: "iov" | "tiov", electors: readonly codecImpl.gov.IElector[]): Electors {
+  const map: Electors = {};
+  return electors.reduce((accumulator, elector) => {
+    const address = encodeBnsAddress(prefix, ensure(elector.address, "address"));
+    return {
+      ...accumulator,
+      [address]: { weight: ensure(elector.weight, "weight") },
+    };
+  }, map);
+}
+
 function decodeProposalExecutorResult(result: codecImpl.gov.Proposal.ExecutorResult): ProposalExecutorResult {
   switch (result) {
     case codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_INVALID:
@@ -319,12 +332,24 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
   }
 }
 
-function decodeRawProposalOption(rawOption: Uint8Array): ProposalAction {
+function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.app.ProposalOptions.decode(rawOption);
   // TODO: support other resolution types
   let out: ProposalAction;
-  if (option.textResolutionMsg) out = { resolution: decodeString(option.textResolutionMsg.resolution) };
-  else throw new Error("Unsupported ProposalOptions");
+  if (option.textResolutionMsg) {
+    out = {
+      kind: ActionKind.CreateTextResolution,
+      resolution: decodeString(option.textResolutionMsg.resolution),
+    };
+  } else if (option.updateElectorateMsg) {
+    out = {
+      kind: ActionKind.UpdateElectorate,
+      electorateId: decodeNumericId(ensure(option.updateElectorateMsg.electorateId, "electorateId")),
+      diffElectors: decodeElectors(prefix, ensure(option.updateElectorateMsg.diffElectors, "diffElectors")),
+    };
+  } else {
+    throw new Error("Unsupported ProposalOptions");
+  }
 
   return out;
 }
@@ -334,7 +359,7 @@ export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.I
   return {
     id: decodeNumericId(proposal._id),
     title: ensure(proposal.title, "title"),
-    action: decodeRawProposalOption(ensure(proposal.rawOption, "rawOption")),
+    action: decodeRawProposalOption(prefix, ensure(proposal.rawOption, "rawOption")),
     description: ensure(proposal.description, "description"),
     electionRule: decodeVersionedId(ensure(proposal.electionRuleRef, "electionRuleRef")),
     electorate: decodeVersionedId(ensure(proposal.electorateRef, "electorateRef")),
@@ -572,7 +597,7 @@ function parseCreateProposalTx(
     ...base,
     kind: "bns/create_proposal",
     title: ensure(msg.title, "title"),
-    action: decodeRawProposalOption(ensure(msg.rawOption, "rawOption")),
+    action: decodeRawProposalOption(prefix, ensure(msg.rawOption, "rawOption")),
     description: ensure(msg.description, "description"),
     electionRuleId: decodeNumericId(ensure(msg.electionRuleId, "electionRuleId")),
     startTime: asIntegerNumber(ensure(msg.startTime, "startTime")),

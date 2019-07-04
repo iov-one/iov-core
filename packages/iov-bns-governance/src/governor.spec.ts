@@ -1,7 +1,7 @@
 import { ReadonlyDate } from "readonly-date";
 
 import { Address, Identity, TokenTicker } from "@iov/bcp";
-import { bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
+import { ActionKind, bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 
 import { CommitteeId } from "./committees";
@@ -117,30 +117,7 @@ describe("Governor", () => {
   });
 
   describe("buildCreateProposalTx", () => {
-    it("throws an error for unsupported proposal types", async () => {
-      pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
-      const governor = new Governor(options);
-
-      await governor
-        .buildCreateProposalTx({
-          type: ProposalType.AddCommitteeMember,
-          title: "Change something",
-          description: "This describes how to change something",
-          startTime: new ReadonlyDate(1562164525898),
-          electionRuleId: 5,
-          committee: 8 as CommitteeId,
-          address: "abcd" as Address,
-        })
-        .then(
-          () => fail("Expected promise to be rejected"),
-          err => expect(err.message).toMatch(/proposal type not yet supported/i),
-        );
-
-      options.connection.disconnect();
-    });
-
-    it("can create a CreateProposal transaction for AmendProtocol", async () => {
+    it("works for AmendProtocol", async () => {
       pendingWithoutBnsd();
       const options = await getConnectionAndIdentity();
       const governor = new Governor(options);
@@ -158,6 +135,7 @@ describe("Governor", () => {
         creator: options.identity,
         title: "Switch to Proof-of-Work",
         action: {
+          kind: ActionKind.CreateTextResolution,
           resolution: "Switch to Proof-of-Work",
         },
         description: "Proposal to change consensus algorithm to POW",
@@ -175,10 +153,93 @@ describe("Governor", () => {
 
       options.connection.disconnect();
     });
+
+    it("works for AddCommitteeMember", async () => {
+      pendingWithoutBnsd();
+      const options = await getConnectionAndIdentity();
+      const governor = new Governor(options);
+
+      const tx = await governor.buildCreateProposalTx({
+        type: ProposalType.AddCommitteeMember,
+        title: "Add abcd to committee 5",
+        description: "Proposal to add abcd to committee 5",
+        startTime: new ReadonlyDate(1562164525898),
+        electionRuleId: 1,
+        committee: 5 as CommitteeId,
+        address: "abcd" as Address,
+        weight: 4,
+      });
+      expect(tx).toEqual({
+        kind: "bns/create_proposal",
+        creator: options.identity,
+        title: "Add abcd to committee 5",
+        action: {
+          kind: ActionKind.UpdateElectorate,
+          electorateId: 5,
+          diffElectors: {
+            abcd: { weight: 4 },
+          },
+        },
+        description: "Proposal to add abcd to committee 5",
+        electionRuleId: 1,
+        startTime: 1562164525,
+        author: bnsCodec.identityToAddress(options.identity),
+        fee: {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+        },
+      });
+
+      options.connection.disconnect();
+    });
+
+    it("works for RemoveCommitteeMember", async () => {
+      pendingWithoutBnsd();
+      const options = await getConnectionAndIdentity();
+      const governor = new Governor(options);
+
+      const tx = await governor.buildCreateProposalTx({
+        type: ProposalType.RemoveCommitteeMember,
+        title: "Remove abcd from committee 5",
+        description: "Proposal to remove abcd from committee 5",
+        startTime: new ReadonlyDate(1562164525898),
+        electionRuleId: 1,
+        committee: 5 as CommitteeId,
+        address: "abcd" as Address,
+      });
+      expect(tx).toEqual({
+        kind: "bns/create_proposal",
+        creator: options.identity,
+        title: "Remove abcd from committee 5",
+        action: {
+          kind: ActionKind.UpdateElectorate,
+          electorateId: 5,
+          diffElectors: {
+            abcd: { weight: 0 },
+          },
+        },
+        description: "Proposal to remove abcd from committee 5",
+        electionRuleId: 1,
+        startTime: 1562164525,
+        author: bnsCodec.identityToAddress(options.identity),
+        fee: {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+        },
+      });
+
+      options.connection.disconnect();
+    });
   });
 
-  describe("buildVoteTx", () => {
-    it("can create a Vote transaction", async () => {
+  describe("createVoteTx", () => {
+    it("can build a Vote transaction", async () => {
       pendingWithoutBnsd();
       const options = await getConnectionAndIdentity();
       const governor = new Governor(options);
@@ -203,7 +264,7 @@ describe("Governor", () => {
   });
 
   describe("buildTallyTx", () => {
-    it("can create a Tally transaction", async () => {
+    it("can build a Tally transaction", async () => {
       pendingWithoutBnsd();
       const options = await getConnectionAndIdentity();
       const governor = new Governor(options);

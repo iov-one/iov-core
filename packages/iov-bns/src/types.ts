@@ -99,6 +99,11 @@ export enum VoteOption {
   Abstain,
 }
 
+export enum ActionKind {
+  CreateTextResolution = "create_text_resolution",
+  UpdateElectorate = "update_electorate",
+}
+
 export interface TallyResult {
   readonly totalYes: number;
   readonly totalNo: number;
@@ -107,15 +112,26 @@ export interface TallyResult {
 }
 
 export interface CreateTextResolution {
+  readonly kind: ActionKind.CreateTextResolution;
   readonly resolution: string;
 }
 
 export function isCreateTextResolution(action: ProposalAction): action is CreateTextResolution {
-  return typeof action.resolution === "string";
+  return action.kind === ActionKind.CreateTextResolution;
+}
+
+export interface UpdateElectorate {
+  readonly kind: ActionKind.UpdateElectorate;
+  readonly electorateId: number;
+  readonly diffElectors: Electors;
+}
+
+export function isUpdateElectorate(action: ProposalAction): action is UpdateElectorate {
+  return action.kind === ActionKind.UpdateElectorate;
 }
 
 /** The action to be executed when the proposal is accepted */
-export type ProposalAction = CreateTextResolution;
+export type ProposalAction = CreateTextResolution | UpdateElectorate;
 
 export interface Proposal {
   readonly id: number;

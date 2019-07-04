@@ -28,6 +28,7 @@ import {
   signedTxBin,
 } from "./testdata.spec";
 import {
+  ActionKind,
   isAddAddressToUsernameTx,
   isCreateEscrowTx,
   isCreateMultisignatureTx,
@@ -307,7 +308,10 @@ describe("Decode", () => {
       expect(decodeProposal("tiov", proposal)).toEqual({
         id: 4785220636355259,
         title: "This will happen next",
-        action: { resolution: "la la la" },
+        action: {
+          kind: ActionKind.CreateTextResolution,
+          resolution: "la la la",
+        },
         description: "foo bar",
         electionRule: {
           id: 187723572689919,
@@ -647,32 +651,74 @@ describe("Decode", () => {
 
     // Governance
 
-    it("works for CreateProposalTx", () => {
-      const transactionMessage: codecImpl.app.ITx = {
-        createProposalMsg: {
-          title: "This will happen next",
-          rawOption: codecImpl.app.ProposalOptions.encode({
-            textResolutionMsg: {
-              metadata: { schema: 1 },
-              resolution: "la la la",
-            },
-          }).finish(),
-          description: "foo bar",
-          electionRuleId: Encoding.fromHex("bbccddbbff"),
-          startTime: 42424242,
-          author: Encoding.fromHex("0011223344556677889900112233445566778899"),
-        },
-      };
-      const parsed = parseMsg(defaultBaseTx, transactionMessage);
-      if (!isCreateProposalTx(parsed)) {
-        throw new Error("unexpected transaction kind");
-      }
-      expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.action).toEqual({ resolution: "la la la" });
-      expect(parsed.description).toEqual("foo bar");
-      expect(parsed.electionRuleId).toEqual(806595967999);
-      expect(parsed.startTime).toEqual(42424242);
-      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+    describe("CreateProposalTx", () => {
+      it("works for CreateProposalTx with CreateTextResolution action", () => {
+        const transactionMessage: codecImpl.app.ITx = {
+          createProposalMsg: {
+            title: "This will happen next",
+            rawOption: codecImpl.app.ProposalOptions.encode({
+              textResolutionMsg: {
+                metadata: { schema: 1 },
+                resolution: "la la la",
+              },
+            }).finish(),
+            description: "foo bar",
+            electionRuleId: Encoding.fromHex("bbccddbbff"),
+            startTime: 42424242,
+            author: Encoding.fromHex("0011223344556677889900112233445566778899"),
+          },
+        };
+        const parsed = parseMsg(defaultBaseTx, transactionMessage);
+        if (!isCreateProposalTx(parsed)) {
+          throw new Error("unexpected transaction kind");
+        }
+        expect(parsed.title).toEqual("This will happen next");
+        expect(parsed.action).toEqual({ kind: ActionKind.CreateTextResolution, resolution: "la la la" });
+        expect(parsed.description).toEqual("foo bar");
+        expect(parsed.electionRuleId).toEqual(806595967999);
+        expect(parsed.startTime).toEqual(42424242);
+        expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      });
+
+      it("works for CreateProposalTx with UpdateElectorate action", () => {
+        const transactionMessage: codecImpl.app.ITx = {
+          createProposalMsg: {
+            title: "This will happen next",
+            rawOption: codecImpl.app.ProposalOptions.encode({
+              updateElectorateMsg: {
+                metadata: { schema: 1 },
+                electorateId: fromHex("0000000000000005"),
+                diffElectors: [
+                  {
+                    address: Encoding.fromHex("ff11223344556677889900112233445566778899"),
+                    weight: 8,
+                  },
+                ],
+              },
+            }).finish(),
+            description: "foo bar",
+            electionRuleId: Encoding.fromHex("bbccddbbff"),
+            startTime: 42424242,
+            author: Encoding.fromHex("0011223344556677889900112233445566778899"),
+          },
+        };
+        const parsed = parseMsg(defaultBaseTx, transactionMessage);
+        if (!isCreateProposalTx(parsed)) {
+          throw new Error("unexpected transaction kind");
+        }
+        expect(parsed.title).toEqual("This will happen next");
+        expect(parsed.action).toEqual({
+          kind: ActionKind.UpdateElectorate,
+          electorateId: 5,
+          diffElectors: {
+            tiov1lugjyv6y24n80zyeqqgjyv6y24n80zyedknaqd: { weight: 8 },
+          },
+        });
+        expect(parsed.description).toEqual("foo bar");
+        expect(parsed.electionRuleId).toEqual(806595967999);
+        expect(parsed.startTime).toEqual(42424242);
+        expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      });
     });
 
     it("works for VoteTx", () => {

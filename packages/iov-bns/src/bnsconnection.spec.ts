@@ -50,6 +50,7 @@ import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { bnsSwapQueryTag } from "./tags";
 import {
+  ActionKind,
   AddAddressToUsernameTx,
   CreateEscrowTx,
   CreateMultisignatureTx,
@@ -1244,7 +1245,10 @@ describe("BnsConnection", () => {
 
       const title = `Hello ${Math.random()}`;
       const description = `Hello ${Math.random()}`;
-      const action: CreateTextResolution = { resolution: `The winner is Alice ${Math.random()}` };
+      const action: CreateTextResolution = {
+        kind: ActionKind.CreateTextResolution,
+        resolution: `The winner is Alice ${Math.random()}`,
+      };
       let proposalId: number;
 
       {
@@ -2003,7 +2007,10 @@ describe("BnsConnection", () => {
 
       const title = `Hello ${Math.random()}`;
       const description = `Hello ${Math.random()}`;
-      const action: CreateTextResolution = { resolution: `The winner is Alice ${Math.random()}` };
+      const action: CreateTextResolution = {
+        kind: ActionKind.CreateTextResolution,
+        resolution: `The winner is Alice ${Math.random()}`,
+      };
 
       const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
         kind: "bns/create_proposal",

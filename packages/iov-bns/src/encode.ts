@@ -1,6 +1,7 @@
 import BN = require("bn.js");
 
 import {
+  Address,
   Algorithm,
   Amount,
   FullSignature,
@@ -25,6 +26,7 @@ import {
   CreateProposalTx,
   isBnsTx,
   isCreateTextResolution,
+  isUpdateElectorate,
   Participant,
   PrivkeyBundle,
   RegisterUsernameTx,
@@ -306,6 +308,17 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
       textResolutionMsg: {
         metadata: { schema: 1 },
         resolution: tx.action.resolution,
+      },
+    };
+  } else if (isUpdateElectorate(tx.action)) {
+    option = {
+      updateElectorateMsg: {
+        metadata: { schema: 1 },
+        electorateId: encodeNumericId(tx.action.electorateId),
+        diffElectors: Object.entries(tx.action.diffElectors).map(([address, { weight }]) => ({
+          address: decodeBnsAddress(address as Address).data,
+          weight: weight,
+        })),
       },
     };
   } else {

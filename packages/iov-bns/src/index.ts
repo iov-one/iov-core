@@ -22,6 +22,7 @@ export {
   UpdateMultisignatureTx,
   isUpdateMultisignatureTx,
   // Governance
+  ActionKind,
   ElectorProperties,
   Electors,
   Electorate,
