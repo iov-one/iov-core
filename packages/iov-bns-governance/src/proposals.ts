@@ -1,6 +1,6 @@
 import { ReadonlyDate } from "readonly-date";
 
-import { Address, Amount } from "@iov/bcp";
+import { Address, Amount, PubkeyBytes } from "@iov/bcp";
 import { Fraction } from "@iov/bns";
 
 import { CommitteeId } from "./committees";
@@ -52,12 +52,12 @@ export interface AmendCommitteeQuorumOptions extends CommonProposalOptions {
 
 export interface AddValidatorOptions extends CommonProposalOptions {
   readonly type: ProposalType.AddValidator;
-  readonly address: Address;
+  readonly pubkey: PubkeyBytes;
 }
 
 export interface RemoveValidatorOptions extends CommonProposalOptions {
   readonly type: ProposalType.RemoveValidator;
-  readonly address: Address;
+  readonly pubkey: PubkeyBytes;
 }
 
 export interface AccessGuaranteeFundOptions extends CommonProposalOptions {
