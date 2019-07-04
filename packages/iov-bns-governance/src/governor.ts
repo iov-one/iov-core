@@ -2,6 +2,7 @@ import BN = require("bn.js");
 
 import { Address, Identity, WithCreator } from "@iov/bcp";
 import {
+  ActionKind,
   bnsCodec,
   BnsConnection,
   CreateProposalTx,
@@ -61,19 +62,45 @@ export class Governor {
   }
 
   public async buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithCreator> {
+    const commonProperties = {
+      kind: "bns/create_proposal" as const,
+      creator: this.identity,
+      author: this.address,
+      title: options.title,
+      description: options.description,
+      startTime: Math.floor(options.startTime.valueOf() / 1000),
+      electionRuleId: options.electionRuleId,
+    };
     switch (options.type) {
+      case ProposalType.AddCommitteeMember:
+        return this.connection.withDefaultFee<CreateProposalTx & WithCreator>({
+          ...commonProperties,
+          action: {
+            kind: ActionKind.UpdateElectorate,
+            electorateId: options.committee,
+            diffElectors: {
+              [options.address]: { weight: options.weight },
+            },
+          },
+        });
+      case ProposalType.RemoveCommitteeMember:
+        return this.connection.withDefaultFee<CreateProposalTx & WithCreator>({
+          ...commonProperties,
+          action: {
+            kind: ActionKind.UpdateElectorate,
+            electorateId: options.committee,
+            diffElectors: {
+              [options.address]: { weight: 0 },
+            },
+          },
+        });
       case ProposalType.AmendProtocol:
         return this.connection.withDefaultFee<CreateProposalTx & WithCreator>({
-          kind: "bns/create_proposal",
-          creator: this.identity,
-          title: options.title,
+          ...commonProperties,
           action: {
+            kind: ActionKind.CreateTextResolution,
             resolution: options.text,
           },
-          description: options.description,
-          electionRuleId: options.electionRuleId,
-          startTime: Math.floor(options.startTime.valueOf() / 1000),
-          author: this.address,
         });
       default:
         throw new Error("Proposal type not yet supported");
