@@ -1,7 +1,8 @@
 import { ReadonlyDate } from "readonly-date";
 
-import { Address, Identity, TokenTicker } from "@iov/bcp";
+import { Address, Identity, PubkeyBytes, TokenTicker } from "@iov/bcp";
 import { ActionKind, bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
+import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 
 import { CommitteeId } from "./committees";
@@ -222,6 +223,46 @@ describe("Governor", () => {
           },
         },
         description: "Proposal to remove abcd from committee 5",
+        electionRuleId: 1,
+        startTime: 1562164525,
+        author: bnsCodec.identityToAddress(options.identity),
+        fee: {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+        },
+      });
+
+      options.connection.disconnect();
+    });
+
+    it("works for AddValidator", async () => {
+      pendingWithoutBnsd();
+      const options = await getConnectionAndIdentity();
+      const governor = new Governor(options);
+
+      const tx = await governor.buildCreateProposalTx({
+        type: ProposalType.AddValidator,
+        title: "Add abcd as validator",
+        description: "Proposal to add abcd as validator",
+        startTime: new ReadonlyDate(1562164525898),
+        electionRuleId: 1,
+        pubkey: Encoding.fromHex("abcd") as PubkeyBytes,
+      });
+      expect(tx).toEqual({
+        kind: "bns/create_proposal",
+        creator: options.identity,
+        title: "Add abcd as validator",
+        action: {
+          kind: ActionKind.UpdateElectorate,
+          electorateId: 5,
+          diffElectors: {
+            abcd: { weight: 4 },
+          },
+        },
+        description: "Proposal to add abcd as validator",
         electionRuleId: 1,
         startTime: 1562164525,
         author: bnsCodec.identityToAddress(options.identity),

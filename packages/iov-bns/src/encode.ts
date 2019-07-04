@@ -1,4 +1,5 @@
 import BN = require("bn.js");
+import Long from "long";
 
 import {
   Address,
@@ -26,6 +27,7 @@ import {
   CreateProposalTx,
   isBnsTx,
   isCreateTextResolution,
+  isSetValidators,
   isUpdateElectorate,
   Participant,
   PrivkeyBundle,
@@ -300,6 +302,16 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
       govCreateTextResolutionMsg: {
         metadata: { schema: 1 },
         resolution: tx.action.resolution,
+      },
+    };
+  } else if (isSetValidators(tx.action)) {
+    option = {
+      setValidatorsMsg: {
+        metadata: { schema: 1 },
+        validatorUpdates: tx.action.validatorUpdates.map(({ pubkey, power }) => ({
+          pubkey: { data: pubkey },
+          power: Long.fromString(new BN(power).toString()),
+        })),
       },
     };
   } else if (isUpdateElectorate(tx.action)) {
