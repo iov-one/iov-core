@@ -10,6 +10,7 @@ import {
   isSwapClaimTransaction,
   isSwapOfferTransaction,
   LightTransaction,
+  PubkeyBytes,
   SendTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
@@ -24,6 +25,11 @@ export interface CashConfiguration {
 }
 
 // Governance
+
+export interface Validator {
+  readonly pubkey: PubkeyBytes;
+  readonly power: Uint8Array;
+}
 
 /** Like Elector from the backend but without the address field */
 export interface ElectorProperties {
@@ -101,6 +107,7 @@ export enum VoteOption {
 
 export enum ActionKind {
   CreateTextResolution = "create_text_resolution",
+  SetValidators = "set_validators",
   UpdateElectorate = "update_electorate",
 }
 
@@ -120,6 +127,15 @@ export function isCreateTextResolution(action: ProposalAction): action is Create
   return action.kind === ActionKind.CreateTextResolution;
 }
 
+export interface SetValidators {
+  readonly kind: ActionKind.SetValidators;
+  readonly validatorUpdates: readonly Validator[];
+}
+
+export function isSetValidators(action: ProposalAction): action is SetValidators {
+  return action.kind === ActionKind.SetValidators;
+}
+
 export interface UpdateElectorate {
   readonly kind: ActionKind.UpdateElectorate;
   readonly electorateId: number;
@@ -131,7 +147,7 @@ export function isUpdateElectorate(action: ProposalAction): action is UpdateElec
 }
 
 /** The action to be executed when the proposal is accepted */
-export type ProposalAction = CreateTextResolution | UpdateElectorate;
+export type ProposalAction = CreateTextResolution | SetValidators | UpdateElectorate;
 
 export interface Proposal {
   readonly id: number;

@@ -1,7 +1,11 @@
 import { As } from "type-tagger";
-import { Address, Algorithm, Amount, ChainId, LightTransaction, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TimestampTimeout } from "@iov/bcp";
+import { Address, Algorithm, Amount, ChainId, LightTransaction, PubkeyBytes, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TimestampTimeout } from "@iov/bcp";
 export interface CashConfiguration {
     readonly minimalFee: Amount;
+}
+export interface Validator {
+    readonly pubkey: PubkeyBytes;
+    readonly power: Uint8Array;
 }
 /** Like Elector from the backend but without the address field */
 export interface ElectorProperties {
@@ -69,6 +73,7 @@ export declare enum VoteOption {
 }
 export declare enum ActionKind {
     CreateTextResolution = "create_text_resolution",
+    SetValidators = "set_validators",
     UpdateElectorate = "update_electorate"
 }
 export interface TallyResult {
@@ -82,6 +87,11 @@ export interface CreateTextResolution {
     readonly resolution: string;
 }
 export declare function isCreateTextResolution(action: ProposalAction): action is CreateTextResolution;
+export interface SetValidators {
+    readonly kind: ActionKind.SetValidators;
+    readonly validatorUpdates: readonly Validator[];
+}
+export declare function isSetValidators(action: ProposalAction): action is SetValidators;
 export interface UpdateElectorate {
     readonly kind: ActionKind.UpdateElectorate;
     readonly electorateId: number;
@@ -89,7 +99,7 @@ export interface UpdateElectorate {
 }
 export declare function isUpdateElectorate(action: ProposalAction): action is UpdateElectorate;
 /** The action to be executed when the proposal is accepted */
-export declare type ProposalAction = CreateTextResolution | UpdateElectorate;
+export declare type ProposalAction = CreateTextResolution | SetValidators | UpdateElectorate;
 export interface Proposal {
     readonly id: number;
     readonly title: string;
