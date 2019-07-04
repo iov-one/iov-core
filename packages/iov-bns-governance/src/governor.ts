@@ -66,7 +66,7 @@ export class Governor {
         return this.connection.withDefaultFee<CreateProposalTx & WithCreator>({
           kind: "bns/create_proposal",
           creator: this.identity,
-          title: options.title || "Amend protocol",
+          title: options.title,
           action: {
             resolution: options.text,
           },

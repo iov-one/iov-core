@@ -125,7 +125,8 @@ describe("Governor", () => {
       await governor
         .buildCreateProposalTx({
           type: ProposalType.AddCommitteeMember,
-          description: "Change something",
+          title: "Change something",
+          description: "This describes how to change something",
           startTime: new ReadonlyDate(1562164525898),
           electionRuleId: 5,
           committee: 8 as CommitteeId,
@@ -146,15 +147,16 @@ describe("Governor", () => {
 
       const tx = await governor.buildCreateProposalTx({
         type: ProposalType.AmendProtocol,
-        text: "Switch to Proof-of-Work",
+        title: "Switch to Proof-of-Work",
         description: "Proposal to change consensus algorithm to POW",
         startTime: new ReadonlyDate(1562164525898),
         electionRuleId: 1,
+        text: "Switch to Proof-of-Work",
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
         creator: options.identity,
-        title: "Amend protocol",
+        title: "Switch to Proof-of-Work",
         action: {
           resolution: "Switch to Proof-of-Work",
         },
@@ -170,24 +172,6 @@ describe("Governor", () => {
           },
         },
       });
-
-      options.connection.disconnect();
-    });
-
-    it("can create a CreateProposal transaction with a custom title", async () => {
-      pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
-      const governor = new Governor(options);
-
-      const tx = await governor.buildCreateProposalTx({
-        type: ProposalType.AmendProtocol,
-        text: "Switch to Proof-of-Work",
-        title: "Custom title",
-        description: "Proposal to change consensus algorithm to POW",
-        startTime: new ReadonlyDate(1562164525898),
-        electionRuleId: 1,
-      });
-      expect(tx.title).toEqual("Custom title");
 
       options.connection.disconnect();
     });

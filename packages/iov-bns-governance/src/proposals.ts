@@ -19,7 +19,7 @@ export enum ProposalType {
 
 interface CommonProposalOptions {
   readonly type: ProposalType;
-  readonly title?: string;
+  readonly title: string;
   readonly description: string;
   readonly startTime: ReadonlyDate;
   readonly electionRuleId: number;
