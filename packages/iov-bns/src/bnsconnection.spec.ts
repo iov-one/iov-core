@@ -756,7 +756,7 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
-    it("can add address to username and remove again", async () => {
+    it("can update targets of username", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId();
@@ -768,13 +768,16 @@ describe("BnsConnection", () => {
       const myAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, myAddress, registerAmount);
 
+      const targets1 = [{ chainId: "foobar" as ChainId, address: myAddress }] as const;
+      const targets2 = [{ chainId: "barfoo" as ChainId, address: myAddress }] as const;
+
       // Create and send registration
       const username = `testuser_${Math.random()}*iov`;
       const usernameRegistration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
         username: username,
-        targets: [],
+        targets: targets1,
       });
       {
         const response = await connection.postTx(
@@ -790,27 +793,18 @@ describe("BnsConnection", () => {
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
-      // With a blockchain
-      const chainId = `wonderland_${Math.random()}` as ChainId;
-
-      // Add address
-      const address = `testaddress_${Math.random()}` as Address;
-      const addAddress = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
+      // Update targets
+      const updateTargets = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
         kind: "bns/update_targets_of_username",
         creator: identity,
         username: username,
-        targets: [
-          {
-            chainId: chainId,
-            address: address,
-          },
-        ],
+        targets: targets2,
       });
       {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
             await profile.signTransaction(
-              addAddress,
+              updateTargets,
               bnsCodec,
               await connection.getNonce({ pubkey: identity.pubkey }),
             ),
@@ -820,59 +814,27 @@ describe("BnsConnection", () => {
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
-      // Adding second address for the same chain fails
-      const address2 = `testaddress2_${Math.random()}` as Address;
-      const addAddress2 = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
-        kind: "bns/update_targets_of_username",
-        creator: identity,
-        username: username,
-        targets: [
-          {
-            chainId: chainId,
-            address: address2,
-          },
-        ],
-      });
-      {
-        const response = await connection.postTx(
-          bnsCodec.bytesToPost(
-            await profile.signTransaction(
-              addAddress2,
-              bnsCodec,
-              await connection.getNonce({ pubkey: identity.pubkey }),
-            ),
-          ),
-        );
-
-        const blockInfo = await response.blockInfo.waitFor(info => info.state === TransactionState.Failed);
-        if (blockInfo.state !== TransactionState.Failed) {
-          throw new Error("Transaction is expected to fail");
-        }
-        // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L29
-        expect(blockInfo.code).toEqual(6);
-        expect(blockInfo.message || "").toMatch(/duplicate/i);
-      }
-
-      // Remove addresses
-      const removeAddresses = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
-        kind: "bns/update_targets_of_username",
-        creator: identity,
-        username: username,
-        targets: [],
-      });
-      {
-        const response = await connection.postTx(
-          bnsCodec.bytesToPost(
-            await profile.signTransaction(
-              removeAddresses,
-              bnsCodec,
-              await connection.getNonce({ pubkey: identity.pubkey }),
-            ),
-          ),
-        );
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-      }
+      // Clear addresses
+      // TODO: Reactivate after https://github.com/iov-one/weave/issues/857
+      // const clearAddresses = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
+      //   kind: "bns/update_targets_of_username",
+      //   creator: identity,
+      //   username: username,
+      //   targets: [],
+      // });
+      // {
+      //   const response = await connection.postTx(
+      //     bnsCodec.bytesToPost(
+      //       await profile.signTransaction(
+      //         clearAddresses,
+      //         bnsCodec,
+      //         await connection.getNonce({ pubkey: identity.pubkey }),
+      //       ),
+      //     ),
+      //   );
+      //   const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      //   expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+      // }
 
       connection.disconnect();
     });
