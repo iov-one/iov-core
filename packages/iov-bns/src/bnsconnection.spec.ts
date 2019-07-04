@@ -2035,11 +2035,12 @@ describe("BnsConnection", () => {
 
       // Register username
       const username = `testuser_${Math.random()}*iov`;
+      const targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
       const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
-        targets: [],
         username: username,
+        targets: targets,
       });
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(registration, bnsCodec, nonce);
@@ -2055,7 +2056,7 @@ describe("BnsConnection", () => {
         expect(results[0]).toEqual({
           id: username,
           owner: identityAddress,
-          targets: [],
+          targets: targets,
         });
       }
 
