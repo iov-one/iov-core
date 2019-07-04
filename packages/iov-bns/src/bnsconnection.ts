@@ -650,7 +650,7 @@ export class BnsConnection implements AtomicSwapConnection {
       throw new Error("Unsupported query");
     }
 
-    const parser = createParser(codecImpl.username.UsernameToken, "usrnft:");
+    const parser = createParser(codecImpl.username.Token, "usrnft:");
     const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId()));
     return nfts;
   }

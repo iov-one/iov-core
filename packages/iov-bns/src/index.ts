@@ -11,10 +11,8 @@ export {
   BnsUsernameNft,
   RegisterUsernameTx,
   isRegisterUsernameTx,
-  AddAddressToUsernameTx,
-  isAddAddressToUsernameTx,
-  RemoveAddressFromUsernameTx,
-  isRemoveAddressFromUsernameTx,
+  UpdateTargetsOfUsernameTx,
+  isUpdateTargetsOfUsernameTx,
   // Multisignature contracts
   Participant,
   CreateMultisignatureTx,

@@ -20,7 +20,7 @@ import { Encoding, Int53 } from "@iov/encoding";
 
 import * as codecImpl from "./generated/codecimpl";
 import {
-  AddAddressToUsernameTx,
+  ChainAddressPair,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
@@ -31,11 +31,11 @@ import {
   PrivkeyBundle,
   RegisterUsernameTx,
   ReleaseEscrowTx,
-  RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
   TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  UpdateTargetsOfUsernameTx,
   VoteOption,
   VoteTx,
 } from "./types";
@@ -124,14 +124,14 @@ function encodeNumericId(id: number): Uint8Array {
 
 // Token sends
 
-function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.app.ITx {
+function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.bnsd.ITx {
   const { prefix: prefix1, data: data1 } = decodeBnsAddress(identityToAddress(tx.creator));
   const { prefix: prefix2, data: data2 } = decodeBnsAddress(tx.sender);
   if (prefix1 !== prefix2 || data1.length !== data2.length || data1.some((b, i) => b !== data2[i])) {
     throw new Error("Sender and creator do not match (currently unsupported)");
   }
   return {
-    sendMsg: codecImpl.cash.SendMsg.create({
+    cashSendMsg: codecImpl.cash.SendMsg.create({
       metadata: { schema: 1 },
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       dest: decodeBnsAddress(tx.recipient).data,
@@ -143,13 +143,13 @@ function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.app.
 
 // Atomic swaps
 
-function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app.ITx {
+function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.bnsd.ITx {
   if (!isTimestampTimeout(tx.timeout)) {
     throw new Error("Got unsupported timeout type");
   }
 
   return {
-    createSwapMsg: codecImpl.aswap.CreateSwapMsg.create({
+    aswapCreateMsg: codecImpl.aswap.CreateMsg.create({
       metadata: { schema: 1 },
       src: decodeBnsAddress(identityToAddress(tx.creator)).data,
       preimageHash: tx.hash,
@@ -161,9 +161,9 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.app
   };
 }
 
-function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.app.ITx {
+function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.bnsd.ITx {
   return {
-    releaseSwapMsg: codecImpl.aswap.ReleaseSwapMsg.create({
+    aswapReleaseMsg: codecImpl.aswap.ReleaseMsg.create({
       metadata: { schema: 1 },
       swapId: tx.swapId.data,
       preimage: tx.preimage,
@@ -171,9 +171,9 @@ function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.app.ITx {
   };
 }
 
-function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.app.ITx {
+function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.bnsd.ITx {
   return {
-    returnSwapMsg: codecImpl.aswap.ReturnSwapMsg.create({
+    aswapReturnMsg: codecImpl.aswap.ReturnSwapMsg.create({
       metadata: { schema: 1 },
       swapId: tx.swapId.data,
     }),
@@ -182,52 +182,38 @@ function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.app.ITx 
 
 // Usernames
 
-function buildRegisterUsernameTx(tx: RegisterUsernameTx & WithCreator): codecImpl.app.ITx {
-  const chainAddresses = tx.addresses.map(
-    (pair): codecImpl.username.IChainAddress => {
-      return {
-        blockchainId: toUtf8(pair.chainId),
-        address: pair.address,
-      };
-    },
-  );
+function encodeChainAddressPair(pair: ChainAddressPair): codecImpl.username.IBlockchainAddress {
   return {
-    issueUsernameNftMsg: codecImpl.username.IssueTokenMsg.create({
-      id: Encoding.toUtf8(tx.username),
-      owner: decodeBnsAddress(identityToAddress(tx.creator)).data,
-      approvals: undefined,
-      details: codecImpl.username.TokenDetails.create({
-        addresses: chainAddresses,
-      }),
-    }),
+    blockchainId: pair.chainId,
+    address: toUtf8(pair.address),
   };
 }
 
-function buildAddAddressToUsernameTx(tx: AddAddressToUsernameTx): codecImpl.app.ITx {
+function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.bnsd.ITx {
   return {
-    addUsernameAddressNftMsg: {
-      usernameId: toUtf8(tx.username),
-      blockchainId: toUtf8(tx.payload.chainId),
-      address: tx.payload.address,
+    usernameRegisterTokenMsg: {
+      metadata: { schema: 1 },
+      username: tx.username,
+      targets: tx.targets.map(encodeChainAddressPair),
     },
   };
 }
 
-function buildRemoveAddressFromUsernameTx(tx: RemoveAddressFromUsernameTx): codecImpl.app.ITx {
+function buildUpdateTargetsOfUsernameTx(tx: UpdateTargetsOfUsernameTx): codecImpl.bnsd.ITx {
   return {
-    removeUsernameAddressMsg: {
-      usernameId: toUtf8(tx.username),
-      blockchainId: toUtf8(tx.payload.chainId),
-      address: tx.payload.address,
+    usernameChangeTokenTargetsMsg: {
+      metadata: { schema: 1 },
+      username: tx.username,
+      newTargets: tx.targets.map(encodeChainAddressPair),
     },
   };
 }
 
 // Multisignature contracts
 
-function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.app.ITx {
+function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.bnsd.ITx {
   return {
-    createContractMsg: {
+    multisigCreateMsg: {
       metadata: { schema: 1 },
       participants: encodeParticipants(tx.participants),
       activationThreshold: tx.activationThreshold,
@@ -236,9 +222,9 @@ function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.app.
   };
 }
 
-function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): codecImpl.app.ITx {
+function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): codecImpl.bnsd.ITx {
   return {
-    updateContractMsg: {
+    multisigUpdateMsg: {
       metadata: { schema: 1 },
       contractId: tx.contractId,
       participants: encodeParticipants(tx.participants),
@@ -250,9 +236,9 @@ function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): codecImpl.app.
 
 // Escrows
 
-function buildCreateEscrowTx(tx: CreateEscrowTx): codecImpl.app.ITx {
+function buildCreateEscrowTx(tx: CreateEscrowTx): codecImpl.bnsd.ITx {
   return {
-    createEscrowMsg: {
+    escrowCreateMsg: {
       metadata: { schema: 1 },
       src: decodeBnsAddress(tx.sender).data,
       arbiter: decodeBnsAddress(tx.arbiter).data,
@@ -264,9 +250,9 @@ function buildCreateEscrowTx(tx: CreateEscrowTx): codecImpl.app.ITx {
   };
 }
 
-function buildReleaseEscrowTx(tx: ReleaseEscrowTx): codecImpl.app.ITx {
+function buildReleaseEscrowTx(tx: ReleaseEscrowTx): codecImpl.bnsd.ITx {
   return {
-    releaseEscrowMsg: {
+    escrowReleaseMsg: {
       metadata: { schema: 1 },
       escrowId: tx.escrowId,
       amount: tx.amounts.map(encodeAmount),
@@ -274,22 +260,22 @@ function buildReleaseEscrowTx(tx: ReleaseEscrowTx): codecImpl.app.ITx {
   };
 }
 
-function buildReturnEscrowTx(tx: ReturnEscrowTx): codecImpl.app.ITx {
+function buildReturnEscrowTx(tx: ReturnEscrowTx): codecImpl.bnsd.ITx {
   return {
-    returnEscrowMsg: {
+    escrowReturnMsg: {
       metadata: { schema: 1 },
       escrowId: tx.escrowId,
     },
   };
 }
 
-function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.app.ITx {
+function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.bnsd.ITx {
   const numPartiesToUpdate = [tx.sender, tx.arbiter, tx.recipient].filter(Boolean).length;
   if (numPartiesToUpdate !== 1) {
     throw new Error(`Only one party can be updated at a time, got ${numPartiesToUpdate}`);
   }
   return {
-    updateEscrowMsg: {
+    escrowUpdatePartiesMsg: {
       metadata: { schema: 1 },
       escrowId: tx.escrowId,
       sender: tx.sender && decodeBnsAddress(tx.sender).data,
@@ -301,18 +287,18 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.app.IT
 
 // Governance
 
-function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
-  let option: codecImpl.app.IProposalOptions;
+function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
+  let option: codecImpl.bnsd.IProposalOptions;
   if (isCreateTextResolution(tx.action)) {
     option = {
-      textResolutionMsg: {
+      govCreateTextResolutionMsg: {
         metadata: { schema: 1 },
         resolution: tx.action.resolution,
       },
     };
   } else if (isUpdateElectorate(tx.action)) {
     option = {
-      updateElectorateMsg: {
+      govUpdateElectorateMsg: {
         metadata: { schema: 1 },
         electorateId: encodeNumericId(tx.action.electorateId),
         diffElectors: Object.entries(tx.action.diffElectors).map(([address, { weight }]) => ({
@@ -326,10 +312,10 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.app.ITx {
   }
 
   return {
-    createProposalMsg: {
+    govCreateProposalMsg: {
       metadata: { schema: 1 },
       title: tx.title,
-      rawOption: codecImpl.app.ProposalOptions.encode(option).finish(),
+      rawOption: codecImpl.bnsd.ProposalOptions.encode(option).finish(),
       description: tx.description,
       electionRuleId: encodeNumericId(tx.electionRuleId),
       startTime: tx.startTime,
@@ -349,9 +335,9 @@ function encodeVoteOption(option: VoteOption): codecImpl.gov.VoteOption {
   }
 }
 
-function buildVoteTx(tx: VoteTx): codecImpl.app.ITx {
+function buildVoteTx(tx: VoteTx): codecImpl.bnsd.ITx {
   return {
-    voteMsg: {
+    govVoteMsg: {
       metadata: { schema: 1 },
       proposalId: encodeNumericId(tx.proposalId),
       selected: encodeVoteOption(tx.selection),
@@ -359,16 +345,16 @@ function buildVoteTx(tx: VoteTx): codecImpl.app.ITx {
   };
 }
 
-function buildTallyTx(tx: TallyTx): codecImpl.app.ITx {
+function buildTallyTx(tx: TallyTx): codecImpl.bnsd.ITx {
   return {
-    tallyMsg: {
+    govTallyMsg: {
       metadata: { schema: 1 },
       proposalId: encodeNumericId(tx.proposalId),
     },
   };
 }
 
-export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
+export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   if (!isBnsTx(tx)) {
     throw new Error("Transaction is not a BNS transaction");
   }
@@ -389,10 +375,8 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
     // BNS: Usernames
     case "bns/register_username":
       return buildRegisterUsernameTx(tx);
-    case "bns/add_address_to_username":
-      return buildAddAddressToUsernameTx(tx);
-    case "bns/remove_address_from_username":
-      return buildRemoveAddressFromUsernameTx(tx);
+    case "bns/update_targets_of_username":
+      return buildUpdateTargetsOfUsernameTx(tx);
 
     // BNS: Multisignature contracts
     case "bns/create_multisignature_contract":
@@ -423,9 +407,9 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.app.ITx {
   }
 }
 
-export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {
+export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   const msg = buildMsg(tx);
-  return codecImpl.app.Tx.create({
+  return codecImpl.bnsd.Tx.create({
     ...msg,
     fees:
       tx.fee && tx.fee.tokens
@@ -437,7 +421,7 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.app.ITx {
   });
 }
 
-export function buildSignedTx(tx: SignedTransaction): codecImpl.app.ITx {
+export function buildSignedTx(tx: SignedTransaction): codecImpl.bnsd.ITx {
   const sigs: readonly FullSignature[] = [tx.primarySignature, ...tx.otherSignatures];
   const built = buildUnsignedTx(tx.transaction);
   return { ...built, signatures: sigs.map(encodeFullSignature) };

@@ -29,7 +29,6 @@ import { Encoding } from "@iov/encoding";
 import * as codecImpl from "./generated/codecimpl";
 import {
   ActionKind,
-  AddAddressToUsernameTx,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
@@ -52,11 +51,11 @@ import {
   ProposalStatus,
   RegisterUsernameTx,
   ReleaseEscrowTx,
-  RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
   TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  UpdateTargetsOfUsernameTx,
   VersionedId,
   VoteOption,
   VoteTx,
@@ -105,24 +104,22 @@ function decodeVersionedId(versionedId: codecImpl.orm.IVersionedIDRef): Versione
   };
 }
 
+function decodeChainAddressPair(pair: codecImpl.username.IBlockchainAddress): ChainAddressPair {
+  return {
+    chainId: ensure(pair.blockchainId, "blockchainId") as ChainId,
+    address: fromUtf8(ensure(pair.address, "address")) as Address,
+  };
+}
+
 export function decodeUsernameNft(
-  nft: codecImpl.username.IUsernameToken,
+  nft: codecImpl.username.IToken & Keyed,
   registryChainId: ChainId,
 ): BnsUsernameNft {
-  const base = ensure(nft.base, "base");
-  const id = ensure(base.id, "base.id");
-  const rawOwnerAddress = ensure(base.owner, "base.owner");
-
-  const details = ensure(nft.details, "details");
-  const addresses = ensure(details.addresses, "details.addresses");
-
+  const rawOwnerAddress = ensure(nft.owner, "owner");
   return {
-    id: fromUtf8(id),
+    id: fromUtf8(nft._id),
     owner: encodeBnsAddress(addressPrefix(registryChainId), rawOwnerAddress),
-    addresses: addresses.map(pair => ({
-      chainId: fromUtf8(ensure(pair.blockchainId, "details.addresses[n].chainId")) as ChainId,
-      address: ensure(pair.address, "details.addresses[n].address") as Address,
-    })),
+    targets: ensure(nft.targets, "targets").map(decodeChainAddressPair),
   };
 }
 
@@ -333,25 +330,24 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
 }
 
 function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array): ProposalAction {
-  const option = codecImpl.app.ProposalOptions.decode(rawOption);
-  // TODO: support other resolution types
-  let out: ProposalAction;
-  if (option.textResolutionMsg) {
-    out = {
+  const option = codecImpl.bnsd.ProposalOptions.decode(rawOption);
+  if (option.govCreateTextResolutionMsg) {
+    return {
       kind: ActionKind.CreateTextResolution,
-      resolution: decodeString(option.textResolutionMsg.resolution),
+      resolution: decodeString(option.govCreateTextResolutionMsg.resolution),
     };
-  } else if (option.updateElectorateMsg) {
-    out = {
+  } else if (option.govUpdateElectorateMsg) {
+    return {
       kind: ActionKind.UpdateElectorate,
-      electorateId: decodeNumericId(ensure(option.updateElectorateMsg.electorateId, "electorateId")),
-      diffElectors: decodeElectors(prefix, ensure(option.updateElectorateMsg.diffElectors, "diffElectors")),
+      electorateId: decodeNumericId(ensure(option.govUpdateElectorateMsg.electorateId, "electorateId")),
+      diffElectors: decodeElectors(
+        prefix,
+        ensure(option.govUpdateElectorateMsg.diffElectors, "diffElectors"),
+      ),
     };
   } else {
     throw new Error("Unsupported ProposalOptions");
   }
-
-  return out;
 }
 
 export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal & Keyed): Proposal {
@@ -400,7 +396,7 @@ function parseSendTransaction(
 
 function parseSwapOfferTx(
   base: UnsignedTransaction,
-  msg: codecImpl.aswap.ICreateSwapMsg,
+  msg: codecImpl.aswap.ICreateMsg,
 ): SwapOfferTransaction & WithCreator {
   const hash = ensure(msg.preimageHash, "preimageHash");
   if (hash.length !== 32) {
@@ -419,7 +415,7 @@ function parseSwapOfferTx(
 
 function parseSwapClaimTx(
   base: UnsignedTransaction,
-  msg: codecImpl.aswap.IReleaseSwapMsg,
+  msg: codecImpl.aswap.IReleaseMsg,
 ): SwapClaimTransaction & WithCreator {
   return {
     ...base,
@@ -448,53 +444,27 @@ function parseSwapAbortTransaction(
 
 function parseRegisterUsernameTx(
   base: UnsignedTransaction,
-  msg: codecImpl.username.IIssueTokenMsg,
+  msg: codecImpl.username.IRegisterTokenMsg,
 ): RegisterUsernameTx & WithCreator {
-  const chainAddresses = ensure(ensure(msg.details, "details").addresses, "details.addresses");
-  const addresses = chainAddresses.map(
-    (chainAddress): ChainAddressPair => {
-      return {
-        chainId: fromUtf8(ensure(chainAddress.blockchainId, "blockchainId")) as ChainId,
-        address: ensure(chainAddress.address, "address") as Address,
-      };
-    },
-  );
-
+  const targets = ensure(msg.targets, "targets").map(decodeChainAddressPair);
   return {
     ...base,
     kind: "bns/register_username",
-    username: Encoding.fromUtf8(ensure(msg.id, "id")),
-    addresses: addresses,
+    username: ensure(msg.username, "username"),
+    targets: targets,
   };
 }
 
-function parseAddAddressToUsernameTx(
+function parseUpdateTargetsOfUsernameTx(
   base: UnsignedTransaction,
-  msg: codecImpl.username.IAddChainAddressMsg,
-): AddAddressToUsernameTx & WithCreator {
+  msg: codecImpl.username.IChangeTokenTargetsMsg,
+): UpdateTargetsOfUsernameTx & WithCreator {
+  const targets = ensure(msg.newTargets, "newTargets").map(decodeChainAddressPair);
   return {
     ...base,
-    kind: "bns/add_address_to_username",
-    username: fromUtf8(ensure(msg.usernameId, "usernameId")),
-    payload: {
-      chainId: fromUtf8(ensure(msg.blockchainId, "blockchainId")) as ChainId,
-      address: ensure(msg.address, "address") as Address,
-    },
-  };
-}
-
-function parseRemoveAddressFromUsernameTx(
-  base: UnsignedTransaction,
-  msg: codecImpl.username.IRemoveChainAddressMsg,
-): RemoveAddressFromUsernameTx & WithCreator {
-  return {
-    ...base,
-    kind: "bns/remove_address_from_username",
-    username: fromUtf8(ensure(msg.usernameId, "usernameId")),
-    payload: {
-      chainId: fromUtf8(ensure(msg.blockchainId, "blockchainId")) as ChainId,
-      address: ensure(msg.address, "address") as Address,
-    },
+    kind: "bns/update_targets_of_username",
+    username: ensure(msg.username, "username"),
+    targets: targets,
   };
 }
 
@@ -502,7 +472,7 @@ function parseRemoveAddressFromUsernameTx(
 
 function parseCreateMultisignatureTx(
   base: UnsignedTransaction,
-  msg: codecImpl.multisig.ICreateContractMsg,
+  msg: codecImpl.multisig.ICreateMsg,
 ): CreateMultisignatureTx & WithCreator {
   const prefix = addressPrefix(base.creator.chainId);
   return {
@@ -516,7 +486,7 @@ function parseCreateMultisignatureTx(
 
 function parseUpdateMultisignatureTx(
   base: UnsignedTransaction,
-  msg: codecImpl.multisig.IUpdateContractMsg,
+  msg: codecImpl.multisig.IUpdateMsg,
 ): UpdateMultisignatureTx & WithCreator {
   const prefix = addressPrefix(base.creator.chainId);
   return {
@@ -533,7 +503,7 @@ function parseUpdateMultisignatureTx(
 
 function parseCreateEscrowTx(
   base: UnsignedTransaction,
-  msg: codecImpl.escrow.ICreateEscrowMsg,
+  msg: codecImpl.escrow.ICreateMsg,
 ): CreateEscrowTx & WithCreator {
   const prefix = addressPrefix(base.creator.chainId);
   return {
@@ -550,7 +520,7 @@ function parseCreateEscrowTx(
 
 function parseReleaseEscrowTx(
   base: UnsignedTransaction,
-  msg: codecImpl.escrow.IReleaseEscrowMsg,
+  msg: codecImpl.escrow.IReleaseMsg,
 ): ReleaseEscrowTx & WithCreator {
   return {
     ...base,
@@ -562,7 +532,7 @@ function parseReleaseEscrowTx(
 
 function parseReturnEscrowTx(
   base: UnsignedTransaction,
-  msg: codecImpl.escrow.IReturnEscrowMsg,
+  msg: codecImpl.escrow.IReturnMsg,
 ): ReturnEscrowTx & WithCreator {
   return {
     ...base,
@@ -573,7 +543,7 @@ function parseReturnEscrowTx(
 
 function parseUpdateEscrowPartiesTx(
   base: UnsignedTransaction,
-  msg: codecImpl.escrow.IUpdateEscrowPartiesMsg,
+  msg: codecImpl.escrow.IUpdatePartiesMsg,
 ): UpdateEscrowPartiesTx & WithCreator {
   const prefix = addressPrefix(base.creator.chainId);
   return {
@@ -637,39 +607,40 @@ function parseTallyTx(base: UnsignedTransaction, msg: codecImpl.gov.ITallyMsg): 
   };
 }
 
-export function parseMsg(base: UnsignedTransaction, tx: codecImpl.app.ITx): UnsignedTransaction {
+export function parseMsg(base: UnsignedTransaction, tx: codecImpl.bnsd.ITx): UnsignedTransaction {
   // Token sends
-  if (tx.sendMsg) return parseSendTransaction(base, tx.sendMsg);
+  if (tx.cashSendMsg) return parseSendTransaction(base, tx.cashSendMsg);
 
   // Atomic swaps
-  if (tx.createSwapMsg) return parseSwapOfferTx(base, tx.createSwapMsg);
-  if (tx.releaseSwapMsg) return parseSwapClaimTx(base, tx.releaseSwapMsg);
-  if (tx.returnSwapMsg) return parseSwapAbortTransaction(base, tx.returnSwapMsg);
+  if (tx.aswapCreateMsg) return parseSwapOfferTx(base, tx.aswapCreateMsg);
+  if (tx.aswapReleaseMsg) return parseSwapClaimTx(base, tx.aswapReleaseMsg);
+  if (tx.aswapReturnMsg) return parseSwapAbortTransaction(base, tx.aswapReturnMsg);
 
   // Usernames
-  if (tx.issueUsernameNftMsg) return parseRegisterUsernameTx(base, tx.issueUsernameNftMsg);
-  if (tx.addUsernameAddressNftMsg) return parseAddAddressToUsernameTx(base, tx.addUsernameAddressNftMsg);
-  if (tx.removeUsernameAddressMsg) return parseRemoveAddressFromUsernameTx(base, tx.removeUsernameAddressMsg);
+  if (tx.usernameRegisterTokenMsg) return parseRegisterUsernameTx(base, tx.usernameRegisterTokenMsg);
+  if (tx.usernameChangeTokenTargetsMsg) {
+    return parseUpdateTargetsOfUsernameTx(base, tx.usernameChangeTokenTargetsMsg);
+  }
 
   // Multisignature contracts
-  if (tx.createContractMsg) return parseCreateMultisignatureTx(base, tx.createContractMsg);
-  if (tx.updateContractMsg) return parseUpdateMultisignatureTx(base, tx.updateContractMsg);
+  if (tx.multisigCreateMsg) return parseCreateMultisignatureTx(base, tx.multisigCreateMsg);
+  if (tx.multisigUpdateMsg) return parseUpdateMultisignatureTx(base, tx.multisigUpdateMsg);
 
   // Escrows
-  if (tx.createEscrowMsg) return parseCreateEscrowTx(base, tx.createEscrowMsg);
-  if (tx.releaseEscrowMsg) return parseReleaseEscrowTx(base, tx.releaseEscrowMsg);
-  if (tx.returnEscrowMsg) return parseReturnEscrowTx(base, tx.returnEscrowMsg);
-  if (tx.updateEscrowMsg) return parseUpdateEscrowPartiesTx(base, tx.updateEscrowMsg);
+  if (tx.escrowCreateMsg) return parseCreateEscrowTx(base, tx.escrowCreateMsg);
+  if (tx.escrowReleaseMsg) return parseReleaseEscrowTx(base, tx.escrowReleaseMsg);
+  if (tx.escrowReturnMsg) return parseReturnEscrowTx(base, tx.escrowReturnMsg);
+  if (tx.escrowUpdatePartiesMsg) return parseUpdateEscrowPartiesTx(base, tx.escrowUpdatePartiesMsg);
 
   // Governance
-  if (tx.createProposalMsg) return parseCreateProposalTx(base, tx.createProposalMsg);
-  if (tx.voteMsg) return parseVoteTx(base, tx.voteMsg);
-  if (tx.tallyMsg) return parseTallyTx(base, tx.tallyMsg);
+  if (tx.govCreateProposalMsg) return parseCreateProposalTx(base, tx.govCreateProposalMsg);
+  if (tx.govVoteMsg) return parseVoteTx(base, tx.govVoteMsg);
+  if (tx.govTallyMsg) return parseTallyTx(base, tx.govTallyMsg);
 
   throw new Error("unknown message type in transaction");
 }
 
-function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
+function parseBaseTx(tx: codecImpl.bnsd.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
   const base: UnsignedTransaction = {
     kind: "",
     creator: {
@@ -683,7 +654,7 @@ function parseBaseTx(tx: codecImpl.app.ITx, sig: FullSignature, chainId: ChainId
   return base;
 }
 
-export function parseTx(tx: codecImpl.app.ITx, chainId: ChainId): SignedTransaction {
+export function parseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): SignedTransaction {
   const sigs = ensure(tx.signatures, "signatures").map(decodeFullSig);
   const sig = ensure(sigs[0], "first signature");
   return {

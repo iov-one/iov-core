@@ -29,18 +29,17 @@ import {
 import * as codecImpl from "./generated/codecimpl";
 import {
   ActionKind,
-  AddAddressToUsernameTx,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
   Participant,
   RegisterUsernameTx,
   ReleaseEscrowTx,
-  RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
   TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  UpdateTargetsOfUsernameTx,
   VoteOption,
   VoteTx,
 } from "./types";
@@ -185,9 +184,8 @@ describe("Encode", () => {
       const encoded = buildUnsignedTx(transaction);
       expect(encoded.fees).toBeFalsy();
 
-      // Ensure sendMsg is encoded. See buildMsg for details.
-      expect(encoded.sendMsg).toBeDefined();
-      expect(encoded.sendMsg!.memo).toEqual("free transaction");
+      expect(encoded.cashSendMsg).toBeDefined();
+      expect(encoded.cashSendMsg!.memo).toEqual("free transaction");
     });
 
     it("can encode transaction with fees", () => {
@@ -210,9 +208,8 @@ describe("Encode", () => {
       expect(encoded.fees!.fees!.ticker).toEqual("CASH");
       expect(encoded.fees!.payer!).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
 
-      // Ensure sendMsg is encoded. See buildMsg for details.
-      expect(encoded.sendMsg).toBeDefined();
-      expect(encoded.sendMsg!.memo).toEqual("paid transaction");
+      expect(encoded.cashSendMsg).toBeDefined();
+      expect(encoded.cashSendMsg!.memo).toEqual("paid transaction");
     });
   });
 
@@ -248,7 +245,7 @@ describe("Encode", () => {
         memo: "abc",
       };
 
-      const msg = buildMsg(transaction).sendMsg!;
+      const msg = buildMsg(transaction).cashSendMsg!;
       expect(msg.src).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
       expect(msg.dest).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
       expect(msg.memo).toEqual("abc");
@@ -276,20 +273,22 @@ describe("Encode", () => {
 
     // Usernames
 
-    it("works for AddAddressToUsernameTx", () => {
-      const addAddress: AddAddressToUsernameTx & WithCreator = {
-        kind: "bns/add_address_to_username",
+    it("works for UpdateTargetsOfUsernameTx", () => {
+      const addAddress: UpdateTargetsOfUsernameTx & WithCreator = {
+        kind: "bns/update_targets_of_username",
         creator: defaultCreator,
         username: "alice",
-        payload: {
-          chainId: "other-land" as ChainId,
-          address: "865765858O" as Address,
-        },
+        targets: [
+          {
+            chainId: "other-land" as ChainId,
+            address: "865765858O" as Address,
+          },
+        ],
       };
-      const msg = buildMsg(addAddress).addUsernameAddressNftMsg!;
-      expect(msg.usernameId).toEqual(toUtf8("alice"));
-      expect(msg.blockchainId).toEqual(toUtf8("other-land"));
-      expect(msg.address).toEqual("865765858O");
+      const msg = buildMsg(addAddress).usernameChangeTokenTargetsMsg!;
+      expect(msg.username).toEqual("alice");
+      expect(msg.newTargets![0].blockchainId).toEqual("other-land");
+      expect(msg.newTargets![0].address).toEqual(toUtf8("865765858O"));
     });
 
     it("works for RegisterUsernameTx", () => {
@@ -297,7 +296,7 @@ describe("Encode", () => {
         kind: "bns/register_username",
         creator: defaultCreator,
         username: "alice",
-        addresses: [
+        targets: [
           {
             chainId: "chain1" as ChainId,
             address: "367X" as Address,
@@ -312,34 +311,16 @@ describe("Encode", () => {
           },
         ],
       };
-      const msg = buildMsg(registerUsername);
-      expect(msg.issueUsernameNftMsg).toBeDefined();
-      expect(msg.issueUsernameNftMsg!.id).toEqual(toAscii("alice"));
-      expect(msg.issueUsernameNftMsg!.details).toBeDefined();
-      expect(msg.issueUsernameNftMsg!.details!.addresses).toBeDefined();
-      expect(msg.issueUsernameNftMsg!.details!.addresses!.length).toEqual(3);
-      expect(msg.issueUsernameNftMsg!.details!.addresses![0].blockchainId).toEqual(toAscii("chain1"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![0].address).toEqual("367X");
-      expect(msg.issueUsernameNftMsg!.details!.addresses![1].blockchainId).toEqual(toAscii("chain3"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![1].address).toEqual("0xddffeeffddaa44");
-      expect(msg.issueUsernameNftMsg!.details!.addresses![2].blockchainId).toEqual(toAscii("chain2"));
-      expect(msg.issueUsernameNftMsg!.details!.addresses![2].address).toEqual("0x00aabbddccffee");
-    });
-
-    it("works for RemoveAddressFromUsernameTx", () => {
-      const removeAddress: RemoveAddressFromUsernameTx & WithCreator = {
-        kind: "bns/remove_address_from_username",
-        creator: defaultCreator,
-        username: "alice",
-        payload: {
-          chainId: "other-land" as ChainId,
-          address: "865765858O" as Address,
-        },
-      };
-      const msg = buildMsg(removeAddress).removeUsernameAddressMsg!;
-      expect(msg.usernameId).toEqual(toUtf8("alice"));
-      expect(msg.blockchainId).toEqual(toUtf8("other-land"));
-      expect(msg.address).toEqual("865765858O");
+      const msg = buildMsg(registerUsername).usernameRegisterTokenMsg!;
+      expect(msg.username).toEqual("alice");
+      expect(msg.targets).toBeDefined();
+      expect(msg.targets!.length).toEqual(3);
+      expect(msg.targets![0].blockchainId).toEqual("chain1");
+      expect(msg.targets![0].address).toEqual(toAscii("367X"));
+      expect(msg.targets![1].blockchainId).toEqual("chain3");
+      expect(msg.targets![1].address).toEqual(toAscii("0xddffeeffddaa44"));
+      expect(msg.targets![2].blockchainId).toEqual("chain2");
+      expect(msg.targets![2].address).toEqual(toAscii("0x00aabbddccffee"));
     });
 
     // Multisignature contracts
@@ -381,7 +362,7 @@ describe("Encode", () => {
         activationThreshold: 2,
         adminThreshold: 3,
       };
-      const msg = buildMsg(createMultisignature).createContractMsg!;
+      const msg = buildMsg(createMultisignature).multisigCreateMsg!;
       expect(msg.participants).toEqual(iParticipants);
       expect(msg.activationThreshold).toEqual(2);
       expect(msg.adminThreshold).toEqual(3);
@@ -425,7 +406,7 @@ describe("Encode", () => {
         activationThreshold: 3,
         adminThreshold: 4,
       };
-      const msg = buildMsg(updateMultisignature).updateContractMsg!;
+      const msg = buildMsg(updateMultisignature).multisigUpdateMsg!;
       expect(msg.contractId).toEqual(fromHex("abcdef0123"));
       expect(msg.participants).toEqual(iParticipants);
       expect(msg.activationThreshold).toEqual(3);
@@ -449,7 +430,7 @@ describe("Encode", () => {
         timeout: timeout,
         memo: memo,
       };
-      const msg = buildMsg(createEscrow).createEscrowMsg!;
+      const msg = buildMsg(createEscrow).escrowCreateMsg!;
 
       expect(msg.metadata).toEqual({ schema: 1 });
       expect(msg.src).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
@@ -470,7 +451,7 @@ describe("Encode", () => {
         escrowId: defaultEscrowId,
         amounts: [defaultAmount],
       };
-      const msg = buildMsg(releaseEscrow).releaseEscrowMsg!;
+      const msg = buildMsg(releaseEscrow).escrowReleaseMsg!;
 
       expect(msg.metadata).toEqual({ schema: 1 });
       expect(msg.escrowId).toEqual(defaultEscrowId);
@@ -486,7 +467,7 @@ describe("Encode", () => {
         creator: defaultCreator,
         escrowId: defaultEscrowId,
       };
-      const msg = buildMsg(returnEscrow).returnEscrowMsg!;
+      const msg = buildMsg(returnEscrow).escrowReturnMsg!;
 
       expect(msg.metadata).toEqual({ schema: 1 });
       expect(msg.escrowId).toEqual(defaultEscrowId);
@@ -499,7 +480,7 @@ describe("Encode", () => {
         escrowId: defaultEscrowId,
         sender: defaultSender,
       };
-      const msg1 = buildMsg(updateEscrowSender).updateEscrowMsg!;
+      const msg1 = buildMsg(updateEscrowSender).escrowUpdatePartiesMsg!;
 
       expect(msg1.metadata).toEqual({ schema: 1 });
       expect(msg1.escrowId).toEqual(defaultEscrowId);
@@ -511,7 +492,7 @@ describe("Encode", () => {
         escrowId: defaultEscrowId,
         recipient: defaultRecipient,
       };
-      const msg2 = buildMsg(updateEscrowRecipient).updateEscrowMsg!;
+      const msg2 = buildMsg(updateEscrowRecipient).escrowUpdatePartiesMsg!;
 
       expect(msg2.metadata).toEqual({ schema: 1 });
       expect(msg2.escrowId).toEqual(defaultEscrowId);
@@ -523,7 +504,7 @@ describe("Encode", () => {
         escrowId: defaultEscrowId,
         arbiter: defaultArbiter,
       };
-      const msg3 = buildMsg(updateEscrowArbiter).updateEscrowMsg!;
+      const msg3 = buildMsg(updateEscrowArbiter).escrowUpdatePartiesMsg!;
 
       expect(msg3.metadata).toEqual({ schema: 1 });
       expect(msg3.escrowId).toEqual(defaultEscrowId);
@@ -558,12 +539,12 @@ describe("Encode", () => {
           startTime: 1122334455,
           author: defaultSender,
         };
-        const msg = buildMsg(createProposal).createProposalMsg!;
+        const msg = buildMsg(createProposal).govCreateProposalMsg!;
         expect(msg).toEqual({
           metadata: { schema: 1 },
           title: "Why not try this?",
-          rawOption: codecImpl.app.ProposalOptions.encode({
-            textResolutionMsg: {
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            govCreateTextResolutionMsg: {
               metadata: { schema: 1 },
               resolution: "la la la",
             },
@@ -592,12 +573,12 @@ describe("Encode", () => {
           startTime: 1122334455,
           author: defaultSender,
         };
-        const msg = buildMsg(createProposal).createProposalMsg!;
+        const msg = buildMsg(createProposal).govCreateProposalMsg!;
         expect(msg).toEqual({
           metadata: { schema: 1 },
           title: "Why not try this?",
-          rawOption: codecImpl.app.ProposalOptions.encode({
-            updateElectorateMsg: {
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            govUpdateElectorateMsg: {
               metadata: { schema: 1 },
               electorateId: fromHex("0000000000000005"),
               diffElectors: [{ address: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"), weight: 8 }],
@@ -618,7 +599,7 @@ describe("Encode", () => {
         proposalId: 733292968738,
         selection: VoteOption.Abstain,
       };
-      const msg = buildMsg(vote).voteMsg!;
+      const msg = buildMsg(vote).govVoteMsg!;
       expect(msg).toEqual({
         metadata: { schema: 1 },
         proposalId: Uint8Array.from([0, 0, 0, ...fromHex("AABBAABB22")]),
@@ -632,7 +613,7 @@ describe("Encode", () => {
         creator: defaultCreator,
         proposalId: 733292968738,
       };
-      const msg = buildMsg(vote).tallyMsg!;
+      const msg = buildMsg(vote).govTallyMsg!;
       expect(msg).toEqual({
         metadata: { schema: 1 },
         proposalId: Uint8Array.from([0, 0, 0, ...fromHex("AABBAABB22")]),
@@ -688,19 +669,19 @@ describe("Encode", () => {
 describe("Encode transactions", () => {
   it("encodes unsigned message", () => {
     const tx = buildMsg(sendTxJson);
-    const encoded = codecImpl.app.Tx.encode(tx).finish();
+    const encoded = codecImpl.bnsd.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(sendTxBin);
   });
 
   it("encodes unsigned transaction", () => {
     const tx = buildUnsignedTx(sendTxJson);
-    const encoded = codecImpl.app.Tx.encode(tx).finish();
+    const encoded = codecImpl.bnsd.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(sendTxBin);
   });
 
   it("encodes signed transaction", () => {
     const tx = buildSignedTx(signedTxJson);
-    const encoded = codecImpl.app.Tx.encode(tx).finish();
+    const encoded = codecImpl.bnsd.Tx.encode(tx).finish();
     expect(Uint8Array.from(encoded)).toEqual(signedTxBin);
   });
 });
@@ -722,7 +703,7 @@ describe("Ensure crypto", () => {
     const pubKey = pubJson.data;
 
     const tx = buildUnsignedTx(sendTxJson);
-    const encoded = codecImpl.app.Tx.encode(tx).finish();
+    const encoded = codecImpl.bnsd.Tx.encode(tx).finish();
     const toSign = appendSignBytes(encoded, sendTxJson.creator.chainId, signedTxSig.nonce);
     // testvector output already has the sha-512 digest applied
     const prehash = new Sha512(toSign).digest();

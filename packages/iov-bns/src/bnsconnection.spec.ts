@@ -51,7 +51,6 @@ import { BnsConnection } from "./bnsconnection";
 import { bnsSwapQueryTag } from "./tags";
 import {
   ActionKind,
-  AddAddressToUsernameTx,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
@@ -69,11 +68,11 @@ import {
   ProposalStatus,
   RegisterUsernameTx,
   ReleaseEscrowTx,
-  RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
   TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  UpdateTargetsOfUsernameTx,
   VoteOption,
   VoteTx,
 } from "./types";
@@ -690,7 +689,7 @@ describe("BnsConnection", () => {
       const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
-        addresses: [{ chainId: "foobar" as ChainId, address: address }],
+        targets: [{ chainId: "foobar" as ChainId, address: address }],
         username: username,
       });
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
@@ -710,7 +709,7 @@ describe("BnsConnection", () => {
         throw new Error("Unexpected transaction kind");
       }
       expect(firstSearchResultTransaction.username).toEqual(username);
-      expect(firstSearchResultTransaction.addresses.length).toEqual(1);
+      expect(firstSearchResultTransaction.targets.length).toEqual(1);
 
       connection.disconnect();
     });
@@ -733,7 +732,7 @@ describe("BnsConnection", () => {
         kind: "bns/register_username",
         creator: identity,
         username: username,
-        addresses: [],
+        targets: [],
       });
       {
         const response = await connection.postTx(
@@ -754,14 +753,16 @@ describe("BnsConnection", () => {
 
       // Add address
       const address = `testaddress_${Math.random()}` as Address;
-      const addAddress = await connection.withDefaultFee<AddAddressToUsernameTx & WithCreator>({
-        kind: "bns/add_address_to_username",
+      const addAddress = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
+        kind: "bns/update_targets_of_username",
         creator: identity,
         username: username,
-        payload: {
-          chainId: chainId,
-          address: address,
-        },
+        targets: [
+          {
+            chainId: chainId,
+            address: address,
+          },
+        ],
       });
       {
         const response = await connection.postTx(
@@ -779,14 +780,16 @@ describe("BnsConnection", () => {
 
       // Adding second address for the same chain fails
       const address2 = `testaddress2_${Math.random()}` as Address;
-      const addAddress2 = await connection.withDefaultFee<AddAddressToUsernameTx & WithCreator>({
-        kind: "bns/add_address_to_username",
+      const addAddress2 = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
+        kind: "bns/update_targets_of_username",
         creator: identity,
         username: username,
-        payload: {
-          chainId: chainId,
-          address: address2,
-        },
+        targets: [
+          {
+            chainId: chainId,
+            address: address2,
+          },
+        ],
       });
       {
         const response = await connection.postTx(
@@ -808,21 +811,18 @@ describe("BnsConnection", () => {
         expect(blockInfo.message || "").toMatch(/duplicate/i);
       }
 
-      // Remove address
-      const removeAddress = await connection.withDefaultFee<RemoveAddressFromUsernameTx & WithCreator>({
-        kind: "bns/remove_address_from_username",
+      // Remove addresses
+      const removeAddresses = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
+        kind: "bns/update_targets_of_username",
         creator: identity,
         username: username,
-        payload: {
-          chainId: chainId,
-          address: address,
-        },
+        targets: [],
       });
       {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
             await profile.signTransaction(
-              removeAddress,
+              removeAddresses,
               bnsCodec,
               await connection.getNonce({ pubkey: identity.pubkey }),
             ),
@@ -830,27 +830,6 @@ describe("BnsConnection", () => {
         );
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-      }
-
-      // Do the same removal again
-      {
-        const response = await connection.postTx(
-          bnsCodec.bytesToPost(
-            await profile.signTransaction(
-              removeAddress,
-              bnsCodec,
-              await connection.getNonce({ pubkey: identity.pubkey }),
-            ),
-          ),
-        );
-
-        const blockInfo = await response.blockInfo.waitFor(info => info.state === TransactionState.Failed);
-        if (blockInfo.state !== TransactionState.Failed) {
-          throw new Error("Transaction is expected to fail");
-        }
-        // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L56
-        expect(blockInfo.code).toEqual(14);
-        expect(blockInfo.message || "").toMatch(/invalid input/i);
       }
 
       connection.disconnect();
@@ -2060,7 +2039,7 @@ describe("BnsConnection", () => {
       const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
-        addresses: [],
+        targets: [],
         username: username,
       });
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
@@ -2077,7 +2056,7 @@ describe("BnsConnection", () => {
         expect(results[0]).toEqual({
           id: username,
           owner: identityAddress,
-          addresses: [],
+          targets: [],
         });
       }
 

@@ -123,7 +123,7 @@ export interface ChainAddressPair {
 export interface BnsUsernameNft {
     readonly id: string;
     readonly owner: Address;
-    readonly addresses: readonly ChainAddressPair[];
+    readonly targets: readonly ChainAddressPair[];
 }
 export interface BnsUsernamesByUsernameQuery {
     readonly username: string;
@@ -152,23 +152,16 @@ export interface Decoder<T extends {}> {
 export interface RegisterUsernameTx extends LightTransaction {
     readonly kind: "bns/register_username";
     readonly username: string;
-    readonly addresses: readonly ChainAddressPair[];
+    readonly targets: readonly ChainAddressPair[];
 }
 export declare function isRegisterUsernameTx(tx: LightTransaction): tx is RegisterUsernameTx;
-export interface AddAddressToUsernameTx extends LightTransaction {
-    readonly kind: "bns/add_address_to_username";
+export interface UpdateTargetsOfUsernameTx extends LightTransaction {
+    readonly kind: "bns/update_targets_of_username";
     /** the username to be updated, must exist on chain */
     readonly username: string;
-    readonly payload: ChainAddressPair;
+    readonly targets: readonly ChainAddressPair[];
 }
-export declare function isAddAddressToUsernameTx(tx: LightTransaction): tx is AddAddressToUsernameTx;
-export interface RemoveAddressFromUsernameTx extends LightTransaction {
-    readonly kind: "bns/remove_address_from_username";
-    /** the username to be updated, must exist on chain */
-    readonly username: string;
-    readonly payload: ChainAddressPair;
-}
-export declare function isRemoveAddressFromUsernameTx(tx: LightTransaction): tx is RemoveAddressFromUsernameTx;
+export declare function isUpdateTargetsOfUsernameTx(tx: LightTransaction): tx is UpdateTargetsOfUsernameTx;
 export interface Participant {
     readonly address: Address;
     readonly weight: number;
@@ -246,5 +239,5 @@ export interface TallyTx extends LightTransaction {
     readonly proposalId: number;
 }
 export declare function isTallyTx(transaction: LightTransaction): transaction is TallyTx;
-export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | AddAddressToUsernameTx | RemoveAddressFromUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx | CreateProposalTx | VoteTx | TallyTx;
+export declare type BnsTx = SendTransaction | SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction | RegisterUsernameTx | UpdateTargetsOfUsernameTx | CreateMultisignatureTx | UpdateMultisignatureTx | CreateEscrowTx | ReleaseEscrowTx | ReturnEscrowTx | UpdateEscrowPartiesTx | CreateProposalTx | VoteTx | TallyTx;
 export declare function isBnsTx(transaction: LightTransaction): transaction is BnsTx;
