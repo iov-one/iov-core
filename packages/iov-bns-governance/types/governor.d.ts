@@ -1,14 +1,6 @@
 import { Identity, WithCreator } from "@iov/bcp";
 import { BnsConnection, BnsTx, ElectionRule, Electorate, Proposal, VoteOption } from "@iov/bns";
-import { CommitteeId, ProposalOptions } from "./proposals";
-export declare const COMMITTEE_IDS: {
-    testnet: {
-        GOVERNING_BOARD: CommitteeId;
-        ECONOMIC_COMMITTEE: CommitteeId;
-        VALIDATOR_COMMITTEE: CommitteeId;
-        TECH_COMMITTEE: CommitteeId;
-    };
-};
+import { ProposalOptions } from "./proposals";
 export interface GovernorOptions {
     readonly connection: BnsConnection;
     readonly identity: Identity;

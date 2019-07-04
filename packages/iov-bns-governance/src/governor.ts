@@ -14,18 +14,8 @@ import {
   VoteTx,
 } from "@iov/bns";
 
-import { CommitteeId, ProposalOptions, ProposalType } from "./proposals";
+import { ProposalOptions, ProposalType } from "./proposals";
 import { groupByCallback, maxWithComparatorCallback } from "./utils";
-
-// TODO: Constants to be finalised once the committees are actually on-chain
-export const COMMITTEE_IDS = {
-  testnet: {
-    GOVERNING_BOARD: 1 as CommitteeId,
-    ECONOMIC_COMMITTEE: 2 as CommitteeId,
-    VALIDATOR_COMMITTEE: 3 as CommitteeId,
-    TECH_COMMITTEE: 4 as CommitteeId,
-  },
-};
 
 export interface GovernorOptions {
   readonly connection: BnsConnection;
