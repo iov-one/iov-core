@@ -1,8 +1,8 @@
-# @iov/core
+# @iov/multichain
 
-[![npm version](https://img.shields.io/npm/v/@iov/core.svg)](https://www.npmjs.com/package/@iov/core)
+[![npm version](https://img.shields.io/npm/v/@iov/multichain.svg)](https://www.npmjs.com/package/@iov/multichain)
 
-@iov/core is the main entrypoint into the monorepo, exposing high-level functionality
+@iov/multichain is the main entrypoint into the monorepo, exposing high-level functionality
 to easily build blockchain clients. It uses the keymanagement functionality of `UserProfile`,
 and the generic blockchain connection of `BlockchainConnection`, and pulls them together into one
 `MultiChainSigner`, which can query state and sign transactions on multiple blockchains.
@@ -162,7 +162,7 @@ in the genesis file, by running `bov init IOV $ADDR`.
 Now, connect to the network:
 
 ```ts
-import { bnsConnector, MultiChainSigner } from '@iov/core';
+import { bnsConnector, MultiChainSigner } from '@iov/multichain';
 
 const signer = new MultiChainSigner(profile);
 await signer.addChain(bnsConnector('wss://bov.hugnet.iov.one/'));

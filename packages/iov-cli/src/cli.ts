@@ -47,7 +47,6 @@ export function main(originalArgs: readonly string[]): void {
       ],
     ],
     ["@iov/bns", ["bnsCodec", "BnsConnection", "bnsConnector", "RegisterUsernameTx"]],
-    ["@iov/core", ["MultiChainSigner"]],
     [
       "@iov/crypto",
       [
@@ -91,6 +90,7 @@ export function main(originalArgs: readonly string[]): void {
       ],
     ],
     ["@iov/lisk", ["liskCodec", "LiskConnection", "liskConnector"]],
+    ["@iov/multichain", ["MultiChainSigner"]],
     ["@iov/rise", ["riseCodec", "RiseConnection", "riseConnector"]],
   ]);
 

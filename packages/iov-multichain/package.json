@@ -1,5 +1,5 @@
 {
-  "name": "@iov/core",
+  "name": "@iov/multichain",
   "version": "0.15.0",
   "description": "Functionality to work with multiple blockchains",
   "author": "IOV SAS <admin@iov.one>",
