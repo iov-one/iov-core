@@ -16,7 +16,7 @@ You can use @iov/rise as an extension of @iov/multichain to interact with the
 RISE blockchain as follows.
 
 ```ts
-import { Ed25519Wallet } from "@iov/multichain";
+import { Ed25519Wallet } from "@iov/keycontrol";
 import { passphraseToKeypair, riseCodec, riseConnector } from "@iov/rise";
 
 const wallet = new Ed25519Wallet();
@@ -62,7 +62,7 @@ This is how you use `riseCodec` to generate send transactions
 for RISE manually, i.e. without the help of @iov/multichain.
 
 ```ts
-import { Ed25519Wallet } from "@iov/multichain";
+import { Ed25519Wallet } from "@iov/keycontrol";
 import { passphraseToKeypair, generateNonce, riseCodec } from "@iov/rise";
 
 const riseTestnet = "rise-296dc9a4d1" as ChainId;
