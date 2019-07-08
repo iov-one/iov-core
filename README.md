@@ -63,8 +63,8 @@ CI Tests:
 ## Getting Started
 
 The best way to learn about code is to use it. You can read some
-[examples in @iov/core](./packages/iov-core/README.md). And you can use a REPL
-to [interactively try the code](./packages/iov-cli/README.md).
+[examples in @iov/core](./packages/iov-multichain/README.md). And you can use a
+REPL to [interactively try the code](./packages/iov-cli/README.md).
 
 Once you understand the basics, you can dig in deeper with the API
 documentation.

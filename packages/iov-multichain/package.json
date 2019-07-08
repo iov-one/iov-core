@@ -8,7 +8,7 @@
   "types": "types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-core"
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-multichain"
   },
   "publishConfig": {
     "access": "public"
