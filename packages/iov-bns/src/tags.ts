@@ -17,9 +17,9 @@ export function bnsSwapQueryTag(query: AtomicSwapQuery, set = true): QueryTag {
   if (isAtomicSwapIdQuery(query)) {
     binKey = Uint8Array.from([...bucketKey(bucket), ...query.id.data]);
   } else if (isAtomicSwapSenderQuery(query)) {
-    binKey = Uint8Array.from([...indexKey(bucket, "src"), ...decodeBnsAddress(query.sender).data]);
+    binKey = Uint8Array.from([...indexKey(bucket, "source"), ...decodeBnsAddress(query.sender).data]);
   } else if (isAtomicSwapRecipientQuery(query)) {
-    binKey = Uint8Array.from([...indexKey(bucket, "recipient"), ...decodeBnsAddress(query.recipient).data]);
+    binKey = Uint8Array.from([...indexKey(bucket, "destination"), ...decodeBnsAddress(query.recipient).data]);
   } else if (isAtomicSwapHashQuery(query)) {
     binKey = Uint8Array.from([...indexKey(bucket, "preimage_hash"), ...query.hash]);
   } else {

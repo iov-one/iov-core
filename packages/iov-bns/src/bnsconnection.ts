@@ -412,9 +412,9 @@ export class BnsConnection implements AtomicSwapConnection {
       if (isAtomicSwapIdQuery(query)) {
         return this.query("/aswaps", query.id.data);
       } else if (isAtomicSwapSenderQuery(query)) {
-        return this.query("/aswaps/src", decodeBnsAddress(query.sender).data);
+        return this.query("/aswaps/source", decodeBnsAddress(query.sender).data);
       } else if (isAtomicSwapRecipientQuery(query)) {
-        return this.query("/aswaps/recipient", decodeBnsAddress(query.recipient).data);
+        return this.query("/aswaps/destination", decodeBnsAddress(query.recipient).data);
       } else if (isAtomicSwapHashQuery(query)) {
         return this.query("/aswaps/preimage_hash", query.hash);
       } else {
