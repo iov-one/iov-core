@@ -5,7 +5,7 @@
 
 // use require instead of import because of this bug
 // https://github.com/jedisct1/libsodium.js/issues/148
-import sodium = require("libsodium-wrappers");
+import sodium from "libsodium-wrappers";
 import { As } from "type-tagger";
 
 export type Xchacha20poly1305IetfKey = Uint8Array & As<"xchacha20poly1305ietf-key">;

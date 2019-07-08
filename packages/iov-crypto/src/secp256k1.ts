@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import elliptic = require("elliptic");
+import elliptic from "elliptic";
 import { As } from "type-tagger";
 
 import { Encoding } from "@iov/encoding";
