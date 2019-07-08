@@ -1,4 +1,4 @@
-import BN = require("bn.js");
+import BN from "bn.js";
 
 import { Address, Algorithm, PubkeyBytes } from "@iov/bcp";
 import { Random, Secp256k1 } from "@iov/crypto";

@@ -1,4 +1,4 @@
-import BN = require("bn.js");
+import BN from "bn.js";
 import { Address } from "@iov/bcp";
 import { Erc20Options } from "./erc20";
 export interface EthereumRpcClient {

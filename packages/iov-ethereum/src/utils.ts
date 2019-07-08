@@ -1,4 +1,4 @@
-import BN = require("bn.js");
+import BN from "bn.js";
 
 import { ChainId, Nonce } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";

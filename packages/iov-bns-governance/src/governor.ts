@@ -1,4 +1,4 @@
-import BN = require("bn.js");
+import BN from "bn.js";
 
 import { Address, Identity, WithCreator } from "@iov/bcp";
 import {

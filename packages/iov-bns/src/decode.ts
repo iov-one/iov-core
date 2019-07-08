@@ -1,4 +1,4 @@
-import BN = require("bn.js");
+import BN from "bn.js";
 import * as Long from "long";
 
 import {

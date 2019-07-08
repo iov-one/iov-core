@@ -1,4 +1,4 @@
-import BN = require("bn.js");
+import BN from "bn.js";
 import elliptic = require("elliptic");
 
 import { Encoding, Uint32 } from "@iov/encoding";
