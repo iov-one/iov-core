@@ -612,16 +612,16 @@ describe("Encode", () => {
           startTime: 1122334455,
           author: defaultSender,
         };
-        const msg = buildMsg(createProposal).createProposalMsg!;
+        const msg = buildMsg(createProposal).govCreateProposalMsg!;
         expect(msg).toEqual({
           metadata: { schema: 1 },
           title: "Why not try this?",
-          rawOption: codecImpl.app.ProposalOptions.encode({
-            setValidatorsMsg: {
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            validatorsApplyDiffMsg: {
               metadata: { schema: 1 },
               validatorUpdates: [
                 {
-                  pubkey: { data: fromHex("abcd") },
+                  pubKey: { data: fromHex("abcd") },
                   power: Long.fromNumber(5),
                 },
               ],

@@ -38,6 +38,7 @@ import {
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
+  Validator,
   VoteOption,
   VoteTx,
 } from "./types";
@@ -295,6 +296,13 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.bnsd.I
 
 // Governance
 
+function encodeValidator({ pubkey, power }: Validator): codecImpl.weave.IValidatorUpdate {
+  return {
+    pubKey: { data: pubkey },
+    power: Long.fromString(new BN(power).toString()),
+  };
+}
+
 function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
   let option: codecImpl.bnsd.IProposalOptions;
   if (isCreateTextResolution(tx.action)) {
@@ -306,12 +314,9 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
     };
   } else if (isSetValidators(tx.action)) {
     option = {
-      setValidatorsMsg: {
+      validatorsApplyDiffMsg: {
         metadata: { schema: 1 },
-        validatorUpdates: tx.action.validatorUpdates.map(({ pubkey, power }) => ({
-          pubkey: { data: pubkey },
-          power: Long.fromString(new BN(power).toString()),
-        })),
+        validatorUpdates: tx.action.validatorUpdates.map(encodeValidator),
       },
     };
   } else if (isUpdateElectorate(tx.action)) {
