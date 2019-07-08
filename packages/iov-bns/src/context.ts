@@ -52,14 +52,15 @@ export class Context {
       throw new Error("Hash must be 32 bytes (sha256)");
     }
 
+    const prefix = addressPrefix(this.chainData.chainId);
     return {
       kind: SwapProcessState.Open,
       data: {
         id: {
           data: swap._id as SwapIdBytes,
         },
-        sender: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.src)),
-        recipient: encodeBnsAddress(addressPrefix(this.chainData.chainId), ensure(swap.recipient)),
+        sender: encodeBnsAddress(prefix, ensure(swap.source, "source")),
+        recipient: encodeBnsAddress(prefix, ensure(swap.destination, "destination")),
         hash: hash as Hash,
         // amounts: ensure(swap.amount).map(coin => decodeAmount(coin)),
         // TODO: read this is a second query

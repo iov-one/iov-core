@@ -246,8 +246,8 @@ describe("Encode", () => {
       };
 
       const msg = buildMsg(transaction).cashSendMsg!;
-      expect(msg.src).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
-      expect(msg.dest).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
+      expect(msg.source).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
+      expect(msg.destination).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
       expect(msg.memo).toEqual("abc");
       expect(msg.amount!.whole).toEqual(1);
       expect(msg.amount!.fractional).toEqual(1);
@@ -433,9 +433,9 @@ describe("Encode", () => {
       const msg = buildMsg(createEscrow).escrowCreateMsg!;
 
       expect(msg.metadata).toEqual({ schema: 1 });
-      expect(msg.src).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
+      expect(msg.source).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
       expect(msg.arbiter).toEqual(fromHex("f102fdde243399a218d13eb662245f04ef9d0287"));
-      expect(msg.recipient).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
+      expect(msg.destination).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
       expect(msg.amount!.length).toEqual(1);
       expect(msg.amount![0].whole).toEqual(1);
       expect(msg.amount![0].fractional).toEqual(1);
@@ -484,7 +484,7 @@ describe("Encode", () => {
 
       expect(msg1.metadata).toEqual({ schema: 1 });
       expect(msg1.escrowId).toEqual(defaultEscrowId);
-      expect(msg1.sender).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
+      expect(msg1.source).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
 
       const updateEscrowRecipient: UpdateEscrowPartiesTx & WithCreator = {
         kind: "bns/update_escrow_parties",
@@ -496,7 +496,7 @@ describe("Encode", () => {
 
       expect(msg2.metadata).toEqual({ schema: 1 });
       expect(msg2.escrowId).toEqual(defaultEscrowId);
-      expect(msg2.recipient).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
+      expect(msg2.destination).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
 
       const updateEscrowArbiter: UpdateEscrowPartiesTx & WithCreator = {
         kind: "bns/update_escrow_parties",
