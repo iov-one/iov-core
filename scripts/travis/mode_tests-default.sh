@@ -14,9 +14,6 @@ source "$SCRIPT_DIR/_includes.sh";
 # Install
 #
 
-# For socketserver
-pip3 install websockets
-
 #
 # Start blockchains
 #

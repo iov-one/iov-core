@@ -17,10 +17,6 @@ node_js:
 
 addons:
   chrome: stable
-  apt:
-    packages:
-      - python3
-      - python3-pip
 
 env:
   matrix:
