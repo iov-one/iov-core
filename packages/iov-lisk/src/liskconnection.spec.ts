@@ -1,6 +1,3 @@
-import Long from "long";
-import { ReadonlyDate } from "readonly-date";
-
 import {
   Account,
   AccountQuery,
@@ -33,6 +30,8 @@ import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
+import Long from "long";
+import { ReadonlyDate } from "readonly-date";
 
 import { pubkeyToAddress } from "./derivation";
 import { liskCodec } from "./liskcodec";

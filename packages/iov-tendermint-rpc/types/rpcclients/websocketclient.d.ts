@@ -1,5 +1,5 @@
-import { Stream } from "xstream";
 import { JsonRpcId, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccessResponse } from "@iov/jsonrpc";
+import { Stream } from "xstream";
 import { RpcStreamingClient, SubscriptionEvent } from "./rpcclient";
 export declare class WebsocketClient implements RpcStreamingClient {
     private readonly url;

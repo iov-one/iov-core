@@ -1,5 +1,3 @@
-import { As } from "type-tagger";
-
 import {
   Address,
   Algorithm,
@@ -17,6 +15,7 @@ import {
   SwapOfferTransaction,
   TimestampTimeout,
 } from "@iov/bcp";
+import { As } from "type-tagger";
 
 // config (those are not used outside of @iov/bns)
 

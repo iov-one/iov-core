@@ -1,8 +1,7 @@
+import { ValueAndUpdates } from "@iov/stream";
 import { ReadonlyDate } from "readonly-date";
 import { As } from "type-tagger";
 import { Stream } from "xstream";
-
-import { ValueAndUpdates } from "@iov/stream";
 
 import { PostableBytes } from "./codec";
 import {

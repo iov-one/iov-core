@@ -2,7 +2,6 @@ import { Encoding } from "@iov/encoding";
 
 import { Bip39 } from "./bip39";
 import { EnglishMnemonic } from "./englishmnemonic";
-
 import bip39Vectors from "./testdata/bip39.json";
 
 const fromHex = Encoding.fromHex;

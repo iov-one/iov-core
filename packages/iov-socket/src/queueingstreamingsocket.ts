@@ -1,7 +1,6 @@
 // tslint:disable:no-object-mutation readonly-array readonly-keyword
-import { Listener, Producer, Stream } from "xstream";
-
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import { Listener, Producer, Stream } from "xstream";
 
 import { SocketWrapperMessageEvent } from "./socketwrapper";
 import { StreamingSocket } from "./streamingsocket";

@@ -1,12 +1,10 @@
-import { Stream } from "xstream";
-
 import { toListPromise } from "@iov/stream";
+import { Stream } from "xstream";
 
 import { defaultInstance } from "../config.spec";
 import { Integer } from "../encodings";
 import { createJsonRpcRequest } from "../jsonrpc";
 import { Method } from "../requests";
-
 import { SubscriptionEvent } from "./rpcclient";
 import { WebsocketClient } from "./websocketclient";
 

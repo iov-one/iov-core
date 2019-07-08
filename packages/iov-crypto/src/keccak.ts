@@ -1,4 +1,5 @@
 import jssha3 from "js-sha3";
+
 import { HashFunction } from "./sha";
 
 export class Keccak256 implements HashFunction {

@@ -1,6 +1,6 @@
-import { As } from "type-tagger";
 import { Address, ChainId, ConfirmedTransaction, Hash, Identity, Nonce, SignableBytes, SwapAbortTransaction, SwapClaimTransaction, SwapData, SwapOfferTransaction, TransactionQuery, UnsignedTransaction, WithCreator } from "@iov/bcp";
 import { QueryString } from "@iov/tendermint-rpc";
+import { As } from "type-tagger";
 export declare function addressPrefix(chainId: ChainId): "iov" | "tiov";
 /** Encodes raw bytes into a bech32 address */
 export declare function encodeBnsAddress(prefix: "iov" | "tiov", bytes: Uint8Array): Address;

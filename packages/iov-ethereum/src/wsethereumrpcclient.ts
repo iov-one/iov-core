@@ -1,7 +1,6 @@
-import { Stream } from "xstream";
-
 import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jsonrpc";
 import { ReconnectingSocket, SocketWrapperMessageEvent } from "@iov/socket";
+import { Stream } from "xstream";
 
 import { EthereumRpcClient } from "./ethereumrpcclient";
 

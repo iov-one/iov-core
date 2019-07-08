@@ -1,5 +1,3 @@
-import { As } from "type-tagger";
-
 import {
   Random,
   Xchacha20poly1305Ietf,
@@ -9,6 +7,7 @@ import {
   Xchacha20poly1305IetfNonce,
 } from "@iov/crypto";
 import { Encoding, Uint32 } from "@iov/encoding";
+import { As } from "type-tagger";
 
 import { KeyringSerializationString } from "./keyring";
 

@@ -1,6 +1,3 @@
-import equal from "fast-deep-equal";
-import { Stream, Subscription } from "xstream";
-
 import {
   Account,
   AccountQuery,
@@ -49,6 +46,8 @@ import {
 import { Encoding, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tendermint-rpc";
+import equal from "fast-deep-equal";
+import { Stream, Subscription } from "xstream";
 
 import { bnsCodec } from "./bnscodec";
 import { ChainData, Context } from "./context";

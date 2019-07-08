@@ -1,10 +1,9 @@
 // tslint:disable:no-bitwise
-import Long from "long";
-import { ReadonlyDate } from "readonly-date";
-
 import { FullSignature, isSendTransaction, TransactionId, UnsignedTransaction } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
+import Long from "long";
+import { ReadonlyDate } from "readonly-date";
 
 import { Derivation } from "./derivation";
 

@@ -1,5 +1,5 @@
-import { Stream } from "xstream";
 import { ValueAndUpdates } from "@iov/stream";
+import { Stream } from "xstream";
 import { ConnectionStatus } from "./queueingstreamingsocket";
 import { SocketWrapperMessageEvent } from "./socketwrapper";
 /**

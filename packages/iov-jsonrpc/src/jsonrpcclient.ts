@@ -1,6 +1,5 @@
-import { Stream } from "xstream";
-
 import { firstEvent } from "@iov/stream";
+import { Stream } from "xstream";
 
 import { isJsonRpcErrorResponse, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccessResponse } from "./types";
 

@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { ReadonlyDate } from "readonly-date";
-
 import { Address, Algorithm, Identity, PubkeyBytes, TokenTicker } from "@iov/bcp";
 import { ActionKind, bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { ReadonlyDate } from "readonly-date";
 
 import { CommitteeId } from "./committees";
 import { Governor } from "./governor";

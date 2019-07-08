@@ -1,7 +1,7 @@
 import { diffLines } from "diff";
 import { join } from "path";
 import { Recoverable, REPLServer, start } from "repl";
-import { register, Register, TSError } from "ts-node";
+import { Register, register, TSError } from "ts-node";
 import { Context, createContext } from "vm";
 
 import { executeJavaScriptAsync, isRecoverable } from "./helpers";

@@ -1,6 +1,5 @@
-import { Stream } from "xstream";
-
 import { JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
+import { Stream } from "xstream";
 
 /**
  * An event emitted from Tendermint after subscribing via RPC.

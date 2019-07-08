@@ -1,5 +1,3 @@
-import BN from "bn.js";
-
 import {
   Address,
   Amount,
@@ -24,6 +22,7 @@ import {
   WithCreator,
 } from "@iov/bcp";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
+import BN from "bn.js";
 
 import { Erc20ApproveTransaction } from "../erc20";
 import { EthereumCodec } from "../ethereumcodec";

@@ -1,8 +1,7 @@
+import { Encoding } from "@iov/encoding";
 import * as bip39 from "bip39";
 import { pbkdf2 } from "pbkdf2";
 import * as unorm from "unorm";
-
-import { Encoding } from "@iov/encoding";
 
 import { EnglishMnemonic } from "./englishmnemonic";
 

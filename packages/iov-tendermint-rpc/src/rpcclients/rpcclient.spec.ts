@@ -1,7 +1,6 @@
 import { defaultInstance } from "../config.spec";
 import { createJsonRpcRequest } from "../jsonrpc";
 import { Method } from "../requests";
-
 import { HttpClient } from "./httpclient";
 import { instanceOfRpcStreamingClient } from "./rpcclient";
 import { WebsocketClient } from "./websocketclient";

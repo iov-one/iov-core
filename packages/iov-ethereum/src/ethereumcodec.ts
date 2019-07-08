@@ -1,5 +1,3 @@
-import BN from "bn.js";
-
 import {
   Address,
   Algorithm,
@@ -30,6 +28,7 @@ import {
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+import BN from "bn.js";
 
 import { Abi, SwapContractMethod } from "./abi";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";

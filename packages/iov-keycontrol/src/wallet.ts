@@ -1,8 +1,7 @@
-import { As } from "type-tagger";
-
 import { ChainId, Identity, PrehashType, SignableBytes, SignatureBytes } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
+import { As } from "type-tagger";
 
 export type WalletId = string & As<"wallet-id">;
 export type WalletImplementationIdString = string & As<"wallet-implementation-id">;

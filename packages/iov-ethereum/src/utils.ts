@@ -1,7 +1,6 @@
-import BN from "bn.js";
-
 import { ChainId, Nonce } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
+import BN from "bn.js";
 
 const bcpChainIdPrefix = "ethereum-eip155-";
 

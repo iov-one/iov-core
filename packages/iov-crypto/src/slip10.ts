@@ -1,7 +1,6 @@
+import { Encoding, Uint32 } from "@iov/encoding";
 import BN from "bn.js";
 import elliptic from "elliptic";
-
-import { Encoding, Uint32 } from "@iov/encoding";
 
 import { Hmac } from "./hmac";
 import { Sha512 } from "./sha";

@@ -1,9 +1,9 @@
-import { AbstractLevelDOWN } from "abstract-leveldown";
-import { LevelUp } from "levelup";
-import { ReadonlyDate } from "readonly-date";
 import { ChainId, Identity, Nonce, SignedTransaction, TxCodec, UnsignedTransaction } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { ValueAndUpdates } from "@iov/stream";
+import { AbstractLevelDOWN } from "abstract-leveldown";
+import { LevelUp } from "levelup";
+import { ReadonlyDate } from "readonly-date";
 import { Keyring, WalletInfo } from "./keyring";
 import { ReadonlyWallet, WalletId } from "./wallet";
 export interface UserProfileEncryptionKey {

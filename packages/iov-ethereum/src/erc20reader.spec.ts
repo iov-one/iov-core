@@ -1,9 +1,8 @@
-import BN from "bn.js";
-
 import { Address, Algorithm, PubkeyBytes } from "@iov/bcp";
 import { Random, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
+import BN from "bn.js";
 
 import { pubkeyToAddress } from "./address";
 import { Erc20Options } from "./erc20";

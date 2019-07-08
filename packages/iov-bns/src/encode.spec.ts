@@ -1,5 +1,3 @@
-import Long from "long";
-
 import {
   Address,
   Algorithm,
@@ -18,6 +16,7 @@ import {
 } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+import Long from "long";
 
 import {
   buildMsg,
@@ -29,6 +28,20 @@ import {
   encodePubkey,
 } from "./encode";
 import * as codecImpl from "./generated/codecimpl";
+import {
+  coinBin,
+  coinJson,
+  privBin,
+  privJson,
+  pubBin,
+  pubJson,
+  sendTxBin,
+  sendTxJson,
+  sendTxSignBytes,
+  signedTxBin,
+  signedTxJson,
+  signedTxSig,
+} from "./testdata.spec";
 import {
   ActionKind,
   CreateEscrowTx,
@@ -46,21 +59,6 @@ import {
   VoteTx,
 } from "./types";
 import { appendSignBytes } from "./util";
-
-import {
-  coinBin,
-  coinJson,
-  privBin,
-  privJson,
-  pubBin,
-  pubJson,
-  sendTxBin,
-  sendTxJson,
-  sendTxSignBytes,
-  signedTxBin,
-  signedTxJson,
-  signedTxSig,
-} from "./testdata.spec";
 
 const { fromHex, toAscii, toUtf8 } = Encoding;
 

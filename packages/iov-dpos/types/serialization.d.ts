@@ -1,5 +1,5 @@
-import { ReadonlyDate } from "readonly-date";
 import { FullSignature, TransactionId, UnsignedTransaction } from "@iov/bcp";
+import { ReadonlyDate } from "readonly-date";
 export interface TransactionSerializationOptions {
     readonly maxMemoLength: number;
 }

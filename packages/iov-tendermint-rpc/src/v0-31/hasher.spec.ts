@@ -1,7 +1,6 @@
 import { Encoding } from "@iov/encoding";
 
 import { TxBytes } from "../types";
-
 import { hashTx } from "./hasher";
 
 describe("Hasher", () => {

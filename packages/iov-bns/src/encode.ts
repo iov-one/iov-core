@@ -1,5 +1,3 @@
-import BN from "bn.js";
-
 import {
   Address,
   Algorithm,
@@ -17,6 +15,7 @@ import {
   WithCreator,
 } from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
+import BN from "bn.js";
 
 import * as codecImpl from "./generated/codecimpl";
 import {
