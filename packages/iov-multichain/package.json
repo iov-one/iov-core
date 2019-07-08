@@ -1,7 +1,7 @@
 {
   "name": "@iov/core",
   "version": "0.15.0",
-  "description": "Central entry point into iov core monorepo, pulling together all modules",
+  "description": "Functionality to work with multiple blockchains",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
