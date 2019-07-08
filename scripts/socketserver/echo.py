@@ -7,7 +7,7 @@ import websockets
 import sys
 import time
 
-HOST = "localhost"
+HOST = "0.0.0.0"
 
 def log(data):
     print(data, flush=True)
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     parser.add_argument("--port",
         help="Port to listen on",
         type=int,
-        default=4444)
+        default=4000)
     parser.add_argument("--delay",
         help="Time in seconds that a connection will be delayed before establishing it",
         type=int,
