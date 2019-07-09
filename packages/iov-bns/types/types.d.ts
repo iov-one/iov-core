@@ -1,10 +1,10 @@
 import { As } from "type-tagger";
-import { Address, Algorithm, Amount, ChainId, LightTransaction, PubkeyBytes, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TimestampTimeout } from "@iov/bcp";
+import { Address, Algorithm, Amount, ChainId, LightTransaction, PubkeyBundle, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TimestampTimeout } from "@iov/bcp";
 export interface CashConfiguration {
     readonly minimalFee: Amount;
 }
 export interface Validator {
-    readonly pubkey: PubkeyBytes;
+    readonly pubkey: PubkeyBundle;
     readonly power: number;
 }
 /** Like Elector from the backend but without the address field */

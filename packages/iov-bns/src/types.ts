@@ -10,7 +10,7 @@ import {
   isSwapClaimTransaction,
   isSwapOfferTransaction,
   LightTransaction,
-  PubkeyBytes,
+  PubkeyBundle,
   SendTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
@@ -27,7 +27,7 @@ export interface CashConfiguration {
 // Governance
 
 export interface Validator {
-  readonly pubkey: PubkeyBytes;
+  readonly pubkey: PubkeyBundle;
   readonly power: number;
 }
 

@@ -297,7 +297,7 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.bnsd.I
 
 function encodeValidator({ pubkey, power }: Validator): codecImpl.weave.IValidatorUpdate {
   return {
-    pubKey: { data: pubkey },
+    pubKey: { data: pubkey.data },
     power: power,
   };
 }

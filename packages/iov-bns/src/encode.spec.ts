@@ -602,7 +602,10 @@ describe("Encode", () => {
             kind: ActionKind.SetValidators,
             validatorUpdates: [
               {
-                pubkey: fromHex("abcd") as PubkeyBytes,
+                pubkey: {
+                  algo: Algorithm.Ed25519,
+                  data: fromHex("abcd") as PubkeyBytes,
+                },
                 power: 5,
               },
             ],

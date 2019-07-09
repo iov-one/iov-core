@@ -5,6 +5,7 @@ import {
   Account,
   AccountQuery,
   AddressQuery,
+  Algorithm,
   Amount,
   AtomicSwap,
   AtomicSwapConnection,
@@ -622,8 +623,13 @@ export class BnsConnection implements AtomicSwapConnection {
     const response = await this.tmClient.validators();
     return response.results.map(
       (validator): Validator => {
+        if (validator.pubkey.algorithm !== "ed25519") throw new Error("Got unsupported pubkey");
+
         return {
-          pubkey: validator.pubkey.data as PubkeyBytes,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: validator.pubkey.data as PubkeyBytes,
+          },
           power: validator.votingPower,
         };
       },
