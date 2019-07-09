@@ -600,15 +600,10 @@ describe("Encode", () => {
           title: "Why not try this?",
           action: {
             kind: ActionKind.SetValidators,
-            validatorUpdates: [
-              {
-                pubkey: {
-                  algo: Algorithm.Ed25519,
-                  data: fromHex("abcd") as PubkeyBytes,
-                },
-                power: 5,
-              },
-            ],
+            validatorUpdates: {
+              // eslint-disable-next-line @typescript-eslint/camelcase
+              ed25519_0902bb5de30ccb15b6decb6aa1fdb4f0c1c7317df62dcafa81ccad82ce88dd22: { power: 5 },
+            },
           },
           description: "foo bar",
           electionRuleId: 4822531585417728,
@@ -624,7 +619,9 @@ describe("Encode", () => {
               metadata: { schema: 1 },
               validatorUpdates: [
                 {
-                  pubKey: { data: fromHex("abcd") },
+                  pubKey: {
+                    data: fromHex("0902bb5de30ccb15b6decb6aa1fdb4f0c1c7317df62dcafa81ccad82ce88dd22"),
+                  },
                   power: Long.fromNumber(5),
                 },
               ],

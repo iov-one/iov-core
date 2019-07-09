@@ -13,9 +13,12 @@ import {
   VoteOption,
   VoteTx,
 } from "@iov/bns";
+import { Encoding } from "@iov/encoding";
 
 import { ProposalOptions, ProposalType } from "./proposals";
 import { groupByCallback, maxWithComparatorCallback } from "./utils";
+
+const { toHex } = Encoding;
 
 export interface GovernorOptions {
   readonly connection: BnsConnection;
@@ -99,7 +102,9 @@ export class Governor {
           ...commonProperties,
           action: {
             kind: ActionKind.SetValidators,
-            validatorUpdates: [],
+            validatorUpdates: {
+              [`ed25519_${toHex(options.pubkey.data)}`]: { power: options.power },
+            },
           },
         });
       case ProposalType.AmendProtocol:

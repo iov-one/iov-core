@@ -20,7 +20,8 @@ export {
   UpdateMultisignatureTx,
   isUpdateMultisignatureTx,
   // Governance
-  Validator,
+  ValidatorProperties,
+  Validators,
   ActionKind,
   ElectorProperties,
   Electors,

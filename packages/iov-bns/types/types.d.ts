@@ -3,9 +3,20 @@ import { Address, Algorithm, Amount, ChainId, LightTransaction, PubkeyBundle, Se
 export interface CashConfiguration {
     readonly minimalFee: Amount;
 }
-export interface Validator {
+export interface ValidatorProperties {
+    readonly power: number;
+}
+export interface Validator extends ValidatorProperties {
     readonly pubkey: PubkeyBundle;
     readonly power: number;
+}
+/**
+ * An unordered map from validator pubkey address to remaining properies
+ *
+ * The string key is in the form `ed25519_<pubkey_hex>`
+ */
+export interface Validators {
+    readonly [index: string]: ValidatorProperties;
 }
 /** Like Elector from the backend but without the address field */
 export interface ElectorProperties {
@@ -89,7 +100,7 @@ export interface CreateTextResolution {
 export declare function isCreateTextResolution(action: ProposalAction): action is CreateTextResolution;
 export interface SetValidators {
     readonly kind: ActionKind.SetValidators;
-    readonly validatorUpdates: readonly Validator[];
+    readonly validatorUpdates: Validators;
 }
 export declare function isSetValidators(action: ProposalAction): action is SetValidators;
 export interface UpdateElectorate {

@@ -26,9 +26,22 @@ export interface CashConfiguration {
 
 // Governance
 
-export interface Validator {
+export interface ValidatorProperties {
+  readonly power: number;
+}
+
+export interface Validator extends ValidatorProperties {
   readonly pubkey: PubkeyBundle;
   readonly power: number;
+}
+
+/**
+ * An unordered map from validator pubkey address to remaining properies
+ *
+ * The string key is in the form `ed25519_<pubkey_hex>`
+ */
+export interface Validators {
+  readonly [index: string]: ValidatorProperties;
 }
 
 /** Like Elector from the backend but without the address field */
@@ -129,7 +142,7 @@ export function isCreateTextResolution(action: ProposalAction): action is Create
 
 export interface SetValidators {
   readonly kind: ActionKind.SetValidators;
-  readonly validatorUpdates: readonly Validator[];
+  readonly validatorUpdates: Validators;
 }
 
 export function isSetValidators(action: ProposalAction): action is SetValidators {

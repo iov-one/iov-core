@@ -37,7 +37,7 @@ import {
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
-  Validator,
+  Validators,
   VoteOption,
   VoteTx,
 } from "./types";
@@ -295,11 +295,19 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.bnsd.I
 
 // Governance
 
-function encodeValidator({ pubkey, power }: Validator): codecImpl.weave.IValidatorUpdate {
-  return {
-    pubKey: { data: pubkey.data },
-    power: power,
-  };
+// tslint:disable-next-line: readonly-array
+function encodeValidators(validators: Validators): codecImpl.weave.IValidatorUpdate[] {
+  return Object.entries(validators).map(([key, { power }]) => {
+    const matches = key.match(/^ed25519_([0-9a-fA-F]{64})$/);
+    if (!matches) {
+      throw new Error("Got validators object key of unexpected format. Must be 'ed25519_<pubkey_hex>'");
+    }
+
+    return {
+      pubKey: { data: Encoding.fromHex(matches[1]) },
+      power: power,
+    };
+  });
 }
 
 function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
@@ -315,7 +323,7 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
     option = {
       validatorsApplyDiffMsg: {
         metadata: { schema: 1 },
-        validatorUpdates: tx.action.validatorUpdates.map(encodeValidator),
+        validatorUpdates: encodeValidators(tx.action.validatorUpdates),
       },
     };
   } else if (isUpdateElectorate(tx.action)) {
