@@ -28,7 +28,7 @@ export interface CashConfiguration {
 
 export interface Validator {
   readonly pubkey: PubkeyBytes;
-  readonly power: Uint8Array;
+  readonly power: number;
 }
 
 /** Like Elector from the backend but without the address field */

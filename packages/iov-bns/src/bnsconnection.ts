@@ -45,7 +45,7 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Encoding, Uint53, Uint64 } from "@iov/encoding";
+import { Encoding, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tendermint-rpc";
 
@@ -624,7 +624,7 @@ export class BnsConnection implements AtomicSwapConnection {
       (validator): Validator => {
         return {
           pubkey: validator.pubkey.data as PubkeyBytes,
-          power: new Uint8Array(Uint64.fromNumber(validator.votingPower).toBytesBigEndian()),
+          power: validator.votingPower,
         };
       },
     );

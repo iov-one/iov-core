@@ -603,7 +603,7 @@ describe("Encode", () => {
             validatorUpdates: [
               {
                 pubkey: fromHex("abcd") as PubkeyBytes,
-                power: fromHex("05"),
+                power: 5,
               },
             ],
           },

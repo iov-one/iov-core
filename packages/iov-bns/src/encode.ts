@@ -1,5 +1,4 @@
 import BN = require("bn.js");
-import Long from "long";
 
 import {
   Address,
@@ -299,7 +298,7 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.bnsd.I
 function encodeValidator({ pubkey, power }: Validator): codecImpl.weave.IValidatorUpdate {
   return {
     pubKey: { data: pubkey },
-    power: Long.fromString(new BN(power).toString()),
+    power: power,
   };
 }
 
