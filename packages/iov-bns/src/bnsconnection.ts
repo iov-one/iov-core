@@ -32,6 +32,7 @@ import {
   PostableBytes,
   PostTxResponse,
   PubkeyBundle,
+  PubkeyBytes,
   PubkeyQuery,
   SwapAbortTransaction,
   SwapClaimTransaction,
@@ -44,7 +45,7 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Encoding, Uint53 } from "@iov/encoding";
+import { Encoding, Uint53, Uint64 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tendermint-rpc";
 
@@ -75,6 +76,7 @@ import {
   Keyed,
   Proposal,
   Result,
+  Validator,
 } from "./types";
 import {
   buildQueryString,
@@ -613,6 +615,18 @@ export class BnsConnection implements AtomicSwapConnection {
         .subscribeTx(buildQueryString({ sentFromOrTo: address }))
         .map(() => Stream.fromPromise(this.getAccount(query)))
         .flatten(),
+    );
+  }
+
+  public async getValidators(): Promise<readonly Validator[]> {
+    const response = await this.tmClient.validators();
+    return response.results.map(
+      (validator): Validator => {
+        return {
+          pubkey: validator.pubkey.data as PubkeyBytes,
+          power: new Uint8Array(Uint64.fromNumber(validator.votingPower).toBytesBigEndian()),
+        };
+      },
     );
   }
 

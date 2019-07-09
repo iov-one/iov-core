@@ -1901,6 +1901,20 @@ describe("BnsConnection", () => {
     });
   });
 
+  describe("getValidators", () => {
+    it("works", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const validators = await connection.getValidators();
+      expect(validators.length).toEqual(1);
+      expect(validators[0].pubkey.length).toEqual(32);
+      expect(validators[0].power).toEqual(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 10]));
+
+      connection.disconnect();
+    });
+  });
+
   describe("getElectorates", () => {
     it("can query electorates set in genesis", async () => {
       pendingWithoutBnsd();
