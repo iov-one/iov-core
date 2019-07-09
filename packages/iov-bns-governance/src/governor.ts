@@ -107,6 +107,16 @@ export class Governor {
             },
           },
         });
+      case ProposalType.RemoveValidator:
+        return this.connection.withDefaultFee({
+          ...commonProperties,
+          action: {
+            kind: ActionKind.SetValidators,
+            validatorUpdates: {
+              [`ed25519_${toHex(options.pubkey.data)}`]: { power: 0 },
+            },
+          },
+        });
       case ProposalType.AmendProtocol:
         return this.connection.withDefaultFee({
           ...commonProperties,
