@@ -264,7 +264,7 @@ $root.bnsd = (function() {
          * @property {migration.IUpgradeSchemaMsg|null} [migrationUpgradeSchemaMsg] Tx migrationUpgradeSchemaMsg
          * @property {aswap.ICreateMsg|null} [aswapCreateMsg] Tx aswapCreateMsg
          * @property {aswap.IReleaseMsg|null} [aswapReleaseMsg] Tx aswapReleaseMsg
-         * @property {aswap.IReturnSwapMsg|null} [aswapReturnMsg] Tx aswapReturnMsg
+         * @property {aswap.IReturnMsg|null} [aswapReturnMsg] Tx aswapReturnMsg
          * @property {gov.ICreateProposalMsg|null} [govCreateProposalMsg] Tx govCreateProposalMsg
          * @property {gov.IDeleteProposalMsg|null} [govDeleteProposalMsg] Tx govDeleteProposalMsg
          * @property {gov.IVoteMsg|null} [govVoteMsg] Tx govVoteMsg
@@ -468,7 +468,7 @@ $root.bnsd = (function() {
 
         /**
          * Tx aswapReturnMsg.
-         * @member {aswap.IReturnSwapMsg|null|undefined} aswapReturnMsg
+         * @member {aswap.IReturnMsg|null|undefined} aswapReturnMsg
          * @memberof bnsd.Tx
          * @instance
          */
@@ -607,7 +607,7 @@ $root.bnsd = (function() {
             if (message.aswapReleaseMsg != null && message.hasOwnProperty("aswapReleaseMsg"))
                 $root.aswap.ReleaseMsg.encode(message.aswapReleaseMsg, writer.uint32(/* id 71, wireType 2 =*/570).fork()).ldelim();
             if (message.aswapReturnMsg != null && message.hasOwnProperty("aswapReturnMsg"))
-                $root.aswap.ReturnSwapMsg.encode(message.aswapReturnMsg, writer.uint32(/* id 72, wireType 2 =*/578).fork()).ldelim();
+                $root.aswap.ReturnMsg.encode(message.aswapReturnMsg, writer.uint32(/* id 72, wireType 2 =*/578).fork()).ldelim();
             if (message.govCreateProposalMsg != null && message.hasOwnProperty("govCreateProposalMsg"))
                 $root.gov.CreateProposalMsg.encode(message.govCreateProposalMsg, writer.uint32(/* id 73, wireType 2 =*/586).fork()).ldelim();
             if (message.govDeleteProposalMsg != null && message.hasOwnProperty("govDeleteProposalMsg"))
@@ -725,7 +725,7 @@ $root.bnsd = (function() {
                     message.aswapReleaseMsg = $root.aswap.ReleaseMsg.decode(reader, reader.uint32());
                     break;
                 case 72:
-                    message.aswapReturnMsg = $root.aswap.ReturnSwapMsg.decode(reader, reader.uint32());
+                    message.aswapReturnMsg = $root.aswap.ReturnMsg.decode(reader, reader.uint32());
                     break;
                 case 73:
                     message.govCreateProposalMsg = $root.gov.CreateProposalMsg.decode(reader, reader.uint32());
@@ -995,7 +995,7 @@ $root.bnsd = (function() {
                     return "sum: multiple values";
                 properties.sum = 1;
                 {
-                    var error = $root.aswap.ReturnSwapMsg.verify(message.aswapReturnMsg);
+                    var error = $root.aswap.ReturnMsg.verify(message.aswapReturnMsg);
                     if (error)
                         return "aswapReturnMsg." + error;
                 }
@@ -1198,7 +1198,7 @@ $root.bnsd = (function() {
             if (object.aswapReturnMsg != null) {
                 if (typeof object.aswapReturnMsg !== "object")
                     throw TypeError(".bnsd.Tx.aswapReturnMsg: object expected");
-                message.aswapReturnMsg = $root.aswap.ReturnSwapMsg.fromObject(object.aswapReturnMsg);
+                message.aswapReturnMsg = $root.aswap.ReturnMsg.fromObject(object.aswapReturnMsg);
             }
             if (object.govCreateProposalMsg != null) {
                 if (typeof object.govCreateProposalMsg !== "object")
@@ -1360,7 +1360,7 @@ $root.bnsd = (function() {
                     object.sum = "aswapReleaseMsg";
             }
             if (message.aswapReturnMsg != null && message.hasOwnProperty("aswapReturnMsg")) {
-                object.aswapReturnMsg = $root.aswap.ReturnSwapMsg.toObject(message.aswapReturnMsg, options);
+                object.aswapReturnMsg = $root.aswap.ReturnMsg.toObject(message.aswapReturnMsg, options);
                 if (options.oneofs)
                     object.sum = "aswapReturnMsg";
             }
@@ -3922,6 +3922,395 @@ $root.bnsd = (function() {
         return ExecuteProposalBatchMsg;
     })();
 
+    bnsd.CronTask = (function() {
+
+        /**
+         * Properties of a CronTask.
+         * @memberof bnsd
+         * @interface ICronTask
+         * @property {Array.<Uint8Array>|null} [authenticators] conditions required for execution, that will be inserted into the context.
+         * @property {escrow.IReleaseMsg|null} [escrowReleaseMsg] CronTask escrowReleaseMsg
+         * @property {escrow.IReturnMsg|null} [escrowReturnMsg] CronTask escrowReturnMsg
+         * @property {distribution.IDistributeMsg|null} [distributionDistributeMsg] CronTask distributionDistributeMsg
+         * @property {aswap.IReleaseMsg|null} [aswapReleaseMsg] CronTask aswapReleaseMsg
+         * @property {gov.ITallyMsg|null} [govTallyMsg] CronTask govTallyMsg
+         */
+
+        /**
+         * Constructs a new CronTask.
+         * @memberof bnsd
+         * @classdesc old fields got deprecated. This is done to maintain binary compatibility.
+         * @implements ICronTask
+         * @constructor
+         * @param {bnsd.ICronTask=} [properties] Properties to set
+         */
+        function CronTask(properties) {
+            this.authenticators = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * conditions required for execution, that will be inserted into the context.
+         * @member {Array.<Uint8Array>} authenticators
+         * @memberof bnsd.CronTask
+         * @instance
+         */
+        CronTask.prototype.authenticators = $util.emptyArray;
+
+        /**
+         * CronTask escrowReleaseMsg.
+         * @member {escrow.IReleaseMsg|null|undefined} escrowReleaseMsg
+         * @memberof bnsd.CronTask
+         * @instance
+         */
+        CronTask.prototype.escrowReleaseMsg = null;
+
+        /**
+         * CronTask escrowReturnMsg.
+         * @member {escrow.IReturnMsg|null|undefined} escrowReturnMsg
+         * @memberof bnsd.CronTask
+         * @instance
+         */
+        CronTask.prototype.escrowReturnMsg = null;
+
+        /**
+         * CronTask distributionDistributeMsg.
+         * @member {distribution.IDistributeMsg|null|undefined} distributionDistributeMsg
+         * @memberof bnsd.CronTask
+         * @instance
+         */
+        CronTask.prototype.distributionDistributeMsg = null;
+
+        /**
+         * CronTask aswapReleaseMsg.
+         * @member {aswap.IReleaseMsg|null|undefined} aswapReleaseMsg
+         * @memberof bnsd.CronTask
+         * @instance
+         */
+        CronTask.prototype.aswapReleaseMsg = null;
+
+        /**
+         * CronTask govTallyMsg.
+         * @member {gov.ITallyMsg|null|undefined} govTallyMsg
+         * @memberof bnsd.CronTask
+         * @instance
+         */
+        CronTask.prototype.govTallyMsg = null;
+
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+
+        /**
+         * Use the same indexes for the messages as the Tx message.
+         * @member {"escrowReleaseMsg"|"escrowReturnMsg"|"distributionDistributeMsg"|"aswapReleaseMsg"|"govTallyMsg"|undefined} sum
+         * @memberof bnsd.CronTask
+         * @instance
+         */
+        Object.defineProperty(CronTask.prototype, "sum", {
+            get: $util.oneOfGetter($oneOfFields = ["escrowReleaseMsg", "escrowReturnMsg", "distributionDistributeMsg", "aswapReleaseMsg", "govTallyMsg"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * Creates a new CronTask instance using the specified properties.
+         * @function create
+         * @memberof bnsd.CronTask
+         * @static
+         * @param {bnsd.ICronTask=} [properties] Properties to set
+         * @returns {bnsd.CronTask} CronTask instance
+         */
+        CronTask.create = function create(properties) {
+            return new CronTask(properties);
+        };
+
+        /**
+         * Encodes the specified CronTask message. Does not implicitly {@link bnsd.CronTask.verify|verify} messages.
+         * @function encode
+         * @memberof bnsd.CronTask
+         * @static
+         * @param {bnsd.ICronTask} message CronTask message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CronTask.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.authenticators != null && message.authenticators.length)
+                for (var i = 0; i < message.authenticators.length; ++i)
+                    writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.authenticators[i]);
+            if (message.escrowReleaseMsg != null && message.hasOwnProperty("escrowReleaseMsg"))
+                $root.escrow.ReleaseMsg.encode(message.escrowReleaseMsg, writer.uint32(/* id 53, wireType 2 =*/426).fork()).ldelim();
+            if (message.escrowReturnMsg != null && message.hasOwnProperty("escrowReturnMsg"))
+                $root.escrow.ReturnMsg.encode(message.escrowReturnMsg, writer.uint32(/* id 54, wireType 2 =*/434).fork()).ldelim();
+            if (message.distributionDistributeMsg != null && message.hasOwnProperty("distributionDistributeMsg"))
+                $root.distribution.DistributeMsg.encode(message.distributionDistributeMsg, writer.uint32(/* id 67, wireType 2 =*/538).fork()).ldelim();
+            if (message.aswapReleaseMsg != null && message.hasOwnProperty("aswapReleaseMsg"))
+                $root.aswap.ReleaseMsg.encode(message.aswapReleaseMsg, writer.uint32(/* id 71, wireType 2 =*/570).fork()).ldelim();
+            if (message.govTallyMsg != null && message.hasOwnProperty("govTallyMsg"))
+                $root.gov.TallyMsg.encode(message.govTallyMsg, writer.uint32(/* id 76, wireType 2 =*/610).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CronTask message, length delimited. Does not implicitly {@link bnsd.CronTask.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof bnsd.CronTask
+         * @static
+         * @param {bnsd.ICronTask} message CronTask message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CronTask.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CronTask message from the specified reader or buffer.
+         * @function decode
+         * @memberof bnsd.CronTask
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {bnsd.CronTask} CronTask
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CronTask.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.bnsd.CronTask();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message.authenticators && message.authenticators.length))
+                        message.authenticators = [];
+                    message.authenticators.push(reader.bytes());
+                    break;
+                case 53:
+                    message.escrowReleaseMsg = $root.escrow.ReleaseMsg.decode(reader, reader.uint32());
+                    break;
+                case 54:
+                    message.escrowReturnMsg = $root.escrow.ReturnMsg.decode(reader, reader.uint32());
+                    break;
+                case 67:
+                    message.distributionDistributeMsg = $root.distribution.DistributeMsg.decode(reader, reader.uint32());
+                    break;
+                case 71:
+                    message.aswapReleaseMsg = $root.aswap.ReleaseMsg.decode(reader, reader.uint32());
+                    break;
+                case 76:
+                    message.govTallyMsg = $root.gov.TallyMsg.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CronTask message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof bnsd.CronTask
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {bnsd.CronTask} CronTask
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CronTask.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CronTask message.
+         * @function verify
+         * @memberof bnsd.CronTask
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CronTask.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            var properties = {};
+            if (message.authenticators != null && message.hasOwnProperty("authenticators")) {
+                if (!Array.isArray(message.authenticators))
+                    return "authenticators: array expected";
+                for (var i = 0; i < message.authenticators.length; ++i)
+                    if (!(message.authenticators[i] && typeof message.authenticators[i].length === "number" || $util.isString(message.authenticators[i])))
+                        return "authenticators: buffer[] expected";
+            }
+            if (message.escrowReleaseMsg != null && message.hasOwnProperty("escrowReleaseMsg")) {
+                properties.sum = 1;
+                {
+                    var error = $root.escrow.ReleaseMsg.verify(message.escrowReleaseMsg);
+                    if (error)
+                        return "escrowReleaseMsg." + error;
+                }
+            }
+            if (message.escrowReturnMsg != null && message.hasOwnProperty("escrowReturnMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.escrow.ReturnMsg.verify(message.escrowReturnMsg);
+                    if (error)
+                        return "escrowReturnMsg." + error;
+                }
+            }
+            if (message.distributionDistributeMsg != null && message.hasOwnProperty("distributionDistributeMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.distribution.DistributeMsg.verify(message.distributionDistributeMsg);
+                    if (error)
+                        return "distributionDistributeMsg." + error;
+                }
+            }
+            if (message.aswapReleaseMsg != null && message.hasOwnProperty("aswapReleaseMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.aswap.ReleaseMsg.verify(message.aswapReleaseMsg);
+                    if (error)
+                        return "aswapReleaseMsg." + error;
+                }
+            }
+            if (message.govTallyMsg != null && message.hasOwnProperty("govTallyMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.gov.TallyMsg.verify(message.govTallyMsg);
+                    if (error)
+                        return "govTallyMsg." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a CronTask message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof bnsd.CronTask
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {bnsd.CronTask} CronTask
+         */
+        CronTask.fromObject = function fromObject(object) {
+            if (object instanceof $root.bnsd.CronTask)
+                return object;
+            var message = new $root.bnsd.CronTask();
+            if (object.authenticators) {
+                if (!Array.isArray(object.authenticators))
+                    throw TypeError(".bnsd.CronTask.authenticators: array expected");
+                message.authenticators = [];
+                for (var i = 0; i < object.authenticators.length; ++i)
+                    if (typeof object.authenticators[i] === "string")
+                        $util.base64.decode(object.authenticators[i], message.authenticators[i] = $util.newBuffer($util.base64.length(object.authenticators[i])), 0);
+                    else if (object.authenticators[i].length)
+                        message.authenticators[i] = object.authenticators[i];
+            }
+            if (object.escrowReleaseMsg != null) {
+                if (typeof object.escrowReleaseMsg !== "object")
+                    throw TypeError(".bnsd.CronTask.escrowReleaseMsg: object expected");
+                message.escrowReleaseMsg = $root.escrow.ReleaseMsg.fromObject(object.escrowReleaseMsg);
+            }
+            if (object.escrowReturnMsg != null) {
+                if (typeof object.escrowReturnMsg !== "object")
+                    throw TypeError(".bnsd.CronTask.escrowReturnMsg: object expected");
+                message.escrowReturnMsg = $root.escrow.ReturnMsg.fromObject(object.escrowReturnMsg);
+            }
+            if (object.distributionDistributeMsg != null) {
+                if (typeof object.distributionDistributeMsg !== "object")
+                    throw TypeError(".bnsd.CronTask.distributionDistributeMsg: object expected");
+                message.distributionDistributeMsg = $root.distribution.DistributeMsg.fromObject(object.distributionDistributeMsg);
+            }
+            if (object.aswapReleaseMsg != null) {
+                if (typeof object.aswapReleaseMsg !== "object")
+                    throw TypeError(".bnsd.CronTask.aswapReleaseMsg: object expected");
+                message.aswapReleaseMsg = $root.aswap.ReleaseMsg.fromObject(object.aswapReleaseMsg);
+            }
+            if (object.govTallyMsg != null) {
+                if (typeof object.govTallyMsg !== "object")
+                    throw TypeError(".bnsd.CronTask.govTallyMsg: object expected");
+                message.govTallyMsg = $root.gov.TallyMsg.fromObject(object.govTallyMsg);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CronTask message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof bnsd.CronTask
+         * @static
+         * @param {bnsd.CronTask} message CronTask
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CronTask.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.authenticators = [];
+            if (message.authenticators && message.authenticators.length) {
+                object.authenticators = [];
+                for (var j = 0; j < message.authenticators.length; ++j)
+                    object.authenticators[j] = options.bytes === String ? $util.base64.encode(message.authenticators[j], 0, message.authenticators[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.authenticators[j]) : message.authenticators[j];
+            }
+            if (message.escrowReleaseMsg != null && message.hasOwnProperty("escrowReleaseMsg")) {
+                object.escrowReleaseMsg = $root.escrow.ReleaseMsg.toObject(message.escrowReleaseMsg, options);
+                if (options.oneofs)
+                    object.sum = "escrowReleaseMsg";
+            }
+            if (message.escrowReturnMsg != null && message.hasOwnProperty("escrowReturnMsg")) {
+                object.escrowReturnMsg = $root.escrow.ReturnMsg.toObject(message.escrowReturnMsg, options);
+                if (options.oneofs)
+                    object.sum = "escrowReturnMsg";
+            }
+            if (message.distributionDistributeMsg != null && message.hasOwnProperty("distributionDistributeMsg")) {
+                object.distributionDistributeMsg = $root.distribution.DistributeMsg.toObject(message.distributionDistributeMsg, options);
+                if (options.oneofs)
+                    object.sum = "distributionDistributeMsg";
+            }
+            if (message.aswapReleaseMsg != null && message.hasOwnProperty("aswapReleaseMsg")) {
+                object.aswapReleaseMsg = $root.aswap.ReleaseMsg.toObject(message.aswapReleaseMsg, options);
+                if (options.oneofs)
+                    object.sum = "aswapReleaseMsg";
+            }
+            if (message.govTallyMsg != null && message.hasOwnProperty("govTallyMsg")) {
+                object.govTallyMsg = $root.gov.TallyMsg.toObject(message.govTallyMsg, options);
+                if (options.oneofs)
+                    object.sum = "govTallyMsg";
+            }
+            return object;
+        };
+
+        /**
+         * Converts this CronTask to JSON.
+         * @function toJSON
+         * @memberof bnsd.CronTask
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CronTask.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CronTask;
+    })();
+
     return bnsd;
 })();
 
@@ -4209,7 +4598,7 @@ $root.username = (function() {
          * @memberof username
          * @interface IBlockchainAddress
          * @property {string|null} [blockchainId] An arbitrary blockchain ID.
-         * @property {Uint8Array|null} [address] data.
+         * @property {string|null} [address] to use.
          */
 
         /**
@@ -4236,12 +4625,12 @@ $root.username = (function() {
         BlockchainAddress.prototype.blockchainId = "";
 
         /**
-         * data.
-         * @member {Uint8Array} address
+         * to use.
+         * @member {string} address
          * @memberof username.BlockchainAddress
          * @instance
          */
-        BlockchainAddress.prototype.address = $util.newBuffer([]);
+        BlockchainAddress.prototype.address = "";
 
         /**
          * Creates a new BlockchainAddress instance using the specified properties.
@@ -4270,7 +4659,7 @@ $root.username = (function() {
             if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.blockchainId);
             if (message.address != null && message.hasOwnProperty("address"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.address);
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.address);
             return writer;
         };
 
@@ -4309,7 +4698,7 @@ $root.username = (function() {
                     message.blockchainId = reader.string();
                     break;
                 case 2:
-                    message.address = reader.bytes();
+                    message.address = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4350,8 +4739,8 @@ $root.username = (function() {
                 if (!$util.isString(message.blockchainId))
                     return "blockchainId: string expected";
             if (message.address != null && message.hasOwnProperty("address"))
-                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
-                    return "address: buffer expected";
+                if (!$util.isString(message.address))
+                    return "address: string expected";
             return null;
         };
 
@@ -4370,10 +4759,7 @@ $root.username = (function() {
             if (object.blockchainId != null)
                 message.blockchainId = String(object.blockchainId);
             if (object.address != null)
-                if (typeof object.address === "string")
-                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
-                else if (object.address.length)
-                    message.address = object.address;
+                message.address = String(object.address);
             return message;
         };
 
@@ -4392,18 +4778,12 @@ $root.username = (function() {
             var object = {};
             if (options.defaults) {
                 object.blockchainId = "";
-                if (options.bytes === String)
-                    object.address = "";
-                else {
-                    object.address = [];
-                    if (options.bytes !== Array)
-                        object.address = $util.newBuffer(object.address);
-                }
+                object.address = "";
             }
             if (message.blockchainId != null && message.hasOwnProperty("blockchainId"))
                 object.blockchainId = message.blockchainId;
             if (message.address != null && message.hasOwnProperty("address"))
-                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
+                object.address = message.address;
             return object;
         };
 
@@ -9245,25 +9625,25 @@ $root.aswap = (function() {
         return ReleaseMsg;
     })();
 
-    aswap.ReturnSwapMsg = (function() {
+    aswap.ReturnMsg = (function() {
 
         /**
-         * Properties of a ReturnSwapMsg.
+         * Properties of a ReturnMsg.
          * @memberof aswap
-         * @interface IReturnSwapMsg
-         * @property {weave.IMetadata|null} [metadata] ReturnSwapMsg metadata
+         * @interface IReturnMsg
+         * @property {weave.IMetadata|null} [metadata] ReturnMsg metadata
          * @property {Uint8Array|null} [swapId] swap_id to return
          */
 
         /**
-         * Constructs a new ReturnSwapMsg.
+         * Constructs a new ReturnMsg.
          * @memberof aswap
          * @classdesc This operation only works if the Swap is expired.
-         * @implements IReturnSwapMsg
+         * @implements IReturnMsg
          * @constructor
-         * @param {aswap.IReturnSwapMsg=} [properties] Properties to set
+         * @param {aswap.IReturnMsg=} [properties] Properties to set
          */
-        function ReturnSwapMsg(properties) {
+        function ReturnMsg(properties) {
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -9271,43 +9651,43 @@ $root.aswap = (function() {
         }
 
         /**
-         * ReturnSwapMsg metadata.
+         * ReturnMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @instance
          */
-        ReturnSwapMsg.prototype.metadata = null;
+        ReturnMsg.prototype.metadata = null;
 
         /**
          * swap_id to return
          * @member {Uint8Array} swapId
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @instance
          */
-        ReturnSwapMsg.prototype.swapId = $util.newBuffer([]);
+        ReturnMsg.prototype.swapId = $util.newBuffer([]);
 
         /**
-         * Creates a new ReturnSwapMsg instance using the specified properties.
+         * Creates a new ReturnMsg instance using the specified properties.
          * @function create
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @static
-         * @param {aswap.IReturnSwapMsg=} [properties] Properties to set
-         * @returns {aswap.ReturnSwapMsg} ReturnSwapMsg instance
+         * @param {aswap.IReturnMsg=} [properties] Properties to set
+         * @returns {aswap.ReturnMsg} ReturnMsg instance
          */
-        ReturnSwapMsg.create = function create(properties) {
-            return new ReturnSwapMsg(properties);
+        ReturnMsg.create = function create(properties) {
+            return new ReturnMsg(properties);
         };
 
         /**
-         * Encodes the specified ReturnSwapMsg message. Does not implicitly {@link aswap.ReturnSwapMsg.verify|verify} messages.
+         * Encodes the specified ReturnMsg message. Does not implicitly {@link aswap.ReturnMsg.verify|verify} messages.
          * @function encode
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @static
-         * @param {aswap.IReturnSwapMsg} message ReturnSwapMsg message or plain object to encode
+         * @param {aswap.IReturnMsg} message ReturnMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        ReturnSwapMsg.encode = function encode(message, writer) {
+        ReturnMsg.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.metadata != null && message.hasOwnProperty("metadata"))
@@ -9318,33 +9698,33 @@ $root.aswap = (function() {
         };
 
         /**
-         * Encodes the specified ReturnSwapMsg message, length delimited. Does not implicitly {@link aswap.ReturnSwapMsg.verify|verify} messages.
+         * Encodes the specified ReturnMsg message, length delimited. Does not implicitly {@link aswap.ReturnMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @static
-         * @param {aswap.IReturnSwapMsg} message ReturnSwapMsg message or plain object to encode
+         * @param {aswap.IReturnMsg} message ReturnMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        ReturnSwapMsg.encodeDelimited = function encodeDelimited(message, writer) {
+        ReturnMsg.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a ReturnSwapMsg message from the specified reader or buffer.
+         * Decodes a ReturnMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {aswap.ReturnSwapMsg} ReturnSwapMsg
+         * @returns {aswap.ReturnMsg} ReturnMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        ReturnSwapMsg.decode = function decode(reader, length) {
+        ReturnMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.aswap.ReturnSwapMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.aswap.ReturnMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -9363,30 +9743,30 @@ $root.aswap = (function() {
         };
 
         /**
-         * Decodes a ReturnSwapMsg message from the specified reader or buffer, length delimited.
+         * Decodes a ReturnMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {aswap.ReturnSwapMsg} ReturnSwapMsg
+         * @returns {aswap.ReturnMsg} ReturnMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        ReturnSwapMsg.decodeDelimited = function decodeDelimited(reader) {
+        ReturnMsg.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a ReturnSwapMsg message.
+         * Verifies a ReturnMsg message.
          * @function verify
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        ReturnSwapMsg.verify = function verify(message) {
+        ReturnMsg.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.metadata != null && message.hasOwnProperty("metadata")) {
@@ -9401,20 +9781,20 @@ $root.aswap = (function() {
         };
 
         /**
-         * Creates a ReturnSwapMsg message from a plain object. Also converts values to their respective internal types.
+         * Creates a ReturnMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {aswap.ReturnSwapMsg} ReturnSwapMsg
+         * @returns {aswap.ReturnMsg} ReturnMsg
          */
-        ReturnSwapMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.aswap.ReturnSwapMsg)
+        ReturnMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.aswap.ReturnMsg)
                 return object;
-            var message = new $root.aswap.ReturnSwapMsg();
+            var message = new $root.aswap.ReturnMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".aswap.ReturnSwapMsg.metadata: object expected");
+                    throw TypeError(".aswap.ReturnMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.swapId != null)
@@ -9426,15 +9806,15 @@ $root.aswap = (function() {
         };
 
         /**
-         * Creates a plain object from a ReturnSwapMsg message. Also converts values to other types if specified.
+         * Creates a plain object from a ReturnMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @static
-         * @param {aswap.ReturnSwapMsg} message ReturnSwapMsg
+         * @param {aswap.ReturnMsg} message ReturnMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        ReturnSwapMsg.toObject = function toObject(message, options) {
+        ReturnMsg.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             var object = {};
@@ -9456,17 +9836,17 @@ $root.aswap = (function() {
         };
 
         /**
-         * Converts this ReturnSwapMsg to JSON.
+         * Converts this ReturnMsg to JSON.
          * @function toJSON
-         * @memberof aswap.ReturnSwapMsg
+         * @memberof aswap.ReturnMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        ReturnSwapMsg.prototype.toJSON = function toJSON() {
+        ReturnMsg.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
-        return ReturnSwapMsg;
+        return ReturnMsg;
     })();
 
     return aswap;
@@ -10997,6 +11377,327 @@ $root.cash = (function() {
     })();
 
     return cash;
+})();
+
+$root.cron = (function() {
+
+    /**
+     * Namespace cron.
+     * @exports cron
+     * @namespace
+     */
+    var cron = {};
+
+    cron.TaskResult = (function() {
+
+        /**
+         * Properties of a TaskResult.
+         * @memberof cron
+         * @interface ITaskResult
+         * @property {weave.IMetadata|null} [metadata] TaskResult metadata
+         * @property {boolean|null} [successful] Successful is set to true if the task was successfully executed.
+         * @property {string|null} [info] about the task execution.
+         * @property {number|Long|null} [execTime] Exec time hold the information of when the task was executed.
+         * @property {number|Long|null} [execHeight] Exec height holds the block height value at the time the task was executed.
+         */
+
+        /**
+         * Constructs a new TaskResult.
+         * @memberof cron
+         * @classdesc https://github.com/tendermint/tendermint/issues/3665
+         * @implements ITaskResult
+         * @constructor
+         * @param {cron.ITaskResult=} [properties] Properties to set
+         */
+        function TaskResult(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * TaskResult metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof cron.TaskResult
+         * @instance
+         */
+        TaskResult.prototype.metadata = null;
+
+        /**
+         * Successful is set to true if the task was successfully executed.
+         * @member {boolean} successful
+         * @memberof cron.TaskResult
+         * @instance
+         */
+        TaskResult.prototype.successful = false;
+
+        /**
+         * about the task execution.
+         * @member {string} info
+         * @memberof cron.TaskResult
+         * @instance
+         */
+        TaskResult.prototype.info = "";
+
+        /**
+         * Exec time hold the information of when the task was executed.
+         * @member {number|Long} execTime
+         * @memberof cron.TaskResult
+         * @instance
+         */
+        TaskResult.prototype.execTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Exec height holds the block height value at the time the task was executed.
+         * @member {number|Long} execHeight
+         * @memberof cron.TaskResult
+         * @instance
+         */
+        TaskResult.prototype.execHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Creates a new TaskResult instance using the specified properties.
+         * @function create
+         * @memberof cron.TaskResult
+         * @static
+         * @param {cron.ITaskResult=} [properties] Properties to set
+         * @returns {cron.TaskResult} TaskResult instance
+         */
+        TaskResult.create = function create(properties) {
+            return new TaskResult(properties);
+        };
+
+        /**
+         * Encodes the specified TaskResult message. Does not implicitly {@link cron.TaskResult.verify|verify} messages.
+         * @function encode
+         * @memberof cron.TaskResult
+         * @static
+         * @param {cron.ITaskResult} message TaskResult message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        TaskResult.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.successful != null && message.hasOwnProperty("successful"))
+                writer.uint32(/* id 2, wireType 0 =*/16).bool(message.successful);
+            if (message.info != null && message.hasOwnProperty("info"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.info);
+            if (message.execTime != null && message.hasOwnProperty("execTime"))
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.execTime);
+            if (message.execHeight != null && message.hasOwnProperty("execHeight"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.execHeight);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified TaskResult message, length delimited. Does not implicitly {@link cron.TaskResult.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof cron.TaskResult
+         * @static
+         * @param {cron.ITaskResult} message TaskResult message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        TaskResult.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a TaskResult message from the specified reader or buffer.
+         * @function decode
+         * @memberof cron.TaskResult
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {cron.TaskResult} TaskResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        TaskResult.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.cron.TaskResult();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.successful = reader.bool();
+                    break;
+                case 3:
+                    message.info = reader.string();
+                    break;
+                case 4:
+                    message.execTime = reader.int64();
+                    break;
+                case 5:
+                    message.execHeight = reader.int64();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a TaskResult message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof cron.TaskResult
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {cron.TaskResult} TaskResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        TaskResult.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a TaskResult message.
+         * @function verify
+         * @memberof cron.TaskResult
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        TaskResult.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.successful != null && message.hasOwnProperty("successful"))
+                if (typeof message.successful !== "boolean")
+                    return "successful: boolean expected";
+            if (message.info != null && message.hasOwnProperty("info"))
+                if (!$util.isString(message.info))
+                    return "info: string expected";
+            if (message.execTime != null && message.hasOwnProperty("execTime"))
+                if (!$util.isInteger(message.execTime) && !(message.execTime && $util.isInteger(message.execTime.low) && $util.isInteger(message.execTime.high)))
+                    return "execTime: integer|Long expected";
+            if (message.execHeight != null && message.hasOwnProperty("execHeight"))
+                if (!$util.isInteger(message.execHeight) && !(message.execHeight && $util.isInteger(message.execHeight.low) && $util.isInteger(message.execHeight.high)))
+                    return "execHeight: integer|Long expected";
+            return null;
+        };
+
+        /**
+         * Creates a TaskResult message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof cron.TaskResult
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {cron.TaskResult} TaskResult
+         */
+        TaskResult.fromObject = function fromObject(object) {
+            if (object instanceof $root.cron.TaskResult)
+                return object;
+            var message = new $root.cron.TaskResult();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".cron.TaskResult.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.successful != null)
+                message.successful = Boolean(object.successful);
+            if (object.info != null)
+                message.info = String(object.info);
+            if (object.execTime != null)
+                if ($util.Long)
+                    (message.execTime = $util.Long.fromValue(object.execTime)).unsigned = false;
+                else if (typeof object.execTime === "string")
+                    message.execTime = parseInt(object.execTime, 10);
+                else if (typeof object.execTime === "number")
+                    message.execTime = object.execTime;
+                else if (typeof object.execTime === "object")
+                    message.execTime = new $util.LongBits(object.execTime.low >>> 0, object.execTime.high >>> 0).toNumber();
+            if (object.execHeight != null)
+                if ($util.Long)
+                    (message.execHeight = $util.Long.fromValue(object.execHeight)).unsigned = false;
+                else if (typeof object.execHeight === "string")
+                    message.execHeight = parseInt(object.execHeight, 10);
+                else if (typeof object.execHeight === "number")
+                    message.execHeight = object.execHeight;
+                else if (typeof object.execHeight === "object")
+                    message.execHeight = new $util.LongBits(object.execHeight.low >>> 0, object.execHeight.high >>> 0).toNumber();
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a TaskResult message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof cron.TaskResult
+         * @static
+         * @param {cron.TaskResult} message TaskResult
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        TaskResult.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.successful = false;
+                object.info = "";
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.execTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.execTime = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.execHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.execHeight = options.longs === String ? "0" : 0;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.successful != null && message.hasOwnProperty("successful"))
+                object.successful = message.successful;
+            if (message.info != null && message.hasOwnProperty("info"))
+                object.info = message.info;
+            if (message.execTime != null && message.hasOwnProperty("execTime"))
+                if (typeof message.execTime === "number")
+                    object.execTime = options.longs === String ? String(message.execTime) : message.execTime;
+                else
+                    object.execTime = options.longs === String ? $util.Long.prototype.toString.call(message.execTime) : options.longs === Number ? new $util.LongBits(message.execTime.low >>> 0, message.execTime.high >>> 0).toNumber() : message.execTime;
+            if (message.execHeight != null && message.hasOwnProperty("execHeight"))
+                if (typeof message.execHeight === "number")
+                    object.execHeight = options.longs === String ? String(message.execHeight) : message.execHeight;
+                else
+                    object.execHeight = options.longs === String ? $util.Long.prototype.toString.call(message.execHeight) : options.longs === Number ? new $util.LongBits(message.execHeight.low >>> 0, message.execHeight.high >>> 0).toNumber() : message.execHeight;
+            return object;
+        };
+
+        /**
+         * Converts this TaskResult to JSON.
+         * @function toJSON
+         * @memberof cron.TaskResult
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        TaskResult.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return TaskResult;
+    })();
+
+    return cron;
 })();
 
 $root.currency = (function() {
@@ -15456,6 +16157,7 @@ $root.gov = (function() {
          * @property {gov.Proposal.Status|null} [status] Status represents the high level position in the life cycle of the proposal. Initial value is Submitted.
          * @property {gov.Proposal.Result|null} [result] Result is the final result based on the votes and election rule. Initial value is Undefined.
          * @property {gov.Proposal.ExecutorResult|null} [executorResult] Result is the final result based on the votes and election rule. Initial value is NotRun.
+         * @property {Uint8Array|null} [tallyTaskId] create the tally once the voting period is over.
          */
 
         /**
@@ -15586,6 +16288,14 @@ $root.gov = (function() {
         Proposal.prototype.executorResult = 0;
 
         /**
+         * create the tally once the voting period is over.
+         * @member {Uint8Array} tallyTaskId
+         * @memberof gov.Proposal
+         * @instance
+         */
+        Proposal.prototype.tallyTaskId = $util.newBuffer([]);
+
+        /**
          * Creates a new Proposal instance using the specified properties.
          * @function create
          * @memberof gov.Proposal
@@ -15637,6 +16347,8 @@ $root.gov = (function() {
                 writer.uint32(/* id 13, wireType 0 =*/104).int32(message.result);
             if (message.executorResult != null && message.hasOwnProperty("executorResult"))
                 writer.uint32(/* id 14, wireType 0 =*/112).int32(message.executorResult);
+            if (message.tallyTaskId != null && message.hasOwnProperty("tallyTaskId"))
+                writer.uint32(/* id 15, wireType 2 =*/122).bytes(message.tallyTaskId);
             return writer;
         };
 
@@ -15712,6 +16424,9 @@ $root.gov = (function() {
                     break;
                 case 14:
                     message.executorResult = reader.int32();
+                    break;
+                case 15:
+                    message.tallyTaskId = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -15819,6 +16534,9 @@ $root.gov = (function() {
                 case 3:
                     break;
                 }
+            if (message.tallyTaskId != null && message.hasOwnProperty("tallyTaskId"))
+                if (!(message.tallyTaskId && typeof message.tallyTaskId.length === "number" || $util.isString(message.tallyTaskId)))
+                    return "tallyTaskId: buffer expected";
             return null;
         };
 
@@ -15949,6 +16667,11 @@ $root.gov = (function() {
                 message.executorResult = 3;
                 break;
             }
+            if (object.tallyTaskId != null)
+                if (typeof object.tallyTaskId === "string")
+                    $util.base64.decode(object.tallyTaskId, message.tallyTaskId = $util.newBuffer($util.base64.length(object.tallyTaskId)), 0);
+                else if (object.tallyTaskId.length)
+                    message.tallyTaskId = object.tallyTaskId;
             return message;
         };
 
@@ -16004,6 +16727,13 @@ $root.gov = (function() {
                 object.status = options.enums === String ? "PROPOSAL_STATUS_INVALID" : 0;
                 object.result = options.enums === String ? "PROPOSAL_RESULT_INVALID" : 0;
                 object.executorResult = options.enums === String ? "PROPOSAL_EXECUTOR_RESULT_INVALID" : 0;
+                if (options.bytes === String)
+                    object.tallyTaskId = "";
+                else {
+                    object.tallyTaskId = [];
+                    if (options.bytes !== Array)
+                        object.tallyTaskId = $util.newBuffer(object.tallyTaskId);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -16042,6 +16772,8 @@ $root.gov = (function() {
                 object.result = options.enums === String ? $root.gov.Proposal.Result[message.result] : message.result;
             if (message.executorResult != null && message.hasOwnProperty("executorResult"))
                 object.executorResult = options.enums === String ? $root.gov.Proposal.ExecutorResult[message.executorResult] : message.executorResult;
+            if (message.tallyTaskId != null && message.hasOwnProperty("tallyTaskId"))
+                object.tallyTaskId = options.bytes === String ? $util.base64.encode(message.tallyTaskId, 0, message.tallyTaskId.length) : options.bytes === Array ? Array.prototype.slice.call(message.tallyTaskId) : message.tallyTaskId;
             return object;
         };
 
