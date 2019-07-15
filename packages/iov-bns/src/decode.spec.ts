@@ -67,7 +67,7 @@ describe("Decode", () => {
       targets: [
         {
           blockchainId: "wonderland",
-          address: toUtf8("12345W"),
+          address: "12345W",
         },
       ],
     };
@@ -400,7 +400,7 @@ describe("Decode", () => {
           newTargets: [
             {
               blockchainId: "wonderland",
-              address: toUtf8("0xAABB001122DD"),
+              address: "0xAABB001122DD",
             },
           ],
         },
@@ -425,11 +425,11 @@ describe("Decode", () => {
           targets: [
             {
               blockchainId: "chain1",
-              address: toUtf8("23456782367823X"),
+              address: "23456782367823X",
             },
             {
               blockchainId: "chain2",
-              address: toUtf8("0x001100aabbccddffeeddaa8899776655"),
+              address: "0x001100aabbccddffeeddaa8899776655",
             },
           ],
         },

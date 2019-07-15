@@ -60,7 +60,7 @@ import {
 } from "./types";
 import { appendSignBytes } from "./util";
 
-const { fromHex, toAscii, toUtf8 } = Encoding;
+const { fromHex } = Encoding;
 
 describe("Encode", () => {
   it("encode pubkey", () => {
@@ -288,7 +288,7 @@ describe("Encode", () => {
       const msg = buildMsg(addAddress).usernameChangeTokenTargetsMsg!;
       expect(msg.username).toEqual("alice");
       expect(msg.newTargets![0].blockchainId).toEqual("other-land");
-      expect(msg.newTargets![0].address).toEqual(toUtf8("865765858O"));
+      expect(msg.newTargets![0].address).toEqual("865765858O");
     });
 
     it("works for RegisterUsernameTx", () => {
@@ -316,11 +316,11 @@ describe("Encode", () => {
       expect(msg.targets).toBeDefined();
       expect(msg.targets!.length).toEqual(3);
       expect(msg.targets![0].blockchainId).toEqual("chain1");
-      expect(msg.targets![0].address).toEqual(toAscii("367X"));
+      expect(msg.targets![0].address).toEqual("367X");
       expect(msg.targets![1].blockchainId).toEqual("chain3");
-      expect(msg.targets![1].address).toEqual(toAscii("0xddffeeffddaa44"));
+      expect(msg.targets![1].address).toEqual("0xddffeeffddaa44");
       expect(msg.targets![2].blockchainId).toEqual("chain2");
-      expect(msg.targets![2].address).toEqual(toAscii("0x00aabbddccffee"));
+      expect(msg.targets![2].address).toEqual("0x00aabbddccffee");
     });
 
     // Multisignature contracts

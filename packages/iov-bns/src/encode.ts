@@ -43,8 +43,6 @@ import {
 } from "./types";
 import { decodeBnsAddress, identityToAddress } from "./util";
 
-const { toUtf8 } = Encoding;
-
 function encodeInt(intNumber: number): number | null {
   if (!Number.isInteger(intNumber)) {
     throw new Error("Received some kind of number that can't be encoded.");
@@ -175,7 +173,7 @@ function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.bnsd.ITx {
 
 function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.bnsd.ITx {
   return {
-    aswapReturnMsg: codecImpl.aswap.ReturnSwapMsg.create({
+    aswapReturnMsg: codecImpl.aswap.ReturnMsg.create({
       metadata: { schema: 1 },
       swapId: tx.swapId.data,
     }),
@@ -187,7 +185,7 @@ function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.bnsd.ITx
 function encodeChainAddressPair(pair: ChainAddressPair): codecImpl.username.IBlockchainAddress {
   return {
     blockchainId: pair.chainId,
-    address: toUtf8(pair.address),
+    address: pair.address,
   };
 }
 

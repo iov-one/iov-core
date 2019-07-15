@@ -107,7 +107,7 @@ function decodeVersionedId(versionedId: codecImpl.orm.IVersionedIDRef): Versione
 function decodeChainAddressPair(pair: codecImpl.username.IBlockchainAddress): ChainAddressPair {
   return {
     chainId: ensure(pair.blockchainId, "blockchainId") as ChainId,
-    address: fromUtf8(ensure(pair.address, "address")) as Address,
+    address: ensure(pair.address, "address") as Address,
   };
 }
 
@@ -457,7 +457,7 @@ function parseSwapClaimTx(
 
 function parseSwapAbortTransaction(
   base: UnsignedTransaction,
-  msg: codecImpl.aswap.IReturnSwapMsg,
+  msg: codecImpl.aswap.IReturnMsg,
 ): SwapAbortTransaction & WithCreator {
   return {
     ...base,
