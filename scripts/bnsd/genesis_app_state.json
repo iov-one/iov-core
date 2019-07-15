@@ -118,6 +118,10 @@
       "ver": 1
     },
     {
+      "pkg": "cron",
+      "ver": 1
+    },
+    {
       "pkg": "currency",
       "ver": 1
     },
