@@ -713,7 +713,6 @@ describe("BnsConnection", () => {
     });
 
     it("can register a username with empty list of targets", async () => {
-      pending("Currently not supported by the blockchain, see https://github.com/iov-one/weave/issues/857");
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId();
