@@ -2065,7 +2065,6 @@ describe("BnsConnection", () => {
     });
 
     it("can query usernames owner", async () => {
-      pending("Not supported right now, see https://github.com/iov-one/weave/issues/858");
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId();

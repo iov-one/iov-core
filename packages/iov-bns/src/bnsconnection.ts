@@ -661,9 +661,8 @@ export class BnsConnection implements AtomicSwapConnection {
     if (isBnsUsernamesByUsernameQuery(query)) {
       results = (await this.query("/usernames", toUtf8(query.username))).results;
     } else if (isBnsUsernamesByOwnerQuery(query)) {
-      throw new Error(
-        "Querying usernames by owner is not supported right now. See https://github.com/iov-one/weave/issues/858",
-      );
+      const rawAddress = decodeBnsAddress(query.owner).data;
+      results = (await this.query("/usernames/owner", rawAddress)).results;
     } else {
       throw new Error("Unsupported query");
     }
