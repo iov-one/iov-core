@@ -335,12 +335,10 @@ export class EthereumConnection implements AtomicSwapConnection {
     this.atomicSwapErc20ContractAddress = atomicSwapErc20ContractAddress;
     this.erc20Tokens = erc20Tokens;
     this.erc20ContractReaders = new Map(
-      [...erc20Tokens.entries()].map(
-        ([ticker, erc20Options]): readonly [TokenTicker, Erc20Reader] => [
-          ticker,
-          new Erc20Reader(ethereumClient, erc20Options),
-        ],
-      ),
+      [...erc20Tokens.entries()].map(([ticker, erc20Options]): readonly [TokenTicker, Erc20Reader] => [
+        ticker,
+        new Erc20Reader(ethereumClient, erc20Options),
+      ]),
     );
     this.codec = new EthereumCodec({
       erc20Tokens: erc20Tokens,
@@ -1289,18 +1287,16 @@ export class EthereumConnection implements AtomicSwapConnection {
             throw new Error("SwapContractEvent type not handled");
         }
       }, [])
-      .filter(
-        (swap: AtomicSwap): boolean => {
-          if (isAtomicSwapRecipientQuery(query)) {
-            return swap.data.recipient === query.recipient;
-          } else if (isAtomicSwapSenderQuery(query)) {
-            return swap.data.sender === query.sender;
-          } else if (isAtomicSwapHashQuery(query)) {
-            return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hash);
-          }
-          throw new Error("unsupported query type");
-        },
-      );
+      .filter((swap: AtomicSwap): boolean => {
+        if (isAtomicSwapRecipientQuery(query)) {
+          return swap.data.recipient === query.recipient;
+        } else if (isAtomicSwapSenderQuery(query)) {
+          return swap.data.sender === query.sender;
+        } else if (isAtomicSwapHashQuery(query)) {
+          return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hash);
+        }
+        throw new Error("unsupported query type");
+      });
   }
 
   private async getSwapLogs(

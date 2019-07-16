@@ -761,31 +761,29 @@ export class BnsConnection implements AtomicSwapConnection {
     const chainId = await this.chainId();
     const currentHeight = await this.height();
 
-    return res.txs.map(
-      (txResponse): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => {
-        const { tx, hash, height, result } = txResponse;
-        const transactionId = Encoding.toHex(hash).toUpperCase() as TransactionId;
+    return res.txs.map((txResponse): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => {
+      const { tx, hash, height, result } = txResponse;
+      const transactionId = Encoding.toHex(hash).toUpperCase() as TransactionId;
 
-        if (result.code === 0) {
-          return {
-            height: height,
-            confirmations: currentHeight - height + 1,
-            transactionId: transactionId,
-            log: result.log,
-            result: result.data,
-            ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
-          };
-        } else {
-          const failed: FailedTransaction = {
-            height: height,
-            transactionId: transactionId,
-            code: result.code,
-            message: result.log,
-          };
-          return failed;
-        }
-      },
-    );
+      if (result.code === 0) {
+        return {
+          height: height,
+          confirmations: currentHeight - height + 1,
+          transactionId: transactionId,
+          log: result.log,
+          result: result.data,
+          ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
+        };
+      } else {
+        const failed: FailedTransaction = {
+          height: height,
+          transactionId: transactionId,
+          code: result.code,
+          message: result.log,
+        };
+        return failed;
+      }
+    });
   }
 
   /**
@@ -797,30 +795,30 @@ export class BnsConnection implements AtomicSwapConnection {
   ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     const chainId = this.chainId();
     const rawQuery = buildQueryString(query);
-    return this.tmClient.subscribeTx(rawQuery).map(
-      (transaction): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => {
-        const transactionId = Encoding.toHex(transaction.hash).toUpperCase() as TransactionId;
+    return this.tmClient.subscribeTx(rawQuery).map((transaction):
+      | ConfirmedTransaction<UnsignedTransaction>
+      | FailedTransaction => {
+      const transactionId = Encoding.toHex(transaction.hash).toUpperCase() as TransactionId;
 
-        if (transaction.result.code === 0) {
-          return {
-            height: transaction.height,
-            confirmations: 1, // assuming block height is current height when listening to events
-            transactionId: transactionId,
-            log: transaction.result.log,
-            result: transaction.result.data,
-            ...this.codec.parseBytes(new Uint8Array(transaction.tx) as PostableBytes, chainId),
-          };
-        } else {
-          const failed: FailedTransaction = {
-            height: transaction.height,
-            transactionId: transactionId,
-            code: transaction.result.code,
-            message: transaction.result.log,
-          };
-          return failed;
-        }
-      },
-    );
+      if (transaction.result.code === 0) {
+        return {
+          height: transaction.height,
+          confirmations: 1, // assuming block height is current height when listening to events
+          transactionId: transactionId,
+          log: transaction.result.log,
+          result: transaction.result.data,
+          ...this.codec.parseBytes(new Uint8Array(transaction.tx) as PostableBytes, chainId),
+        };
+      } else {
+        const failed: FailedTransaction = {
+          height: transaction.height,
+          transactionId: transactionId,
+          code: transaction.result.code,
+          message: transaction.result.log,
+        };
+        return failed;
+      }
+    });
   }
 
   /**
