@@ -6,7 +6,7 @@
 It uses the keymanagement functionality of `UserProfile`,
 and the generic blockchain connection of `BlockchainConnection`, and pulls them together into one
 `MultiChainSigner`, which can query state and sign transactions on multiple blockchains.
-The examples below show a basic usage of the core library. You may also want to experiment
+The examples below show a basic usage of `MultiChainSigner`. You may also want to experiment
 with [@iov/cli](https://github.com/iov-one/iov-core/blob/master/packages/iov-cli/README.md)
 as a developer tool to familiarize yourself with this functionality.
 
