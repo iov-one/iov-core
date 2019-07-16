@@ -12,7 +12,7 @@ Breaking changes
 
 - @iov/bns: `ElectionRule`, `Proposal` and `VersionedId` all use numeric IDs now
   to conform with `Electorate`.
-- @iov/bns: Remove `AddAddressToUsernameTx` and `UpdateTargetsOfUsernameTx` in
+- @iov/bns: Remove `AddAddressToUsernameTx` and `RemoveAddressFromUsernameTx` in
   favour of the new `UpdateTargetsOfUsernameTx`.
 - @iov/bns: Rename `BnsUsernameNft.addresses` to `.targets`.
 - @iov/bns: Rename `RegisterUsernameTx.addresses` to `.targets`.
