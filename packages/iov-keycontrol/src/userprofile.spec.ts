@@ -124,9 +124,10 @@ describe("UserProfile", () => {
       await original.storeIn(db, defaultEncryptionPassword);
 
       const otherEncryptionPassword = "something wrong";
-      await UserProfile.loadFrom(db, otherEncryptionPassword)
-        .then(() => fail("loading must not succeed"))
-        .catch(error => expect(error).toMatch(/invalid usage/));
+      await UserProfile.loadFrom(db, otherEncryptionPassword).then(
+        () => fail("loading must not succeed"),
+        error => expect(error).toMatch(/ciphertext cannot be decrypted using that key/i),
+      );
 
       await db.close();
     });
