@@ -1,5 +1,5 @@
 import { ReadonlyDate } from "readonly-date";
-import { Address, Amount } from "@iov/bcp";
+import { Address, Amount, PubkeyBundle } from "@iov/bcp";
 import { Fraction } from "@iov/bns";
 import { CommitteeId } from "./committees";
 export declare enum ProposalType {
@@ -43,11 +43,12 @@ export interface AmendCommitteeQuorumOptions extends CommonProposalOptions {
 }
 export interface AddValidatorOptions extends CommonProposalOptions {
     readonly type: ProposalType.AddValidator;
-    readonly address: Address;
+    readonly pubkey: PubkeyBundle;
+    readonly power: number;
 }
 export interface RemoveValidatorOptions extends CommonProposalOptions {
     readonly type: ProposalType.RemoveValidator;
-    readonly address: Address;
+    readonly pubkey: PubkeyBundle;
 }
 export interface AccessGuaranteeFundOptions extends CommonProposalOptions {
     readonly type: ProposalType.AccessGuaranteeFund;

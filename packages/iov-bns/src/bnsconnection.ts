@@ -5,6 +5,7 @@ import {
   Account,
   AccountQuery,
   AddressQuery,
+  Algorithm,
   Amount,
   AtomicSwap,
   AtomicSwapConnection,
@@ -32,6 +33,7 @@ import {
   PostableBytes,
   PostTxResponse,
   PubkeyBundle,
+  PubkeyBytes,
   PubkeyQuery,
   SwapAbortTransaction,
   SwapClaimTransaction,
@@ -75,6 +77,7 @@ import {
   Keyed,
   Proposal,
   Result,
+  Validator,
 } from "./types";
 import {
   buildQueryString,
@@ -613,6 +616,23 @@ export class BnsConnection implements AtomicSwapConnection {
         .subscribeTx(buildQueryString({ sentFromOrTo: address }))
         .map(() => Stream.fromPromise(this.getAccount(query)))
         .flatten(),
+    );
+  }
+
+  public async getValidators(): Promise<readonly Validator[]> {
+    const response = await this.tmClient.validators();
+    return response.results.map(
+      (validator): Validator => {
+        if (validator.pubkey.algorithm !== "ed25519") throw new Error("Got unsupported pubkey");
+
+        return {
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: validator.pubkey.data as PubkeyBytes,
+          },
+          power: validator.votingPower,
+        };
+      },
     );
   }
 

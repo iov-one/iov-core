@@ -13,9 +13,12 @@ import {
   VoteOption,
   VoteTx,
 } from "@iov/bns";
+import { Encoding } from "@iov/encoding";
 
 import { ProposalOptions, ProposalType } from "./proposals";
 import { groupByCallback, maxWithComparatorCallback } from "./utils";
+
+const { toHex } = Encoding;
 
 export interface GovernorOptions {
   readonly connection: BnsConnection;
@@ -73,7 +76,7 @@ export class Governor {
     };
     switch (options.type) {
       case ProposalType.AddCommitteeMember:
-        return this.connection.withDefaultFee<CreateProposalTx & WithCreator>({
+        return this.connection.withDefaultFee({
           ...commonProperties,
           action: {
             kind: ActionKind.UpdateElectorate,
@@ -84,7 +87,7 @@ export class Governor {
           },
         });
       case ProposalType.RemoveCommitteeMember:
-        return this.connection.withDefaultFee<CreateProposalTx & WithCreator>({
+        return this.connection.withDefaultFee({
           ...commonProperties,
           action: {
             kind: ActionKind.UpdateElectorate,
@@ -94,8 +97,28 @@ export class Governor {
             },
           },
         });
+      case ProposalType.AddValidator:
+        return this.connection.withDefaultFee({
+          ...commonProperties,
+          action: {
+            kind: ActionKind.SetValidators,
+            validatorUpdates: {
+              [`ed25519_${toHex(options.pubkey.data)}`]: { power: options.power },
+            },
+          },
+        });
+      case ProposalType.RemoveValidator:
+        return this.connection.withDefaultFee({
+          ...commonProperties,
+          action: {
+            kind: ActionKind.SetValidators,
+            validatorUpdates: {
+              [`ed25519_${toHex(options.pubkey.data)}`]: { power: 0 },
+            },
+          },
+        });
       case ProposalType.AmendProtocol:
-        return this.connection.withDefaultFee<CreateProposalTx & WithCreator>({
+        return this.connection.withDefaultFee({
           ...commonProperties,
           action: {
             kind: ActionKind.CreateTextResolution,
@@ -108,7 +131,7 @@ export class Governor {
   }
 
   public async buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx & WithCreator> {
-    return this.connection.withDefaultFee<VoteTx & WithCreator>({
+    return this.connection.withDefaultFee({
       kind: "bns/vote",
       creator: this.identity,
       proposalId: proposalId,
@@ -117,7 +140,7 @@ export class Governor {
   }
 
   public async buildTallyTx(proposalId: number): Promise<TallyTx & WithCreator> {
-    return this.connection.withDefaultFee<TallyTx & WithCreator>({
+    return this.connection.withDefaultFee({
       kind: "bns/tally",
       creator: this.identity,
       proposalId: proposalId,

@@ -1,7 +1,21 @@
 import { As } from "type-tagger";
-import { Address, Algorithm, Amount, ChainId, LightTransaction, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TimestampTimeout } from "@iov/bcp";
+import { Address, Algorithm, Amount, ChainId, LightTransaction, PubkeyBundle, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TimestampTimeout } from "@iov/bcp";
 export interface CashConfiguration {
     readonly minimalFee: Amount;
+}
+export interface ValidatorProperties {
+    readonly power: number;
+}
+export interface Validator extends ValidatorProperties {
+    readonly pubkey: PubkeyBundle;
+}
+/**
+ * An unordered map from validator pubkey address to remaining properies
+ *
+ * The string key is in the form `ed25519_<pubkey_hex>`
+ */
+export interface Validators {
+    readonly [index: string]: ValidatorProperties;
 }
 /** Like Elector from the backend but without the address field */
 export interface ElectorProperties {
@@ -69,6 +83,7 @@ export declare enum VoteOption {
 }
 export declare enum ActionKind {
     CreateTextResolution = "create_text_resolution",
+    SetValidators = "set_validators",
     UpdateElectorate = "update_electorate"
 }
 export interface TallyResult {
@@ -82,6 +97,11 @@ export interface CreateTextResolution {
     readonly resolution: string;
 }
 export declare function isCreateTextResolution(action: ProposalAction): action is CreateTextResolution;
+export interface SetValidators {
+    readonly kind: ActionKind.SetValidators;
+    readonly validatorUpdates: Validators;
+}
+export declare function isSetValidators(action: ProposalAction): action is SetValidators;
 export interface UpdateElectorate {
     readonly kind: ActionKind.UpdateElectorate;
     readonly electorateId: number;
@@ -89,7 +109,7 @@ export interface UpdateElectorate {
 }
 export declare function isUpdateElectorate(action: ProposalAction): action is UpdateElectorate;
 /** The action to be executed when the proposal is accepted */
-export declare type ProposalAction = CreateTextResolution | UpdateElectorate;
+export declare type ProposalAction = CreateTextResolution | SetValidators | UpdateElectorate;
 export interface Proposal {
     readonly id: number;
     readonly title: string;

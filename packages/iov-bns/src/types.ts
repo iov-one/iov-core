@@ -10,6 +10,7 @@ import {
   isSwapClaimTransaction,
   isSwapOfferTransaction,
   LightTransaction,
+  PubkeyBundle,
   SendTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
@@ -24,6 +25,23 @@ export interface CashConfiguration {
 }
 
 // Governance
+
+export interface ValidatorProperties {
+  readonly power: number;
+}
+
+export interface Validator extends ValidatorProperties {
+  readonly pubkey: PubkeyBundle;
+}
+
+/**
+ * An unordered map from validator pubkey address to remaining properies
+ *
+ * The string key is in the form `ed25519_<pubkey_hex>`
+ */
+export interface Validators {
+  readonly [index: string]: ValidatorProperties;
+}
 
 /** Like Elector from the backend but without the address field */
 export interface ElectorProperties {
@@ -101,6 +119,7 @@ export enum VoteOption {
 
 export enum ActionKind {
   CreateTextResolution = "create_text_resolution",
+  SetValidators = "set_validators",
   UpdateElectorate = "update_electorate",
 }
 
@@ -120,6 +139,15 @@ export function isCreateTextResolution(action: ProposalAction): action is Create
   return action.kind === ActionKind.CreateTextResolution;
 }
 
+export interface SetValidators {
+  readonly kind: ActionKind.SetValidators;
+  readonly validatorUpdates: Validators;
+}
+
+export function isSetValidators(action: ProposalAction): action is SetValidators {
+  return action.kind === ActionKind.SetValidators;
+}
+
 export interface UpdateElectorate {
   readonly kind: ActionKind.UpdateElectorate;
   readonly electorateId: number;
@@ -131,7 +159,7 @@ export function isUpdateElectorate(action: ProposalAction): action is UpdateElec
 }
 
 /** The action to be executed when the proposal is accepted */
-export type ProposalAction = CreateTextResolution | UpdateElectorate;
+export type ProposalAction = CreateTextResolution | SetValidators | UpdateElectorate;
 
 export interface Proposal {
   readonly id: number;

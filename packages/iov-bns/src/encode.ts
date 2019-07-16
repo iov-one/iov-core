@@ -26,6 +26,7 @@ import {
   CreateProposalTx,
   isBnsTx,
   isCreateTextResolution,
+  isSetValidators,
   isUpdateElectorate,
   Participant,
   PrivkeyBundle,
@@ -36,6 +37,7 @@ import {
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
+  Validators,
   VoteOption,
   VoteTx,
 } from "./types";
@@ -293,6 +295,21 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.bnsd.I
 
 // Governance
 
+// tslint:disable-next-line: readonly-array
+function encodeValidators(validators: Validators): codecImpl.weave.IValidatorUpdate[] {
+  return Object.entries(validators).map(([key, { power }]) => {
+    const matches = key.match(/^ed25519_([0-9a-fA-F]{64})$/);
+    if (!matches) {
+      throw new Error("Got validators object key of unexpected format. Must be 'ed25519_<pubkey_hex>'");
+    }
+
+    return {
+      pubKey: { data: Encoding.fromHex(matches[1]) },
+      power: power,
+    };
+  });
+}
+
 function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
   let option: codecImpl.bnsd.IProposalOptions;
   if (isCreateTextResolution(tx.action)) {
@@ -300,6 +317,13 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
       govCreateTextResolutionMsg: {
         metadata: { schema: 1 },
         resolution: tx.action.resolution,
+      },
+    };
+  } else if (isSetValidators(tx.action)) {
+    option = {
+      validatorsApplyDiffMsg: {
+        metadata: { schema: 1 },
+        validatorUpdates: encodeValidators(tx.action.validatorUpdates),
       },
     };
   } else if (isUpdateElectorate(tx.action)) {

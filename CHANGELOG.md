@@ -2,6 +2,7 @@
 
 ## 0.16.0
 
+- @iov/bns: Add `BnsConnection.getValidators`.
 - @iov/bns-governance: Add new package to help with common governance tasks.
   Includes `Governor` class (with `GovernorOptions`); `ProposalType` along with
   the union type `ProposalOptions` and individual options types for each
