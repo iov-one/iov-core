@@ -32,7 +32,6 @@ export interface ValidatorProperties {
 
 export interface Validator extends ValidatorProperties {
   readonly pubkey: PubkeyBundle;
-  readonly power: number;
 }
 
 /**

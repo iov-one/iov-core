@@ -8,7 +8,6 @@ export interface ValidatorProperties {
 }
 export interface Validator extends ValidatorProperties {
     readonly pubkey: PubkeyBundle;
-    readonly power: number;
 }
 /**
  * An unordered map from validator pubkey address to remaining properies
