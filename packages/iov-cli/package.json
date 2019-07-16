@@ -26,10 +26,10 @@
   },
   "dependencies": {
     "@iov/bns": "^0.15.0",
-    "@iov/core": "^0.15.0",
     "@iov/ethereum": "^0.15.0",
     "@iov/faucets": "^0.15.0",
     "@iov/lisk": "^0.15.0",
+    "@iov/multichain": "^0.15.0",
     "@iov/rise": "^0.15.0",
     "argparse": "^1.0.10",
     "babylon": "^6.18.0",

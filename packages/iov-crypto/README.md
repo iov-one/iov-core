@@ -6,7 +6,7 @@
 libraries. Little of it is implemented here, but mainly it is a curation of
 external libraries along with correctness tests. We add type-safety, some more
 checks, and a simple API to these libraries. This can also be freely imported
-outside of @iov/core based applications.
+outside of IOV-Core based applications.
 
 ## API Documentation
 

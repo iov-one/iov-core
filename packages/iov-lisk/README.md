@@ -4,19 +4,19 @@
 
 ## Getting started
 
-The primary way to use @iov/lisk is together with @iov/core. Alternatively,
+The primary way to use @iov/lisk is together with @iov/multichain. Alternatively,
 you can use @iov/lisk to create offline transactions which can be posted manually.
 
 All examples are made for use in @iov/cli and you may need to include some
 missing symbols if used in a different environment.
 
-### Using with @iov/core
+### Using with @iov/multichain
 
-You can use @iov/lisk as an extension of @iov/core to interact with the
+You can use @iov/lisk as an extension of @iov/multichain to interact with the
 Lisk blockchain as follows.
 
 ```ts
-import { Ed25519Wallet } from "@iov/core";
+import { Ed25519Wallet } from "@iov/keycontrol";
 import { passphraseToKeypair, liskCodec, liskConnector } from "@iov/lisk";
 
 const wallet = new Ed25519Wallet();
@@ -59,10 +59,10 @@ console.log((await connection.getAccount({ address: recipientAddress })).data[0]
 ### The manual way
 
 This is how you use `liskCodec` to generate send transactions
-for Lisk manually, i.e. without the help of @iov/core.
+for Lisk manually, i.e. without the help of @iov/multichain.
 
 ```ts
-import { Ed25519Wallet } from "@iov/core";
+import { Ed25519Wallet } from "@iov/keycontrol";
 import { passphraseToKeypair, generateNonce, liskCodec } from "@iov/lisk";
 
 const liskTestnet = "lisk-da3ed6a454" as ChainId;
@@ -123,7 +123,7 @@ software implementation of the the Lisk wallet on Ledger or Trezor.
 The following code snippet shows how to implement address discovery.
 
 ```ts
-import { Ed25519HdWallet } from "@iov/core";
+import { Ed25519HdWallet } from "@iov/multichain";
 import { Slip10RawIndex } from "@iov/crypto";
 import { liskCodec, LiskConnection } from "@iov/lisk";
 

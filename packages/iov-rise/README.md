@@ -4,19 +4,19 @@
 
 ## Getting started
 
-The primary way to use @iov/rise is together with @iov/core. Alternatively,
+The primary way to use @iov/rise is together with @iov/multichain. Alternatively,
 you can use @iov/rise to create offline transactions which can be posted manually.
 
 All examples are made for use in @iov/cli and you may need to include some
 missing symbols if used in a different environment.
 
-### Using with @iov/core
+### Using with @iov/multichain
 
-You can use @iov/rise as an extension of @iov/core to interact with the
+You can use @iov/rise as an extension of @iov/multichain to interact with the
 RISE blockchain as follows.
 
 ```ts
-import { Ed25519Wallet } from "@iov/core";
+import { Ed25519Wallet } from "@iov/keycontrol";
 import { passphraseToKeypair, riseCodec, riseConnector } from "@iov/rise";
 
 const wallet = new Ed25519Wallet();
@@ -59,10 +59,10 @@ console.log(
 ### The manual way
 
 This is how you use `riseCodec` to generate send transactions
-for RISE manually, i.e. without the help of @iov/core.
+for RISE manually, i.e. without the help of @iov/multichain.
 
 ```ts
-import { Ed25519Wallet } from "@iov/core";
+import { Ed25519Wallet } from "@iov/keycontrol";
 import { passphraseToKeypair, generateNonce, riseCodec } from "@iov/rise";
 
 const riseTestnet = "rise-296dc9a4d1" as ChainId;
