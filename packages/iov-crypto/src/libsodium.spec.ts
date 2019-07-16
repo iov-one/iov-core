@@ -503,23 +503,26 @@ describe("Libsodium", () => {
         const corruptedCiphertext = ciphertext.map((x, i) =>
           i === 0 ? x ^ 0x01 : x,
         ) as Xchacha20poly1305IetfCiphertext;
-        await Xchacha20poly1305Ietf.decrypt(corruptedCiphertext, key, nonce)
-          .then(() => fail("promise must not resolve"))
-          .catch(error => expect(error.message).toContain("invalid usage"));
+        await Xchacha20poly1305Ietf.decrypt(corruptedCiphertext, key, nonce).then(
+          () => fail("promise must not resolve"),
+          error => expect(error.message).toMatch(/ciphertext cannot be decrypted using that key/i),
+        );
       }
       {
         // corrupted key
         const corruptedKey = key.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as Xchacha20poly1305IetfKey;
-        await Xchacha20poly1305Ietf.decrypt(ciphertext, corruptedKey, nonce)
-          .then(() => fail("promise must not resolve"))
-          .catch(error => expect(error.message).toContain("invalid usage"));
+        await Xchacha20poly1305Ietf.decrypt(ciphertext, corruptedKey, nonce).then(
+          () => fail("promise must not resolve"),
+          error => expect(error.message).toMatch(/ciphertext cannot be decrypted using that key/i),
+        );
       }
       {
         // corrupted nonce
         const corruptedNonce = nonce.map((x, i) => (i === 0 ? x ^ 0x01 : x)) as Xchacha20poly1305IetfNonce;
-        await Xchacha20poly1305Ietf.decrypt(ciphertext, key, corruptedNonce)
-          .then(() => fail("promise must not resolve"))
-          .catch(error => expect(error.message).toContain("invalid usage"));
+        await Xchacha20poly1305Ietf.decrypt(ciphertext, key, corruptedNonce).then(
+          () => fail("promise must not resolve"),
+          error => expect(error.message).toMatch(/ciphertext cannot be decrypted using that key/i),
+        );
       }
     });
 
