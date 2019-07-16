@@ -1,7 +1,6 @@
-import { ReadonlyDate } from "readonly-date";
-
 import { Nonce } from "@iov/bcp";
 import { Uint64 } from "@iov/encoding";
+import { ReadonlyDate } from "readonly-date";
 
 export class Parse {
   /** validates string to be a non-negative integer and cuts leading zeros */

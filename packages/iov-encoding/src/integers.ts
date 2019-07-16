@@ -1,5 +1,5 @@
 /* tslint:disable:no-bitwise */
-import BN = require("bn.js");
+import BN from "bn.js";
 
 const uint64MaxValue = new BN("18446744073709551615", 10, "be");
 

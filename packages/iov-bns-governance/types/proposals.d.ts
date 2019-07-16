@@ -1,6 +1,6 @@
-import { ReadonlyDate } from "readonly-date";
 import { Address, Amount, PubkeyBundle } from "@iov/bcp";
 import { Fraction } from "@iov/bns";
+import { ReadonlyDate } from "readonly-date";
 import { CommitteeId } from "./committees";
 export declare enum ProposalType {
     AddCommitteeMember = 0,

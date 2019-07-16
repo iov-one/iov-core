@@ -1,11 +1,10 @@
-import axios from "axios";
-
 import {
   isJsonRpcErrorResponse,
   JsonRpcRequest,
   JsonRpcSuccessResponse,
   parseJsonRpcResponse2,
 } from "@iov/jsonrpc";
+import axios from "axios";
 
 import { hasProtocol, RpcClient } from "./rpcclient";
 

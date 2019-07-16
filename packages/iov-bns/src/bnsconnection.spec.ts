@@ -1,6 +1,3 @@
-import BN = require("bn.js");
-import Long from "long";
-
 import {
   Account,
   Address,
@@ -46,6 +43,8 @@ import { Ed25519, Random, Sha512 } from "@iov/crypto";
 import { Encoding, Uint64 } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
 import { asArray, firstEvent, lastValue, toListPromise } from "@iov/stream";
+import BN from "bn.js";
+import Long from "long";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";

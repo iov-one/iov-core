@@ -1,5 +1,3 @@
-import { ReadonlyDate } from "readonly-date";
-
 import {
   Address,
   Algorithm,
@@ -22,6 +20,7 @@ import {
 } from "@iov/bcp";
 import { Parse, Serialization } from "@iov/dpos";
 import { Encoding, Int53 } from "@iov/encoding";
+import { ReadonlyDate } from "readonly-date";
 
 import { constants } from "./constants";
 import { isValidAddress, pubkeyToAddress } from "./derivation";

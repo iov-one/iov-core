@@ -1,8 +1,3 @@
-import axios from "axios";
-import equal from "fast-deep-equal";
-import { ReadonlyDate } from "readonly-date";
-import { Producer, Stream } from "xstream";
-
 import {
   Account,
   AccountQuery,
@@ -34,6 +29,10 @@ import {
 import { Parse } from "@iov/dpos";
 import { Encoding, Uint53, Uint64 } from "@iov/encoding";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import axios from "axios";
+import equal from "fast-deep-equal";
+import { ReadonlyDate } from "readonly-date";
+import { Producer, Stream } from "xstream";
 
 import { constants } from "./constants";
 import { pubkeyToAddress } from "./derivation";

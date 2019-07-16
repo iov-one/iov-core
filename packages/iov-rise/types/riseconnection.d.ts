@@ -1,5 +1,5 @@
-import { Stream } from "xstream";
 import { Account, AccountQuery, AddressQuery, BlockchainConnection, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionId, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Stream } from "xstream";
 /**
  * Encodes the current date and time as a nonce
  */

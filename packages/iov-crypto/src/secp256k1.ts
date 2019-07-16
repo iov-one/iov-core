@@ -1,8 +1,7 @@
-import BN = require("bn.js");
-import elliptic = require("elliptic");
-import { As } from "type-tagger";
-
 import { Encoding } from "@iov/encoding";
+import BN from "bn.js";
+import elliptic from "elliptic";
+import { As } from "type-tagger";
 
 import { ExtendedSecp256k1Signature, Secp256k1Signature } from "./secp256k1signature";
 

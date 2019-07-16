@@ -1,8 +1,7 @@
 // Make sure this file is not importet from index.d.ts to avoid a dependency on @types/bn.js
-import BN = require("bn.js");
-
 import { Address } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
+import BN from "bn.js";
 
 import { Abi } from "./abi";
 import { Erc20Options } from "./erc20";

@@ -1,7 +1,6 @@
+import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jsonrpc";
 import axios from "axios";
 import xstream from "xstream";
-
-import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jsonrpc";
 
 import { EthereumRpcClient } from "./ethereumrpcclient";
 

@@ -1,7 +1,3 @@
-import levelup from "levelup";
-import MemDownConstructor from "memdown";
-import { ReadonlyDate } from "readonly-date";
-
 import {
   Address,
   Algorithm,
@@ -22,6 +18,9 @@ import {
 } from "@iov/bcp";
 import { Ed25519, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+import levelup from "levelup";
+import MemDownConstructor from "memdown";
+import { ReadonlyDate } from "readonly-date";
 
 import { HdPaths } from "./hdpaths";
 import { Keyring } from "./keyring";

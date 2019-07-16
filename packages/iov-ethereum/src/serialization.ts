@@ -1,5 +1,3 @@
-import BN from "bn.js";
-
 import {
   Address,
   BlockHeightTimeout,
@@ -21,6 +19,7 @@ import {
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
+import BN from "bn.js";
 
 import { Abi } from "./abi";
 import { isValidAddress, pubkeyToAddress } from "./address";

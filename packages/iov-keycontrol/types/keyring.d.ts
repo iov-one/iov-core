@@ -1,6 +1,6 @@
-import { As } from "type-tagger";
 import { ChainId, Identity } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
+import { As } from "type-tagger";
 import { ReadonlyWallet, Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "./wallet";
 export declare type KeyringSerializationString = string & As<"keyring-serialization">;
 /**

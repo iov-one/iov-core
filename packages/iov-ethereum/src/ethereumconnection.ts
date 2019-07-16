@@ -1,9 +1,3 @@
-import axios from "axios";
-import BN from "bn.js";
-import equal from "fast-deep-equal";
-import { ReadonlyDate } from "readonly-date";
-import { Producer, Stream, Subscription } from "xstream";
-
 import {
   Account,
   AccountQuery,
@@ -52,6 +46,11 @@ import { Random } from "@iov/crypto";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, makeJsonRpcId } from "@iov/jsonrpc";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
+import axios from "axios";
+import BN from "bn.js";
+import equal from "fast-deep-equal";
+import { ReadonlyDate } from "readonly-date";
+import { Producer, Stream, Subscription } from "xstream";
 
 import { Abi, SwapContractEvent } from "./abi";
 import { pubkeyToAddress } from "./address";

@@ -1,6 +1,3 @@
-import BN = require("bn.js");
-import * as Long from "long";
-
 import {
   Address,
   Algorithm,
@@ -25,6 +22,8 @@ import {
   WithCreator,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
+import BN from "bn.js";
+import * as Long from "long";
 
 import * as codecImpl from "./generated/codecimpl";
 import {

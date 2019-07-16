@@ -1,8 +1,7 @@
-import Long from "long";
-
 import { Address } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
+import Long from "long";
 
 export class Derivation {
   public static isValidAddressWithEnding(address: string, ending: string): boolean {

@@ -1,5 +1,5 @@
-import { As } from "type-tagger";
 import { Address, Algorithm, Amount, ChainId, LightTransaction, PubkeyBundle, SendTransaction, SwapAbortTransaction, SwapClaimTransaction, SwapOfferTransaction, TimestampTimeout } from "@iov/bcp";
+import { As } from "type-tagger";
 export interface CashConfiguration {
     readonly minimalFee: Amount;
 }

@@ -1,5 +1,5 @@
-import BN = require("bn.js");
 import { Address } from "@iov/bcp";
+import BN from "bn.js";
 import { Erc20Options } from "./erc20";
 export interface EthereumRpcClient {
     readonly ethCall: (to: Address, data: Uint8Array) => Promise<Uint8Array>;

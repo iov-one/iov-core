@@ -1,6 +1,5 @@
-import { ReadonlyDate } from "readonly-date";
-
 import { Nonce } from "@iov/bcp";
+import { ReadonlyDate } from "readonly-date";
 
 import { Parse } from "./parse";
 

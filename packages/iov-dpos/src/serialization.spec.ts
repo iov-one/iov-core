@@ -1,5 +1,3 @@
-import { ReadonlyDate } from "readonly-date";
-
 import {
   Address,
   Algorithm,
@@ -13,6 +11,7 @@ import {
   WithCreator,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
+import { ReadonlyDate } from "readonly-date";
 
 import { Serialization, TransactionSerializationOptions } from "./serialization";
 

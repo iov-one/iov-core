@@ -1,5 +1,5 @@
-import { Stream } from "xstream";
 import { Account, AccountQuery, Address, AddressQuery, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, SwapId, Token, TokenTicker, TransactionId, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Stream } from "xstream";
 import { Erc20TokensMap } from "./erc20";
 export interface EthereumLog {
     readonly transactionIndex: string;

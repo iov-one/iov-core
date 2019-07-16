@@ -1,7 +1,6 @@
-import { As } from "type-tagger";
-
 import { ChainId, Identity, identityEquals } from "@iov/bcp";
 import { Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
+import { As } from "type-tagger";
 
 import {
   ReadonlyWallet,

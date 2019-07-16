@@ -1,6 +1,3 @@
-import Long from "long";
-import { As } from "type-tagger";
-
 import {
   Address,
   Algorithm,
@@ -26,6 +23,8 @@ import {
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
 import { QueryString } from "@iov/tendermint-rpc";
+import Long from "long";
+import { As } from "type-tagger";
 
 const bnsMainnetChainId = "PLEASE_INSERT_HERE_WHEN_GENESIS_EXISTS" as ChainId;
 

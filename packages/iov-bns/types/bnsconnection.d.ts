@@ -1,5 +1,5 @@
-import { Stream } from "xstream";
 import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionId, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Stream } from "xstream";
 import { BnsUsernameNft, BnsUsernamesQuery, ElectionRule, Electorate, Proposal, Result, Validator } from "./types";
 export interface QueryResponse {
     readonly height?: number;

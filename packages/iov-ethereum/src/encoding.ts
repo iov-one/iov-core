@@ -1,6 +1,5 @@
-import * as rlp from "rlp";
-
 import { Int53 } from "@iov/encoding";
+import * as rlp from "rlp";
 
 /**
  * Encode as RLP (Recursive Length Prefix)

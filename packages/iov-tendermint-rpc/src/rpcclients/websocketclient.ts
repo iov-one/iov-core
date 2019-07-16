@@ -1,6 +1,4 @@
 /* tslint:disable:readonly-keyword readonly-array no-object-mutation */
-import { Listener, Producer, Stream, Subscription } from "xstream";
-
 import {
   isJsonRpcErrorResponse,
   JsonRpcId,
@@ -11,6 +9,7 @@ import {
 } from "@iov/jsonrpc";
 import { ConnectionStatus, ReconnectingSocket, SocketWrapperMessageEvent } from "@iov/socket";
 import { firstEvent } from "@iov/stream";
+import { Listener, Producer, Stream, Subscription } from "xstream";
 
 import { hasProtocol, RpcStreamingClient, SubscriptionEvent } from "./rpcclient";
 

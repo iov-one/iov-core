@@ -1,7 +1,5 @@
 /// <reference lib="dom" />
 
-import { Producer, Stream } from "xstream";
-
 import {
   Address,
   Algorithm,
@@ -28,6 +26,7 @@ import {
   SimpleMessagingConnection,
 } from "@iov/jsonrpc";
 import { firstEvent } from "@iov/stream";
+import { Producer, Stream } from "xstream";
 
 import { TransactionEncoder } from "./transactionencoder";
 

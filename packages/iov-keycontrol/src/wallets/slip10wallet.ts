@@ -1,6 +1,3 @@
-import PseudoRandom from "random-js";
-import { As } from "type-tagger";
-
 import {
   Algorithm,
   ChainId,
@@ -22,6 +19,8 @@ import {
 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import PseudoRandom from "random-js";
+import { As } from "type-tagger";
 
 import { prehash } from "../prehashing";
 import { Wallet, WalletId, WalletImplementationIdString, WalletSerializationString } from "../wallet";

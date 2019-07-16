@@ -1,6 +1,5 @@
-import axios from "axios";
-
 import { Address, TokenTicker } from "@iov/bcp";
+import axios from "axios";
 
 export class IovFaucet {
   private readonly baseUrl: string;

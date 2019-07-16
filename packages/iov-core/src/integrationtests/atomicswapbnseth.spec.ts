@@ -1,5 +1,3 @@
-import BN = require("bn.js");
-
 import {
   Address,
   Amount,
@@ -26,6 +24,7 @@ import { bnsConnector } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Erc20ApproveTransaction, EthereumConnection, ethereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
+import BN from "bn.js";
 
 import { MultiChainSigner } from "../multichainsigner";
 

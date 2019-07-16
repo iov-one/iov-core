@@ -1,7 +1,3 @@
-import { AbstractLevelDOWN } from "abstract-leveldown";
-import { LevelUp } from "levelup";
-import { ReadonlyDate } from "readonly-date";
-
 import {
   ChainId,
   FullSignature,
@@ -14,6 +10,9 @@ import {
 import { Argon2id, Argon2idOptions, Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import { AbstractLevelDOWN } from "abstract-leveldown";
+import { LevelUp } from "levelup";
+import { ReadonlyDate } from "readonly-date";
 
 import { Keyring, WalletInfo } from "./keyring";
 import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";

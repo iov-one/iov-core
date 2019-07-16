@@ -1,5 +1,5 @@
-import * as Long from "long";
 import { Amount, ChainId, FullSignature, Nonce, PubkeyBundle, SignatureBytes, SignedTransaction, Token, UnsignedTransaction } from "@iov/bcp";
+import * as Long from "long";
 import * as codecImpl from "./generated/codecimpl";
 import { BnsUsernameNft, CashConfiguration, ElectionRule, Electorate, Keyed, Participant, PrivkeyBundle, Proposal } from "./types";
 /**

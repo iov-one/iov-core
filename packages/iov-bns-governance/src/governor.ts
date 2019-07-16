@@ -1,5 +1,3 @@
-import BN = require("bn.js");
-
 import { Address, Identity, WithCreator } from "@iov/bcp";
 import {
   ActionKind,
@@ -14,6 +12,7 @@ import {
   VoteTx,
 } from "@iov/bns";
 import { Encoding } from "@iov/encoding";
+import BN from "bn.js";
 
 import { ProposalOptions, ProposalType } from "./proposals";
 import { groupByCallback, maxWithComparatorCallback } from "./utils";

@@ -1,6 +1,6 @@
-import { Stream } from "xstream";
 import { JsonRpcRequest, JsonRpcResponse } from "@iov/jsonrpc";
 import { SocketWrapperMessageEvent } from "@iov/socket";
+import { Stream } from "xstream";
 import { EthereumRpcClient } from "./ethereumrpcclient";
 export declare class WsEthereumRpcClient implements EthereumRpcClient {
     readonly events: Stream<SocketWrapperMessageEvent>;
