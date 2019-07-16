@@ -91,7 +91,10 @@ export namespace app {
      */
     public toJSON(): { [k: string]: any };
   }
+}
 
+/** Namespace bnsd. */
+export namespace bnsd {
   /** Properties of a Tx. */
   interface ITx {
     /** Tx fees */
@@ -103,89 +106,83 @@ export namespace app {
     /** ID of a multisig contract. */
     multisig?: Uint8Array[] | null;
 
-    /** Tx sendMsg */
-    sendMsg?: cash.ISendMsg | null;
+    /** Tx cashSendMsg */
+    cashSendMsg?: cash.ISendMsg | null;
 
-    /** Tx createEscrowMsg */
-    createEscrowMsg?: escrow.ICreateEscrowMsg | null;
+    /** Tx escrowCreateMsg */
+    escrowCreateMsg?: escrow.ICreateMsg | null;
 
-    /** Tx releaseEscrowMsg */
-    releaseEscrowMsg?: escrow.IReleaseEscrowMsg | null;
+    /** Tx escrowReleaseMsg */
+    escrowReleaseMsg?: escrow.IReleaseMsg | null;
 
-    /** Tx returnEscrowMsg */
-    returnEscrowMsg?: escrow.IReturnEscrowMsg | null;
+    /** Tx escrowReturnMsg */
+    escrowReturnMsg?: escrow.IReturnMsg | null;
 
-    /** Tx updateEscrowMsg */
-    updateEscrowMsg?: escrow.IUpdateEscrowPartiesMsg | null;
+    /** Tx escrowUpdatePartiesMsg */
+    escrowUpdatePartiesMsg?: escrow.IUpdatePartiesMsg | null;
 
-    /** Tx createContractMsg */
-    createContractMsg?: multisig.ICreateContractMsg | null;
+    /** Tx multisigCreateMsg */
+    multisigCreateMsg?: multisig.ICreateMsg | null;
 
-    /** Tx updateContractMsg */
-    updateContractMsg?: multisig.IUpdateContractMsg | null;
+    /** Tx multisigUpdateMsg */
+    multisigUpdateMsg?: multisig.IUpdateMsg | null;
 
-    /** Tx setValidatorsMsg */
-    setValidatorsMsg?: validators.ISetValidatorsMsg | null;
+    /** Tx validatorsApplyDiffMsg */
+    validatorsApplyDiffMsg?: validators.IApplyDiffMsg | null;
 
-    /** Tx newTokenInfoMsg */
-    newTokenInfoMsg?: currency.INewTokenInfoMsg | null;
+    /** Tx currencyCreateMsg */
+    currencyCreateMsg?: currency.ICreateMsg | null;
 
-    /** Tx batchMsg */
-    batchMsg?: app.IBatchMsg | null;
+    /** Tx executeBatchMsg */
+    executeBatchMsg?: bnsd.IExecuteBatchMsg | null;
 
-    /** Tx addApprovalMsg */
-    addApprovalMsg?: nft.IAddApprovalMsg | null;
+    /** Tx usernameRegisterTokenMsg */
+    usernameRegisterTokenMsg?: username.IRegisterTokenMsg | null;
 
-    /** Tx removeApprovalMsg */
-    removeApprovalMsg?: nft.IRemoveApprovalMsg | null;
+    /** Tx usernameTransferTokenMsg */
+    usernameTransferTokenMsg?: username.ITransferTokenMsg | null;
 
-    /** Tx issueUsernameNftMsg */
-    issueUsernameNftMsg?: username.IIssueTokenMsg | null;
+    /** Tx usernameChangeTokenTargetsMsg */
+    usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
 
-    /** Tx addUsernameAddressNftMsg */
-    addUsernameAddressNftMsg?: username.IAddChainAddressMsg | null;
+    /** Tx distributionCreateMsg */
+    distributionCreateMsg?: distribution.ICreateMsg | null;
 
-    /** Tx removeUsernameAddressMsg */
-    removeUsernameAddressMsg?: username.IRemoveChainAddressMsg | null;
+    /** Tx distributionMsg */
+    distributionMsg?: distribution.IDistributeMsg | null;
 
-    /** Tx newRevenueMsg */
-    newRevenueMsg?: distribution.INewRevenueMsg | null;
+    /** Tx distributionResetMsg */
+    distributionResetMsg?: distribution.IResetMsg | null;
 
-    /** Tx distributeMsg */
-    distributeMsg?: distribution.IDistributeMsg | null;
+    /** Tx migrationUpgradeSchemaMsg */
+    migrationUpgradeSchemaMsg?: migration.IUpgradeSchemaMsg | null;
 
-    /** Tx resetRevenueMsg */
-    resetRevenueMsg?: distribution.IResetRevenueMsg | null;
+    /** Tx aswapCreateMsg */
+    aswapCreateMsg?: aswap.ICreateMsg | null;
 
-    /** Tx upgradeSchemaMsg */
-    upgradeSchemaMsg?: migration.IUpgradeSchemaMsg | null;
+    /** Tx aswapReleaseMsg */
+    aswapReleaseMsg?: aswap.IReleaseMsg | null;
 
-    /** Tx createSwapMsg */
-    createSwapMsg?: aswap.ICreateSwapMsg | null;
+    /** Tx aswapReturnMsg */
+    aswapReturnMsg?: aswap.IReturnSwapMsg | null;
 
-    /** Tx releaseSwapMsg */
-    releaseSwapMsg?: aswap.IReleaseSwapMsg | null;
+    /** Tx govCreateProposalMsg */
+    govCreateProposalMsg?: gov.ICreateProposalMsg | null;
 
-    /** Tx returnSwapMsg */
-    returnSwapMsg?: aswap.IReturnSwapMsg | null;
+    /** Tx govDeleteProposalMsg */
+    govDeleteProposalMsg?: gov.IDeleteProposalMsg | null;
 
-    /** Tx createProposalMsg */
-    createProposalMsg?: gov.ICreateProposalMsg | null;
+    /** Tx govVoteMsg */
+    govVoteMsg?: gov.IVoteMsg | null;
 
-    /** Tx deleteProposalMsg */
-    deleteProposalMsg?: gov.IDeleteProposalMsg | null;
+    /** Tx govTallyMsg */
+    govTallyMsg?: gov.ITallyMsg | null;
 
-    /** Tx voteMsg */
-    voteMsg?: gov.IVoteMsg | null;
+    /** Tx govUpdateElectorateMsg */
+    govUpdateElectorateMsg?: gov.IUpdateElectorateMsg | null;
 
-    /** Tx tallyMsg */
-    tallyMsg?: gov.ITallyMsg | null;
-
-    /** Tx updateElectorateMsg */
-    updateElectorateMsg?: gov.IUpdateElectorateMsg | null;
-
-    /** Tx updateElectionRuleMsg */
-    updateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
+    /** Tx govUpdateElectionRuleMsg */
+    govUpdateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
   }
 
   /** old fields got deprecated. This is done to maintain binary compatibility. */
@@ -194,7 +191,7 @@ export namespace app {
      * Constructs a new Tx.
      * @param [properties] Properties to set
      */
-    constructor(properties?: app.ITx);
+    constructor(properties?: bnsd.ITx);
 
     /** Tx fees. */
     public fees?: cash.IFeeInfo | null;
@@ -205,143 +202,135 @@ export namespace app {
     /** ID of a multisig contract. */
     public multisig: Uint8Array[];
 
-    /** Tx sendMsg. */
-    public sendMsg?: cash.ISendMsg | null;
+    /** Tx cashSendMsg. */
+    public cashSendMsg?: cash.ISendMsg | null;
 
-    /** Tx createEscrowMsg. */
-    public createEscrowMsg?: escrow.ICreateEscrowMsg | null;
+    /** Tx escrowCreateMsg. */
+    public escrowCreateMsg?: escrow.ICreateMsg | null;
 
-    /** Tx releaseEscrowMsg. */
-    public releaseEscrowMsg?: escrow.IReleaseEscrowMsg | null;
+    /** Tx escrowReleaseMsg. */
+    public escrowReleaseMsg?: escrow.IReleaseMsg | null;
 
-    /** Tx returnEscrowMsg. */
-    public returnEscrowMsg?: escrow.IReturnEscrowMsg | null;
+    /** Tx escrowReturnMsg. */
+    public escrowReturnMsg?: escrow.IReturnMsg | null;
 
-    /** Tx updateEscrowMsg. */
-    public updateEscrowMsg?: escrow.IUpdateEscrowPartiesMsg | null;
+    /** Tx escrowUpdatePartiesMsg. */
+    public escrowUpdatePartiesMsg?: escrow.IUpdatePartiesMsg | null;
 
-    /** Tx createContractMsg. */
-    public createContractMsg?: multisig.ICreateContractMsg | null;
+    /** Tx multisigCreateMsg. */
+    public multisigCreateMsg?: multisig.ICreateMsg | null;
 
-    /** Tx updateContractMsg. */
-    public updateContractMsg?: multisig.IUpdateContractMsg | null;
+    /** Tx multisigUpdateMsg. */
+    public multisigUpdateMsg?: multisig.IUpdateMsg | null;
 
-    /** Tx setValidatorsMsg. */
-    public setValidatorsMsg?: validators.ISetValidatorsMsg | null;
+    /** Tx validatorsApplyDiffMsg. */
+    public validatorsApplyDiffMsg?: validators.IApplyDiffMsg | null;
 
-    /** Tx newTokenInfoMsg. */
-    public newTokenInfoMsg?: currency.INewTokenInfoMsg | null;
+    /** Tx currencyCreateMsg. */
+    public currencyCreateMsg?: currency.ICreateMsg | null;
 
-    /** Tx batchMsg. */
-    public batchMsg?: app.IBatchMsg | null;
+    /** Tx executeBatchMsg. */
+    public executeBatchMsg?: bnsd.IExecuteBatchMsg | null;
 
-    /** Tx addApprovalMsg. */
-    public addApprovalMsg?: nft.IAddApprovalMsg | null;
+    /** Tx usernameRegisterTokenMsg. */
+    public usernameRegisterTokenMsg?: username.IRegisterTokenMsg | null;
 
-    /** Tx removeApprovalMsg. */
-    public removeApprovalMsg?: nft.IRemoveApprovalMsg | null;
+    /** Tx usernameTransferTokenMsg. */
+    public usernameTransferTokenMsg?: username.ITransferTokenMsg | null;
 
-    /** Tx issueUsernameNftMsg. */
-    public issueUsernameNftMsg?: username.IIssueTokenMsg | null;
+    /** Tx usernameChangeTokenTargetsMsg. */
+    public usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
 
-    /** Tx addUsernameAddressNftMsg. */
-    public addUsernameAddressNftMsg?: username.IAddChainAddressMsg | null;
+    /** Tx distributionCreateMsg. */
+    public distributionCreateMsg?: distribution.ICreateMsg | null;
 
-    /** Tx removeUsernameAddressMsg. */
-    public removeUsernameAddressMsg?: username.IRemoveChainAddressMsg | null;
+    /** Tx distributionMsg. */
+    public distributionMsg?: distribution.IDistributeMsg | null;
 
-    /** Tx newRevenueMsg. */
-    public newRevenueMsg?: distribution.INewRevenueMsg | null;
+    /** Tx distributionResetMsg. */
+    public distributionResetMsg?: distribution.IResetMsg | null;
 
-    /** Tx distributeMsg. */
-    public distributeMsg?: distribution.IDistributeMsg | null;
+    /** Tx migrationUpgradeSchemaMsg. */
+    public migrationUpgradeSchemaMsg?: migration.IUpgradeSchemaMsg | null;
 
-    /** Tx resetRevenueMsg. */
-    public resetRevenueMsg?: distribution.IResetRevenueMsg | null;
+    /** Tx aswapCreateMsg. */
+    public aswapCreateMsg?: aswap.ICreateMsg | null;
 
-    /** Tx upgradeSchemaMsg. */
-    public upgradeSchemaMsg?: migration.IUpgradeSchemaMsg | null;
+    /** Tx aswapReleaseMsg. */
+    public aswapReleaseMsg?: aswap.IReleaseMsg | null;
 
-    /** Tx createSwapMsg. */
-    public createSwapMsg?: aswap.ICreateSwapMsg | null;
+    /** Tx aswapReturnMsg. */
+    public aswapReturnMsg?: aswap.IReturnSwapMsg | null;
 
-    /** Tx releaseSwapMsg. */
-    public releaseSwapMsg?: aswap.IReleaseSwapMsg | null;
+    /** Tx govCreateProposalMsg. */
+    public govCreateProposalMsg?: gov.ICreateProposalMsg | null;
 
-    /** Tx returnSwapMsg. */
-    public returnSwapMsg?: aswap.IReturnSwapMsg | null;
+    /** Tx govDeleteProposalMsg. */
+    public govDeleteProposalMsg?: gov.IDeleteProposalMsg | null;
 
-    /** Tx createProposalMsg. */
-    public createProposalMsg?: gov.ICreateProposalMsg | null;
+    /** Tx govVoteMsg. */
+    public govVoteMsg?: gov.IVoteMsg | null;
 
-    /** Tx deleteProposalMsg. */
-    public deleteProposalMsg?: gov.IDeleteProposalMsg | null;
+    /** Tx govTallyMsg. */
+    public govTallyMsg?: gov.ITallyMsg | null;
 
-    /** Tx voteMsg. */
-    public voteMsg?: gov.IVoteMsg | null;
+    /** Tx govUpdateElectorateMsg. */
+    public govUpdateElectorateMsg?: gov.IUpdateElectorateMsg | null;
 
-    /** Tx tallyMsg. */
-    public tallyMsg?: gov.ITallyMsg | null;
-
-    /** Tx updateElectorateMsg. */
-    public updateElectorateMsg?: gov.IUpdateElectorateMsg | null;
-
-    /** Tx updateElectionRuleMsg. */
-    public updateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
+    /** Tx govUpdateElectionRuleMsg. */
+    public govUpdateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
 
     /** msg is a sum type over all allowed messages on this chain. */
     public sum?:
-      | "sendMsg"
-      | "createEscrowMsg"
-      | "releaseEscrowMsg"
-      | "returnEscrowMsg"
-      | "updateEscrowMsg"
-      | "createContractMsg"
-      | "updateContractMsg"
-      | "setValidatorsMsg"
-      | "newTokenInfoMsg"
-      | "batchMsg"
-      | "addApprovalMsg"
-      | "removeApprovalMsg"
-      | "issueUsernameNftMsg"
-      | "addUsernameAddressNftMsg"
-      | "removeUsernameAddressMsg"
-      | "newRevenueMsg"
-      | "distributeMsg"
-      | "resetRevenueMsg"
-      | "upgradeSchemaMsg"
-      | "createSwapMsg"
-      | "releaseSwapMsg"
-      | "returnSwapMsg"
-      | "createProposalMsg"
-      | "deleteProposalMsg"
-      | "voteMsg"
-      | "tallyMsg"
-      | "updateElectorateMsg"
-      | "updateElectionRuleMsg";
+      | "cashSendMsg"
+      | "escrowCreateMsg"
+      | "escrowReleaseMsg"
+      | "escrowReturnMsg"
+      | "escrowUpdatePartiesMsg"
+      | "multisigCreateMsg"
+      | "multisigUpdateMsg"
+      | "validatorsApplyDiffMsg"
+      | "currencyCreateMsg"
+      | "executeBatchMsg"
+      | "usernameRegisterTokenMsg"
+      | "usernameTransferTokenMsg"
+      | "usernameChangeTokenTargetsMsg"
+      | "distributionCreateMsg"
+      | "distributionMsg"
+      | "distributionResetMsg"
+      | "migrationUpgradeSchemaMsg"
+      | "aswapCreateMsg"
+      | "aswapReleaseMsg"
+      | "aswapReturnMsg"
+      | "govCreateProposalMsg"
+      | "govDeleteProposalMsg"
+      | "govVoteMsg"
+      | "govTallyMsg"
+      | "govUpdateElectorateMsg"
+      | "govUpdateElectionRuleMsg";
 
     /**
      * Creates a new Tx instance using the specified properties.
      * @param [properties] Properties to set
      * @returns Tx instance
      */
-    public static create(properties?: app.ITx): app.Tx;
+    public static create(properties?: bnsd.ITx): bnsd.Tx;
 
     /**
-     * Encodes the specified Tx message. Does not implicitly {@link app.Tx.verify|verify} messages.
+     * Encodes the specified Tx message. Does not implicitly {@link bnsd.Tx.verify|verify} messages.
      * @param message Tx message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: app.ITx, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: bnsd.ITx, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified Tx message, length delimited. Does not implicitly {@link app.Tx.verify|verify} messages.
+     * Encodes the specified Tx message, length delimited. Does not implicitly {@link bnsd.Tx.verify|verify} messages.
      * @param message Tx message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(message: app.ITx, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encodeDelimited(message: bnsd.ITx, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
      * Decodes a Tx message from the specified reader or buffer.
@@ -351,7 +340,7 @@ export namespace app {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): app.Tx;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): bnsd.Tx;
 
     /**
      * Decodes a Tx message from the specified reader or buffer, length delimited.
@@ -360,7 +349,7 @@ export namespace app {
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): app.Tx;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): bnsd.Tx;
 
     /**
      * Verifies a Tx message.
@@ -374,7 +363,7 @@ export namespace app {
      * @param object Plain object
      * @returns Tx
      */
-    public static fromObject(object: { [k: string]: any }): app.Tx;
+    public static fromObject(object: { [k: string]: any }): bnsd.Tx;
 
     /**
      * Creates a plain object from a Tx message. Also converts values to other types if specified.
@@ -382,7 +371,7 @@ export namespace app {
      * @param [options] Conversion options
      * @returns Plain object
      */
-    public static toObject(message: app.Tx, options?: $protobuf.IConversionOptions): { [k: string]: any };
+    public static toObject(message: bnsd.Tx, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
     /**
      * Converts this Tx to JSON.
@@ -391,607 +380,147 @@ export namespace app {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a BatchMsg. */
-  interface IBatchMsg {
-    /** BatchMsg messages */
-    messages?: app.BatchMsg.IUnion[] | null;
+  /** Properties of an ExecuteBatchMsg. */
+  interface IExecuteBatchMsg {
+    /** ExecuteBatchMsg messages */
+    messages?: bnsd.ExecuteBatchMsg.IUnion[] | null;
   }
 
-  /** BatchMsg encapsulates multiple messages to support batch transaction */
-  class BatchMsg implements IBatchMsg {
+  /** ExecuteBatchMsg encapsulates multiple messages to support batch transaction */
+  class ExecuteBatchMsg implements IExecuteBatchMsg {
     /**
-     * Constructs a new BatchMsg.
+     * Constructs a new ExecuteBatchMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: app.IBatchMsg);
+    constructor(properties?: bnsd.IExecuteBatchMsg);
 
-    /** BatchMsg messages. */
-    public messages: app.BatchMsg.IUnion[];
+    /** ExecuteBatchMsg messages. */
+    public messages: bnsd.ExecuteBatchMsg.IUnion[];
 
     /**
-     * Creates a new BatchMsg instance using the specified properties.
+     * Creates a new ExecuteBatchMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns BatchMsg instance
+     * @returns ExecuteBatchMsg instance
      */
-    public static create(properties?: app.IBatchMsg): app.BatchMsg;
+    public static create(properties?: bnsd.IExecuteBatchMsg): bnsd.ExecuteBatchMsg;
 
     /**
-     * Encodes the specified BatchMsg message. Does not implicitly {@link app.BatchMsg.verify|verify} messages.
-     * @param message BatchMsg message or plain object to encode
+     * Encodes the specified ExecuteBatchMsg message. Does not implicitly {@link bnsd.ExecuteBatchMsg.verify|verify} messages.
+     * @param message ExecuteBatchMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: app.IBatchMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: bnsd.IExecuteBatchMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified BatchMsg message, length delimited. Does not implicitly {@link app.BatchMsg.verify|verify} messages.
-     * @param message BatchMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: app.IBatchMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a BatchMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns BatchMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): app.BatchMsg;
-
-    /**
-     * Decodes a BatchMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns BatchMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): app.BatchMsg;
-
-    /**
-     * Verifies a BatchMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a BatchMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns BatchMsg
-     */
-    public static fromObject(object: { [k: string]: any }): app.BatchMsg;
-
-    /**
-     * Creates a plain object from a BatchMsg message. Also converts values to other types if specified.
-     * @param message BatchMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: app.BatchMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this BatchMsg to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  namespace BatchMsg {
-    /** Properties of an Union. */
-    interface IUnion {
-      /** Union sendMsg */
-      sendMsg?: cash.ISendMsg | null;
-
-      /** Union createEscrowMsg */
-      createEscrowMsg?: escrow.ICreateEscrowMsg | null;
-
-      /** Union releaseEscrowMsg */
-      releaseEscrowMsg?: escrow.IReleaseEscrowMsg | null;
-
-      /** Union returnEscrowMsg */
-      returnEscrowMsg?: escrow.IReturnEscrowMsg | null;
-
-      /** Union updateEscrowMsg */
-      updateEscrowMsg?: escrow.IUpdateEscrowPartiesMsg | null;
-
-      /** Union createContractMsg */
-      createContractMsg?: multisig.ICreateContractMsg | null;
-
-      /** Union updateContractMsg */
-      updateContractMsg?: multisig.IUpdateContractMsg | null;
-
-      /** Union setValidatorsMsg */
-      setValidatorsMsg?: validators.ISetValidatorsMsg | null;
-
-      /** Union newTokenInfoMsg */
-      newTokenInfoMsg?: currency.INewTokenInfoMsg | null;
-
-      /** No recursive batches! */
-      addApprovalMsg?: nft.IAddApprovalMsg | null;
-
-      /** Union removeApprovalMsg */
-      removeApprovalMsg?: nft.IRemoveApprovalMsg | null;
-
-      /** Union issueUsernameNftMsg */
-      issueUsernameNftMsg?: username.IIssueTokenMsg | null;
-
-      /** Union addUsernameAddressNftMsg */
-      addUsernameAddressNftMsg?: username.IAddChainAddressMsg | null;
-
-      /** Union removeUsernameAddressMsg */
-      removeUsernameAddressMsg?: username.IRemoveChainAddressMsg | null;
-
-      /** Union newRevenueMsg */
-      newRevenueMsg?: distribution.INewRevenueMsg | null;
-
-      /** Union distributeMsg */
-      distributeMsg?: distribution.IDistributeMsg | null;
-
-      /** Union resetRevenueMsg */
-      resetRevenueMsg?: distribution.IResetRevenueMsg | null;
-    }
-
-    /** Represents an Union. */
-    class Union implements IUnion {
-      /**
-       * Constructs a new Union.
-       * @param [properties] Properties to set
-       */
-      constructor(properties?: app.BatchMsg.IUnion);
-
-      /** Union sendMsg. */
-      public sendMsg?: cash.ISendMsg | null;
-
-      /** Union createEscrowMsg. */
-      public createEscrowMsg?: escrow.ICreateEscrowMsg | null;
-
-      /** Union releaseEscrowMsg. */
-      public releaseEscrowMsg?: escrow.IReleaseEscrowMsg | null;
-
-      /** Union returnEscrowMsg. */
-      public returnEscrowMsg?: escrow.IReturnEscrowMsg | null;
-
-      /** Union updateEscrowMsg. */
-      public updateEscrowMsg?: escrow.IUpdateEscrowPartiesMsg | null;
-
-      /** Union createContractMsg. */
-      public createContractMsg?: multisig.ICreateContractMsg | null;
-
-      /** Union updateContractMsg. */
-      public updateContractMsg?: multisig.IUpdateContractMsg | null;
-
-      /** Union setValidatorsMsg. */
-      public setValidatorsMsg?: validators.ISetValidatorsMsg | null;
-
-      /** Union newTokenInfoMsg. */
-      public newTokenInfoMsg?: currency.INewTokenInfoMsg | null;
-
-      /** No recursive batches! */
-      public addApprovalMsg?: nft.IAddApprovalMsg | null;
-
-      /** Union removeApprovalMsg. */
-      public removeApprovalMsg?: nft.IRemoveApprovalMsg | null;
-
-      /** Union issueUsernameNftMsg. */
-      public issueUsernameNftMsg?: username.IIssueTokenMsg | null;
-
-      /** Union addUsernameAddressNftMsg. */
-      public addUsernameAddressNftMsg?: username.IAddChainAddressMsg | null;
-
-      /** Union removeUsernameAddressMsg. */
-      public removeUsernameAddressMsg?: username.IRemoveChainAddressMsg | null;
-
-      /** Union newRevenueMsg. */
-      public newRevenueMsg?: distribution.INewRevenueMsg | null;
-
-      /** Union distributeMsg. */
-      public distributeMsg?: distribution.IDistributeMsg | null;
-
-      /** Union resetRevenueMsg. */
-      public resetRevenueMsg?: distribution.IResetRevenueMsg | null;
-
-      /** Union sum. */
-      public sum?:
-        | "sendMsg"
-        | "createEscrowMsg"
-        | "releaseEscrowMsg"
-        | "returnEscrowMsg"
-        | "updateEscrowMsg"
-        | "createContractMsg"
-        | "updateContractMsg"
-        | "setValidatorsMsg"
-        | "newTokenInfoMsg"
-        | "addApprovalMsg"
-        | "removeApprovalMsg"
-        | "issueUsernameNftMsg"
-        | "addUsernameAddressNftMsg"
-        | "removeUsernameAddressMsg"
-        | "newRevenueMsg"
-        | "distributeMsg"
-        | "resetRevenueMsg";
-
-      /**
-       * Creates a new Union instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns Union instance
-       */
-      public static create(properties?: app.BatchMsg.IUnion): app.BatchMsg.Union;
-
-      /**
-       * Encodes the specified Union message. Does not implicitly {@link app.BatchMsg.Union.verify|verify} messages.
-       * @param message Union message or plain object to encode
-       * @param [writer] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(message: app.BatchMsg.IUnion, writer?: $protobuf.Writer): $protobuf.Writer;
-
-      /**
-       * Encodes the specified Union message, length delimited. Does not implicitly {@link app.BatchMsg.Union.verify|verify} messages.
-       * @param message Union message or plain object to encode
-       * @param [writer] Writer to encode to
-       * @returns Writer
-       */
-      public static encodeDelimited(
-        message: app.BatchMsg.IUnion,
-        writer?: $protobuf.Writer,
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes an Union message from the specified reader or buffer.
-       * @param reader Reader or buffer to decode from
-       * @param [length] Message length if known beforehand
-       * @returns Union
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): app.BatchMsg.Union;
-
-      /**
-       * Decodes an Union message from the specified reader or buffer, length delimited.
-       * @param reader Reader or buffer to decode from
-       * @returns Union
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): app.BatchMsg.Union;
-
-      /**
-       * Verifies an Union message.
-       * @param message Plain object to verify
-       * @returns `null` if valid, otherwise the reason why it is not
-       */
-      public static verify(message: { [k: string]: any }): string | null;
-
-      /**
-       * Creates an Union message from a plain object. Also converts values to their respective internal types.
-       * @param object Plain object
-       * @returns Union
-       */
-      public static fromObject(object: { [k: string]: any }): app.BatchMsg.Union;
-
-      /**
-       * Creates a plain object from an Union message. Also converts values to other types if specified.
-       * @param message Union
-       * @param [options] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        message: app.BatchMsg.Union,
-        options?: $protobuf.IConversionOptions,
-      ): { [k: string]: any };
-
-      /**
-       * Converts this Union to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-  }
-
-  /** Properties of a ProposalOptions. */
-  interface IProposalOptions {
-    /** ProposalOptions sendMsg */
-    sendMsg?: cash.ISendMsg | null;
-
-    /** ProposalOptions releaseEscrowMsg */
-    releaseEscrowMsg?: escrow.IReleaseEscrowMsg | null;
-
-    /** ProposalOptions updateEscrowMsg */
-    updateEscrowMsg?: escrow.IUpdateEscrowPartiesMsg | null;
-
-    /** ProposalOptions setValidatorsMsg */
-    setValidatorsMsg?: validators.ISetValidatorsMsg | null;
-
-    /** ProposalOptions batchMsg */
-    batchMsg?: app.IProposalBatchMsg | null;
-
-    /** ProposalOptions newRevenueMsg */
-    newRevenueMsg?: distribution.INewRevenueMsg | null;
-
-    /** ProposalOptions distributeMsg */
-    distributeMsg?: distribution.IDistributeMsg | null;
-
-    /** ProposalOptions resetRevenueMsg */
-    resetRevenueMsg?: distribution.IResetRevenueMsg | null;
-
-    /** ProposalOptions upgradeSchemaMsg */
-    upgradeSchemaMsg?: migration.IUpgradeSchemaMsg | null;
-
-    /** ProposalOptions updateElectorateMsg */
-    updateElectorateMsg?: gov.IUpdateElectorateMsg | null;
-
-    /** ProposalOptions updateElectionRuleMsg */
-    updateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
-
-    /** ProposalOptions textResolutionMsg */
-    textResolutionMsg?: gov.ITextResolutionMsg | null;
-  }
-
-  /** Trimmed down somewhat arbitrary to what is believed to be reasonable */
-  class ProposalOptions implements IProposalOptions {
-    /**
-     * Constructs a new ProposalOptions.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: app.IProposalOptions);
-
-    /** ProposalOptions sendMsg. */
-    public sendMsg?: cash.ISendMsg | null;
-
-    /** ProposalOptions releaseEscrowMsg. */
-    public releaseEscrowMsg?: escrow.IReleaseEscrowMsg | null;
-
-    /** ProposalOptions updateEscrowMsg. */
-    public updateEscrowMsg?: escrow.IUpdateEscrowPartiesMsg | null;
-
-    /** ProposalOptions setValidatorsMsg. */
-    public setValidatorsMsg?: validators.ISetValidatorsMsg | null;
-
-    /** ProposalOptions batchMsg. */
-    public batchMsg?: app.IProposalBatchMsg | null;
-
-    /** ProposalOptions newRevenueMsg. */
-    public newRevenueMsg?: distribution.INewRevenueMsg | null;
-
-    /** ProposalOptions distributeMsg. */
-    public distributeMsg?: distribution.IDistributeMsg | null;
-
-    /** ProposalOptions resetRevenueMsg. */
-    public resetRevenueMsg?: distribution.IResetRevenueMsg | null;
-
-    /** ProposalOptions upgradeSchemaMsg. */
-    public upgradeSchemaMsg?: migration.IUpgradeSchemaMsg | null;
-
-    /** ProposalOptions updateElectorateMsg. */
-    public updateElectorateMsg?: gov.IUpdateElectorateMsg | null;
-
-    /** ProposalOptions updateElectionRuleMsg. */
-    public updateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
-
-    /** ProposalOptions textResolutionMsg. */
-    public textResolutionMsg?: gov.ITextResolutionMsg | null;
-
-    /** ProposalOptions option. */
-    public option?:
-      | "sendMsg"
-      | "releaseEscrowMsg"
-      | "updateEscrowMsg"
-      | "setValidatorsMsg"
-      | "batchMsg"
-      | "newRevenueMsg"
-      | "distributeMsg"
-      | "resetRevenueMsg"
-      | "upgradeSchemaMsg"
-      | "updateElectorateMsg"
-      | "updateElectionRuleMsg"
-      | "textResolutionMsg";
-
-    /**
-     * Creates a new ProposalOptions instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ProposalOptions instance
-     */
-    public static create(properties?: app.IProposalOptions): app.ProposalOptions;
-
-    /**
-     * Encodes the specified ProposalOptions message. Does not implicitly {@link app.ProposalOptions.verify|verify} messages.
-     * @param message ProposalOptions message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: app.IProposalOptions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ProposalOptions message, length delimited. Does not implicitly {@link app.ProposalOptions.verify|verify} messages.
-     * @param message ProposalOptions message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: app.IProposalOptions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a ProposalOptions message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ProposalOptions
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): app.ProposalOptions;
-
-    /**
-     * Decodes a ProposalOptions message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ProposalOptions
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): app.ProposalOptions;
-
-    /**
-     * Verifies a ProposalOptions message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a ProposalOptions message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ProposalOptions
-     */
-    public static fromObject(object: { [k: string]: any }): app.ProposalOptions;
-
-    /**
-     * Creates a plain object from a ProposalOptions message. Also converts values to other types if specified.
-     * @param message ProposalOptions
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: app.ProposalOptions,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this ProposalOptions to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a ProposalBatchMsg. */
-  interface IProposalBatchMsg {
-    /** ProposalBatchMsg messages */
-    messages?: app.ProposalBatchMsg.IUnion[] | null;
-  }
-
-  /** Represents a ProposalBatchMsg. */
-  class ProposalBatchMsg implements IProposalBatchMsg {
-    /**
-     * Constructs a new ProposalBatchMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: app.IProposalBatchMsg);
-
-    /** ProposalBatchMsg messages. */
-    public messages: app.ProposalBatchMsg.IUnion[];
-
-    /**
-     * Creates a new ProposalBatchMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ProposalBatchMsg instance
-     */
-    public static create(properties?: app.IProposalBatchMsg): app.ProposalBatchMsg;
-
-    /**
-     * Encodes the specified ProposalBatchMsg message. Does not implicitly {@link app.ProposalBatchMsg.verify|verify} messages.
-     * @param message ProposalBatchMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: app.IProposalBatchMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ProposalBatchMsg message, length delimited. Does not implicitly {@link app.ProposalBatchMsg.verify|verify} messages.
-     * @param message ProposalBatchMsg message or plain object to encode
+     * Encodes the specified ExecuteBatchMsg message, length delimited. Does not implicitly {@link bnsd.ExecuteBatchMsg.verify|verify} messages.
+     * @param message ExecuteBatchMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(
-      message: app.IProposalBatchMsg,
+      message: bnsd.IExecuteBatchMsg,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Decodes a ProposalBatchMsg message from the specified reader or buffer.
+     * Decodes an ExecuteBatchMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns ProposalBatchMsg
+     * @returns ExecuteBatchMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): app.ProposalBatchMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): bnsd.ExecuteBatchMsg;
 
     /**
-     * Decodes a ProposalBatchMsg message from the specified reader or buffer, length delimited.
+     * Decodes an ExecuteBatchMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns ProposalBatchMsg
+     * @returns ExecuteBatchMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): app.ProposalBatchMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): bnsd.ExecuteBatchMsg;
 
     /**
-     * Verifies a ProposalBatchMsg message.
+     * Verifies an ExecuteBatchMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a ProposalBatchMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates an ExecuteBatchMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns ProposalBatchMsg
+     * @returns ExecuteBatchMsg
      */
-    public static fromObject(object: { [k: string]: any }): app.ProposalBatchMsg;
+    public static fromObject(object: { [k: string]: any }): bnsd.ExecuteBatchMsg;
 
     /**
-     * Creates a plain object from a ProposalBatchMsg message. Also converts values to other types if specified.
-     * @param message ProposalBatchMsg
+     * Creates a plain object from an ExecuteBatchMsg message. Also converts values to other types if specified.
+     * @param message ExecuteBatchMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: app.ProposalBatchMsg,
+      message: bnsd.ExecuteBatchMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this ProposalBatchMsg to JSON.
+     * Converts this ExecuteBatchMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
   }
 
-  namespace ProposalBatchMsg {
+  namespace ExecuteBatchMsg {
     /** Properties of an Union. */
     interface IUnion {
-      /** Union sendMsg */
-      sendMsg?: cash.ISendMsg | null;
+      /** Union cashSendMsg */
+      cashSendMsg?: cash.ISendMsg | null;
 
-      /** Union releaseEscrowMsg */
-      releaseEscrowMsg?: escrow.IReleaseEscrowMsg | null;
+      /** Union escrowCreateMsg */
+      escrowCreateMsg?: escrow.ICreateMsg | null;
 
-      /** Union updateEscrowMsg */
-      updateEscrowMsg?: escrow.IUpdateEscrowPartiesMsg | null;
+      /** Union escrowReleaseMsg */
+      escrowReleaseMsg?: escrow.IReleaseMsg | null;
 
-      /** Union setValidatorsMsg */
-      setValidatorsMsg?: validators.ISetValidatorsMsg | null;
+      /** Union escrowReturnMsg */
+      escrowReturnMsg?: escrow.IReturnMsg | null;
 
-      /** no recursive batches */
-      newRevenueMsg?: distribution.INewRevenueMsg | null;
+      /** Union escrowUpdatePartiesMsg */
+      escrowUpdatePartiesMsg?: escrow.IUpdatePartiesMsg | null;
 
-      /** Union distributeMsg */
-      distributeMsg?: distribution.IDistributeMsg | null;
+      /** Union multisigCreateMsg */
+      multisigCreateMsg?: multisig.ICreateMsg | null;
 
-      /** Union resetRevenueMsg */
-      resetRevenueMsg?: distribution.IResetRevenueMsg | null;
+      /** Union multisigUpdateMsg */
+      multisigUpdateMsg?: multisig.IUpdateMsg | null;
 
-      /** don't allow UpgradeSchema as part of a batch, as effects are too confusing */
-      updateElectorateMsg?: gov.IUpdateElectorateMsg | null;
+      /** Union validatorsApplyDiffMsg */
+      validatorsApplyDiffMsg?: validators.IApplyDiffMsg | null;
 
-      /** Union updateElectionRuleMsg */
-      updateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
+      /** Union currencyCreateMsg */
+      currencyCreateMsg?: currency.ICreateMsg | null;
 
-      /** Union textResolutionMsg */
-      textResolutionMsg?: gov.ITextResolutionMsg | null;
+      /** No recursive batches! */
+      usernameRegisterTokenMsg?: username.IRegisterTokenMsg | null;
+
+      /** Union usernameTransferTokenMsg */
+      usernameTransferTokenMsg?: username.ITransferTokenMsg | null;
+
+      /** Union usernameChangeTokenTargetsMsg */
+      usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
+
+      /** Union distributionCreateMsg */
+      distributionCreateMsg?: distribution.ICreateMsg | null;
+
+      /** Union distributionMsg */
+      distributionMsg?: distribution.IDistributeMsg | null;
+
+      /** Union distributionResetMsg */
+      distributionResetMsg?: distribution.IResetMsg | null;
     }
 
     /** Represents an Union. */
@@ -1000,74 +529,94 @@ export namespace app {
        * Constructs a new Union.
        * @param [properties] Properties to set
        */
-      constructor(properties?: app.ProposalBatchMsg.IUnion);
+      constructor(properties?: bnsd.ExecuteBatchMsg.IUnion);
 
-      /** Union sendMsg. */
-      public sendMsg?: cash.ISendMsg | null;
+      /** Union cashSendMsg. */
+      public cashSendMsg?: cash.ISendMsg | null;
 
-      /** Union releaseEscrowMsg. */
-      public releaseEscrowMsg?: escrow.IReleaseEscrowMsg | null;
+      /** Union escrowCreateMsg. */
+      public escrowCreateMsg?: escrow.ICreateMsg | null;
 
-      /** Union updateEscrowMsg. */
-      public updateEscrowMsg?: escrow.IUpdateEscrowPartiesMsg | null;
+      /** Union escrowReleaseMsg. */
+      public escrowReleaseMsg?: escrow.IReleaseMsg | null;
 
-      /** Union setValidatorsMsg. */
-      public setValidatorsMsg?: validators.ISetValidatorsMsg | null;
+      /** Union escrowReturnMsg. */
+      public escrowReturnMsg?: escrow.IReturnMsg | null;
 
-      /** no recursive batches */
-      public newRevenueMsg?: distribution.INewRevenueMsg | null;
+      /** Union escrowUpdatePartiesMsg. */
+      public escrowUpdatePartiesMsg?: escrow.IUpdatePartiesMsg | null;
 
-      /** Union distributeMsg. */
-      public distributeMsg?: distribution.IDistributeMsg | null;
+      /** Union multisigCreateMsg. */
+      public multisigCreateMsg?: multisig.ICreateMsg | null;
 
-      /** Union resetRevenueMsg. */
-      public resetRevenueMsg?: distribution.IResetRevenueMsg | null;
+      /** Union multisigUpdateMsg. */
+      public multisigUpdateMsg?: multisig.IUpdateMsg | null;
 
-      /** don't allow UpgradeSchema as part of a batch, as effects are too confusing */
-      public updateElectorateMsg?: gov.IUpdateElectorateMsg | null;
+      /** Union validatorsApplyDiffMsg. */
+      public validatorsApplyDiffMsg?: validators.IApplyDiffMsg | null;
 
-      /** Union updateElectionRuleMsg. */
-      public updateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
+      /** Union currencyCreateMsg. */
+      public currencyCreateMsg?: currency.ICreateMsg | null;
 
-      /** Union textResolutionMsg. */
-      public textResolutionMsg?: gov.ITextResolutionMsg | null;
+      /** No recursive batches! */
+      public usernameRegisterTokenMsg?: username.IRegisterTokenMsg | null;
+
+      /** Union usernameTransferTokenMsg. */
+      public usernameTransferTokenMsg?: username.ITransferTokenMsg | null;
+
+      /** Union usernameChangeTokenTargetsMsg. */
+      public usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
+
+      /** Union distributionCreateMsg. */
+      public distributionCreateMsg?: distribution.ICreateMsg | null;
+
+      /** Union distributionMsg. */
+      public distributionMsg?: distribution.IDistributeMsg | null;
+
+      /** Union distributionResetMsg. */
+      public distributionResetMsg?: distribution.IResetMsg | null;
 
       /** Union sum. */
       public sum?:
-        | "sendMsg"
-        | "releaseEscrowMsg"
-        | "updateEscrowMsg"
-        | "setValidatorsMsg"
-        | "newRevenueMsg"
-        | "distributeMsg"
-        | "resetRevenueMsg"
-        | "updateElectorateMsg"
-        | "updateElectionRuleMsg"
-        | "textResolutionMsg";
+        | "cashSendMsg"
+        | "escrowCreateMsg"
+        | "escrowReleaseMsg"
+        | "escrowReturnMsg"
+        | "escrowUpdatePartiesMsg"
+        | "multisigCreateMsg"
+        | "multisigUpdateMsg"
+        | "validatorsApplyDiffMsg"
+        | "currencyCreateMsg"
+        | "usernameRegisterTokenMsg"
+        | "usernameTransferTokenMsg"
+        | "usernameChangeTokenTargetsMsg"
+        | "distributionCreateMsg"
+        | "distributionMsg"
+        | "distributionResetMsg";
 
       /**
        * Creates a new Union instance using the specified properties.
        * @param [properties] Properties to set
        * @returns Union instance
        */
-      public static create(properties?: app.ProposalBatchMsg.IUnion): app.ProposalBatchMsg.Union;
+      public static create(properties?: bnsd.ExecuteBatchMsg.IUnion): bnsd.ExecuteBatchMsg.Union;
 
       /**
-       * Encodes the specified Union message. Does not implicitly {@link app.ProposalBatchMsg.Union.verify|verify} messages.
+       * Encodes the specified Union message. Does not implicitly {@link bnsd.ExecuteBatchMsg.Union.verify|verify} messages.
        * @param message Union message or plain object to encode
        * @param [writer] Writer to encode to
        * @returns Writer
        */
-      public static encode(message: app.ProposalBatchMsg.IUnion, writer?: $protobuf.Writer): $protobuf.Writer;
+      public static encode(message: bnsd.ExecuteBatchMsg.IUnion, writer?: $protobuf.Writer): $protobuf.Writer;
 
       /**
-       * Encodes the specified Union message, length delimited. Does not implicitly {@link app.ProposalBatchMsg.Union.verify|verify} messages.
+       * Encodes the specified Union message, length delimited. Does not implicitly {@link bnsd.ExecuteBatchMsg.Union.verify|verify} messages.
        * @param message Union message or plain object to encode
        * @param [writer] Writer to encode to
        * @returns Writer
        */
       public static encodeDelimited(
-        message: app.ProposalBatchMsg.IUnion,
+        message: bnsd.ExecuteBatchMsg.IUnion,
         writer?: $protobuf.Writer,
       ): $protobuf.Writer;
 
@@ -1082,7 +631,7 @@ export namespace app {
       public static decode(
         reader: $protobuf.Reader | Uint8Array,
         length?: number,
-      ): app.ProposalBatchMsg.Union;
+      ): bnsd.ExecuteBatchMsg.Union;
 
       /**
        * Decodes an Union message from the specified reader or buffer, length delimited.
@@ -1091,7 +640,7 @@ export namespace app {
        * @throws {Error} If the payload is not a reader or valid buffer
        * @throws {$protobuf.util.ProtocolError} If required fields are missing
        */
-      public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): app.ProposalBatchMsg.Union;
+      public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): bnsd.ExecuteBatchMsg.Union;
 
       /**
        * Verifies an Union message.
@@ -1105,7 +654,7 @@ export namespace app {
        * @param object Plain object
        * @returns Union
        */
-      public static fromObject(object: { [k: string]: any }): app.ProposalBatchMsg.Union;
+      public static fromObject(object: { [k: string]: any }): bnsd.ExecuteBatchMsg.Union;
 
       /**
        * Creates a plain object from an Union message. Also converts values to other types if specified.
@@ -1114,7 +663,515 @@ export namespace app {
        * @returns Plain object
        */
       public static toObject(
-        message: app.ProposalBatchMsg.Union,
+        message: bnsd.ExecuteBatchMsg.Union,
+        options?: $protobuf.IConversionOptions,
+      ): { [k: string]: any };
+
+      /**
+       * Converts this Union to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+  }
+
+  /** Properties of a ProposalOptions. */
+  interface IProposalOptions {
+    /** ProposalOptions cashSendMsg */
+    cashSendMsg?: cash.ISendMsg | null;
+
+    /** ProposalOptions escrowReleaseMsg */
+    escrowReleaseMsg?: escrow.IReleaseMsg | null;
+
+    /** ProposalOptions updateEscrowPartiesMsg */
+    updateEscrowPartiesMsg?: escrow.IUpdatePartiesMsg | null;
+
+    /** ProposalOptions multisigUpdateMsg */
+    multisigUpdateMsg?: multisig.IUpdateMsg | null;
+
+    /** ProposalOptions validatorsApplyDiffMsg */
+    validatorsApplyDiffMsg?: validators.IApplyDiffMsg | null;
+
+    /** ProposalOptions currencyCreateMsg */
+    currencyCreateMsg?: currency.ICreateMsg | null;
+
+    /** ProposalOptions executeProposalBatchMsg */
+    executeProposalBatchMsg?: bnsd.IExecuteProposalBatchMsg | null;
+
+    /** ProposalOptions usernameRegisterTokenMsg */
+    usernameRegisterTokenMsg?: username.IRegisterTokenMsg | null;
+
+    /** ProposalOptions usernameTransferTokenMsg */
+    usernameTransferTokenMsg?: username.ITransferTokenMsg | null;
+
+    /** ProposalOptions usernameChangeTokenTargetsMsg */
+    usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
+
+    /** ProposalOptions distributionCreateMsg */
+    distributionCreateMsg?: distribution.ICreateMsg | null;
+
+    /** ProposalOptions distributionMsg */
+    distributionMsg?: distribution.IDistributeMsg | null;
+
+    /** ProposalOptions distributionResetMsg */
+    distributionResetMsg?: distribution.IResetMsg | null;
+
+    /** ProposalOptions migrationUpgradeSchemaMsg */
+    migrationUpgradeSchemaMsg?: migration.IUpgradeSchemaMsg | null;
+
+    /** ProposalOptions govUpdateElectorateMsg */
+    govUpdateElectorateMsg?: gov.IUpdateElectorateMsg | null;
+
+    /** ProposalOptions govUpdateElectionRuleMsg */
+    govUpdateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
+
+    /** ProposalOptions govCreateTextResolutionMsg */
+    govCreateTextResolutionMsg?: gov.ICreateTextResolutionMsg | null;
+  }
+
+  /** Trimmed down somewhat arbitrary to what is believed to be reasonable */
+  class ProposalOptions implements IProposalOptions {
+    /**
+     * Constructs a new ProposalOptions.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: bnsd.IProposalOptions);
+
+    /** ProposalOptions cashSendMsg. */
+    public cashSendMsg?: cash.ISendMsg | null;
+
+    /** ProposalOptions escrowReleaseMsg. */
+    public escrowReleaseMsg?: escrow.IReleaseMsg | null;
+
+    /** ProposalOptions updateEscrowPartiesMsg. */
+    public updateEscrowPartiesMsg?: escrow.IUpdatePartiesMsg | null;
+
+    /** ProposalOptions multisigUpdateMsg. */
+    public multisigUpdateMsg?: multisig.IUpdateMsg | null;
+
+    /** ProposalOptions validatorsApplyDiffMsg. */
+    public validatorsApplyDiffMsg?: validators.IApplyDiffMsg | null;
+
+    /** ProposalOptions currencyCreateMsg. */
+    public currencyCreateMsg?: currency.ICreateMsg | null;
+
+    /** ProposalOptions executeProposalBatchMsg. */
+    public executeProposalBatchMsg?: bnsd.IExecuteProposalBatchMsg | null;
+
+    /** ProposalOptions usernameRegisterTokenMsg. */
+    public usernameRegisterTokenMsg?: username.IRegisterTokenMsg | null;
+
+    /** ProposalOptions usernameTransferTokenMsg. */
+    public usernameTransferTokenMsg?: username.ITransferTokenMsg | null;
+
+    /** ProposalOptions usernameChangeTokenTargetsMsg. */
+    public usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
+
+    /** ProposalOptions distributionCreateMsg. */
+    public distributionCreateMsg?: distribution.ICreateMsg | null;
+
+    /** ProposalOptions distributionMsg. */
+    public distributionMsg?: distribution.IDistributeMsg | null;
+
+    /** ProposalOptions distributionResetMsg. */
+    public distributionResetMsg?: distribution.IResetMsg | null;
+
+    /** ProposalOptions migrationUpgradeSchemaMsg. */
+    public migrationUpgradeSchemaMsg?: migration.IUpgradeSchemaMsg | null;
+
+    /** ProposalOptions govUpdateElectorateMsg. */
+    public govUpdateElectorateMsg?: gov.IUpdateElectorateMsg | null;
+
+    /** ProposalOptions govUpdateElectionRuleMsg. */
+    public govUpdateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
+
+    /** ProposalOptions govCreateTextResolutionMsg. */
+    public govCreateTextResolutionMsg?: gov.ICreateTextResolutionMsg | null;
+
+    /** ProposalOptions option. */
+    public option?:
+      | "cashSendMsg"
+      | "escrowReleaseMsg"
+      | "updateEscrowPartiesMsg"
+      | "multisigUpdateMsg"
+      | "validatorsApplyDiffMsg"
+      | "currencyCreateMsg"
+      | "executeProposalBatchMsg"
+      | "usernameRegisterTokenMsg"
+      | "usernameTransferTokenMsg"
+      | "usernameChangeTokenTargetsMsg"
+      | "distributionCreateMsg"
+      | "distributionMsg"
+      | "distributionResetMsg"
+      | "migrationUpgradeSchemaMsg"
+      | "govUpdateElectorateMsg"
+      | "govUpdateElectionRuleMsg"
+      | "govCreateTextResolutionMsg";
+
+    /**
+     * Creates a new ProposalOptions instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ProposalOptions instance
+     */
+    public static create(properties?: bnsd.IProposalOptions): bnsd.ProposalOptions;
+
+    /**
+     * Encodes the specified ProposalOptions message. Does not implicitly {@link bnsd.ProposalOptions.verify|verify} messages.
+     * @param message ProposalOptions message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: bnsd.IProposalOptions, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ProposalOptions message, length delimited. Does not implicitly {@link bnsd.ProposalOptions.verify|verify} messages.
+     * @param message ProposalOptions message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: bnsd.IProposalOptions,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a ProposalOptions message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ProposalOptions
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): bnsd.ProposalOptions;
+
+    /**
+     * Decodes a ProposalOptions message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ProposalOptions
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): bnsd.ProposalOptions;
+
+    /**
+     * Verifies a ProposalOptions message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ProposalOptions message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ProposalOptions
+     */
+    public static fromObject(object: { [k: string]: any }): bnsd.ProposalOptions;
+
+    /**
+     * Creates a plain object from a ProposalOptions message. Also converts values to other types if specified.
+     * @param message ProposalOptions
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: bnsd.ProposalOptions,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ProposalOptions to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an ExecuteProposalBatchMsg. */
+  interface IExecuteProposalBatchMsg {
+    /** ExecuteProposalBatchMsg messages */
+    messages?: bnsd.ExecuteProposalBatchMsg.IUnion[] | null;
+  }
+
+  /** Represents an ExecuteProposalBatchMsg. */
+  class ExecuteProposalBatchMsg implements IExecuteProposalBatchMsg {
+    /**
+     * Constructs a new ExecuteProposalBatchMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: bnsd.IExecuteProposalBatchMsg);
+
+    /** ExecuteProposalBatchMsg messages. */
+    public messages: bnsd.ExecuteProposalBatchMsg.IUnion[];
+
+    /**
+     * Creates a new ExecuteProposalBatchMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ExecuteProposalBatchMsg instance
+     */
+    public static create(properties?: bnsd.IExecuteProposalBatchMsg): bnsd.ExecuteProposalBatchMsg;
+
+    /**
+     * Encodes the specified ExecuteProposalBatchMsg message. Does not implicitly {@link bnsd.ExecuteProposalBatchMsg.verify|verify} messages.
+     * @param message ExecuteProposalBatchMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: bnsd.IExecuteProposalBatchMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ExecuteProposalBatchMsg message, length delimited. Does not implicitly {@link bnsd.ExecuteProposalBatchMsg.verify|verify} messages.
+     * @param message ExecuteProposalBatchMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: bnsd.IExecuteProposalBatchMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes an ExecuteProposalBatchMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ExecuteProposalBatchMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): bnsd.ExecuteProposalBatchMsg;
+
+    /**
+     * Decodes an ExecuteProposalBatchMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ExecuteProposalBatchMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): bnsd.ExecuteProposalBatchMsg;
+
+    /**
+     * Verifies an ExecuteProposalBatchMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an ExecuteProposalBatchMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ExecuteProposalBatchMsg
+     */
+    public static fromObject(object: { [k: string]: any }): bnsd.ExecuteProposalBatchMsg;
+
+    /**
+     * Creates a plain object from an ExecuteProposalBatchMsg message. Also converts values to other types if specified.
+     * @param message ExecuteProposalBatchMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: bnsd.ExecuteProposalBatchMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ExecuteProposalBatchMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  namespace ExecuteProposalBatchMsg {
+    /** Properties of an Union. */
+    interface IUnion {
+      /** Union sendMsg */
+      sendMsg?: cash.ISendMsg | null;
+
+      /** Union escrowReleaseMsg */
+      escrowReleaseMsg?: escrow.IReleaseMsg | null;
+
+      /** Union updateEscrowPartiesMsg */
+      updateEscrowPartiesMsg?: escrow.IUpdatePartiesMsg | null;
+
+      /** Union multisigUpdateMsg */
+      multisigUpdateMsg?: multisig.IUpdateMsg | null;
+
+      /** Union validatorsApplyDiffMsg */
+      validatorsApplyDiffMsg?: validators.IApplyDiffMsg | null;
+
+      /** no recursive batches */
+      usernameRegisterTokenMsg?: username.IRegisterTokenMsg | null;
+
+      /** Union usernameTransferTokenMsg */
+      usernameTransferTokenMsg?: username.ITransferTokenMsg | null;
+
+      /** Union usernameChangeTokenTargetsMsg */
+      usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
+
+      /** Union distributionCreateMsg */
+      distributionCreateMsg?: distribution.ICreateMsg | null;
+
+      /** Union distributionMsg */
+      distributionMsg?: distribution.IDistributeMsg | null;
+
+      /** Union distributionResetMsg */
+      distributionResetMsg?: distribution.IResetMsg | null;
+
+      /** don't allow UpgradeSchema as part of a batch, as effects are too confusing */
+      govUpdateElectorateMsg?: gov.IUpdateElectorateMsg | null;
+
+      /** Union govUpdateElectionRuleMsg */
+      govUpdateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
+
+      /** Union govCreateTextResolutionMsg */
+      govCreateTextResolutionMsg?: gov.ICreateTextResolutionMsg | null;
+    }
+
+    /** Represents an Union. */
+    class Union implements IUnion {
+      /**
+       * Constructs a new Union.
+       * @param [properties] Properties to set
+       */
+      constructor(properties?: bnsd.ExecuteProposalBatchMsg.IUnion);
+
+      /** Union sendMsg. */
+      public sendMsg?: cash.ISendMsg | null;
+
+      /** Union escrowReleaseMsg. */
+      public escrowReleaseMsg?: escrow.IReleaseMsg | null;
+
+      /** Union updateEscrowPartiesMsg. */
+      public updateEscrowPartiesMsg?: escrow.IUpdatePartiesMsg | null;
+
+      /** Union multisigUpdateMsg. */
+      public multisigUpdateMsg?: multisig.IUpdateMsg | null;
+
+      /** Union validatorsApplyDiffMsg. */
+      public validatorsApplyDiffMsg?: validators.IApplyDiffMsg | null;
+
+      /** no recursive batches */
+      public usernameRegisterTokenMsg?: username.IRegisterTokenMsg | null;
+
+      /** Union usernameTransferTokenMsg. */
+      public usernameTransferTokenMsg?: username.ITransferTokenMsg | null;
+
+      /** Union usernameChangeTokenTargetsMsg. */
+      public usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
+
+      /** Union distributionCreateMsg. */
+      public distributionCreateMsg?: distribution.ICreateMsg | null;
+
+      /** Union distributionMsg. */
+      public distributionMsg?: distribution.IDistributeMsg | null;
+
+      /** Union distributionResetMsg. */
+      public distributionResetMsg?: distribution.IResetMsg | null;
+
+      /** don't allow UpgradeSchema as part of a batch, as effects are too confusing */
+      public govUpdateElectorateMsg?: gov.IUpdateElectorateMsg | null;
+
+      /** Union govUpdateElectionRuleMsg. */
+      public govUpdateElectionRuleMsg?: gov.IUpdateElectionRuleMsg | null;
+
+      /** Union govCreateTextResolutionMsg. */
+      public govCreateTextResolutionMsg?: gov.ICreateTextResolutionMsg | null;
+
+      /** Union sum. */
+      public sum?:
+        | "sendMsg"
+        | "escrowReleaseMsg"
+        | "updateEscrowPartiesMsg"
+        | "multisigUpdateMsg"
+        | "validatorsApplyDiffMsg"
+        | "usernameRegisterTokenMsg"
+        | "usernameTransferTokenMsg"
+        | "usernameChangeTokenTargetsMsg"
+        | "distributionCreateMsg"
+        | "distributionMsg"
+        | "distributionResetMsg"
+        | "govUpdateElectorateMsg"
+        | "govUpdateElectionRuleMsg"
+        | "govCreateTextResolutionMsg";
+
+      /**
+       * Creates a new Union instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns Union instance
+       */
+      public static create(
+        properties?: bnsd.ExecuteProposalBatchMsg.IUnion,
+      ): bnsd.ExecuteProposalBatchMsg.Union;
+
+      /**
+       * Encodes the specified Union message. Does not implicitly {@link bnsd.ExecuteProposalBatchMsg.Union.verify|verify} messages.
+       * @param message Union message or plain object to encode
+       * @param [writer] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        message: bnsd.ExecuteProposalBatchMsg.IUnion,
+        writer?: $protobuf.Writer,
+      ): $protobuf.Writer;
+
+      /**
+       * Encodes the specified Union message, length delimited. Does not implicitly {@link bnsd.ExecuteProposalBatchMsg.Union.verify|verify} messages.
+       * @param message Union message or plain object to encode
+       * @param [writer] Writer to encode to
+       * @returns Writer
+       */
+      public static encodeDelimited(
+        message: bnsd.ExecuteProposalBatchMsg.IUnion,
+        writer?: $protobuf.Writer,
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes an Union message from the specified reader or buffer.
+       * @param reader Reader or buffer to decode from
+       * @param [length] Message length if known beforehand
+       * @returns Union
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        reader: $protobuf.Reader | Uint8Array,
+        length?: number,
+      ): bnsd.ExecuteProposalBatchMsg.Union;
+
+      /**
+       * Decodes an Union message from the specified reader or buffer, length delimited.
+       * @param reader Reader or buffer to decode from
+       * @returns Union
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decodeDelimited(
+        reader: $protobuf.Reader | Uint8Array,
+      ): bnsd.ExecuteProposalBatchMsg.Union;
+
+      /**
+       * Verifies an Union message.
+       * @param message Plain object to verify
+       * @returns `null` if valid, otherwise the reason why it is not
+       */
+      public static verify(message: { [k: string]: any }): string | null;
+
+      /**
+       * Creates an Union message from a plain object. Also converts values to their respective internal types.
+       * @param object Plain object
+       * @returns Union
+       */
+      public static fromObject(object: { [k: string]: any }): bnsd.ExecuteProposalBatchMsg.Union;
+
+      /**
+       * Creates a plain object from an Union message. Also converts values to other types if specified.
+       * @param message Union
+       * @param [options] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        message: bnsd.ExecuteProposalBatchMsg.Union,
         options?: $protobuf.IConversionOptions,
       ): { [k: string]: any };
 
@@ -1129,649 +1186,528 @@ export namespace app {
 
 /** Namespace username. */
 export namespace username {
-  /** Properties of a UsernameToken. */
-  interface IUsernameToken {
-    /** UsernameToken metadata */
+  /** Properties of a Token. */
+  interface IToken {
+    /** Token metadata */
     metadata?: weave.IMetadata | null;
 
-    /** UsernameToken base */
-    base?: nft.INonFungibleToken | null;
+    /** least one blockchain address elemenet. */
+    targets?: username.IBlockchainAddress[] | null;
 
-    /** UsernameToken details */
-    details?: username.ITokenDetails | null;
-  }
-
-  /** Represents a UsernameToken. */
-  class UsernameToken implements IUsernameToken {
-    /**
-     * Constructs a new UsernameToken.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: username.IUsernameToken);
-
-    /** UsernameToken metadata. */
-    public metadata?: weave.IMetadata | null;
-
-    /** UsernameToken base. */
-    public base?: nft.INonFungibleToken | null;
-
-    /** UsernameToken details. */
-    public details?: username.ITokenDetails | null;
-
-    /**
-     * Creates a new UsernameToken instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns UsernameToken instance
-     */
-    public static create(properties?: username.IUsernameToken): username.UsernameToken;
-
-    /**
-     * Encodes the specified UsernameToken message. Does not implicitly {@link username.UsernameToken.verify|verify} messages.
-     * @param message UsernameToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: username.IUsernameToken, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified UsernameToken message, length delimited. Does not implicitly {@link username.UsernameToken.verify|verify} messages.
-     * @param message UsernameToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: username.IUsernameToken,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a UsernameToken message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns UsernameToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): username.UsernameToken;
-
-    /**
-     * Decodes a UsernameToken message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns UsernameToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.UsernameToken;
-
-    /**
-     * Verifies a UsernameToken message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a UsernameToken message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns UsernameToken
-     */
-    public static fromObject(object: { [k: string]: any }): username.UsernameToken;
-
-    /**
-     * Creates a plain object from a UsernameToken message. Also converts values to other types if specified.
-     * @param message UsernameToken
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: username.UsernameToken,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this UsernameToken to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a TokenDetails. */
-  interface ITokenDetails {
-    /** TokenDetails addresses */
-    addresses?: username.IChainAddress[] | null;
-  }
-
-  /** Represents a TokenDetails. */
-  class TokenDetails implements ITokenDetails {
-    /**
-     * Constructs a new TokenDetails.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: username.ITokenDetails);
-
-    /** TokenDetails addresses. */
-    public addresses: username.IChainAddress[];
-
-    /**
-     * Creates a new TokenDetails instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns TokenDetails instance
-     */
-    public static create(properties?: username.ITokenDetails): username.TokenDetails;
-
-    /**
-     * Encodes the specified TokenDetails message. Does not implicitly {@link username.TokenDetails.verify|verify} messages.
-     * @param message TokenDetails message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: username.ITokenDetails, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified TokenDetails message, length delimited. Does not implicitly {@link username.TokenDetails.verify|verify} messages.
-     * @param message TokenDetails message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: username.ITokenDetails,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a TokenDetails message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns TokenDetails
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): username.TokenDetails;
-
-    /**
-     * Decodes a TokenDetails message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns TokenDetails
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.TokenDetails;
-
-    /**
-     * Verifies a TokenDetails message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a TokenDetails message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns TokenDetails
-     */
-    public static fromObject(object: { [k: string]: any }): username.TokenDetails;
-
-    /**
-     * Creates a plain object from a TokenDetails message. Also converts values to other types if specified.
-     * @param message TokenDetails
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: username.TokenDetails,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this TokenDetails to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a ChainAddress. */
-  interface IChainAddress {
-    /** validating it. */
-    blockchainId?: Uint8Array | null;
-
-    /** blockchain. */
-    address?: string | null;
-  }
-
-  /** ChainAddress is an address bind to a specific blockchain chain. */
-  class ChainAddress implements IChainAddress {
-    /**
-     * Constructs a new ChainAddress.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: username.IChainAddress);
-
-    /** validating it. */
-    public blockchainId: Uint8Array;
-
-    /** blockchain. */
-    public address: string;
-
-    /**
-     * Creates a new ChainAddress instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ChainAddress instance
-     */
-    public static create(properties?: username.IChainAddress): username.ChainAddress;
-
-    /**
-     * Encodes the specified ChainAddress message. Does not implicitly {@link username.ChainAddress.verify|verify} messages.
-     * @param message ChainAddress message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: username.IChainAddress, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ChainAddress message, length delimited. Does not implicitly {@link username.ChainAddress.verify|verify} messages.
-     * @param message ChainAddress message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: username.IChainAddress,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a ChainAddress message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ChainAddress
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): username.ChainAddress;
-
-    /**
-     * Decodes a ChainAddress message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ChainAddress
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.ChainAddress;
-
-    /**
-     * Verifies a ChainAddress message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a ChainAddress message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ChainAddress
-     */
-    public static fromObject(object: { [k: string]: any }): username.ChainAddress;
-
-    /**
-     * Creates a plain object from a ChainAddress message. Also converts values to other types if specified.
-     * @param message ChainAddress
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: username.ChainAddress,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this ChainAddress to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an IssueTokenMsg. */
-  interface IIssueTokenMsg {
-    /** IssueTokenMsg metadata */
-    metadata?: weave.IMetadata | null;
-
-    /** IssueTokenMsg id */
-    id?: Uint8Array | null;
-
-    /** IssueTokenMsg owner */
+    /** modify a username token. */
     owner?: Uint8Array | null;
-
-    /** IssueTokenMsg approvals */
-    approvals?: nft.IActionApprovals[] | null;
-
-    /** IssueTokenMsg details */
-    details?: username.ITokenDetails | null;
   }
 
-  /** Represents an IssueTokenMsg. */
-  class IssueTokenMsg implements IIssueTokenMsg {
+  /** ourselves to certain patterns. */
+  class Token implements IToken {
     /**
-     * Constructs a new IssueTokenMsg.
+     * Constructs a new Token.
      * @param [properties] Properties to set
      */
-    constructor(properties?: username.IIssueTokenMsg);
+    constructor(properties?: username.IToken);
 
-    /** IssueTokenMsg metadata. */
+    /** Token metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** IssueTokenMsg id. */
-    public id: Uint8Array;
+    /** least one blockchain address elemenet. */
+    public targets: username.IBlockchainAddress[];
 
-    /** IssueTokenMsg owner. */
+    /** modify a username token. */
     public owner: Uint8Array;
 
-    /** IssueTokenMsg approvals. */
-    public approvals: nft.IActionApprovals[];
-
-    /** IssueTokenMsg details. */
-    public details?: username.ITokenDetails | null;
-
     /**
-     * Creates a new IssueTokenMsg instance using the specified properties.
+     * Creates a new Token instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns IssueTokenMsg instance
+     * @returns Token instance
      */
-    public static create(properties?: username.IIssueTokenMsg): username.IssueTokenMsg;
+    public static create(properties?: username.IToken): username.Token;
 
     /**
-     * Encodes the specified IssueTokenMsg message. Does not implicitly {@link username.IssueTokenMsg.verify|verify} messages.
-     * @param message IssueTokenMsg message or plain object to encode
+     * Encodes the specified Token message. Does not implicitly {@link username.Token.verify|verify} messages.
+     * @param message Token message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: username.IIssueTokenMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: username.IToken, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified IssueTokenMsg message, length delimited. Does not implicitly {@link username.IssueTokenMsg.verify|verify} messages.
-     * @param message IssueTokenMsg message or plain object to encode
+     * Encodes the specified Token message, length delimited. Does not implicitly {@link username.Token.verify|verify} messages.
+     * @param message Token message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: username.IIssueTokenMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: username.IToken, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes an IssueTokenMsg message from the specified reader or buffer.
+     * Decodes a Token message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns IssueTokenMsg
+     * @returns Token
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): username.IssueTokenMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): username.Token;
 
     /**
-     * Decodes an IssueTokenMsg message from the specified reader or buffer, length delimited.
+     * Decodes a Token message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns IssueTokenMsg
+     * @returns Token
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.IssueTokenMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.Token;
 
     /**
-     * Verifies an IssueTokenMsg message.
+     * Verifies a Token message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates an IssueTokenMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a Token message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns IssueTokenMsg
+     * @returns Token
      */
-    public static fromObject(object: { [k: string]: any }): username.IssueTokenMsg;
+    public static fromObject(object: { [k: string]: any }): username.Token;
 
     /**
-     * Creates a plain object from an IssueTokenMsg message. Also converts values to other types if specified.
-     * @param message IssueTokenMsg
+     * Creates a plain object from a Token message. Also converts values to other types if specified.
+     * @param message Token
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: username.IssueTokenMsg,
+      message: username.Token,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this IssueTokenMsg to JSON.
+     * Converts this Token to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of an AddChainAddressMsg. */
-  interface IAddChainAddressMsg {
-    /** AddChainAddressMsg metadata */
-    metadata?: weave.IMetadata | null;
+  /** Properties of a BlockchainAddress. */
+  interface IBlockchainAddress {
+    /** An arbitrary blockchain ID. */
+    blockchainId?: string | null;
 
-    /** AddChainAddressMsg usernameId */
-    usernameId?: Uint8Array | null;
-
-    /** AddChainAddressMsg blockchainId */
-    blockchainId?: Uint8Array | null;
-
-    /** AddChainAddressMsg address */
-    address?: string | null;
+    /** data. */
+    address?: Uint8Array | null;
   }
 
-  /** Represents an AddChainAddressMsg. */
-  class AddChainAddressMsg implements IAddChainAddressMsg {
+  /** to an address on any blockchain network. */
+  class BlockchainAddress implements IBlockchainAddress {
     /**
-     * Constructs a new AddChainAddressMsg.
+     * Constructs a new BlockchainAddress.
      * @param [properties] Properties to set
      */
-    constructor(properties?: username.IAddChainAddressMsg);
+    constructor(properties?: username.IBlockchainAddress);
 
-    /** AddChainAddressMsg metadata. */
-    public metadata?: weave.IMetadata | null;
+    /** An arbitrary blockchain ID. */
+    public blockchainId: string;
 
-    /** AddChainAddressMsg usernameId. */
-    public usernameId: Uint8Array;
-
-    /** AddChainAddressMsg blockchainId. */
-    public blockchainId: Uint8Array;
-
-    /** AddChainAddressMsg address. */
-    public address: string;
+    /** data. */
+    public address: Uint8Array;
 
     /**
-     * Creates a new AddChainAddressMsg instance using the specified properties.
+     * Creates a new BlockchainAddress instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns AddChainAddressMsg instance
+     * @returns BlockchainAddress instance
      */
-    public static create(properties?: username.IAddChainAddressMsg): username.AddChainAddressMsg;
+    public static create(properties?: username.IBlockchainAddress): username.BlockchainAddress;
 
     /**
-     * Encodes the specified AddChainAddressMsg message. Does not implicitly {@link username.AddChainAddressMsg.verify|verify} messages.
-     * @param message AddChainAddressMsg message or plain object to encode
+     * Encodes the specified BlockchainAddress message. Does not implicitly {@link username.BlockchainAddress.verify|verify} messages.
+     * @param message BlockchainAddress message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: username.IAddChainAddressMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: username.IBlockchainAddress, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified AddChainAddressMsg message, length delimited. Does not implicitly {@link username.AddChainAddressMsg.verify|verify} messages.
-     * @param message AddChainAddressMsg message or plain object to encode
+     * Encodes the specified BlockchainAddress message, length delimited. Does not implicitly {@link username.BlockchainAddress.verify|verify} messages.
+     * @param message BlockchainAddress message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(
-      message: username.IAddChainAddressMsg,
+      message: username.IBlockchainAddress,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Decodes an AddChainAddressMsg message from the specified reader or buffer.
+     * Decodes a BlockchainAddress message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns AddChainAddressMsg
+     * @returns BlockchainAddress
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): username.AddChainAddressMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): username.BlockchainAddress;
 
     /**
-     * Decodes an AddChainAddressMsg message from the specified reader or buffer, length delimited.
+     * Decodes a BlockchainAddress message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns AddChainAddressMsg
+     * @returns BlockchainAddress
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.AddChainAddressMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.BlockchainAddress;
 
     /**
-     * Verifies an AddChainAddressMsg message.
+     * Verifies a BlockchainAddress message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates an AddChainAddressMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a BlockchainAddress message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns AddChainAddressMsg
+     * @returns BlockchainAddress
      */
-    public static fromObject(object: { [k: string]: any }): username.AddChainAddressMsg;
+    public static fromObject(object: { [k: string]: any }): username.BlockchainAddress;
 
     /**
-     * Creates a plain object from an AddChainAddressMsg message. Also converts values to other types if specified.
-     * @param message AddChainAddressMsg
+     * Creates a plain object from a BlockchainAddress message. Also converts values to other types if specified.
+     * @param message BlockchainAddress
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: username.AddChainAddressMsg,
+      message: username.BlockchainAddress,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this AddChainAddressMsg to JSON.
+     * Converts this BlockchainAddress to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a RemoveChainAddressMsg. */
-  interface IRemoveChainAddressMsg {
-    /** RemoveChainAddressMsg metadata */
+  /** Properties of a RegisterTokenMsg. */
+  interface IRegisterTokenMsg {
+    /** RegisterTokenMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** RemoveChainAddressMsg usernameId */
-    usernameId?: Uint8Array | null;
+    /** Username is the unique name of the token, for example alice*iov */
+    username?: string | null;
 
-    /** RemoveChainAddressMsg blockchainId */
-    blockchainId?: Uint8Array | null;
-
-    /** RemoveChainAddressMsg address */
-    address?: string | null;
+    /** Targets is a blockchain address list that this token should point to. */
+    targets?: username.IBlockchainAddress[] | null;
   }
 
-  /** Represents a RemoveChainAddressMsg. */
-  class RemoveChainAddressMsg implements IRemoveChainAddressMsg {
+  /** to the main signer. */
+  class RegisterTokenMsg implements IRegisterTokenMsg {
     /**
-     * Constructs a new RemoveChainAddressMsg.
+     * Constructs a new RegisterTokenMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: username.IRemoveChainAddressMsg);
+    constructor(properties?: username.IRegisterTokenMsg);
 
-    /** RemoveChainAddressMsg metadata. */
+    /** RegisterTokenMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** RemoveChainAddressMsg usernameId. */
-    public usernameId: Uint8Array;
+    /** Username is the unique name of the token, for example alice*iov */
+    public username: string;
 
-    /** RemoveChainAddressMsg blockchainId. */
-    public blockchainId: Uint8Array;
-
-    /** RemoveChainAddressMsg address. */
-    public address: string;
+    /** Targets is a blockchain address list that this token should point to. */
+    public targets: username.IBlockchainAddress[];
 
     /**
-     * Creates a new RemoveChainAddressMsg instance using the specified properties.
+     * Creates a new RegisterTokenMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns RemoveChainAddressMsg instance
+     * @returns RegisterTokenMsg instance
      */
-    public static create(properties?: username.IRemoveChainAddressMsg): username.RemoveChainAddressMsg;
+    public static create(properties?: username.IRegisterTokenMsg): username.RegisterTokenMsg;
 
     /**
-     * Encodes the specified RemoveChainAddressMsg message. Does not implicitly {@link username.RemoveChainAddressMsg.verify|verify} messages.
-     * @param message RemoveChainAddressMsg message or plain object to encode
+     * Encodes the specified RegisterTokenMsg message. Does not implicitly {@link username.RegisterTokenMsg.verify|verify} messages.
+     * @param message RegisterTokenMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: username.IRegisterTokenMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified RegisterTokenMsg message, length delimited. Does not implicitly {@link username.RegisterTokenMsg.verify|verify} messages.
+     * @param message RegisterTokenMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: username.IRegisterTokenMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a RegisterTokenMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns RegisterTokenMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): username.RegisterTokenMsg;
+
+    /**
+     * Decodes a RegisterTokenMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns RegisterTokenMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.RegisterTokenMsg;
+
+    /**
+     * Verifies a RegisterTokenMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a RegisterTokenMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns RegisterTokenMsg
+     */
+    public static fromObject(object: { [k: string]: any }): username.RegisterTokenMsg;
+
+    /**
+     * Creates a plain object from a RegisterTokenMsg message. Also converts values to other types if specified.
+     * @param message RegisterTokenMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: username.RegisterTokenMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this RegisterTokenMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a TransferTokenMsg. */
+  interface ITransferTokenMsg {
+    /** TransferTokenMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Username is the unique name of the token, for example alice*iov */
+    username?: string | null;
+
+    /** Owner is a weave address that will owns this token after the change. */
+    newOwner?: Uint8Array | null;
+  }
+
+  /** owner is not required in order to succeed. */
+  class TransferTokenMsg implements ITransferTokenMsg {
+    /**
+     * Constructs a new TransferTokenMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: username.ITransferTokenMsg);
+
+    /** TransferTokenMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Username is the unique name of the token, for example alice*iov */
+    public username: string;
+
+    /** Owner is a weave address that will owns this token after the change. */
+    public newOwner: Uint8Array;
+
+    /**
+     * Creates a new TransferTokenMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns TransferTokenMsg instance
+     */
+    public static create(properties?: username.ITransferTokenMsg): username.TransferTokenMsg;
+
+    /**
+     * Encodes the specified TransferTokenMsg message. Does not implicitly {@link username.TransferTokenMsg.verify|verify} messages.
+     * @param message TransferTokenMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: username.ITransferTokenMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified TransferTokenMsg message, length delimited. Does not implicitly {@link username.TransferTokenMsg.verify|verify} messages.
+     * @param message TransferTokenMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: username.ITransferTokenMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a TransferTokenMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns TransferTokenMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): username.TransferTokenMsg;
+
+    /**
+     * Decodes a TransferTokenMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns TransferTokenMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.TransferTokenMsg;
+
+    /**
+     * Verifies a TransferTokenMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a TransferTokenMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns TransferTokenMsg
+     */
+    public static fromObject(object: { [k: string]: any }): username.TransferTokenMsg;
+
+    /**
+     * Creates a plain object from a TransferTokenMsg message. Also converts values to other types if specified.
+     * @param message TransferTokenMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: username.TransferTokenMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this TransferTokenMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a ChangeTokenTargetsMsg. */
+  interface IChangeTokenTargetsMsg {
+    /** ChangeTokenTargetsMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Username is the unique name of the token, for example alice*iov */
+    username?: string | null;
+
+    /** to after the change. Old list is overwritten with what is provided. */
+    newTargets?: username.IBlockchainAddress[] | null;
+  }
+
+  /** points to. Only the owner of a token can request this operation. */
+  class ChangeTokenTargetsMsg implements IChangeTokenTargetsMsg {
+    /**
+     * Constructs a new ChangeTokenTargetsMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: username.IChangeTokenTargetsMsg);
+
+    /** ChangeTokenTargetsMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Username is the unique name of the token, for example alice*iov */
+    public username: string;
+
+    /** to after the change. Old list is overwritten with what is provided. */
+    public newTargets: username.IBlockchainAddress[];
+
+    /**
+     * Creates a new ChangeTokenTargetsMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ChangeTokenTargetsMsg instance
+     */
+    public static create(properties?: username.IChangeTokenTargetsMsg): username.ChangeTokenTargetsMsg;
+
+    /**
+     * Encodes the specified ChangeTokenTargetsMsg message. Does not implicitly {@link username.ChangeTokenTargetsMsg.verify|verify} messages.
+     * @param message ChangeTokenTargetsMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encode(
-      message: username.IRemoveChainAddressMsg,
+      message: username.IChangeTokenTargetsMsg,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Encodes the specified RemoveChainAddressMsg message, length delimited. Does not implicitly {@link username.RemoveChainAddressMsg.verify|verify} messages.
-     * @param message RemoveChainAddressMsg message or plain object to encode
+     * Encodes the specified ChangeTokenTargetsMsg message, length delimited. Does not implicitly {@link username.ChangeTokenTargetsMsg.verify|verify} messages.
+     * @param message ChangeTokenTargetsMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(
-      message: username.IRemoveChainAddressMsg,
+      message: username.IChangeTokenTargetsMsg,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Decodes a RemoveChainAddressMsg message from the specified reader or buffer.
+     * Decodes a ChangeTokenTargetsMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns RemoveChainAddressMsg
+     * @returns ChangeTokenTargetsMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
     public static decode(
       reader: $protobuf.Reader | Uint8Array,
       length?: number,
-    ): username.RemoveChainAddressMsg;
+    ): username.ChangeTokenTargetsMsg;
 
     /**
-     * Decodes a RemoveChainAddressMsg message from the specified reader or buffer, length delimited.
+     * Decodes a ChangeTokenTargetsMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns RemoveChainAddressMsg
+     * @returns ChangeTokenTargetsMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.RemoveChainAddressMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): username.ChangeTokenTargetsMsg;
 
     /**
-     * Verifies a RemoveChainAddressMsg message.
+     * Verifies a ChangeTokenTargetsMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a RemoveChainAddressMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a ChangeTokenTargetsMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns RemoveChainAddressMsg
+     * @returns ChangeTokenTargetsMsg
      */
-    public static fromObject(object: { [k: string]: any }): username.RemoveChainAddressMsg;
+    public static fromObject(object: { [k: string]: any }): username.ChangeTokenTargetsMsg;
 
     /**
-     * Creates a plain object from a RemoveChainAddressMsg message. Also converts values to other types if specified.
-     * @param message RemoveChainAddressMsg
+     * Creates a plain object from a ChangeTokenTargetsMsg message. Also converts values to other types if specified.
+     * @param message ChangeTokenTargetsMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: username.RemoveChainAddressMsg,
+      message: username.ChangeTokenTargetsMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this RemoveChainAddressMsg to JSON.
+     * Converts this ChangeTokenTargetsMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -1866,6 +1802,297 @@ export namespace weave {
 
     /**
      * Converts this Metadata to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a ValidatorUpdates. */
+  interface IValidatorUpdates {
+    /** ValidatorUpdates validatorUpdates */
+    validatorUpdates?: weave.IValidatorUpdate[] | null;
+  }
+
+  /** ValidatorUpdates represents latest validator state, currently used to validate SetValidatorMsg transactions. */
+  class ValidatorUpdates implements IValidatorUpdates {
+    /**
+     * Constructs a new ValidatorUpdates.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: weave.IValidatorUpdates);
+
+    /** ValidatorUpdates validatorUpdates. */
+    public validatorUpdates: weave.IValidatorUpdate[];
+
+    /**
+     * Creates a new ValidatorUpdates instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ValidatorUpdates instance
+     */
+    public static create(properties?: weave.IValidatorUpdates): weave.ValidatorUpdates;
+
+    /**
+     * Encodes the specified ValidatorUpdates message. Does not implicitly {@link weave.ValidatorUpdates.verify|verify} messages.
+     * @param message ValidatorUpdates message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: weave.IValidatorUpdates, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ValidatorUpdates message, length delimited. Does not implicitly {@link weave.ValidatorUpdates.verify|verify} messages.
+     * @param message ValidatorUpdates message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: weave.IValidatorUpdates,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a ValidatorUpdates message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ValidatorUpdates
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): weave.ValidatorUpdates;
+
+    /**
+     * Decodes a ValidatorUpdates message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ValidatorUpdates
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): weave.ValidatorUpdates;
+
+    /**
+     * Verifies a ValidatorUpdates message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ValidatorUpdates message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ValidatorUpdates
+     */
+    public static fromObject(object: { [k: string]: any }): weave.ValidatorUpdates;
+
+    /**
+     * Creates a plain object from a ValidatorUpdates message. Also converts values to other types if specified.
+     * @param message ValidatorUpdates
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: weave.ValidatorUpdates,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ValidatorUpdates to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a ValidatorUpdate. */
+  interface IValidatorUpdate {
+    /** ValidatorUpdate pubKey */
+    pubKey?: weave.IPubKey | null;
+
+    /** ValidatorUpdate power */
+    power?: number | Long | null;
+  }
+
+  /** ValidatorUpdate represents an update to validator set. */
+  class ValidatorUpdate implements IValidatorUpdate {
+    /**
+     * Constructs a new ValidatorUpdate.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: weave.IValidatorUpdate);
+
+    /** ValidatorUpdate pubKey. */
+    public pubKey?: weave.IPubKey | null;
+
+    /** ValidatorUpdate power. */
+    public power: number | Long;
+
+    /**
+     * Creates a new ValidatorUpdate instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ValidatorUpdate instance
+     */
+    public static create(properties?: weave.IValidatorUpdate): weave.ValidatorUpdate;
+
+    /**
+     * Encodes the specified ValidatorUpdate message. Does not implicitly {@link weave.ValidatorUpdate.verify|verify} messages.
+     * @param message ValidatorUpdate message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: weave.IValidatorUpdate, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ValidatorUpdate message, length delimited. Does not implicitly {@link weave.ValidatorUpdate.verify|verify} messages.
+     * @param message ValidatorUpdate message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: weave.IValidatorUpdate,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a ValidatorUpdate message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ValidatorUpdate
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): weave.ValidatorUpdate;
+
+    /**
+     * Decodes a ValidatorUpdate message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ValidatorUpdate
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): weave.ValidatorUpdate;
+
+    /**
+     * Verifies a ValidatorUpdate message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ValidatorUpdate message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ValidatorUpdate
+     */
+    public static fromObject(object: { [k: string]: any }): weave.ValidatorUpdate;
+
+    /**
+     * Creates a plain object from a ValidatorUpdate message. Also converts values to other types if specified.
+     * @param message ValidatorUpdate
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: weave.ValidatorUpdate,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ValidatorUpdate to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a PubKey. */
+  interface IPubKey {
+    /** PubKey type */
+    type?: string | null;
+
+    /** PubKey data */
+    data?: Uint8Array | null;
+  }
+
+  /** PubKey represents a validator public key. */
+  class PubKey implements IPubKey {
+    /**
+     * Constructs a new PubKey.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: weave.IPubKey);
+
+    /** PubKey type. */
+    public type: string;
+
+    /** PubKey data. */
+    public data: Uint8Array;
+
+    /**
+     * Creates a new PubKey instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns PubKey instance
+     */
+    public static create(properties?: weave.IPubKey): weave.PubKey;
+
+    /**
+     * Encodes the specified PubKey message. Does not implicitly {@link weave.PubKey.verify|verify} messages.
+     * @param message PubKey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: weave.IPubKey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified PubKey message, length delimited. Does not implicitly {@link weave.PubKey.verify|verify} messages.
+     * @param message PubKey message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: weave.IPubKey, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a PubKey message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns PubKey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): weave.PubKey;
+
+    /**
+     * Decodes a PubKey message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns PubKey
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): weave.PubKey;
+
+    /**
+     * Verifies a PubKey message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a PubKey message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns PubKey
+     */
+    public static fromObject(object: { [k: string]: any }): weave.PubKey;
+
+    /**
+     * Creates a plain object from a PubKey message. Also converts values to other types if specified.
+     * @param message PubKey
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: weave.PubKey,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this PubKey to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -2962,18 +3189,18 @@ export namespace aswap {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a CreateSwapMsg. */
-  interface ICreateSwapMsg {
-    /** CreateSwapMsg metadata */
+  /** Properties of a CreateMsg. */
+  interface ICreateMsg {
+    /** CreateMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** CreateSwapMsg src */
+    /** CreateMsg src */
     src?: Uint8Array | null;
 
     /** sha256 hash of preimage, 32 bytes long */
     preimageHash?: Uint8Array | null;
 
-    /** CreateSwapMsg recipient */
+    /** CreateMsg recipient */
     recipient?: Uint8Array | null;
 
     /** amount may contain multiple token types */
@@ -2986,24 +3213,24 @@ export namespace aswap {
     memo?: string | null;
   }
 
-  /** CreateSwapMsg creates a Swap with some coins. */
-  class CreateSwapMsg implements ICreateSwapMsg {
+  /** CreateMsg creates a Swap with some coins. */
+  class CreateMsg implements ICreateMsg {
     /**
-     * Constructs a new CreateSwapMsg.
+     * Constructs a new CreateMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: aswap.ICreateSwapMsg);
+    constructor(properties?: aswap.ICreateMsg);
 
-    /** CreateSwapMsg metadata. */
+    /** CreateMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** CreateSwapMsg src. */
+    /** CreateMsg src. */
     public src: Uint8Array;
 
     /** sha256 hash of preimage, 32 bytes long */
     public preimageHash: Uint8Array;
 
-    /** CreateSwapMsg recipient. */
+    /** CreateMsg recipient. */
     public recipient: Uint8Array;
 
     /** amount may contain multiple token types */
@@ -3016,82 +3243,82 @@ export namespace aswap {
     public memo: string;
 
     /**
-     * Creates a new CreateSwapMsg instance using the specified properties.
+     * Creates a new CreateMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns CreateSwapMsg instance
+     * @returns CreateMsg instance
      */
-    public static create(properties?: aswap.ICreateSwapMsg): aswap.CreateSwapMsg;
+    public static create(properties?: aswap.ICreateMsg): aswap.CreateMsg;
 
     /**
-     * Encodes the specified CreateSwapMsg message. Does not implicitly {@link aswap.CreateSwapMsg.verify|verify} messages.
-     * @param message CreateSwapMsg message or plain object to encode
+     * Encodes the specified CreateMsg message. Does not implicitly {@link aswap.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: aswap.ICreateSwapMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: aswap.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified CreateSwapMsg message, length delimited. Does not implicitly {@link aswap.CreateSwapMsg.verify|verify} messages.
-     * @param message CreateSwapMsg message or plain object to encode
+     * Encodes the specified CreateMsg message, length delimited. Does not implicitly {@link aswap.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(message: aswap.ICreateSwapMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encodeDelimited(message: aswap.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a CreateSwapMsg message from the specified reader or buffer.
+     * Decodes a CreateMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns CreateSwapMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): aswap.CreateSwapMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): aswap.CreateMsg;
 
     /**
-     * Decodes a CreateSwapMsg message from the specified reader or buffer, length delimited.
+     * Decodes a CreateMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns CreateSwapMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): aswap.CreateSwapMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): aswap.CreateMsg;
 
     /**
-     * Verifies a CreateSwapMsg message.
+     * Verifies a CreateMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a CreateSwapMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a CreateMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns CreateSwapMsg
+     * @returns CreateMsg
      */
-    public static fromObject(object: { [k: string]: any }): aswap.CreateSwapMsg;
+    public static fromObject(object: { [k: string]: any }): aswap.CreateMsg;
 
     /**
-     * Creates a plain object from a CreateSwapMsg message. Also converts values to other types if specified.
-     * @param message CreateSwapMsg
+     * Creates a plain object from a CreateMsg message. Also converts values to other types if specified.
+     * @param message CreateMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: aswap.CreateSwapMsg,
+      message: aswap.CreateMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this CreateSwapMsg to JSON.
+     * Converts this CreateMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a ReleaseSwapMsg. */
-  interface IReleaseSwapMsg {
-    /** ReleaseSwapMsg metadata */
+  /** Properties of a ReleaseMsg. */
+  interface IReleaseMsg {
+    /** ReleaseMsg metadata */
     metadata?: weave.IMetadata | null;
 
     /** swap_id to release */
@@ -3102,14 +3329,14 @@ export namespace aswap {
   }
 
   /** This operation is authorized by preimage, which is sent raw and then hashed on the backend. */
-  class ReleaseSwapMsg implements IReleaseSwapMsg {
+  class ReleaseMsg implements IReleaseMsg {
     /**
-     * Constructs a new ReleaseSwapMsg.
+     * Constructs a new ReleaseMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: aswap.IReleaseSwapMsg);
+    constructor(properties?: aswap.IReleaseMsg);
 
-    /** ReleaseSwapMsg metadata. */
+    /** ReleaseMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
     /** swap_id to release */
@@ -3119,77 +3346,74 @@ export namespace aswap {
     public preimage: Uint8Array;
 
     /**
-     * Creates a new ReleaseSwapMsg instance using the specified properties.
+     * Creates a new ReleaseMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns ReleaseSwapMsg instance
+     * @returns ReleaseMsg instance
      */
-    public static create(properties?: aswap.IReleaseSwapMsg): aswap.ReleaseSwapMsg;
+    public static create(properties?: aswap.IReleaseMsg): aswap.ReleaseMsg;
 
     /**
-     * Encodes the specified ReleaseSwapMsg message. Does not implicitly {@link aswap.ReleaseSwapMsg.verify|verify} messages.
-     * @param message ReleaseSwapMsg message or plain object to encode
+     * Encodes the specified ReleaseMsg message. Does not implicitly {@link aswap.ReleaseMsg.verify|verify} messages.
+     * @param message ReleaseMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: aswap.IReleaseSwapMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: aswap.IReleaseMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified ReleaseSwapMsg message, length delimited. Does not implicitly {@link aswap.ReleaseSwapMsg.verify|verify} messages.
-     * @param message ReleaseSwapMsg message or plain object to encode
+     * Encodes the specified ReleaseMsg message, length delimited. Does not implicitly {@link aswap.ReleaseMsg.verify|verify} messages.
+     * @param message ReleaseMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: aswap.IReleaseSwapMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: aswap.IReleaseMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a ReleaseSwapMsg message from the specified reader or buffer.
+     * Decodes a ReleaseMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns ReleaseSwapMsg
+     * @returns ReleaseMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): aswap.ReleaseSwapMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): aswap.ReleaseMsg;
 
     /**
-     * Decodes a ReleaseSwapMsg message from the specified reader or buffer, length delimited.
+     * Decodes a ReleaseMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns ReleaseSwapMsg
+     * @returns ReleaseMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): aswap.ReleaseSwapMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): aswap.ReleaseMsg;
 
     /**
-     * Verifies a ReleaseSwapMsg message.
+     * Verifies a ReleaseMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a ReleaseSwapMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a ReleaseMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns ReleaseSwapMsg
+     * @returns ReleaseMsg
      */
-    public static fromObject(object: { [k: string]: any }): aswap.ReleaseSwapMsg;
+    public static fromObject(object: { [k: string]: any }): aswap.ReleaseMsg;
 
     /**
-     * Creates a plain object from a ReleaseSwapMsg message. Also converts values to other types if specified.
-     * @param message ReleaseSwapMsg
+     * Creates a plain object from a ReleaseMsg message. Also converts values to other types if specified.
+     * @param message ReleaseMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: aswap.ReleaseSwapMsg,
+      message: aswap.ReleaseMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this ReleaseSwapMsg to JSON.
+     * Converts this ReleaseMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -3703,7 +3927,10 @@ export namespace cash {
 
   /** Properties of a Configuration. */
   interface IConfiguration {
-    /** TODO: add schema uint32 here */
+    /** Configuration metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** needed to make use of gconf.NewUpdateConfigurationHandler */
     owner?: Uint8Array | null;
 
     /** Configuration collectorAddress */
@@ -3721,7 +3948,10 @@ export namespace cash {
      */
     constructor(properties?: cash.IConfiguration);
 
-    /** TODO: add schema uint32 here */
+    /** Configuration metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** needed to make use of gconf.NewUpdateConfigurationHandler */
     public owner: Uint8Array;
 
     /** Configuration collectorAddress. */
@@ -3804,95 +4034,101 @@ export namespace cash {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a ConfigurationMsg. */
-  interface IConfigurationMsg {
-    /** TODO: add schema uint32 here */
+  /** Properties of an UpdateConfigurationMsg. */
+  interface IUpdateConfigurationMsg {
+    /** UpdateConfigurationMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch */
     patch?: cash.IConfiguration | null;
   }
 
-  /** Represents a ConfigurationMsg. */
-  class ConfigurationMsg implements IConfigurationMsg {
+  /** Represents an UpdateConfigurationMsg. */
+  class UpdateConfigurationMsg implements IUpdateConfigurationMsg {
     /**
-     * Constructs a new ConfigurationMsg.
+     * Constructs a new UpdateConfigurationMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: cash.IConfigurationMsg);
+    constructor(properties?: cash.IUpdateConfigurationMsg);
 
-    /** TODO: add schema uint32 here */
+    /** UpdateConfigurationMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch. */
     public patch?: cash.IConfiguration | null;
 
     /**
-     * Creates a new ConfigurationMsg instance using the specified properties.
+     * Creates a new UpdateConfigurationMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns ConfigurationMsg instance
+     * @returns UpdateConfigurationMsg instance
      */
-    public static create(properties?: cash.IConfigurationMsg): cash.ConfigurationMsg;
+    public static create(properties?: cash.IUpdateConfigurationMsg): cash.UpdateConfigurationMsg;
 
     /**
-     * Encodes the specified ConfigurationMsg message. Does not implicitly {@link cash.ConfigurationMsg.verify|verify} messages.
-     * @param message ConfigurationMsg message or plain object to encode
+     * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link cash.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: cash.IConfigurationMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: cash.IUpdateConfigurationMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified ConfigurationMsg message, length delimited. Does not implicitly {@link cash.ConfigurationMsg.verify|verify} messages.
-     * @param message ConfigurationMsg message or plain object to encode
+     * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link cash.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(
-      message: cash.IConfigurationMsg,
+      message: cash.IUpdateConfigurationMsg,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Decodes a ConfigurationMsg message from the specified reader or buffer.
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns ConfigurationMsg
+     * @returns UpdateConfigurationMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): cash.ConfigurationMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): cash.UpdateConfigurationMsg;
 
     /**
-     * Decodes a ConfigurationMsg message from the specified reader or buffer, length delimited.
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns ConfigurationMsg
+     * @returns UpdateConfigurationMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): cash.ConfigurationMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): cash.UpdateConfigurationMsg;
 
     /**
-     * Verifies a ConfigurationMsg message.
+     * Verifies an UpdateConfigurationMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a ConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns ConfigurationMsg
+     * @returns UpdateConfigurationMsg
      */
-    public static fromObject(object: { [k: string]: any }): cash.ConfigurationMsg;
+    public static fromObject(object: { [k: string]: any }): cash.UpdateConfigurationMsg;
 
     /**
-     * Creates a plain object from a ConfigurationMsg message. Also converts values to other types if specified.
-     * @param message ConfigurationMsg
+     * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+     * @param message UpdateConfigurationMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: cash.ConfigurationMsg,
+      message: cash.UpdateConfigurationMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this ConfigurationMsg to JSON.
+     * Converts this UpdateConfigurationMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -3998,107 +4234,104 @@ export namespace currency {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a NewTokenInfoMsg. */
-  interface INewTokenInfoMsg {
-    /** NewTokenInfoMsg metadata */
+  /** Properties of a CreateMsg. */
+  interface ICreateMsg {
+    /** CreateMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** NewTokenInfoMsg ticker */
+    /** CreateMsg ticker */
     ticker?: string | null;
 
-    /** NewTokenInfoMsg name */
+    /** CreateMsg name */
     name?: string | null;
   }
 
   /** be registered only once. */
-  class NewTokenInfoMsg implements INewTokenInfoMsg {
+  class CreateMsg implements ICreateMsg {
     /**
-     * Constructs a new NewTokenInfoMsg.
+     * Constructs a new CreateMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: currency.INewTokenInfoMsg);
+    constructor(properties?: currency.ICreateMsg);
 
-    /** NewTokenInfoMsg metadata. */
+    /** CreateMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** NewTokenInfoMsg ticker. */
+    /** CreateMsg ticker. */
     public ticker: string;
 
-    /** NewTokenInfoMsg name. */
+    /** CreateMsg name. */
     public name: string;
 
     /**
-     * Creates a new NewTokenInfoMsg instance using the specified properties.
+     * Creates a new CreateMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns NewTokenInfoMsg instance
+     * @returns CreateMsg instance
      */
-    public static create(properties?: currency.INewTokenInfoMsg): currency.NewTokenInfoMsg;
+    public static create(properties?: currency.ICreateMsg): currency.CreateMsg;
 
     /**
-     * Encodes the specified NewTokenInfoMsg message. Does not implicitly {@link currency.NewTokenInfoMsg.verify|verify} messages.
-     * @param message NewTokenInfoMsg message or plain object to encode
+     * Encodes the specified CreateMsg message. Does not implicitly {@link currency.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: currency.INewTokenInfoMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: currency.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified NewTokenInfoMsg message, length delimited. Does not implicitly {@link currency.NewTokenInfoMsg.verify|verify} messages.
-     * @param message NewTokenInfoMsg message or plain object to encode
+     * Encodes the specified CreateMsg message, length delimited. Does not implicitly {@link currency.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: currency.INewTokenInfoMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: currency.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a NewTokenInfoMsg message from the specified reader or buffer.
+     * Decodes a CreateMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns NewTokenInfoMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): currency.NewTokenInfoMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): currency.CreateMsg;
 
     /**
-     * Decodes a NewTokenInfoMsg message from the specified reader or buffer, length delimited.
+     * Decodes a CreateMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns NewTokenInfoMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): currency.NewTokenInfoMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): currency.CreateMsg;
 
     /**
-     * Verifies a NewTokenInfoMsg message.
+     * Verifies a CreateMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a NewTokenInfoMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a CreateMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns NewTokenInfoMsg
+     * @returns CreateMsg
      */
-    public static fromObject(object: { [k: string]: any }): currency.NewTokenInfoMsg;
+    public static fromObject(object: { [k: string]: any }): currency.CreateMsg;
 
     /**
-     * Creates a plain object from a NewTokenInfoMsg message. Also converts values to other types if specified.
-     * @param message NewTokenInfoMsg
+     * Creates a plain object from a CreateMsg message. Also converts values to other types if specified.
+     * @param message CreateMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: currency.NewTokenInfoMsg,
+      message: currency.CreateMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this NewTokenInfoMsg to JSON.
+     * Converts this CreateMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -4313,9 +4546,9 @@ export namespace distribution {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a NewRevenueMsg. */
-  interface INewRevenueMsg {
-    /** NewRevenueMsg metadata */
+  /** Properties of a CreateMsg. */
+  interface ICreateMsg {
+    /** CreateMsg metadata */
     metadata?: weave.IMetadata | null;
 
     /** While not enforced it is best to use a multisig contract here. */
@@ -4325,15 +4558,15 @@ export namespace distribution {
     recipients?: distribution.IRecipient[] | null;
   }
 
-  /** NewRevenueMsg is issuing the creation of a new revenue stream instance. */
-  class NewRevenueMsg implements INewRevenueMsg {
+  /** CreateMsg is issuing the creation of a new revenue stream instance. */
+  class CreateMsg implements ICreateMsg {
     /**
-     * Constructs a new NewRevenueMsg.
+     * Constructs a new CreateMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: distribution.INewRevenueMsg);
+    constructor(properties?: distribution.ICreateMsg);
 
-    /** NewRevenueMsg metadata. */
+    /** CreateMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
     /** While not enforced it is best to use a multisig contract here. */
@@ -4343,77 +4576,77 @@ export namespace distribution {
     public recipients: distribution.IRecipient[];
 
     /**
-     * Creates a new NewRevenueMsg instance using the specified properties.
+     * Creates a new CreateMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns NewRevenueMsg instance
+     * @returns CreateMsg instance
      */
-    public static create(properties?: distribution.INewRevenueMsg): distribution.NewRevenueMsg;
+    public static create(properties?: distribution.ICreateMsg): distribution.CreateMsg;
 
     /**
-     * Encodes the specified NewRevenueMsg message. Does not implicitly {@link distribution.NewRevenueMsg.verify|verify} messages.
-     * @param message NewRevenueMsg message or plain object to encode
+     * Encodes the specified CreateMsg message. Does not implicitly {@link distribution.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: distribution.INewRevenueMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: distribution.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified NewRevenueMsg message, length delimited. Does not implicitly {@link distribution.NewRevenueMsg.verify|verify} messages.
-     * @param message NewRevenueMsg message or plain object to encode
+     * Encodes the specified CreateMsg message, length delimited. Does not implicitly {@link distribution.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(
-      message: distribution.INewRevenueMsg,
+      message: distribution.ICreateMsg,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Decodes a NewRevenueMsg message from the specified reader or buffer.
+     * Decodes a CreateMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns NewRevenueMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): distribution.NewRevenueMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): distribution.CreateMsg;
 
     /**
-     * Decodes a NewRevenueMsg message from the specified reader or buffer, length delimited.
+     * Decodes a CreateMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns NewRevenueMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.NewRevenueMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.CreateMsg;
 
     /**
-     * Verifies a NewRevenueMsg message.
+     * Verifies a CreateMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a NewRevenueMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a CreateMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns NewRevenueMsg
+     * @returns CreateMsg
      */
-    public static fromObject(object: { [k: string]: any }): distribution.NewRevenueMsg;
+    public static fromObject(object: { [k: string]: any }): distribution.CreateMsg;
 
     /**
-     * Creates a plain object from a NewRevenueMsg message. Also converts values to other types if specified.
-     * @param message NewRevenueMsg
+     * Creates a plain object from a CreateMsg message. Also converts values to other types if specified.
+     * @param message CreateMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: distribution.NewRevenueMsg,
+      message: distribution.CreateMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this NewRevenueMsg to JSON.
+     * Converts this CreateMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -4519,9 +4752,9 @@ export namespace distribution {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a ResetRevenueMsg. */
-  interface IResetRevenueMsg {
-    /** ResetRevenueMsg metadata */
+  /** Properties of a ResetMsg. */
+  interface IResetMsg {
+    /** ResetMsg metadata */
     metadata?: weave.IMetadata | null;
 
     /** Revenue ID reference an ID of a revenue instance that is updated. */
@@ -4532,14 +4765,14 @@ export namespace distribution {
   }
 
   /** collected revenue amount is equal to zero the change is applied. */
-  class ResetRevenueMsg implements IResetRevenueMsg {
+  class ResetMsg implements IResetMsg {
     /**
-     * Constructs a new ResetRevenueMsg.
+     * Constructs a new ResetMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: distribution.IResetRevenueMsg);
+    constructor(properties?: distribution.IResetMsg);
 
-    /** ResetRevenueMsg metadata. */
+    /** ResetMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
     /** Revenue ID reference an ID of a revenue instance that is updated. */
@@ -4549,80 +4782,77 @@ export namespace distribution {
     public recipients: distribution.IRecipient[];
 
     /**
-     * Creates a new ResetRevenueMsg instance using the specified properties.
+     * Creates a new ResetMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns ResetRevenueMsg instance
+     * @returns ResetMsg instance
      */
-    public static create(properties?: distribution.IResetRevenueMsg): distribution.ResetRevenueMsg;
+    public static create(properties?: distribution.IResetMsg): distribution.ResetMsg;
 
     /**
-     * Encodes the specified ResetRevenueMsg message. Does not implicitly {@link distribution.ResetRevenueMsg.verify|verify} messages.
-     * @param message ResetRevenueMsg message or plain object to encode
+     * Encodes the specified ResetMsg message. Does not implicitly {@link distribution.ResetMsg.verify|verify} messages.
+     * @param message ResetMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: distribution.IResetRevenueMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: distribution.IResetMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified ResetRevenueMsg message, length delimited. Does not implicitly {@link distribution.ResetRevenueMsg.verify|verify} messages.
-     * @param message ResetRevenueMsg message or plain object to encode
+     * Encodes the specified ResetMsg message, length delimited. Does not implicitly {@link distribution.ResetMsg.verify|verify} messages.
+     * @param message ResetMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(
-      message: distribution.IResetRevenueMsg,
+      message: distribution.IResetMsg,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Decodes a ResetRevenueMsg message from the specified reader or buffer.
+     * Decodes a ResetMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns ResetRevenueMsg
+     * @returns ResetMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(
-      reader: $protobuf.Reader | Uint8Array,
-      length?: number,
-    ): distribution.ResetRevenueMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): distribution.ResetMsg;
 
     /**
-     * Decodes a ResetRevenueMsg message from the specified reader or buffer, length delimited.
+     * Decodes a ResetMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns ResetRevenueMsg
+     * @returns ResetMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.ResetRevenueMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.ResetMsg;
 
     /**
-     * Verifies a ResetRevenueMsg message.
+     * Verifies a ResetMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a ResetRevenueMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a ResetMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns ResetRevenueMsg
+     * @returns ResetMsg
      */
-    public static fromObject(object: { [k: string]: any }): distribution.ResetRevenueMsg;
+    public static fromObject(object: { [k: string]: any }): distribution.ResetMsg;
 
     /**
-     * Creates a plain object from a ResetRevenueMsg message. Also converts values to other types if specified.
-     * @param message ResetRevenueMsg
+     * Creates a plain object from a ResetMsg message. Also converts values to other types if specified.
+     * @param message ResetMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: distribution.ResetRevenueMsg,
+      message: distribution.ResetMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this ResetRevenueMsg to JSON.
+     * Converts this ResetMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -4752,18 +4982,18 @@ export namespace escrow {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a CreateEscrowMsg. */
-  interface ICreateEscrowMsg {
-    /** CreateEscrowMsg metadata */
+  /** Properties of a CreateMsg. */
+  interface ICreateMsg {
+    /** CreateMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** CreateEscrowMsg src */
+    /** CreateMsg src */
     src?: Uint8Array | null;
 
-    /** CreateEscrowMsg arbiter */
+    /** CreateMsg arbiter */
     arbiter?: Uint8Array | null;
 
-    /** CreateEscrowMsg recipient */
+    /** CreateMsg recipient */
     recipient?: Uint8Array | null;
 
     /** amount may contain multiple token types */
@@ -4777,23 +5007,23 @@ export namespace escrow {
   }
 
   /** The rest must be defined */
-  class CreateEscrowMsg implements ICreateEscrowMsg {
+  class CreateMsg implements ICreateMsg {
     /**
-     * Constructs a new CreateEscrowMsg.
+     * Constructs a new CreateMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: escrow.ICreateEscrowMsg);
+    constructor(properties?: escrow.ICreateMsg);
 
-    /** CreateEscrowMsg metadata. */
+    /** CreateMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** CreateEscrowMsg src. */
+    /** CreateMsg src. */
     public src: Uint8Array;
 
-    /** CreateEscrowMsg arbiter. */
+    /** CreateMsg arbiter. */
     public arbiter: Uint8Array;
 
-    /** CreateEscrowMsg recipient. */
+    /** CreateMsg recipient. */
     public recipient: Uint8Array;
 
     /** amount may contain multiple token types */
@@ -4806,407 +5036,392 @@ export namespace escrow {
     public memo: string;
 
     /**
-     * Creates a new CreateEscrowMsg instance using the specified properties.
+     * Creates a new CreateMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns CreateEscrowMsg instance
+     * @returns CreateMsg instance
      */
-    public static create(properties?: escrow.ICreateEscrowMsg): escrow.CreateEscrowMsg;
+    public static create(properties?: escrow.ICreateMsg): escrow.CreateMsg;
 
     /**
-     * Encodes the specified CreateEscrowMsg message. Does not implicitly {@link escrow.CreateEscrowMsg.verify|verify} messages.
-     * @param message CreateEscrowMsg message or plain object to encode
+     * Encodes the specified CreateMsg message. Does not implicitly {@link escrow.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: escrow.ICreateEscrowMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: escrow.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified CreateEscrowMsg message, length delimited. Does not implicitly {@link escrow.CreateEscrowMsg.verify|verify} messages.
-     * @param message CreateEscrowMsg message or plain object to encode
+     * Encodes the specified CreateMsg message, length delimited. Does not implicitly {@link escrow.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: escrow.ICreateEscrowMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: escrow.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a CreateEscrowMsg message from the specified reader or buffer.
+     * Decodes a CreateMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns CreateEscrowMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): escrow.CreateEscrowMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): escrow.CreateMsg;
 
     /**
-     * Decodes a CreateEscrowMsg message from the specified reader or buffer, length delimited.
+     * Decodes a CreateMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns CreateEscrowMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): escrow.CreateEscrowMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): escrow.CreateMsg;
 
     /**
-     * Verifies a CreateEscrowMsg message.
+     * Verifies a CreateMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a CreateEscrowMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a CreateMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns CreateEscrowMsg
+     * @returns CreateMsg
      */
-    public static fromObject(object: { [k: string]: any }): escrow.CreateEscrowMsg;
+    public static fromObject(object: { [k: string]: any }): escrow.CreateMsg;
 
     /**
-     * Creates a plain object from a CreateEscrowMsg message. Also converts values to other types if specified.
-     * @param message CreateEscrowMsg
+     * Creates a plain object from a CreateMsg message. Also converts values to other types if specified.
+     * @param message CreateMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: escrow.CreateEscrowMsg,
+      message: escrow.CreateMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this CreateEscrowMsg to JSON.
+     * Converts this CreateMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a ReleaseEscrowMsg. */
-  interface IReleaseEscrowMsg {
-    /** ReleaseEscrowMsg metadata */
+  /** Properties of a ReleaseMsg. */
+  interface IReleaseMsg {
+    /** ReleaseMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** ReleaseEscrowMsg escrowId */
+    /** ReleaseMsg escrowId */
     escrowId?: Uint8Array | null;
 
-    /** ReleaseEscrowMsg amount */
+    /** ReleaseMsg amount */
     amount?: coin.ICoin[] | null;
   }
 
   /** May be a subset of the current balance. */
-  class ReleaseEscrowMsg implements IReleaseEscrowMsg {
+  class ReleaseMsg implements IReleaseMsg {
     /**
-     * Constructs a new ReleaseEscrowMsg.
+     * Constructs a new ReleaseMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: escrow.IReleaseEscrowMsg);
+    constructor(properties?: escrow.IReleaseMsg);
 
-    /** ReleaseEscrowMsg metadata. */
+    /** ReleaseMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** ReleaseEscrowMsg escrowId. */
+    /** ReleaseMsg escrowId. */
     public escrowId: Uint8Array;
 
-    /** ReleaseEscrowMsg amount. */
+    /** ReleaseMsg amount. */
     public amount: coin.ICoin[];
 
     /**
-     * Creates a new ReleaseEscrowMsg instance using the specified properties.
+     * Creates a new ReleaseMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns ReleaseEscrowMsg instance
+     * @returns ReleaseMsg instance
      */
-    public static create(properties?: escrow.IReleaseEscrowMsg): escrow.ReleaseEscrowMsg;
+    public static create(properties?: escrow.IReleaseMsg): escrow.ReleaseMsg;
 
     /**
-     * Encodes the specified ReleaseEscrowMsg message. Does not implicitly {@link escrow.ReleaseEscrowMsg.verify|verify} messages.
-     * @param message ReleaseEscrowMsg message or plain object to encode
+     * Encodes the specified ReleaseMsg message. Does not implicitly {@link escrow.ReleaseMsg.verify|verify} messages.
+     * @param message ReleaseMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: escrow.IReleaseEscrowMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: escrow.IReleaseMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified ReleaseEscrowMsg message, length delimited. Does not implicitly {@link escrow.ReleaseEscrowMsg.verify|verify} messages.
-     * @param message ReleaseEscrowMsg message or plain object to encode
+     * Encodes the specified ReleaseMsg message, length delimited. Does not implicitly {@link escrow.ReleaseMsg.verify|verify} messages.
+     * @param message ReleaseMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: escrow.IReleaseEscrowMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: escrow.IReleaseMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a ReleaseEscrowMsg message from the specified reader or buffer.
+     * Decodes a ReleaseMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns ReleaseEscrowMsg
+     * @returns ReleaseMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): escrow.ReleaseEscrowMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): escrow.ReleaseMsg;
 
     /**
-     * Decodes a ReleaseEscrowMsg message from the specified reader or buffer, length delimited.
+     * Decodes a ReleaseMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns ReleaseEscrowMsg
+     * @returns ReleaseMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): escrow.ReleaseEscrowMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): escrow.ReleaseMsg;
 
     /**
-     * Verifies a ReleaseEscrowMsg message.
+     * Verifies a ReleaseMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a ReleaseEscrowMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a ReleaseMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns ReleaseEscrowMsg
+     * @returns ReleaseMsg
      */
-    public static fromObject(object: { [k: string]: any }): escrow.ReleaseEscrowMsg;
+    public static fromObject(object: { [k: string]: any }): escrow.ReleaseMsg;
 
     /**
-     * Creates a plain object from a ReleaseEscrowMsg message. Also converts values to other types if specified.
-     * @param message ReleaseEscrowMsg
+     * Creates a plain object from a ReleaseMsg message. Also converts values to other types if specified.
+     * @param message ReleaseMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: escrow.ReleaseEscrowMsg,
+      message: escrow.ReleaseMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this ReleaseEscrowMsg to JSON.
+     * Converts this ReleaseMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a ReturnEscrowMsg. */
-  interface IReturnEscrowMsg {
-    /** ReturnEscrowMsg metadata */
+  /** Properties of a ReturnMsg. */
+  interface IReturnMsg {
+    /** ReturnMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** ReturnEscrowMsg escrowId */
+    /** ReturnMsg escrowId */
     escrowId?: Uint8Array | null;
   }
 
   /** Must be authorized by the sender or an expired timeout */
-  class ReturnEscrowMsg implements IReturnEscrowMsg {
+  class ReturnMsg implements IReturnMsg {
     /**
-     * Constructs a new ReturnEscrowMsg.
+     * Constructs a new ReturnMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: escrow.IReturnEscrowMsg);
+    constructor(properties?: escrow.IReturnMsg);
 
-    /** ReturnEscrowMsg metadata. */
+    /** ReturnMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** ReturnEscrowMsg escrowId. */
+    /** ReturnMsg escrowId. */
     public escrowId: Uint8Array;
 
     /**
-     * Creates a new ReturnEscrowMsg instance using the specified properties.
+     * Creates a new ReturnMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns ReturnEscrowMsg instance
+     * @returns ReturnMsg instance
      */
-    public static create(properties?: escrow.IReturnEscrowMsg): escrow.ReturnEscrowMsg;
+    public static create(properties?: escrow.IReturnMsg): escrow.ReturnMsg;
 
     /**
-     * Encodes the specified ReturnEscrowMsg message. Does not implicitly {@link escrow.ReturnEscrowMsg.verify|verify} messages.
-     * @param message ReturnEscrowMsg message or plain object to encode
+     * Encodes the specified ReturnMsg message. Does not implicitly {@link escrow.ReturnMsg.verify|verify} messages.
+     * @param message ReturnMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: escrow.IReturnEscrowMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: escrow.IReturnMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified ReturnEscrowMsg message, length delimited. Does not implicitly {@link escrow.ReturnEscrowMsg.verify|verify} messages.
-     * @param message ReturnEscrowMsg message or plain object to encode
+     * Encodes the specified ReturnMsg message, length delimited. Does not implicitly {@link escrow.ReturnMsg.verify|verify} messages.
+     * @param message ReturnMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: escrow.IReturnEscrowMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: escrow.IReturnMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a ReturnEscrowMsg message from the specified reader or buffer.
+     * Decodes a ReturnMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns ReturnEscrowMsg
+     * @returns ReturnMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): escrow.ReturnEscrowMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): escrow.ReturnMsg;
 
     /**
-     * Decodes a ReturnEscrowMsg message from the specified reader or buffer, length delimited.
+     * Decodes a ReturnMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns ReturnEscrowMsg
+     * @returns ReturnMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): escrow.ReturnEscrowMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): escrow.ReturnMsg;
 
     /**
-     * Verifies a ReturnEscrowMsg message.
+     * Verifies a ReturnMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a ReturnEscrowMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a ReturnMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns ReturnEscrowMsg
+     * @returns ReturnMsg
      */
-    public static fromObject(object: { [k: string]: any }): escrow.ReturnEscrowMsg;
+    public static fromObject(object: { [k: string]: any }): escrow.ReturnMsg;
 
     /**
-     * Creates a plain object from a ReturnEscrowMsg message. Also converts values to other types if specified.
-     * @param message ReturnEscrowMsg
+     * Creates a plain object from a ReturnMsg message. Also converts values to other types if specified.
+     * @param message ReturnMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: escrow.ReturnEscrowMsg,
+      message: escrow.ReturnMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this ReturnEscrowMsg to JSON.
+     * Converts this ReturnMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of an UpdateEscrowPartiesMsg. */
-  interface IUpdateEscrowPartiesMsg {
-    /** UpdateEscrowPartiesMsg metadata */
+  /** Properties of an UpdatePartiesMsg. */
+  interface IUpdatePartiesMsg {
+    /** UpdatePartiesMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** UpdateEscrowPartiesMsg escrowId */
+    /** UpdatePartiesMsg escrowId */
     escrowId?: Uint8Array | null;
 
-    /** UpdateEscrowPartiesMsg sender */
+    /** UpdatePartiesMsg sender */
     sender?: Uint8Array | null;
 
-    /** UpdateEscrowPartiesMsg arbiter */
+    /** UpdatePartiesMsg arbiter */
     arbiter?: Uint8Array | null;
 
-    /** UpdateEscrowPartiesMsg recipient */
+    /** UpdatePartiesMsg recipient */
     recipient?: Uint8Array | null;
   }
 
   /** Represents delegating responsibility */
-  class UpdateEscrowPartiesMsg implements IUpdateEscrowPartiesMsg {
+  class UpdatePartiesMsg implements IUpdatePartiesMsg {
     /**
-     * Constructs a new UpdateEscrowPartiesMsg.
+     * Constructs a new UpdatePartiesMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: escrow.IUpdateEscrowPartiesMsg);
+    constructor(properties?: escrow.IUpdatePartiesMsg);
 
-    /** UpdateEscrowPartiesMsg metadata. */
+    /** UpdatePartiesMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** UpdateEscrowPartiesMsg escrowId. */
+    /** UpdatePartiesMsg escrowId. */
     public escrowId: Uint8Array;
 
-    /** UpdateEscrowPartiesMsg sender. */
+    /** UpdatePartiesMsg sender. */
     public sender: Uint8Array;
 
-    /** UpdateEscrowPartiesMsg arbiter. */
+    /** UpdatePartiesMsg arbiter. */
     public arbiter: Uint8Array;
 
-    /** UpdateEscrowPartiesMsg recipient. */
+    /** UpdatePartiesMsg recipient. */
     public recipient: Uint8Array;
 
     /**
-     * Creates a new UpdateEscrowPartiesMsg instance using the specified properties.
+     * Creates a new UpdatePartiesMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns UpdateEscrowPartiesMsg instance
+     * @returns UpdatePartiesMsg instance
      */
-    public static create(properties?: escrow.IUpdateEscrowPartiesMsg): escrow.UpdateEscrowPartiesMsg;
+    public static create(properties?: escrow.IUpdatePartiesMsg): escrow.UpdatePartiesMsg;
 
     /**
-     * Encodes the specified UpdateEscrowPartiesMsg message. Does not implicitly {@link escrow.UpdateEscrowPartiesMsg.verify|verify} messages.
-     * @param message UpdateEscrowPartiesMsg message or plain object to encode
+     * Encodes the specified UpdatePartiesMsg message. Does not implicitly {@link escrow.UpdatePartiesMsg.verify|verify} messages.
+     * @param message UpdatePartiesMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(
-      message: escrow.IUpdateEscrowPartiesMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encode(message: escrow.IUpdatePartiesMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified UpdateEscrowPartiesMsg message, length delimited. Does not implicitly {@link escrow.UpdateEscrowPartiesMsg.verify|verify} messages.
-     * @param message UpdateEscrowPartiesMsg message or plain object to encode
+     * Encodes the specified UpdatePartiesMsg message, length delimited. Does not implicitly {@link escrow.UpdatePartiesMsg.verify|verify} messages.
+     * @param message UpdatePartiesMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(
-      message: escrow.IUpdateEscrowPartiesMsg,
+      message: escrow.IUpdatePartiesMsg,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Decodes an UpdateEscrowPartiesMsg message from the specified reader or buffer.
+     * Decodes an UpdatePartiesMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns UpdateEscrowPartiesMsg
+     * @returns UpdatePartiesMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(
-      reader: $protobuf.Reader | Uint8Array,
-      length?: number,
-    ): escrow.UpdateEscrowPartiesMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): escrow.UpdatePartiesMsg;
 
     /**
-     * Decodes an UpdateEscrowPartiesMsg message from the specified reader or buffer, length delimited.
+     * Decodes an UpdatePartiesMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns UpdateEscrowPartiesMsg
+     * @returns UpdatePartiesMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): escrow.UpdateEscrowPartiesMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): escrow.UpdatePartiesMsg;
 
     /**
-     * Verifies an UpdateEscrowPartiesMsg message.
+     * Verifies an UpdatePartiesMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates an UpdateEscrowPartiesMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates an UpdatePartiesMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns UpdateEscrowPartiesMsg
+     * @returns UpdatePartiesMsg
      */
-    public static fromObject(object: { [k: string]: any }): escrow.UpdateEscrowPartiesMsg;
+    public static fromObject(object: { [k: string]: any }): escrow.UpdatePartiesMsg;
 
     /**
-     * Creates a plain object from an UpdateEscrowPartiesMsg message. Also converts values to other types if specified.
-     * @param message UpdateEscrowPartiesMsg
+     * Creates a plain object from an UpdatePartiesMsg message. Also converts values to other types if specified.
+     * @param message UpdatePartiesMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: escrow.UpdateEscrowPartiesMsg,
+      message: escrow.UpdatePartiesMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this UpdateEscrowPartiesMsg to JSON.
+     * Converts this UpdatePartiesMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -5698,13 +5913,13 @@ export namespace gov {
     /** Result of the election. Contains intermediate tally results while voting period is open. */
     voteState?: gov.ITallyResult | null;
 
-    /** Status represents the high level position in the life cycle of the proposal. Initial value is submitted. */
+    /** Status represents the high level position in the life cycle of the proposal. Initial value is Submitted. */
     status?: gov.Proposal.Status | null;
 
     /** Result is the final result based on the votes and election rule. Initial value is Undefined. */
     result?: gov.Proposal.Result | null;
 
-    /** Result is the final result based on the votes and election rule. Initial value is Undefined. */
+    /** Result is the final result based on the votes and election rule. Initial value is NotRun. */
     executorResult?: gov.Proposal.ExecutorResult | null;
   }
 
@@ -5749,13 +5964,13 @@ export namespace gov {
     /** Result of the election. Contains intermediate tally results while voting period is open. */
     public voteState?: gov.ITallyResult | null;
 
-    /** Status represents the high level position in the life cycle of the proposal. Initial value is submitted. */
+    /** Status represents the high level position in the life cycle of the proposal. Initial value is Submitted. */
     public status: gov.Proposal.Status;
 
     /** Result is the final result based on the votes and election rule. Initial value is Undefined. */
     public result: gov.Proposal.Result;
 
-    /** Result is the final result based on the votes and election rule. Initial value is Undefined. */
+    /** Result is the final result based on the votes and election rule. Initial value is NotRun. */
     public executorResult: gov.Proposal.ExecutorResult;
 
     /**
@@ -6632,101 +6847,101 @@ export namespace gov {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a TextResolutionMsg. */
-  interface ITextResolutionMsg {
-    /** TextResolutionMsg metadata */
+  /** Properties of a CreateTextResolutionMsg. */
+  interface ICreateTextResolutionMsg {
+    /** CreateTextResolutionMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** TextResolutionMsg resolution */
+    /** CreateTextResolutionMsg resolution */
     resolution?: string | null;
   }
 
   /** with a reference to the electorate that approved it */
-  class TextResolutionMsg implements ITextResolutionMsg {
+  class CreateTextResolutionMsg implements ICreateTextResolutionMsg {
     /**
-     * Constructs a new TextResolutionMsg.
+     * Constructs a new CreateTextResolutionMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: gov.ITextResolutionMsg);
+    constructor(properties?: gov.ICreateTextResolutionMsg);
 
-    /** TextResolutionMsg metadata. */
+    /** CreateTextResolutionMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** TextResolutionMsg resolution. */
+    /** CreateTextResolutionMsg resolution. */
     public resolution: string;
 
     /**
-     * Creates a new TextResolutionMsg instance using the specified properties.
+     * Creates a new CreateTextResolutionMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns TextResolutionMsg instance
+     * @returns CreateTextResolutionMsg instance
      */
-    public static create(properties?: gov.ITextResolutionMsg): gov.TextResolutionMsg;
+    public static create(properties?: gov.ICreateTextResolutionMsg): gov.CreateTextResolutionMsg;
 
     /**
-     * Encodes the specified TextResolutionMsg message. Does not implicitly {@link gov.TextResolutionMsg.verify|verify} messages.
-     * @param message TextResolutionMsg message or plain object to encode
+     * Encodes the specified CreateTextResolutionMsg message. Does not implicitly {@link gov.CreateTextResolutionMsg.verify|verify} messages.
+     * @param message CreateTextResolutionMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: gov.ITextResolutionMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: gov.ICreateTextResolutionMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified TextResolutionMsg message, length delimited. Does not implicitly {@link gov.TextResolutionMsg.verify|verify} messages.
-     * @param message TextResolutionMsg message or plain object to encode
+     * Encodes the specified CreateTextResolutionMsg message, length delimited. Does not implicitly {@link gov.CreateTextResolutionMsg.verify|verify} messages.
+     * @param message CreateTextResolutionMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(
-      message: gov.ITextResolutionMsg,
+      message: gov.ICreateTextResolutionMsg,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Decodes a TextResolutionMsg message from the specified reader or buffer.
+     * Decodes a CreateTextResolutionMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns TextResolutionMsg
+     * @returns CreateTextResolutionMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.TextResolutionMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): gov.CreateTextResolutionMsg;
 
     /**
-     * Decodes a TextResolutionMsg message from the specified reader or buffer, length delimited.
+     * Decodes a CreateTextResolutionMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns TextResolutionMsg
+     * @returns CreateTextResolutionMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.TextResolutionMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): gov.CreateTextResolutionMsg;
 
     /**
-     * Verifies a TextResolutionMsg message.
+     * Verifies a CreateTextResolutionMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a TextResolutionMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a CreateTextResolutionMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns TextResolutionMsg
+     * @returns CreateTextResolutionMsg
      */
-    public static fromObject(object: { [k: string]: any }): gov.TextResolutionMsg;
+    public static fromObject(object: { [k: string]: any }): gov.CreateTextResolutionMsg;
 
     /**
-     * Creates a plain object from a TextResolutionMsg message. Also converts values to other types if specified.
-     * @param message TextResolutionMsg
+     * Creates a plain object from a CreateTextResolutionMsg message. Also converts values to other types if specified.
+     * @param message CreateTextResolutionMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: gov.TextResolutionMsg,
+      message: gov.CreateTextResolutionMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this TextResolutionMsg to JSON.
+     * Converts this CreateTextResolutionMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -6953,7 +7168,7 @@ export namespace gov {
   /** Properties of a ProposalOptions. */
   interface IProposalOptions {
     /** ProposalOptions text */
-    text?: gov.ITextResolutionMsg | null;
+    text?: gov.ICreateTextResolutionMsg | null;
 
     /** ProposalOptions electorate */
     electorate?: gov.IUpdateElectorateMsg | null;
@@ -6971,7 +7186,7 @@ export namespace gov {
     constructor(properties?: gov.IProposalOptions);
 
     /** ProposalOptions text. */
-    public text?: gov.ITextResolutionMsg | null;
+    public text?: gov.ICreateTextResolutionMsg | null;
 
     /** ProposalOptions electorate. */
     public electorate?: gov.IUpdateElectorateMsg | null;
@@ -7374,1309 +7589,225 @@ export namespace multisig {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a CreateContractMsg. */
-  interface ICreateContractMsg {
-    /** CreateContractMsg metadata */
+  /** Properties of a CreateMsg. */
+  interface ICreateMsg {
+    /** CreateMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** CreateContractMsg participants */
+    /** CreateMsg participants */
     participants?: multisig.IParticipant[] | null;
 
-    /** CreateContractMsg activationThreshold */
+    /** CreateMsg activationThreshold */
     activationThreshold?: number | null;
 
-    /** CreateContractMsg adminThreshold */
+    /** CreateMsg adminThreshold */
     adminThreshold?: number | null;
   }
 
-  /** Represents a CreateContractMsg. */
-  class CreateContractMsg implements ICreateContractMsg {
+  /** Represents a CreateMsg. */
+  class CreateMsg implements ICreateMsg {
     /**
-     * Constructs a new CreateContractMsg.
+     * Constructs a new CreateMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: multisig.ICreateContractMsg);
+    constructor(properties?: multisig.ICreateMsg);
 
-    /** CreateContractMsg metadata. */
+    /** CreateMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** CreateContractMsg participants. */
+    /** CreateMsg participants. */
     public participants: multisig.IParticipant[];
 
-    /** CreateContractMsg activationThreshold. */
+    /** CreateMsg activationThreshold. */
     public activationThreshold: number;
 
-    /** CreateContractMsg adminThreshold. */
+    /** CreateMsg adminThreshold. */
     public adminThreshold: number;
 
     /**
-     * Creates a new CreateContractMsg instance using the specified properties.
+     * Creates a new CreateMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns CreateContractMsg instance
+     * @returns CreateMsg instance
      */
-    public static create(properties?: multisig.ICreateContractMsg): multisig.CreateContractMsg;
+    public static create(properties?: multisig.ICreateMsg): multisig.CreateMsg;
 
     /**
-     * Encodes the specified CreateContractMsg message. Does not implicitly {@link multisig.CreateContractMsg.verify|verify} messages.
-     * @param message CreateContractMsg message or plain object to encode
+     * Encodes the specified CreateMsg message. Does not implicitly {@link multisig.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: multisig.ICreateContractMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: multisig.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified CreateContractMsg message, length delimited. Does not implicitly {@link multisig.CreateContractMsg.verify|verify} messages.
-     * @param message CreateContractMsg message or plain object to encode
+     * Encodes the specified CreateMsg message, length delimited. Does not implicitly {@link multisig.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: multisig.ICreateContractMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: multisig.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a CreateContractMsg message from the specified reader or buffer.
+     * Decodes a CreateMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns CreateContractMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): multisig.CreateContractMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): multisig.CreateMsg;
 
     /**
-     * Decodes a CreateContractMsg message from the specified reader or buffer, length delimited.
+     * Decodes a CreateMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns CreateContractMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): multisig.CreateContractMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): multisig.CreateMsg;
 
     /**
-     * Verifies a CreateContractMsg message.
+     * Verifies a CreateMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a CreateContractMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a CreateMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns CreateContractMsg
+     * @returns CreateMsg
      */
-    public static fromObject(object: { [k: string]: any }): multisig.CreateContractMsg;
+    public static fromObject(object: { [k: string]: any }): multisig.CreateMsg;
 
     /**
-     * Creates a plain object from a CreateContractMsg message. Also converts values to other types if specified.
-     * @param message CreateContractMsg
+     * Creates a plain object from a CreateMsg message. Also converts values to other types if specified.
+     * @param message CreateMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: multisig.CreateContractMsg,
+      message: multisig.CreateMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this CreateContractMsg to JSON.
+     * Converts this CreateMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of an UpdateContractMsg. */
-  interface IUpdateContractMsg {
-    /** UpdateContractMsg metadata */
+  /** Properties of an UpdateMsg. */
+  interface IUpdateMsg {
+    /** UpdateMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** UpdateContractMsg contractId */
+    /** UpdateMsg contractId */
     contractId?: Uint8Array | null;
 
-    /** UpdateContractMsg participants */
+    /** UpdateMsg participants */
     participants?: multisig.IParticipant[] | null;
 
-    /** UpdateContractMsg activationThreshold */
+    /** UpdateMsg activationThreshold */
     activationThreshold?: number | null;
 
-    /** UpdateContractMsg adminThreshold */
+    /** UpdateMsg adminThreshold */
     adminThreshold?: number | null;
   }
 
-  /** Represents an UpdateContractMsg. */
-  class UpdateContractMsg implements IUpdateContractMsg {
+  /** Represents an UpdateMsg. */
+  class UpdateMsg implements IUpdateMsg {
     /**
-     * Constructs a new UpdateContractMsg.
+     * Constructs a new UpdateMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: multisig.IUpdateContractMsg);
+    constructor(properties?: multisig.IUpdateMsg);
 
-    /** UpdateContractMsg metadata. */
+    /** UpdateMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** UpdateContractMsg contractId. */
+    /** UpdateMsg contractId. */
     public contractId: Uint8Array;
 
-    /** UpdateContractMsg participants. */
+    /** UpdateMsg participants. */
     public participants: multisig.IParticipant[];
 
-    /** UpdateContractMsg activationThreshold. */
+    /** UpdateMsg activationThreshold. */
     public activationThreshold: number;
 
-    /** UpdateContractMsg adminThreshold. */
+    /** UpdateMsg adminThreshold. */
     public adminThreshold: number;
 
     /**
-     * Creates a new UpdateContractMsg instance using the specified properties.
+     * Creates a new UpdateMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns UpdateContractMsg instance
+     * @returns UpdateMsg instance
      */
-    public static create(properties?: multisig.IUpdateContractMsg): multisig.UpdateContractMsg;
+    public static create(properties?: multisig.IUpdateMsg): multisig.UpdateMsg;
 
     /**
-     * Encodes the specified UpdateContractMsg message. Does not implicitly {@link multisig.UpdateContractMsg.verify|verify} messages.
-     * @param message UpdateContractMsg message or plain object to encode
+     * Encodes the specified UpdateMsg message. Does not implicitly {@link multisig.UpdateMsg.verify|verify} messages.
+     * @param message UpdateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: multisig.IUpdateContractMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: multisig.IUpdateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified UpdateContractMsg message, length delimited. Does not implicitly {@link multisig.UpdateContractMsg.verify|verify} messages.
-     * @param message UpdateContractMsg message or plain object to encode
+     * Encodes the specified UpdateMsg message, length delimited. Does not implicitly {@link multisig.UpdateMsg.verify|verify} messages.
+     * @param message UpdateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: multisig.IUpdateContractMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: multisig.IUpdateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes an UpdateContractMsg message from the specified reader or buffer.
+     * Decodes an UpdateMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns UpdateContractMsg
+     * @returns UpdateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): multisig.UpdateContractMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): multisig.UpdateMsg;
 
     /**
-     * Decodes an UpdateContractMsg message from the specified reader or buffer, length delimited.
+     * Decodes an UpdateMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns UpdateContractMsg
+     * @returns UpdateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): multisig.UpdateContractMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): multisig.UpdateMsg;
 
     /**
-     * Verifies an UpdateContractMsg message.
+     * Verifies an UpdateMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates an UpdateContractMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates an UpdateMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns UpdateContractMsg
+     * @returns UpdateMsg
      */
-    public static fromObject(object: { [k: string]: any }): multisig.UpdateContractMsg;
+    public static fromObject(object: { [k: string]: any }): multisig.UpdateMsg;
 
     /**
-     * Creates a plain object from an UpdateContractMsg message. Also converts values to other types if specified.
-     * @param message UpdateContractMsg
+     * Creates a plain object from an UpdateMsg message. Also converts values to other types if specified.
+     * @param message UpdateMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: multisig.UpdateContractMsg,
+      message: multisig.UpdateMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this UpdateContractMsg to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-}
-
-/** Namespace namecoin. */
-export namespace namecoin {
-  /** Properties of a Wallet. */
-  interface IWallet {
-    /** Wallet metadata */
-    metadata?: weave.IMetadata | null;
-
-    /** Wallet coins */
-    coins?: coin.ICoin[] | null;
-
-    /** Wallet name */
-    name?: string | null;
-  }
-
-  /** Wallet has a name and a set of coins */
-  class Wallet implements IWallet {
-    /**
-     * Constructs a new Wallet.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: namecoin.IWallet);
-
-    /** Wallet metadata. */
-    public metadata?: weave.IMetadata | null;
-
-    /** Wallet coins. */
-    public coins: coin.ICoin[];
-
-    /** Wallet name. */
-    public name: string;
-
-    /**
-     * Creates a new Wallet instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Wallet instance
-     */
-    public static create(properties?: namecoin.IWallet): namecoin.Wallet;
-
-    /**
-     * Encodes the specified Wallet message. Does not implicitly {@link namecoin.Wallet.verify|verify} messages.
-     * @param message Wallet message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: namecoin.IWallet, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Wallet message, length delimited. Does not implicitly {@link namecoin.Wallet.verify|verify} messages.
-     * @param message Wallet message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: namecoin.IWallet, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a Wallet message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Wallet
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): namecoin.Wallet;
-
-    /**
-     * Decodes a Wallet message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Wallet
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): namecoin.Wallet;
-
-    /**
-     * Verifies a Wallet message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a Wallet message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Wallet
-     */
-    public static fromObject(object: { [k: string]: any }): namecoin.Wallet;
-
-    /**
-     * Creates a plain object from a Wallet message. Also converts values to other types if specified.
-     * @param message Wallet
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: namecoin.Wallet,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this Wallet to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a Token. */
-  interface IToken {
-    /** Token metadata */
-    metadata?: weave.IMetadata | null;
-
-    /** Token name */
-    name?: string | null;
-
-    /** Token sigFigs */
-    sigFigs?: number | null;
-  }
-
-  /** Token contains information about a registered currency */
-  class Token implements IToken {
-    /**
-     * Constructs a new Token.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: namecoin.IToken);
-
-    /** Token metadata. */
-    public metadata?: weave.IMetadata | null;
-
-    /** Token name. */
-    public name: string;
-
-    /** Token sigFigs. */
-    public sigFigs: number;
-
-    /**
-     * Creates a new Token instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Token instance
-     */
-    public static create(properties?: namecoin.IToken): namecoin.Token;
-
-    /**
-     * Encodes the specified Token message. Does not implicitly {@link namecoin.Token.verify|verify} messages.
-     * @param message Token message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: namecoin.IToken, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Token message, length delimited. Does not implicitly {@link namecoin.Token.verify|verify} messages.
-     * @param message Token message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: namecoin.IToken, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a Token message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Token
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): namecoin.Token;
-
-    /**
-     * Decodes a Token message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Token
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): namecoin.Token;
-
-    /**
-     * Verifies a Token message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a Token message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Token
-     */
-    public static fromObject(object: { [k: string]: any }): namecoin.Token;
-
-    /**
-     * Creates a plain object from a Token message. Also converts values to other types if specified.
-     * @param message Token
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: namecoin.Token,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this Token to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a NewTokenMsg. */
-  interface INewTokenMsg {
-    /** NewTokenMsg metadata */
-    metadata?: weave.IMetadata | null;
-
-    /** NewTokenMsg ticker */
-    ticker?: string | null;
-
-    /** NewTokenMsg name */
-    name?: string | null;
-
-    /** NewTokenMsg sigFigs */
-    sigFigs?: number | null;
-  }
-
-  /** and should be limited to privledged users. */
-  class NewTokenMsg implements INewTokenMsg {
-    /**
-     * Constructs a new NewTokenMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: namecoin.INewTokenMsg);
-
-    /** NewTokenMsg metadata. */
-    public metadata?: weave.IMetadata | null;
-
-    /** NewTokenMsg ticker. */
-    public ticker: string;
-
-    /** NewTokenMsg name. */
-    public name: string;
-
-    /** NewTokenMsg sigFigs. */
-    public sigFigs: number;
-
-    /**
-     * Creates a new NewTokenMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns NewTokenMsg instance
-     */
-    public static create(properties?: namecoin.INewTokenMsg): namecoin.NewTokenMsg;
-
-    /**
-     * Encodes the specified NewTokenMsg message. Does not implicitly {@link namecoin.NewTokenMsg.verify|verify} messages.
-     * @param message NewTokenMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: namecoin.INewTokenMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified NewTokenMsg message, length delimited. Does not implicitly {@link namecoin.NewTokenMsg.verify|verify} messages.
-     * @param message NewTokenMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: namecoin.INewTokenMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a NewTokenMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns NewTokenMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): namecoin.NewTokenMsg;
-
-    /**
-     * Decodes a NewTokenMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns NewTokenMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): namecoin.NewTokenMsg;
-
-    /**
-     * Verifies a NewTokenMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a NewTokenMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns NewTokenMsg
-     */
-    public static fromObject(object: { [k: string]: any }): namecoin.NewTokenMsg;
-
-    /**
-     * Creates a plain object from a NewTokenMsg message. Also converts values to other types if specified.
-     * @param message NewTokenMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: namecoin.NewTokenMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this NewTokenMsg to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a SetWalletNameMsg. */
-  interface ISetWalletNameMsg {
-    /** SetWalletNameMsg metadata */
-    metadata?: weave.IMetadata | null;
-
-    /** SetWalletNameMsg address */
-    address?: Uint8Array | null;
-
-    /** SetWalletNameMsg name */
-    name?: string | null;
-  }
-
-  /** wallet. Can only be performed if the wallet name is empty. */
-  class SetWalletNameMsg implements ISetWalletNameMsg {
-    /**
-     * Constructs a new SetWalletNameMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: namecoin.ISetWalletNameMsg);
-
-    /** SetWalletNameMsg metadata. */
-    public metadata?: weave.IMetadata | null;
-
-    /** SetWalletNameMsg address. */
-    public address: Uint8Array;
-
-    /** SetWalletNameMsg name. */
-    public name: string;
-
-    /**
-     * Creates a new SetWalletNameMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns SetWalletNameMsg instance
-     */
-    public static create(properties?: namecoin.ISetWalletNameMsg): namecoin.SetWalletNameMsg;
-
-    /**
-     * Encodes the specified SetWalletNameMsg message. Does not implicitly {@link namecoin.SetWalletNameMsg.verify|verify} messages.
-     * @param message SetWalletNameMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: namecoin.ISetWalletNameMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified SetWalletNameMsg message, length delimited. Does not implicitly {@link namecoin.SetWalletNameMsg.verify|verify} messages.
-     * @param message SetWalletNameMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: namecoin.ISetWalletNameMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a SetWalletNameMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns SetWalletNameMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): namecoin.SetWalletNameMsg;
-
-    /**
-     * Decodes a SetWalletNameMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns SetWalletNameMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): namecoin.SetWalletNameMsg;
-
-    /**
-     * Verifies a SetWalletNameMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a SetWalletNameMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns SetWalletNameMsg
-     */
-    public static fromObject(object: { [k: string]: any }): namecoin.SetWalletNameMsg;
-
-    /**
-     * Creates a plain object from a SetWalletNameMsg message. Also converts values to other types if specified.
-     * @param message SetWalletNameMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: namecoin.SetWalletNameMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this SetWalletNameMsg to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-}
-
-/** Namespace nft. */
-export namespace nft {
-  /** Properties of a NonFungibleToken. */
-  interface INonFungibleToken {
-    /** NonFungibleToken metadata */
-    metadata?: weave.IMetadata | null;
-
-    /** ID is the address of this token. */
-    id?: Uint8Array | null;
-
-    /** Owner is the address of the token owner. */
-    owner?: Uint8Array | null;
-
-    /** succeed, all action approvals validation must pass. */
-    actionApprovals?: nft.IActionApprovals[] | null;
-  }
-
-  /** implementation. Usually it is the first attirbute called `base`. */
-  class NonFungibleToken implements INonFungibleToken {
-    /**
-     * Constructs a new NonFungibleToken.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.INonFungibleToken);
-
-    /** NonFungibleToken metadata. */
-    public metadata?: weave.IMetadata | null;
-
-    /** ID is the address of this token. */
-    public id: Uint8Array;
-
-    /** Owner is the address of the token owner. */
-    public owner: Uint8Array;
-
-    /** succeed, all action approvals validation must pass. */
-    public actionApprovals: nft.IActionApprovals[];
-
-    /**
-     * Creates a new NonFungibleToken instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns NonFungibleToken instance
-     */
-    public static create(properties?: nft.INonFungibleToken): nft.NonFungibleToken;
-
-    /**
-     * Encodes the specified NonFungibleToken message. Does not implicitly {@link nft.NonFungibleToken.verify|verify} messages.
-     * @param message NonFungibleToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.INonFungibleToken, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified NonFungibleToken message, length delimited. Does not implicitly {@link nft.NonFungibleToken.verify|verify} messages.
-     * @param message NonFungibleToken message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: nft.INonFungibleToken,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a NonFungibleToken message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns NonFungibleToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.NonFungibleToken;
-
-    /**
-     * Decodes a NonFungibleToken message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns NonFungibleToken
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.NonFungibleToken;
-
-    /**
-     * Verifies a NonFungibleToken message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a NonFungibleToken message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns NonFungibleToken
-     */
-    public static fromObject(object: { [k: string]: any }): nft.NonFungibleToken;
-
-    /**
-     * Creates a plain object from a NonFungibleToken message. Also converts values to other types if specified.
-     * @param message NonFungibleToken
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.NonFungibleToken,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this NonFungibleToken to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an ActionApprovals. */
-  interface IActionApprovals {
-    /** ActionApprovals action */
-    action?: string | null;
-
-    /** ActionApprovals approvals */
-    approvals?: nft.IApproval[] | null;
-  }
-
-  /** execute given operation. */
-  class ActionApprovals implements IActionApprovals {
-    /**
-     * Constructs a new ActionApprovals.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.IActionApprovals);
-
-    /** ActionApprovals action. */
-    public action: string;
-
-    /** ActionApprovals approvals. */
-    public approvals: nft.IApproval[];
-
-    /**
-     * Creates a new ActionApprovals instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ActionApprovals instance
-     */
-    public static create(properties?: nft.IActionApprovals): nft.ActionApprovals;
-
-    /**
-     * Encodes the specified ActionApprovals message. Does not implicitly {@link nft.ActionApprovals.verify|verify} messages.
-     * @param message ActionApprovals message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.IActionApprovals, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ActionApprovals message, length delimited. Does not implicitly {@link nft.ActionApprovals.verify|verify} messages.
-     * @param message ActionApprovals message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: nft.IActionApprovals, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an ActionApprovals message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ActionApprovals
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.ActionApprovals;
-
-    /**
-     * Decodes an ActionApprovals message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ActionApprovals
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.ActionApprovals;
-
-    /**
-     * Verifies an ActionApprovals message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an ActionApprovals message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ActionApprovals
-     */
-    public static fromObject(object: { [k: string]: any }): nft.ActionApprovals;
-
-    /**
-     * Creates a plain object from an ActionApprovals message. Also converts values to other types if specified.
-     * @param message ActionApprovals
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.ActionApprovals,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this ActionApprovals to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an Approval. */
-  interface IApproval {
-    /** Approval address */
-    address?: Uint8Array | null;
-
-    /** Approval options */
-    options?: nft.IApprovalOptions | null;
-  }
-
-  /** Represents an Approval. */
-  class Approval implements IApproval {
-    /**
-     * Constructs a new Approval.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.IApproval);
-
-    /** Approval address. */
-    public address: Uint8Array;
-
-    /** Approval options. */
-    public options?: nft.IApprovalOptions | null;
-
-    /**
-     * Creates a new Approval instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Approval instance
-     */
-    public static create(properties?: nft.IApproval): nft.Approval;
-
-    /**
-     * Encodes the specified Approval message. Does not implicitly {@link nft.Approval.verify|verify} messages.
-     * @param message Approval message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.IApproval, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Approval message, length delimited. Does not implicitly {@link nft.Approval.verify|verify} messages.
-     * @param message Approval message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: nft.IApproval, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an Approval message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Approval
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.Approval;
-
-    /**
-     * Decodes an Approval message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Approval
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.Approval;
-
-    /**
-     * Verifies an Approval message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an Approval message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Approval
-     */
-    public static fromObject(object: { [k: string]: any }): nft.Approval;
-
-    /**
-     * Creates a plain object from an Approval message. Also converts values to other types if specified.
-     * @param message Approval
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.Approval,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this Approval to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an ApprovalOptions. */
-  interface IApprovalOptions {
-    /** approval is valid. This can be used to define an approval expiration. */
-    untilBlockHeight?: number | Long | null;
-
-    /** Use -1 to bypass count expiration. */
-    count?: number | Long | null;
-
-    /** changed. */
-    immutable?: boolean | null;
-  }
-
-  /** Represents an ApprovalOptions. */
-  class ApprovalOptions implements IApprovalOptions {
-    /**
-     * Constructs a new ApprovalOptions.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.IApprovalOptions);
-
-    /** approval is valid. This can be used to define an approval expiration. */
-    public untilBlockHeight: number | Long;
-
-    /** Use -1 to bypass count expiration. */
-    public count: number | Long;
-
-    /** changed. */
-    public immutable: boolean;
-
-    /**
-     * Creates a new ApprovalOptions instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ApprovalOptions instance
-     */
-    public static create(properties?: nft.IApprovalOptions): nft.ApprovalOptions;
-
-    /**
-     * Encodes the specified ApprovalOptions message. Does not implicitly {@link nft.ApprovalOptions.verify|verify} messages.
-     * @param message ApprovalOptions message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.IApprovalOptions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ApprovalOptions message, length delimited. Does not implicitly {@link nft.ApprovalOptions.verify|verify} messages.
-     * @param message ApprovalOptions message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: nft.IApprovalOptions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an ApprovalOptions message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ApprovalOptions
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.ApprovalOptions;
-
-    /**
-     * Decodes an ApprovalOptions message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ApprovalOptions
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.ApprovalOptions;
-
-    /**
-     * Verifies an ApprovalOptions message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an ApprovalOptions message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ApprovalOptions
-     */
-    public static fromObject(object: { [k: string]: any }): nft.ApprovalOptions;
-
-    /**
-     * Creates a plain object from an ApprovalOptions message. Also converts values to other types if specified.
-     * @param message ApprovalOptions
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.ApprovalOptions,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this ApprovalOptions to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of an AddApprovalMsg. */
-  interface IAddApprovalMsg {
-    /** AddApprovalMsg metadata */
-    metadata?: weave.IMetadata | null;
-
-    /** AddApprovalMsg id */
-    id?: Uint8Array | null;
-
-    /** AddApprovalMsg address */
-    address?: Uint8Array | null;
-
-    /** AddApprovalMsg action */
-    action?: string | null;
-
-    /** AddApprovalMsg options */
-    options?: nft.IApprovalOptions | null;
-
-    /** AddApprovalMsg t */
-    t?: string | null;
-  }
-
-  /** Represents an AddApprovalMsg. */
-  class AddApprovalMsg implements IAddApprovalMsg {
-    /**
-     * Constructs a new AddApprovalMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.IAddApprovalMsg);
-
-    /** AddApprovalMsg metadata. */
-    public metadata?: weave.IMetadata | null;
-
-    /** AddApprovalMsg id. */
-    public id: Uint8Array;
-
-    /** AddApprovalMsg address. */
-    public address: Uint8Array;
-
-    /** AddApprovalMsg action. */
-    public action: string;
-
-    /** AddApprovalMsg options. */
-    public options?: nft.IApprovalOptions | null;
-
-    /** AddApprovalMsg t. */
-    public t: string;
-
-    /**
-     * Creates a new AddApprovalMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns AddApprovalMsg instance
-     */
-    public static create(properties?: nft.IAddApprovalMsg): nft.AddApprovalMsg;
-
-    /**
-     * Encodes the specified AddApprovalMsg message. Does not implicitly {@link nft.AddApprovalMsg.verify|verify} messages.
-     * @param message AddApprovalMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.IAddApprovalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified AddApprovalMsg message, length delimited. Does not implicitly {@link nft.AddApprovalMsg.verify|verify} messages.
-     * @param message AddApprovalMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: nft.IAddApprovalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes an AddApprovalMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns AddApprovalMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.AddApprovalMsg;
-
-    /**
-     * Decodes an AddApprovalMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns AddApprovalMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.AddApprovalMsg;
-
-    /**
-     * Verifies an AddApprovalMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates an AddApprovalMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns AddApprovalMsg
-     */
-    public static fromObject(object: { [k: string]: any }): nft.AddApprovalMsg;
-
-    /**
-     * Creates a plain object from an AddApprovalMsg message. Also converts values to other types if specified.
-     * @param message AddApprovalMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.AddApprovalMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this AddApprovalMsg to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a RemoveApprovalMsg. */
-  interface IRemoveApprovalMsg {
-    /** RemoveApprovalMsg metadata */
-    metadata?: weave.IMetadata | null;
-
-    /** RemoveApprovalMsg id */
-    id?: Uint8Array | null;
-
-    /** RemoveApprovalMsg address */
-    address?: Uint8Array | null;
-
-    /** RemoveApprovalMsg action */
-    action?: string | null;
-
-    /** RemoveApprovalMsg t */
-    t?: string | null;
-  }
-
-  /** Represents a RemoveApprovalMsg. */
-  class RemoveApprovalMsg implements IRemoveApprovalMsg {
-    /**
-     * Constructs a new RemoveApprovalMsg.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: nft.IRemoveApprovalMsg);
-
-    /** RemoveApprovalMsg metadata. */
-    public metadata?: weave.IMetadata | null;
-
-    /** RemoveApprovalMsg id. */
-    public id: Uint8Array;
-
-    /** RemoveApprovalMsg address. */
-    public address: Uint8Array;
-
-    /** RemoveApprovalMsg action. */
-    public action: string;
-
-    /** RemoveApprovalMsg t. */
-    public t: string;
-
-    /**
-     * Creates a new RemoveApprovalMsg instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns RemoveApprovalMsg instance
-     */
-    public static create(properties?: nft.IRemoveApprovalMsg): nft.RemoveApprovalMsg;
-
-    /**
-     * Encodes the specified RemoveApprovalMsg message. Does not implicitly {@link nft.RemoveApprovalMsg.verify|verify} messages.
-     * @param message RemoveApprovalMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: nft.IRemoveApprovalMsg, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified RemoveApprovalMsg message, length delimited. Does not implicitly {@link nft.RemoveApprovalMsg.verify|verify} messages.
-     * @param message RemoveApprovalMsg message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: nft.IRemoveApprovalMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a RemoveApprovalMsg message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns RemoveApprovalMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): nft.RemoveApprovalMsg;
-
-    /**
-     * Decodes a RemoveApprovalMsg message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns RemoveApprovalMsg
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): nft.RemoveApprovalMsg;
-
-    /**
-     * Verifies a RemoveApprovalMsg message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a RemoveApprovalMsg message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns RemoveApprovalMsg
-     */
-    public static fromObject(object: { [k: string]: any }): nft.RemoveApprovalMsg;
-
-    /**
-     * Creates a plain object from a RemoveApprovalMsg message. Also converts values to other types if specified.
-     * @param message RemoveApprovalMsg
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: nft.RemoveApprovalMsg,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this RemoveApprovalMsg to JSON.
+     * Converts this UpdateMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -8821,9 +7952,9 @@ export namespace paychan {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a CreatePaymentChannelMsg. */
-  interface ICreatePaymentChannelMsg {
-    /** CreatePaymentChannelMsg metadata */
+  /** Properties of a CreateMsg. */
+  interface ICreateMsg {
+    /** CreateMsg metadata */
     metadata?: weave.IMetadata | null;
 
     /** Sender address (weave.Address). */
@@ -8846,14 +7977,14 @@ export namespace paychan {
   }
 
   /** in the transactions done via created payment channel. */
-  class CreatePaymentChannelMsg implements ICreatePaymentChannelMsg {
+  class CreateMsg implements ICreateMsg {
     /**
-     * Constructs a new CreatePaymentChannelMsg.
+     * Constructs a new CreateMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: paychan.ICreatePaymentChannelMsg);
+    constructor(properties?: paychan.ICreateMsg);
 
-    /** CreatePaymentChannelMsg metadata. */
+    /** CreateMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
     /** Sender address (weave.Address). */
@@ -8875,83 +8006,74 @@ export namespace paychan {
     public memo: string;
 
     /**
-     * Creates a new CreatePaymentChannelMsg instance using the specified properties.
+     * Creates a new CreateMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns CreatePaymentChannelMsg instance
+     * @returns CreateMsg instance
      */
-    public static create(properties?: paychan.ICreatePaymentChannelMsg): paychan.CreatePaymentChannelMsg;
+    public static create(properties?: paychan.ICreateMsg): paychan.CreateMsg;
 
     /**
-     * Encodes the specified CreatePaymentChannelMsg message. Does not implicitly {@link paychan.CreatePaymentChannelMsg.verify|verify} messages.
-     * @param message CreatePaymentChannelMsg message or plain object to encode
+     * Encodes the specified CreateMsg message. Does not implicitly {@link paychan.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(
-      message: paychan.ICreatePaymentChannelMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encode(message: paychan.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified CreatePaymentChannelMsg message, length delimited. Does not implicitly {@link paychan.CreatePaymentChannelMsg.verify|verify} messages.
-     * @param message CreatePaymentChannelMsg message or plain object to encode
+     * Encodes the specified CreateMsg message, length delimited. Does not implicitly {@link paychan.CreateMsg.verify|verify} messages.
+     * @param message CreateMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: paychan.ICreatePaymentChannelMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: paychan.ICreateMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a CreatePaymentChannelMsg message from the specified reader or buffer.
+     * Decodes a CreateMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns CreatePaymentChannelMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(
-      reader: $protobuf.Reader | Uint8Array,
-      length?: number,
-    ): paychan.CreatePaymentChannelMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): paychan.CreateMsg;
 
     /**
-     * Decodes a CreatePaymentChannelMsg message from the specified reader or buffer, length delimited.
+     * Decodes a CreateMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns CreatePaymentChannelMsg
+     * @returns CreateMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.CreatePaymentChannelMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.CreateMsg;
 
     /**
-     * Verifies a CreatePaymentChannelMsg message.
+     * Verifies a CreateMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a CreatePaymentChannelMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a CreateMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns CreatePaymentChannelMsg
+     * @returns CreateMsg
      */
-    public static fromObject(object: { [k: string]: any }): paychan.CreatePaymentChannelMsg;
+    public static fromObject(object: { [k: string]: any }): paychan.CreateMsg;
 
     /**
-     * Creates a plain object from a CreatePaymentChannelMsg message. Also converts values to other types if specified.
-     * @param message CreatePaymentChannelMsg
+     * Creates a plain object from a CreateMsg message. Also converts values to other types if specified.
+     * @param message CreateMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: paychan.CreatePaymentChannelMsg,
+      message: paychan.CreateMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this CreatePaymentChannelMsg to JSON.
+     * Converts this CreateMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -9066,124 +8188,115 @@ export namespace paychan {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a TransferPaymentChannelMsg. */
-  interface ITransferPaymentChannelMsg {
-    /** TransferPaymentChannelMsg metadata */
+  /** Properties of a TransferMsg. */
+  interface ITransferMsg {
+    /** TransferMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** TransferPaymentChannelMsg payment */
+    /** TransferMsg payment */
     payment?: paychan.IPayment | null;
 
-    /** TransferPaymentChannelMsg signature */
+    /** TransferMsg signature */
     signature?: crypto.ISignature | null;
   }
 
   /** Signature is there to ensure that payment message was not altered. */
-  class TransferPaymentChannelMsg implements ITransferPaymentChannelMsg {
+  class TransferMsg implements ITransferMsg {
     /**
-     * Constructs a new TransferPaymentChannelMsg.
+     * Constructs a new TransferMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: paychan.ITransferPaymentChannelMsg);
+    constructor(properties?: paychan.ITransferMsg);
 
-    /** TransferPaymentChannelMsg metadata. */
+    /** TransferMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** TransferPaymentChannelMsg payment. */
+    /** TransferMsg payment. */
     public payment?: paychan.IPayment | null;
 
-    /** TransferPaymentChannelMsg signature. */
+    /** TransferMsg signature. */
     public signature?: crypto.ISignature | null;
 
     /**
-     * Creates a new TransferPaymentChannelMsg instance using the specified properties.
+     * Creates a new TransferMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns TransferPaymentChannelMsg instance
+     * @returns TransferMsg instance
      */
-    public static create(properties?: paychan.ITransferPaymentChannelMsg): paychan.TransferPaymentChannelMsg;
+    public static create(properties?: paychan.ITransferMsg): paychan.TransferMsg;
 
     /**
-     * Encodes the specified TransferPaymentChannelMsg message. Does not implicitly {@link paychan.TransferPaymentChannelMsg.verify|verify} messages.
-     * @param message TransferPaymentChannelMsg message or plain object to encode
+     * Encodes the specified TransferMsg message. Does not implicitly {@link paychan.TransferMsg.verify|verify} messages.
+     * @param message TransferMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(
-      message: paychan.ITransferPaymentChannelMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encode(message: paychan.ITransferMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified TransferPaymentChannelMsg message, length delimited. Does not implicitly {@link paychan.TransferPaymentChannelMsg.verify|verify} messages.
-     * @param message TransferPaymentChannelMsg message or plain object to encode
+     * Encodes the specified TransferMsg message, length delimited. Does not implicitly {@link paychan.TransferMsg.verify|verify} messages.
+     * @param message TransferMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: paychan.ITransferPaymentChannelMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: paychan.ITransferMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a TransferPaymentChannelMsg message from the specified reader or buffer.
+     * Decodes a TransferMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns TransferPaymentChannelMsg
+     * @returns TransferMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(
-      reader: $protobuf.Reader | Uint8Array,
-      length?: number,
-    ): paychan.TransferPaymentChannelMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): paychan.TransferMsg;
 
     /**
-     * Decodes a TransferPaymentChannelMsg message from the specified reader or buffer, length delimited.
+     * Decodes a TransferMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns TransferPaymentChannelMsg
+     * @returns TransferMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.TransferPaymentChannelMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.TransferMsg;
 
     /**
-     * Verifies a TransferPaymentChannelMsg message.
+     * Verifies a TransferMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a TransferPaymentChannelMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a TransferMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns TransferPaymentChannelMsg
+     * @returns TransferMsg
      */
-    public static fromObject(object: { [k: string]: any }): paychan.TransferPaymentChannelMsg;
+    public static fromObject(object: { [k: string]: any }): paychan.TransferMsg;
 
     /**
-     * Creates a plain object from a TransferPaymentChannelMsg message. Also converts values to other types if specified.
-     * @param message TransferPaymentChannelMsg
+     * Creates a plain object from a TransferMsg message. Also converts values to other types if specified.
+     * @param message TransferMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: paychan.TransferPaymentChannelMsg,
+      message: paychan.TransferMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this TransferPaymentChannelMsg to JSON.
+     * Converts this TransferMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a ClosePaymentChannelMsg. */
-  interface IClosePaymentChannelMsg {
-    /** ClosePaymentChannelMsg metadata */
+  /** Properties of a CloseMsg. */
+  interface ICloseMsg {
+    /** CloseMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** ClosePaymentChannelMsg channelId */
+    /** CloseMsg channelId */
     channelId?: Uint8Array | null;
 
     /** Max length 128 character. */
@@ -9191,100 +8304,91 @@ export namespace paychan {
   }
 
   /** Sender can close channel only if the timeout was reached. */
-  class ClosePaymentChannelMsg implements IClosePaymentChannelMsg {
+  class CloseMsg implements ICloseMsg {
     /**
-     * Constructs a new ClosePaymentChannelMsg.
+     * Constructs a new CloseMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: paychan.IClosePaymentChannelMsg);
+    constructor(properties?: paychan.ICloseMsg);
 
-    /** ClosePaymentChannelMsg metadata. */
+    /** CloseMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** ClosePaymentChannelMsg channelId. */
+    /** CloseMsg channelId. */
     public channelId: Uint8Array;
 
     /** Max length 128 character. */
     public memo: string;
 
     /**
-     * Creates a new ClosePaymentChannelMsg instance using the specified properties.
+     * Creates a new CloseMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns ClosePaymentChannelMsg instance
+     * @returns CloseMsg instance
      */
-    public static create(properties?: paychan.IClosePaymentChannelMsg): paychan.ClosePaymentChannelMsg;
+    public static create(properties?: paychan.ICloseMsg): paychan.CloseMsg;
 
     /**
-     * Encodes the specified ClosePaymentChannelMsg message. Does not implicitly {@link paychan.ClosePaymentChannelMsg.verify|verify} messages.
-     * @param message ClosePaymentChannelMsg message or plain object to encode
+     * Encodes the specified CloseMsg message. Does not implicitly {@link paychan.CloseMsg.verify|verify} messages.
+     * @param message CloseMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(
-      message: paychan.IClosePaymentChannelMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encode(message: paychan.ICloseMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified ClosePaymentChannelMsg message, length delimited. Does not implicitly {@link paychan.ClosePaymentChannelMsg.verify|verify} messages.
-     * @param message ClosePaymentChannelMsg message or plain object to encode
+     * Encodes the specified CloseMsg message, length delimited. Does not implicitly {@link paychan.CloseMsg.verify|verify} messages.
+     * @param message CloseMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(
-      message: paychan.IClosePaymentChannelMsg,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
+    public static encodeDelimited(message: paychan.ICloseMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a ClosePaymentChannelMsg message from the specified reader or buffer.
+     * Decodes a CloseMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns ClosePaymentChannelMsg
+     * @returns CloseMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(
-      reader: $protobuf.Reader | Uint8Array,
-      length?: number,
-    ): paychan.ClosePaymentChannelMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): paychan.CloseMsg;
 
     /**
-     * Decodes a ClosePaymentChannelMsg message from the specified reader or buffer, length delimited.
+     * Decodes a CloseMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns ClosePaymentChannelMsg
+     * @returns CloseMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.ClosePaymentChannelMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): paychan.CloseMsg;
 
     /**
-     * Verifies a ClosePaymentChannelMsg message.
+     * Verifies a CloseMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a ClosePaymentChannelMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a CloseMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns ClosePaymentChannelMsg
+     * @returns CloseMsg
      */
-    public static fromObject(object: { [k: string]: any }): paychan.ClosePaymentChannelMsg;
+    public static fromObject(object: { [k: string]: any }): paychan.CloseMsg;
 
     /**
-     * Creates a plain object from a ClosePaymentChannelMsg message. Also converts values to other types if specified.
-     * @param message ClosePaymentChannelMsg
+     * Creates a plain object from a CloseMsg message. Also converts values to other types if specified.
+     * @param message CloseMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: paychan.ClosePaymentChannelMsg,
+      message: paychan.CloseMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this ClosePaymentChannelMsg to JSON.
+     * Converts this CloseMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -9602,298 +8706,101 @@ export namespace sigs {
 
 /** Namespace validators. */
 export namespace validators {
-  /** Properties of a ValidatorUpdate. */
-  interface IValidatorUpdate {
-    /** ValidatorUpdate pubkey */
-    pubkey?: validators.IPubkey | null;
-
-    /** ValidatorUpdate power */
-    power?: number | Long | null;
-  }
-
-  /** ValidatorUpdate */
-  class ValidatorUpdate implements IValidatorUpdate {
-    /**
-     * Constructs a new ValidatorUpdate.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: validators.IValidatorUpdate);
-
-    /** ValidatorUpdate pubkey. */
-    public pubkey?: validators.IPubkey | null;
-
-    /** ValidatorUpdate power. */
-    public power: number | Long;
-
-    /**
-     * Creates a new ValidatorUpdate instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ValidatorUpdate instance
-     */
-    public static create(properties?: validators.IValidatorUpdate): validators.ValidatorUpdate;
-
-    /**
-     * Encodes the specified ValidatorUpdate message. Does not implicitly {@link validators.ValidatorUpdate.verify|verify} messages.
-     * @param message ValidatorUpdate message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: validators.IValidatorUpdate, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ValidatorUpdate message, length delimited. Does not implicitly {@link validators.ValidatorUpdate.verify|verify} messages.
-     * @param message ValidatorUpdate message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(
-      message: validators.IValidatorUpdate,
-      writer?: $protobuf.Writer,
-    ): $protobuf.Writer;
-
-    /**
-     * Decodes a ValidatorUpdate message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ValidatorUpdate
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.ValidatorUpdate;
-
-    /**
-     * Decodes a ValidatorUpdate message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ValidatorUpdate
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.ValidatorUpdate;
-
-    /**
-     * Verifies a ValidatorUpdate message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a ValidatorUpdate message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ValidatorUpdate
-     */
-    public static fromObject(object: { [k: string]: any }): validators.ValidatorUpdate;
-
-    /**
-     * Creates a plain object from a ValidatorUpdate message. Also converts values to other types if specified.
-     * @param message ValidatorUpdate
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: validators.ValidatorUpdate,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this ValidatorUpdate to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a Pubkey. */
-  interface IPubkey {
-    /** Pubkey type */
-    type?: string | null;
-
-    /** Pubkey data */
-    data?: Uint8Array | null;
-  }
-
-  /** Represents a Pubkey. */
-  class Pubkey implements IPubkey {
-    /**
-     * Constructs a new Pubkey.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: validators.IPubkey);
-
-    /** Pubkey type. */
-    public type: string;
-
-    /** Pubkey data. */
-    public data: Uint8Array;
-
-    /**
-     * Creates a new Pubkey instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Pubkey instance
-     */
-    public static create(properties?: validators.IPubkey): validators.Pubkey;
-
-    /**
-     * Encodes the specified Pubkey message. Does not implicitly {@link validators.Pubkey.verify|verify} messages.
-     * @param message Pubkey message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: validators.IPubkey, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Pubkey message, length delimited. Does not implicitly {@link validators.Pubkey.verify|verify} messages.
-     * @param message Pubkey message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: validators.IPubkey, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a Pubkey message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Pubkey
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.Pubkey;
-
-    /**
-     * Decodes a Pubkey message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Pubkey
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.Pubkey;
-
-    /**
-     * Verifies a Pubkey message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): string | null;
-
-    /**
-     * Creates a Pubkey message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Pubkey
-     */
-    public static fromObject(object: { [k: string]: any }): validators.Pubkey;
-
-    /**
-     * Creates a plain object from a Pubkey message. Also converts values to other types if specified.
-     * @param message Pubkey
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(
-      message: validators.Pubkey,
-      options?: $protobuf.IConversionOptions,
-    ): { [k: string]: any };
-
-    /**
-     * Converts this Pubkey to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-  }
-
-  /** Properties of a SetValidatorsMsg. */
-  interface ISetValidatorsMsg {
-    /** SetValidatorsMsg metadata */
+  /** Properties of an ApplyDiffMsg. */
+  interface IApplyDiffMsg {
+    /** ApplyDiffMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** SetValidatorsMsg validatorUpdates */
-    validatorUpdates?: validators.IValidatorUpdate[] | null;
+    /** ApplyDiffMsg validatorUpdates */
+    validatorUpdates?: weave.IValidatorUpdate[] | null;
   }
 
-  /** This message is designed to update validator power */
-  class SetValidatorsMsg implements ISetValidatorsMsg {
+  /** ApplyDiffMsg is designed to update validator power */
+  class ApplyDiffMsg implements IApplyDiffMsg {
     /**
-     * Constructs a new SetValidatorsMsg.
+     * Constructs a new ApplyDiffMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: validators.ISetValidatorsMsg);
+    constructor(properties?: validators.IApplyDiffMsg);
 
-    /** SetValidatorsMsg metadata. */
+    /** ApplyDiffMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** SetValidatorsMsg validatorUpdates. */
-    public validatorUpdates: validators.IValidatorUpdate[];
+    /** ApplyDiffMsg validatorUpdates. */
+    public validatorUpdates: weave.IValidatorUpdate[];
 
     /**
-     * Creates a new SetValidatorsMsg instance using the specified properties.
+     * Creates a new ApplyDiffMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns SetValidatorsMsg instance
+     * @returns ApplyDiffMsg instance
      */
-    public static create(properties?: validators.ISetValidatorsMsg): validators.SetValidatorsMsg;
+    public static create(properties?: validators.IApplyDiffMsg): validators.ApplyDiffMsg;
 
     /**
-     * Encodes the specified SetValidatorsMsg message. Does not implicitly {@link validators.SetValidatorsMsg.verify|verify} messages.
-     * @param message SetValidatorsMsg message or plain object to encode
+     * Encodes the specified ApplyDiffMsg message. Does not implicitly {@link validators.ApplyDiffMsg.verify|verify} messages.
+     * @param message ApplyDiffMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: validators.ISetValidatorsMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: validators.IApplyDiffMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified SetValidatorsMsg message, length delimited. Does not implicitly {@link validators.SetValidatorsMsg.verify|verify} messages.
-     * @param message SetValidatorsMsg message or plain object to encode
+     * Encodes the specified ApplyDiffMsg message, length delimited. Does not implicitly {@link validators.ApplyDiffMsg.verify|verify} messages.
+     * @param message ApplyDiffMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(
-      message: validators.ISetValidatorsMsg,
+      message: validators.IApplyDiffMsg,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Decodes a SetValidatorsMsg message from the specified reader or buffer.
+     * Decodes an ApplyDiffMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns SetValidatorsMsg
+     * @returns ApplyDiffMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.SetValidatorsMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): validators.ApplyDiffMsg;
 
     /**
-     * Decodes a SetValidatorsMsg message from the specified reader or buffer, length delimited.
+     * Decodes an ApplyDiffMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns SetValidatorsMsg
+     * @returns ApplyDiffMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.SetValidatorsMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): validators.ApplyDiffMsg;
 
     /**
-     * Verifies a SetValidatorsMsg message.
+     * Verifies an ApplyDiffMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a SetValidatorsMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates an ApplyDiffMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns SetValidatorsMsg
+     * @returns ApplyDiffMsg
      */
-    public static fromObject(object: { [k: string]: any }): validators.SetValidatorsMsg;
+    public static fromObject(object: { [k: string]: any }): validators.ApplyDiffMsg;
 
     /**
-     * Creates a plain object from a SetValidatorsMsg message. Also converts values to other types if specified.
-     * @param message SetValidatorsMsg
+     * Creates a plain object from an ApplyDiffMsg message. Also converts values to other types if specified.
+     * @param message ApplyDiffMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: validators.SetValidatorsMsg,
+      message: validators.ApplyDiffMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this SetValidatorsMsg to JSON.
+     * Converts this ApplyDiffMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };

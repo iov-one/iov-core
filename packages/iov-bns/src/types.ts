@@ -170,7 +170,7 @@ export interface ChainAddressPair {
 export interface BnsUsernameNft {
   readonly id: string;
   readonly owner: Address;
-  readonly addresses: readonly ChainAddressPair[];
+  readonly targets: readonly ChainAddressPair[];
 }
 
 export interface BnsUsernamesByUsernameQuery {
@@ -219,33 +219,22 @@ export interface Decoder<T extends {}> {
 export interface RegisterUsernameTx extends LightTransaction {
   readonly kind: "bns/register_username";
   readonly username: string;
-  readonly addresses: readonly ChainAddressPair[];
+  readonly targets: readonly ChainAddressPair[];
 }
 
 export function isRegisterUsernameTx(tx: LightTransaction): tx is RegisterUsernameTx {
   return tx.kind === "bns/register_username";
 }
 
-export interface AddAddressToUsernameTx extends LightTransaction {
-  readonly kind: "bns/add_address_to_username";
+export interface UpdateTargetsOfUsernameTx extends LightTransaction {
+  readonly kind: "bns/update_targets_of_username";
   /** the username to be updated, must exist on chain */
   readonly username: string;
-  readonly payload: ChainAddressPair;
+  readonly targets: readonly ChainAddressPair[];
 }
 
-export function isAddAddressToUsernameTx(tx: LightTransaction): tx is AddAddressToUsernameTx {
-  return tx.kind === "bns/add_address_to_username";
-}
-
-export interface RemoveAddressFromUsernameTx extends LightTransaction {
-  readonly kind: "bns/remove_address_from_username";
-  /** the username to be updated, must exist on chain */
-  readonly username: string;
-  readonly payload: ChainAddressPair;
-}
-
-export function isRemoveAddressFromUsernameTx(tx: LightTransaction): tx is RemoveAddressFromUsernameTx {
-  return tx.kind === "bns/remove_address_from_username";
+export function isUpdateTargetsOfUsernameTx(tx: LightTransaction): tx is UpdateTargetsOfUsernameTx {
+  return tx.kind === "bns/update_targets_of_username";
 }
 
 // Transactions: Multisignature contracts
@@ -379,8 +368,7 @@ export type BnsTx =
   | SwapAbortTransaction
   // BNS: Usernames
   | RegisterUsernameTx
-  | AddAddressToUsernameTx
-  | RemoveAddressFromUsernameTx
+  | UpdateTargetsOfUsernameTx
   // BNS: Multisignature contracts
   | CreateMultisignatureTx
   | UpdateMultisignatureTx

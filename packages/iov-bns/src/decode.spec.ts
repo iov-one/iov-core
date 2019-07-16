@@ -29,17 +29,16 @@ import {
 } from "./testdata.spec";
 import {
   ActionKind,
-  isAddAddressToUsernameTx,
   isCreateEscrowTx,
   isCreateMultisignatureTx,
   isCreateProposalTx,
   isRegisterUsernameTx,
   isReleaseEscrowTx,
-  isRemoveAddressFromUsernameTx,
   isReturnEscrowTx,
   isTallyTx,
   isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
+  isUpdateTargetsOfUsernameTx,
   isVoteTx,
   Keyed,
   Participant,
@@ -53,25 +52,21 @@ const { fromHex, toUtf8 } = Encoding;
 
 describe("Decode", () => {
   it("decodes username NFT", () => {
-    const nft: codecImpl.username.IUsernameToken = {
-      base: {
-        id: toUtf8("alice"),
-        owner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
-      },
-      details: {
-        addresses: [
-          {
-            blockchainId: toUtf8("wonderland"),
-            address: "12345W",
-          },
-        ],
-      },
+    const nft: codecImpl.username.IToken & Keyed = {
+      _id: toUtf8("alice"),
+      owner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+      targets: [
+        {
+          blockchainId: "wonderland",
+          address: toUtf8("12345W"),
+        },
+      ],
     };
     const decoded = decodeUsernameNft(nft, "bns-testchain" as ChainId);
     expect(decoded.id).toEqual("alice");
     expect(decoded.owner).toEqual(Bech32.encode("tiov", fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472")));
-    expect(decoded.addresses.length).toEqual(1);
-    expect(decoded.addresses[0]).toEqual({
+    expect(decoded.targets.length).toEqual(1);
+    expect(decoded.targets[0]).toEqual({
       chainId: "wonderland" as ChainId,
       address: "12345W" as Address,
     });
@@ -105,10 +100,9 @@ describe("Decode", () => {
   });
 
   it("has working decodeToken", () => {
-    const token: codecImpl.namecoin.IToken & Keyed = {
+    const token: codecImpl.currency.ITokenInfo & Keyed = {
       _id: toUtf8("TRASH"),
       name: "Trash",
-      sigFigs: 22, // Will be ignored. It is always 9.
     };
     const ticker = decodeToken(token);
     expect(ticker).toEqual({
@@ -275,8 +269,8 @@ describe("Decode", () => {
         _id: fromHex("001100220033aabb"),
         metadata: { schema: 1 },
         title: "This will happen next",
-        rawOption: codecImpl.app.ProposalOptions.encode({
-          textResolutionMsg: {
+        rawOption: codecImpl.bnsd.ProposalOptions.encode({
+          govCreateTextResolutionMsg: {
             metadata: { schema: 1 },
             resolution: "la la la",
           },
@@ -342,17 +336,17 @@ describe("Decode", () => {
     it("decode invalid transaction fails", () => {
       /* tslint:disable-next-line:no-bitwise */
       const badBin = signedTxBin.map((x: number, i: number) => (i % 5 ? x ^ 0x01 : x));
-      expect(() => codecImpl.app.Tx.decode(badBin)).toThrowError();
+      expect(() => codecImpl.bnsd.Tx.decode(badBin)).toThrowError();
     });
 
     // unsigned tx will fail as parsing requires a sig to extract signer
     it("decode unsigned transaction fails", () => {
-      const decoded = codecImpl.app.Tx.decode(sendTxBin);
+      const decoded = codecImpl.bnsd.Tx.decode(sendTxBin);
       expect(() => parseTx(decoded, chainId)).toThrowError(/missing first signature/);
     });
 
     it("decode signed transaction", () => {
-      const decoded = codecImpl.app.Tx.decode(signedTxBin);
+      const decoded = codecImpl.bnsd.Tx.decode(signedTxBin);
       const tx = parseTx(decoded, chainId);
       expect(tx.transaction).toEqual(sendTxJson);
     });
@@ -385,41 +379,45 @@ describe("Decode", () => {
 
     // Usernames
 
-    it("works for AddAddressToUsernameTx", () => {
-      const transactionMessage: codecImpl.app.ITx = {
-        addUsernameAddressNftMsg: {
-          usernameId: toUtf8("alice"),
-          blockchainId: toUtf8("wonderland"),
-          address: "0xAABB001122DD",
+    it("works for UpdateTargetsOfUsernameTx", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        usernameChangeTokenTargetsMsg: {
+          username: "alice",
+          newTargets: [
+            {
+              blockchainId: "wonderland",
+              address: toUtf8("0xAABB001122DD"),
+            },
+          ],
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
-      if (!isAddAddressToUsernameTx(parsed)) {
+      if (!isUpdateTargetsOfUsernameTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.username).toEqual("alice");
-      expect(parsed.payload.chainId).toEqual("wonderland");
-      expect(parsed.payload.address).toEqual("0xAABB001122DD");
+      expect(parsed.targets).toEqual([
+        {
+          chainId: "wonderland" as ChainId,
+          address: "0xAABB001122DD" as Address,
+        },
+      ]);
     });
 
     it("works for RegisterUsernameTx", () => {
-      const transactionMessage: codecImpl.app.ITx = {
-        issueUsernameNftMsg: {
-          id: Encoding.toAscii("bobby"),
-          owner: Encoding.fromHex("0011223344556677889900112233445566778899"),
-          approvals: [],
-          details: {
-            addresses: [
-              {
-                blockchainId: Encoding.toAscii("chain1"),
-                address: "23456782367823X",
-              },
-              {
-                blockchainId: Encoding.toAscii("chain2"),
-                address: "0x001100aabbccddffeeddaa8899776655",
-              },
-            ],
-          },
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        usernameRegisterTokenMsg: {
+          username: "bobby",
+          targets: [
+            {
+              blockchainId: "chain1",
+              address: toUtf8("23456782367823X"),
+            },
+            {
+              blockchainId: "chain2",
+              address: toUtf8("0x001100aabbccddffeeddaa8899776655"),
+            },
+          ],
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
@@ -427,32 +425,15 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.username).toEqual("bobby");
-      expect(parsed.addresses.length).toEqual(2);
-      expect(parsed.addresses[0]).toEqual({
+      expect(parsed.targets.length).toEqual(2);
+      expect(parsed.targets[0]).toEqual({
         chainId: "chain1" as ChainId,
         address: "23456782367823X" as Address,
       });
-      expect(parsed.addresses[1]).toEqual({
+      expect(parsed.targets[1]).toEqual({
         chainId: "chain2" as ChainId,
         address: "0x001100aabbccddffeeddaa8899776655" as Address,
       });
-    });
-
-    it("works for RemoveAddressFromUsernameTx", () => {
-      const transactionMessage: codecImpl.app.ITx = {
-        removeUsernameAddressMsg: {
-          usernameId: toUtf8("alice"),
-          address: "0xAABB001122DD",
-          blockchainId: toUtf8("wonderland"),
-        },
-      };
-      const parsed = parseMsg(defaultBaseTx, transactionMessage);
-      if (!isRemoveAddressFromUsernameTx(parsed)) {
-        throw new Error("unexpected transaction kind");
-      }
-      expect(parsed.username).toEqual("alice");
-      expect(parsed.payload.chainId).toEqual("wonderland");
-      expect(parsed.payload.address).toEqual("0xAABB001122DD");
     });
 
     // Multisignature contracts
@@ -487,8 +468,8 @@ describe("Decode", () => {
           weight: 1,
         },
       ];
-      const transactionMessage: codecImpl.app.ITx = {
-        createContractMsg: {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        multisigCreateMsg: {
           participants: iParticipants,
           activationThreshold: 2,
           adminThreshold: 3,
@@ -533,8 +514,8 @@ describe("Decode", () => {
           weight: 1,
         },
       ];
-      const transactionMessage: codecImpl.app.ITx = {
-        updateContractMsg: {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        multisigUpdateMsg: {
           contractId: fromHex("0123456789"),
           participants: iParticipants,
           activationThreshold: 2,
@@ -556,8 +537,8 @@ describe("Decode", () => {
     it("works for CreateEscrowTx", () => {
       const timeout = 1560940182424;
       const memo = "testing 123";
-      const transactionMessage: codecImpl.app.ITx = {
-        createEscrowMsg: {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        escrowCreateMsg: {
           src: Encoding.fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
           arbiter: Encoding.fromHex("f102fdde243399a218d13eb662245f04ef9d0287"),
           recipient: Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
@@ -591,8 +572,8 @@ describe("Decode", () => {
     });
 
     it("works for ReleaseEscrowTx", () => {
-      const transactionMessage: codecImpl.app.ITx = {
-        releaseEscrowMsg: {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        escrowReleaseMsg: {
           escrowId: defaultEscrowId,
           amount: [
             {
@@ -618,8 +599,8 @@ describe("Decode", () => {
     });
 
     it("works for ReturnEscrowTx", () => {
-      const transactionMessage: codecImpl.app.ITx = {
-        returnEscrowMsg: {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        escrowReturnMsg: {
           escrowId: defaultEscrowId,
         },
       };
@@ -631,8 +612,8 @@ describe("Decode", () => {
     });
 
     it("works for UpdateEscrowPartiesTx", () => {
-      const transactionMessage: codecImpl.app.ITx = {
-        updateEscrowMsg: {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        escrowUpdatePartiesMsg: {
           escrowId: defaultEscrowId,
           sender: Encoding.fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
           arbiter: Encoding.fromHex("f102fdde243399a218d13eb662245f04ef9d0287"),
@@ -653,11 +634,11 @@ describe("Decode", () => {
 
     describe("CreateProposalTx", () => {
       it("works for CreateProposalTx with CreateTextResolution action", () => {
-        const transactionMessage: codecImpl.app.ITx = {
-          createProposalMsg: {
+        const transactionMessage: codecImpl.bnsd.ITx = {
+          govCreateProposalMsg: {
             title: "This will happen next",
-            rawOption: codecImpl.app.ProposalOptions.encode({
-              textResolutionMsg: {
+            rawOption: codecImpl.bnsd.ProposalOptions.encode({
+              govCreateTextResolutionMsg: {
                 metadata: { schema: 1 },
                 resolution: "la la la",
               },
@@ -681,11 +662,11 @@ describe("Decode", () => {
       });
 
       it("works for CreateProposalTx with UpdateElectorate action", () => {
-        const transactionMessage: codecImpl.app.ITx = {
-          createProposalMsg: {
+        const transactionMessage: codecImpl.bnsd.ITx = {
+          govCreateProposalMsg: {
             title: "This will happen next",
-            rawOption: codecImpl.app.ProposalOptions.encode({
-              updateElectorateMsg: {
+            rawOption: codecImpl.bnsd.ProposalOptions.encode({
+              govUpdateElectorateMsg: {
                 metadata: { schema: 1 },
                 electorateId: fromHex("0000000000000005"),
                 diffElectors: [
@@ -722,8 +703,8 @@ describe("Decode", () => {
     });
 
     it("works for VoteTx", () => {
-      const transactionMessage: codecImpl.app.ITx = {
-        voteMsg: {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govVoteMsg: {
           metadata: { schema: 1 },
           proposalId: fromHex("aabbddeeffff"),
           selected: codecImpl.gov.VoteOption.VOTE_OPTION_YES,
@@ -738,8 +719,8 @@ describe("Decode", () => {
     });
 
     it("works for TallyTx", () => {
-      const transactionMessage: codecImpl.app.ITx = {
-        tallyMsg: {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govTallyMsg: {
           metadata: { schema: 1 },
           proposalId: fromHex("aabbddeeffff"),
         },

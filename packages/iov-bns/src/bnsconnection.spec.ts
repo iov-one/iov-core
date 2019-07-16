@@ -51,7 +51,6 @@ import { BnsConnection } from "./bnsconnection";
 import { bnsSwapQueryTag } from "./tags";
 import {
   ActionKind,
-  AddAddressToUsernameTx,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
@@ -69,11 +68,11 @@ import {
   ProposalStatus,
   RegisterUsernameTx,
   ReleaseEscrowTx,
-  RemoveAddressFromUsernameTx,
   ReturnEscrowTx,
   TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
+  UpdateTargetsOfUsernameTx,
   VoteOption,
   VoteTx,
 } from "./types";
@@ -686,17 +685,16 @@ describe("BnsConnection", () => {
       await sendTokensFromFaucet(connection, address, registerAmount);
 
       // Create and send registration
-      const username = `testuser_${Math.random()}`;
+      const username = `testuser_${Math.random()}*iov`;
       const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
-        addresses: [{ chainId: "foobar" as ChainId, address: address }],
         username: username,
+        targets: [{ chainId: "foobar" as ChainId, address: address }],
       });
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(registration, bnsCodec, nonce);
-      const txBytes = bnsCodec.bytesToPost(signed);
-      const response = await connection.postTx(txBytes);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
@@ -710,12 +708,55 @@ describe("BnsConnection", () => {
         throw new Error("Unexpected transaction kind");
       }
       expect(firstSearchResultTransaction.username).toEqual(username);
-      expect(firstSearchResultTransaction.addresses.length).toEqual(1);
+      expect(firstSearchResultTransaction.targets.length).toEqual(1);
 
       connection.disconnect();
     });
 
-    it("can add address to username and remove again", async () => {
+    it("can register a username with empty list of targets", async () => {
+      pending("Currently not supported by the blockchain, see https://github.com/iov-one/weave/issues/857");
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create and send registration
+      const username = `testuser_${Math.random()}*iov`;
+      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
+        kind: "bns/register_username",
+        creator: identity,
+        username: username,
+        targets: [],
+      });
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(registration, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find registration transaction
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(isConfirmedTransaction);
+      expect(searchResult.length).toEqual(1);
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      if (!isRegisterUsernameTx(firstSearchResultTransaction)) {
+        throw new Error("Unexpected transaction kind");
+      }
+      expect(firstSearchResultTransaction.username).toEqual(username);
+      expect(firstSearchResultTransaction.targets.length).toEqual(0);
+
+      connection.disconnect();
+    });
+
+    it("can update targets of username", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId();
@@ -727,13 +768,16 @@ describe("BnsConnection", () => {
       const myAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, myAddress, registerAmount);
 
+      const targets1 = [{ chainId: "foobar" as ChainId, address: myAddress }] as const;
+      const targets2 = [{ chainId: "barfoo" as ChainId, address: myAddress }] as const;
+
       // Create and send registration
-      const username = `testuser_${Math.random()}`;
+      const username = `testuser_${Math.random()}*iov`;
       const usernameRegistration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
         username: username,
-        addresses: [],
+        targets: targets1,
       });
       {
         const response = await connection.postTx(
@@ -749,25 +793,18 @@ describe("BnsConnection", () => {
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
-      // With a blockchain
-      const chainId = `wonderland_${Math.random()}` as ChainId;
-
-      // Add address
-      const address = `testaddress_${Math.random()}` as Address;
-      const addAddress = await connection.withDefaultFee<AddAddressToUsernameTx & WithCreator>({
-        kind: "bns/add_address_to_username",
+      // Update targets
+      const updateTargets = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
+        kind: "bns/update_targets_of_username",
         creator: identity,
         username: username,
-        payload: {
-          chainId: chainId,
-          address: address,
-        },
+        targets: targets2,
       });
       {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
             await profile.signTransaction(
-              addAddress,
+              updateTargets,
               bnsCodec,
               await connection.getNonce({ pubkey: identity.pubkey }),
             ),
@@ -777,81 +814,27 @@ describe("BnsConnection", () => {
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
-      // Adding second address for the same chain fails
-      const address2 = `testaddress2_${Math.random()}` as Address;
-      const addAddress2 = await connection.withDefaultFee<AddAddressToUsernameTx & WithCreator>({
-        kind: "bns/add_address_to_username",
-        creator: identity,
-        username: username,
-        payload: {
-          chainId: chainId,
-          address: address2,
-        },
-      });
-      {
-        const response = await connection.postTx(
-          bnsCodec.bytesToPost(
-            await profile.signTransaction(
-              addAddress2,
-              bnsCodec,
-              await connection.getNonce({ pubkey: identity.pubkey }),
-            ),
-          ),
-        );
-
-        const blockInfo = await response.blockInfo.waitFor(info => info.state === TransactionState.Failed);
-        if (blockInfo.state !== TransactionState.Failed) {
-          throw new Error("Transaction is expected to fail");
-        }
-        // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L29
-        expect(blockInfo.code).toEqual(6);
-        expect(blockInfo.message || "").toMatch(/duplicate/i);
-      }
-
-      // Remove address
-      const removeAddress = await connection.withDefaultFee<RemoveAddressFromUsernameTx & WithCreator>({
-        kind: "bns/remove_address_from_username",
-        creator: identity,
-        username: username,
-        payload: {
-          chainId: chainId,
-          address: address,
-        },
-      });
-      {
-        const response = await connection.postTx(
-          bnsCodec.bytesToPost(
-            await profile.signTransaction(
-              removeAddress,
-              bnsCodec,
-              await connection.getNonce({ pubkey: identity.pubkey }),
-            ),
-          ),
-        );
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-      }
-
-      // Do the same removal again
-      {
-        const response = await connection.postTx(
-          bnsCodec.bytesToPost(
-            await profile.signTransaction(
-              removeAddress,
-              bnsCodec,
-              await connection.getNonce({ pubkey: identity.pubkey }),
-            ),
-          ),
-        );
-
-        const blockInfo = await response.blockInfo.waitFor(info => info.state === TransactionState.Failed);
-        if (blockInfo.state !== TransactionState.Failed) {
-          throw new Error("Transaction is expected to fail");
-        }
-        // https://github.com/iov-one/weave/blob/v0.13.0/errors/errors.go#L56
-        expect(blockInfo.code).toEqual(14);
-        expect(blockInfo.message || "").toMatch(/invalid input/i);
-      }
+      // Clear addresses
+      // TODO: Reactivate after https://github.com/iov-one/weave/issues/857
+      // const clearAddresses = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
+      //   kind: "bns/update_targets_of_username",
+      //   creator: identity,
+      //   username: username,
+      //   targets: [],
+      // });
+      // {
+      //   const response = await connection.postTx(
+      //     bnsCodec.bytesToPost(
+      //       await profile.signTransaction(
+      //         clearAddresses,
+      //         bnsCodec,
+      //         await connection.getNonce({ pubkey: identity.pubkey }),
+      //       ),
+      //     ),
+      //   );
+      //   const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      //   expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+      // }
 
       connection.disconnect();
     });
@@ -2044,7 +2027,7 @@ describe("BnsConnection", () => {
   });
 
   describe("getUsernames", () => {
-    it("can query usernames by name or owner", async () => {
+    it("can query usernames by name", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId();
@@ -2056,12 +2039,13 @@ describe("BnsConnection", () => {
       await sendTokensFromFaucet(connection, identityAddress, registerAmount);
 
       // Register username
-      const username = `testuser_${Math.random()}`;
+      const username = `testuser_${Math.random()}*iov`;
+      const targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
       const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
         kind: "bns/register_username",
         creator: identity,
-        addresses: [],
         username: username,
+        targets: targets,
       });
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(registration, bnsCodec, nonce);
@@ -2077,14 +2061,45 @@ describe("BnsConnection", () => {
         expect(results[0]).toEqual({
           id: username,
           owner: identityAddress,
-          addresses: [],
+          targets: targets,
         });
       }
 
       // Query by non-existing name
       {
-        const results = await connection.getUsernames({ username: "user_we_dont_have" });
+        const results = await connection.getUsernames({ username: "user_we_dont_have*iov" });
         expect(results.length).toEqual(0);
+      }
+
+      connection.disconnect();
+    });
+
+    it("can query usernames owner", async () => {
+      pending("Not supported right now, see https://github.com/iov-one/weave/issues/858");
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+      const identityAddress = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, identityAddress, registerAmount);
+
+      // Register username
+      const username = `testuser_${Math.random()}*iov`;
+      const targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
+      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
+        kind: "bns/register_username",
+        creator: identity,
+        username: username,
+        targets: targets,
+      });
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(registration, bnsCodec, nonce);
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       }
 
       // Query by existing owner

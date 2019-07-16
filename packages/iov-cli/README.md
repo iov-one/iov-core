@@ -157,7 +157,7 @@ transactions associated from above
 const registration: RegisterUsernameTx = {
   kind: "bns/register_username",
   creator: recipient,
-  addresses: [],
+  targets: [],
   username: "hans",
 };
 ^D
@@ -166,11 +166,11 @@ const registration: RegisterUsernameTx = {
 > await bnsConnection.getUsernames({ owner: recipientAddress });
 [ { id: 'hans',
     owner: 'tiov14cn8m57wtrlewmlnjucctsahpnxlj92l0crkvq',
-    addresses: [] } ]
+    targets: [] } ]
 > await bnsConnection.getUsernames({ username: "hans" });
 [ { id: 'hans',
     owner: 'tiov14cn8m57wtrlewmlnjucctsahpnxlj92l0crkvq',
-    addresses: [] } ]
+    targets: [] } ]
 ```
 
 ### Disconnecting

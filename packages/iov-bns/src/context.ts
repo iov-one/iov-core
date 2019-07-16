@@ -38,8 +38,7 @@ export class Context {
     this.chainData = chainData;
   }
 
-  public wallet(acct: codecImpl.namecoin.IWallet & Keyed): WalletData {
-    // acct.name is ignored in favour of username NFTs
+  public wallet(acct: codecImpl.cash.ISet & Keyed): WalletData {
     return {
       address: encodeBnsAddress(addressPrefix(this.chainData.chainId), acct._id),
       balance: ensure(acct.coins).map(c => decodeAmount(c)),
