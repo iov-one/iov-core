@@ -2,8 +2,8 @@
 
 [![npm version](https://img.shields.io/npm/v/@iov/multichain.svg)](https://www.npmjs.com/package/@iov/multichain)
 
-@iov/multichain is the main entrypoint into the monorepo, exposing high-level functionality
-to easily build blockchain clients. It uses the keymanagement functionality of `UserProfile`,
+@iov/multichain exposes high-level functionality to work with multiple blockchains.
+It uses the keymanagement functionality of `UserProfile`,
 and the generic blockchain connection of `BlockchainConnection`, and pulls them together into one
 `MultiChainSigner`, which can query state and sign transactions on multiple blockchains.
 The examples below show a basic usage of the core library. You may also want to experiment
