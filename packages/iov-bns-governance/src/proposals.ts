@@ -7,8 +7,8 @@ import { CommitteeId } from "./committees";
 export enum ProposalType {
   AddCommitteeMember,
   RemoveCommitteeMember,
-  AmendCommitteeThreshold,
-  AmendCommitteeQuorum,
+  AmendElectionRuleThreshold,
+  AmendElectionRuleQuorum,
   AddValidator,
   RemoveValidator,
   ReleaseGuaranteeFunds,
@@ -37,15 +37,15 @@ export interface RemoveCommitteeMemberOptions extends CommonProposalOptions {
   readonly address: Address;
 }
 
-export interface AmendCommitteeThresholdOptions extends CommonProposalOptions {
-  readonly type: ProposalType.AmendCommitteeThreshold;
-  readonly committee: CommitteeId;
+export interface AmendElectionRuleThresholdOptions extends CommonProposalOptions {
+  readonly type: ProposalType.AmendElectionRuleThreshold;
+  readonly targetElectionRuleId: number;
   readonly threshold: Fraction;
 }
 
-export interface AmendCommitteeQuorumOptions extends CommonProposalOptions {
-  readonly type: ProposalType.AmendCommitteeQuorum;
-  readonly committee: CommitteeId;
+export interface AmendElectionRuleQuorumOptions extends CommonProposalOptions {
+  readonly type: ProposalType.AmendElectionRuleQuorum;
+  readonly targetElectionRuleId: number;
   readonly quorum: Fraction | null;
 }
 
@@ -81,8 +81,8 @@ export interface AmendProtocolOptions extends CommonProposalOptions {
 export type ProposalOptions =
   | AddCommitteeMemberOptions
   | RemoveCommitteeMemberOptions
-  | AmendCommitteeThresholdOptions
-  | AmendCommitteeQuorumOptions
+  | AmendElectionRuleThresholdOptions
+  | AmendElectionRuleQuorumOptions
   | AddValidatorOptions
   | RemoveValidatorOptions
   | ReleaseGuaranteeFundsOptions

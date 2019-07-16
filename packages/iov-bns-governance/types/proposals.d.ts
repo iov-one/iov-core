@@ -5,8 +5,8 @@ import { CommitteeId } from "./committees";
 export declare enum ProposalType {
     AddCommitteeMember = 0,
     RemoveCommitteeMember = 1,
-    AmendCommitteeThreshold = 2,
-    AmendCommitteeQuorum = 3,
+    AmendElectionRuleThreshold = 2,
+    AmendElectionRuleQuorum = 3,
     AddValidator = 4,
     RemoveValidator = 5,
     ReleaseGuaranteeFunds = 6,
@@ -31,14 +31,14 @@ export interface RemoveCommitteeMemberOptions extends CommonProposalOptions {
     readonly committee: CommitteeId;
     readonly address: Address;
 }
-export interface AmendCommitteeThresholdOptions extends CommonProposalOptions {
-    readonly type: ProposalType.AmendCommitteeThreshold;
-    readonly committee: CommitteeId;
+export interface AmendElectionRuleThresholdOptions extends CommonProposalOptions {
+    readonly type: ProposalType.AmendElectionRuleThreshold;
+    readonly targetElectionRuleId: number;
     readonly threshold: Fraction;
 }
-export interface AmendCommitteeQuorumOptions extends CommonProposalOptions {
-    readonly type: ProposalType.AmendCommitteeQuorum;
-    readonly committee: CommitteeId;
+export interface AmendElectionRuleQuorumOptions extends CommonProposalOptions {
+    readonly type: ProposalType.AmendElectionRuleQuorum;
+    readonly targetElectionRuleId: number;
     readonly quorum: Fraction | null;
 }
 export interface AddValidatorOptions extends CommonProposalOptions {
@@ -65,5 +65,5 @@ export interface AmendProtocolOptions extends CommonProposalOptions {
     readonly type: ProposalType.AmendProtocol;
     readonly text: string;
 }
-export declare type ProposalOptions = AddCommitteeMemberOptions | RemoveCommitteeMemberOptions | AmendCommitteeThresholdOptions | AmendCommitteeQuorumOptions | AddValidatorOptions | RemoveValidatorOptions | ReleaseGuaranteeFundsOptions | DistributeFundsOptions | AmendProtocolOptions;
+export declare type ProposalOptions = AddCommitteeMemberOptions | RemoveCommitteeMemberOptions | AmendElectionRuleThresholdOptions | AmendElectionRuleQuorumOptions | AddValidatorOptions | RemoveValidatorOptions | ReleaseGuaranteeFundsOptions | DistributeFundsOptions | AmendProtocolOptions;
 export {};

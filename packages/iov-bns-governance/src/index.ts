@@ -3,8 +3,8 @@ export { Governor, GovernorOptions } from "./governor";
 export {
   AddCommitteeMemberOptions,
   AddValidatorOptions,
-  AmendCommitteeThresholdOptions,
-  AmendCommitteeQuorumOptions,
+  AmendElectionRuleThresholdOptions,
+  AmendElectionRuleQuorumOptions,
   AmendProtocolOptions,
   DistributeFundsOptions,
   ReleaseGuaranteeFundsOptions,
