@@ -29,6 +29,7 @@ import {
   PubkeyBytes,
   SendTransaction,
   SwapClaimTransaction,
+  SwapData,
   SwapId,
   SwapIdBytes,
   swapIdEquals,
@@ -2330,24 +2331,83 @@ describe("BnsConnection", () => {
     expect(hashSwap.length).toEqual(1);
     expect(hashSwap[0]).toEqual(swap);
 
-    // ----- connection.getSwapByState() should also work -------
-    const swapStates = await connection.getSwapsFromState(querySwapRecipient);
-    expect(swapStates.length).toEqual(1);
-
-    const swapState = swapStates[0];
-    expect(swapState.kind).toEqual(SwapProcessState.Open);
-
-    // and it matches expectations
-    const stateData = swapState.data;
-    expect(stateData.id).toEqual({ data: txResult });
-    expect(stateData.sender).toEqual(faucetAddr);
-    expect(stateData.recipient).toEqual(recipientAddr);
-    expect(stateData.timeout).toEqual(swapOfferTimeout);
-    expect(stateData.amounts.length).toEqual(1);
-    expect(stateData.amounts[0]).toEqual(amount);
-    expect(stateData.hash).toEqual(swapOfferHash);
-
     connection.disconnect();
+  });
+
+  describe("getSwapsFromState", () => {
+    it("works", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
+      const faucetAddr = identityToAddress(faucet);
+      const recipientAddr = await randomBnsAddress();
+
+      const swapOfferHash = AtomicSwapHelpers.hashPreimage(await AtomicSwapHelpers.createPreimage());
+
+      // it will live 48 hours
+      const swapOfferTimeout = createTimestampTimeout(48 * 3600);
+      const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+        kind: "bcp/swap_offer",
+        creator: faucet,
+        recipient: recipientAddr,
+        amounts: [defaultAmount],
+        timeout: swapOfferTimeout,
+        hash: swapOfferHash,
+        memo: "fooooobar",
+      });
+
+      const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
+      const signed = await profile.signTransaction(swapOfferTx, bnsCodec, nonce);
+      const post = await connection.postTx(bnsCodec.bytesToPost(signed));
+
+      const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      if (!isBlockInfoSucceeded(blockInfo)) {
+        throw new Error(`Expected transaction state success but got state: ${blockInfo.state}`);
+      }
+      const txResult = blockInfo.result! as SwapIdBytes;
+
+      await tendermintSearchIndexUpdated();
+
+      // Prepare queries
+      const expectedSwapData: SwapData = {
+        id: { data: txResult },
+        sender: faucetAddr,
+        recipient: recipientAddr,
+        timeout: swapOfferTimeout,
+        amounts: [defaultAmount],
+        hash: swapOfferHash,
+        memo: "fooooobar",
+      };
+
+      // by ID
+      const querySwapId: AtomicSwapQuery = { id: { data: txResult } };
+      const swapsById = await connection.getSwapsFromState(querySwapId);
+      expect(swapsById.length).toEqual(1);
+      expect(swapsById[0].kind).toEqual(SwapProcessState.Open);
+      expect(swapsById[0].data).toEqual(expectedSwapData);
+
+      // by hash
+      const querySwapHash: AtomicSwapQuery = { hash: swapOfferHash };
+      const swapsByPreimageHash = await connection.getSwapsFromState(querySwapHash);
+      expect(swapsByPreimageHash.length).toEqual(1);
+      expect(swapsByPreimageHash[0].kind).toEqual(SwapProcessState.Open);
+      expect(swapsByPreimageHash[0].data).toEqual(expectedSwapData);
+
+      // by recipient
+      const querySwapRecipient: AtomicSwapQuery = { recipient: recipientAddr };
+      const swapsByRecipient = await connection.getSwapsFromState(querySwapRecipient);
+      expect(swapsByRecipient.length).toEqual(1);
+      expect(swapsByRecipient[0].kind).toEqual(SwapProcessState.Open);
+      expect(swapsByRecipient[0].data).toEqual(expectedSwapData);
+
+      // by sender
+      const querySwapSender: AtomicSwapQuery = { sender: faucetAddr };
+      const swapsBySender = await connection.getSwapsFromState(querySwapSender);
+      expect(swapsBySender[swapsBySender.length - 1].kind).toEqual(SwapProcessState.Open);
+      expect(swapsBySender[swapsBySender.length - 1].data).toEqual(expectedSwapData);
+
+      connection.disconnect();
+    });
   });
 
   const openSwap = async (

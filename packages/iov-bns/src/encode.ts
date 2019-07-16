@@ -133,8 +133,8 @@ function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.bnsd
   return {
     cashSendMsg: codecImpl.cash.SendMsg.create({
       metadata: { schema: 1 },
-      src: decodeBnsAddress(identityToAddress(tx.creator)).data,
-      dest: decodeBnsAddress(tx.recipient).data,
+      source: decodeBnsAddress(identityToAddress(tx.creator)).data,
+      destination: decodeBnsAddress(tx.recipient).data,
       amount: encodeAmount(tx.amount),
       memo: encodeString(tx.memo),
     }),
@@ -151,9 +151,9 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.bns
   return {
     aswapCreateMsg: codecImpl.aswap.CreateMsg.create({
       metadata: { schema: 1 },
-      src: decodeBnsAddress(identityToAddress(tx.creator)).data,
+      source: decodeBnsAddress(identityToAddress(tx.creator)).data,
       preimageHash: tx.hash,
-      recipient: decodeBnsAddress(tx.recipient).data,
+      destination: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: encodeInt(tx.timeout.timestamp),
       memo: encodeString(tx.memo),
@@ -246,9 +246,9 @@ function buildCreateEscrowTx(tx: CreateEscrowTx): codecImpl.bnsd.ITx {
   return {
     escrowCreateMsg: {
       metadata: { schema: 1 },
-      src: decodeBnsAddress(tx.sender).data,
+      source: decodeBnsAddress(tx.sender).data,
       arbiter: decodeBnsAddress(tx.arbiter).data,
-      recipient: decodeBnsAddress(tx.recipient).data,
+      destination: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: encodeInt(tx.timeout.timestamp),
       memo: encodeString(tx.memo),
@@ -284,9 +284,9 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.bnsd.I
     escrowUpdatePartiesMsg: {
       metadata: { schema: 1 },
       escrowId: tx.escrowId,
-      sender: tx.sender && decodeBnsAddress(tx.sender).data,
+      source: tx.sender && decodeBnsAddress(tx.sender).data,
       arbiter: tx.arbiter && decodeBnsAddress(tx.arbiter).data,
-      recipient: tx.recipient && decodeBnsAddress(tx.recipient).data,
+      destination: tx.recipient && decodeBnsAddress(tx.recipient).data,
     },
   };
 }

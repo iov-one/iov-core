@@ -539,9 +539,9 @@ describe("Decode", () => {
       const memo = "testing 123";
       const transactionMessage: codecImpl.bnsd.ITx = {
         escrowCreateMsg: {
-          src: Encoding.fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          source: Encoding.fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
           arbiter: Encoding.fromHex("f102fdde243399a218d13eb662245f04ef9d0287"),
-          recipient: Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+          destination: Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
           amount: [
             {
               whole: 3,
@@ -615,9 +615,9 @@ describe("Decode", () => {
       const transactionMessage: codecImpl.bnsd.ITx = {
         escrowUpdatePartiesMsg: {
           escrowId: defaultEscrowId,
-          sender: Encoding.fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          source: Encoding.fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
           arbiter: Encoding.fromHex("f102fdde243399a218d13eb662245f04ef9d0287"),
-          recipient: Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+          destination: Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);

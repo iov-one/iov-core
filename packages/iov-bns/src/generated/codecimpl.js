@@ -8266,8 +8266,8 @@ $root.aswap = (function() {
          * @interface ISwap
          * @property {weave.IMetadata|null} [metadata] metadata is used for schema versioning support
          * @property {Uint8Array|null} [preimageHash] sha256 hash of preimage, 32 bytes long
-         * @property {Uint8Array|null} [src] src is a sender address
-         * @property {Uint8Array|null} [recipient] recipient is an address of recipient
+         * @property {Uint8Array|null} [source] source is a sender address
+         * @property {Uint8Array|null} [destination] destination is an address of destination
          * @property {number|Long|null} [timeout] expired: [timeout, infinity)
          * @property {string|null} [memo] max length 128 characters
          */
@@ -8304,20 +8304,20 @@ $root.aswap = (function() {
         Swap.prototype.preimageHash = $util.newBuffer([]);
 
         /**
-         * src is a sender address
-         * @member {Uint8Array} src
+         * source is a sender address
+         * @member {Uint8Array} source
          * @memberof aswap.Swap
          * @instance
          */
-        Swap.prototype.src = $util.newBuffer([]);
+        Swap.prototype.source = $util.newBuffer([]);
 
         /**
-         * recipient is an address of recipient
-         * @member {Uint8Array} recipient
+         * destination is an address of destination
+         * @member {Uint8Array} destination
          * @memberof aswap.Swap
          * @instance
          */
-        Swap.prototype.recipient = $util.newBuffer([]);
+        Swap.prototype.destination = $util.newBuffer([]);
 
         /**
          * expired: [timeout, infinity)
@@ -8363,10 +8363,10 @@ $root.aswap = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.preimageHash);
-            if (message.src != null && message.hasOwnProperty("src"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.src);
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.recipient);
+            if (message.source != null && message.hasOwnProperty("source"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.source);
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.destination);
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 writer.uint32(/* id 6, wireType 0 =*/48).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
@@ -8412,10 +8412,10 @@ $root.aswap = (function() {
                     message.preimageHash = reader.bytes();
                     break;
                 case 3:
-                    message.src = reader.bytes();
+                    message.source = reader.bytes();
                     break;
                 case 5:
-                    message.recipient = reader.bytes();
+                    message.destination = reader.bytes();
                     break;
                 case 6:
                     message.timeout = reader.int64();
@@ -8466,12 +8466,12 @@ $root.aswap = (function() {
             if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
                 if (!(message.preimageHash && typeof message.preimageHash.length === "number" || $util.isString(message.preimageHash)))
                     return "preimageHash: buffer expected";
-            if (message.src != null && message.hasOwnProperty("src"))
-                if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
-                    return "src: buffer expected";
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
-                    return "recipient: buffer expected";
+            if (message.source != null && message.hasOwnProperty("source"))
+                if (!(message.source && typeof message.source.length === "number" || $util.isString(message.source)))
+                    return "source: buffer expected";
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                if (!(message.destination && typeof message.destination.length === "number" || $util.isString(message.destination)))
+                    return "destination: buffer expected";
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 if (!$util.isInteger(message.timeout) && !(message.timeout && $util.isInteger(message.timeout.low) && $util.isInteger(message.timeout.high)))
                     return "timeout: integer|Long expected";
@@ -8503,16 +8503,16 @@ $root.aswap = (function() {
                     $util.base64.decode(object.preimageHash, message.preimageHash = $util.newBuffer($util.base64.length(object.preimageHash)), 0);
                 else if (object.preimageHash.length)
                     message.preimageHash = object.preimageHash;
-            if (object.src != null)
-                if (typeof object.src === "string")
-                    $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
-                else if (object.src.length)
-                    message.src = object.src;
-            if (object.recipient != null)
-                if (typeof object.recipient === "string")
-                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
-                else if (object.recipient.length)
-                    message.recipient = object.recipient;
+            if (object.source != null)
+                if (typeof object.source === "string")
+                    $util.base64.decode(object.source, message.source = $util.newBuffer($util.base64.length(object.source)), 0);
+                else if (object.source.length)
+                    message.source = object.source;
+            if (object.destination != null)
+                if (typeof object.destination === "string")
+                    $util.base64.decode(object.destination, message.destination = $util.newBuffer($util.base64.length(object.destination)), 0);
+                else if (object.destination.length)
+                    message.destination = object.destination;
             if (object.timeout != null)
                 if ($util.Long)
                     (message.timeout = $util.Long.fromValue(object.timeout)).unsigned = false;
@@ -8550,18 +8550,18 @@ $root.aswap = (function() {
                         object.preimageHash = $util.newBuffer(object.preimageHash);
                 }
                 if (options.bytes === String)
-                    object.src = "";
+                    object.source = "";
                 else {
-                    object.src = [];
+                    object.source = [];
                     if (options.bytes !== Array)
-                        object.src = $util.newBuffer(object.src);
+                        object.source = $util.newBuffer(object.source);
                 }
                 if (options.bytes === String)
-                    object.recipient = "";
+                    object.destination = "";
                 else {
-                    object.recipient = [];
+                    object.destination = [];
                     if (options.bytes !== Array)
-                        object.recipient = $util.newBuffer(object.recipient);
+                        object.destination = $util.newBuffer(object.destination);
                 }
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
@@ -8574,10 +8574,10 @@ $root.aswap = (function() {
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
                 object.preimageHash = options.bytes === String ? $util.base64.encode(message.preimageHash, 0, message.preimageHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.preimageHash) : message.preimageHash;
-            if (message.src != null && message.hasOwnProperty("src"))
-                object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.source != null && message.hasOwnProperty("source"))
+                object.source = options.bytes === String ? $util.base64.encode(message.source, 0, message.source.length) : options.bytes === Array ? Array.prototype.slice.call(message.source) : message.source;
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                object.destination = options.bytes === String ? $util.base64.encode(message.destination, 0, message.destination.length) : options.bytes === Array ? Array.prototype.slice.call(message.destination) : message.destination;
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 if (typeof message.timeout === "number")
                     object.timeout = options.longs === String ? String(message.timeout) : message.timeout;
@@ -8609,9 +8609,9 @@ $root.aswap = (function() {
          * @memberof aswap
          * @interface ICreateMsg
          * @property {weave.IMetadata|null} [metadata] CreateMsg metadata
-         * @property {Uint8Array|null} [src] CreateMsg src
+         * @property {Uint8Array|null} [source] CreateMsg source
          * @property {Uint8Array|null} [preimageHash] sha256 hash of preimage, 32 bytes long
-         * @property {Uint8Array|null} [recipient] CreateMsg recipient
+         * @property {Uint8Array|null} [destination] CreateMsg destination
          * @property {Array.<coin.ICoin>|null} [amount] amount may contain multiple token types
          * @property {number|Long|null} [timeout] Timeout represents wall clock time.
          * @property {string|null} [memo] max length 128 character
@@ -8642,12 +8642,12 @@ $root.aswap = (function() {
         CreateMsg.prototype.metadata = null;
 
         /**
-         * CreateMsg src.
-         * @member {Uint8Array} src
+         * CreateMsg source.
+         * @member {Uint8Array} source
          * @memberof aswap.CreateMsg
          * @instance
          */
-        CreateMsg.prototype.src = $util.newBuffer([]);
+        CreateMsg.prototype.source = $util.newBuffer([]);
 
         /**
          * sha256 hash of preimage, 32 bytes long
@@ -8658,12 +8658,12 @@ $root.aswap = (function() {
         CreateMsg.prototype.preimageHash = $util.newBuffer([]);
 
         /**
-         * CreateMsg recipient.
-         * @member {Uint8Array} recipient
+         * CreateMsg destination.
+         * @member {Uint8Array} destination
          * @memberof aswap.CreateMsg
          * @instance
          */
-        CreateMsg.prototype.recipient = $util.newBuffer([]);
+        CreateMsg.prototype.destination = $util.newBuffer([]);
 
         /**
          * amount may contain multiple token types
@@ -8715,12 +8715,12 @@ $root.aswap = (function() {
                 writer = $Writer.create();
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.src != null && message.hasOwnProperty("src"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.src);
+            if (message.source != null && message.hasOwnProperty("source"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.source);
             if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.preimageHash);
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.destination);
             if (message.amount != null && message.amount.length)
                 for (var i = 0; i < message.amount.length; ++i)
                     $root.coin.Coin.encode(message.amount[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
@@ -8766,13 +8766,13 @@ $root.aswap = (function() {
                     message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.src = reader.bytes();
+                    message.source = reader.bytes();
                     break;
                 case 3:
                     message.preimageHash = reader.bytes();
                     break;
                 case 4:
-                    message.recipient = reader.bytes();
+                    message.destination = reader.bytes();
                     break;
                 case 5:
                     if (!(message.amount && message.amount.length))
@@ -8825,15 +8825,15 @@ $root.aswap = (function() {
                 if (error)
                     return "metadata." + error;
             }
-            if (message.src != null && message.hasOwnProperty("src"))
-                if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
-                    return "src: buffer expected";
+            if (message.source != null && message.hasOwnProperty("source"))
+                if (!(message.source && typeof message.source.length === "number" || $util.isString(message.source)))
+                    return "source: buffer expected";
             if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
                 if (!(message.preimageHash && typeof message.preimageHash.length === "number" || $util.isString(message.preimageHash)))
                     return "preimageHash: buffer expected";
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
-                    return "recipient: buffer expected";
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                if (!(message.destination && typeof message.destination.length === "number" || $util.isString(message.destination)))
+                    return "destination: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount")) {
                 if (!Array.isArray(message.amount))
                     return "amount: array expected";
@@ -8869,21 +8869,21 @@ $root.aswap = (function() {
                     throw TypeError(".aswap.CreateMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
-            if (object.src != null)
-                if (typeof object.src === "string")
-                    $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
-                else if (object.src.length)
-                    message.src = object.src;
+            if (object.source != null)
+                if (typeof object.source === "string")
+                    $util.base64.decode(object.source, message.source = $util.newBuffer($util.base64.length(object.source)), 0);
+                else if (object.source.length)
+                    message.source = object.source;
             if (object.preimageHash != null)
                 if (typeof object.preimageHash === "string")
                     $util.base64.decode(object.preimageHash, message.preimageHash = $util.newBuffer($util.base64.length(object.preimageHash)), 0);
                 else if (object.preimageHash.length)
                     message.preimageHash = object.preimageHash;
-            if (object.recipient != null)
-                if (typeof object.recipient === "string")
-                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
-                else if (object.recipient.length)
-                    message.recipient = object.recipient;
+            if (object.destination != null)
+                if (typeof object.destination === "string")
+                    $util.base64.decode(object.destination, message.destination = $util.newBuffer($util.base64.length(object.destination)), 0);
+                else if (object.destination.length)
+                    message.destination = object.destination;
             if (object.amount) {
                 if (!Array.isArray(object.amount))
                     throw TypeError(".aswap.CreateMsg.amount: array expected");
@@ -8926,11 +8926,11 @@ $root.aswap = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 if (options.bytes === String)
-                    object.src = "";
+                    object.source = "";
                 else {
-                    object.src = [];
+                    object.source = [];
                     if (options.bytes !== Array)
-                        object.src = $util.newBuffer(object.src);
+                        object.source = $util.newBuffer(object.source);
                 }
                 if (options.bytes === String)
                     object.preimageHash = "";
@@ -8940,11 +8940,11 @@ $root.aswap = (function() {
                         object.preimageHash = $util.newBuffer(object.preimageHash);
                 }
                 if (options.bytes === String)
-                    object.recipient = "";
+                    object.destination = "";
                 else {
-                    object.recipient = [];
+                    object.destination = [];
                     if (options.bytes !== Array)
-                        object.recipient = $util.newBuffer(object.recipient);
+                        object.destination = $util.newBuffer(object.destination);
                 }
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
@@ -8955,12 +8955,12 @@ $root.aswap = (function() {
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
-            if (message.src != null && message.hasOwnProperty("src"))
-                object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
+            if (message.source != null && message.hasOwnProperty("source"))
+                object.source = options.bytes === String ? $util.base64.encode(message.source, 0, message.source.length) : options.bytes === Array ? Array.prototype.slice.call(message.source) : message.source;
             if (message.preimageHash != null && message.hasOwnProperty("preimageHash"))
                 object.preimageHash = options.bytes === String ? $util.base64.encode(message.preimageHash, 0, message.preimageHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.preimageHash) : message.preimageHash;
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                object.destination = options.bytes === String ? $util.base64.encode(message.destination, 0, message.destination.length) : options.bytes === Array ? Array.prototype.slice.call(message.destination) : message.destination;
             if (message.amount && message.amount.length) {
                 object.amount = [];
                 for (var j = 0; j < message.amount.length; ++j)
@@ -9942,8 +9942,8 @@ $root.cash = (function() {
          * @memberof cash
          * @interface ISendMsg
          * @property {weave.IMetadata|null} [metadata] SendMsg metadata
-         * @property {Uint8Array|null} [src] SendMsg src
-         * @property {Uint8Array|null} [dest] SendMsg dest
+         * @property {Uint8Array|null} [source] SendMsg source
+         * @property {Uint8Array|null} [destination] SendMsg destination
          * @property {coin.ICoin|null} [amount] SendMsg amount
          * @property {string|null} [memo] max length 128 character
          * @property {Uint8Array|null} [ref] max length 64 bytes
@@ -9973,20 +9973,20 @@ $root.cash = (function() {
         SendMsg.prototype.metadata = null;
 
         /**
-         * SendMsg src.
-         * @member {Uint8Array} src
+         * SendMsg source.
+         * @member {Uint8Array} source
          * @memberof cash.SendMsg
          * @instance
          */
-        SendMsg.prototype.src = $util.newBuffer([]);
+        SendMsg.prototype.source = $util.newBuffer([]);
 
         /**
-         * SendMsg dest.
-         * @member {Uint8Array} dest
+         * SendMsg destination.
+         * @member {Uint8Array} destination
          * @memberof cash.SendMsg
          * @instance
          */
-        SendMsg.prototype.dest = $util.newBuffer([]);
+        SendMsg.prototype.destination = $util.newBuffer([]);
 
         /**
          * SendMsg amount.
@@ -10038,10 +10038,10 @@ $root.cash = (function() {
                 writer = $Writer.create();
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.src != null && message.hasOwnProperty("src"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.src);
-            if (message.dest != null && message.hasOwnProperty("dest"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.dest);
+            if (message.source != null && message.hasOwnProperty("source"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.source);
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.destination);
             if (message.amount != null && message.hasOwnProperty("amount"))
                 $root.coin.Coin.encode(message.amount, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.memo != null && message.hasOwnProperty("memo"))
@@ -10086,10 +10086,10 @@ $root.cash = (function() {
                     message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.src = reader.bytes();
+                    message.source = reader.bytes();
                     break;
                 case 3:
-                    message.dest = reader.bytes();
+                    message.destination = reader.bytes();
                     break;
                 case 4:
                     message.amount = $root.coin.Coin.decode(reader, reader.uint32());
@@ -10140,12 +10140,12 @@ $root.cash = (function() {
                 if (error)
                     return "metadata." + error;
             }
-            if (message.src != null && message.hasOwnProperty("src"))
-                if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
-                    return "src: buffer expected";
-            if (message.dest != null && message.hasOwnProperty("dest"))
-                if (!(message.dest && typeof message.dest.length === "number" || $util.isString(message.dest)))
-                    return "dest: buffer expected";
+            if (message.source != null && message.hasOwnProperty("source"))
+                if (!(message.source && typeof message.source.length === "number" || $util.isString(message.source)))
+                    return "source: buffer expected";
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                if (!(message.destination && typeof message.destination.length === "number" || $util.isString(message.destination)))
+                    return "destination: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount")) {
                 var error = $root.coin.Coin.verify(message.amount);
                 if (error)
@@ -10177,16 +10177,16 @@ $root.cash = (function() {
                     throw TypeError(".cash.SendMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
-            if (object.src != null)
-                if (typeof object.src === "string")
-                    $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
-                else if (object.src.length)
-                    message.src = object.src;
-            if (object.dest != null)
-                if (typeof object.dest === "string")
-                    $util.base64.decode(object.dest, message.dest = $util.newBuffer($util.base64.length(object.dest)), 0);
-                else if (object.dest.length)
-                    message.dest = object.dest;
+            if (object.source != null)
+                if (typeof object.source === "string")
+                    $util.base64.decode(object.source, message.source = $util.newBuffer($util.base64.length(object.source)), 0);
+                else if (object.source.length)
+                    message.source = object.source;
+            if (object.destination != null)
+                if (typeof object.destination === "string")
+                    $util.base64.decode(object.destination, message.destination = $util.newBuffer($util.base64.length(object.destination)), 0);
+                else if (object.destination.length)
+                    message.destination = object.destination;
             if (object.amount != null) {
                 if (typeof object.amount !== "object")
                     throw TypeError(".cash.SendMsg.amount: object expected");
@@ -10218,18 +10218,18 @@ $root.cash = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 if (options.bytes === String)
-                    object.src = "";
+                    object.source = "";
                 else {
-                    object.src = [];
+                    object.source = [];
                     if (options.bytes !== Array)
-                        object.src = $util.newBuffer(object.src);
+                        object.source = $util.newBuffer(object.source);
                 }
                 if (options.bytes === String)
-                    object.dest = "";
+                    object.destination = "";
                 else {
-                    object.dest = [];
+                    object.destination = [];
                     if (options.bytes !== Array)
-                        object.dest = $util.newBuffer(object.dest);
+                        object.destination = $util.newBuffer(object.destination);
                 }
                 object.amount = null;
                 object.memo = "";
@@ -10243,10 +10243,10 @@ $root.cash = (function() {
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
-            if (message.src != null && message.hasOwnProperty("src"))
-                object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
-            if (message.dest != null && message.hasOwnProperty("dest"))
-                object.dest = options.bytes === String ? $util.base64.encode(message.dest, 0, message.dest.length) : options.bytes === Array ? Array.prototype.slice.call(message.dest) : message.dest;
+            if (message.source != null && message.hasOwnProperty("source"))
+                object.source = options.bytes === String ? $util.base64.encode(message.source, 0, message.source.length) : options.bytes === Array ? Array.prototype.slice.call(message.source) : message.source;
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                object.destination = options.bytes === String ? $util.base64.encode(message.destination, 0, message.destination.length) : options.bytes === Array ? Array.prototype.slice.call(message.destination) : message.destination;
             if (message.amount != null && message.hasOwnProperty("amount"))
                 object.amount = $root.coin.Coin.toObject(message.amount, options);
             if (message.memo != null && message.hasOwnProperty("memo"))
@@ -11480,7 +11480,7 @@ $root.distribution = (function() {
          * @interface IRevenue
          * @property {weave.IMetadata|null} [metadata] Revenue metadata
          * @property {Uint8Array|null} [admin] While not enforced it is best to use a multisig contract here.
-         * @property {Array.<distribution.IRecipient>|null} [recipients] distributed to. Must be at least one.
+         * @property {Array.<distribution.IDestination>|null} [destinations] distributed to. Must be at least one.
          */
 
         /**
@@ -11492,7 +11492,7 @@ $root.distribution = (function() {
          * @param {distribution.IRevenue=} [properties] Properties to set
          */
         function Revenue(properties) {
-            this.recipients = [];
+            this.destinations = [];
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -11517,11 +11517,11 @@ $root.distribution = (function() {
 
         /**
          * distributed to. Must be at least one.
-         * @member {Array.<distribution.IRecipient>} recipients
+         * @member {Array.<distribution.IDestination>} destinations
          * @memberof distribution.Revenue
          * @instance
          */
-        Revenue.prototype.recipients = $util.emptyArray;
+        Revenue.prototype.destinations = $util.emptyArray;
 
         /**
          * Creates a new Revenue instance using the specified properties.
@@ -11551,9 +11551,9 @@ $root.distribution = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.admin != null && message.hasOwnProperty("admin"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.admin);
-            if (message.recipients != null && message.recipients.length)
-                for (var i = 0; i < message.recipients.length; ++i)
-                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.destinations != null && message.destinations.length)
+                for (var i = 0; i < message.destinations.length; ++i)
+                    $root.distribution.Destination.encode(message.destinations[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -11595,9 +11595,9 @@ $root.distribution = (function() {
                     message.admin = reader.bytes();
                     break;
                 case 3:
-                    if (!(message.recipients && message.recipients.length))
-                        message.recipients = [];
-                    message.recipients.push($root.distribution.Recipient.decode(reader, reader.uint32()));
+                    if (!(message.destinations && message.destinations.length))
+                        message.destinations = [];
+                    message.destinations.push($root.distribution.Destination.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -11642,13 +11642,13 @@ $root.distribution = (function() {
             if (message.admin != null && message.hasOwnProperty("admin"))
                 if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
                     return "admin: buffer expected";
-            if (message.recipients != null && message.hasOwnProperty("recipients")) {
-                if (!Array.isArray(message.recipients))
-                    return "recipients: array expected";
-                for (var i = 0; i < message.recipients.length; ++i) {
-                    var error = $root.distribution.Recipient.verify(message.recipients[i]);
+            if (message.destinations != null && message.hasOwnProperty("destinations")) {
+                if (!Array.isArray(message.destinations))
+                    return "destinations: array expected";
+                for (var i = 0; i < message.destinations.length; ++i) {
+                    var error = $root.distribution.Destination.verify(message.destinations[i]);
                     if (error)
-                        return "recipients." + error;
+                        return "destinations." + error;
                 }
             }
             return null;
@@ -11676,14 +11676,14 @@ $root.distribution = (function() {
                     $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
                 else if (object.admin.length)
                     message.admin = object.admin;
-            if (object.recipients) {
-                if (!Array.isArray(object.recipients))
-                    throw TypeError(".distribution.Revenue.recipients: array expected");
-                message.recipients = [];
-                for (var i = 0; i < object.recipients.length; ++i) {
-                    if (typeof object.recipients[i] !== "object")
-                        throw TypeError(".distribution.Revenue.recipients: object expected");
-                    message.recipients[i] = $root.distribution.Recipient.fromObject(object.recipients[i]);
+            if (object.destinations) {
+                if (!Array.isArray(object.destinations))
+                    throw TypeError(".distribution.Revenue.destinations: array expected");
+                message.destinations = [];
+                for (var i = 0; i < object.destinations.length; ++i) {
+                    if (typeof object.destinations[i] !== "object")
+                        throw TypeError(".distribution.Revenue.destinations: object expected");
+                    message.destinations[i] = $root.distribution.Destination.fromObject(object.destinations[i]);
                 }
             }
             return message;
@@ -11703,7 +11703,7 @@ $root.distribution = (function() {
                 options = {};
             var object = {};
             if (options.arrays || options.defaults)
-                object.recipients = [];
+                object.destinations = [];
             if (options.defaults) {
                 object.metadata = null;
                 if (options.bytes === String)
@@ -11718,10 +11718,10 @@ $root.distribution = (function() {
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.admin != null && message.hasOwnProperty("admin"))
                 object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
-            if (message.recipients && message.recipients.length) {
-                object.recipients = [];
-                for (var j = 0; j < message.recipients.length; ++j)
-                    object.recipients[j] = $root.distribution.Recipient.toObject(message.recipients[j], options);
+            if (message.destinations && message.destinations.length) {
+                object.destinations = [];
+                for (var j = 0; j < message.destinations.length; ++j)
+                    object.destinations[j] = $root.distribution.Destination.toObject(message.destinations[j], options);
             }
             return object;
         };
@@ -11740,25 +11740,25 @@ $root.distribution = (function() {
         return Revenue;
     })();
 
-    distribution.Recipient = (function() {
+    distribution.Destination = (function() {
 
         /**
-         * Properties of a Recipient.
+         * Properties of a Destination.
          * @memberof distribution
-         * @interface IRecipient
+         * @interface IDestination
          * @property {Uint8Array|null} [address] of the validators.
          * @property {number|null} [weight] second one.
          */
 
         /**
-         * Constructs a new Recipient.
+         * Constructs a new Destination.
          * @memberof distribution
-         * @classdesc Represents a Recipient.
-         * @implements IRecipient
+         * @classdesc Represents a Destination.
+         * @implements IDestination
          * @constructor
-         * @param {distribution.IRecipient=} [properties] Properties to set
+         * @param {distribution.IDestination=} [properties] Properties to set
          */
-        function Recipient(properties) {
+        function Destination(properties) {
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -11768,41 +11768,41 @@ $root.distribution = (function() {
         /**
          * of the validators.
          * @member {Uint8Array} address
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @instance
          */
-        Recipient.prototype.address = $util.newBuffer([]);
+        Destination.prototype.address = $util.newBuffer([]);
 
         /**
          * second one.
          * @member {number} weight
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @instance
          */
-        Recipient.prototype.weight = 0;
+        Destination.prototype.weight = 0;
 
         /**
-         * Creates a new Recipient instance using the specified properties.
+         * Creates a new Destination instance using the specified properties.
          * @function create
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @static
-         * @param {distribution.IRecipient=} [properties] Properties to set
-         * @returns {distribution.Recipient} Recipient instance
+         * @param {distribution.IDestination=} [properties] Properties to set
+         * @returns {distribution.Destination} Destination instance
          */
-        Recipient.create = function create(properties) {
-            return new Recipient(properties);
+        Destination.create = function create(properties) {
+            return new Destination(properties);
         };
 
         /**
-         * Encodes the specified Recipient message. Does not implicitly {@link distribution.Recipient.verify|verify} messages.
+         * Encodes the specified Destination message. Does not implicitly {@link distribution.Destination.verify|verify} messages.
          * @function encode
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @static
-         * @param {distribution.IRecipient} message Recipient message or plain object to encode
+         * @param {distribution.IDestination} message Destination message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        Recipient.encode = function encode(message, writer) {
+        Destination.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.address != null && message.hasOwnProperty("address"))
@@ -11813,33 +11813,33 @@ $root.distribution = (function() {
         };
 
         /**
-         * Encodes the specified Recipient message, length delimited. Does not implicitly {@link distribution.Recipient.verify|verify} messages.
+         * Encodes the specified Destination message, length delimited. Does not implicitly {@link distribution.Destination.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @static
-         * @param {distribution.IRecipient} message Recipient message or plain object to encode
+         * @param {distribution.IDestination} message Destination message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        Recipient.encodeDelimited = function encodeDelimited(message, writer) {
+        Destination.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a Recipient message from the specified reader or buffer.
+         * Decodes a Destination message from the specified reader or buffer.
          * @function decode
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {distribution.Recipient} Recipient
+         * @returns {distribution.Destination} Destination
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        Recipient.decode = function decode(reader, length) {
+        Destination.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.distribution.Recipient();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.distribution.Destination();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -11858,30 +11858,30 @@ $root.distribution = (function() {
         };
 
         /**
-         * Decodes a Recipient message from the specified reader or buffer, length delimited.
+         * Decodes a Destination message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {distribution.Recipient} Recipient
+         * @returns {distribution.Destination} Destination
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        Recipient.decodeDelimited = function decodeDelimited(reader) {
+        Destination.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a Recipient message.
+         * Verifies a Destination message.
          * @function verify
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        Recipient.verify = function verify(message) {
+        Destination.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.address != null && message.hasOwnProperty("address"))
@@ -11894,17 +11894,17 @@ $root.distribution = (function() {
         };
 
         /**
-         * Creates a Recipient message from a plain object. Also converts values to their respective internal types.
+         * Creates a Destination message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {distribution.Recipient} Recipient
+         * @returns {distribution.Destination} Destination
          */
-        Recipient.fromObject = function fromObject(object) {
-            if (object instanceof $root.distribution.Recipient)
+        Destination.fromObject = function fromObject(object) {
+            if (object instanceof $root.distribution.Destination)
                 return object;
-            var message = new $root.distribution.Recipient();
+            var message = new $root.distribution.Destination();
             if (object.address != null)
                 if (typeof object.address === "string")
                     $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
@@ -11916,15 +11916,15 @@ $root.distribution = (function() {
         };
 
         /**
-         * Creates a plain object from a Recipient message. Also converts values to other types if specified.
+         * Creates a plain object from a Destination message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @static
-         * @param {distribution.Recipient} message Recipient
+         * @param {distribution.Destination} message Destination
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        Recipient.toObject = function toObject(message, options) {
+        Destination.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             var object = {};
@@ -11946,17 +11946,17 @@ $root.distribution = (function() {
         };
 
         /**
-         * Converts this Recipient to JSON.
+         * Converts this Destination to JSON.
          * @function toJSON
-         * @memberof distribution.Recipient
+         * @memberof distribution.Destination
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        Recipient.prototype.toJSON = function toJSON() {
+        Destination.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
-        return Recipient;
+        return Destination;
     })();
 
     distribution.CreateMsg = (function() {
@@ -11967,7 +11967,7 @@ $root.distribution = (function() {
          * @interface ICreateMsg
          * @property {weave.IMetadata|null} [metadata] CreateMsg metadata
          * @property {Uint8Array|null} [admin] While not enforced it is best to use a multisig contract here.
-         * @property {Array.<distribution.IRecipient>|null} [recipients] distributed to. Must be at least one.
+         * @property {Array.<distribution.IDestination>|null} [destinations] distributed to. Must be at least one.
          */
 
         /**
@@ -11979,7 +11979,7 @@ $root.distribution = (function() {
          * @param {distribution.ICreateMsg=} [properties] Properties to set
          */
         function CreateMsg(properties) {
-            this.recipients = [];
+            this.destinations = [];
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -12004,11 +12004,11 @@ $root.distribution = (function() {
 
         /**
          * distributed to. Must be at least one.
-         * @member {Array.<distribution.IRecipient>} recipients
+         * @member {Array.<distribution.IDestination>} destinations
          * @memberof distribution.CreateMsg
          * @instance
          */
-        CreateMsg.prototype.recipients = $util.emptyArray;
+        CreateMsg.prototype.destinations = $util.emptyArray;
 
         /**
          * Creates a new CreateMsg instance using the specified properties.
@@ -12038,9 +12038,9 @@ $root.distribution = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.admin != null && message.hasOwnProperty("admin"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.admin);
-            if (message.recipients != null && message.recipients.length)
-                for (var i = 0; i < message.recipients.length; ++i)
-                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.destinations != null && message.destinations.length)
+                for (var i = 0; i < message.destinations.length; ++i)
+                    $root.distribution.Destination.encode(message.destinations[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -12082,9 +12082,9 @@ $root.distribution = (function() {
                     message.admin = reader.bytes();
                     break;
                 case 3:
-                    if (!(message.recipients && message.recipients.length))
-                        message.recipients = [];
-                    message.recipients.push($root.distribution.Recipient.decode(reader, reader.uint32()));
+                    if (!(message.destinations && message.destinations.length))
+                        message.destinations = [];
+                    message.destinations.push($root.distribution.Destination.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -12129,13 +12129,13 @@ $root.distribution = (function() {
             if (message.admin != null && message.hasOwnProperty("admin"))
                 if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
                     return "admin: buffer expected";
-            if (message.recipients != null && message.hasOwnProperty("recipients")) {
-                if (!Array.isArray(message.recipients))
-                    return "recipients: array expected";
-                for (var i = 0; i < message.recipients.length; ++i) {
-                    var error = $root.distribution.Recipient.verify(message.recipients[i]);
+            if (message.destinations != null && message.hasOwnProperty("destinations")) {
+                if (!Array.isArray(message.destinations))
+                    return "destinations: array expected";
+                for (var i = 0; i < message.destinations.length; ++i) {
+                    var error = $root.distribution.Destination.verify(message.destinations[i]);
                     if (error)
-                        return "recipients." + error;
+                        return "destinations." + error;
                 }
             }
             return null;
@@ -12163,14 +12163,14 @@ $root.distribution = (function() {
                     $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
                 else if (object.admin.length)
                     message.admin = object.admin;
-            if (object.recipients) {
-                if (!Array.isArray(object.recipients))
-                    throw TypeError(".distribution.CreateMsg.recipients: array expected");
-                message.recipients = [];
-                for (var i = 0; i < object.recipients.length; ++i) {
-                    if (typeof object.recipients[i] !== "object")
-                        throw TypeError(".distribution.CreateMsg.recipients: object expected");
-                    message.recipients[i] = $root.distribution.Recipient.fromObject(object.recipients[i]);
+            if (object.destinations) {
+                if (!Array.isArray(object.destinations))
+                    throw TypeError(".distribution.CreateMsg.destinations: array expected");
+                message.destinations = [];
+                for (var i = 0; i < object.destinations.length; ++i) {
+                    if (typeof object.destinations[i] !== "object")
+                        throw TypeError(".distribution.CreateMsg.destinations: object expected");
+                    message.destinations[i] = $root.distribution.Destination.fromObject(object.destinations[i]);
                 }
             }
             return message;
@@ -12190,7 +12190,7 @@ $root.distribution = (function() {
                 options = {};
             var object = {};
             if (options.arrays || options.defaults)
-                object.recipients = [];
+                object.destinations = [];
             if (options.defaults) {
                 object.metadata = null;
                 if (options.bytes === String)
@@ -12205,10 +12205,10 @@ $root.distribution = (function() {
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.admin != null && message.hasOwnProperty("admin"))
                 object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
-            if (message.recipients && message.recipients.length) {
-                object.recipients = [];
-                for (var j = 0; j < message.recipients.length; ++j)
-                    object.recipients[j] = $root.distribution.Recipient.toObject(message.recipients[j], options);
+            if (message.destinations && message.destinations.length) {
+                object.destinations = [];
+                for (var j = 0; j < message.destinations.length; ++j)
+                    object.destinations[j] = $root.distribution.Destination.toObject(message.destinations[j], options);
             }
             return object;
         };
@@ -12234,7 +12234,7 @@ $root.distribution = (function() {
          * @memberof distribution
          * @interface IDistributeMsg
          * @property {weave.IMetadata|null} [metadata] DistributeMsg metadata
-         * @property {Uint8Array|null} [revenueId] should be distributed between recipients.
+         * @property {Uint8Array|null} [revenueId] should be distributed between destinations.
          */
 
         /**
@@ -12261,7 +12261,7 @@ $root.distribution = (function() {
         DistributeMsg.prototype.metadata = null;
 
         /**
-         * should be distributed between recipients.
+         * should be distributed between destinations.
          * @member {Uint8Array} revenueId
          * @memberof distribution.DistributeMsg
          * @instance
@@ -12459,7 +12459,7 @@ $root.distribution = (function() {
          * @interface IResetMsg
          * @property {weave.IMetadata|null} [metadata] ResetMsg metadata
          * @property {Uint8Array|null} [revenueId] Revenue ID reference an ID of a revenue instance that is updated.
-         * @property {Array.<distribution.IRecipient>|null} [recipients] distributed to. Must be at least one.
+         * @property {Array.<distribution.IDestination>|null} [destinations] distributed to. Must be at least one.
          */
 
         /**
@@ -12471,7 +12471,7 @@ $root.distribution = (function() {
          * @param {distribution.IResetMsg=} [properties] Properties to set
          */
         function ResetMsg(properties) {
-            this.recipients = [];
+            this.destinations = [];
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -12496,11 +12496,11 @@ $root.distribution = (function() {
 
         /**
          * distributed to. Must be at least one.
-         * @member {Array.<distribution.IRecipient>} recipients
+         * @member {Array.<distribution.IDestination>} destinations
          * @memberof distribution.ResetMsg
          * @instance
          */
-        ResetMsg.prototype.recipients = $util.emptyArray;
+        ResetMsg.prototype.destinations = $util.emptyArray;
 
         /**
          * Creates a new ResetMsg instance using the specified properties.
@@ -12530,9 +12530,9 @@ $root.distribution = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.revenueId != null && message.hasOwnProperty("revenueId"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.revenueId);
-            if (message.recipients != null && message.recipients.length)
-                for (var i = 0; i < message.recipients.length; ++i)
-                    $root.distribution.Recipient.encode(message.recipients[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.destinations != null && message.destinations.length)
+                for (var i = 0; i < message.destinations.length; ++i)
+                    $root.distribution.Destination.encode(message.destinations[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             return writer;
         };
 
@@ -12574,9 +12574,9 @@ $root.distribution = (function() {
                     message.revenueId = reader.bytes();
                     break;
                 case 3:
-                    if (!(message.recipients && message.recipients.length))
-                        message.recipients = [];
-                    message.recipients.push($root.distribution.Recipient.decode(reader, reader.uint32()));
+                    if (!(message.destinations && message.destinations.length))
+                        message.destinations = [];
+                    message.destinations.push($root.distribution.Destination.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -12621,13 +12621,13 @@ $root.distribution = (function() {
             if (message.revenueId != null && message.hasOwnProperty("revenueId"))
                 if (!(message.revenueId && typeof message.revenueId.length === "number" || $util.isString(message.revenueId)))
                     return "revenueId: buffer expected";
-            if (message.recipients != null && message.hasOwnProperty("recipients")) {
-                if (!Array.isArray(message.recipients))
-                    return "recipients: array expected";
-                for (var i = 0; i < message.recipients.length; ++i) {
-                    var error = $root.distribution.Recipient.verify(message.recipients[i]);
+            if (message.destinations != null && message.hasOwnProperty("destinations")) {
+                if (!Array.isArray(message.destinations))
+                    return "destinations: array expected";
+                for (var i = 0; i < message.destinations.length; ++i) {
+                    var error = $root.distribution.Destination.verify(message.destinations[i]);
                     if (error)
-                        return "recipients." + error;
+                        return "destinations." + error;
                 }
             }
             return null;
@@ -12655,14 +12655,14 @@ $root.distribution = (function() {
                     $util.base64.decode(object.revenueId, message.revenueId = $util.newBuffer($util.base64.length(object.revenueId)), 0);
                 else if (object.revenueId.length)
                     message.revenueId = object.revenueId;
-            if (object.recipients) {
-                if (!Array.isArray(object.recipients))
-                    throw TypeError(".distribution.ResetMsg.recipients: array expected");
-                message.recipients = [];
-                for (var i = 0; i < object.recipients.length; ++i) {
-                    if (typeof object.recipients[i] !== "object")
-                        throw TypeError(".distribution.ResetMsg.recipients: object expected");
-                    message.recipients[i] = $root.distribution.Recipient.fromObject(object.recipients[i]);
+            if (object.destinations) {
+                if (!Array.isArray(object.destinations))
+                    throw TypeError(".distribution.ResetMsg.destinations: array expected");
+                message.destinations = [];
+                for (var i = 0; i < object.destinations.length; ++i) {
+                    if (typeof object.destinations[i] !== "object")
+                        throw TypeError(".distribution.ResetMsg.destinations: object expected");
+                    message.destinations[i] = $root.distribution.Destination.fromObject(object.destinations[i]);
                 }
             }
             return message;
@@ -12682,7 +12682,7 @@ $root.distribution = (function() {
                 options = {};
             var object = {};
             if (options.arrays || options.defaults)
-                object.recipients = [];
+                object.destinations = [];
             if (options.defaults) {
                 object.metadata = null;
                 if (options.bytes === String)
@@ -12697,10 +12697,10 @@ $root.distribution = (function() {
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.revenueId != null && message.hasOwnProperty("revenueId"))
                 object.revenueId = options.bytes === String ? $util.base64.encode(message.revenueId, 0, message.revenueId.length) : options.bytes === Array ? Array.prototype.slice.call(message.revenueId) : message.revenueId;
-            if (message.recipients && message.recipients.length) {
-                object.recipients = [];
-                for (var j = 0; j < message.recipients.length; ++j)
-                    object.recipients[j] = $root.distribution.Recipient.toObject(message.recipients[j], options);
+            if (message.destinations && message.destinations.length) {
+                object.destinations = [];
+                for (var j = 0; j < message.destinations.length; ++j)
+                    object.destinations[j] = $root.distribution.Destination.toObject(message.destinations[j], options);
             }
             return object;
         };
@@ -12738,9 +12738,9 @@ $root.escrow = (function() {
          * @memberof escrow
          * @interface IEscrow
          * @property {weave.IMetadata|null} [metadata] Escrow metadata
-         * @property {Uint8Array|null} [sender] Escrow sender
+         * @property {Uint8Array|null} [source] Escrow source
          * @property {Uint8Array|null} [arbiter] Escrow arbiter
-         * @property {Uint8Array|null} [recipient] Escrow recipient
+         * @property {Uint8Array|null} [destination] Escrow destination
          * @property {number|Long|null} [timeout] expired: [timeout, infinity)
          * @property {string|null} [memo] max length 128 character
          */
@@ -12748,7 +12748,7 @@ $root.escrow = (function() {
         /**
          * Constructs a new Escrow.
          * @memberof escrow
-         * @classdesc Upon timeout, they will be returned to the sender.
+         * @classdesc Upon timeout, they will be returned to the source.
          * @implements IEscrow
          * @constructor
          * @param {escrow.IEscrow=} [properties] Properties to set
@@ -12769,12 +12769,12 @@ $root.escrow = (function() {
         Escrow.prototype.metadata = null;
 
         /**
-         * Escrow sender.
-         * @member {Uint8Array} sender
+         * Escrow source.
+         * @member {Uint8Array} source
          * @memberof escrow.Escrow
          * @instance
          */
-        Escrow.prototype.sender = $util.newBuffer([]);
+        Escrow.prototype.source = $util.newBuffer([]);
 
         /**
          * Escrow arbiter.
@@ -12785,12 +12785,12 @@ $root.escrow = (function() {
         Escrow.prototype.arbiter = $util.newBuffer([]);
 
         /**
-         * Escrow recipient.
-         * @member {Uint8Array} recipient
+         * Escrow destination.
+         * @member {Uint8Array} destination
          * @memberof escrow.Escrow
          * @instance
          */
-        Escrow.prototype.recipient = $util.newBuffer([]);
+        Escrow.prototype.destination = $util.newBuffer([]);
 
         /**
          * expired: [timeout, infinity)
@@ -12834,12 +12834,12 @@ $root.escrow = (function() {
                 writer = $Writer.create();
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.sender != null && message.hasOwnProperty("sender"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.sender);
+            if (message.source != null && message.hasOwnProperty("source"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.source);
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.arbiter);
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.destination);
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
@@ -12882,13 +12882,13 @@ $root.escrow = (function() {
                     message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.sender = reader.bytes();
+                    message.source = reader.bytes();
                     break;
                 case 3:
                     message.arbiter = reader.bytes();
                     break;
                 case 4:
-                    message.recipient = reader.bytes();
+                    message.destination = reader.bytes();
                     break;
                 case 5:
                     message.timeout = reader.int64();
@@ -12936,15 +12936,15 @@ $root.escrow = (function() {
                 if (error)
                     return "metadata." + error;
             }
-            if (message.sender != null && message.hasOwnProperty("sender"))
-                if (!(message.sender && typeof message.sender.length === "number" || $util.isString(message.sender)))
-                    return "sender: buffer expected";
+            if (message.source != null && message.hasOwnProperty("source"))
+                if (!(message.source && typeof message.source.length === "number" || $util.isString(message.source)))
+                    return "source: buffer expected";
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
                 if (!(message.arbiter && typeof message.arbiter.length === "number" || $util.isString(message.arbiter)))
                     return "arbiter: buffer expected";
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
-                    return "recipient: buffer expected";
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                if (!(message.destination && typeof message.destination.length === "number" || $util.isString(message.destination)))
+                    return "destination: buffer expected";
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 if (!$util.isInteger(message.timeout) && !(message.timeout && $util.isInteger(message.timeout.low) && $util.isInteger(message.timeout.high)))
                     return "timeout: integer|Long expected";
@@ -12971,21 +12971,21 @@ $root.escrow = (function() {
                     throw TypeError(".escrow.Escrow.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
-            if (object.sender != null)
-                if (typeof object.sender === "string")
-                    $util.base64.decode(object.sender, message.sender = $util.newBuffer($util.base64.length(object.sender)), 0);
-                else if (object.sender.length)
-                    message.sender = object.sender;
+            if (object.source != null)
+                if (typeof object.source === "string")
+                    $util.base64.decode(object.source, message.source = $util.newBuffer($util.base64.length(object.source)), 0);
+                else if (object.source.length)
+                    message.source = object.source;
             if (object.arbiter != null)
                 if (typeof object.arbiter === "string")
                     $util.base64.decode(object.arbiter, message.arbiter = $util.newBuffer($util.base64.length(object.arbiter)), 0);
                 else if (object.arbiter.length)
                     message.arbiter = object.arbiter;
-            if (object.recipient != null)
-                if (typeof object.recipient === "string")
-                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
-                else if (object.recipient.length)
-                    message.recipient = object.recipient;
+            if (object.destination != null)
+                if (typeof object.destination === "string")
+                    $util.base64.decode(object.destination, message.destination = $util.newBuffer($util.base64.length(object.destination)), 0);
+                else if (object.destination.length)
+                    message.destination = object.destination;
             if (object.timeout != null)
                 if ($util.Long)
                     (message.timeout = $util.Long.fromValue(object.timeout)).unsigned = false;
@@ -13016,11 +13016,11 @@ $root.escrow = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 if (options.bytes === String)
-                    object.sender = "";
+                    object.source = "";
                 else {
-                    object.sender = [];
+                    object.source = [];
                     if (options.bytes !== Array)
-                        object.sender = $util.newBuffer(object.sender);
+                        object.source = $util.newBuffer(object.source);
                 }
                 if (options.bytes === String)
                     object.arbiter = "";
@@ -13030,11 +13030,11 @@ $root.escrow = (function() {
                         object.arbiter = $util.newBuffer(object.arbiter);
                 }
                 if (options.bytes === String)
-                    object.recipient = "";
+                    object.destination = "";
                 else {
-                    object.recipient = [];
+                    object.destination = [];
                     if (options.bytes !== Array)
-                        object.recipient = $util.newBuffer(object.recipient);
+                        object.destination = $util.newBuffer(object.destination);
                 }
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
@@ -13045,12 +13045,12 @@ $root.escrow = (function() {
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
-            if (message.sender != null && message.hasOwnProperty("sender"))
-                object.sender = options.bytes === String ? $util.base64.encode(message.sender, 0, message.sender.length) : options.bytes === Array ? Array.prototype.slice.call(message.sender) : message.sender;
+            if (message.source != null && message.hasOwnProperty("source"))
+                object.source = options.bytes === String ? $util.base64.encode(message.source, 0, message.source.length) : options.bytes === Array ? Array.prototype.slice.call(message.source) : message.source;
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
                 object.arbiter = options.bytes === String ? $util.base64.encode(message.arbiter, 0, message.arbiter.length) : options.bytes === Array ? Array.prototype.slice.call(message.arbiter) : message.arbiter;
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                object.destination = options.bytes === String ? $util.base64.encode(message.destination, 0, message.destination.length) : options.bytes === Array ? Array.prototype.slice.call(message.destination) : message.destination;
             if (message.timeout != null && message.hasOwnProperty("timeout"))
                 if (typeof message.timeout === "number")
                     object.timeout = options.longs === String ? String(message.timeout) : message.timeout;
@@ -13082,9 +13082,9 @@ $root.escrow = (function() {
          * @memberof escrow
          * @interface ICreateMsg
          * @property {weave.IMetadata|null} [metadata] CreateMsg metadata
-         * @property {Uint8Array|null} [src] CreateMsg src
+         * @property {Uint8Array|null} [source] CreateMsg source
          * @property {Uint8Array|null} [arbiter] CreateMsg arbiter
-         * @property {Uint8Array|null} [recipient] CreateMsg recipient
+         * @property {Uint8Array|null} [destination] CreateMsg destination
          * @property {Array.<coin.ICoin>|null} [amount] amount may contain multiple token types
          * @property {number|Long|null} [timeout] Timeout represents wall clock time.
          * @property {string|null} [memo] max length 128 character
@@ -13115,12 +13115,12 @@ $root.escrow = (function() {
         CreateMsg.prototype.metadata = null;
 
         /**
-         * CreateMsg src.
-         * @member {Uint8Array} src
+         * CreateMsg source.
+         * @member {Uint8Array} source
          * @memberof escrow.CreateMsg
          * @instance
          */
-        CreateMsg.prototype.src = $util.newBuffer([]);
+        CreateMsg.prototype.source = $util.newBuffer([]);
 
         /**
          * CreateMsg arbiter.
@@ -13131,12 +13131,12 @@ $root.escrow = (function() {
         CreateMsg.prototype.arbiter = $util.newBuffer([]);
 
         /**
-         * CreateMsg recipient.
-         * @member {Uint8Array} recipient
+         * CreateMsg destination.
+         * @member {Uint8Array} destination
          * @memberof escrow.CreateMsg
          * @instance
          */
-        CreateMsg.prototype.recipient = $util.newBuffer([]);
+        CreateMsg.prototype.destination = $util.newBuffer([]);
 
         /**
          * amount may contain multiple token types
@@ -13188,12 +13188,12 @@ $root.escrow = (function() {
                 writer = $Writer.create();
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.src != null && message.hasOwnProperty("src"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.src);
+            if (message.source != null && message.hasOwnProperty("source"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.source);
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.arbiter);
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.destination);
             if (message.amount != null && message.amount.length)
                 for (var i = 0; i < message.amount.length; ++i)
                     $root.coin.Coin.encode(message.amount[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
@@ -13239,13 +13239,13 @@ $root.escrow = (function() {
                     message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.src = reader.bytes();
+                    message.source = reader.bytes();
                     break;
                 case 3:
                     message.arbiter = reader.bytes();
                     break;
                 case 4:
-                    message.recipient = reader.bytes();
+                    message.destination = reader.bytes();
                     break;
                 case 5:
                     if (!(message.amount && message.amount.length))
@@ -13298,15 +13298,15 @@ $root.escrow = (function() {
                 if (error)
                     return "metadata." + error;
             }
-            if (message.src != null && message.hasOwnProperty("src"))
-                if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
-                    return "src: buffer expected";
+            if (message.source != null && message.hasOwnProperty("source"))
+                if (!(message.source && typeof message.source.length === "number" || $util.isString(message.source)))
+                    return "source: buffer expected";
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
                 if (!(message.arbiter && typeof message.arbiter.length === "number" || $util.isString(message.arbiter)))
                     return "arbiter: buffer expected";
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
-                    return "recipient: buffer expected";
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                if (!(message.destination && typeof message.destination.length === "number" || $util.isString(message.destination)))
+                    return "destination: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount")) {
                 if (!Array.isArray(message.amount))
                     return "amount: array expected";
@@ -13342,21 +13342,21 @@ $root.escrow = (function() {
                     throw TypeError(".escrow.CreateMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
-            if (object.src != null)
-                if (typeof object.src === "string")
-                    $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
-                else if (object.src.length)
-                    message.src = object.src;
+            if (object.source != null)
+                if (typeof object.source === "string")
+                    $util.base64.decode(object.source, message.source = $util.newBuffer($util.base64.length(object.source)), 0);
+                else if (object.source.length)
+                    message.source = object.source;
             if (object.arbiter != null)
                 if (typeof object.arbiter === "string")
                     $util.base64.decode(object.arbiter, message.arbiter = $util.newBuffer($util.base64.length(object.arbiter)), 0);
                 else if (object.arbiter.length)
                     message.arbiter = object.arbiter;
-            if (object.recipient != null)
-                if (typeof object.recipient === "string")
-                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
-                else if (object.recipient.length)
-                    message.recipient = object.recipient;
+            if (object.destination != null)
+                if (typeof object.destination === "string")
+                    $util.base64.decode(object.destination, message.destination = $util.newBuffer($util.base64.length(object.destination)), 0);
+                else if (object.destination.length)
+                    message.destination = object.destination;
             if (object.amount) {
                 if (!Array.isArray(object.amount))
                     throw TypeError(".escrow.CreateMsg.amount: array expected");
@@ -13399,11 +13399,11 @@ $root.escrow = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 if (options.bytes === String)
-                    object.src = "";
+                    object.source = "";
                 else {
-                    object.src = [];
+                    object.source = [];
                     if (options.bytes !== Array)
-                        object.src = $util.newBuffer(object.src);
+                        object.source = $util.newBuffer(object.source);
                 }
                 if (options.bytes === String)
                     object.arbiter = "";
@@ -13413,11 +13413,11 @@ $root.escrow = (function() {
                         object.arbiter = $util.newBuffer(object.arbiter);
                 }
                 if (options.bytes === String)
-                    object.recipient = "";
+                    object.destination = "";
                 else {
-                    object.recipient = [];
+                    object.destination = [];
                     if (options.bytes !== Array)
-                        object.recipient = $util.newBuffer(object.recipient);
+                        object.destination = $util.newBuffer(object.destination);
                 }
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
@@ -13428,12 +13428,12 @@ $root.escrow = (function() {
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
-            if (message.src != null && message.hasOwnProperty("src"))
-                object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
+            if (message.source != null && message.hasOwnProperty("source"))
+                object.source = options.bytes === String ? $util.base64.encode(message.source, 0, message.source.length) : options.bytes === Array ? Array.prototype.slice.call(message.source) : message.source;
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
                 object.arbiter = options.bytes === String ? $util.base64.encode(message.arbiter, 0, message.arbiter.length) : options.bytes === Array ? Array.prototype.slice.call(message.arbiter) : message.arbiter;
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                object.destination = options.bytes === String ? $util.base64.encode(message.destination, 0, message.destination.length) : options.bytes === Array ? Array.prototype.slice.call(message.destination) : message.destination;
             if (message.amount && message.amount.length) {
                 object.amount = [];
                 for (var j = 0; j < message.amount.length; ++j)
@@ -13744,7 +13744,7 @@ $root.escrow = (function() {
         /**
          * Constructs a new ReturnMsg.
          * @memberof escrow
-         * @classdesc Must be authorized by the sender or an expired timeout
+         * @classdesc Must be authorized by the source or an expired timeout
          * @implements IReturnMsg
          * @constructor
          * @param {escrow.IReturnMsg=} [properties] Properties to set
@@ -13963,9 +13963,9 @@ $root.escrow = (function() {
          * @interface IUpdatePartiesMsg
          * @property {weave.IMetadata|null} [metadata] UpdatePartiesMsg metadata
          * @property {Uint8Array|null} [escrowId] UpdatePartiesMsg escrowId
-         * @property {Uint8Array|null} [sender] UpdatePartiesMsg sender
+         * @property {Uint8Array|null} [source] UpdatePartiesMsg source
          * @property {Uint8Array|null} [arbiter] UpdatePartiesMsg arbiter
-         * @property {Uint8Array|null} [recipient] UpdatePartiesMsg recipient
+         * @property {Uint8Array|null} [destination] UpdatePartiesMsg destination
          */
 
         /**
@@ -14000,12 +14000,12 @@ $root.escrow = (function() {
         UpdatePartiesMsg.prototype.escrowId = $util.newBuffer([]);
 
         /**
-         * UpdatePartiesMsg sender.
-         * @member {Uint8Array} sender
+         * UpdatePartiesMsg source.
+         * @member {Uint8Array} source
          * @memberof escrow.UpdatePartiesMsg
          * @instance
          */
-        UpdatePartiesMsg.prototype.sender = $util.newBuffer([]);
+        UpdatePartiesMsg.prototype.source = $util.newBuffer([]);
 
         /**
          * UpdatePartiesMsg arbiter.
@@ -14016,12 +14016,12 @@ $root.escrow = (function() {
         UpdatePartiesMsg.prototype.arbiter = $util.newBuffer([]);
 
         /**
-         * UpdatePartiesMsg recipient.
-         * @member {Uint8Array} recipient
+         * UpdatePartiesMsg destination.
+         * @member {Uint8Array} destination
          * @memberof escrow.UpdatePartiesMsg
          * @instance
          */
-        UpdatePartiesMsg.prototype.recipient = $util.newBuffer([]);
+        UpdatePartiesMsg.prototype.destination = $util.newBuffer([]);
 
         /**
          * Creates a new UpdatePartiesMsg instance using the specified properties.
@@ -14051,12 +14051,12 @@ $root.escrow = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.escrowId);
-            if (message.sender != null && message.hasOwnProperty("sender"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.sender);
+            if (message.source != null && message.hasOwnProperty("source"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.source);
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
                 writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.arbiter);
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.recipient);
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.destination);
             return writer;
         };
 
@@ -14098,13 +14098,13 @@ $root.escrow = (function() {
                     message.escrowId = reader.bytes();
                     break;
                 case 3:
-                    message.sender = reader.bytes();
+                    message.source = reader.bytes();
                     break;
                 case 4:
                     message.arbiter = reader.bytes();
                     break;
                 case 5:
-                    message.recipient = reader.bytes();
+                    message.destination = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -14149,15 +14149,15 @@ $root.escrow = (function() {
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
                 if (!(message.escrowId && typeof message.escrowId.length === "number" || $util.isString(message.escrowId)))
                     return "escrowId: buffer expected";
-            if (message.sender != null && message.hasOwnProperty("sender"))
-                if (!(message.sender && typeof message.sender.length === "number" || $util.isString(message.sender)))
-                    return "sender: buffer expected";
+            if (message.source != null && message.hasOwnProperty("source"))
+                if (!(message.source && typeof message.source.length === "number" || $util.isString(message.source)))
+                    return "source: buffer expected";
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
                 if (!(message.arbiter && typeof message.arbiter.length === "number" || $util.isString(message.arbiter)))
                     return "arbiter: buffer expected";
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
-                    return "recipient: buffer expected";
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                if (!(message.destination && typeof message.destination.length === "number" || $util.isString(message.destination)))
+                    return "destination: buffer expected";
             return null;
         };
 
@@ -14183,21 +14183,21 @@ $root.escrow = (function() {
                     $util.base64.decode(object.escrowId, message.escrowId = $util.newBuffer($util.base64.length(object.escrowId)), 0);
                 else if (object.escrowId.length)
                     message.escrowId = object.escrowId;
-            if (object.sender != null)
-                if (typeof object.sender === "string")
-                    $util.base64.decode(object.sender, message.sender = $util.newBuffer($util.base64.length(object.sender)), 0);
-                else if (object.sender.length)
-                    message.sender = object.sender;
+            if (object.source != null)
+                if (typeof object.source === "string")
+                    $util.base64.decode(object.source, message.source = $util.newBuffer($util.base64.length(object.source)), 0);
+                else if (object.source.length)
+                    message.source = object.source;
             if (object.arbiter != null)
                 if (typeof object.arbiter === "string")
                     $util.base64.decode(object.arbiter, message.arbiter = $util.newBuffer($util.base64.length(object.arbiter)), 0);
                 else if (object.arbiter.length)
                     message.arbiter = object.arbiter;
-            if (object.recipient != null)
-                if (typeof object.recipient === "string")
-                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
-                else if (object.recipient.length)
-                    message.recipient = object.recipient;
+            if (object.destination != null)
+                if (typeof object.destination === "string")
+                    $util.base64.decode(object.destination, message.destination = $util.newBuffer($util.base64.length(object.destination)), 0);
+                else if (object.destination.length)
+                    message.destination = object.destination;
             return message;
         };
 
@@ -14224,11 +14224,11 @@ $root.escrow = (function() {
                         object.escrowId = $util.newBuffer(object.escrowId);
                 }
                 if (options.bytes === String)
-                    object.sender = "";
+                    object.source = "";
                 else {
-                    object.sender = [];
+                    object.source = [];
                     if (options.bytes !== Array)
-                        object.sender = $util.newBuffer(object.sender);
+                        object.source = $util.newBuffer(object.source);
                 }
                 if (options.bytes === String)
                     object.arbiter = "";
@@ -14238,23 +14238,23 @@ $root.escrow = (function() {
                         object.arbiter = $util.newBuffer(object.arbiter);
                 }
                 if (options.bytes === String)
-                    object.recipient = "";
+                    object.destination = "";
                 else {
-                    object.recipient = [];
+                    object.destination = [];
                     if (options.bytes !== Array)
-                        object.recipient = $util.newBuffer(object.recipient);
+                        object.destination = $util.newBuffer(object.destination);
                 }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.escrowId != null && message.hasOwnProperty("escrowId"))
                 object.escrowId = options.bytes === String ? $util.base64.encode(message.escrowId, 0, message.escrowId.length) : options.bytes === Array ? Array.prototype.slice.call(message.escrowId) : message.escrowId;
-            if (message.sender != null && message.hasOwnProperty("sender"))
-                object.sender = options.bytes === String ? $util.base64.encode(message.sender, 0, message.sender.length) : options.bytes === Array ? Array.prototype.slice.call(message.sender) : message.sender;
+            if (message.source != null && message.hasOwnProperty("source"))
+                object.source = options.bytes === String ? $util.base64.encode(message.source, 0, message.source.length) : options.bytes === Array ? Array.prototype.slice.call(message.source) : message.source;
             if (message.arbiter != null && message.hasOwnProperty("arbiter"))
                 object.arbiter = options.bytes === String ? $util.base64.encode(message.arbiter, 0, message.arbiter.length) : options.bytes === Array ? Array.prototype.slice.call(message.arbiter) : message.arbiter;
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                object.destination = options.bytes === String ? $util.base64.encode(message.destination, 0, message.destination.length) : options.bytes === Array ? Array.prototype.slice.call(message.destination) : message.destination;
             return object;
         };
 
@@ -20560,9 +20560,9 @@ $root.paychan = (function() {
          * @memberof paychan
          * @interface IPaymentChannel
          * @property {weave.IMetadata|null} [metadata] PaymentChannel metadata
-         * @property {Uint8Array|null} [src] Sender is the source that the founds are allocated from.
-         * @property {crypto.IPublicKey|null} [senderPubkey] to the recipient. Signature prevents from altering transfer message.
-         * @property {Uint8Array|null} [recipient] Recipient is the party that receives payments through this channel
+         * @property {Uint8Array|null} [source] Source is the source that the founds are allocated from.
+         * @property {crypto.IPublicKey|null} [sourcePubkey] to the destination. Signature prevents from altering transfer message.
+         * @property {Uint8Array|null} [destination] Destination is the party that receives payments through this channel
          * @property {coin.ICoin|null} [total] payment channel.
          * @property {number|Long|null} [timeout] expired: [timeout, infinity)
          * @property {string|null} [memo] Max length 128 character.
@@ -20593,28 +20593,28 @@ $root.paychan = (function() {
         PaymentChannel.prototype.metadata = null;
 
         /**
-         * Sender is the source that the founds are allocated from.
-         * @member {Uint8Array} src
+         * Source is the source that the founds are allocated from.
+         * @member {Uint8Array} source
          * @memberof paychan.PaymentChannel
          * @instance
          */
-        PaymentChannel.prototype.src = $util.newBuffer([]);
+        PaymentChannel.prototype.source = $util.newBuffer([]);
 
         /**
-         * to the recipient. Signature prevents from altering transfer message.
-         * @member {crypto.IPublicKey|null|undefined} senderPubkey
+         * to the destination. Signature prevents from altering transfer message.
+         * @member {crypto.IPublicKey|null|undefined} sourcePubkey
          * @memberof paychan.PaymentChannel
          * @instance
          */
-        PaymentChannel.prototype.senderPubkey = null;
+        PaymentChannel.prototype.sourcePubkey = null;
 
         /**
-         * Recipient is the party that receives payments through this channel
-         * @member {Uint8Array} recipient
+         * Destination is the party that receives payments through this channel
+         * @member {Uint8Array} destination
          * @memberof paychan.PaymentChannel
          * @instance
          */
-        PaymentChannel.prototype.recipient = $util.newBuffer([]);
+        PaymentChannel.prototype.destination = $util.newBuffer([]);
 
         /**
          * payment channel.
@@ -20674,12 +20674,12 @@ $root.paychan = (function() {
                 writer = $Writer.create();
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.src != null && message.hasOwnProperty("src"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.src);
-            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
-                $root.crypto.PublicKey.encode(message.senderPubkey, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
+            if (message.source != null && message.hasOwnProperty("source"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.source);
+            if (message.sourcePubkey != null && message.hasOwnProperty("sourcePubkey"))
+                $root.crypto.PublicKey.encode(message.sourcePubkey, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.destination);
             if (message.total != null && message.hasOwnProperty("total"))
                 $root.coin.Coin.encode(message.total, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.timeout != null && message.hasOwnProperty("timeout"))
@@ -20726,13 +20726,13 @@ $root.paychan = (function() {
                     message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.src = reader.bytes();
+                    message.source = reader.bytes();
                     break;
                 case 3:
-                    message.senderPubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
+                    message.sourcePubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
                     break;
                 case 4:
-                    message.recipient = reader.bytes();
+                    message.destination = reader.bytes();
                     break;
                 case 5:
                     message.total = $root.coin.Coin.decode(reader, reader.uint32());
@@ -20786,17 +20786,17 @@ $root.paychan = (function() {
                 if (error)
                     return "metadata." + error;
             }
-            if (message.src != null && message.hasOwnProperty("src"))
-                if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
-                    return "src: buffer expected";
-            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey")) {
-                var error = $root.crypto.PublicKey.verify(message.senderPubkey);
+            if (message.source != null && message.hasOwnProperty("source"))
+                if (!(message.source && typeof message.source.length === "number" || $util.isString(message.source)))
+                    return "source: buffer expected";
+            if (message.sourcePubkey != null && message.hasOwnProperty("sourcePubkey")) {
+                var error = $root.crypto.PublicKey.verify(message.sourcePubkey);
                 if (error)
-                    return "senderPubkey." + error;
+                    return "sourcePubkey." + error;
             }
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
-                    return "recipient: buffer expected";
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                if (!(message.destination && typeof message.destination.length === "number" || $util.isString(message.destination)))
+                    return "destination: buffer expected";
             if (message.total != null && message.hasOwnProperty("total")) {
                 var error = $root.coin.Coin.verify(message.total);
                 if (error)
@@ -20833,21 +20833,21 @@ $root.paychan = (function() {
                     throw TypeError(".paychan.PaymentChannel.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
-            if (object.src != null)
-                if (typeof object.src === "string")
-                    $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
-                else if (object.src.length)
-                    message.src = object.src;
-            if (object.senderPubkey != null) {
-                if (typeof object.senderPubkey !== "object")
-                    throw TypeError(".paychan.PaymentChannel.senderPubkey: object expected");
-                message.senderPubkey = $root.crypto.PublicKey.fromObject(object.senderPubkey);
+            if (object.source != null)
+                if (typeof object.source === "string")
+                    $util.base64.decode(object.source, message.source = $util.newBuffer($util.base64.length(object.source)), 0);
+                else if (object.source.length)
+                    message.source = object.source;
+            if (object.sourcePubkey != null) {
+                if (typeof object.sourcePubkey !== "object")
+                    throw TypeError(".paychan.PaymentChannel.sourcePubkey: object expected");
+                message.sourcePubkey = $root.crypto.PublicKey.fromObject(object.sourcePubkey);
             }
-            if (object.recipient != null)
-                if (typeof object.recipient === "string")
-                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
-                else if (object.recipient.length)
-                    message.recipient = object.recipient;
+            if (object.destination != null)
+                if (typeof object.destination === "string")
+                    $util.base64.decode(object.destination, message.destination = $util.newBuffer($util.base64.length(object.destination)), 0);
+                else if (object.destination.length)
+                    message.destination = object.destination;
             if (object.total != null) {
                 if (typeof object.total !== "object")
                     throw TypeError(".paychan.PaymentChannel.total: object expected");
@@ -20888,19 +20888,19 @@ $root.paychan = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 if (options.bytes === String)
-                    object.src = "";
+                    object.source = "";
                 else {
-                    object.src = [];
+                    object.source = [];
                     if (options.bytes !== Array)
-                        object.src = $util.newBuffer(object.src);
+                        object.source = $util.newBuffer(object.source);
                 }
-                object.senderPubkey = null;
+                object.sourcePubkey = null;
                 if (options.bytes === String)
-                    object.recipient = "";
+                    object.destination = "";
                 else {
-                    object.recipient = [];
+                    object.destination = [];
                     if (options.bytes !== Array)
-                        object.recipient = $util.newBuffer(object.recipient);
+                        object.destination = $util.newBuffer(object.destination);
                 }
                 object.total = null;
                 if ($util.Long) {
@@ -20913,12 +20913,12 @@ $root.paychan = (function() {
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
-            if (message.src != null && message.hasOwnProperty("src"))
-                object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
-            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
-                object.senderPubkey = $root.crypto.PublicKey.toObject(message.senderPubkey, options);
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.source != null && message.hasOwnProperty("source"))
+                object.source = options.bytes === String ? $util.base64.encode(message.source, 0, message.source.length) : options.bytes === Array ? Array.prototype.slice.call(message.source) : message.source;
+            if (message.sourcePubkey != null && message.hasOwnProperty("sourcePubkey"))
+                object.sourcePubkey = $root.crypto.PublicKey.toObject(message.sourcePubkey, options);
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                object.destination = options.bytes === String ? $util.base64.encode(message.destination, 0, message.destination.length) : options.bytes === Array ? Array.prototype.slice.call(message.destination) : message.destination;
             if (message.total != null && message.hasOwnProperty("total"))
                 object.total = $root.coin.Coin.toObject(message.total, options);
             if (message.timeout != null && message.hasOwnProperty("timeout"))
@@ -20954,9 +20954,9 @@ $root.paychan = (function() {
          * @memberof paychan
          * @interface ICreateMsg
          * @property {weave.IMetadata|null} [metadata] CreateMsg metadata
-         * @property {Uint8Array|null} [src] Sender address (weave.Address).
-         * @property {crypto.IPublicKey|null} [senderPubkey] Sender public key is for validating transfer message signature.
-         * @property {Uint8Array|null} [recipient] Recipient address  (weave.Address).
+         * @property {Uint8Array|null} [source] Source address (weave.Address).
+         * @property {crypto.IPublicKey|null} [sourcePubkey] Source public key is for validating transfer message signature.
+         * @property {Uint8Array|null} [destination] Destination address  (weave.Address).
          * @property {coin.ICoin|null} [total] Maximum amount that can be transferred via this channel.
          * @property {number|Long|null} [timeout] If reached, channel can be closed by anyone.
          * @property {string|null} [memo] Max length 128 character.
@@ -20986,28 +20986,28 @@ $root.paychan = (function() {
         CreateMsg.prototype.metadata = null;
 
         /**
-         * Sender address (weave.Address).
-         * @member {Uint8Array} src
+         * Source address (weave.Address).
+         * @member {Uint8Array} source
          * @memberof paychan.CreateMsg
          * @instance
          */
-        CreateMsg.prototype.src = $util.newBuffer([]);
+        CreateMsg.prototype.source = $util.newBuffer([]);
 
         /**
-         * Sender public key is for validating transfer message signature.
-         * @member {crypto.IPublicKey|null|undefined} senderPubkey
+         * Source public key is for validating transfer message signature.
+         * @member {crypto.IPublicKey|null|undefined} sourcePubkey
          * @memberof paychan.CreateMsg
          * @instance
          */
-        CreateMsg.prototype.senderPubkey = null;
+        CreateMsg.prototype.sourcePubkey = null;
 
         /**
-         * Recipient address  (weave.Address).
-         * @member {Uint8Array} recipient
+         * Destination address  (weave.Address).
+         * @member {Uint8Array} destination
          * @memberof paychan.CreateMsg
          * @instance
          */
-        CreateMsg.prototype.recipient = $util.newBuffer([]);
+        CreateMsg.prototype.destination = $util.newBuffer([]);
 
         /**
          * Maximum amount that can be transferred via this channel.
@@ -21059,12 +21059,12 @@ $root.paychan = (function() {
                 writer = $Writer.create();
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.src != null && message.hasOwnProperty("src"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.src);
-            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
-                $root.crypto.PublicKey.encode(message.senderPubkey, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipient);
+            if (message.source != null && message.hasOwnProperty("source"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.source);
+            if (message.sourcePubkey != null && message.hasOwnProperty("sourcePubkey"))
+                $root.crypto.PublicKey.encode(message.sourcePubkey, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.destination);
             if (message.total != null && message.hasOwnProperty("total"))
                 $root.coin.Coin.encode(message.total, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.timeout != null && message.hasOwnProperty("timeout"))
@@ -21109,13 +21109,13 @@ $root.paychan = (function() {
                     message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.src = reader.bytes();
+                    message.source = reader.bytes();
                     break;
                 case 3:
-                    message.senderPubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
+                    message.sourcePubkey = $root.crypto.PublicKey.decode(reader, reader.uint32());
                     break;
                 case 4:
-                    message.recipient = reader.bytes();
+                    message.destination = reader.bytes();
                     break;
                 case 5:
                     message.total = $root.coin.Coin.decode(reader, reader.uint32());
@@ -21166,17 +21166,17 @@ $root.paychan = (function() {
                 if (error)
                     return "metadata." + error;
             }
-            if (message.src != null && message.hasOwnProperty("src"))
-                if (!(message.src && typeof message.src.length === "number" || $util.isString(message.src)))
-                    return "src: buffer expected";
-            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey")) {
-                var error = $root.crypto.PublicKey.verify(message.senderPubkey);
+            if (message.source != null && message.hasOwnProperty("source"))
+                if (!(message.source && typeof message.source.length === "number" || $util.isString(message.source)))
+                    return "source: buffer expected";
+            if (message.sourcePubkey != null && message.hasOwnProperty("sourcePubkey")) {
+                var error = $root.crypto.PublicKey.verify(message.sourcePubkey);
                 if (error)
-                    return "senderPubkey." + error;
+                    return "sourcePubkey." + error;
             }
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
-                    return "recipient: buffer expected";
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                if (!(message.destination && typeof message.destination.length === "number" || $util.isString(message.destination)))
+                    return "destination: buffer expected";
             if (message.total != null && message.hasOwnProperty("total")) {
                 var error = $root.coin.Coin.verify(message.total);
                 if (error)
@@ -21208,21 +21208,21 @@ $root.paychan = (function() {
                     throw TypeError(".paychan.CreateMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
-            if (object.src != null)
-                if (typeof object.src === "string")
-                    $util.base64.decode(object.src, message.src = $util.newBuffer($util.base64.length(object.src)), 0);
-                else if (object.src.length)
-                    message.src = object.src;
-            if (object.senderPubkey != null) {
-                if (typeof object.senderPubkey !== "object")
-                    throw TypeError(".paychan.CreateMsg.senderPubkey: object expected");
-                message.senderPubkey = $root.crypto.PublicKey.fromObject(object.senderPubkey);
+            if (object.source != null)
+                if (typeof object.source === "string")
+                    $util.base64.decode(object.source, message.source = $util.newBuffer($util.base64.length(object.source)), 0);
+                else if (object.source.length)
+                    message.source = object.source;
+            if (object.sourcePubkey != null) {
+                if (typeof object.sourcePubkey !== "object")
+                    throw TypeError(".paychan.CreateMsg.sourcePubkey: object expected");
+                message.sourcePubkey = $root.crypto.PublicKey.fromObject(object.sourcePubkey);
             }
-            if (object.recipient != null)
-                if (typeof object.recipient === "string")
-                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
-                else if (object.recipient.length)
-                    message.recipient = object.recipient;
+            if (object.destination != null)
+                if (typeof object.destination === "string")
+                    $util.base64.decode(object.destination, message.destination = $util.newBuffer($util.base64.length(object.destination)), 0);
+                else if (object.destination.length)
+                    message.destination = object.destination;
             if (object.total != null) {
                 if (typeof object.total !== "object")
                     throw TypeError(".paychan.CreateMsg.total: object expected");
@@ -21258,19 +21258,19 @@ $root.paychan = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 if (options.bytes === String)
-                    object.src = "";
+                    object.source = "";
                 else {
-                    object.src = [];
+                    object.source = [];
                     if (options.bytes !== Array)
-                        object.src = $util.newBuffer(object.src);
+                        object.source = $util.newBuffer(object.source);
                 }
-                object.senderPubkey = null;
+                object.sourcePubkey = null;
                 if (options.bytes === String)
-                    object.recipient = "";
+                    object.destination = "";
                 else {
-                    object.recipient = [];
+                    object.destination = [];
                     if (options.bytes !== Array)
-                        object.recipient = $util.newBuffer(object.recipient);
+                        object.destination = $util.newBuffer(object.destination);
                 }
                 object.total = null;
                 if ($util.Long) {
@@ -21282,12 +21282,12 @@ $root.paychan = (function() {
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
-            if (message.src != null && message.hasOwnProperty("src"))
-                object.src = options.bytes === String ? $util.base64.encode(message.src, 0, message.src.length) : options.bytes === Array ? Array.prototype.slice.call(message.src) : message.src;
-            if (message.senderPubkey != null && message.hasOwnProperty("senderPubkey"))
-                object.senderPubkey = $root.crypto.PublicKey.toObject(message.senderPubkey, options);
-            if (message.recipient != null && message.hasOwnProperty("recipient"))
-                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.source != null && message.hasOwnProperty("source"))
+                object.source = options.bytes === String ? $util.base64.encode(message.source, 0, message.source.length) : options.bytes === Array ? Array.prototype.slice.call(message.source) : message.source;
+            if (message.sourcePubkey != null && message.hasOwnProperty("sourcePubkey"))
+                object.sourcePubkey = $root.crypto.PublicKey.toObject(message.sourcePubkey, options);
+            if (message.destination != null && message.hasOwnProperty("destination"))
+                object.destination = options.bytes === String ? $util.base64.encode(message.destination, 0, message.destination.length) : options.bytes === Array ? Array.prototype.slice.call(message.destination) : message.destination;
             if (message.total != null && message.hasOwnProperty("total"))
                 object.total = $root.coin.Coin.toObject(message.total, options);
             if (message.timeout != null && message.hasOwnProperty("timeout"))
@@ -21843,7 +21843,7 @@ $root.paychan = (function() {
         /**
          * Constructs a new CloseMsg.
          * @memberof paychan
-         * @classdesc Sender can close channel only if the timeout was reached.
+         * @classdesc Source can close channel only if the timeout was reached.
          * @implements ICloseMsg
          * @constructor
          * @param {paychan.ICloseMsg=} [properties] Properties to set

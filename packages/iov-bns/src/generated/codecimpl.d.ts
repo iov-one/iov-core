@@ -3079,11 +3079,11 @@ export namespace aswap {
     /** sha256 hash of preimage, 32 bytes long */
     preimageHash?: Uint8Array | null;
 
-    /** src is a sender address */
-    src?: Uint8Array | null;
+    /** source is a sender address */
+    source?: Uint8Array | null;
 
-    /** recipient is an address of recipient */
-    recipient?: Uint8Array | null;
+    /** destination is an address of destination */
+    destination?: Uint8Array | null;
 
     /** expired: [timeout, infinity) */
     timeout?: number | Long | null;
@@ -3106,11 +3106,11 @@ export namespace aswap {
     /** sha256 hash of preimage, 32 bytes long */
     public preimageHash: Uint8Array;
 
-    /** src is a sender address */
-    public src: Uint8Array;
+    /** source is a sender address */
+    public source: Uint8Array;
 
-    /** recipient is an address of recipient */
-    public recipient: Uint8Array;
+    /** destination is an address of destination */
+    public destination: Uint8Array;
 
     /** expired: [timeout, infinity) */
     public timeout: number | Long;
@@ -3194,14 +3194,14 @@ export namespace aswap {
     /** CreateMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** CreateMsg src */
-    src?: Uint8Array | null;
+    /** CreateMsg source */
+    source?: Uint8Array | null;
 
     /** sha256 hash of preimage, 32 bytes long */
     preimageHash?: Uint8Array | null;
 
-    /** CreateMsg recipient */
-    recipient?: Uint8Array | null;
+    /** CreateMsg destination */
+    destination?: Uint8Array | null;
 
     /** amount may contain multiple token types */
     amount?: coin.ICoin[] | null;
@@ -3224,14 +3224,14 @@ export namespace aswap {
     /** CreateMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** CreateMsg src. */
-    public src: Uint8Array;
+    /** CreateMsg source. */
+    public source: Uint8Array;
 
     /** sha256 hash of preimage, 32 bytes long */
     public preimageHash: Uint8Array;
 
-    /** CreateMsg recipient. */
-    public recipient: Uint8Array;
+    /** CreateMsg destination. */
+    public destination: Uint8Array;
 
     /** amount may contain multiple token types */
     public amount: coin.ICoin[];
@@ -3712,11 +3712,11 @@ export namespace cash {
     /** SendMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** SendMsg src */
-    src?: Uint8Array | null;
+    /** SendMsg source */
+    source?: Uint8Array | null;
 
-    /** SendMsg dest */
-    dest?: Uint8Array | null;
+    /** SendMsg destination */
+    destination?: Uint8Array | null;
 
     /** SendMsg amount */
     amount?: coin.ICoin | null;
@@ -3739,11 +3739,11 @@ export namespace cash {
     /** SendMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** SendMsg src. */
-    public src: Uint8Array;
+    /** SendMsg source. */
+    public source: Uint8Array;
 
-    /** SendMsg dest. */
-    public dest: Uint8Array;
+    /** SendMsg destination. */
+    public destination: Uint8Array;
 
     /** SendMsg amount. */
     public amount?: coin.ICoin | null;
@@ -4349,7 +4349,7 @@ export namespace distribution {
     admin?: Uint8Array | null;
 
     /** distributed to. Must be at least one. */
-    recipients?: distribution.IRecipient[] | null;
+    destinations?: distribution.IDestination[] | null;
   }
 
   /** the owners. */
@@ -4367,7 +4367,7 @@ export namespace distribution {
     public admin: Uint8Array;
 
     /** distributed to. Must be at least one. */
-    public recipients: distribution.IRecipient[];
+    public destinations: distribution.IDestination[];
 
     /**
      * Creates a new Revenue instance using the specified properties.
@@ -4446,8 +4446,8 @@ export namespace distribution {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a Recipient. */
-  interface IRecipient {
+  /** Properties of a Destination. */
+  interface IDestination {
     /** of the validators. */
     address?: Uint8Array | null;
 
@@ -4455,13 +4455,13 @@ export namespace distribution {
     weight?: number | null;
   }
 
-  /** Represents a Recipient. */
-  class Recipient implements IRecipient {
+  /** Represents a Destination. */
+  class Destination implements IDestination {
     /**
-     * Constructs a new Recipient.
+     * Constructs a new Destination.
      * @param [properties] Properties to set
      */
-    constructor(properties?: distribution.IRecipient);
+    constructor(properties?: distribution.IDestination);
 
     /** of the validators. */
     public address: Uint8Array;
@@ -4470,77 +4470,77 @@ export namespace distribution {
     public weight: number;
 
     /**
-     * Creates a new Recipient instance using the specified properties.
+     * Creates a new Destination instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns Recipient instance
+     * @returns Destination instance
      */
-    public static create(properties?: distribution.IRecipient): distribution.Recipient;
+    public static create(properties?: distribution.IDestination): distribution.Destination;
 
     /**
-     * Encodes the specified Recipient message. Does not implicitly {@link distribution.Recipient.verify|verify} messages.
-     * @param message Recipient message or plain object to encode
+     * Encodes the specified Destination message. Does not implicitly {@link distribution.Destination.verify|verify} messages.
+     * @param message Destination message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: distribution.IRecipient, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: distribution.IDestination, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified Recipient message, length delimited. Does not implicitly {@link distribution.Recipient.verify|verify} messages.
-     * @param message Recipient message or plain object to encode
+     * Encodes the specified Destination message, length delimited. Does not implicitly {@link distribution.Destination.verify|verify} messages.
+     * @param message Destination message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
     public static encodeDelimited(
-      message: distribution.IRecipient,
+      message: distribution.IDestination,
       writer?: $protobuf.Writer,
     ): $protobuf.Writer;
 
     /**
-     * Decodes a Recipient message from the specified reader or buffer.
+     * Decodes a Destination message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns Recipient
+     * @returns Destination
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): distribution.Recipient;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): distribution.Destination;
 
     /**
-     * Decodes a Recipient message from the specified reader or buffer, length delimited.
+     * Decodes a Destination message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns Recipient
+     * @returns Destination
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.Recipient;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): distribution.Destination;
 
     /**
-     * Verifies a Recipient message.
+     * Verifies a Destination message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a Recipient message from a plain object. Also converts values to their respective internal types.
+     * Creates a Destination message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns Recipient
+     * @returns Destination
      */
-    public static fromObject(object: { [k: string]: any }): distribution.Recipient;
+    public static fromObject(object: { [k: string]: any }): distribution.Destination;
 
     /**
-     * Creates a plain object from a Recipient message. Also converts values to other types if specified.
-     * @param message Recipient
+     * Creates a plain object from a Destination message. Also converts values to other types if specified.
+     * @param message Destination
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: distribution.Recipient,
+      message: distribution.Destination,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this Recipient to JSON.
+     * Converts this Destination to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -4555,7 +4555,7 @@ export namespace distribution {
     admin?: Uint8Array | null;
 
     /** distributed to. Must be at least one. */
-    recipients?: distribution.IRecipient[] | null;
+    destinations?: distribution.IDestination[] | null;
   }
 
   /** CreateMsg is issuing the creation of a new revenue stream instance. */
@@ -4573,7 +4573,7 @@ export namespace distribution {
     public admin: Uint8Array;
 
     /** distributed to. Must be at least one. */
-    public recipients: distribution.IRecipient[];
+    public destinations: distribution.IDestination[];
 
     /**
      * Creates a new CreateMsg instance using the specified properties.
@@ -4657,7 +4657,7 @@ export namespace distribution {
     /** DistributeMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** should be distributed between recipients. */
+    /** should be distributed between destinations. */
     revenueId?: Uint8Array | null;
   }
 
@@ -4672,7 +4672,7 @@ export namespace distribution {
     /** DistributeMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** should be distributed between recipients. */
+    /** should be distributed between destinations. */
     public revenueId: Uint8Array;
 
     /**
@@ -4761,7 +4761,7 @@ export namespace distribution {
     revenueId?: Uint8Array | null;
 
     /** distributed to. Must be at least one. */
-    recipients?: distribution.IRecipient[] | null;
+    destinations?: distribution.IDestination[] | null;
   }
 
   /** collected revenue amount is equal to zero the change is applied. */
@@ -4779,7 +4779,7 @@ export namespace distribution {
     public revenueId: Uint8Array;
 
     /** distributed to. Must be at least one. */
-    public recipients: distribution.IRecipient[];
+    public destinations: distribution.IDestination[];
 
     /**
      * Creates a new ResetMsg instance using the specified properties.
@@ -4866,14 +4866,14 @@ export namespace escrow {
     /** Escrow metadata */
     metadata?: weave.IMetadata | null;
 
-    /** Escrow sender */
-    sender?: Uint8Array | null;
+    /** Escrow source */
+    source?: Uint8Array | null;
 
     /** Escrow arbiter */
     arbiter?: Uint8Array | null;
 
-    /** Escrow recipient */
-    recipient?: Uint8Array | null;
+    /** Escrow destination */
+    destination?: Uint8Array | null;
 
     /** expired: [timeout, infinity) */
     timeout?: number | Long | null;
@@ -4882,7 +4882,7 @@ export namespace escrow {
     memo?: string | null;
   }
 
-  /** Upon timeout, they will be returned to the sender. */
+  /** Upon timeout, they will be returned to the source. */
   class Escrow implements IEscrow {
     /**
      * Constructs a new Escrow.
@@ -4893,14 +4893,14 @@ export namespace escrow {
     /** Escrow metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** Escrow sender. */
-    public sender: Uint8Array;
+    /** Escrow source. */
+    public source: Uint8Array;
 
     /** Escrow arbiter. */
     public arbiter: Uint8Array;
 
-    /** Escrow recipient. */
-    public recipient: Uint8Array;
+    /** Escrow destination. */
+    public destination: Uint8Array;
 
     /** expired: [timeout, infinity) */
     public timeout: number | Long;
@@ -4987,14 +4987,14 @@ export namespace escrow {
     /** CreateMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** CreateMsg src */
-    src?: Uint8Array | null;
+    /** CreateMsg source */
+    source?: Uint8Array | null;
 
     /** CreateMsg arbiter */
     arbiter?: Uint8Array | null;
 
-    /** CreateMsg recipient */
-    recipient?: Uint8Array | null;
+    /** CreateMsg destination */
+    destination?: Uint8Array | null;
 
     /** amount may contain multiple token types */
     amount?: coin.ICoin[] | null;
@@ -5017,14 +5017,14 @@ export namespace escrow {
     /** CreateMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** CreateMsg src. */
-    public src: Uint8Array;
+    /** CreateMsg source. */
+    public source: Uint8Array;
 
     /** CreateMsg arbiter. */
     public arbiter: Uint8Array;
 
-    /** CreateMsg recipient. */
-    public recipient: Uint8Array;
+    /** CreateMsg destination. */
+    public destination: Uint8Array;
 
     /** amount may contain multiple token types */
     public amount: coin.ICoin[];
@@ -5221,7 +5221,7 @@ export namespace escrow {
     escrowId?: Uint8Array | null;
   }
 
-  /** Must be authorized by the sender or an expired timeout */
+  /** Must be authorized by the source or an expired timeout */
   class ReturnMsg implements IReturnMsg {
     /**
      * Constructs a new ReturnMsg.
@@ -5317,14 +5317,14 @@ export namespace escrow {
     /** UpdatePartiesMsg escrowId */
     escrowId?: Uint8Array | null;
 
-    /** UpdatePartiesMsg sender */
-    sender?: Uint8Array | null;
+    /** UpdatePartiesMsg source */
+    source?: Uint8Array | null;
 
     /** UpdatePartiesMsg arbiter */
     arbiter?: Uint8Array | null;
 
-    /** UpdatePartiesMsg recipient */
-    recipient?: Uint8Array | null;
+    /** UpdatePartiesMsg destination */
+    destination?: Uint8Array | null;
   }
 
   /** Represents delegating responsibility */
@@ -5341,14 +5341,14 @@ export namespace escrow {
     /** UpdatePartiesMsg escrowId. */
     public escrowId: Uint8Array;
 
-    /** UpdatePartiesMsg sender. */
-    public sender: Uint8Array;
+    /** UpdatePartiesMsg source. */
+    public source: Uint8Array;
 
     /** UpdatePartiesMsg arbiter. */
     public arbiter: Uint8Array;
 
-    /** UpdatePartiesMsg recipient. */
-    public recipient: Uint8Array;
+    /** UpdatePartiesMsg destination. */
+    public destination: Uint8Array;
 
     /**
      * Creates a new UpdatePartiesMsg instance using the specified properties.
@@ -7821,14 +7821,14 @@ export namespace paychan {
     /** PaymentChannel metadata */
     metadata?: weave.IMetadata | null;
 
-    /** Sender is the source that the founds are allocated from. */
-    src?: Uint8Array | null;
+    /** Source is the source that the founds are allocated from. */
+    source?: Uint8Array | null;
 
-    /** to the recipient. Signature prevents from altering transfer message. */
-    senderPubkey?: crypto.IPublicKey | null;
+    /** to the destination. Signature prevents from altering transfer message. */
+    sourcePubkey?: crypto.IPublicKey | null;
 
-    /** Recipient is the party that receives payments through this channel */
-    recipient?: Uint8Array | null;
+    /** Destination is the party that receives payments through this channel */
+    destination?: Uint8Array | null;
 
     /** payment channel. */
     total?: coin.ICoin | null;
@@ -7854,14 +7854,14 @@ export namespace paychan {
     /** PaymentChannel metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** Sender is the source that the founds are allocated from. */
-    public src: Uint8Array;
+    /** Source is the source that the founds are allocated from. */
+    public source: Uint8Array;
 
-    /** to the recipient. Signature prevents from altering transfer message. */
-    public senderPubkey?: crypto.IPublicKey | null;
+    /** to the destination. Signature prevents from altering transfer message. */
+    public sourcePubkey?: crypto.IPublicKey | null;
 
-    /** Recipient is the party that receives payments through this channel */
-    public recipient: Uint8Array;
+    /** Destination is the party that receives payments through this channel */
+    public destination: Uint8Array;
 
     /** payment channel. */
     public total?: coin.ICoin | null;
@@ -7957,14 +7957,14 @@ export namespace paychan {
     /** CreateMsg metadata */
     metadata?: weave.IMetadata | null;
 
-    /** Sender address (weave.Address). */
-    src?: Uint8Array | null;
+    /** Source address (weave.Address). */
+    source?: Uint8Array | null;
 
-    /** Sender public key is for validating transfer message signature. */
-    senderPubkey?: crypto.IPublicKey | null;
+    /** Source public key is for validating transfer message signature. */
+    sourcePubkey?: crypto.IPublicKey | null;
 
-    /** Recipient address  (weave.Address). */
-    recipient?: Uint8Array | null;
+    /** Destination address  (weave.Address). */
+    destination?: Uint8Array | null;
 
     /** Maximum amount that can be transferred via this channel. */
     total?: coin.ICoin | null;
@@ -7987,14 +7987,14 @@ export namespace paychan {
     /** CreateMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
-    /** Sender address (weave.Address). */
-    public src: Uint8Array;
+    /** Source address (weave.Address). */
+    public source: Uint8Array;
 
-    /** Sender public key is for validating transfer message signature. */
-    public senderPubkey?: crypto.IPublicKey | null;
+    /** Source public key is for validating transfer message signature. */
+    public sourcePubkey?: crypto.IPublicKey | null;
 
-    /** Recipient address  (weave.Address). */
-    public recipient: Uint8Array;
+    /** Destination address  (weave.Address). */
+    public destination: Uint8Array;
 
     /** Maximum amount that can be transferred via this channel. */
     public total?: coin.ICoin | null;
@@ -8303,7 +8303,7 @@ export namespace paychan {
     memo?: string | null;
   }
 
-  /** Sender can close channel only if the timeout was reached. */
+  /** Source can close channel only if the timeout was reached. */
   class CloseMsg implements ICloseMsg {
     /**
      * Constructs a new CloseMsg.

@@ -386,7 +386,7 @@ function parseSendTransaction(
     ...base,
     kind: "bcp/send",
     sender: identityToAddress(base.creator),
-    recipient: encodeBnsAddress(prefix, ensure(msg.dest, "recipient")),
+    recipient: encodeBnsAddress(prefix, ensure(msg.destination, "destination")),
     amount: decodeAmount(ensure(msg.amount)),
     memo: msg.memo || undefined,
   };
@@ -407,7 +407,7 @@ function parseSwapOfferTx(
     ...base,
     kind: "bcp/swap_offer",
     hash: hash as Hash,
-    recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
+    recipient: encodeBnsAddress(prefix, ensure(msg.destination, "destination")),
     timeout: { timestamp: asIntegerNumber(ensure(msg.timeout, "timeout")) },
     amounts: (msg.amount || []).map(decodeAmount),
   };
@@ -509,9 +509,9 @@ function parseCreateEscrowTx(
   return {
     ...base,
     kind: "bns/create_escrow",
-    sender: encodeBnsAddress(prefix, ensure(msg.src, "src")),
+    sender: encodeBnsAddress(prefix, ensure(msg.source, "source")),
     arbiter: encodeBnsAddress(prefix, ensure(msg.arbiter, "arbiter")),
-    recipient: encodeBnsAddress(prefix, ensure(msg.recipient, "recipient")),
+    recipient: encodeBnsAddress(prefix, ensure(msg.destination, "destination")),
     amounts: ensure(msg.amount, "amount").map(decodeAmount),
     timeout: { timestamp: asIntegerNumber(ensure(msg.timeout, "timeout")) },
     memo: msg.memo !== null ? msg.memo : undefined,
@@ -550,9 +550,9 @@ function parseUpdateEscrowPartiesTx(
     ...base,
     kind: "bns/update_escrow_parties",
     escrowId: ensure(msg.escrowId, "escrowId"),
-    sender: msg.sender ? encodeBnsAddress(prefix, msg.sender) : undefined,
+    sender: msg.source ? encodeBnsAddress(prefix, msg.source) : undefined,
     arbiter: msg.arbiter ? encodeBnsAddress(prefix, msg.arbiter) : undefined,
-    recipient: msg.recipient ? encodeBnsAddress(prefix, msg.recipient) : undefined,
+    recipient: msg.destination ? encodeBnsAddress(prefix, msg.destination) : undefined,
   };
 }
 
