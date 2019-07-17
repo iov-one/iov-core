@@ -9,7 +9,7 @@ export declare enum ProposalType {
     AmendCommitteeQuorum = 3,
     AddValidator = 4,
     RemoveValidator = 5,
-    AccessGuaranteeFund = 6,
+    ReleaseGuaranteeFunds = 6,
     DistributeFunds = 7,
     AmendProtocol = 8
 }
@@ -50,8 +50,8 @@ export interface RemoveValidatorOptions extends CommonProposalOptions {
     readonly type: ProposalType.RemoveValidator;
     readonly pubkey: PubkeyBundle;
 }
-export interface AccessGuaranteeFundOptions extends CommonProposalOptions {
-    readonly type: ProposalType.AccessGuaranteeFund;
+export interface ReleaseGuaranteeFundsOptions extends CommonProposalOptions {
+    readonly type: ProposalType.ReleaseGuaranteeFunds;
     readonly amount: Amount;
 }
 export interface DistributeFundsOptions extends CommonProposalOptions {
@@ -65,5 +65,5 @@ export interface AmendProtocolOptions extends CommonProposalOptions {
     readonly type: ProposalType.AmendProtocol;
     readonly text: string;
 }
-export declare type ProposalOptions = AddCommitteeMemberOptions | RemoveCommitteeMemberOptions | AmendCommitteeThresholdOptions | AmendCommitteeQuorumOptions | AddValidatorOptions | RemoveValidatorOptions | AccessGuaranteeFundOptions | DistributeFundsOptions | AmendProtocolOptions;
+export declare type ProposalOptions = AddCommitteeMemberOptions | RemoveCommitteeMemberOptions | AmendCommitteeThresholdOptions | AmendCommitteeQuorumOptions | AddValidatorOptions | RemoveValidatorOptions | ReleaseGuaranteeFundsOptions | DistributeFundsOptions | AmendProtocolOptions;
 export {};
