@@ -555,6 +555,78 @@ describe("Encode", () => {
         });
       });
 
+      it("works with ExecuteProposalBatch action with array of Send actions", () => {
+        const createProposal: CreateProposalTx & WithCreator = {
+          kind: "bns/create_proposal",
+          creator: defaultCreator,
+          title: "Why not try this?",
+          action: {
+            kind: ActionKind.ExecuteProposalBatch,
+            messages: [
+              {
+                kind: ActionKind.Send,
+                sender: defaultSender,
+                recipient: defaultRecipient,
+                amount: defaultAmount,
+                memo: "say hi",
+              },
+              {
+                kind: ActionKind.Send,
+                sender: defaultRecipient,
+                recipient: defaultSender,
+                amount: {
+                  quantity: "3000000003",
+                  fractionalDigits: 9,
+                  tokenTicker: "MASH" as TokenTicker,
+                },
+              },
+            ],
+          },
+          description: "foo bar",
+          electionRuleId: 4822531585417728,
+          startTime: 1122334455,
+          author: defaultSender,
+        };
+        const msg = buildMsg(createProposal).govCreateProposalMsg!;
+        expect(msg).toEqual({
+          metadata: { schema: 1 },
+          title: "Why not try this?",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            executeProposalBatchMsg: {
+              messages: [
+                {
+                  sendMsg: {
+                    source: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+                    destination: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+                    amount: {
+                      whole: 1,
+                      fractional: 1,
+                      ticker: "CASH",
+                    },
+                    memo: "say hi",
+                  },
+                },
+                {
+                  sendMsg: {
+                    source: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+                    destination: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+                    amount: {
+                      whole: 3,
+                      fractional: 3,
+                      ticker: "MASH",
+                    },
+                  },
+                },
+              ],
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("0011221122112200"),
+          startTime: 1122334455,
+          author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+        });
+      });
+
       it("works with ReleaseEscrow action", () => {
         const createProposal: CreateProposalTx & WithCreator = {
           kind: "bns/create_proposal",
