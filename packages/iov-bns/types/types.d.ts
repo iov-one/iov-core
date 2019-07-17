@@ -83,6 +83,7 @@ export declare enum VoteOption {
 }
 export declare enum ActionKind {
     CreateTextResolution = "create_text_resolution",
+    ExecuteProposalBatch = "execute_proposal_batch",
     ReleaseEscrow = "release_escrow ",
     SetValidators = "set_validators",
     UpdateElectionRule = "update_election_rule",
@@ -99,6 +100,11 @@ export interface CreateTextResolution {
     readonly resolution: string;
 }
 export declare function isCreateTextResolution(action: ProposalAction): action is CreateTextResolution;
+export interface ExecuteProposalBatch {
+    readonly kind: ActionKind.ExecuteProposalBatch;
+    readonly messages: readonly ProposalAction[];
+}
+export declare function isExecuteProposalBatch(action: ProposalAction): action is ExecuteProposalBatch;
 export interface ReleaseEscrow {
     readonly kind: ActionKind.ReleaseEscrow;
     readonly escrowId: Uint8Array;
@@ -124,7 +130,7 @@ export interface UpdateElectorate {
 }
 export declare function isUpdateElectorate(action: ProposalAction): action is UpdateElectorate;
 /** The action to be executed when the proposal is accepted */
-export declare type ProposalAction = CreateTextResolution | ReleaseEscrow | SetValidators | UpdateElectorate | UpdateElectionRule;
+export declare type ProposalAction = CreateTextResolution | ExecuteProposalBatch | ReleaseEscrow | SetValidators | UpdateElectorate | UpdateElectionRule;
 export interface Proposal {
     readonly id: number;
     readonly title: string;
