@@ -1,4 +1,13 @@
-import { Address, Algorithm, ChainId, Nonce, PubkeyBytes, TokenTicker, UnsignedTransaction } from "@iov/bcp";
+import {
+  Address,
+  Algorithm,
+  Amount,
+  ChainId,
+  Nonce,
+  PubkeyBytes,
+  TokenTicker,
+  UnsignedTransaction,
+} from "@iov/bcp";
 import { Bech32, Encoding } from "@iov/encoding";
 
 import {
@@ -359,7 +368,7 @@ describe("Decode", () => {
         chainId: "bns-chain" as ChainId,
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: Encoding.fromHex("aabbccdd") as PubkeyBytes,
+          data: fromHex("aabbccdd") as PubkeyBytes,
         },
       },
     };
@@ -368,6 +377,11 @@ describe("Decode", () => {
     const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
     const defaultArbiter = "tiov17yp0mh3yxwv6yxx386mxyfzlqnhe6q58edka6r" as Address;
     const defaultEscrowId = fromHex("0000000000000004");
+    const defaultAmount: Amount = {
+      quantity: "1000000001",
+      fractionalDigits: 9,
+      tokenTicker: "CASH" as TokenTicker,
+    };
 
     // Token sends
 
@@ -539,9 +553,9 @@ describe("Decode", () => {
       const memo = "testing 123";
       const transactionMessage: codecImpl.bnsd.ITx = {
         escrowCreateMsg: {
-          source: Encoding.fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
-          arbiter: Encoding.fromHex("f102fdde243399a218d13eb662245f04ef9d0287"),
-          destination: Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+          source: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          arbiter: fromHex("f102fdde243399a218d13eb662245f04ef9d0287"),
+          destination: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
           amount: [
             {
               whole: 3,
@@ -615,9 +629,9 @@ describe("Decode", () => {
       const transactionMessage: codecImpl.bnsd.ITx = {
         escrowUpdatePartiesMsg: {
           escrowId: defaultEscrowId,
-          source: Encoding.fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
-          arbiter: Encoding.fromHex("f102fdde243399a218d13eb662245f04ef9d0287"),
-          destination: Encoding.fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+          source: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          arbiter: fromHex("f102fdde243399a218d13eb662245f04ef9d0287"),
+          destination: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
@@ -644,9 +658,9 @@ describe("Decode", () => {
               },
             }).finish(),
             description: "foo bar",
-            electionRuleId: Encoding.fromHex("bbccddbbff"),
+            electionRuleId: fromHex("bbccddbbff"),
             startTime: 42424242,
-            author: Encoding.fromHex("0011223344556677889900112233445566778899"),
+            author: fromHex("0011223344556677889900112233445566778899"),
           },
         };
         const parsed = parseMsg(defaultBaseTx, transactionMessage);
@@ -655,6 +669,45 @@ describe("Decode", () => {
         }
         expect(parsed.title).toEqual("This will happen next");
         expect(parsed.action).toEqual({ kind: ActionKind.CreateTextResolution, resolution: "la la la" });
+        expect(parsed.description).toEqual("foo bar");
+        expect(parsed.electionRuleId).toEqual(806595967999);
+        expect(parsed.startTime).toEqual(42424242);
+        expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      });
+
+      it("works with ReleaseGuaranteeFunds action", () => {
+        const transactionMessage: codecImpl.bnsd.ITx = {
+          govCreateProposalMsg: {
+            title: "This will happen next",
+            rawOption: codecImpl.bnsd.ProposalOptions.encode({
+              escrowReleaseMsg: {
+                metadata: { schema: 1 },
+                escrowId: defaultEscrowId,
+                amount: [
+                  {
+                    whole: 1,
+                    fractional: 1,
+                    ticker: "CASH",
+                  },
+                ],
+              },
+            }).finish(),
+            description: "foo bar",
+            electionRuleId: fromHex("bbccddbbff"),
+            startTime: 42424242,
+            author: fromHex("0011223344556677889900112233445566778899"),
+          },
+        };
+        const parsed = parseMsg(defaultBaseTx, transactionMessage);
+        if (!isCreateProposalTx(parsed)) {
+          throw new Error("unexpected transaction kind");
+        }
+        expect(parsed.title).toEqual("This will happen next");
+        expect(parsed.action).toEqual({
+          kind: ActionKind.ReleaseGuaranteeFunds,
+          escrowId: defaultEscrowId,
+          amount: defaultAmount,
+        });
         expect(parsed.description).toEqual("foo bar");
         expect(parsed.electionRuleId).toEqual(806595967999);
         expect(parsed.startTime).toEqual(42424242);
@@ -675,9 +728,9 @@ describe("Decode", () => {
               },
             }).finish(),
             description: "foo bar",
-            electionRuleId: Encoding.fromHex("bbccddbbff"),
+            electionRuleId: fromHex("bbccddbbff"),
             startTime: 42424242,
-            author: Encoding.fromHex("0011223344556677889900112233445566778899"),
+            author: fromHex("0011223344556677889900112233445566778899"),
           },
         };
         const parsed = parseMsg(defaultBaseTx, transactionMessage);
@@ -708,16 +761,16 @@ describe("Decode", () => {
                 electorateId: fromHex("0000000000000005"),
                 diffElectors: [
                   {
-                    address: Encoding.fromHex("ff11223344556677889900112233445566778899"),
+                    address: fromHex("ff11223344556677889900112233445566778899"),
                     weight: 8,
                   },
                 ],
               },
             }).finish(),
             description: "foo bar",
-            electionRuleId: Encoding.fromHex("bbccddbbff"),
+            electionRuleId: fromHex("bbccddbbff"),
             startTime: 42424242,
-            author: Encoding.fromHex("0011223344556677889900112233445566778899"),
+            author: fromHex("0011223344556677889900112233445566778899"),
           },
         };
         const parsed = parseMsg(defaultBaseTx, transactionMessage);

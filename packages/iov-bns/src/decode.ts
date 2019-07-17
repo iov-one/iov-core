@@ -55,10 +55,10 @@ import {
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
+  Validators,
   VersionedId,
   VoteOption,
   VoteTx,
-  Validators,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
@@ -349,6 +349,13 @@ function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array):
     return {
       kind: ActionKind.CreateTextResolution,
       resolution: decodeString(option.govCreateTextResolutionMsg.resolution),
+    };
+  } else if (option.escrowReleaseMsg) {
+    return {
+      kind: ActionKind.ReleaseGuaranteeFunds,
+      // codecImpl.bnsd.ProposalOptions.decode currently returns a Buffer
+      escrowId: Uint8Array.from(ensure(option.escrowReleaseMsg.escrowId, "escrowId")),
+      amount: ensure(ensure(option.escrowReleaseMsg.amount, "amount").map(decodeAmount)[0], "amount.0"),
     };
   } else if (option.validatorsApplyDiffMsg) {
     return {
