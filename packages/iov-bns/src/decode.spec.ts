@@ -44,7 +44,6 @@ import {
   isRegisterUsernameTx,
   isReleaseEscrowTx,
   isReturnEscrowTx,
-  isTallyTx,
   isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
   isUpdateTargetsOfUsernameTx,
@@ -805,20 +804,6 @@ describe("Decode", () => {
         throw new Error("unexpected transaction kind");
       }
       expect(parsed.selection).toEqual(VoteOption.Yes);
-      expect(parsed.proposalId).toEqual(187723859034111);
-    });
-
-    it("works for TallyTx", () => {
-      const transactionMessage: codecImpl.bnsd.ITx = {
-        govTallyMsg: {
-          metadata: { schema: 1 },
-          proposalId: fromHex("aabbddeeffff"),
-        },
-      };
-      const parsed = parseMsg(defaultBaseTx, transactionMessage);
-      if (!isTallyTx(parsed)) {
-        throw new Error("unexpected transaction kind");
-      }
       expect(parsed.proposalId).toEqual(187723859034111);
     });
   });

@@ -33,7 +33,6 @@ import {
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
-  TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -382,15 +381,6 @@ function buildVoteTx(tx: VoteTx): codecImpl.bnsd.ITx {
   };
 }
 
-function buildTallyTx(tx: TallyTx): codecImpl.bnsd.ITx {
-  return {
-    govTallyMsg: {
-      metadata: { schema: 1 },
-      proposalId: encodeNumericId(tx.proposalId),
-    },
-  };
-}
-
 export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   if (!isBnsTx(tx)) {
     throw new Error("Transaction is not a BNS transaction");
@@ -436,8 +426,6 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
       return buildCreateProposalTx(tx);
     case "bns/vote":
       return buildVoteTx(tx);
-    case "bns/tally":
-      return buildTallyTx(tx);
 
     default:
       throw new Error("Received transaction of unsupported kind.");

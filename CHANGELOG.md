@@ -20,6 +20,7 @@ Breaking changes
 - @iov/bns: Rename `BnsUsernameNft.addresses` to `.targets`.
 - @iov/bns: Rename `RegisterUsernameTx.addresses` to `.targets`.
 - @iov/bns: `RegisterUsernameTx.username` now has to include a \*iov suffix.
+- @iov/bns: Remove `TallyTx` as tallies will now be performed automatically.
 - @iov/core: Rename package to @iov/multichain.
 
 ## 0.15.1

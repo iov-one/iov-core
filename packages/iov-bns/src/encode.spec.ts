@@ -51,7 +51,6 @@ import {
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
-  TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -684,19 +683,6 @@ describe("Encode", () => {
         metadata: { schema: 1 },
         proposalId: Uint8Array.from([0, 0, 0, ...fromHex("AABBAABB22")]),
         selected: codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN,
-      });
-    });
-
-    it("works for TallyTx", () => {
-      const vote: TallyTx & WithCreator = {
-        kind: "bns/tally",
-        creator: defaultCreator,
-        proposalId: 733292968738,
-      };
-      const msg = buildMsg(vote).govTallyMsg!;
-      expect(msg).toEqual({
-        metadata: { schema: 1 },
-        proposalId: Uint8Array.from([0, 0, 0, ...fromHex("AABBAABB22")]),
       });
     });
 
