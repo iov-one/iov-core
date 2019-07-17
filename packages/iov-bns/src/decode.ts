@@ -58,6 +58,7 @@ import {
   VersionedId,
   VoteOption,
   VoteTx,
+  Validators,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
 
@@ -328,12 +329,33 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
   }
 }
 
+function decodeValidators(validators: readonly codecImpl.weave.IValidatorUpdate[]): Validators {
+  const initialValidators: Validators = {};
+  return validators.reduce((result, validator) => {
+    if (!validator.pubKey || !validator.pubKey.data) {
+      throw new Error("Validator is missing pubKey data");
+    }
+    const pubkeyHex = Encoding.toHex(validator.pubKey.data);
+    return {
+      ...result,
+      [pubkeyHex]: { power: asIntegerNumber(validator.power) },
+    };
+  }, initialValidators);
+}
+
 function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.bnsd.ProposalOptions.decode(rawOption);
   if (option.govCreateTextResolutionMsg) {
     return {
       kind: ActionKind.CreateTextResolution,
       resolution: decodeString(option.govCreateTextResolutionMsg.resolution),
+    };
+  } else if (option.validatorsApplyDiffMsg) {
+    return {
+      kind: ActionKind.SetValidators,
+      validatorUpdates: decodeValidators(
+        ensure(option.validatorsApplyDiffMsg.validatorUpdates, "validatorUpdates"),
+      ),
     };
   } else if (option.govUpdateElectorateMsg) {
     return {

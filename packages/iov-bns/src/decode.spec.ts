@@ -633,7 +633,7 @@ describe("Decode", () => {
     // Governance
 
     describe("CreateProposalTx", () => {
-      it("works for CreateProposalTx with CreateTextResolution action", () => {
+      it("works with CreateTextResolution action", () => {
         const transactionMessage: codecImpl.bnsd.ITx = {
           govCreateProposalMsg: {
             title: "This will happen next",
@@ -661,7 +661,44 @@ describe("Decode", () => {
         expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
       });
 
-      it("works for CreateProposalTx with UpdateElectorate action", () => {
+      it("works with SetValidators action", () => {
+        const transactionMessage: codecImpl.bnsd.ITx = {
+          govCreateProposalMsg: {
+            title: "This will happen next",
+            rawOption: codecImpl.bnsd.ProposalOptions.encode({
+              validatorsApplyDiffMsg: {
+                metadata: { schema: 1 },
+                validatorUpdates: [
+                  { pubKey: { type: "type1", data: fromHex("abcd") }, power: 5 },
+                  { pubKey: { type: "type2", data: fromHex("ef12") }, power: 7 },
+                ],
+              },
+            }).finish(),
+            description: "foo bar",
+            electionRuleId: Encoding.fromHex("bbccddbbff"),
+            startTime: 42424242,
+            author: Encoding.fromHex("0011223344556677889900112233445566778899"),
+          },
+        };
+        const parsed = parseMsg(defaultBaseTx, transactionMessage);
+        if (!isCreateProposalTx(parsed)) {
+          throw new Error("unexpected transaction kind");
+        }
+        expect(parsed.title).toEqual("This will happen next");
+        expect(parsed.action).toEqual({
+          kind: ActionKind.SetValidators,
+          validatorUpdates: {
+            abcd: { power: 5 },
+            ef12: { power: 7 },
+          },
+        });
+        expect(parsed.description).toEqual("foo bar");
+        expect(parsed.electionRuleId).toEqual(806595967999);
+        expect(parsed.startTime).toEqual(42424242);
+        expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      });
+
+      it("works with UpdateElectorate action", () => {
         const transactionMessage: codecImpl.bnsd.ITx = {
           govCreateProposalMsg: {
             title: "This will happen next",
