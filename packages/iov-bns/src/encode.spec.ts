@@ -591,6 +591,45 @@ describe("Encode", () => {
         });
       });
 
+      it("works with ReleaseGuaranteeFunds action", () => {
+        const createProposal: CreateProposalTx & WithCreator = {
+          kind: "bns/create_proposal",
+          creator: defaultCreator,
+          title: "Why not try this?",
+          action: {
+            kind: ActionKind.ReleaseGuaranteeFunds,
+            escrowId: defaultEscrowId,
+            amount: defaultAmount,
+          },
+          description: "foo bar",
+          electionRuleId: 4822531585417728,
+          startTime: 1122334455,
+          author: defaultSender,
+        };
+        const msg = buildMsg(createProposal).govCreateProposalMsg!;
+        expect(msg).toEqual({
+          metadata: { schema: 1 },
+          title: "Why not try this?",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            escrowReleaseMsg: {
+              metadata: { schema: 1 },
+              escrowId: defaultEscrowId,
+              amount: [
+                {
+                  whole: 1,
+                  fractional: 1,
+                  ticker: "CASH",
+                },
+              ],
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("0011221122112200"),
+          startTime: 1122334455,
+          author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+        });
+      });
+
       it("works with SetValidators action", () => {
         const createProposal: CreateProposalTx & WithCreator = {
           kind: "bns/create_proposal",
