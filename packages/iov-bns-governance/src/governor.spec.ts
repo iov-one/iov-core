@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Address, Algorithm, Identity, PubkeyBytes, TokenTicker } from "@iov/bcp";
+import { Address, Algorithm, PubkeyBytes, TokenTicker } from "@iov/bcp";
 import { ActionKind, bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { ReadonlyDate } from "readonly-date";
 
 import { CommitteeId } from "./committees";
-import { Governor } from "./governor";
+import { Governor, GovernorOptions } from "./governor";
 import { ProposalType } from "./proposals";
 
 function pendingWithoutBnsd(): void {
@@ -21,10 +21,9 @@ function pendingWithoutBnsd(): void {
 const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 const faucetPath = HdPaths.iov(0);
 const bnsdUrl = "http://localhost:23456";
+const guaranteeFundEscrowId = Encoding.fromHex("88008800");
 
-async function getConnectionAndIdentity(
-  path = faucetPath,
-): Promise<{ readonly connection: BnsConnection; readonly identity: Identity }> {
+async function getGovernorOptions(path = faucetPath): Promise<GovernorOptions> {
   const connection = await BnsConnection.establish(bnsdUrl);
   const chainId = await connection.chainId();
   const profile = new UserProfile();
@@ -33,13 +32,14 @@ async function getConnectionAndIdentity(
   return {
     connection: connection,
     identity: identity,
+    guaranteeFundEscrowId: guaranteeFundEscrowId,
   };
 }
 
 describe("Governor", () => {
   it("can be constructed", async () => {
     pendingWithoutBnsd();
-    const options = await getConnectionAndIdentity();
+    const options = await getGovernorOptions();
     const governor = new Governor(options);
     expect(governor).toBeTruthy();
 
@@ -49,7 +49,7 @@ describe("Governor", () => {
   describe("getElectorates", () => {
     it("can get electorates", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
+      const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const electorates = await governor.getElectorates();
@@ -62,7 +62,7 @@ describe("Governor", () => {
 
     it("can get empty list of electorates", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity(HdPaths.iov(100));
+      const options = await getGovernorOptions(HdPaths.iov(100));
       const governor = new Governor(options);
 
       const electorates = await governor.getElectorates();
@@ -75,7 +75,7 @@ describe("Governor", () => {
   describe("getElectionRules", () => {
     it("throws for non-existent electorateId", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
+      const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const electorateId = 100;
@@ -91,7 +91,7 @@ describe("Governor", () => {
 
     it("returns the latest versions of election rules for an electorate", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
+      const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const electorateId = 1;
@@ -107,7 +107,7 @@ describe("Governor", () => {
   describe("getProposals", () => {
     it("can get an empty list of proposals", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity(HdPaths.iov(100));
+      const options = await getGovernorOptions(HdPaths.iov(100));
       const governor = new Governor(options);
 
       const proposals = await governor.getProposals();
@@ -120,7 +120,7 @@ describe("Governor", () => {
   describe("buildCreateProposalTx", () => {
     it("works for AmendProtocol", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
+      const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -157,7 +157,7 @@ describe("Governor", () => {
 
     it("works for AddCommitteeMember", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
+      const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -199,7 +199,7 @@ describe("Governor", () => {
 
     it("works for RemoveCommitteeMember", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
+      const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -240,7 +240,7 @@ describe("Governor", () => {
 
     it("works for AddValidator", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
+      const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -283,7 +283,7 @@ describe("Governor", () => {
 
     it("works for RemoveValidator", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
+      const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -322,12 +322,58 @@ describe("Governor", () => {
 
       options.connection.disconnect();
     });
+
+    it("works for ReleaseGuaranteeFunds", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const governor = new Governor(options);
+
+      const tx = await governor.buildCreateProposalTx({
+        type: ProposalType.ReleaseGuaranteeFunds,
+        title: "Release guarantee funds",
+        description: "Proposal to release guarantee funds",
+        startTime: new ReadonlyDate(1562164525898),
+        electionRuleId: 1,
+        amount: {
+          quantity: "2000000002",
+          fractionalDigits: 9,
+          tokenTicker: "CASH" as TokenTicker,
+        },
+      });
+      expect(tx).toEqual({
+        kind: "bns/create_proposal",
+        creator: options.identity,
+        title: "Release guarantee funds",
+        action: {
+          kind: ActionKind.ReleaseGuaranteeFunds,
+          escrowId: guaranteeFundEscrowId,
+          amount: {
+            quantity: "2000000002",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+        },
+        description: "Proposal to release guarantee funds",
+        electionRuleId: 1,
+        startTime: 1562164525,
+        author: bnsCodec.identityToAddress(options.identity),
+        fee: {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+        },
+      });
+
+      options.connection.disconnect();
+    });
   });
 
   describe("createVoteTx", () => {
     it("can build a Vote transaction", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
+      const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const tx = await governor.buildVoteTx(5, VoteOption.Yes);
@@ -352,7 +398,7 @@ describe("Governor", () => {
   describe("buildTallyTx", () => {
     it("can build a Tally transaction", async () => {
       pendingWithoutBnsd();
-      const options = await getConnectionAndIdentity();
+      const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const tx = await governor.buildTallyTx(5);

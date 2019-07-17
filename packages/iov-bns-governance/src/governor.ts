@@ -22,17 +22,20 @@ const { toHex } = Encoding;
 export interface GovernorOptions {
   readonly connection: BnsConnection;
   readonly identity: Identity;
+  readonly guaranteeFundEscrowId: Uint8Array;
 }
 
 export class Governor {
   private readonly connection: BnsConnection;
   private readonly identity: Identity;
   private readonly address: Address;
+  private readonly guaranteeFundEscrowId: Uint8Array;
 
-  public constructor({ connection, identity }: GovernorOptions) {
+  public constructor({ connection, identity, guaranteeFundEscrowId }: GovernorOptions) {
     this.connection = connection;
     this.identity = identity;
     this.address = bnsCodec.identityToAddress(this.identity);
+    this.guaranteeFundEscrowId = guaranteeFundEscrowId;
   }
 
   public async getElectorates(): Promise<readonly Electorate[]> {
@@ -114,6 +117,15 @@ export class Governor {
             validatorUpdates: {
               [`ed25519_${toHex(options.pubkey.data)}`]: { power: 0 },
             },
+          },
+        });
+      case ProposalType.ReleaseGuaranteeFunds:
+        return this.connection.withDefaultFee({
+          ...commonProperties,
+          action: {
+            kind: ActionKind.ReleaseGuaranteeFunds,
+            escrowId: this.guaranteeFundEscrowId,
+            amount: options.amount,
           },
         });
       case ProposalType.AmendProtocol:
