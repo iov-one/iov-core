@@ -117,12 +117,12 @@ export enum VoteOption {
 }
 
 export enum ActionKind {
-  CreateTextResolution = "create_text_resolution",
+  CreateTextResolution = "gov_create_text_resolution",
   ExecuteProposalBatch = "execute_proposal_batch",
-  ReleaseEscrow = "release_escrow ",
-  SetValidators = "set_validators",
-  UpdateElectionRule = "update_election_rule",
-  UpdateElectorate = "update_electorate",
+  ReleaseEscrow = "escrow_release",
+  SetValidators = "validators_apply_diff",
+  UpdateElectionRule = "gov_update_election_rule",
+  UpdateElectorate = "gov_update_electorate",
 }
 
 export interface TallyResult {
