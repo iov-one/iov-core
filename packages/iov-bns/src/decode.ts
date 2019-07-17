@@ -55,6 +55,7 @@ import {
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
+  Validators,
   VersionedId,
   VoteOption,
   VoteTx,
@@ -328,12 +329,40 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
   }
 }
 
+function decodeValidators(validators: readonly codecImpl.weave.IValidatorUpdate[]): Validators {
+  const initialValidators: Validators = {};
+  return validators.reduce((result, validator) => {
+    if (!validator.pubKey || !validator.pubKey.data) {
+      throw new Error("Validator is missing pubKey data");
+    }
+    const pubkeyHex = Encoding.toHex(validator.pubKey.data);
+    return {
+      ...result,
+      [pubkeyHex]: { power: asIntegerNumber(validator.power) },
+    };
+  }, initialValidators);
+}
+
 function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.bnsd.ProposalOptions.decode(rawOption);
   if (option.govCreateTextResolutionMsg) {
     return {
       kind: ActionKind.CreateTextResolution,
       resolution: decodeString(option.govCreateTextResolutionMsg.resolution),
+    };
+  } else if (option.escrowReleaseMsg) {
+    return {
+      kind: ActionKind.ReleaseGuaranteeFunds,
+      // codecImpl.bnsd.ProposalOptions.decode currently returns a Buffer
+      escrowId: Uint8Array.from(ensure(option.escrowReleaseMsg.escrowId, "escrowId")),
+      amount: ensure(ensure(option.escrowReleaseMsg.amount, "amount").map(decodeAmount)[0], "amount.0"),
+    };
+  } else if (option.validatorsApplyDiffMsg) {
+    return {
+      kind: ActionKind.SetValidators,
+      validatorUpdates: decodeValidators(
+        ensure(option.validatorsApplyDiffMsg.validatorUpdates, "validatorUpdates"),
+      ),
     };
   } else if (option.govUpdateElectorateMsg) {
     return {

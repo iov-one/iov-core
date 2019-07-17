@@ -25,6 +25,7 @@ import {
   CreateProposalTx,
   isBnsTx,
   isCreateTextResolution,
+  isReleaseGuaranteeFunds,
   isSetValidators,
   isUpdateElectorate,
   Participant,
@@ -310,27 +311,36 @@ function encodeValidators(validators: Validators): codecImpl.weave.IValidatorUpd
 }
 
 function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
+  const { action } = tx;
   let option: codecImpl.bnsd.IProposalOptions;
-  if (isCreateTextResolution(tx.action)) {
+  if (isCreateTextResolution(action)) {
     option = {
       govCreateTextResolutionMsg: {
         metadata: { schema: 1 },
-        resolution: tx.action.resolution,
+        resolution: action.resolution,
       },
     };
-  } else if (isSetValidators(tx.action)) {
+  } else if (isReleaseGuaranteeFunds(action)) {
+    option = {
+      escrowReleaseMsg: {
+        metadata: { schema: 1 },
+        escrowId: action.escrowId,
+        amount: [encodeAmount(action.amount)],
+      },
+    };
+  } else if (isSetValidators(action)) {
     option = {
       validatorsApplyDiffMsg: {
         metadata: { schema: 1 },
-        validatorUpdates: encodeValidators(tx.action.validatorUpdates),
+        validatorUpdates: encodeValidators(action.validatorUpdates),
       },
     };
-  } else if (isUpdateElectorate(tx.action)) {
+  } else if (isUpdateElectorate(action)) {
     option = {
       govUpdateElectorateMsg: {
         metadata: { schema: 1 },
-        electorateId: encodeNumericId(tx.action.electorateId),
-        diffElectors: Object.entries(tx.action.diffElectors).map(([address, { weight }]) => ({
+        electorateId: encodeNumericId(action.electorateId),
+        diffElectors: Object.entries(action.diffElectors).map(([address, { weight }]) => ({
           address: decodeBnsAddress(address as Address).data,
           weight: weight,
         })),

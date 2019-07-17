@@ -11,7 +11,7 @@ export enum ProposalType {
   AmendCommitteeQuorum,
   AddValidator,
   RemoveValidator,
-  AccessGuaranteeFund,
+  ReleaseGuaranteeFunds,
   DistributeFunds,
   AmendProtocol,
 }
@@ -60,8 +60,8 @@ export interface RemoveValidatorOptions extends CommonProposalOptions {
   readonly pubkey: PubkeyBundle;
 }
 
-export interface AccessGuaranteeFundOptions extends CommonProposalOptions {
-  readonly type: ProposalType.AccessGuaranteeFund;
+export interface ReleaseGuaranteeFundsOptions extends CommonProposalOptions {
+  readonly type: ProposalType.ReleaseGuaranteeFunds;
   readonly amount: Amount;
 }
 
@@ -85,6 +85,6 @@ export type ProposalOptions =
   | AmendCommitteeQuorumOptions
   | AddValidatorOptions
   | RemoveValidatorOptions
-  | AccessGuaranteeFundOptions
+  | ReleaseGuaranteeFundsOptions
   | DistributeFundsOptions
   | AmendProtocolOptions;
