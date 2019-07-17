@@ -7,7 +7,6 @@ import {
   ElectionRule,
   Electorate,
   Proposal,
-  TallyTx,
   VoteOption,
   VoteTx,
 } from "@iov/bns";
@@ -147,14 +146,6 @@ export class Governor {
       creator: this.identity,
       proposalId: proposalId,
       selection: selection,
-    });
-  }
-
-  public async buildTallyTx(proposalId: number): Promise<TallyTx & WithCreator> {
-    return this.connection.withDefaultFee({
-      kind: "bns/tally",
-      creator: this.identity,
-      proposalId: proposalId,
     });
   }
 }

@@ -394,28 +394,4 @@ describe("Governor", () => {
       options.connection.disconnect();
     });
   });
-
-  describe("buildTallyTx", () => {
-    it("can build a Tally transaction", async () => {
-      pendingWithoutBnsd();
-      const options = await getGovernorOptions();
-      const governor = new Governor(options);
-
-      const tx = await governor.buildTallyTx(5);
-      expect(tx).toEqual({
-        kind: "bns/tally",
-        creator: options.identity,
-        proposalId: 5,
-        fee: {
-          tokens: {
-            quantity: "10000000",
-            fractionalDigits: 9,
-            tokenTicker: "CASH" as TokenTicker,
-          },
-        },
-      });
-
-      options.connection.disconnect();
-    });
-  });
 });
