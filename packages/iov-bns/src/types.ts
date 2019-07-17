@@ -118,7 +118,7 @@ export enum VoteOption {
 
 export enum ActionKind {
   CreateTextResolution = "create_text_resolution",
-  ReleaseGuaranteeFunds = "release_guarantee_funds",
+  ReleaseEscrow = "release_escrow ",
   SetValidators = "set_validators",
   UpdateElectionRule = "update_election_rule",
   UpdateElectorate = "update_electorate",
@@ -140,14 +140,14 @@ export function isCreateTextResolution(action: ProposalAction): action is Create
   return action.kind === ActionKind.CreateTextResolution;
 }
 
-export interface ReleaseGuaranteeFunds {
-  readonly kind: ActionKind.ReleaseGuaranteeFunds;
+export interface ReleaseEscrow {
+  readonly kind: ActionKind.ReleaseEscrow;
   readonly escrowId: Uint8Array;
   readonly amount: Amount;
 }
 
-export function isReleaseGuaranteeFunds(action: ProposalAction): action is ReleaseGuaranteeFunds {
-  return action.kind === ActionKind.ReleaseGuaranteeFunds;
+export function isReleaseEscrow(action: ProposalAction): action is ReleaseEscrow {
+  return action.kind === ActionKind.ReleaseEscrow;
 }
 
 export interface SetValidators {
@@ -183,7 +183,7 @@ export function isUpdateElectorate(action: ProposalAction): action is UpdateElec
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolution
-  | ReleaseGuaranteeFunds
+  | ReleaseEscrow
   | SetValidators
   | UpdateElectorate
   | UpdateElectionRule;

@@ -25,7 +25,7 @@ import {
   CreateProposalTx,
   isBnsTx,
   isCreateTextResolution,
-  isReleaseGuaranteeFunds,
+  isReleaseEscrow,
   isSetValidators,
   isUpdateElectionRule,
   isUpdateElectorate,
@@ -318,7 +318,7 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
         resolution: action.resolution,
       },
     };
-  } else if (isReleaseGuaranteeFunds(action)) {
+  } else if (isReleaseEscrow(action)) {
     option = {
       escrowReleaseMsg: {
         metadata: { schema: 1 },

@@ -703,7 +703,7 @@ describe("Decode", () => {
         }
         expect(parsed.title).toEqual("This will happen next");
         expect(parsed.action).toEqual({
-          kind: ActionKind.ReleaseGuaranteeFunds,
+          kind: ActionKind.ReleaseEscrow,
           escrowId: defaultEscrowId,
           amount: defaultAmount,
         });

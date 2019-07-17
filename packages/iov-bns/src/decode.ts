@@ -351,7 +351,7 @@ function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array):
     };
   } else if (option.escrowReleaseMsg) {
     return {
-      kind: ActionKind.ReleaseGuaranteeFunds,
+      kind: ActionKind.ReleaseEscrow,
       // codecImpl.bnsd.ProposalOptions.decode currently returns a Buffer
       escrowId: Uint8Array.from(ensure(option.escrowReleaseMsg.escrowId, "escrowId")),
       amount: ensure(ensure(option.escrowReleaseMsg.amount, "amount").map(decodeAmount)[0], "amount.0"),
