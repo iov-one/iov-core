@@ -6,8 +6,9 @@
 - @iov/bns-governance: Add new package to help with common governance tasks.
   Includes `Governor` class (with `GovernorOptions`); `ProposalType` along with
   the union type `ProposalOptions` and individual options types for each
-  proposal type; `CommitteeId` and `CommitteeIds` types along with a constant
-  `committeeIds` to be populated with known committee IDs on a per-chain basis.
+  proposal type; `CommitteeId` and `CommitteeIds` types along with constants
+  `committeeIds` and `guaranteeFundEscrowIds` to be populated with known
+  committee IDs on a per-chain basis.
 
 Breaking changes
 
