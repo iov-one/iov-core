@@ -9,3 +9,6 @@ export interface CommitteeIds {
 export declare const committeeIds: {
     readonly [chainId: string]: CommitteeIds;
 };
+export declare const guaranteeFundEscrowIds: {
+    readonly [chainId: string]: Uint8Array;
+};

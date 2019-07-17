@@ -18,3 +18,8 @@ export const committeeIds: { readonly [chainId: string]: CommitteeIds } = {
   //   techCommittee: 4 as CommitteeId,
   // },
 };
+
+export const guaranteeFundEscrowIds: { readonly [chainId: string]: Uint8Array } = {
+  // TODO: Constants to be finalised once the guarantee funds are set up in the actual genesis blocks. E.g.:
+  // testnet: Encoding.fromHex("abcd"),
+};
