@@ -140,7 +140,7 @@ export class Governor {
         return this.connection.withDefaultFee({
           ...commonProperties,
           action: {
-            kind: ActionKind.ReleaseGuaranteeFunds,
+            kind: ActionKind.ReleaseEscrow,
             escrowId: this.guaranteeFundEscrowId,
             amount: options.amount,
           },
