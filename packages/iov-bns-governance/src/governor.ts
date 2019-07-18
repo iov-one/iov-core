@@ -1,4 +1,4 @@
-import { Address, Identity, WithCreator } from "@iov/bcp";
+import { Address, Identity, TokenTicker, WithCreator } from "@iov/bcp";
 import {
   ActionKind,
   bnsCodec,
@@ -22,6 +22,7 @@ export interface GovernorOptions {
   readonly connection: BnsConnection;
   readonly identity: Identity;
   readonly guaranteeFundEscrowId: Uint8Array;
+  readonly rewardFundAddress: Address;
 }
 
 export class Governor {
@@ -29,12 +30,14 @@ export class Governor {
   private readonly identity: Identity;
   private readonly address: Address;
   private readonly guaranteeFundEscrowId: Uint8Array;
+  private readonly rewardFundAddress: Address;
 
-  public constructor({ connection, identity, guaranteeFundEscrowId }: GovernorOptions) {
+  public constructor({ connection, identity, guaranteeFundEscrowId, rewardFundAddress }: GovernorOptions) {
     this.connection = connection;
     this.identity = identity;
     this.address = bnsCodec.identityToAddress(this.identity);
     this.guaranteeFundEscrowId = guaranteeFundEscrowId;
+    this.rewardFundAddress = rewardFundAddress;
   }
 
   public async getElectorates(): Promise<readonly Electorate[]> {
@@ -145,6 +148,48 @@ export class Governor {
             amount: options.amount,
           },
         });
+      case ProposalType.DistributeFunds: {
+        const rewardFund = await this.connection.getAccount({ address: this.rewardFundAddress });
+        if (!rewardFund) {
+          throw new Error("Could not find guarantee fund account");
+        }
+        const fundTotal = rewardFund.balance.find(({ tokenTicker }) => tokenTicker === "CASH");
+        if (!fundTotal) {
+          throw new Error("Guarantee fund has no CASH balance");
+        }
+
+        const tx = {
+          ...commonProperties,
+          action: {
+            kind: ActionKind.ExecuteProposalBatch,
+            messages: [],
+          },
+        };
+        const feeQuote = await this.connection.getFeeQuote(tx);
+        if (!feeQuote.tokens) throw new Error("Received fee quote of unexpected type");
+        const fundTotalMinusFee = new BN(fundTotal.quantity).sub(new BN(feeQuote.tokens.quantity));
+        const totalWeight = options.recipients.reduce((total, { weight }) => total + weight, 0);
+
+        return this.connection.withDefaultFee({
+          ...tx,
+          action: {
+            kind: ActionKind.ExecuteProposalBatch,
+            messages: options.recipients.map(({ address, weight }) => ({
+              kind: ActionKind.Send,
+              sender: this.rewardFundAddress,
+              recipient: address,
+              amount: {
+                quantity: fundTotalMinusFee
+                  .muln(weight)
+                  .divn(totalWeight)
+                  .toString(),
+                fractionalDigits: 9,
+                tokenTicker: "CASH" as TokenTicker,
+              },
+            })),
+          },
+        });
+      }
       case ProposalType.AmendProtocol:
         return this.connection.withDefaultFee({
           ...commonProperties,
