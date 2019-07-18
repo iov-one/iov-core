@@ -175,10 +175,7 @@ export namespace bnsd {
     /** Tx govVoteMsg */
     govVoteMsg?: gov.IVoteMsg | null;
 
-    /** Tx govTallyMsg */
-    govTallyMsg?: gov.ITallyMsg | null;
-
-    /** Tx govUpdateElectorateMsg */
+    /** gov.TallyMsg gov_tally_msg = 76; */
     govUpdateElectorateMsg?: gov.IUpdateElectorateMsg | null;
 
     /** Tx govUpdateElectionRuleMsg */
@@ -271,10 +268,7 @@ export namespace bnsd {
     /** Tx govVoteMsg. */
     public govVoteMsg?: gov.IVoteMsg | null;
 
-    /** Tx govTallyMsg. */
-    public govTallyMsg?: gov.ITallyMsg | null;
-
-    /** Tx govUpdateElectorateMsg. */
+    /** gov.TallyMsg gov_tally_msg = 76; */
     public govUpdateElectorateMsg?: gov.IUpdateElectorateMsg | null;
 
     /** Tx govUpdateElectionRuleMsg. */
@@ -305,7 +299,6 @@ export namespace bnsd {
       | "govCreateProposalMsg"
       | "govDeleteProposalMsg"
       | "govVoteMsg"
-      | "govTallyMsg"
       | "govUpdateElectorateMsg"
       | "govUpdateElectionRuleMsg";
 
@@ -3219,6 +3212,9 @@ export namespace aswap {
 
     /** max length 128 characters */
     memo?: string | null;
+
+    /** Address of this entity. Set during creation and does not change. */
+    address?: Uint8Array | null;
   }
 
   /** Swap is designed to hold some coins for atomic swap, locked by preimage_hash */
@@ -3246,6 +3242,9 @@ export namespace aswap {
 
     /** max length 128 characters */
     public memo: string;
+
+    /** Address of this entity. Set during creation and does not change. */
+    public address: Uint8Array;
 
     /**
      * Creates a new Swap instance using the specified properties.
@@ -4597,6 +4596,9 @@ export namespace distribution {
 
     /** distributed to. Must be at least one. */
     destinations?: distribution.IDestination[] | null;
+
+    /** Address of this entity. Set during creation and does not change. */
+    address?: Uint8Array | null;
   }
 
   /** the owners. */
@@ -4615,6 +4617,9 @@ export namespace distribution {
 
     /** distributed to. Must be at least one. */
     public destinations: distribution.IDestination[];
+
+    /** Address of this entity. Set during creation and does not change. */
+    public address: Uint8Array;
 
     /**
      * Creates a new Revenue instance using the specified properties.
@@ -5127,6 +5132,9 @@ export namespace escrow {
 
     /** max length 128 character */
     memo?: string | null;
+
+    /** Address of this entity. Set during creation and does not change. */
+    address?: Uint8Array | null;
   }
 
   /** Upon timeout, they will be returned to the source. */
@@ -5154,6 +5162,9 @@ export namespace escrow {
 
     /** max length 128 character */
     public memo: string;
+
+    /** Address of this entity. Set during creation and does not change. */
+    public address: Uint8Array;
 
     /**
      * Creates a new Escrow instance using the specified properties.
@@ -5920,6 +5931,9 @@ export namespace gov {
 
     /** of the eligible voters. */
     quorum?: gov.IFraction | null;
+
+    /** Address of this entity. Set during creation and does not change. */
+    address?: Uint8Array | null;
   }
 
   /** Election Rule defines how an election is run. A proposal must be voted upon via a pre-defined ruleset. */
@@ -5953,6 +5967,9 @@ export namespace gov {
 
     /** of the eligible voters. */
     public quorum?: gov.IFraction | null;
+
+    /** Address of this entity. Set during creation and does not change. */
+    public address: Uint8Array;
 
     /**
      * Creates a new ElectionRule instance using the specified properties.
@@ -7319,6 +7336,9 @@ export namespace gov {
 
     /** of the eligible voters. */
     threshold?: gov.IFraction | null;
+
+    /** allows any value between half and all of the eligible voters. */
+    quorum?: gov.IFraction | null;
   }
 
   /** Represents an UpdateElectionRuleMsg. */
@@ -7340,6 +7360,9 @@ export namespace gov {
 
     /** of the eligible voters. */
     public threshold?: gov.IFraction | null;
+
+    /** allows any value between half and all of the eligible voters. */
+    public quorum?: gov.IFraction | null;
 
     /**
      * Creates a new UpdateElectionRuleMsg instance using the specified properties.
@@ -7646,6 +7669,9 @@ export namespace multisig {
 
     /** computed as the sum of weights of all participating signatures. */
     adminThreshold?: number | null;
+
+    /** Address of this entity. Set during creation and does not change. */
+    address?: Uint8Array | null;
   }
 
   /** Represents a Contract. */
@@ -7667,6 +7693,9 @@ export namespace multisig {
 
     /** computed as the sum of weights of all participating signatures. */
     public adminThreshold: number;
+
+    /** Address of this entity. Set during creation and does not change. */
+    public address: Uint8Array;
 
     /**
      * Creates a new Contract instance using the specified properties.
@@ -8094,6 +8123,9 @@ export namespace paychan {
 
     /** (total) value. Transferred must never exceed total value. */
     transferred?: coin.ICoin | null;
+
+    /** Address of this entity. Set during creation and does not change. */
+    address?: Uint8Array | null;
   }
 
   /** PaymentChannel holds the state of a payment channel during its lifetime. */
@@ -8127,6 +8159,9 @@ export namespace paychan {
 
     /** (total) value. Transferred must never exceed total value. */
     public transferred?: coin.ICoin | null;
+
+    /** Address of this entity. Set during creation and does not change. */
+    public address: Uint8Array;
 
     /**
      * Creates a new PaymentChannel instance using the specified properties.

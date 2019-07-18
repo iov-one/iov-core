@@ -268,8 +268,7 @@ $root.bnsd = (function() {
          * @property {gov.ICreateProposalMsg|null} [govCreateProposalMsg] Tx govCreateProposalMsg
          * @property {gov.IDeleteProposalMsg|null} [govDeleteProposalMsg] Tx govDeleteProposalMsg
          * @property {gov.IVoteMsg|null} [govVoteMsg] Tx govVoteMsg
-         * @property {gov.ITallyMsg|null} [govTallyMsg] Tx govTallyMsg
-         * @property {gov.IUpdateElectorateMsg|null} [govUpdateElectorateMsg] Tx govUpdateElectorateMsg
+         * @property {gov.IUpdateElectorateMsg|null} [govUpdateElectorateMsg] gov.TallyMsg gov_tally_msg = 76;
          * @property {gov.IUpdateElectionRuleMsg|null} [govUpdateElectionRuleMsg] Tx govUpdateElectionRuleMsg
          */
 
@@ -499,15 +498,7 @@ $root.bnsd = (function() {
         Tx.prototype.govVoteMsg = null;
 
         /**
-         * Tx govTallyMsg.
-         * @member {gov.ITallyMsg|null|undefined} govTallyMsg
-         * @memberof bnsd.Tx
-         * @instance
-         */
-        Tx.prototype.govTallyMsg = null;
-
-        /**
-         * Tx govUpdateElectorateMsg.
+         * gov.TallyMsg gov_tally_msg = 76;
          * @member {gov.IUpdateElectorateMsg|null|undefined} govUpdateElectorateMsg
          * @memberof bnsd.Tx
          * @instance
@@ -527,12 +518,12 @@ $root.bnsd = (function() {
 
         /**
          * msg is a sum type over all allowed messages on this chain.
-         * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"aswapCreateMsg"|"aswapReleaseMsg"|"aswapReturnMsg"|"govCreateProposalMsg"|"govDeleteProposalMsg"|"govVoteMsg"|"govTallyMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|undefined} sum
+         * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"aswapCreateMsg"|"aswapReleaseMsg"|"aswapReturnMsg"|"govCreateProposalMsg"|"govDeleteProposalMsg"|"govVoteMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|undefined} sum
          * @memberof bnsd.Tx
          * @instance
          */
         Object.defineProperty(Tx.prototype, "sum", {
-            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "aswapCreateMsg", "aswapReleaseMsg", "aswapReturnMsg", "govCreateProposalMsg", "govDeleteProposalMsg", "govVoteMsg", "govTallyMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "aswapCreateMsg", "aswapReleaseMsg", "aswapReturnMsg", "govCreateProposalMsg", "govDeleteProposalMsg", "govVoteMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -614,8 +605,6 @@ $root.bnsd = (function() {
                 $root.gov.DeleteProposalMsg.encode(message.govDeleteProposalMsg, writer.uint32(/* id 74, wireType 2 =*/594).fork()).ldelim();
             if (message.govVoteMsg != null && message.hasOwnProperty("govVoteMsg"))
                 $root.gov.VoteMsg.encode(message.govVoteMsg, writer.uint32(/* id 75, wireType 2 =*/602).fork()).ldelim();
-            if (message.govTallyMsg != null && message.hasOwnProperty("govTallyMsg"))
-                $root.gov.TallyMsg.encode(message.govTallyMsg, writer.uint32(/* id 76, wireType 2 =*/610).fork()).ldelim();
             if (message.govUpdateElectorateMsg != null && message.hasOwnProperty("govUpdateElectorateMsg"))
                 $root.gov.UpdateElectorateMsg.encode(message.govUpdateElectorateMsg, writer.uint32(/* id 77, wireType 2 =*/618).fork()).ldelim();
             if (message.govUpdateElectionRuleMsg != null && message.hasOwnProperty("govUpdateElectionRuleMsg"))
@@ -735,9 +724,6 @@ $root.bnsd = (function() {
                     break;
                 case 75:
                     message.govVoteMsg = $root.gov.VoteMsg.decode(reader, reader.uint32());
-                    break;
-                case 76:
-                    message.govTallyMsg = $root.gov.TallyMsg.decode(reader, reader.uint32());
                     break;
                 case 77:
                     message.govUpdateElectorateMsg = $root.gov.UpdateElectorateMsg.decode(reader, reader.uint32());
@@ -1030,16 +1016,6 @@ $root.bnsd = (function() {
                         return "govVoteMsg." + error;
                 }
             }
-            if (message.govTallyMsg != null && message.hasOwnProperty("govTallyMsg")) {
-                if (properties.sum === 1)
-                    return "sum: multiple values";
-                properties.sum = 1;
-                {
-                    var error = $root.gov.TallyMsg.verify(message.govTallyMsg);
-                    if (error)
-                        return "govTallyMsg." + error;
-                }
-            }
             if (message.govUpdateElectorateMsg != null && message.hasOwnProperty("govUpdateElectorateMsg")) {
                 if (properties.sum === 1)
                     return "sum: multiple values";
@@ -1215,11 +1191,6 @@ $root.bnsd = (function() {
                     throw TypeError(".bnsd.Tx.govVoteMsg: object expected");
                 message.govVoteMsg = $root.gov.VoteMsg.fromObject(object.govVoteMsg);
             }
-            if (object.govTallyMsg != null) {
-                if (typeof object.govTallyMsg !== "object")
-                    throw TypeError(".bnsd.Tx.govTallyMsg: object expected");
-                message.govTallyMsg = $root.gov.TallyMsg.fromObject(object.govTallyMsg);
-            }
             if (object.govUpdateElectorateMsg != null) {
                 if (typeof object.govUpdateElectorateMsg !== "object")
                     throw TypeError(".bnsd.Tx.govUpdateElectorateMsg: object expected");
@@ -1378,11 +1349,6 @@ $root.bnsd = (function() {
                 object.govVoteMsg = $root.gov.VoteMsg.toObject(message.govVoteMsg, options);
                 if (options.oneofs)
                     object.sum = "govVoteMsg";
-            }
-            if (message.govTallyMsg != null && message.hasOwnProperty("govTallyMsg")) {
-                object.govTallyMsg = $root.gov.TallyMsg.toObject(message.govTallyMsg, options);
-                if (options.oneofs)
-                    object.sum = "govTallyMsg";
             }
             if (message.govUpdateElectorateMsg != null && message.hasOwnProperty("govUpdateElectorateMsg")) {
                 object.govUpdateElectorateMsg = $root.gov.UpdateElectorateMsg.toObject(message.govUpdateElectorateMsg, options);
@@ -8650,6 +8616,7 @@ $root.aswap = (function() {
          * @property {Uint8Array|null} [destination] destination is an address of destination
          * @property {number|Long|null} [timeout] expired: [timeout, infinity)
          * @property {string|null} [memo] max length 128 characters
+         * @property {Uint8Array|null} [address] Address of this entity. Set during creation and does not change.
          */
 
         /**
@@ -8716,6 +8683,14 @@ $root.aswap = (function() {
         Swap.prototype.memo = "";
 
         /**
+         * Address of this entity. Set during creation and does not change.
+         * @member {Uint8Array} address
+         * @memberof aswap.Swap
+         * @instance
+         */
+        Swap.prototype.address = $util.newBuffer([]);
+
+        /**
          * Creates a new Swap instance using the specified properties.
          * @function create
          * @memberof aswap.Swap
@@ -8751,6 +8726,8 @@ $root.aswap = (function() {
                 writer.uint32(/* id 6, wireType 0 =*/48).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
                 writer.uint32(/* id 7, wireType 2 =*/58).string(message.memo);
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.address);
             return writer;
         };
 
@@ -8802,6 +8779,9 @@ $root.aswap = (function() {
                     break;
                 case 7:
                     message.memo = reader.string();
+                    break;
+                case 8:
+                    message.address = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -8858,6 +8838,9 @@ $root.aswap = (function() {
             if (message.memo != null && message.hasOwnProperty("memo"))
                 if (!$util.isString(message.memo))
                     return "memo: string expected";
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
             return null;
         };
 
@@ -8904,6 +8887,11 @@ $root.aswap = (function() {
                     message.timeout = new $util.LongBits(object.timeout.low >>> 0, object.timeout.high >>> 0).toNumber();
             if (object.memo != null)
                 message.memo = String(object.memo);
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
             return message;
         };
 
@@ -8949,6 +8937,13 @@ $root.aswap = (function() {
                 } else
                     object.timeout = options.longs === String ? "0" : 0;
                 object.memo = "";
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -8965,6 +8960,8 @@ $root.aswap = (function() {
                     object.timeout = options.longs === String ? $util.Long.prototype.toString.call(message.timeout) : options.longs === Number ? new $util.LongBits(message.timeout.low >>> 0, message.timeout.high >>> 0).toNumber() : message.timeout;
             if (message.memo != null && message.hasOwnProperty("memo"))
                 object.memo = message.memo;
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
             return object;
         };
 
@@ -12182,6 +12179,7 @@ $root.distribution = (function() {
          * @property {weave.IMetadata|null} [metadata] Revenue metadata
          * @property {Uint8Array|null} [admin] While not enforced it is best to use a multisig contract here.
          * @property {Array.<distribution.IDestination>|null} [destinations] distributed to. Must be at least one.
+         * @property {Uint8Array|null} [address] Address of this entity. Set during creation and does not change.
          */
 
         /**
@@ -12225,6 +12223,14 @@ $root.distribution = (function() {
         Revenue.prototype.destinations = $util.emptyArray;
 
         /**
+         * Address of this entity. Set during creation and does not change.
+         * @member {Uint8Array} address
+         * @memberof distribution.Revenue
+         * @instance
+         */
+        Revenue.prototype.address = $util.newBuffer([]);
+
+        /**
          * Creates a new Revenue instance using the specified properties.
          * @function create
          * @memberof distribution.Revenue
@@ -12255,6 +12261,8 @@ $root.distribution = (function() {
             if (message.destinations != null && message.destinations.length)
                 for (var i = 0; i < message.destinations.length; ++i)
                     $root.distribution.Destination.encode(message.destinations[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.address);
             return writer;
         };
 
@@ -12299,6 +12307,9 @@ $root.distribution = (function() {
                     if (!(message.destinations && message.destinations.length))
                         message.destinations = [];
                     message.destinations.push($root.distribution.Destination.decode(reader, reader.uint32()));
+                    break;
+                case 4:
+                    message.address = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -12352,6 +12363,9 @@ $root.distribution = (function() {
                         return "destinations." + error;
                 }
             }
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
             return null;
         };
 
@@ -12387,6 +12401,11 @@ $root.distribution = (function() {
                     message.destinations[i] = $root.distribution.Destination.fromObject(object.destinations[i]);
                 }
             }
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
             return message;
         };
 
@@ -12414,6 +12433,13 @@ $root.distribution = (function() {
                     if (options.bytes !== Array)
                         object.admin = $util.newBuffer(object.admin);
                 }
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -12424,6 +12450,8 @@ $root.distribution = (function() {
                 for (var j = 0; j < message.destinations.length; ++j)
                     object.destinations[j] = $root.distribution.Destination.toObject(message.destinations[j], options);
             }
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
             return object;
         };
 
@@ -13444,6 +13472,7 @@ $root.escrow = (function() {
          * @property {Uint8Array|null} [destination] Escrow destination
          * @property {number|Long|null} [timeout] expired: [timeout, infinity)
          * @property {string|null} [memo] max length 128 character
+         * @property {Uint8Array|null} [address] Address of this entity. Set during creation and does not change.
          */
 
         /**
@@ -13510,6 +13539,14 @@ $root.escrow = (function() {
         Escrow.prototype.memo = "";
 
         /**
+         * Address of this entity. Set during creation and does not change.
+         * @member {Uint8Array} address
+         * @memberof escrow.Escrow
+         * @instance
+         */
+        Escrow.prototype.address = $util.newBuffer([]);
+
+        /**
          * Creates a new Escrow instance using the specified properties.
          * @function create
          * @memberof escrow.Escrow
@@ -13545,6 +13582,8 @@ $root.escrow = (function() {
                 writer.uint32(/* id 5, wireType 0 =*/40).int64(message.timeout);
             if (message.memo != null && message.hasOwnProperty("memo"))
                 writer.uint32(/* id 6, wireType 2 =*/50).string(message.memo);
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.address);
             return writer;
         };
 
@@ -13596,6 +13635,9 @@ $root.escrow = (function() {
                     break;
                 case 6:
                     message.memo = reader.string();
+                    break;
+                case 7:
+                    message.address = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -13652,6 +13694,9 @@ $root.escrow = (function() {
             if (message.memo != null && message.hasOwnProperty("memo"))
                 if (!$util.isString(message.memo))
                     return "memo: string expected";
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
             return null;
         };
 
@@ -13698,6 +13743,11 @@ $root.escrow = (function() {
                     message.timeout = new $util.LongBits(object.timeout.low >>> 0, object.timeout.high >>> 0).toNumber();
             if (object.memo != null)
                 message.memo = String(object.memo);
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
             return message;
         };
 
@@ -13743,6 +13793,13 @@ $root.escrow = (function() {
                 } else
                     object.timeout = options.longs === String ? "0" : 0;
                 object.memo = "";
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -13759,6 +13816,8 @@ $root.escrow = (function() {
                     object.timeout = options.longs === String ? $util.Long.prototype.toString.call(message.timeout) : options.longs === Number ? new $util.LongBits(message.timeout.low >>> 0, message.timeout.high >>> 0).toNumber() : message.timeout;
             if (message.memo != null && message.hasOwnProperty("memo"))
                 object.memo = message.memo;
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
             return object;
         };
 
@@ -15566,6 +15625,7 @@ $root.gov = (function() {
          * @property {number|null} [votingPeriod] Duration in seconds of how long the voting period will take place.
          * @property {gov.IFraction|null} [threshold] of the eligible voters.
          * @property {gov.IFraction|null} [quorum] of the eligible voters.
+         * @property {Uint8Array|null} [address] Address of this entity. Set during creation and does not change.
          */
 
         /**
@@ -15648,6 +15708,14 @@ $root.gov = (function() {
         ElectionRule.prototype.quorum = null;
 
         /**
+         * Address of this entity. Set during creation and does not change.
+         * @member {Uint8Array} address
+         * @memberof gov.ElectionRule
+         * @instance
+         */
+        ElectionRule.prototype.address = $util.newBuffer([]);
+
+        /**
          * Creates a new ElectionRule instance using the specified properties.
          * @function create
          * @memberof gov.ElectionRule
@@ -15687,6 +15755,8 @@ $root.gov = (function() {
                 $root.gov.Fraction.encode(message.threshold, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             if (message.quorum != null && message.hasOwnProperty("quorum"))
                 $root.gov.Fraction.encode(message.quorum, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.address);
             return writer;
         };
 
@@ -15744,6 +15814,9 @@ $root.gov = (function() {
                     break;
                 case 8:
                     message.quorum = $root.gov.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 9:
+                    message.address = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -15810,6 +15883,9 @@ $root.gov = (function() {
                 if (error)
                     return "quorum." + error;
             }
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
             return null;
         };
 
@@ -15856,6 +15932,11 @@ $root.gov = (function() {
                     throw TypeError(".gov.ElectionRule.quorum: object expected");
                 message.quorum = $root.gov.Fraction.fromObject(object.quorum);
             }
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
             return message;
         };
 
@@ -15893,6 +15974,13 @@ $root.gov = (function() {
                 object.votingPeriod = 0;
                 object.threshold = null;
                 object.quorum = null;
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -15910,6 +15998,8 @@ $root.gov = (function() {
                 object.threshold = $root.gov.Fraction.toObject(message.threshold, options);
             if (message.quorum != null && message.hasOwnProperty("quorum"))
                 object.quorum = $root.gov.Fraction.toObject(message.quorum, options);
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
             return object;
         };
 
@@ -19372,6 +19462,7 @@ $root.gov = (function() {
          * @property {Uint8Array|null} [electionRuleId] ElectionRuleID is a reference to the election rule
          * @property {number|null} [votingPeriod] Duration in seconds of how long the voting period will take place.
          * @property {gov.IFraction|null} [threshold] of the eligible voters.
+         * @property {gov.IFraction|null} [quorum] allows any value between half and all of the eligible voters.
          */
 
         /**
@@ -19422,6 +19513,14 @@ $root.gov = (function() {
         UpdateElectionRuleMsg.prototype.threshold = null;
 
         /**
+         * allows any value between half and all of the eligible voters.
+         * @member {gov.IFraction|null|undefined} quorum
+         * @memberof gov.UpdateElectionRuleMsg
+         * @instance
+         */
+        UpdateElectionRuleMsg.prototype.quorum = null;
+
+        /**
          * Creates a new UpdateElectionRuleMsg instance using the specified properties.
          * @function create
          * @memberof gov.UpdateElectionRuleMsg
@@ -19453,6 +19552,8 @@ $root.gov = (function() {
                 writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.votingPeriod);
             if (message.threshold != null && message.hasOwnProperty("threshold"))
                 $root.gov.Fraction.encode(message.threshold, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.quorum != null && message.hasOwnProperty("quorum"))
+                $root.gov.Fraction.encode(message.quorum, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             return writer;
         };
 
@@ -19498,6 +19599,9 @@ $root.gov = (function() {
                     break;
                 case 4:
                     message.threshold = $root.gov.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.quorum = $root.gov.Fraction.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -19550,6 +19654,11 @@ $root.gov = (function() {
                 if (error)
                     return "threshold." + error;
             }
+            if (message.quorum != null && message.hasOwnProperty("quorum")) {
+                var error = $root.gov.Fraction.verify(message.quorum);
+                if (error)
+                    return "quorum." + error;
+            }
             return null;
         };
 
@@ -19582,6 +19691,11 @@ $root.gov = (function() {
                     throw TypeError(".gov.UpdateElectionRuleMsg.threshold: object expected");
                 message.threshold = $root.gov.Fraction.fromObject(object.threshold);
             }
+            if (object.quorum != null) {
+                if (typeof object.quorum !== "object")
+                    throw TypeError(".gov.UpdateElectionRuleMsg.quorum: object expected");
+                message.quorum = $root.gov.Fraction.fromObject(object.quorum);
+            }
             return message;
         };
 
@@ -19609,6 +19723,7 @@ $root.gov = (function() {
                 }
                 object.votingPeriod = 0;
                 object.threshold = null;
+                object.quorum = null;
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -19618,6 +19733,8 @@ $root.gov = (function() {
                 object.votingPeriod = message.votingPeriod;
             if (message.threshold != null && message.hasOwnProperty("threshold"))
                 object.threshold = $root.gov.Fraction.toObject(message.threshold, options);
+            if (message.quorum != null && message.hasOwnProperty("quorum"))
+                object.quorum = $root.gov.Fraction.toObject(message.quorum, options);
             return object;
         };
 
@@ -20190,6 +20307,7 @@ $root.multisig = (function() {
          * @property {Array.<multisig.IParticipant>|null} [participants] contract.
          * @property {number|null} [activationThreshold] computed as the sum of weights of all participating signatures.
          * @property {number|null} [adminThreshold] computed as the sum of weights of all participating signatures.
+         * @property {Uint8Array|null} [address] Address of this entity. Set during creation and does not change.
          */
 
         /**
@@ -20241,6 +20359,14 @@ $root.multisig = (function() {
         Contract.prototype.adminThreshold = 0;
 
         /**
+         * Address of this entity. Set during creation and does not change.
+         * @member {Uint8Array} address
+         * @memberof multisig.Contract
+         * @instance
+         */
+        Contract.prototype.address = $util.newBuffer([]);
+
+        /**
          * Creates a new Contract instance using the specified properties.
          * @function create
          * @memberof multisig.Contract
@@ -20273,6 +20399,8 @@ $root.multisig = (function() {
                 writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.activationThreshold);
             if (message.adminThreshold != null && message.hasOwnProperty("adminThreshold"))
                 writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.adminThreshold);
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.address);
             return writer;
         };
 
@@ -20320,6 +20448,9 @@ $root.multisig = (function() {
                     break;
                 case 4:
                     message.adminThreshold = reader.uint32();
+                    break;
+                case 5:
+                    message.address = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -20376,6 +20507,9 @@ $root.multisig = (function() {
             if (message.adminThreshold != null && message.hasOwnProperty("adminThreshold"))
                 if (!$util.isInteger(message.adminThreshold))
                     return "adminThreshold: integer expected";
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
             return null;
         };
 
@@ -20410,6 +20544,11 @@ $root.multisig = (function() {
                 message.activationThreshold = object.activationThreshold >>> 0;
             if (object.adminThreshold != null)
                 message.adminThreshold = object.adminThreshold >>> 0;
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
             return message;
         };
 
@@ -20432,6 +20571,13 @@ $root.multisig = (function() {
                 object.metadata = null;
                 object.activationThreshold = 0;
                 object.adminThreshold = 0;
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -20444,6 +20590,8 @@ $root.multisig = (function() {
                 object.activationThreshold = message.activationThreshold;
             if (message.adminThreshold != null && message.hasOwnProperty("adminThreshold"))
                 object.adminThreshold = message.adminThreshold;
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
             return object;
         };
 
@@ -21299,6 +21447,7 @@ $root.paychan = (function() {
          * @property {number|Long|null} [timeout] expired: [timeout, infinity)
          * @property {string|null} [memo] Max length 128 character.
          * @property {coin.ICoin|null} [transferred] (total) value. Transferred must never exceed total value.
+         * @property {Uint8Array|null} [address] Address of this entity. Set during creation and does not change.
          */
 
         /**
@@ -21381,6 +21530,14 @@ $root.paychan = (function() {
         PaymentChannel.prototype.transferred = null;
 
         /**
+         * Address of this entity. Set during creation and does not change.
+         * @member {Uint8Array} address
+         * @memberof paychan.PaymentChannel
+         * @instance
+         */
+        PaymentChannel.prototype.address = $util.newBuffer([]);
+
+        /**
          * Creates a new PaymentChannel instance using the specified properties.
          * @function create
          * @memberof paychan.PaymentChannel
@@ -21420,6 +21577,8 @@ $root.paychan = (function() {
                 writer.uint32(/* id 7, wireType 2 =*/58).string(message.memo);
             if (message.transferred != null && message.hasOwnProperty("transferred"))
                 $root.coin.Coin.encode(message.transferred, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.address);
             return writer;
         };
 
@@ -21477,6 +21636,9 @@ $root.paychan = (function() {
                     break;
                 case 8:
                     message.transferred = $root.coin.Coin.decode(reader, reader.uint32());
+                    break;
+                case 9:
+                    message.address = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -21545,6 +21707,9 @@ $root.paychan = (function() {
                 if (error)
                     return "transferred." + error;
             }
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
             return null;
         };
 
@@ -21601,6 +21766,11 @@ $root.paychan = (function() {
                     throw TypeError(".paychan.PaymentChannel.transferred: object expected");
                 message.transferred = $root.coin.Coin.fromObject(object.transferred);
             }
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
             return message;
         };
 
@@ -21642,6 +21812,13 @@ $root.paychan = (function() {
                     object.timeout = options.longs === String ? "0" : 0;
                 object.memo = "";
                 object.transferred = null;
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -21662,6 +21839,8 @@ $root.paychan = (function() {
                 object.memo = message.memo;
             if (message.transferred != null && message.hasOwnProperty("transferred"))
                 object.transferred = $root.coin.Coin.toObject(message.transferred, options);
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
             return object;
         };
 
