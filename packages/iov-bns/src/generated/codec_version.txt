@@ -1,1 +1,1 @@
-de660dee83ff02c4f311dba71462a05190f1537d (HEAD, origin/master, origin/HEAD) Merge pull request #834 from iov-one/client-helpers
+0cbda30bb69c8b5af4712626efb112f2d5a89c00 (HEAD, tag: v0.19.0, origin/master, origin/HEAD) x/gov: add ElectionRule address and pregernate ID (#893)
