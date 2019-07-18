@@ -50,20 +50,20 @@ long term support for one specific Tendermint version.
 The main entry point is the
 [Client](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/classes/client.html).
 
-The connection to the blockchain is defned by a flexible
+The connection to the blockchain is defined by a flexible
 [RpcClient](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/interfaces/rpcclient.html)
-interface, with implmentations for Http (POST) and Websockets. You can add your
+interface, with implementations for HTTP (POST) and WebSockets. You can add your
 own connection type or just wrap one with custom retry rules, error handling,
 etc. The RPC client is just responsible for sending JSON-RPC requests and
 returning the responses.
 
-The actual domain knowledge is embeded in the
+The actual domain knowledge is embedded in the
 [Adaptor](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/interfaces/adaptor.html),
 which defines a class for encoding
 [Params](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/classes/params.html)
 and another for decoding
 [Responses](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/classes/responses.html).
-The Tendermint version specific functionality is implemented in global objects
+The Tendermint version-specific functionality is implemented in global objects
 (like e.g.
 [v0_31](https://iov-one.github.io/iov-core-docs/latest/iov-tendermint-rpc/globals.html#v0_31)).
 This knowledge is mainly for those who want to add support for new versions,
