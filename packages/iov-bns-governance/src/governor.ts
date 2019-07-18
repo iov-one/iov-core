@@ -21,16 +21,16 @@ const { toHex } = Encoding;
 export interface GovernorOptions {
   readonly connection: BnsConnection;
   readonly identity: Identity;
-  readonly guaranteeFundEscrowId: Uint8Array;
-  readonly rewardFundAddress: Address;
+  readonly guaranteeFundEscrowId?: Uint8Array;
+  readonly rewardFundAddress?: Address;
 }
 
 export class Governor {
   private readonly connection: BnsConnection;
   private readonly identity: Identity;
   private readonly address: Address;
-  private readonly guaranteeFundEscrowId: Uint8Array;
-  private readonly rewardFundAddress: Address;
+  private readonly guaranteeFundEscrowId?: Uint8Array;
+  private readonly rewardFundAddress?: Address;
 
   public constructor({ connection, identity, guaranteeFundEscrowId, rewardFundAddress }: GovernorOptions) {
     this.connection = connection;
@@ -140,6 +140,9 @@ export class Governor {
           },
         });
       case ProposalType.ReleaseGuaranteeFunds:
+        if (!this.guaranteeFundEscrowId) {
+          throw new Error("This Governor instance was not initialised with a guaranteeFundEscrowId");
+        }
         return this.connection.withDefaultFee({
           ...commonProperties,
           action: {
@@ -149,7 +152,11 @@ export class Governor {
           },
         });
       case ProposalType.DistributeFunds: {
-        const rewardFund = await this.connection.getAccount({ address: this.rewardFundAddress });
+        if (!this.rewardFundAddress) {
+          throw new Error("This Governor instance was not initialised with a rewardFundAddress");
+        }
+        const rewardFundAddress = this.rewardFundAddress;
+        const rewardFund = await this.connection.getAccount({ address: rewardFundAddress });
         if (!rewardFund) {
           throw new Error("Could not find guarantee fund account");
         }
@@ -176,7 +183,7 @@ export class Governor {
             kind: ActionKind.ExecuteProposalBatch,
             messages: options.recipients.map(({ address, weight }) => ({
               kind: ActionKind.Send,
-              sender: this.rewardFundAddress,
+              sender: rewardFundAddress,
               recipient: address,
               amount: {
                 quantity: fundTotalMinusFee

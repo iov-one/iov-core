@@ -4,15 +4,15 @@ import { ProposalOptions } from "./proposals";
 export interface GovernorOptions {
     readonly connection: BnsConnection;
     readonly identity: Identity;
-    readonly guaranteeFundEscrowId: Uint8Array;
-    readonly rewardFundAddress: Address;
+    readonly guaranteeFundEscrowId?: Uint8Array;
+    readonly rewardFundAddress?: Address;
 }
 export declare class Governor {
     private readonly connection;
     private readonly identity;
     private readonly address;
-    private readonly guaranteeFundEscrowId;
-    private readonly rewardFundAddress;
+    private readonly guaranteeFundEscrowId?;
+    private readonly rewardFundAddress?;
     constructor({ connection, identity, guaranteeFundEscrowId, rewardFundAddress }: GovernorOptions);
     getElectorates(): Promise<readonly Electorate[]>;
     getElectionRules(electorateId: number): Promise<readonly ElectionRule[]>;
