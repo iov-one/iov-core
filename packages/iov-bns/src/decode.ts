@@ -51,7 +51,6 @@ import {
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
-  TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -107,7 +106,7 @@ function decodeVersionedId(versionedId: codecImpl.orm.IVersionedIDRef): Versione
 function decodeChainAddressPair(pair: codecImpl.username.IBlockchainAddress): ChainAddressPair {
   return {
     chainId: ensure(pair.blockchainId, "blockchainId") as ChainId,
-    address: fromUtf8(ensure(pair.address, "address")) as Address,
+    address: ensure(pair.address, "address") as Address,
   };
 }
 
@@ -457,7 +456,7 @@ function parseSwapClaimTx(
 
 function parseSwapAbortTransaction(
   base: UnsignedTransaction,
-  msg: codecImpl.aswap.IReturnSwapMsg,
+  msg: codecImpl.aswap.IReturnMsg,
 ): SwapAbortTransaction & WithCreator {
   return {
     ...base,
@@ -627,14 +626,6 @@ function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): Vo
   };
 }
 
-function parseTallyTx(base: UnsignedTransaction, msg: codecImpl.gov.ITallyMsg): TallyTx & WithCreator {
-  return {
-    ...base,
-    kind: "bns/tally",
-    proposalId: decodeNumericId(ensure(msg.proposalId, "proposalId")),
-  };
-}
-
 export function parseMsg(base: UnsignedTransaction, tx: codecImpl.bnsd.ITx): UnsignedTransaction {
   // Token sends
   if (tx.cashSendMsg) return parseSendTransaction(base, tx.cashSendMsg);
@@ -663,7 +654,6 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.bnsd.ITx): Uns
   // Governance
   if (tx.govCreateProposalMsg) return parseCreateProposalTx(base, tx.govCreateProposalMsg);
   if (tx.govVoteMsg) return parseVoteTx(base, tx.govVoteMsg);
-  if (tx.govTallyMsg) return parseTallyTx(base, tx.govTallyMsg);
 
   throw new Error("unknown message type in transaction");
 }

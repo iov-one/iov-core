@@ -643,15 +643,14 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public async getElectionRules(): Promise<readonly ElectionRule[]> {
-    const results = (await this.query("/electionRules?prefix", new Uint8Array([]))).results;
+    const results = (await this.query("/electionrules?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.ElectionRule, "electnrule:");
     const rules = results.map(parser).map(rule => decodeElectionRule("tiov", rule));
     return rules;
   }
 
   public async getProposals(): Promise<readonly Proposal[]> {
-    // TODO: Change path to /proposals once https://github.com/iov-one/weave/issues/810 is resolved
-    const results = (await this.query("/proposal?prefix", new Uint8Array([]))).results;
+    const results = (await this.query("/proposals?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.Proposal, "proposal:");
     const proposals = results.map(parser).map(rule => decodeProposal("tiov", rule));
     return proposals;
@@ -662,9 +661,8 @@ export class BnsConnection implements AtomicSwapConnection {
     if (isBnsUsernamesByUsernameQuery(query)) {
       results = (await this.query("/usernames", toUtf8(query.username))).results;
     } else if (isBnsUsernamesByOwnerQuery(query)) {
-      throw new Error(
-        "Querying usernames by owner is not supported right now. See https://github.com/iov-one/weave/issues/858",
-      );
+      const rawAddress = decodeBnsAddress(query.owner).data;
+      results = (await this.query("/usernames/owner", rawAddress)).results;
     } else {
       throw new Error("Unsupported query");
     }

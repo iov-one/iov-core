@@ -69,7 +69,6 @@ import {
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
-  TallyTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -714,7 +713,6 @@ describe("BnsConnection", () => {
     });
 
     it("can register a username with empty list of targets", async () => {
-      pending("Currently not supported by the blockchain, see https://github.com/iov-one/weave/issues/857");
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId();
@@ -1301,31 +1299,7 @@ describe("BnsConnection", () => {
       await sleep(5_000);
 
       {
-        // Election voting period ended but not yet tallied
-        const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
-        expect(proposal.votingEndTime).toBeLessThan(Date.now() / 1000);
-        expect(proposal.state.totalYes).toEqual(1);
-        expect(proposal.state.totalNo).toEqual(0);
-        expect(proposal.state.totalAbstain).toEqual(0);
-        expect(proposal.status).toEqual(ProposalStatus.Submitted);
-        expect(proposal.result).toEqual(ProposalResult.Undefined);
-        expect(proposal.executorResult).toEqual(ProposalExecutorResult.NotRun);
-      }
-
-      {
-        const tallyVotes = await connection.withDefaultFee<TallyTx & WithCreator>({
-          kind: "bns/tally",
-          creator: author,
-          proposalId: proposalId,
-        });
-        const nonce = await connection.getNonce({ pubkey: author.pubkey });
-        const signed = await profile.signTransaction(tallyVotes, bnsCodec, nonce);
-        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-      }
-
-      {
-        // Election ended and accepted
+        // Election ended, was tallied automatically and is accepted
         const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
         expect(proposal.state.totalYes).toEqual(1);
         expect(proposal.state.totalNo).toEqual(0);
@@ -2090,7 +2064,6 @@ describe("BnsConnection", () => {
     });
 
     it("can query usernames owner", async () => {
-      pending("Not supported right now, see https://github.com/iov-one/weave/issues/858");
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId();

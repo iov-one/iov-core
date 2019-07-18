@@ -1,1 +1,1 @@
-a9cbdc8c0b3fabb273656a3154e566d64100a469 (HEAD, tag: v0.18.0) 0.18.0 release (#839)
+de660dee83ff02c4f311dba71462a05190f1537d (HEAD, origin/master, origin/HEAD) Merge pull request #834 from iov-one/client-helpers

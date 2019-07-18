@@ -39,8 +39,6 @@ export {
   isCreateProposalTx,
   VoteTx,
   isVoteTx,
-  TallyTx,
-  isTallyTx,
   // transactions
   BnsTx,
   isBnsTx,

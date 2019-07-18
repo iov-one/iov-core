@@ -164,7 +164,7 @@ export namespace bnsd {
     aswapReleaseMsg?: aswap.IReleaseMsg | null;
 
     /** Tx aswapReturnMsg */
-    aswapReturnMsg?: aswap.IReturnSwapMsg | null;
+    aswapReturnMsg?: aswap.IReturnMsg | null;
 
     /** Tx govCreateProposalMsg */
     govCreateProposalMsg?: gov.ICreateProposalMsg | null;
@@ -260,7 +260,7 @@ export namespace bnsd {
     public aswapReleaseMsg?: aswap.IReleaseMsg | null;
 
     /** Tx aswapReturnMsg. */
-    public aswapReturnMsg?: aswap.IReturnSwapMsg | null;
+    public aswapReturnMsg?: aswap.IReturnMsg | null;
 
     /** Tx govCreateProposalMsg. */
     public govCreateProposalMsg?: gov.ICreateProposalMsg | null;
@@ -1182,6 +1182,135 @@ export namespace bnsd {
       public toJSON(): { [k: string]: any };
     }
   }
+
+  /** Properties of a CronTask. */
+  interface ICronTask {
+    /** conditions required for execution, that will be inserted into the context. */
+    authenticators?: Uint8Array[] | null;
+
+    /** CronTask escrowReleaseMsg */
+    escrowReleaseMsg?: escrow.IReleaseMsg | null;
+
+    /** CronTask escrowReturnMsg */
+    escrowReturnMsg?: escrow.IReturnMsg | null;
+
+    /** CronTask distributionDistributeMsg */
+    distributionDistributeMsg?: distribution.IDistributeMsg | null;
+
+    /** CronTask aswapReleaseMsg */
+    aswapReleaseMsg?: aswap.IReleaseMsg | null;
+
+    /** CronTask govTallyMsg */
+    govTallyMsg?: gov.ITallyMsg | null;
+  }
+
+  /** old fields got deprecated. This is done to maintain binary compatibility. */
+  class CronTask implements ICronTask {
+    /**
+     * Constructs a new CronTask.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: bnsd.ICronTask);
+
+    /** conditions required for execution, that will be inserted into the context. */
+    public authenticators: Uint8Array[];
+
+    /** CronTask escrowReleaseMsg. */
+    public escrowReleaseMsg?: escrow.IReleaseMsg | null;
+
+    /** CronTask escrowReturnMsg. */
+    public escrowReturnMsg?: escrow.IReturnMsg | null;
+
+    /** CronTask distributionDistributeMsg. */
+    public distributionDistributeMsg?: distribution.IDistributeMsg | null;
+
+    /** CronTask aswapReleaseMsg. */
+    public aswapReleaseMsg?: aswap.IReleaseMsg | null;
+
+    /** CronTask govTallyMsg. */
+    public govTallyMsg?: gov.ITallyMsg | null;
+
+    /** Use the same indexes for the messages as the Tx message. */
+    public sum?:
+      | "escrowReleaseMsg"
+      | "escrowReturnMsg"
+      | "distributionDistributeMsg"
+      | "aswapReleaseMsg"
+      | "govTallyMsg";
+
+    /**
+     * Creates a new CronTask instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns CronTask instance
+     */
+    public static create(properties?: bnsd.ICronTask): bnsd.CronTask;
+
+    /**
+     * Encodes the specified CronTask message. Does not implicitly {@link bnsd.CronTask.verify|verify} messages.
+     * @param message CronTask message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: bnsd.ICronTask, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified CronTask message, length delimited. Does not implicitly {@link bnsd.CronTask.verify|verify} messages.
+     * @param message CronTask message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: bnsd.ICronTask, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a CronTask message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns CronTask
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): bnsd.CronTask;
+
+    /**
+     * Decodes a CronTask message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns CronTask
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): bnsd.CronTask;
+
+    /**
+     * Verifies a CronTask message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a CronTask message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns CronTask
+     */
+    public static fromObject(object: { [k: string]: any }): bnsd.CronTask;
+
+    /**
+     * Creates a plain object from a CronTask message. Also converts values to other types if specified.
+     * @param message CronTask
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: bnsd.CronTask,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this CronTask to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
 }
 
 /** Namespace username. */
@@ -1294,8 +1423,8 @@ export namespace username {
     /** An arbitrary blockchain ID. */
     blockchainId?: string | null;
 
-    /** data. */
-    address?: Uint8Array | null;
+    /** to use. */
+    address?: string | null;
   }
 
   /** to an address on any blockchain network. */
@@ -1309,8 +1438,8 @@ export namespace username {
     /** An arbitrary blockchain ID. */
     public blockchainId: string;
 
-    /** data. */
-    public address: Uint8Array;
+    /** to use. */
+    public address: string;
 
     /**
      * Creates a new BlockchainAddress instance using the specified properties.
@@ -3419,9 +3548,9 @@ export namespace aswap {
     public toJSON(): { [k: string]: any };
   }
 
-  /** Properties of a ReturnSwapMsg. */
-  interface IReturnSwapMsg {
-    /** ReturnSwapMsg metadata */
+  /** Properties of a ReturnMsg. */
+  interface IReturnMsg {
+    /** ReturnMsg metadata */
     metadata?: weave.IMetadata | null;
 
     /** swap_id to return */
@@ -3429,88 +3558,88 @@ export namespace aswap {
   }
 
   /** This operation only works if the Swap is expired. */
-  class ReturnSwapMsg implements IReturnSwapMsg {
+  class ReturnMsg implements IReturnMsg {
     /**
-     * Constructs a new ReturnSwapMsg.
+     * Constructs a new ReturnMsg.
      * @param [properties] Properties to set
      */
-    constructor(properties?: aswap.IReturnSwapMsg);
+    constructor(properties?: aswap.IReturnMsg);
 
-    /** ReturnSwapMsg metadata. */
+    /** ReturnMsg metadata. */
     public metadata?: weave.IMetadata | null;
 
     /** swap_id to return */
     public swapId: Uint8Array;
 
     /**
-     * Creates a new ReturnSwapMsg instance using the specified properties.
+     * Creates a new ReturnMsg instance using the specified properties.
      * @param [properties] Properties to set
-     * @returns ReturnSwapMsg instance
+     * @returns ReturnMsg instance
      */
-    public static create(properties?: aswap.IReturnSwapMsg): aswap.ReturnSwapMsg;
+    public static create(properties?: aswap.IReturnMsg): aswap.ReturnMsg;
 
     /**
-     * Encodes the specified ReturnSwapMsg message. Does not implicitly {@link aswap.ReturnSwapMsg.verify|verify} messages.
-     * @param message ReturnSwapMsg message or plain object to encode
+     * Encodes the specified ReturnMsg message. Does not implicitly {@link aswap.ReturnMsg.verify|verify} messages.
+     * @param message ReturnMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encode(message: aswap.IReturnSwapMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encode(message: aswap.IReturnMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Encodes the specified ReturnSwapMsg message, length delimited. Does not implicitly {@link aswap.ReturnSwapMsg.verify|verify} messages.
-     * @param message ReturnSwapMsg message or plain object to encode
+     * Encodes the specified ReturnMsg message, length delimited. Does not implicitly {@link aswap.ReturnMsg.verify|verify} messages.
+     * @param message ReturnMsg message or plain object to encode
      * @param [writer] Writer to encode to
      * @returns Writer
      */
-    public static encodeDelimited(message: aswap.IReturnSwapMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+    public static encodeDelimited(message: aswap.IReturnMsg, writer?: $protobuf.Writer): $protobuf.Writer;
 
     /**
-     * Decodes a ReturnSwapMsg message from the specified reader or buffer.
+     * Decodes a ReturnMsg message from the specified reader or buffer.
      * @param reader Reader or buffer to decode from
      * @param [length] Message length if known beforehand
-     * @returns ReturnSwapMsg
+     * @returns ReturnMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): aswap.ReturnSwapMsg;
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): aswap.ReturnMsg;
 
     /**
-     * Decodes a ReturnSwapMsg message from the specified reader or buffer, length delimited.
+     * Decodes a ReturnMsg message from the specified reader or buffer, length delimited.
      * @param reader Reader or buffer to decode from
-     * @returns ReturnSwapMsg
+     * @returns ReturnMsg
      * @throws {Error} If the payload is not a reader or valid buffer
      * @throws {$protobuf.util.ProtocolError} If required fields are missing
      */
-    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): aswap.ReturnSwapMsg;
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): aswap.ReturnMsg;
 
     /**
-     * Verifies a ReturnSwapMsg message.
+     * Verifies a ReturnMsg message.
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
     public static verify(message: { [k: string]: any }): string | null;
 
     /**
-     * Creates a ReturnSwapMsg message from a plain object. Also converts values to their respective internal types.
+     * Creates a ReturnMsg message from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
-     * @returns ReturnSwapMsg
+     * @returns ReturnMsg
      */
-    public static fromObject(object: { [k: string]: any }): aswap.ReturnSwapMsg;
+    public static fromObject(object: { [k: string]: any }): aswap.ReturnMsg;
 
     /**
-     * Creates a plain object from a ReturnSwapMsg message. Also converts values to other types if specified.
-     * @param message ReturnSwapMsg
+     * Creates a plain object from a ReturnMsg message. Also converts values to other types if specified.
+     * @param message ReturnMsg
      * @param [options] Conversion options
      * @returns Plain object
      */
     public static toObject(
-      message: aswap.ReturnSwapMsg,
+      message: aswap.ReturnMsg,
       options?: $protobuf.IConversionOptions,
     ): { [k: string]: any };
 
     /**
-     * Converts this ReturnSwapMsg to JSON.
+     * Converts this ReturnMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -4129,6 +4258,124 @@ export namespace cash {
 
     /**
      * Converts this UpdateConfigurationMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
+/** Namespace cron. */
+export namespace cron {
+  /** Properties of a TaskResult. */
+  interface ITaskResult {
+    /** TaskResult metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Successful is set to true if the task was successfully executed. */
+    successful?: boolean | null;
+
+    /** about the task execution. */
+    info?: string | null;
+
+    /** Exec time hold the information of when the task was executed. */
+    execTime?: number | Long | null;
+
+    /** Exec height holds the block height value at the time the task was executed. */
+    execHeight?: number | Long | null;
+  }
+
+  /** https://github.com/tendermint/tendermint/issues/3665 */
+  class TaskResult implements ITaskResult {
+    /**
+     * Constructs a new TaskResult.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: cron.ITaskResult);
+
+    /** TaskResult metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Successful is set to true if the task was successfully executed. */
+    public successful: boolean;
+
+    /** about the task execution. */
+    public info: string;
+
+    /** Exec time hold the information of when the task was executed. */
+    public execTime: number | Long;
+
+    /** Exec height holds the block height value at the time the task was executed. */
+    public execHeight: number | Long;
+
+    /**
+     * Creates a new TaskResult instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns TaskResult instance
+     */
+    public static create(properties?: cron.ITaskResult): cron.TaskResult;
+
+    /**
+     * Encodes the specified TaskResult message. Does not implicitly {@link cron.TaskResult.verify|verify} messages.
+     * @param message TaskResult message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: cron.ITaskResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified TaskResult message, length delimited. Does not implicitly {@link cron.TaskResult.verify|verify} messages.
+     * @param message TaskResult message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: cron.ITaskResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a TaskResult message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns TaskResult
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): cron.TaskResult;
+
+    /**
+     * Decodes a TaskResult message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns TaskResult
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): cron.TaskResult;
+
+    /**
+     * Verifies a TaskResult message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a TaskResult message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns TaskResult
+     */
+    public static fromObject(object: { [k: string]: any }): cron.TaskResult;
+
+    /**
+     * Creates a plain object from a TaskResult message. Also converts values to other types if specified.
+     * @param message TaskResult
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: cron.TaskResult,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this TaskResult to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -5921,6 +6168,9 @@ export namespace gov {
 
     /** Result is the final result based on the votes and election rule. Initial value is NotRun. */
     executorResult?: gov.Proposal.ExecutorResult | null;
+
+    /** create the tally once the voting period is over. */
+    tallyTaskId?: Uint8Array | null;
   }
 
   /** (what is being voted on) */
@@ -5972,6 +6222,9 @@ export namespace gov {
 
     /** Result is the final result based on the votes and election rule. Initial value is NotRun. */
     public executorResult: gov.Proposal.ExecutorResult;
+
+    /** create the tally once the voting period is over. */
+    public tallyTaskId: Uint8Array;
 
     /**
      * Creates a new Proposal instance using the specified properties.

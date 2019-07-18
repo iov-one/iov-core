@@ -1,5 +1,5 @@
 import { Identity, WithCreator } from "@iov/bcp";
-import { BnsConnection, CreateProposalTx, ElectionRule, Electorate, Proposal, TallyTx, VoteOption, VoteTx } from "@iov/bns";
+import { BnsConnection, CreateProposalTx, ElectionRule, Electorate, Proposal, VoteOption, VoteTx } from "@iov/bns";
 import { ProposalOptions } from "./proposals";
 export interface GovernorOptions {
     readonly connection: BnsConnection;
@@ -17,5 +17,4 @@ export declare class Governor {
     getProposals(): Promise<readonly Proposal[]>;
     buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithCreator>;
     buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx & WithCreator>;
-    buildTallyTx(proposalId: number): Promise<TallyTx & WithCreator>;
 }
