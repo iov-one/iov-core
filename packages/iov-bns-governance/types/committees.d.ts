@@ -1,3 +1,4 @@
+import { Address } from "@iov/bcp";
 import { As } from "type-tagger";
 export declare type CommitteeId = number & As<"committee">;
 export interface CommitteeIds {
@@ -11,4 +12,7 @@ export declare const committeeIds: {
 };
 export declare const guaranteeFundEscrowIds: {
     readonly [chainId: string]: Uint8Array;
+};
+export declare const rewardFundAddresses: {
+    readonly [chainId: string]: Address;
 };

@@ -1,3 +1,4 @@
+import { Address } from "@iov/bcp";
 import { As } from "type-tagger";
 
 export type CommitteeId = number & As<"committee">;
@@ -22,4 +23,9 @@ export const committeeIds: { readonly [chainId: string]: CommitteeIds } = {
 export const guaranteeFundEscrowIds: { readonly [chainId: string]: Uint8Array } = {
   // TODO: Constants to be finalised once the guarantee funds are set up in the actual genesis blocks. E.g.:
   // testnet: Encoding.fromHex("abcd"),
+};
+
+export const rewardFundAddresses: { readonly [chainId: string]: Address } = {
+  // TODO: Constants to be finalised once the reward funds are set up in the actual deployments. E.g.:
+  // testnet: "tiov1111111111111111111111111111111111111111" as Address,
 };
