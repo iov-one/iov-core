@@ -98,6 +98,24 @@ export class Governor {
             },
           },
         });
+      case ProposalType.AmendElectionRuleThreshold:
+        return this.connection.withDefaultFee({
+          ...commonProperties,
+          action: {
+            kind: ActionKind.UpdateElectionRule,
+            electionRuleId: options.targetElectionRuleId,
+            threshold: options.threshold,
+          },
+        });
+      case ProposalType.AmendElectionRuleQuorum:
+        return this.connection.withDefaultFee({
+          ...commonProperties,
+          action: {
+            kind: ActionKind.UpdateElectionRule,
+            electionRuleId: options.targetElectionRuleId,
+            quorum: options.quorum,
+          },
+        });
       case ProposalType.AddValidator:
         return this.connection.withDefaultFee({
           ...commonProperties,

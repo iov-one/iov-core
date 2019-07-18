@@ -27,6 +27,7 @@ import {
   isCreateTextResolution,
   isReleaseGuaranteeFunds,
   isSetValidators,
+  isUpdateElectionRule,
   isUpdateElectorate,
   Participant,
   PrivkeyBundle,
@@ -341,6 +342,15 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
           address: decodeBnsAddress(address as Address).data,
           weight: weight,
         })),
+      },
+    };
+  } else if (isUpdateElectionRule(tx.action)) {
+    option = {
+      govUpdateElectionRuleMsg: {
+        metadata: { schema: 1 },
+        electionRuleId: encodeNumericId(tx.action.electionRuleId),
+        threshold: tx.action.threshold,
+        quorum: tx.action.quorum,
       },
     };
   } else {

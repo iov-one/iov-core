@@ -238,6 +238,96 @@ describe("Governor", () => {
       options.connection.disconnect();
     });
 
+    it("works for AmendElectionRuleThreshold", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const governor = new Governor(options);
+
+      const tx = await governor.buildCreateProposalTx({
+        type: ProposalType.AmendElectionRuleThreshold,
+        title: "Amend threshold for committee 5",
+        description: "Proposal to amend threshold to 2/7",
+        startTime: new ReadonlyDate(1562164525898),
+        electionRuleId: 1,
+        targetElectionRuleId: 2,
+        threshold: {
+          numerator: 2,
+          denominator: 7,
+        },
+      });
+      expect(tx).toEqual({
+        kind: "bns/create_proposal",
+        creator: options.identity,
+        title: "Amend threshold for committee 5",
+        action: {
+          kind: ActionKind.UpdateElectionRule,
+          electionRuleId: 2,
+          threshold: {
+            numerator: 2,
+            denominator: 7,
+          },
+        },
+        description: "Proposal to amend threshold to 2/7",
+        electionRuleId: 1,
+        startTime: 1562164525,
+        author: bnsCodec.identityToAddress(options.identity),
+        fee: {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+        },
+      });
+
+      options.connection.disconnect();
+    });
+
+    it("works for AmendElectionRuleQuorum", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const governor = new Governor(options);
+
+      const tx = await governor.buildCreateProposalTx({
+        type: ProposalType.AmendElectionRuleQuorum,
+        title: "Amend quorum for committee 5",
+        description: "Proposal to amend quorum to 2/7",
+        startTime: new ReadonlyDate(1562164525898),
+        electionRuleId: 1,
+        targetElectionRuleId: 2,
+        quorum: {
+          numerator: 2,
+          denominator: 7,
+        },
+      });
+      expect(tx).toEqual({
+        kind: "bns/create_proposal",
+        creator: options.identity,
+        title: "Amend quorum for committee 5",
+        action: {
+          kind: ActionKind.UpdateElectionRule,
+          electionRuleId: 2,
+          quorum: {
+            numerator: 2,
+            denominator: 7,
+          },
+        },
+        description: "Proposal to amend quorum to 2/7",
+        electionRuleId: 1,
+        startTime: 1562164525,
+        author: bnsCodec.identityToAddress(options.identity),
+        fee: {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+        },
+      });
+
+      options.connection.disconnect();
+    });
+
     it("works for AddValidator", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();

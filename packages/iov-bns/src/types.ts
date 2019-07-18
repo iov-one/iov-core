@@ -120,6 +120,7 @@ export enum ActionKind {
   CreateTextResolution = "create_text_resolution",
   ReleaseGuaranteeFunds = "release_guarantee_funds",
   SetValidators = "set_validators",
+  UpdateElectionRule = "update_election_rule",
   UpdateElectorate = "update_electorate",
 }
 
@@ -158,6 +159,17 @@ export function isSetValidators(action: ProposalAction): action is SetValidators
   return action.kind === ActionKind.SetValidators;
 }
 
+export interface UpdateElectionRule {
+  readonly kind: ActionKind.UpdateElectionRule;
+  readonly electionRuleId: number;
+  readonly threshold?: Fraction;
+  readonly quorum?: Fraction | null;
+}
+
+export function isUpdateElectionRule(action: ProposalAction): action is UpdateElectionRule {
+  return action.kind === ActionKind.UpdateElectionRule;
+}
+
 export interface UpdateElectorate {
   readonly kind: ActionKind.UpdateElectorate;
   readonly electorateId: number;
@@ -169,7 +181,12 @@ export function isUpdateElectorate(action: ProposalAction): action is UpdateElec
 }
 
 /** The action to be executed when the proposal is accepted */
-export type ProposalAction = CreateTextResolution | ReleaseGuaranteeFunds | SetValidators | UpdateElectorate;
+export type ProposalAction =
+  | CreateTextResolution
+  | ReleaseGuaranteeFunds
+  | SetValidators
+  | UpdateElectorate
+  | UpdateElectionRule;
 
 export interface Proposal {
   readonly id: number;

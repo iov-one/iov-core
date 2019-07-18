@@ -356,12 +356,18 @@ function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array):
       escrowId: Uint8Array.from(ensure(option.escrowReleaseMsg.escrowId, "escrowId")),
       amount: ensure(ensure(option.escrowReleaseMsg.amount, "amount").map(decodeAmount)[0], "amount.0"),
     };
-  } else if (option.validatorsApplyDiffMsg) {
+  } else if (option.govUpdateElectionRuleMsg) {
     return {
-      kind: ActionKind.SetValidators,
-      validatorUpdates: decodeValidators(
-        ensure(option.validatorsApplyDiffMsg.validatorUpdates, "validatorUpdates"),
+      kind: ActionKind.UpdateElectionRule,
+      electionRuleId: decodeNumericId(
+        ensure(option.govUpdateElectionRuleMsg.electionRuleId, "electionRuleId"),
       ),
+      threshold: option.govUpdateElectionRuleMsg.threshold
+        ? decodeFraction(option.govUpdateElectionRuleMsg.threshold)
+        : undefined,
+      quorum: option.govUpdateElectionRuleMsg.quorum
+        ? decodeFraction(option.govUpdateElectionRuleMsg.quorum)
+        : undefined,
     };
   } else if (option.govUpdateElectorateMsg) {
     return {
@@ -370,6 +376,13 @@ function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array):
       diffElectors: decodeElectors(
         prefix,
         ensure(option.govUpdateElectorateMsg.diffElectors, "diffElectors"),
+      ),
+    };
+  } else if (option.validatorsApplyDiffMsg) {
+    return {
+      kind: ActionKind.SetValidators,
+      validatorUpdates: decodeValidators(
+        ensure(option.validatorsApplyDiffMsg.validatorUpdates, "validatorUpdates"),
       ),
     };
   } else {

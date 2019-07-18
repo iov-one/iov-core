@@ -750,6 +750,53 @@ describe("Decode", () => {
         expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
       });
 
+      it("works for UpdateElectionRule action", () => {
+        const transactionMessage: codecImpl.bnsd.ITx = {
+          govCreateProposalMsg: {
+            title: "This will happen next",
+            rawOption: codecImpl.bnsd.ProposalOptions.encode({
+              govUpdateElectionRuleMsg: {
+                metadata: { schema: 1 },
+                electionRuleId: fromHex("0000000000000005"),
+                threshold: {
+                  numerator: 6,
+                  denominator: 7,
+                },
+                quorum: {
+                  numerator: 2,
+                  denominator: 3,
+                },
+              },
+            }).finish(),
+            description: "foo bar",
+            electionRuleId: Encoding.fromHex("bbccddbbff"),
+            startTime: 42424242,
+            author: Encoding.fromHex("0011223344556677889900112233445566778899"),
+          },
+        };
+        const parsed = parseMsg(defaultBaseTx, transactionMessage);
+        if (!isCreateProposalTx(parsed)) {
+          throw new Error("unexpected transaction kind");
+        }
+        expect(parsed.title).toEqual("This will happen next");
+        expect(parsed.action).toEqual({
+          kind: ActionKind.UpdateElectionRule,
+          electionRuleId: 5,
+          threshold: {
+            numerator: 6,
+            denominator: 7,
+          },
+          quorum: {
+            numerator: 2,
+            denominator: 3,
+          },
+        });
+        expect(parsed.description).toEqual("foo bar");
+        expect(parsed.electionRuleId).toEqual(806595967999);
+        expect(parsed.startTime).toEqual(42424242);
+        expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      });
+
       it("works with UpdateElectorate action", () => {
         const transactionMessage: codecImpl.bnsd.ITx = {
           govCreateProposalMsg: {
