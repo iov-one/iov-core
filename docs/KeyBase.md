@@ -399,62 +399,6 @@ one relation of each type.
 }
 ```
 
-# Address Architecture
-
-There are two main types of addresses implemented into the Keybase. These are
-`Simple Addresses` and `Extended Addresses`. The simple address will implement
-the base set of features offered by BIP43. The extended addresses will implement
-the full suite of BIP44 features.
-
-## Simple Addresses:
-
-The BCP and BNS will both support the standard cryptography algorithms found in
-the majority of blockchain ecosystems. This includes `ed25519` and `secp256k1`.
-While these algorithms are different, we can use some key features of Bitcoin
-that have propogated and become standard throughout many implementations.
-
-Simple addresses are BIP43 compatible HD addresses using the IOV purpose.
-
-### IOV purpose (purpose = 4804438)
-
-BIP43 describes the standard HD path specification. It allows the use of custom
-`purpose`s for for custom address schemes. Simple addresses use
-`purpose = 4804438`. The chosen purpose value is the integer created by the
-ascii encoding of the letters "IOV". We hope it remains unique within the
-industry.
-
-### Simple Address Derivation
-
-Using `purpose = 4804438`, we create BIP43 compatible HD addresses using the
-derivation path `m / 4804438' / i'` where `i` is an index starting at 0.
-
-This creates a simple, linear address space.
-
-## Extended Addresses:
-
-In many circumstances, users will want a chain specific key that can be portable
-if needed. We can provide them access to these keys using the full BIP43/44
-specifications.
-
-> m / purpose' / coin_type' / account' / change / address_index
-
-Purpose MUST follow the BIP44 specification and as such, be set to be `44`.
-`coin_type` MUST be supported according to the SLIP list. This will provide the
-greatest compatibility, especially if a user needs to exit the system.
-
-Users MAY use these individual chain specific addresses.
-
-This feature set provides compatibility with other wallets (eg. metamask),
-allowing the user to use the same seed in other wallets for any features or
-integrations that are not present in iov-core at launch (although we will work
-over time to provide most of these features).
-
-This is support is also critical for users who are importing HD seeds from other
-software, so that we can locate existing tokens for that user. During the import
-process, that user should be given a choice of supported tokens to add to the
-list and the software can automatically derive the addresses that are already
-used. In the case of many addresses, the user can use a `load more` button.
-
 # Security Concerns
 
 There are a few minor security concerns around Seed management and private key
