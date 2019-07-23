@@ -6,6 +6,7 @@ import {
   Identity,
   isBlockHeightTimeout,
   isIdentity,
+  isNonNullObject,
   isPubkeyBundle,
   isTimestampTimeout,
   PubkeyBundle,
@@ -15,6 +16,26 @@ import {
 const { fromHex } = Encoding;
 
 describe("transactions", () => {
+  describe("isNonNullObject", () => {
+    it("returns true for objects", () => {
+      expect(isNonNullObject({})).toEqual(true);
+      expect(isNonNullObject({ foo: 123 })).toEqual(true);
+      expect(isNonNullObject(new Uint8Array([]))).toEqual(true);
+      expect(isNonNullObject([])).toEqual(true);
+    });
+
+    it("returns false for null", () => {
+      expect(isNonNullObject(null)).toEqual(false);
+    });
+
+    it("returns false for other kind of data", () => {
+      expect(isNonNullObject(undefined)).toEqual(false);
+      expect(isNonNullObject("abc")).toEqual(false);
+      expect(isNonNullObject(123)).toEqual(false);
+      expect(isNonNullObject(true)).toEqual(false);
+    });
+  });
+
   describe("isPubkeyBundle", () => {
     it("returns true for valid PubkeyBundle", () => {
       const good: PubkeyBundle = {

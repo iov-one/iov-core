@@ -15,13 +15,18 @@ export interface PubkeyBundle {
   readonly data: PubkeyBytes;
 }
 
-function isObject(data: unknown): data is object {
+/**
+ * Checks is data is a non-null object (i.e. matches the TypeScript object type)
+ *
+ * Only used package-internal.
+ */
+export function isNonNullObject(data: unknown): data is object {
   return typeof data === "object" && data !== null;
 }
 
 export function isPubkeyBundle(data: any): data is PubkeyBundle {
   return (
-    isObject(data) &&
+    isNonNullObject(data) &&
     ((data as PubkeyBundle).algo === Algorithm.Ed25519 ||
       (data as PubkeyBundle).algo === Algorithm.Secp256k1) &&
     (data as PubkeyBundle).data instanceof Uint8Array
@@ -56,7 +61,7 @@ export interface Identity {
 
 export function isIdentity(data: any): data is Identity {
   return (
-    isObject(data) &&
+    isNonNullObject(data) &&
     typeof (data as Identity).chainId === "string" &&
     isPubkeyBundle((data as Identity).pubkey)
   );
@@ -156,7 +161,7 @@ export interface Amount {
 
 export function isAmount(data: any): data is Amount {
   return (
-    isObject(data) &&
+    isNonNullObject(data) &&
     typeof (data as Amount).quantity === "string" &&
     typeof (data as Amount).fractionalDigits === "number" &&
     typeof (data as Amount).tokenTicker === "string"
@@ -172,7 +177,7 @@ export interface Fee {
 
 export function isFee(data: any): data is Fee {
   return (
-    isObject(data) &&
+    isNonNullObject(data) &&
     (isAmount((data as Fee).tokens) ||
       (isAmount((data as Fee).gasPrice) && typeof (data as Fee).gasLimit === "string"))
   );
@@ -196,7 +201,7 @@ export interface LightTransaction {
 }
 
 export function isLightTransaction(data: any): data is LightTransaction {
-  if (!isObject(data)) return false;
+  if (!isNonNullObject(data)) return false;
   const transaction = data as LightTransaction;
   return typeof transaction.kind === "string" && (transaction.fee === undefined || isFee(transaction.fee));
 }
