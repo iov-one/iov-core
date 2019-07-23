@@ -25,22 +25,31 @@ function readBin() {
   xxd -p -c 999999 < "$1"
 }
 
+>&2 echo "Reading address ..."
+address=$(bech32 -e -h tiov "$(cut -d " " -f2 "$WEAVE/ADDRESS.txt")")
+
+>&2 echo "Reading coin files ..."
 coin_whole=$(readAsString "$WEAVE/coin.json" .whole)
 coin_fractional=$(readAsString "$WEAVE/coin.json" .fractional)
 coin_ticker=$(readAsString "$WEAVE/coin.json" .ticker)
 coin_bin=$(readBin "$WEAVE/coin.bin")
-address=$(bech32 -e -h tiov "$(cut -d " " -f2 "$WEAVE/ADDRESS.txt")")
+
+>&2 echo "Reading pubkey/privkey files ..."
 pubkey_ed25519_raw=$(readBase64Bytes "$WEAVE/pub_key.json" .Pub.Ed25519)
 pubkey_bin=$(readBin "$WEAVE/pub_key.bin")
 privkey_ed25519_raw=$(readBase64Bytes "$WEAVE/priv_key.json" .Priv.Ed25519)
 privkey_bin=$(readBin "$WEAVE/priv_key.bin")
-unsigned_tx_sender=$(bech32 -e -h tiov "$(readHexBytes "$WEAVE/unsigned_tx.json" .Sum.SendMsg.src)")
-unsigned_tx_recipient=$(bech32 -e -h tiov "$(readHexBytes "$WEAVE/unsigned_tx.json" .Sum.SendMsg.dest)")
-unsigned_tx_amount_whole=$(readAsString "$WEAVE/unsigned_tx.json" .Sum.SendMsg.amount.whole)
-unsigned_tx_amount_ticker=$(readAsString "$WEAVE/unsigned_tx.json" .Sum.SendMsg.amount.ticker)
-unsigned_tx_memo=$(readAsString "$WEAVE/unsigned_tx.json" .Sum.SendMsg.memo)
+
+>&2 echo "Reading unsigned_tx files ..."
+unsigned_tx_sender=$(bech32 -e -h tiov "$(readHexBytes "$WEAVE/unsigned_tx.json" .Sum.CashSendMsg.source)")
+unsigned_tx_recipient=$(bech32 -e -h tiov "$(readHexBytes "$WEAVE/unsigned_tx.json" .Sum.CashSendMsg.destination)")
+unsigned_tx_amount_whole=$(readAsString "$WEAVE/unsigned_tx.json" .Sum.CashSendMsg.amount.whole)
+unsigned_tx_amount_ticker=$(readAsString "$WEAVE/unsigned_tx.json" .Sum.CashSendMsg.amount.ticker)
+unsigned_tx_memo=$(readAsString "$WEAVE/unsigned_tx.json" .Sum.CashSendMsg.memo)
 unsigned_tx_bin=$(readBin "$WEAVE/unsigned_tx.bin")
 unsigned_tx_signbytes=$(readBin "$WEAVE/unsigned_tx.signbytes")
+
+>&2 echo "Reading signed_tx files ..."
 signed_tx_sig_nonce=$(readAsString "$WEAVE/signed_tx.json" ".signatures[0].sequence")
 signed_tx_sig_ed25519_raw=$(readBase64Bytes "$WEAVE/signed_tx.json" ".signatures[0].signature.Sig.Ed25519")
 signed_tx_bin=$(readBin "$WEAVE/signed_tx.bin")
