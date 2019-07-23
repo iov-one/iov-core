@@ -38,7 +38,7 @@
     "leveldown": "^5.0.0",
     "recast": "^0.15.3",
     "ts-node": "^7.0.0",
-    "typescript": "~3.4"
+    "typescript": "~3.5"
   },
   "devDependencies": {
     "@types/argparse": "^1.0.34",
