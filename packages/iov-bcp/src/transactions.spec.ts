@@ -38,7 +38,16 @@ describe("transactions", () => {
       expect(isPubkeyBundle(null)).toEqual(false);
       expect(isPubkeyBundle(undefined)).toEqual(false);
       expect(isPubkeyBundle(fromHex("aabb"))).toEqual(false);
-      // TODO: test with missing algo, data once we have TS3.5 omit type
+
+      const missingAlgo: Omit<PubkeyBundle, "algo"> = {
+        data: fromHex("aabbccdd") as PubkeyBytes,
+      };
+      expect(isPubkeyBundle(missingAlgo)).toEqual(false);
+
+      const missingData: Omit<PubkeyBundle, "data"> = {
+        algo: Algorithm.Ed25519,
+      };
+      expect(isPubkeyBundle(missingData)).toEqual(false);
     });
   });
 
@@ -71,7 +80,19 @@ describe("transactions", () => {
       expect(isIdentity(null)).toEqual(false);
       expect(isIdentity(undefined)).toEqual(false);
       expect(isIdentity(fromHex("aabb"))).toEqual(false);
-      // TODO: test with missing chainId, pubkey once we have TS3.5 omit type
+
+      const missingChainId: Omit<Identity, "chainId"> = {
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("aabbccdd") as PubkeyBytes,
+        },
+      };
+      expect(isIdentity(missingChainId)).toEqual(false);
+
+      const missingPubkey: Omit<Identity, "pubkey"> = {
+        chainId: "foobar" as ChainId,
+      };
+      expect(isIdentity(missingPubkey)).toEqual(false);
     });
   });
 
