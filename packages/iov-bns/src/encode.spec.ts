@@ -555,13 +555,13 @@ describe("Encode", () => {
         });
       });
 
-      it("works with ReleaseGuaranteeFunds action", () => {
+      it("works with ReleaseEscrow action", () => {
         const createProposal: CreateProposalTx & WithCreator = {
           kind: "bns/create_proposal",
           creator: defaultCreator,
           title: "Why not try this?",
           action: {
-            kind: ActionKind.ReleaseGuaranteeFunds,
+            kind: ActionKind.ReleaseEscrow,
             escrowId: defaultEscrowId,
             amount: defaultAmount,
           },

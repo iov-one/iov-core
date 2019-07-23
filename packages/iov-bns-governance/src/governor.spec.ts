@@ -435,7 +435,7 @@ describe("Governor", () => {
         creator: options.identity,
         title: "Release guarantee funds",
         action: {
-          kind: ActionKind.ReleaseGuaranteeFunds,
+          kind: ActionKind.ReleaseEscrow,
           escrowId: guaranteeFundEscrowId,
           amount: {
             quantity: "2000000002",
