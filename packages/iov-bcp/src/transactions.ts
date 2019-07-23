@@ -4,15 +4,15 @@ import { As } from "type-tagger";
 import { Hash, Preimage } from "./atomicswaptypes";
 
 /**
- * Checks is data is a non-null object (i.e. matches the TypeScript object type)
+ * Checks if data is a non-null object (i.e. matches the TypeScript object type)
  *
- * Only used package-internal.
+ * Only used internally to this package.
  */
 export function isNonNullObject(data: unknown): data is object {
   return typeof data === "object" && data !== null;
 }
 
-/** Checks if data is an Uint8Array. Note: Buffer is treatet as not a Uint8Array */
+/** Checks if data is an Uint8Array. Note: Buffer is treated as not a Uint8Array */
 export function isUint8Array(data: unknown): data is Uint8Array {
   if (!isNonNullObject(data)) return false;
 
