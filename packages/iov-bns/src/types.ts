@@ -187,6 +187,7 @@ export interface UpdateElectionRule {
   readonly electionRuleId: number;
   readonly threshold?: Fraction;
   readonly quorum?: Fraction | null;
+  readonly votingPeriod: number;
 }
 
 export function isUpdateElectionRule(action: ProposalAction): action is UpdateElectionRule {

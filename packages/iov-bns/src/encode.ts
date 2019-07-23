@@ -371,6 +371,7 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
         electionRuleId: encodeNumericId(tx.action.electionRuleId),
         threshold: tx.action.threshold,
         quorum: tx.action.quorum,
+        votingPeriod: tx.action.votingPeriod,
       },
     };
   } else {

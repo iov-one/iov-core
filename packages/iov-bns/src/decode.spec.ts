@@ -840,6 +840,7 @@ describe("Decode", () => {
                   numerator: 2,
                   denominator: 3,
                 },
+                votingPeriod: 3600,
               },
             }).finish(),
             description: "foo bar",
@@ -864,6 +865,7 @@ describe("Decode", () => {
             numerator: 2,
             denominator: 3,
           },
+          votingPeriod: 3600,
         });
         expect(parsed.description).toEqual("foo bar");
         expect(parsed.electionRuleId).toEqual(806595967999);
