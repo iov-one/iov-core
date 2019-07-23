@@ -3,18 +3,6 @@ import { As } from "type-tagger";
 
 import { Hash, Preimage } from "./atomicswaptypes";
 
-export enum Algorithm {
-  Ed25519 = "ed25519",
-  Secp256k1 = "secp256k1",
-}
-
-export type PubkeyBytes = Uint8Array & As<"pubkey-bytes">;
-
-export interface PubkeyBundle {
-  readonly algo: Algorithm;
-  readonly data: PubkeyBytes;
-}
-
 /**
  * Checks is data is a non-null object (i.e. matches the TypeScript object type)
  *
@@ -40,6 +28,18 @@ export function isUint8Array(data: unknown): data is Uint8Array {
   }
 
   return true;
+}
+
+export enum Algorithm {
+  Ed25519 = "ed25519",
+  Secp256k1 = "secp256k1",
+}
+
+export type PubkeyBytes = Uint8Array & As<"pubkey-bytes">;
+
+export interface PubkeyBundle {
+  readonly algo: Algorithm;
+  readonly data: PubkeyBytes;
 }
 
 export function isPubkeyBundle(data: unknown): data is PubkeyBundle {

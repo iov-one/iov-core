@@ -1,5 +1,13 @@
 import { As } from "type-tagger";
 import { Hash, Preimage } from "./atomicswaptypes";
+/**
+ * Checks is data is a non-null object (i.e. matches the TypeScript object type)
+ *
+ * Only used package-internal.
+ */
+export declare function isNonNullObject(data: unknown): data is object;
+/** Checks if data is an Uint8Array. Note: Buffer is treatet as not a Uint8Array */
+export declare function isUint8Array(data: unknown): data is Uint8Array;
 export declare enum Algorithm {
     Ed25519 = "ed25519",
     Secp256k1 = "secp256k1"
@@ -9,14 +17,6 @@ export interface PubkeyBundle {
     readonly algo: Algorithm;
     readonly data: PubkeyBytes;
 }
-/**
- * Checks is data is a non-null object (i.e. matches the TypeScript object type)
- *
- * Only used package-internal.
- */
-export declare function isNonNullObject(data: unknown): data is object;
-/** Checks if data is an Uint8Array. Note: Buffer is treatet as not a Uint8Array */
-export declare function isUint8Array(data: unknown): data is Uint8Array;
 export declare function isPubkeyBundle(data: unknown): data is PubkeyBundle;
 /**
  * Compares two objects that conform to the PubkeyBundle interface for equality.
