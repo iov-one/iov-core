@@ -89,6 +89,15 @@ describe("transactions", () => {
       expect(isPubkeyBundle(good)).toEqual(true);
     });
 
+    it("ignores additional fields", () => {
+      const withOtherData: PubkeyBundle & { readonly other: number } = {
+        algo: Algorithm.Ed25519,
+        data: fromHex("aabbccdd") as PubkeyBytes,
+        other: 123,
+      };
+      expect(isPubkeyBundle(withOtherData)).toEqual(true);
+    });
+
     it("returns false for a bunch of other stuff", () => {
       expect(isPubkeyBundle("abc")).toEqual(false);
       expect(isPubkeyBundle({})).toEqual(false);
@@ -129,6 +138,18 @@ describe("transactions", () => {
         },
       };
       expect(isIdentity(good)).toEqual(true);
+    });
+
+    it("ignores additional fields", () => {
+      const withOtherData: Identity & { readonly other: number } = {
+        chainId: "foobar" as ChainId,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("aabbccdd") as PubkeyBytes,
+        },
+        other: 123,
+      };
+      expect(isIdentity(withOtherData)).toEqual(true);
     });
 
     it("returns false for a bunch of other stuff", () => {
