@@ -480,8 +480,7 @@ describe("Governor", () => {
         sender: bnsCodec.identityToAddress(identity),
         recipient: cleanRewardFundAddress,
         amount: {
-          // 999000000000 + fee
-          quantity: "999010000000",
+          quantity: "999000000000",
           fractionalDigits: 9,
           tokenTicker: "CASH" as TokenTicker,
         },

@@ -164,21 +164,10 @@ export class Governor {
         if (!fundTotal) {
           throw new Error("Guarantee fund has no CASH balance");
         }
-
-        const tx = {
-          ...commonProperties,
-          action: {
-            kind: ActionKind.ExecuteProposalBatch,
-            messages: [],
-          },
-        };
-        const feeQuote = await this.connection.getFeeQuote(tx);
-        if (!feeQuote.tokens) throw new Error("Received fee quote of unexpected type");
-        const fundTotalMinusFee = new BN(fundTotal.quantity).sub(new BN(feeQuote.tokens.quantity));
         const totalWeight = options.recipients.reduce((total, { weight }) => total + weight, 0);
 
         return this.connection.withDefaultFee({
-          ...tx,
+          ...commonProperties,
           action: {
             kind: ActionKind.ExecuteProposalBatch,
             messages: options.recipients.map(({ address, weight }) => ({
@@ -186,7 +175,7 @@ export class Governor {
               sender: rewardFundAddress,
               recipient: address,
               amount: {
-                quantity: fundTotalMinusFee
+                quantity: new BN(fundTotal.quantity)
                   .muln(weight)
                   .divn(totalWeight)
                   .toString(),
