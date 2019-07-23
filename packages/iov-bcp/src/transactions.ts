@@ -15,10 +15,13 @@ export interface PubkeyBundle {
   readonly data: PubkeyBytes;
 }
 
+function isObject(data: unknown): data is object {
+  return typeof data === "object" && data !== null;
+}
+
 export function isPubkeyBundle(data: any): data is PubkeyBundle {
   return (
-    typeof data === "object" &&
-    data !== null &&
+    isObject(data) &&
     ((data as PubkeyBundle).algo === Algorithm.Ed25519 ||
       (data as PubkeyBundle).algo === Algorithm.Secp256k1) &&
     (data as PubkeyBundle).data instanceof Uint8Array
@@ -53,8 +56,7 @@ export interface Identity {
 
 export function isIdentity(data: any): data is Identity {
   return (
-    typeof data === "object" &&
-    data !== null &&
+    isObject(data) &&
     typeof (data as Identity).chainId === "string" &&
     isPubkeyBundle((data as Identity).pubkey)
   );
@@ -154,8 +156,7 @@ export interface Amount {
 
 export function isAmount(data: any): data is Amount {
   return (
-    typeof data === "object" &&
-    data !== null &&
+    isObject(data) &&
     typeof (data as Amount).quantity === "string" &&
     typeof (data as Amount).fractionalDigits === "number" &&
     typeof (data as Amount).tokenTicker === "string"
@@ -171,9 +172,9 @@ export interface Fee {
 
 export function isFee(data: any): data is Fee {
   return (
-    typeof data === "object" &&
-    data !== null &&
-    (isAmount(data.tokens) || (isAmount(data.gasPrice) && typeof data.gasLimit === "string"))
+    isObject(data) &&
+    (isAmount((data as Fee).tokens) ||
+      (isAmount((data as Fee).gasPrice) && typeof (data as Fee).gasLimit === "string"))
   );
 }
 
@@ -195,10 +196,7 @@ export interface LightTransaction {
 }
 
 export function isLightTransaction(data: any): data is LightTransaction {
-  const isObject = typeof data === "object" && data !== null;
-  if (!isObject) {
-    return false;
-  }
+  if (!isObject(data)) return false;
   const transaction = data as LightTransaction;
   return typeof transaction.kind === "string" && (transaction.fee === undefined || isFee(transaction.fee));
 }
