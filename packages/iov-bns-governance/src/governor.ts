@@ -1,4 +1,4 @@
-import { Address, Identity, TokenTicker, WithCreator } from "@iov/bcp";
+import { Address, Identity, WithCreator } from "@iov/bcp";
 import {
   ActionKind,
   bnsCodec,
@@ -158,31 +158,33 @@ export class Governor {
         const rewardFundAddress = this.rewardFundAddress;
         const rewardFund = await this.connection.getAccount({ address: rewardFundAddress });
         if (!rewardFund) {
-          throw new Error("Could not find guarantee fund account");
-        }
-        const fundTotal = rewardFund.balance.find(({ tokenTicker }) => tokenTicker === "CASH");
-        if (!fundTotal) {
-          throw new Error("Guarantee fund has no CASH balance");
+          throw new Error("Could not find reward fund account");
         }
         const totalWeight = options.recipients.reduce((total, { weight }) => total + weight, 0);
+
+        const messages = rewardFund.balance
+          .map(amount => {
+            const quantity = new BN(amount.quantity);
+            return options.recipients.map(({ address, weight }) => ({
+              kind: ActionKind.Send as ActionKind.Send,
+              sender: rewardFundAddress,
+              recipient: address,
+              amount: {
+                ...amount,
+                quantity: quantity
+                  .muln(weight)
+                  .divn(totalWeight)
+                  .toString(),
+              },
+            }));
+          })
+          .reduce((accumulator, next) => [...accumulator, ...next], []);
 
         return this.connection.withDefaultFee({
           ...commonProperties,
           action: {
             kind: ActionKind.ExecuteProposalBatch,
-            messages: options.recipients.map(({ address, weight }) => ({
-              kind: ActionKind.Send,
-              sender: rewardFundAddress,
-              recipient: address,
-              amount: {
-                quantity: new BN(fundTotal.quantity)
-                  .muln(weight)
-                  .divn(totalWeight)
-                  .toString(),
-                fractionalDigits: 9,
-                tokenTicker: "CASH" as TokenTicker,
-              },
-            })),
+            messages: messages,
           },
         });
       }
