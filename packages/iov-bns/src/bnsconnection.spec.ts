@@ -1315,12 +1315,12 @@ describe("BnsConnection", () => {
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       }
 
-      await sleep(5_000);
+      await sleep(15_000);
 
       {
         // Election ended, was tallied automatically and is accepted
         const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
-        expect(proposal.state.totalYes).toEqual(1);
+        expect(proposal.state.totalYes).toEqual(10);
         expect(proposal.state.totalNo).toEqual(0);
         expect(proposal.state.totalAbstain).toEqual(0);
         expect(proposal.status).toEqual(ProposalStatus.Closed);
@@ -1918,7 +1918,7 @@ describe("BnsConnection", () => {
       expect(electorates[0]).toEqual({
         id: 1,
         version: 1,
-        admin: "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address,
+        admin: "tiov1qkz3ujh7fwpjy88tc3xnc70xr8xfh703pm8r85" as Address,
         title: "Default electorate",
         electors: {
           tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea: { weight: 9 },
@@ -1942,7 +1942,7 @@ describe("BnsConnection", () => {
       expect(rules[0]).toEqual({
         id: 1,
         version: 1,
-        admin: "tiov1a4kh67w979r4w7h0t7t7glqcxdmnjt2k66gk0c" as Address,
+        admin: "tiov1qkz3ujh7fwpjy88tc3xnc70xr8xfh703pm8r85" as Address,
         electorateId: 1,
         title: "fooo",
         votingPeriod: 1 * 3600,
@@ -1955,10 +1955,10 @@ describe("BnsConnection", () => {
       expect(rules[1]).toEqual({
         id: 2,
         version: 1,
-        admin: "tiov1g3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyj522p5" as Address,
+        admin: "tiov1k0dp2fmdunscuwjjusqtk6mttx5ufk3z0mmp0z" as Address,
         electorateId: 2,
         title: "barr",
-        votingPeriod: 5,
+        votingPeriod: 7,
         threshold: {
           numerator: 1,
           denominator: 2,

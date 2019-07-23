@@ -34,7 +34,7 @@
   "governance": {
     "electorate": [
       {
-        "admin": "bech32:tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea",
+        "admin": "cond:gov/rule/0000000000000001",
         "title": "Default electorate",
         "electors": [
           {
@@ -52,11 +52,11 @@
         ]
       },
       {
-        "admin": "bech32:tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea",
+        "admin": "cond:gov/rule/0000000000000002",
         "title": "Dictatorship",
         "electors": [
           {
-            "weight": 1,
+            "weight": 10,
             "address": "bech32:tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea"
           }
         ]
@@ -64,7 +64,7 @@
     ],
     "rules": [
       {
-        "admin": "cond:foo/bar/0000000000000002",
+        "admin": "cond:gov/rule/0000000000000001",
         "title": "fooo",
         "voting_period": "1h",
         "threshold": {
@@ -74,9 +74,9 @@
         "electorate_id": 1
       },
       {
-        "admin": "4444444444444444444444444444444444444444",
+        "admin": "cond:gov/rule/0000000000000002",
         "title": "barr",
-        "voting_period": "5s",
+        "voting_period": "7s",
         "threshold": {
           "numerator": 1,
           "denominator": 2
