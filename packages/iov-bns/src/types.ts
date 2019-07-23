@@ -117,11 +117,13 @@ export enum VoteOption {
 }
 
 export enum ActionKind {
-  CreateTextResolution = "create_text_resolution",
-  ReleaseEscrow = "release_escrow ",
-  SetValidators = "set_validators",
-  UpdateElectionRule = "update_election_rule",
-  UpdateElectorate = "update_electorate",
+  CreateTextResolution = "gov_create_text_resolution",
+  ExecuteProposalBatch = "execute_proposal_batch",
+  ReleaseEscrow = "escrow_release",
+  Send = "cash_send",
+  SetValidators = "validators_apply_diff",
+  UpdateElectionRule = "gov_update_election_rule",
+  UpdateElectorate = "gov_update_electorate",
 }
 
 export interface TallyResult {
@@ -140,6 +142,15 @@ export function isCreateTextResolution(action: ProposalAction): action is Create
   return action.kind === ActionKind.CreateTextResolution;
 }
 
+export interface ExecuteProposalBatch {
+  readonly kind: ActionKind.ExecuteProposalBatch;
+  readonly messages: readonly ProposalAction[];
+}
+
+export function isExecuteProposalBatch(action: ProposalAction): action is ExecuteProposalBatch {
+  return action.kind === ActionKind.ExecuteProposalBatch;
+}
+
 export interface ReleaseEscrow {
   readonly kind: ActionKind.ReleaseEscrow;
   readonly escrowId: Uint8Array;
@@ -148,6 +159,18 @@ export interface ReleaseEscrow {
 
 export function isReleaseEscrow(action: ProposalAction): action is ReleaseEscrow {
   return action.kind === ActionKind.ReleaseEscrow;
+}
+
+export interface Send {
+  readonly kind: ActionKind.Send;
+  readonly sender: Address;
+  readonly recipient: Address;
+  readonly amount: Amount;
+  readonly memo?: string;
+}
+
+export function isSend(action: ProposalAction): action is Send {
+  return action.kind === ActionKind.Send;
 }
 
 export interface SetValidators {
@@ -183,7 +206,9 @@ export function isUpdateElectorate(action: ProposalAction): action is UpdateElec
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolution
+  | ExecuteProposalBatch
   | ReleaseEscrow
+  | Send
   | SetValidators
   | UpdateElectorate
   | UpdateElectionRule;

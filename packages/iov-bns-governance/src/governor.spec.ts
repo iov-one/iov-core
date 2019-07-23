@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Address, Algorithm, PubkeyBytes, TokenTicker } from "@iov/bcp";
+import { Address, Algorithm, isBlockInfoPending, PubkeyBytes, TokenTicker } from "@iov/bcp";
 import { ActionKind, bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
-import { Encoding } from "@iov/encoding";
+import { Random } from "@iov/crypto";
+import { Bech32, Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { ReadonlyDate } from "readonly-date";
 
@@ -20,10 +21,13 @@ function pendingWithoutBnsd(): void {
 // This account has money in the genesis file (see scripts/bnsd/README.md).
 const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 const faucetPath = HdPaths.iov(0);
-const bnsdUrl = "http://localhost:23456";
+const bnsdUrl = "ws://localhost:23456";
 const guaranteeFundEscrowId = Encoding.fromHex("88008800");
+const rewardFundAddress = "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address;
 
-async function getGovernorOptions(path = faucetPath): Promise<GovernorOptions> {
+async function getGovernorOptions(
+  path = faucetPath,
+): Promise<GovernorOptions & { readonly profile: UserProfile }> {
   const connection = await BnsConnection.establish(bnsdUrl);
   const chainId = await connection.chainId();
   const profile = new UserProfile();
@@ -33,6 +37,8 @@ async function getGovernorOptions(path = faucetPath): Promise<GovernorOptions> {
     connection: connection,
     identity: identity,
     guaranteeFundEscrowId: guaranteeFundEscrowId,
+    rewardFundAddress: rewardFundAddress,
+    profile: profile,
   };
 }
 
@@ -455,8 +461,95 @@ describe("Governor", () => {
           },
         },
       });
-
       options.connection.disconnect();
+    });
+
+    it("works for DistributeFunds", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const cleanRewardFundAddress = Bech32.encode("tiov", await Random.getBytes(20)) as Address;
+      const governor = new Governor({
+        ...options,
+        rewardFundAddress: cleanRewardFundAddress,
+      });
+      const { connection, identity, profile } = options;
+
+      const sendTx = await connection.withDefaultFee({
+        kind: "bcp/send",
+        creator: identity,
+        sender: bnsCodec.identityToAddress(identity),
+        recipient: cleanRewardFundAddress,
+        amount: {
+          quantity: "999000000000",
+          fractionalDigits: 9,
+          tokenTicker: "CASH" as TokenTicker,
+        },
+      });
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+
+      const tx = await governor.buildCreateProposalTx({
+        type: ProposalType.DistributeFunds,
+        title: "Distribute funds",
+        description: "Proposal to distribute funds",
+        startTime: new ReadonlyDate(1562164525898),
+        electionRuleId: 1,
+        recipients: [
+          {
+            address: "tiov222222222222222222222222222222222222222" as Address,
+            weight: 2,
+          },
+          {
+            address: "tiov555555555555555555555555555555555555555" as Address,
+            weight: 5,
+          },
+        ],
+      });
+      expect(tx).toEqual({
+        kind: "bns/create_proposal",
+        creator: identity,
+        title: "Distribute funds",
+        action: {
+          kind: ActionKind.ExecuteProposalBatch,
+          messages: [
+            {
+              kind: ActionKind.Send,
+              sender: cleanRewardFundAddress,
+              recipient: "tiov222222222222222222222222222222222222222" as Address,
+              amount: {
+                quantity: "285428571428",
+                fractionalDigits: 9,
+                tokenTicker: "CASH" as TokenTicker,
+              },
+            },
+            {
+              kind: ActionKind.Send,
+              sender: cleanRewardFundAddress,
+              recipient: "tiov555555555555555555555555555555555555555" as Address,
+              amount: {
+                quantity: "713571428571",
+                fractionalDigits: 9,
+                tokenTicker: "CASH" as TokenTicker,
+              },
+            },
+          ],
+        },
+        description: "Proposal to distribute funds",
+        electionRuleId: 1,
+        startTime: 1562164525,
+        author: bnsCodec.identityToAddress(identity),
+        fee: {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+        },
+      });
+
+      connection.disconnect();
     });
   });
 

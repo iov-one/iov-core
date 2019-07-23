@@ -25,7 +25,9 @@ import {
   CreateProposalTx,
   isBnsTx,
   isCreateTextResolution,
+  isExecuteProposalBatch,
   isReleaseEscrow,
+  isSend,
   isSetValidators,
   isUpdateElectionRule,
   isUpdateElectorate,
@@ -316,6 +318,24 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
       govCreateTextResolutionMsg: {
         metadata: { schema: 1 },
         resolution: action.resolution,
+      },
+    };
+  } else if (isExecuteProposalBatch(action)) {
+    option = {
+      executeProposalBatchMsg: {
+        messages: action.messages.map(message => {
+          if (!isSend(message)) {
+            throw new Error("Only send actions are currently supported in proposal batch");
+          }
+          return {
+            sendMsg: {
+              source: decodeBnsAddress(message.sender).data,
+              destination: decodeBnsAddress(message.recipient).data,
+              amount: encodeAmount(message.amount),
+              memo: encodeString(message.memo),
+            },
+          };
+        }),
       },
     };
   } else if (isReleaseEscrow(action)) {

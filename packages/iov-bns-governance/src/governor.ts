@@ -21,20 +21,23 @@ const { toHex } = Encoding;
 export interface GovernorOptions {
   readonly connection: BnsConnection;
   readonly identity: Identity;
-  readonly guaranteeFundEscrowId: Uint8Array;
+  readonly guaranteeFundEscrowId?: Uint8Array;
+  readonly rewardFundAddress?: Address;
 }
 
 export class Governor {
   private readonly connection: BnsConnection;
   private readonly identity: Identity;
   private readonly address: Address;
-  private readonly guaranteeFundEscrowId: Uint8Array;
+  private readonly guaranteeFundEscrowId?: Uint8Array;
+  private readonly rewardFundAddress?: Address;
 
-  public constructor({ connection, identity, guaranteeFundEscrowId }: GovernorOptions) {
+  public constructor({ connection, identity, guaranteeFundEscrowId, rewardFundAddress }: GovernorOptions) {
     this.connection = connection;
     this.identity = identity;
     this.address = bnsCodec.identityToAddress(this.identity);
     this.guaranteeFundEscrowId = guaranteeFundEscrowId;
+    this.rewardFundAddress = rewardFundAddress;
   }
 
   public async getElectorates(): Promise<readonly Electorate[]> {
@@ -137,6 +140,9 @@ export class Governor {
           },
         });
       case ProposalType.ReleaseGuaranteeFunds:
+        if (!this.guaranteeFundEscrowId) {
+          throw new Error("This Governor instance was not initialised with a guaranteeFundEscrowId");
+        }
         return this.connection.withDefaultFee({
           ...commonProperties,
           action: {
@@ -145,6 +151,43 @@ export class Governor {
             amount: options.amount,
           },
         });
+      case ProposalType.DistributeFunds: {
+        if (!this.rewardFundAddress) {
+          throw new Error("This Governor instance was not initialised with a rewardFundAddress");
+        }
+        const rewardFundAddress = this.rewardFundAddress;
+        const rewardFund = await this.connection.getAccount({ address: rewardFundAddress });
+        if (!rewardFund) {
+          throw new Error("Could not find reward fund account");
+        }
+        const totalWeight = options.recipients.reduce((total, { weight }) => total + weight, 0);
+
+        const messages = rewardFund.balance
+          .map(amount => {
+            const quantity = new BN(amount.quantity);
+            return options.recipients.map(({ address, weight }) => ({
+              kind: ActionKind.Send as ActionKind.Send,
+              sender: rewardFundAddress,
+              recipient: address,
+              amount: {
+                ...amount,
+                quantity: quantity
+                  .muln(weight)
+                  .divn(totalWeight)
+                  .toString(),
+              },
+            }));
+          })
+          .reduce((accumulator, next) => [...accumulator, ...next], []);
+
+        return this.connection.withDefaultFee({
+          ...commonProperties,
+          action: {
+            kind: ActionKind.ExecuteProposalBatch,
+            messages: messages,
+          },
+        });
+      }
       case ProposalType.AmendProtocol:
         return this.connection.withDefaultFee({
           ...commonProperties,

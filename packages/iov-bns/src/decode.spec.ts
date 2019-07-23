@@ -674,6 +674,78 @@ describe("Decode", () => {
         expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
       });
 
+      it("works with ExecuteProposalBatch action with array of Send actions", () => {
+        const transactionMessage: codecImpl.bnsd.ITx = {
+          govCreateProposalMsg: {
+            title: "This will happen next",
+            rawOption: codecImpl.bnsd.ProposalOptions.encode({
+              executeProposalBatchMsg: {
+                messages: [
+                  {
+                    sendMsg: {
+                      source: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+                      destination: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+                      amount: {
+                        whole: 1,
+                        fractional: 1,
+                        ticker: "CASH",
+                      },
+                      memo: "say hi",
+                    },
+                  },
+                  {
+                    sendMsg: {
+                      source: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+                      destination: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+                      amount: {
+                        whole: 3,
+                        fractional: 3,
+                        ticker: "MASH",
+                      },
+                    },
+                  },
+                ],
+              },
+            }).finish(),
+            description: "foo bar",
+            electionRuleId: fromHex("bbccddbbff"),
+            startTime: 42424242,
+            author: fromHex("0011223344556677889900112233445566778899"),
+          },
+        };
+        const parsed = parseMsg(defaultBaseTx, transactionMessage);
+        if (!isCreateProposalTx(parsed)) {
+          throw new Error("unexpected transaction kind");
+        }
+        expect(parsed.title).toEqual("This will happen next");
+        expect(parsed.action).toEqual({
+          kind: ActionKind.ExecuteProposalBatch,
+          messages: [
+            {
+              kind: ActionKind.Send,
+              sender: defaultSender,
+              recipient: defaultRecipient,
+              amount: defaultAmount,
+              memo: "say hi",
+            },
+            {
+              kind: ActionKind.Send,
+              sender: defaultRecipient,
+              recipient: defaultSender,
+              amount: {
+                quantity: "3000000003",
+                fractionalDigits: 9,
+                tokenTicker: "MASH" as TokenTicker,
+              },
+            },
+          ],
+        });
+        expect(parsed.description).toEqual("foo bar");
+        expect(parsed.electionRuleId).toEqual(806595967999);
+        expect(parsed.startTime).toEqual(42424242);
+        expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      });
+
       it("works with ReleaseGuaranteeFunds action", () => {
         const transactionMessage: codecImpl.bnsd.ITx = {
           govCreateProposalMsg: {

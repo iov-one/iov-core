@@ -82,11 +82,13 @@ export declare enum VoteOption {
     Abstain = 2
 }
 export declare enum ActionKind {
-    CreateTextResolution = "create_text_resolution",
-    ReleaseEscrow = "release_escrow ",
-    SetValidators = "set_validators",
-    UpdateElectionRule = "update_election_rule",
-    UpdateElectorate = "update_electorate"
+    CreateTextResolution = "gov_create_text_resolution",
+    ExecuteProposalBatch = "execute_proposal_batch",
+    ReleaseEscrow = "escrow_release",
+    Send = "cash_send",
+    SetValidators = "validators_apply_diff",
+    UpdateElectionRule = "gov_update_election_rule",
+    UpdateElectorate = "gov_update_electorate"
 }
 export interface TallyResult {
     readonly totalYes: number;
@@ -99,12 +101,25 @@ export interface CreateTextResolution {
     readonly resolution: string;
 }
 export declare function isCreateTextResolution(action: ProposalAction): action is CreateTextResolution;
+export interface ExecuteProposalBatch {
+    readonly kind: ActionKind.ExecuteProposalBatch;
+    readonly messages: readonly ProposalAction[];
+}
+export declare function isExecuteProposalBatch(action: ProposalAction): action is ExecuteProposalBatch;
 export interface ReleaseEscrow {
     readonly kind: ActionKind.ReleaseEscrow;
     readonly escrowId: Uint8Array;
     readonly amount: Amount;
 }
 export declare function isReleaseEscrow(action: ProposalAction): action is ReleaseEscrow;
+export interface Send {
+    readonly kind: ActionKind.Send;
+    readonly sender: Address;
+    readonly recipient: Address;
+    readonly amount: Amount;
+    readonly memo?: string;
+}
+export declare function isSend(action: ProposalAction): action is Send;
 export interface SetValidators {
     readonly kind: ActionKind.SetValidators;
     readonly validatorUpdates: Validators;
@@ -124,7 +139,7 @@ export interface UpdateElectorate {
 }
 export declare function isUpdateElectorate(action: ProposalAction): action is UpdateElectorate;
 /** The action to be executed when the proposal is accepted */
-export declare type ProposalAction = CreateTextResolution | ReleaseEscrow | SetValidators | UpdateElectorate | UpdateElectionRule;
+export declare type ProposalAction = CreateTextResolution | ExecuteProposalBatch | ReleaseEscrow | Send | SetValidators | UpdateElectorate | UpdateElectionRule;
 export interface Proposal {
     readonly id: number;
     readonly title: string;
