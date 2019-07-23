@@ -15,6 +15,8 @@ export interface PubkeyBundle {
  * Only used package-internal.
  */
 export declare function isNonNullObject(data: unknown): data is object;
+/** Checks if data is an Uint8Array. Note: Buffer is treatet as not a Uint8Array */
+export declare function isUint8Array(data: unknown): data is Uint8Array;
 export declare function isPubkeyBundle(data: any): data is PubkeyBundle;
 /**
  * Compares two objects that conform to the PubkeyBundle interface for equality.

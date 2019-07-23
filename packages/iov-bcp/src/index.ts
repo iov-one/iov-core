@@ -8,6 +8,7 @@ export {
   Algorithm,
   PubkeyBytes,
   PubkeyBundle,
+  isUint8Array,
   isPubkeyBundle,
   pubkeyBundleEquals,
   ChainId,
