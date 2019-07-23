@@ -4,4 +4,4 @@ export { AtomicSwapMerger } from "./atomicswapmerger";
 export * from "./chainconnector";
 export * from "./codec";
 export * from "./connection";
-export * from "./transactions";
+export { isUint8Array, Algorithm, PubkeyBytes, PubkeyBundle, isPubkeyBundle, pubkeyBundleEquals, ChainId, Identity, isIdentity, identityEquals, SignatureBytes, Nonce, TokenTicker, SwapIdBytes, SwapId, swapIdEquals, TransactionId, SignableBytes, PrehashType, SigningJob, FullSignature, Address, Amount, isAmount, Fee, isFee, LightTransaction, isLightTransaction, WithCreator, UnsignedTransaction, isUnsignedTransaction, SignedTransaction, SendTransaction, SwapTimeout, BlockHeightTimeout, isBlockHeightTimeout, TimestampTimeout, isTimestampTimeout, createTimestampTimeout, SwapOfferTransaction, SwapClaimTransaction, SwapAbortTransaction, SwapTransaction, isSendTransaction, isSwapOfferTransaction, isSwapClaimTransaction, isSwapAbortTransaction, isSwapTransaction, } from "./transactions";

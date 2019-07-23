@@ -3,6 +3,33 @@ import { As } from "type-tagger";
 
 import { Hash, Preimage } from "./atomicswaptypes";
 
+/**
+ * Checks if data is a non-null object (i.e. matches the TypeScript object type)
+ *
+ * Only used internally to this package.
+ */
+export function isNonNullObject(data: unknown): data is object {
+  return typeof data === "object" && data !== null;
+}
+
+/** Checks if data is an Uint8Array. Note: Buffer is treated as not a Uint8Array */
+export function isUint8Array(data: unknown): data is Uint8Array {
+  if (!isNonNullObject(data)) return false;
+
+  // Avoid instanceof check which is unreliable in some JS environments
+  // https://medium.com/@simonwarta/limitations-of-the-instanceof-operator-f4bcdbe7a400
+
+  // Use check that was discussed in https://github.com/crypto-browserify/pbkdf2/pull/81
+  if (Object.prototype.toString.call(data) !== "[object Uint8Array]") return false;
+
+  if (typeof Buffer !== "undefined" && typeof Buffer.isBuffer !== "undefined") {
+    // Buffer.isBuffer is available at runtime
+    if (Buffer.isBuffer(data)) return false;
+  }
+
+  return true;
+}
+
 export enum Algorithm {
   Ed25519 = "ed25519",
   Secp256k1 = "secp256k1",
@@ -15,13 +42,12 @@ export interface PubkeyBundle {
   readonly data: PubkeyBytes;
 }
 
-export function isPubkeyBundle(data: any): data is PubkeyBundle {
+export function isPubkeyBundle(data: unknown): data is PubkeyBundle {
   return (
-    typeof data === "object" &&
-    data !== null &&
+    isNonNullObject(data) &&
     ((data as PubkeyBundle).algo === Algorithm.Ed25519 ||
       (data as PubkeyBundle).algo === Algorithm.Secp256k1) &&
-    (data as PubkeyBundle).data instanceof Uint8Array
+    isUint8Array((data as PubkeyBundle).data)
   );
 }
 
@@ -51,10 +77,9 @@ export interface Identity {
   readonly pubkey: PubkeyBundle;
 }
 
-export function isIdentity(data: any): data is Identity {
+export function isIdentity(data: unknown): data is Identity {
   return (
-    typeof data === "object" &&
-    data !== null &&
+    isNonNullObject(data) &&
     typeof (data as Identity).chainId === "string" &&
     isPubkeyBundle((data as Identity).pubkey)
   );
@@ -152,10 +177,9 @@ export interface Amount {
   readonly tokenTicker: TokenTicker;
 }
 
-export function isAmount(data: any): data is Amount {
+export function isAmount(data: unknown): data is Amount {
   return (
-    typeof data === "object" &&
-    data !== null &&
+    isNonNullObject(data) &&
     typeof (data as Amount).quantity === "string" &&
     typeof (data as Amount).fractionalDigits === "number" &&
     typeof (data as Amount).tokenTicker === "string"
@@ -169,11 +193,11 @@ export interface Fee {
   readonly gasLimit?: string;
 }
 
-export function isFee(data: any): data is Fee {
+export function isFee(data: unknown): data is Fee {
   return (
-    typeof data === "object" &&
-    data !== null &&
-    (isAmount(data.tokens) || (isAmount(data.gasPrice) && typeof data.gasLimit === "string"))
+    isNonNullObject(data) &&
+    (isAmount((data as Fee).tokens) ||
+      (isAmount((data as Fee).gasPrice) && typeof (data as Fee).gasLimit === "string"))
   );
 }
 
@@ -194,11 +218,8 @@ export interface LightTransaction {
   readonly fee?: Fee;
 }
 
-export function isLightTransaction(data: any): data is LightTransaction {
-  const isObject = typeof data === "object" && data !== null;
-  if (!isObject) {
-    return false;
-  }
+export function isLightTransaction(data: unknown): data is LightTransaction {
+  if (!isNonNullObject(data)) return false;
   const transaction = data as LightTransaction;
   return typeof transaction.kind === "string" && (transaction.fee === undefined || isFee(transaction.fee));
 }
@@ -214,7 +235,7 @@ export interface WithCreator {
 
 export type UnsignedTransaction = LightTransaction & WithCreator;
 
-export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
+export function isUnsignedTransaction(data: unknown): data is UnsignedTransaction {
   const transaction = data as UnsignedTransaction;
   return isLightTransaction(transaction) && isIdentity(transaction.creator);
 }

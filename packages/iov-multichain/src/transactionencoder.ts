@@ -1,3 +1,4 @@
+import { isUint8Array } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 import { JsonCompatibleValue } from "@iov/jsonrpc";
 
@@ -33,7 +34,7 @@ export class TransactionEncoder {
       return `${prefixes.string}${data}`;
     }
 
-    if (data instanceof Uint8Array) {
+    if (isUint8Array(data)) {
       return `${prefixes.bytes}${Encoding.toHex(data)}`;
     }
 

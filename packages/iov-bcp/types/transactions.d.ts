@@ -1,5 +1,13 @@
 import { As } from "type-tagger";
 import { Hash, Preimage } from "./atomicswaptypes";
+/**
+ * Checks if data is a non-null object (i.e. matches the TypeScript object type)
+ *
+ * Only used internally to this package.
+ */
+export declare function isNonNullObject(data: unknown): data is object;
+/** Checks if data is an Uint8Array. Note: Buffer is treated as not a Uint8Array */
+export declare function isUint8Array(data: unknown): data is Uint8Array;
 export declare enum Algorithm {
     Ed25519 = "ed25519",
     Secp256k1 = "secp256k1"
@@ -9,7 +17,7 @@ export interface PubkeyBundle {
     readonly algo: Algorithm;
     readonly data: PubkeyBytes;
 }
-export declare function isPubkeyBundle(data: any): data is PubkeyBundle;
+export declare function isPubkeyBundle(data: unknown): data is PubkeyBundle;
 /**
  * Compares two objects that conform to the PubkeyBundle interface for equality.
  *
@@ -27,7 +35,7 @@ export interface Identity {
     readonly chainId: ChainId;
     readonly pubkey: PubkeyBundle;
 }
-export declare function isIdentity(data: any): data is Identity;
+export declare function isIdentity(data: unknown): data is Identity;
 /**
  * Compares two objects that conform to the Identity interface for equality.
  * All additional (non-Identity) fields are ignored.
@@ -95,14 +103,14 @@ export interface Amount {
     readonly fractionalDigits: number;
     readonly tokenTicker: TokenTicker;
 }
-export declare function isAmount(data: any): data is Amount;
+export declare function isAmount(data: unknown): data is Amount;
 /** A general interface for blockchain fees */
 export interface Fee {
     readonly tokens?: Amount;
     readonly gasPrice?: Amount;
     readonly gasLimit?: string;
 }
-export declare function isFee(data: any): data is Fee;
+export declare function isFee(data: unknown): data is Fee;
 /** The basic transaction type all transactions should extend */
 export interface LightTransaction {
     /**
@@ -119,7 +127,7 @@ export interface LightTransaction {
     readonly kind: string;
     readonly fee?: Fee;
 }
-export declare function isLightTransaction(data: any): data is LightTransaction;
+export declare function isLightTransaction(data: unknown): data is LightTransaction;
 export interface WithCreator {
     /**
      * The creator of the transaction.
@@ -129,7 +137,7 @@ export interface WithCreator {
     readonly creator: Identity;
 }
 export declare type UnsignedTransaction = LightTransaction & WithCreator;
-export declare function isUnsignedTransaction(data: any): data is UnsignedTransaction;
+export declare function isUnsignedTransaction(data: unknown): data is UnsignedTransaction;
 /** A signable transaction knows how to serialize itself and how to store signatures */
 export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction> {
     /** transaction is the user request */
