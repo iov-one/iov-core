@@ -1,6 +1,6 @@
 {
   "name": "@iov/bns",
-  "version": "0.16.0-alpha.0",
+  "version": "0.16.0-alpha.1",
   "description": "Transaction codec and BCP client to communicate with BNS blockchain",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -34,11 +34,11 @@
     "protoc": "./scripts/weave.sh && yarn pack-proto && yarn define-proto && yarn format && yarn store-codec-version"
   },
   "dependencies": {
-    "@iov/bcp": "^0.16.0-alpha.0",
-    "@iov/crypto": "^0.16.0-alpha.0",
-    "@iov/encoding": "^0.16.0-alpha.0",
-    "@iov/stream": "^0.16.0-alpha.0",
-    "@iov/tendermint-rpc": "^0.16.0-alpha.0",
+    "@iov/bcp": "^0.16.0-alpha.1",
+    "@iov/crypto": "^0.16.0-alpha.1",
+    "@iov/encoding": "^0.16.0-alpha.1",
+    "@iov/stream": "^0.16.0-alpha.1",
+    "@iov/tendermint-rpc": "^0.16.0-alpha.1",
     "@types/long": "^4.0.0",
     "@types/node": "^10.12.18",
     "bn.js": "^4.11.8",
@@ -49,6 +49,6 @@
     "xstream": "^11.10.0"
   },
   "devDependencies": {
-    "@iov/keycontrol": "^0.16.0-alpha.0"
+    "@iov/keycontrol": "^0.16.0-alpha.1"
   }
 }
