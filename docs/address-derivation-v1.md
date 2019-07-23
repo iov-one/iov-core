@@ -1,28 +1,29 @@
 # IOV address derivation version 1
 
-IOV uses industry standard technology to derive cryptographic keypairs and
+IOV uses industry standard technology to derive cryptographic key pairs and
 blockchain addresses from a secret mnemonic. The first step is to derive an
-Ed25519 keypair form the secret. The address is then derives from the pubkey in
-a second step.
+Ed25519 key pair from the secret. The address is then derived from the public
+key in a second step.
 
 ## Create the base secret
 
 The base secret is an English
-[BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
-compatible mnemonic.
+[BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)-compatible
+mnemonic.
 
-Even though it is potentially possible to extend this spec to using a mnemonic
-in a different language, none of our software allows doing that.
+Even though it is potentially feasible to extend this spec for the use of
+mnemonics in different languages, none of our software currently supports doing
+that.
 
-Note: There are extensions to BIP39 that allow mnemonics with less than 12
-words. Those mnemonics need to be considered insecure and none of our software
-supports them.
+Note: There are extensions to BIP39 that allow mnemonics with fewer than 12
+words. Those mnemonics should be considered insecure for our purposes and none
+of our software supports them.
 
-## Derive keypair from mnemonic
+## Derive a key pair from a mnemonic
 
 The IOV Name Service (i.e. our blockchain) uses Ed25519 for signing.
 Hierarchical deterministic (HD) key derivation allows us to derive multiple
-Ed25519 keypairs from the mnemonic. We follow the
+Ed25519 key pairs from a single mnemonic. We follow the
 [SLIP-0010](https://github.com/satoshilabs/slips/blob/master/slip-0010.md)
 standard.
 
@@ -34,7 +35,7 @@ mnemonic. Following this standard, we registered the coin index 234 for the IOV
 token in
 [SLIP-0044](https://github.com/satoshilabs/slips/blob/master/slip-0044.md).
 
-Since IOV is an account based model, our paths follows
+Since IOV is an account-based model, our paths follows
 [Trezor's recommendation](https://github.com/trezor/trezor-firmware/tree/master/core/docs/coins)
 that
 
@@ -62,7 +63,7 @@ described above is equally simple.
 
 ## Deriving addresses from keypairs
 
-Given an Ed25519 pubkey, we derive IOV addresses as follows
+Given an Ed25519 public key, we derive IOV addresses as follows
 
 ```
 address := bech32(prefix, sha256(ascii("sigs/ed25519/") + pubkey)[0:20]);
@@ -74,13 +75,13 @@ where `prefix` (the human readable part of
 
 ## Example
 
-The menonic
+The mnemonic
 
 ```
 wisdom harvest task decrease hybrid mad concert drift ready traffic feel smoke
 ```
 
-derives to the Ed25519 pubkeys and testnet addresses:
+derives to the Ed25519 public keys and testnet addresses:
 
 ```
 m/44'/234'/0':
@@ -99,7 +100,7 @@ tiov16xrvuk2867536tj5j6zzhy205efzrzac8g7zhc
 ## Useful links
 
 - [Token finder](https://iov-one.github.io/token-finder/)
-  ([src](https://github.com/iov-one/token-finder)) is helpful for debugging HD
-  key and address derivation
-- [HdPaths class in IOV-Core](https://github.com/iov-one/iov-core/blob/master/packages/iov-keycontrol/src/hdpaths.ts)
-  shows different derivation paths used in our software
+  ([source](https://github.com/iov-one/token-finder)) is helpful for debugging
+  HD key and address derivation.
+- [The HdPaths class in IOV-Core](https://github.com/iov-one/iov-core/blob/master/packages/iov-keycontrol/src/hdpaths.ts),
+  which shows the various derivation paths used in our software.
