@@ -42,7 +42,7 @@ export function isUint8Array(data: unknown): data is Uint8Array {
   return true;
 }
 
-export function isPubkeyBundle(data: any): data is PubkeyBundle {
+export function isPubkeyBundle(data: unknown): data is PubkeyBundle {
   return (
     isNonNullObject(data) &&
     ((data as PubkeyBundle).algo === Algorithm.Ed25519 ||
@@ -77,7 +77,7 @@ export interface Identity {
   readonly pubkey: PubkeyBundle;
 }
 
-export function isIdentity(data: any): data is Identity {
+export function isIdentity(data: unknown): data is Identity {
   return (
     isNonNullObject(data) &&
     typeof (data as Identity).chainId === "string" &&
@@ -177,7 +177,7 @@ export interface Amount {
   readonly tokenTicker: TokenTicker;
 }
 
-export function isAmount(data: any): data is Amount {
+export function isAmount(data: unknown): data is Amount {
   return (
     isNonNullObject(data) &&
     typeof (data as Amount).quantity === "string" &&
@@ -193,7 +193,7 @@ export interface Fee {
   readonly gasLimit?: string;
 }
 
-export function isFee(data: any): data is Fee {
+export function isFee(data: unknown): data is Fee {
   return (
     isNonNullObject(data) &&
     (isAmount((data as Fee).tokens) ||
@@ -218,7 +218,7 @@ export interface LightTransaction {
   readonly fee?: Fee;
 }
 
-export function isLightTransaction(data: any): data is LightTransaction {
+export function isLightTransaction(data: unknown): data is LightTransaction {
   if (!isNonNullObject(data)) return false;
   const transaction = data as LightTransaction;
   return typeof transaction.kind === "string" && (transaction.fee === undefined || isFee(transaction.fee));
@@ -235,7 +235,7 @@ export interface WithCreator {
 
 export type UnsignedTransaction = LightTransaction & WithCreator;
 
-export function isUnsignedTransaction(data: any): data is UnsignedTransaction {
+export function isUnsignedTransaction(data: unknown): data is UnsignedTransaction {
   const transaction = data as UnsignedTransaction;
   return isLightTransaction(transaction) && isIdentity(transaction.creator);
 }
