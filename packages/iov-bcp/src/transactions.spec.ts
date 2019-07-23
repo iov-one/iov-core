@@ -22,6 +22,12 @@ describe("transactions", () => {
       expect(isNonNullObject({})).toEqual(true);
       expect(isNonNullObject({ foo: 123 })).toEqual(true);
       expect(isNonNullObject(new Uint8Array([]))).toEqual(true);
+    });
+
+    it("returns true for arrays", () => {
+      // > object is a type that represents the non-primitive type, i.e.
+      // > anything that is not number, string, boolean, symbol, null, or undefined.
+      // https://www.typescriptlang.org/docs/handbook/basic-types.html#object
       expect(isNonNullObject([])).toEqual(true);
     });
 
