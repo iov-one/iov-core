@@ -38,6 +38,26 @@ interface TestTransaction {
 }
 
 describe("TransactionEncoder", () => {
+  const defaultCreator = {
+    chainId: "testchain",
+    pubkey: {
+      algo: "ed25519",
+      data: Encoding.fromHex("aabbccdd"),
+    },
+  };
+  const defaultAmount = {
+    quantity: "123",
+    tokenTicker: "CASH",
+    fractionalDigits: 2,
+  };
+  const defaultFee = {
+    tokens: {
+      quantity: "1",
+      tokenTicker: "ASH",
+      fractionalDigits: 2,
+    },
+  };
+
   describe("toJson", () => {
     it("works for numbers", () => {
       expect(toJson(0)).toEqual(0);
@@ -155,31 +175,30 @@ describe("TransactionEncoder", () => {
       expect(() => fromJson("Integer:123")).toThrowError(expectedError);
     });
 
-    it("decodes a full send transaction", () => {
+    it("encodes and decodes a full send transaction", () => {
       const original: TestTransaction = {
         kind: "send_transaction",
-        creator: {
-          chainId: "testchain",
-          pubkey: {
-            algo: "ed25519",
-            data: Encoding.fromHex("aabbccdd"),
-          },
-        },
+        creator: defaultCreator,
         memo: "Hello hello",
-        amount: {
-          quantity: "123",
-          tokenTicker: "CASH",
-          fractionalDigits: 2,
-        },
+        amount: defaultAmount,
         sender: "not used",
         recipient: "aabbcc",
-        fee: {
-          tokens: {
-            quantity: "1",
-            tokenTicker: "ASH",
-            fractionalDigits: 2,
-          },
-        },
+        fee: defaultFee,
+      };
+
+      const restored = fromJson(toJson(original));
+      expect(restored).toEqual(original);
+      expect(isUint8Array(restored.creator.pubkey.data)).toEqual(true);
+    });
+
+    it("encodes and decodes a send transaction without memo", () => {
+      const original: TestTransaction = {
+        kind: "send_transaction",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        sender: "not used",
+        recipient: "aabbcc",
+        fee: defaultFee,
       };
 
       const restored = fromJson(toJson(original));
