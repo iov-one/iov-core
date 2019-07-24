@@ -4,7 +4,7 @@ import { isUint8Array } from "./typechecks";
 
 const { fromJson, toJson } = TransactionEncoder;
 
-/** and example of how this could potentially be used */
+/** An example of how this could potentially be used */
 interface TestTransaction {
   readonly creator: {
     readonly chainId: string;
