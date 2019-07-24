@@ -320,6 +320,10 @@ describe("Governor", () => {
         action: {
           kind: ActionKind.UpdateElectionRule,
           electionRuleId: 2,
+          threshold: {
+            numerator: 1,
+            denominator: 2,
+          },
           quorum: {
             numerator: 2,
             denominator: 7,

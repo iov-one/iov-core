@@ -16,6 +16,7 @@ export declare class Governor {
     constructor({ connection, identity, guaranteeFundEscrowId, rewardFundAddress }: GovernorOptions);
     getElectorates(): Promise<readonly Electorate[]>;
     getElectionRules(electorateId: number): Promise<readonly ElectionRule[]>;
+    getElectionRuleById(electionRuleId: number): Promise<ElectionRule>;
     getProposals(): Promise<readonly Proposal[]>;
     buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithCreator>;
     buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx & WithCreator>;
