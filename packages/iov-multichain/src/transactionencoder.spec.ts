@@ -1,18 +1,41 @@
-import {
-  Address,
-  Algorithm,
-  ChainId,
-  isIdentity,
-  PubkeyBytes,
-  SendTransaction,
-  TokenTicker,
-  WithCreator,
-} from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, isUint8Array } from "@iov/encoding";
 
 import { TransactionEncoder } from "./transactionencoder";
 
 const { fromJson, toJson } = TransactionEncoder;
+
+/** and example of how this could potentially be used */
+interface TestTransaction {
+  readonly creator: {
+    readonly chainId: string;
+    readonly pubkey: {
+      readonly algo: string;
+      readonly data: Uint8Array;
+    };
+  };
+  readonly kind: "send_transaction";
+  readonly fee?: {
+    readonly tokens?: {
+      readonly quantity: string;
+      readonly fractionalDigits: number;
+      readonly tokenTicker: string;
+    };
+    readonly gasPrice?: {
+      readonly quantity: string;
+      readonly fractionalDigits: number;
+      readonly tokenTicker: string;
+    };
+    readonly gasLimit?: string;
+  };
+  readonly amount: {
+    readonly quantity: string;
+    readonly fractionalDigits: number;
+    readonly tokenTicker: string;
+  };
+  readonly sender: string;
+  readonly recipient: string;
+  readonly memo?: string;
+}
 
 describe("TransactionEncoder", () => {
   describe("toJson", () => {
@@ -133,27 +156,27 @@ describe("TransactionEncoder", () => {
     });
 
     it("decodes a full send transaction", () => {
-      const original: SendTransaction & WithCreator = {
-        kind: "bcp/send",
+      const original: TestTransaction = {
+        kind: "send_transaction",
         creator: {
-          chainId: "testchain" as ChainId,
+          chainId: "testchain",
           pubkey: {
-            algo: Algorithm.Ed25519,
-            data: Encoding.fromHex("aabbccdd") as PubkeyBytes,
+            algo: "ed25519",
+            data: Encoding.fromHex("aabbccdd"),
           },
         },
         memo: "Hello hello",
         amount: {
           quantity: "123",
-          tokenTicker: "CASH" as TokenTicker,
+          tokenTicker: "CASH",
           fractionalDigits: 2,
         },
-        sender: "not used" as Address,
-        recipient: "aabbcc" as Address,
+        sender: "not used",
+        recipient: "aabbcc",
         fee: {
           tokens: {
             quantity: "1",
-            tokenTicker: "ASH" as TokenTicker,
+            tokenTicker: "ASH",
             fractionalDigits: 2,
           },
         },
@@ -161,7 +184,7 @@ describe("TransactionEncoder", () => {
 
       const restored = fromJson(toJson(original));
       expect(restored).toEqual(original);
-      expect(isIdentity(restored.creator)).toEqual(true);
+      expect(isUint8Array(restored.creator.pubkey.data)).toEqual(true);
     });
   });
 });
