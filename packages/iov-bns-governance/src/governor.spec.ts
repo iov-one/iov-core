@@ -60,7 +60,7 @@ describe("Governor", () => {
       const options = await getGovernorOptions();
       const governor = new Governor(options);
 
-      const electorates = await governor.getElectorates();
+      const electorates = (await governor.getElectorates()).filter(({ version }) => version === 1);
       expect(electorates.length).toEqual(2);
       expect(electorates[0].id).toEqual(1);
       expect(electorates[1].id).toEqual(2);
@@ -103,7 +103,9 @@ describe("Governor", () => {
       const governor = new Governor(options);
 
       const electorateId = 1;
-      const electionRules = await governor.getElectionRules(electorateId);
+      const electionRules = (await governor.getElectionRules(electorateId)).filter(
+        ({ version }) => version === 1,
+      );
       expect(electionRules.length).toEqual(1);
       expect(electionRules[0].id).toEqual(1);
       expect(electionRules[0].version).toEqual(1);
