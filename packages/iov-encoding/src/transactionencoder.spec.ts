@@ -89,6 +89,11 @@ describe("TransactionEncoder", () => {
       expect(toJson({ foo: { bar: 1 } })).toEqual({ foo: { bar: 1 } });
     });
 
+    it("skips dictionary entries with value undefined", () => {
+      expect(toJson({ foo: undefined })).toEqual({});
+      expect(toJson({ bar: 123, foo: undefined })).toEqual({ bar: 123 });
+    });
+
     it("fails for unsupported objects", () => {
       const expectedError = /Cannot encode type to JSON/i;
       expect(() => toJson(() => 0)).toThrowError(expectedError);
@@ -204,6 +209,29 @@ describe("TransactionEncoder", () => {
       const restored = fromJson(toJson(original));
       expect(restored).toEqual(original);
       expect(isUint8Array(restored.creator.pubkey.data)).toEqual(true);
+    });
+
+    it("encodes and decodes a send transaction with memo set to undefined", () => {
+      const original: TestTransaction = {
+        kind: "send_transaction",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        memo: undefined,
+        sender: "not used",
+        recipient: "aabbcc",
+        fee: defaultFee,
+      };
+
+      const restored = fromJson(toJson(original));
+      expect(restored).toEqual({
+        kind: "send_transaction",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        // memo key does not exist anymore
+        sender: "not used",
+        recipient: "aabbcc",
+        fee: defaultFee,
+      });
     });
   });
 });

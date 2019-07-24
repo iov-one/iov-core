@@ -52,8 +52,15 @@ export class TransactionEncoder {
     ) {
       const out: any = {};
       for (const key of Object.keys(data)) {
+        const value = (data as any)[key];
+
+        // Skip dictionary entries with value `undefined`, just like native JSON:
+        // > JSON.stringify({ foo: undefined })
+        // '{}'
+        if (value === undefined) continue;
+
         // tslint:disable-next-line: no-object-mutation
-        out[key] = TransactionEncoder.toJson((data as any)[key]);
+        out[key] = TransactionEncoder.toJson(value);
       }
       return out;
     }

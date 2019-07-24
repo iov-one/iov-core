@@ -13,6 +13,8 @@
   committee IDs on a per-chain basis.
 - @iov/encoding: Add standard library type checks `isNonNullObject` and
   `isUint8Array`.
+- @iov/encoding: `TransactionEncoder` now skips dictionary entries with value
+  `undefined` instead of throwing an error.
 
 Breaking changes
 
