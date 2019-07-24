@@ -65,6 +65,7 @@ import {
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
+  BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
   Decoder,
@@ -117,22 +118,33 @@ function isDefined<T>(value: T | undefined): value is T {
   return value !== undefined;
 }
 
-function mapKindToBnsPath(kind: string): string | undefined {
-  switch (kind) {
+function mapKindToBnsPath(transaction: BnsTx): string | undefined {
+  // For full list track https://github.com/iov-one/weave/issues/908
+  switch (transaction.kind) {
+    // Token sends
     case "bcp/send":
       return "cash/send";
+    // Atomic swaps
     case "bcp/swap_offer":
-      return "escrow/create";
+      return "aswap/create";
     case "bcp/swap_claim":
-      return "escrow/release";
+      return "aswap/release";
     case "bcp/swap_abort":
-      return "escrow/return";
+      return "aswap/return";
+    // Usernames
     case "bns/register_username":
-      return "nft/username/issue";
-    case "bns/add_address_to_username":
-      return "nft/username/address/add";
-    case "bns/remove_address_from_username":
-      return "nft/username/address/remove";
+      return "username/register_token";
+    case "bns/update_targets_of_username":
+      return "username/change_token_targets";
+    // Escrows
+    case "bns/create_escrow":
+      return "escrow/create";
+    case "bns/release_escrow":
+      return "escrow/release";
+    case "bns/return_escrow":
+      return "escrow/return";
+    case "bns/update_escrow_parties":
+      return "escrow/update";
     default:
       return undefined;
   }
@@ -677,7 +689,7 @@ export class BnsConnection implements AtomicSwapConnection {
       throw new Error("Received transaction of unsupported kind.");
     }
     // use product fee if it exists, otherwise fallback to default anti-spam fee
-    let fee = await this.getProductFee(transaction.kind);
+    let fee = await this.getProductFee(transaction);
     if (!fee) {
       fee = await this.getDefaultFee();
     }
@@ -721,8 +733,8 @@ export class BnsConnection implements AtomicSwapConnection {
    * Queries the blockchain for the enforced product fee for this kind of transaction.
    * Returns undefined if no product fee is defined
    */
-  protected async getProductFee(kind: string): Promise<Amount | undefined> {
-    const path = mapKindToBnsPath(kind);
+  protected async getProductFee(transaction: BnsTx): Promise<Amount | undefined> {
+    const path = mapKindToBnsPath(transaction);
 
     // TODO: add query handler to msgfee
     const { results } = await this.query("/", Encoding.toAscii(`msgfee:${path}`));

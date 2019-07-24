@@ -1,6 +1,6 @@
 import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionId, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { Stream } from "xstream";
-import { BnsUsernameNft, BnsUsernamesQuery, ElectionRule, Electorate, Proposal, Result, Validator } from "./types";
+import { BnsTx, BnsUsernameNft, BnsUsernamesQuery, ElectionRule, Electorate, Proposal, Result, Validator } from "./types";
 export interface QueryResponse {
     readonly height?: number;
     readonly results: readonly Result[];
@@ -91,7 +91,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
      * Queries the blockchain for the enforced product fee for this kind of transaction.
      * Returns undefined if no product fee is defined
      */
-    protected getProductFee(kind: string): Promise<Amount | undefined>;
+    protected getProductFee(transaction: BnsTx): Promise<Amount | undefined>;
     /**
      * The same as searchTx but with ConfirmedTransaction<UnsignedTransaction> instead of
      * ConfirmedTransaction<LightTransaction>

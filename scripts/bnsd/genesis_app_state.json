@@ -100,7 +100,7 @@
   },
   "msgfee": [
     {
-      "msg_path": "nft/username/issue",
+      "msg_path": "username/register_token",
       "fee": "5 CASH"
     }
   ],

@@ -120,6 +120,22 @@ describe("Encode", () => {
       });
     });
 
+    it("can encode an empty amount", () => {
+      // We saw this in the wild. It is still unclear if an instance like this is allowed
+      // to exist. But if it is, it needs to be encoded the following way:
+      const amount: Amount = {
+        quantity: "0",
+        fractionalDigits: 9,
+        tokenTicker: "" as TokenTicker,
+      };
+      const encoded = encodeAmount(amount);
+      expect(encoded).toEqual({
+        whole: null,
+        fractional: null,
+        ticker: null,
+      });
+    });
+
     it("throws for encoding fractional digits other than 9", () => {
       const amount: Amount = {
         quantity: "1",

@@ -87,7 +87,7 @@ export function encodeAmount(amount: Amount): codecImpl.coin.ICoin {
   return {
     whole: encodeInt(whole.toNumber()),
     fractional: encodeInt(fractional.toNumber()),
-    ticker: amount.tokenTicker,
+    ticker: encodeString(amount.tokenTicker),
   };
 }
 
