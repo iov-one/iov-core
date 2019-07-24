@@ -812,8 +812,10 @@ describe("Decode", () => {
         expect(parsed.action).toEqual({
           kind: ActionKind.SetValidators,
           validatorUpdates: {
-            abcd: { power: 5 },
-            ef12: { power: 7 },
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            ed25519_abcd: { power: 5 },
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            ed25519_ef12: { power: 7 },
           },
         });
         expect(parsed.description).toEqual("foo bar");
