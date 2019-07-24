@@ -1,14 +1,6 @@
 export { makeJsonRpcId } from "./id";
 export { JsonRpcClient, SimpleMessagingConnection } from "./jsonrpcclient";
 export {
-  JsonCompatibleArray,
-  JsonCompatibleDictionary,
-  JsonCompatibleValue,
-  isJsonCompatibleArray,
-  isJsonCompatibleDictionary,
-  isJsonCompatibleValue,
-} from "./jsoncompatibledictionary";
-export {
   parseJsonRpcId,
   parseJsonRpcRequest,
   parseJsonRpcResponse2,

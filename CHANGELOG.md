@@ -24,6 +24,10 @@ Breaking changes
 - @iov/bns: `RegisterUsernameTx.username` now has to include a \*iov suffix.
 - @iov/bns: Remove `TallyTx` as tallies will now be performed automatically.
 - @iov/core: Rename package to @iov/multichain.
+- @iov/jsonrpc: Move basic json types `JsonCompatibleValue`,
+  `isJsonCompatibleValue`, `JsonCompatibleDictionary`,
+  `isJsonCompatibleDictionary`, `JsonCompatibleArray`, `isJsonCompatibleArray`
+  into @iov/encoding.
 
 ## 0.15.1
 

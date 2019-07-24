@@ -1,6 +1,5 @@
 import { isUint8Array } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
-import { JsonCompatibleValue } from "@iov/jsonrpc";
+import { Encoding, JsonCompatibleValue } from "@iov/encoding";
 
 const prefixes = {
   string: "string:",

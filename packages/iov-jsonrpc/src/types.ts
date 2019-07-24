@@ -1,8 +1,4 @@
-import {
-  JsonCompatibleArray,
-  JsonCompatibleDictionary,
-  JsonCompatibleValue,
-} from "./jsoncompatibledictionary";
+import { JsonCompatibleArray, JsonCompatibleDictionary, JsonCompatibleValue } from "@iov/encoding";
 
 export type JsonRpcId = number | string;
 

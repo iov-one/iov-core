@@ -1,4 +1,4 @@
-import { JsonCompatibleValue } from "@iov/jsonrpc";
+import { JsonCompatibleValue } from "@iov/encoding";
 /**
  * Encodes non-circular JavaScript objects and primitives into JSON.
  * Used for encoding/decoding transactions but works for kind of data consisting of the supported types.

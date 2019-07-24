@@ -1,6 +1,6 @@
 import { ChainId, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp";
+import { isJsonCompatibleDictionary } from "@iov/encoding";
 import {
-  isJsonCompatibleDictionary,
   jsonRpcCode,
   JsonRpcErrorResponse,
   JsonRpcRequest,
