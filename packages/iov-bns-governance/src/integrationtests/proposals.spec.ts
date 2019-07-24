@@ -200,7 +200,143 @@ describe("Proposals", () => {
     connection.disconnect();
   }, 60_000);
 
-  it("works for amending election rule threshold/quorum");
+  it("works for amending election rule threshold/quorum", async () => {
+    pendingWithoutBnsd();
+    const governorOptions = await getGovernorOptions();
+    const { address, connection, profile } = governorOptions;
+    const governor = new Governor(governorOptions);
+    const numProposalsBefore = (await governor.getProposals()).length;
+
+    const electionRuleId = 2;
+    const electionRulePre = await governor.getElectionRuleById(electionRuleId);
+
+    // Amend threshold
+
+    const startTime1 = new ReadonlyDate(Date.now() + 1_000);
+    const proposalOptions1: ProposalOptions = {
+      type: ProposalType.AmendElectionRuleThreshold,
+      title: "Amend election rule threshold",
+      description: "Amend the election rule threshold in more detail",
+      startTime: startTime1,
+      electionRuleId: electionRuleId,
+      targetElectionRuleId: electionRuleId,
+      threshold: {
+        numerator: 3,
+        denominator: 4,
+      },
+    };
+    const createProposal1Tx = await governor.buildCreateProposalTx(proposalOptions1);
+    await signAndPost(createProposal1Tx, connection, profile);
+
+    const proposalsAfterCreate1 = await governor.getProposals();
+    expect(proposalsAfterCreate1.length).toEqual(numProposalsBefore + 1);
+    const proposal1Pre = proposalsAfterCreate1[proposalsAfterCreate1.length - 1];
+    expect(proposal1Pre.title).toEqual("Amend election rule threshold");
+    expect(proposal1Pre.description).toEqual("Amend the election rule threshold in more detail");
+    expect(new ReadonlyDate(proposal1Pre.votingStartTime * 1000).toDateString()).toEqual(
+      startTime1.toDateString(),
+    );
+    expect(proposal1Pre.electionRule.id).toEqual(electionRuleId);
+    expect(proposal1Pre.author).toEqual(address);
+    expect(proposal1Pre.action).toEqual({
+      kind: ActionKind.UpdateElectionRule,
+      electionRuleId: electionRuleId,
+      threshold: {
+        numerator: 3,
+        denominator: 4,
+      },
+      quorum: electionRulePre.quorum,
+      votingPeriod: electionRulePre.votingPeriod,
+    });
+    expect(proposal1Pre.status).toEqual(ProposalStatus.Submitted);
+
+    await sleep(5000);
+
+    const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
+    await signAndPost(vote1Tx, connection, profile);
+
+    await sleep(5000);
+
+    const proposalsAfterVote1 = await governor.getProposals();
+    expect(proposalsAfterVote1.length).toEqual(numProposalsBefore + 1);
+    const proposal1Post = proposalsAfterVote1[proposalsAfterVote1.length - 1];
+    expect(proposal1Post.id).toEqual(proposal1Pre.id);
+    expect(proposal1Post.title).toEqual("Amend election rule threshold");
+    expect(proposal1Post.status).toEqual(ProposalStatus.Closed);
+    expect(proposal1Post.executorResult).toEqual(ProposalExecutorResult.Succeeded);
+
+    const electionRule1 = await governor.getElectionRuleById(electionRuleId);
+    expect(electionRule1.threshold).toEqual({
+      numerator: 3,
+      denominator: 4,
+    });
+
+    // Amend quorum
+
+    const startTime2 = new ReadonlyDate(Date.now() + 1_000);
+    const proposalOptions2: ProposalOptions = {
+      type: ProposalType.AmendElectionRuleQuorum,
+      title: "Amend election rule threshold",
+      description: "Amend the election rule threshold in more detail",
+      startTime: startTime2,
+      electionRuleId: electionRuleId,
+      targetElectionRuleId: electionRuleId,
+      quorum: {
+        numerator: 4,
+        denominator: 7,
+      },
+    };
+    const createProposal2Tx = await governor.buildCreateProposalTx(proposalOptions2);
+    await signAndPost(createProposal2Tx, connection, profile);
+
+    const proposalsAfterCreate2 = await governor.getProposals();
+    expect(proposalsAfterCreate2.length).toEqual(numProposalsBefore + 2);
+    const proposal2Pre = proposalsAfterCreate2[proposalsAfterCreate2.length - 1];
+    expect(proposal2Pre.title).toEqual("Amend election rule threshold");
+    expect(proposal2Pre.description).toEqual("Amend the election rule threshold in more detail");
+    expect(new ReadonlyDate(proposal2Pre.votingStartTime * 1000).toDateString()).toEqual(
+      startTime2.toDateString(),
+    );
+    expect(proposal2Pre.electionRule.id).toEqual(electionRuleId);
+    expect(proposal2Pre.author).toEqual(address);
+    expect(proposal2Pre.action).toEqual({
+      kind: ActionKind.UpdateElectionRule,
+      electionRuleId: electionRuleId,
+      threshold: {
+        numerator: 3,
+        denominator: 4,
+      },
+      quorum: {
+        numerator: 4,
+        denominator: 7,
+      },
+      votingPeriod: electionRulePre.votingPeriod,
+    });
+    expect(proposal2Pre.status).toEqual(ProposalStatus.Submitted);
+
+    await sleep(5000);
+
+    const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
+    await signAndPost(vote2Tx, connection, profile);
+
+    await sleep(5000);
+
+    const proposalsAfterVote2 = await governor.getProposals();
+    expect(proposalsAfterVote2.length).toEqual(numProposalsBefore + 2);
+    const proposal2Post = proposalsAfterVote2[proposalsAfterVote2.length - 1];
+    expect(proposal2Post.id).toEqual(proposal2Pre.id);
+    expect(proposal2Post.title).toEqual("Amend election rule threshold");
+    expect(proposal2Post.status).toEqual(ProposalStatus.Closed);
+    expect(proposal2Post.executorResult).toEqual(ProposalExecutorResult.Succeeded);
+
+    const electionRule2 = await governor.getElectionRuleById(electionRuleId);
+    expect(electionRule2.quorum).toEqual({
+      numerator: 4,
+      denominator: 7,
+    });
+
+    connection.disconnect();
+  }, 60_000);
 
   it("works for adding and removing validators");
 
