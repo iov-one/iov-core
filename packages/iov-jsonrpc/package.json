@@ -1,6 +1,6 @@
 {
   "name": "@iov/jsonrpc",
-  "version": "0.16.0-alpha.2",
+  "version": "0.16.0-alpha.3",
   "description": "Framework for implementing a JSON-RPC 2.0 API",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -29,8 +29,8 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/encoding": "^0.16.0-alpha.2",
-    "@iov/stream": "^0.16.0-alpha.2",
+    "@iov/encoding": "^0.16.0-alpha.3",
+    "@iov/stream": "^0.16.0-alpha.3",
     "xstream": "^11.10.0"
   }
 }
