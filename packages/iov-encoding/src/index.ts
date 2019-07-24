@@ -8,3 +8,4 @@ export {
   JsonCompatibleArray,
   isJsonCompatibleArray,
 } from "./json";
+export { isNonNullObject, isUint8Array } from "./typechecks";

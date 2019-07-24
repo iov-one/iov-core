@@ -11,6 +11,8 @@
   proposal type; `CommitteeId` and `CommitteeIds` types along with constants
   `committeeIds` and `guaranteeFundEscrowIds` to be populated with known
   committee IDs on a per-chain basis.
+- @iov/encoding: Add standard library type checks `isNonNullObject` and
+  `isUint8Array`.
 
 Breaking changes
 
