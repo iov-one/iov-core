@@ -11,6 +11,10 @@
   proposal type; `CommitteeId` and `CommitteeIds` types along with constants
   `committeeIds` and `guaranteeFundEscrowIds` to be populated with known
   committee IDs on a per-chain basis.
+- @iov/encoding: Add standard library type checks `isNonNullObject` and
+  `isUint8Array`.
+- @iov/encoding: `TransactionEncoder` now skips dictionary entries with value
+  `undefined` instead of throwing an error.
 
 Breaking changes
 
@@ -23,7 +27,12 @@ Breaking changes
 - @iov/bns: Rename `RegisterUsernameTx.addresses` to `.targets`.
 - @iov/bns: `RegisterUsernameTx.username` now has to include a \*iov suffix.
 - @iov/bns: Remove `TallyTx` as tallies will now be performed automatically.
+- @iov/core: Move `TransactionEncoder` into @iov/encoding.
 - @iov/core: Rename package to @iov/multichain.
+- @iov/jsonrpc: Move basic json types `JsonCompatibleValue`,
+  `isJsonCompatibleValue`, `JsonCompatibleDictionary`,
+  `isJsonCompatibleDictionary`, `JsonCompatibleArray`, `isJsonCompatibleArray`
+  into @iov/encoding.
 
 ## 0.15.1
 

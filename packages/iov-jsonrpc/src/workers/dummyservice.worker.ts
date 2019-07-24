@@ -2,10 +2,11 @@
 
 // for testing only
 
-import { isJsonCompatibleDictionary } from "../jsoncompatibledictionary";
+import { isJsonCompatibleDictionary } from "@iov/encoding";
+
 import { parseJsonRpcId, parseJsonRpcRequest } from "../parse";
 import {
-  jsonRpcCodeInvalidRequest,
+  jsonRpcCode,
   JsonRpcErrorResponse,
   JsonRpcRequest,
   JsonRpcResponse,
@@ -22,7 +23,7 @@ function handleRequest(event: MessageEvent): JsonRpcResponse {
       jsonrpc: "2.0",
       id: requestId,
       error: {
-        code: jsonRpcCodeInvalidRequest,
+        code: jsonRpcCode.invalidRequest,
         message: error.toString(),
       },
     };

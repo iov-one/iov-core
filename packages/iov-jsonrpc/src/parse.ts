@@ -4,7 +4,8 @@ import {
   isJsonCompatibleValue,
   JsonCompatibleDictionary,
   JsonCompatibleValue,
-} from "./jsoncompatibledictionary";
+} from "@iov/encoding";
+
 import {
   JsonRpcError,
   JsonRpcErrorResponse,

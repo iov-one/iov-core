@@ -29,6 +29,7 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
+    "@iov/encoding": "^0.16.0-alpha.1",
     "@iov/stream": "^0.16.0-alpha.1",
     "xstream": "^11.10.0"
   }

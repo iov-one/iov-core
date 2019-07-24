@@ -1,20 +1,63 @@
-import {
-  Address,
-  Algorithm,
-  ChainId,
-  isIdentity,
-  PubkeyBytes,
-  SendTransaction,
-  TokenTicker,
-  WithCreator,
-} from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
-
+import { Encoding } from "./encoding";
 import { TransactionEncoder } from "./transactionencoder";
+import { isUint8Array } from "./typechecks";
 
 const { fromJson, toJson } = TransactionEncoder;
 
+/** An example of how this could potentially be used */
+interface TestTransaction {
+  readonly creator: {
+    readonly chainId: string;
+    readonly pubkey: {
+      readonly algo: string;
+      readonly data: Uint8Array;
+    };
+  };
+  readonly kind: "send_transaction";
+  readonly fee?: {
+    readonly tokens?: {
+      readonly quantity: string;
+      readonly fractionalDigits: number;
+      readonly tokenTicker: string;
+    };
+    readonly gasPrice?: {
+      readonly quantity: string;
+      readonly fractionalDigits: number;
+      readonly tokenTicker: string;
+    };
+    readonly gasLimit?: string;
+  };
+  readonly amount: {
+    readonly quantity: string;
+    readonly fractionalDigits: number;
+    readonly tokenTicker: string;
+  };
+  readonly sender: string;
+  readonly recipient: string;
+  readonly memo?: string;
+}
+
 describe("TransactionEncoder", () => {
+  const defaultCreator = {
+    chainId: "testchain",
+    pubkey: {
+      algo: "ed25519",
+      data: Encoding.fromHex("aabbccdd"),
+    },
+  };
+  const defaultAmount = {
+    quantity: "123",
+    tokenTicker: "CASH",
+    fractionalDigits: 2,
+  };
+  const defaultFee = {
+    tokens: {
+      quantity: "1",
+      tokenTicker: "ASH",
+      fractionalDigits: 2,
+    },
+  };
+
   describe("toJson", () => {
     it("works for numbers", () => {
       expect(toJson(0)).toEqual(0);
@@ -44,6 +87,11 @@ describe("TransactionEncoder", () => {
       expect(toJson({ foo: 1 })).toEqual({ foo: 1 });
       expect(toJson({ foo: 1, bar: 2 })).toEqual({ foo: 1, bar: 2 });
       expect(toJson({ foo: { bar: 1 } })).toEqual({ foo: { bar: 1 } });
+    });
+
+    it("skips dictionary entries with value undefined", () => {
+      expect(toJson({ foo: undefined })).toEqual({});
+      expect(toJson({ bar: 123, foo: undefined })).toEqual({ bar: 123 });
     });
 
     it("fails for unsupported objects", () => {
@@ -132,36 +180,58 @@ describe("TransactionEncoder", () => {
       expect(() => fromJson("Integer:123")).toThrowError(expectedError);
     });
 
-    it("decodes a full send transaction", () => {
-      const original: SendTransaction & WithCreator = {
-        kind: "bcp/send",
-        creator: {
-          chainId: "testchain" as ChainId,
-          pubkey: {
-            algo: Algorithm.Ed25519,
-            data: Encoding.fromHex("aabbccdd") as PubkeyBytes,
-          },
-        },
+    it("encodes and decodes a full send transaction", () => {
+      const original: TestTransaction = {
+        kind: "send_transaction",
+        creator: defaultCreator,
         memo: "Hello hello",
-        amount: {
-          quantity: "123",
-          tokenTicker: "CASH" as TokenTicker,
-          fractionalDigits: 2,
-        },
-        sender: "not used" as Address,
-        recipient: "aabbcc" as Address,
-        fee: {
-          tokens: {
-            quantity: "1",
-            tokenTicker: "ASH" as TokenTicker,
-            fractionalDigits: 2,
-          },
-        },
+        amount: defaultAmount,
+        sender: "not used",
+        recipient: "aabbcc",
+        fee: defaultFee,
       };
 
       const restored = fromJson(toJson(original));
       expect(restored).toEqual(original);
-      expect(isIdentity(restored.creator)).toEqual(true);
+      expect(isUint8Array(restored.creator.pubkey.data)).toEqual(true);
+    });
+
+    it("encodes and decodes a send transaction without memo", () => {
+      const original: TestTransaction = {
+        kind: "send_transaction",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        sender: "not used",
+        recipient: "aabbcc",
+        fee: defaultFee,
+      };
+
+      const restored = fromJson(toJson(original));
+      expect(restored).toEqual(original);
+      expect(isUint8Array(restored.creator.pubkey.data)).toEqual(true);
+    });
+
+    it("encodes and decodes a send transaction with memo set to undefined", () => {
+      const original: TestTransaction = {
+        kind: "send_transaction",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        memo: undefined,
+        sender: "not used",
+        recipient: "aabbcc",
+        fee: defaultFee,
+      };
+
+      const restored = fromJson(toJson(original));
+      expect(restored).toEqual({
+        kind: "send_transaction",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        // memo key does not exist anymore
+        sender: "not used",
+        recipient: "aabbcc",
+        fee: defaultFee,
+      });
     });
   });
 });

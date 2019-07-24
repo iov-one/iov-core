@@ -1,4 +1,4 @@
-import { JsonCompatibleArray, JsonCompatibleDictionary, JsonCompatibleValue } from "./jsoncompatibledictionary";
+import { JsonCompatibleArray, JsonCompatibleDictionary, JsonCompatibleValue } from "@iov/encoding";
 export declare type JsonRpcId = number | string;
 export interface JsonRpcRequest {
     readonly jsonrpc: "2.0";

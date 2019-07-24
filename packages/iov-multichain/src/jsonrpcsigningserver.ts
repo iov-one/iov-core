@@ -1,6 +1,6 @@
 import { ChainId, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp";
+import { isJsonCompatibleDictionary, TransactionEncoder } from "@iov/encoding";
 import {
-  isJsonCompatibleDictionary,
   jsonRpcCode,
   JsonRpcErrorResponse,
   JsonRpcRequest,
@@ -11,7 +11,6 @@ import {
 } from "@iov/jsonrpc";
 
 import { SigningServerCore } from "./signingservercore";
-import { TransactionEncoder } from "./transactionencoder";
 
 interface RpcCallGetIdentities {
   readonly name: "getIdentities";

@@ -5,7 +5,6 @@ export * from "./chainconnector";
 export * from "./codec";
 export * from "./connection";
 export {
-  isUint8Array,
   Algorithm,
   PubkeyBytes,
   PubkeyBundle,

@@ -17,7 +17,7 @@ import {
 } from "@iov/bcp";
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, TransactionEncoder } from "@iov/encoding";
 import {
   JsonRpcClient,
   JsonRpcRequest,
@@ -27,8 +27,6 @@ import {
 } from "@iov/jsonrpc";
 import { firstEvent } from "@iov/stream";
 import { Producer, Stream } from "xstream";
-
-import { TransactionEncoder } from "./transactionencoder";
 
 const { fromHex } = Encoding;
 
