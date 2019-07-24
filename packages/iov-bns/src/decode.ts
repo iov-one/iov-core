@@ -335,10 +335,10 @@ function decodeValidators(validators: readonly codecImpl.weave.IValidatorUpdate[
     if (!validator.pubKey || !validator.pubKey.data) {
       throw new Error("Validator is missing pubKey data");
     }
-    const pubkeyHex = Encoding.toHex(validator.pubKey.data);
+    const index = `ed25519_${Encoding.toHex(validator.pubKey.data)}`;
     return {
       ...result,
-      [pubkeyHex]: { power: asIntegerNumber(validator.power) },
+      [index]: { power: asIntegerNumber(validator.power) },
     };
   }, initialValidators);
 }
