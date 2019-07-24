@@ -15,7 +15,7 @@ import {
 } from "@iov/bcp";
 import { bnsCodec, bnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, TransactionEncoder } from "@iov/encoding";
 import { ethereumConnector } from "@iov/ethereum";
 import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
@@ -24,7 +24,6 @@ import { firstEvent } from "@iov/stream";
 import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
 import { MultiChainSigner } from "./multichainsigner";
 import { GetIdentitiesAuthorization, SignAndPostAuthorization, SigningServerCore } from "./signingservercore";
-import { TransactionEncoder } from "./transactionencoder";
 
 const { fromHex } = Encoding;
 

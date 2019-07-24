@@ -1,6 +1,6 @@
-import { Encoding, isUint8Array } from "@iov/encoding";
-
+import { Encoding } from "./encoding";
 import { TransactionEncoder } from "./transactionencoder";
+import { isUint8Array } from "./typechecks";
 
 const { fromJson, toJson } = TransactionEncoder;
 

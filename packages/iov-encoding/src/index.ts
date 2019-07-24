@@ -8,4 +8,5 @@ export {
   JsonCompatibleArray,
   isJsonCompatibleArray,
 } from "./json";
+export { TransactionEncoder } from "./transactionencoder";
 export { isNonNullObject, isUint8Array } from "./typechecks";

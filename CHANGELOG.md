@@ -25,6 +25,7 @@ Breaking changes
 - @iov/bns: Rename `RegisterUsernameTx.addresses` to `.targets`.
 - @iov/bns: `RegisterUsernameTx.username` now has to include a \*iov suffix.
 - @iov/bns: Remove `TallyTx` as tallies will now be performed automatically.
+- @iov/core: Move `TransactionEncoder` into @iov/encoding.
 - @iov/core: Rename package to @iov/multichain.
 - @iov/jsonrpc: Move basic json types `JsonCompatibleValue`,
   `isJsonCompatibleValue`, `JsonCompatibleDictionary`,

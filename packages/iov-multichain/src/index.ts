@@ -6,4 +6,3 @@ export {
   SignedAndPosted,
   SigningServerCore,
 } from "./signingservercore";
-export { TransactionEncoder } from "./transactionencoder";
