@@ -119,22 +119,32 @@ function isDefined<T>(value: T | undefined): value is T {
 }
 
 function mapKindToBnsPath(transaction: BnsTx): string | undefined {
+  // For full list track https://github.com/iov-one/weave/issues/908
   switch (transaction.kind) {
     // Token sends
     case "bcp/send":
       return "cash/send";
     // Atomic swaps
     case "bcp/swap_offer":
-      return "escrow/create";
+      return "aswap/create";
     case "bcp/swap_claim":
-      return "escrow/release";
+      return "aswap/release";
     case "bcp/swap_abort":
-      return "escrow/return";
+      return "aswap/return";
     // Usernames
     case "bns/register_username":
-      return "nft/username/issue";
+      return "username/register_token";
     case "bns/update_targets_of_username":
-      return "nft/username/address/add";
+      return "username/change_token_targets";
+    // Escrows
+    case "bns/create_escrow":
+      return "escrow/create";
+    case "bns/release_escrow":
+      return "escrow/release";
+    case "bns/return_escrow":
+      return "escrow/return";
+    case "bns/update_escrow_parties":
+      return "escrow/update";
     default:
       return undefined;
   }
