@@ -3,10 +3,14 @@ export declare class HdPaths {
     /**
      * IOV's SimpleAddress derivation path
      *
-     * @see https://github.com/iov-one/iov-core/blob/v0.6.1/docs/KeyBase.md#simple-addresses
+     * @see https://github.com/iov-one/iov-core/blob/v0.16.0-alpha.3/docs/address-derivation-v1.md#simple-addresses-deprecated
      * @deprecated we use IOV HD paths in the form m/44'/234'/a' now
      */
     static simpleAddress(index: number): readonly Slip10RawIndex[];
+    /**
+     * This function allows custom purposes e.g. for use by the faucet
+     */
+    static bip43(...indices: readonly number[]): readonly Slip10RawIndex[];
     /**
      * Only use this for the real BIP-0044 with
      * - 5 component path (m / purpose' / coin_type' / account' / change / address_index)
@@ -40,6 +44,7 @@ export declare class HdPaths {
      * @param account The account index `a` starting at 0
      */
     static iov(account: number): readonly Slip10RawIndex[];
+    static iovFaucet(): readonly Slip10RawIndex[];
     /**
      * The default Ethereum derivation path
      *
@@ -51,4 +56,10 @@ export declare class HdPaths {
      * @param account The account index `a` starting at 0
      */
     static ethereum(account: number): readonly Slip10RawIndex[];
+    private static readonly purposes;
+    /**
+     * Coin types as registered at
+     * https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+     */
+    private static readonly coinTypes;
 }

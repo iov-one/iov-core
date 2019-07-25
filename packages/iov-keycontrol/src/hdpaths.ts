@@ -4,12 +4,18 @@ export class HdPaths {
   /**
    * IOV's SimpleAddress derivation path
    *
-   * @see https://github.com/iov-one/iov-core/blob/v0.6.1/docs/KeyBase.md#simple-addresses
+   * @see https://github.com/iov-one/iov-core/blob/v0.16.0-alpha.3/docs/address-derivation-v1.md#simple-addresses-deprecated
    * @deprecated we use IOV HD paths in the form m/44'/234'/a' now
    */
   public static simpleAddress(index: number): readonly Slip10RawIndex[] {
-    const iovPurpose = 4804438;
-    return [Slip10RawIndex.hardened(iovPurpose), Slip10RawIndex.hardened(index)];
+    return [Slip10RawIndex.hardened(HdPaths.purposes.iov), Slip10RawIndex.hardened(index)];
+  }
+
+  /**
+   * This function allows custom purposes e.g. for use by the faucet
+   */
+  public static bip43(...indices: readonly number[]): readonly Slip10RawIndex[] {
+    return indices.map(Slip10RawIndex.hardened);
   }
 
   /**
@@ -25,9 +31,8 @@ export class HdPaths {
     change: number,
     address: number,
   ): readonly Slip10RawIndex[] {
-    const bip44Purpose = 44;
     return [
-      Slip10RawIndex.hardened(bip44Purpose),
+      Slip10RawIndex.hardened(HdPaths.purposes.bip44),
       Slip10RawIndex.hardened(coinType),
       Slip10RawIndex.hardened(account),
       Slip10RawIndex.normal(change),
@@ -54,7 +59,11 @@ export class HdPaths {
    * compatible to the 5 component BIP44 standard.
    */
   public static bip44Like(coinType: number, account: number): readonly Slip10RawIndex[] {
-    return [Slip10RawIndex.hardened(44), Slip10RawIndex.hardened(coinType), Slip10RawIndex.hardened(account)];
+    return [
+      Slip10RawIndex.hardened(HdPaths.purposes.bip44),
+      Slip10RawIndex.hardened(coinType),
+      Slip10RawIndex.hardened(account),
+    ];
   }
 
   /**
@@ -63,9 +72,11 @@ export class HdPaths {
    * @param account The account index `a` starting at 0
    */
   public static iov(account: number): readonly Slip10RawIndex[] {
-    // coin type 234 is registered for IOV at
-    // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-    return HdPaths.bip44Like(234, account);
+    return HdPaths.bip44Like(HdPaths.coinTypes.iov, account);
+  }
+
+  public static iovFaucet(): readonly Slip10RawIndex[] {
+    return HdPaths.bip43(HdPaths.purposes.iovFaucet, HdPaths.coinTypes.testnet, 0, 0);
   }
 
   /**
@@ -79,6 +90,21 @@ export class HdPaths {
    * @param account The account index `a` starting at 0
    */
   public static ethereum(account: number): readonly Slip10RawIndex[] {
-    return HdPaths.bip44(60, 0, 0, account);
+    return HdPaths.bip44(HdPaths.coinTypes.eth, 0, 0, account);
   }
+
+  private static readonly purposes = {
+    bip44: 44,
+    iov: 4804438,
+    iovFaucet: 1229936198,
+  };
+  /**
+   * Coin types as registered at
+   * https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+   */
+  private static readonly coinTypes = {
+    testnet: 1,
+    eth: 60,
+    iov: 234,
+  };
 }
