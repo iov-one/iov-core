@@ -89,6 +89,9 @@
       }
     ]
   },
+  "update_validators": {
+    "addresses": ["cond:gov/rule/0000000000000002"]
+  },
   "conf": {
     "cash": {
       "minimal_fee": "0.01 CASH",
