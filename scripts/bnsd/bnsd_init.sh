@@ -29,7 +29,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 APP_STATE=$(<"$SCRIPT_DIR/genesis_app_state.json")
 # shellcheck disable=SC2002
 cat "${BNSD_DIR}/config/genesis.json.orig" \
-  | jq '.chain_id = "local-bns-devnet"' \
+  | jq '.chain_id = "local-iov-devnet"' \
   | jq ". + {\"app_state\" : $APP_STATE}" \
   > "${BNSD_DIR}/config/genesis.json"
 
