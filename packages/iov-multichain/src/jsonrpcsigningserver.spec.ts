@@ -52,7 +52,7 @@ async function randomBnsAddress(): Promise<Address> {
 }
 
 const bnsdUrl = "ws://localhost:23456";
-const bnsChainId = "local-bns-devnet";
+const bnsChainId = "local-iov-devnet";
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 const bnsdFaucetPath = HdPaths.iov(0);
 const ethereumUrl = "http://localhost:8545";

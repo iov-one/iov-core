@@ -70,7 +70,7 @@ describe("Decode", () => {
         },
       ],
     };
-    const decoded = decodeUsernameNft(nft, "bns-testchain" as ChainId);
+    const decoded = decodeUsernameNft(nft, "iov-testchain" as ChainId);
     expect(decoded.id).toEqual("alice");
     expect(decoded.owner).toEqual(Bech32.encode("tiov", fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472")));
     expect(decoded.targets.length).toEqual(1);
@@ -364,7 +364,7 @@ describe("Decode", () => {
     const defaultBaseTx: UnsignedTransaction = {
       kind: "", // this should be overriden by parseMsg
       creator: {
-        chainId: "bns-chain" as ChainId,
+        chainId: "iov-chain" as ChainId,
         pubkey: {
           algo: Algorithm.Ed25519,
           data: fromHex("aabbccdd") as PubkeyBytes,

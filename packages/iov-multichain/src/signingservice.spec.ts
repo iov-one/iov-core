@@ -88,7 +88,7 @@ function makeSimpleMessagingConnection(
 
 describe("signingservice.worker", () => {
   const bnsdUrl = "ws://localhost:23456";
-  const bnsChainId = "local-bns-devnet";
+  const bnsChainId = "local-iov-devnet";
 
   const signingserviceKarmaUrl = "/base/dist/web/signingservice.worker.js";
   // time to wait until service is initialized and connected to chain
