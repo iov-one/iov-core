@@ -250,12 +250,12 @@ describe("Proposals", () => {
     });
     expect(proposal1Pre.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(5000);
+    await sleep(6000);
 
     const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
     await signAndPost(vote1Tx, connection, profile);
 
-    await sleep(5000);
+    await sleep(15000);
 
     const proposalsAfterVote1 = await governor.getProposals();
     expect(proposalsAfterVote1.length).toEqual(numProposalsBefore + 1);
@@ -314,12 +314,12 @@ describe("Proposals", () => {
     });
     expect(proposal2Pre.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(5000);
+    await sleep(6000);
 
     const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
     await signAndPost(vote2Tx, connection, profile);
 
-    await sleep(5000);
+    await sleep(15000);
 
     const proposalsAfterVote2 = await governor.getProposals();
     expect(proposalsAfterVote2.length).toEqual(numProposalsBefore + 2);
@@ -380,7 +380,7 @@ describe("Proposals", () => {
     });
     expect(proposal1Pre.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(3000);
+    await sleep(5000);
 
     const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
     await signAndPost(vote1Tx, connection, profile);
@@ -435,7 +435,7 @@ describe("Proposals", () => {
     });
     expect(proposal2Pre.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(3000);
+    await sleep(5000);
 
     const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
     await signAndPost(vote2Tx, connection, profile);
@@ -503,7 +503,7 @@ describe("Proposals", () => {
     const voteTx = await governor.buildVoteTx(proposal1.id, VoteOption.Yes);
     await signAndPost(voteTx, connection, profile);
 
-    await sleep(5000);
+    await sleep(15000);
 
     const proposalsAfterVote = await governor.getProposals();
     expect(proposalsAfterVote.length).toEqual(numProposalsBefore + 1);
@@ -514,5 +514,5 @@ describe("Proposals", () => {
     expect(proposal2.executorResult).toEqual(ProposalExecutorResult.Succeeded);
 
     connection.disconnect();
-  });
+  }, 60_000);
 });
