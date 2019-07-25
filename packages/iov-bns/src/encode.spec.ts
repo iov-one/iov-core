@@ -709,6 +709,7 @@ describe("Encode", () => {
               validatorUpdates: [
                 {
                   pubKey: {
+                    type: "ed25519",
                     data: fromHex("0902bb5de30ccb15b6decb6aa1fdb4f0c1c7317df62dcafa81ccad82ce88dd22"),
                   },
                   power: Long.fromNumber(5),

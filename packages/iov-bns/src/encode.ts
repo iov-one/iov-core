@@ -304,7 +304,7 @@ function encodeValidators(validators: Validators): codecImpl.weave.IValidatorUpd
     }
 
     return {
-      pubKey: { data: Encoding.fromHex(matches[1]) },
+      pubKey: { data: Encoding.fromHex(matches[1]), type: "ed25519" },
       power: power,
     };
   });
