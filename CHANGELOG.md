@@ -15,6 +15,7 @@
   `isUint8Array`.
 - @iov/encoding: `TransactionEncoder` now skips dictionary entries with value
   `undefined` instead of throwing an error.
+- @iov/keycontrol: Add `HdPaths.iovFaucet`.
 
 Breaking changes
 
