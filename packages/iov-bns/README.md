@@ -16,7 +16,7 @@ Simplest usage, to use auto-detecting tendermint client and standard bns
 transaction parser:
 
 ```ts
-const connection = await BnsConnection.establish("wss://bns.hugnet.iov.one");
+const connection = await BnsConnection.establish("wss://rpc.lovenet.iov.one");
 ```
 
 ## Supported weave (bnsd) versions

@@ -203,13 +203,13 @@ In this example we connect to a public test network.
 > const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
 
 > const signer = new MultiChainSigner(profile);
-> const { connection } = await signer.addChain(bnsConnector("https://bns.hugnet.iov.one"));
+> const { connection } = await signer.addChain(bnsConnector("https://bns.lovenet.iov.one"));
 > const chainId = connection.chainId();
 
 > const alice = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(0));
 > const aliceAddress = signer.identityToAddress(alice);
 
-> const faucet = new IovFaucet("https://iov-faucet.hugnet.iov.one");
+> const faucet = new IovFaucet("https://bns-faucet.lovenet.iov.one/");
 
 > await faucet.credit(aliceAddress, "IOV" as TokenTicker)
 > (await connection.getAccount({ address: aliceAddress })).balance
