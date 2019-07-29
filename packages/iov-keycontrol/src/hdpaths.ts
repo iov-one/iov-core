@@ -12,13 +12,6 @@ export class HdPaths {
   }
 
   /**
-   * This function allows custom purposes e.g. for use by the faucet
-   */
-  public static bip43(...indices: readonly number[]): readonly Slip10RawIndex[] {
-    return indices.map(Slip10RawIndex.hardened);
-  }
-
-  /**
    * Only use this for the real BIP-0044 with
    * - 5 component path (m / purpose' / coin_type' / account' / change / address_index)
    * - no ed25519 support (due to the use of unhardened path components)
@@ -76,7 +69,12 @@ export class HdPaths {
   }
 
   public static iovFaucet(): readonly Slip10RawIndex[] {
-    return HdPaths.bip43(HdPaths.purposes.iovFaucet, HdPaths.coinTypes.testnet, 0, 0);
+    return [
+      Slip10RawIndex.hardened(HdPaths.purposes.iovFaucet),
+      Slip10RawIndex.hardened(HdPaths.coinTypes.testnet),
+      Slip10RawIndex.hardened(0),
+      Slip10RawIndex.hardened(0),
+    ];
   }
 
   /**

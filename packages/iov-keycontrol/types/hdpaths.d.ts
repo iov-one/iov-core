@@ -8,10 +8,6 @@ export declare class HdPaths {
      */
     static simpleAddress(index: number): readonly Slip10RawIndex[];
     /**
-     * This function allows custom purposes e.g. for use by the faucet
-     */
-    static bip43(...indices: readonly number[]): readonly Slip10RawIndex[];
-    /**
      * Only use this for the real BIP-0044 with
      * - 5 component path (m / purpose' / coin_type' / account' / change / address_index)
      * - no ed25519 support (due to the use of unhardened path components)
