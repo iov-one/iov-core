@@ -66,7 +66,8 @@ described above is equally simple.
 Given an Ed25519 public key, we derive IOV addresses as follows
 
 ```
-address := bech32(prefix, sha256(ascii("sigs/ed25519/") + pubkey)[0:20]);
+weave_address := sha256(ascii("sigs/ed25519/") + pubkey)[0:20];
+address := bech32(prefix, weave_address);
 ```
 
 where `prefix` (the human readable part of
