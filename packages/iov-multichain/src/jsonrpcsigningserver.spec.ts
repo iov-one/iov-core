@@ -95,7 +95,7 @@ async function makeBnsEthereumSigningServer(
 describe("JsonRpcSigningServer", () => {
   const bnsdFaucetPubkey: PubkeyBundle = {
     algo: Algorithm.Ed25519,
-    data: fromHex("418f88ff4876d33a3d6e2a17d0fe0e78dc3cb5e4b42c6c156ed1b8bfce5d46d1") as PubkeyBytes,
+    data: fromHex("e05f47e7639b47625c23738e2e46d092819abd6039c5fc550d9aa37f1a2556a1") as PubkeyBytes,
   };
 
   const ganacheSecondIdentity: Identity = {
