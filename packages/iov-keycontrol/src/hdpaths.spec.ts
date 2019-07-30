@@ -12,26 +12,6 @@ describe("HdPaths", () => {
     expect(HdPaths.simpleAddress(2)).toEqual([Slip10RawIndex.hardened(4804438), Slip10RawIndex.hardened(2)]);
   });
 
-  it("has working bip43 implementation", () => {
-    // m/1229936198'/33'/22'
-    expect(HdPaths.bip43(1229936198, 33, 22)).toEqual([
-      Slip10RawIndex.hardened(1229936198),
-      Slip10RawIndex.hardened(33),
-      Slip10RawIndex.hardened(22),
-    ]);
-
-    // m/5'/6'/7'/8'/9'/10'/11'
-    expect(HdPaths.bip43(5, 6, 7, 8, 9, 10, 11)).toEqual([
-      Slip10RawIndex.hardened(5),
-      Slip10RawIndex.hardened(6),
-      Slip10RawIndex.hardened(7),
-      Slip10RawIndex.hardened(8),
-      Slip10RawIndex.hardened(9),
-      Slip10RawIndex.hardened(10),
-      Slip10RawIndex.hardened(11),
-    ]);
-  });
-
   it("has working bip44 implementation", () => {
     // m/44'/1'/2'/3/4
     expect(HdPaths.bip44(1, 2, 3, 4)).toEqual([
@@ -67,14 +47,26 @@ describe("HdPaths", () => {
     ]);
   });
 
-  it("has working iovFaucet implementation", () => {
-    // m/1229936198'/1'/0'/0'
-    expect(HdPaths.iovFaucet()).toEqual([
-      Slip10RawIndex.hardened(1229936198),
-      Slip10RawIndex.hardened(1),
-      Slip10RawIndex.hardened(0),
-      Slip10RawIndex.hardened(0),
-    ]);
+  describe("iovFaucet", () => {
+    it("returns token holder account for instance 0 when called with no arguments", () => {
+      // m/1229936198'/1'/0'/0'
+      expect(HdPaths.iovFaucet()).toEqual([
+        Slip10RawIndex.hardened(1229936198),
+        Slip10RawIndex.hardened(1),
+        Slip10RawIndex.hardened(0),
+        Slip10RawIndex.hardened(0),
+      ]);
+    });
+
+    it("allows setting custom coin type, instance index and account index", () => {
+      // m/1229936198'/33'/44'/55'
+      expect(HdPaths.iovFaucet(33, 44, 55)).toEqual([
+        Slip10RawIndex.hardened(1229936198),
+        Slip10RawIndex.hardened(33),
+        Slip10RawIndex.hardened(44),
+        Slip10RawIndex.hardened(55),
+      ]);
+    });
   });
 
   it("has working Ethereum implementation", () => {

@@ -12,13 +12,6 @@ export class HdPaths {
   }
 
   /**
-   * This function allows custom purposes e.g. for use by the faucet
-   */
-  public static bip43(...indices: readonly number[]): readonly Slip10RawIndex[] {
-    return indices.map(Slip10RawIndex.hardened);
-  }
-
-  /**
    * Only use this for the real BIP-0044 with
    * - 5 component path (m / purpose' / coin_type' / account' / change / address_index)
    * - no ed25519 support (due to the use of unhardened path components)
@@ -75,8 +68,26 @@ export class HdPaths {
     return HdPaths.bip44Like(HdPaths.coinTypes.iov, account);
   }
 
-  public static iovFaucet(): readonly Slip10RawIndex[] {
-    return HdPaths.bip43(HdPaths.purposes.iovFaucet, HdPaths.coinTypes.testnet, 0, 0);
+  /**
+   * An IOV faucet HD path in the form m/1229936198'/coinType'/instanceIndex'/accountIndex'
+   *
+   * @see https://github.com/iov-one/iov-faucet/tree/v0.8.1#faucet-hd-wallet
+   *
+   * @param coinType A SLIP-0044 coin. Defaults to 1 (i.e. "Testnet (all coins)") when unset.
+   * @param instanceIndex 0-based index of the faucet instance. Defaults to 0 when unset.
+   * @param accountIndex 0-based index of the account. Account 0 is the token holder and accounts >= 1 are the distributor accounts. Defaults to 0 when unset.
+   */
+  public static iovFaucet(
+    coinType: number = HdPaths.coinTypes.testnet,
+    instanceIndex: number = 0,
+    accountIndex: number = 0,
+  ): readonly Slip10RawIndex[] {
+    return [
+      Slip10RawIndex.hardened(HdPaths.purposes.iovFaucet),
+      Slip10RawIndex.hardened(coinType),
+      Slip10RawIndex.hardened(instanceIndex),
+      Slip10RawIndex.hardened(accountIndex),
+    ];
   }
 
   /**

@@ -8,10 +8,6 @@ export declare class HdPaths {
      */
     static simpleAddress(index: number): readonly Slip10RawIndex[];
     /**
-     * This function allows custom purposes e.g. for use by the faucet
-     */
-    static bip43(...indices: readonly number[]): readonly Slip10RawIndex[];
-    /**
      * Only use this for the real BIP-0044 with
      * - 5 component path (m / purpose' / coin_type' / account' / change / address_index)
      * - no ed25519 support (due to the use of unhardened path components)
@@ -44,7 +40,16 @@ export declare class HdPaths {
      * @param account The account index `a` starting at 0
      */
     static iov(account: number): readonly Slip10RawIndex[];
-    static iovFaucet(): readonly Slip10RawIndex[];
+    /**
+     * An IOV faucet HD path in the form m/1229936198'/coinType'/instanceIndex'/accountIndex'
+     *
+     * @see https://github.com/iov-one/iov-faucet/tree/v0.8.1#faucet-hd-wallet
+     *
+     * @param coinType A SLIP-0044 coin. Defaults to 1 (i.e. "Testnet (all coins)") when unset.
+     * @param instanceIndex 0-based index of the faucet instance. Defaults to 0 when unset.
+     * @param accountIndex 0-based index of the account. Account 0 is the token holder and accounts >= 1 are the distributor accounts. Defaults to 0 when unset.
+     */
+    static iovFaucet(coinType?: number, instanceIndex?: number, accountIndex?: number): readonly Slip10RawIndex[];
     /**
      * The default Ethereum derivation path
      *
