@@ -35,6 +35,7 @@ export {
   WithCreator,
   UnsignedTransaction,
   isUnsignedTransaction,
+  TransactionContainer,
   SignedTransaction,
   ConfirmedTransaction,
   FailedTransaction,

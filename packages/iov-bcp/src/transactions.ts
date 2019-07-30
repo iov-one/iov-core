@@ -214,21 +214,21 @@ export function isUnsignedTransaction(data: unknown): data is UnsignedTransactio
   return isLightTransaction(transaction) && isIdentity(transaction.creator);
 }
 
-/** A signable transaction knows how to serialize itself and how to store signatures */
-export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction> {
-  /** The transaction content. Keep this compatible to the ConfirmedTransaction interface */
+/** An interface to ensure the transaction property of other types is in sync */
+export interface TransactionContainer<T extends LightTransaction> {
+  /** The transaction content */
   readonly transaction: T;
+}
 
+/** A signable transaction knows how to serialize itself and how to store signatures */
+export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction>
+  extends TransactionContainer<T> {
   readonly primarySignature: FullSignature;
-
   /** signatures can be appended as this is signed */
   readonly otherSignatures: readonly FullSignature[];
 }
 
-export interface ConfirmedTransaction<T extends LightTransaction> {
-  /** The transaction content. Keep this compatible to the SignedTransaction interface */
-  readonly transaction: T;
-
+export interface ConfirmedTransaction<T extends LightTransaction> extends TransactionContainer<T> {
   readonly height: number; // the block it was written to
   /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
   readonly confirmations: number;
