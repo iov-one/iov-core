@@ -131,11 +131,13 @@ describe("BnsConnection", () => {
     data: fromHex("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") as PubkeyBytes,
   };
 
-  // The first IOV key (m/44'/234'/0') generated from this mnemonic produces the address
-  // tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea (bech32) / a4f97447e7df55b6ef0d6209ebef2a7b22625376 (hex).
+  // Dev faucet
+  // path: m/1229936198'/1'/0'/0'
+  // pubkey: e05f47e7639b47625c23738e2e46d092819abd6039c5fc550d9aa37f1a2556a1
+  // IOV address: tiov1q5lyl7asgr2dcweqrhlfyexqpkgcuzrm4e0cku
   // This account has money in the genesis file (see scripts/bnsd/README.md).
   const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-  const faucetPath = HdPaths.iov(0);
+  const faucetPath = HdPaths.iovFaucet();
 
   const bnsdTendermintUrl = "ws://localhost:23456";
   const bnsdTendermintHttpUrl = "http://localhost:23456";
