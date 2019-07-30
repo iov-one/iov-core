@@ -92,6 +92,22 @@
   "update_validators": {
     "addresses": ["cond:gov/rule/0000000000000002"]
   },
+  "escrow": [
+    {
+      "//name": "Guarantee Fund",
+      "amount": [
+        {
+          "ticker": "CASH",
+          "whole": 100000000000000
+        }
+      ],
+      "arbiter": "cond:gov/rule/0000000000000002",
+      "//destination-name": "Reward Fund",
+      "destination": "cond:gov/rule/0000000000000002",
+      "source": "0000000000000000000000000000000000000000",
+      "timeout": "2999-12-31T00:00:00Z"
+    }
+  ],
   "conf": {
     "cash": {
       "minimal_fee": "0.01 CASH",
