@@ -241,7 +241,6 @@ export interface ConfirmedTransaction<T extends LightTransaction> {
    * may change at any time.
    */
   readonly log?: string;
-  // readonly tags: ReadonlyArray<Tag>;
 }
 
 export interface FailedTransaction {
