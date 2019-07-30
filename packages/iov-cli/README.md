@@ -203,7 +203,7 @@ In this example we connect to a public test network.
 > const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
 
 > const signer = new MultiChainSigner(profile);
-> const { connection } = await signer.addChain(bnsConnector("https://bns.lovenet.iov.one"));
+> const { connection } = await signer.addChain(bnsConnector("https://rpc.lovenet.iov.one"));
 > const chainId = connection.chainId();
 
 > const alice = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(0));
