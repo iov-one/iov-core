@@ -21,11 +21,13 @@ import { CommitteeId } from "../committees";
 import { Governor, GovernorOptions } from "../governor";
 import { ProposalOptions, ProposalType } from "../proposals";
 
-// The first IOV key (m/44'/234'/0') generated from this mnemonic produces the address
-// tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea (bech32) / a4f97447e7df55b6ef0d6209ebef2a7b22625376 (hex).
+// Dev admin
+// path: m/44'/234'/0'
+// pubkey: 418f88ff4876d33a3d6e2a17d0fe0e78dc3cb5e4b42c6c156ed1b8bfce5d46d1
+// IOV address: tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea
 // This account has money in the genesis file (see scripts/bnsd/README.md).
-const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-const faucetPath = HdPaths.iov(0);
+const adminMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+const adminPath = HdPaths.iov(0);
 const bnsdUrl = "ws://localhost:23456";
 const guaranteeFundEscrowId = Encoding.fromHex("88008800");
 const rewardFundAddress = "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address;
@@ -41,12 +43,12 @@ async function sleep(ms: number): Promise<void> {
 }
 
 async function getGovernorOptions(
-  path = faucetPath,
+  path = adminPath,
 ): Promise<GovernorOptions & { readonly profile: UserProfile; readonly address: Address }> {
   const connection = await BnsConnection.establish(bnsdUrl);
   const chainId = await connection.chainId();
   const profile = new UserProfile();
-  const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
+  const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
   const identity = await profile.createIdentity(wallet.id, chainId, path);
   return {
     address: bnsCodec.identityToAddress(identity),
