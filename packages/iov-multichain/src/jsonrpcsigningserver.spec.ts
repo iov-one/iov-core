@@ -53,8 +53,13 @@ async function randomBnsAddress(): Promise<Address> {
 
 const bnsdUrl = "ws://localhost:23456";
 const bnsChainId = "local-iov-devnet";
+// Dev faucet
+// path: m/1229936198'/1'/0'/0'
+// pubkey: e05f47e7639b47625c23738e2e46d092819abd6039c5fc550d9aa37f1a2556a1
+// IOV address: tiov1q5lyl7asgr2dcweqrhlfyexqpkgcuzrm4e0cku
+// This account has money in the genesis file (see scripts/bnsd/README.md).
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-const bnsdFaucetPath = HdPaths.iov(0);
+const bnsdFaucetPath = HdPaths.iovFaucet();
 const ethereumUrl = "http://localhost:8545";
 const ethereumChainId = "ethereum-eip155-5777" as ChainId;
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
