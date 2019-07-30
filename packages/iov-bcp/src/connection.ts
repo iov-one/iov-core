@@ -8,11 +8,12 @@ import {
   Address,
   Amount,
   ChainId,
+  ConfirmedTransaction,
+  FailedTransaction,
   Fee,
   LightTransaction,
   Nonce,
   PubkeyBundle,
-  SignedTransaction,
   TokenTicker,
   TransactionId,
   UnsignedTransaction,
@@ -113,50 +114,6 @@ export interface PostTxResponse {
   readonly transactionId: TransactionId;
   /** a human readable debugging log */
   readonly log?: string;
-}
-
-export interface ConfirmedTransaction<T extends LightTransaction> extends SignedTransaction<T> {
-  readonly height: number; // the block it was written to
-  /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
-  readonly confirmations: number;
-  /** a unique identifier (hash of the transaction) */
-  readonly transactionId: TransactionId;
-  /** application specific data from executing tx (result, code, tags...) */
-  readonly result?: Uint8Array;
-  /**
-   * Application specific logging output in an arbitrary text format that
-   * may change at any time.
-   */
-  readonly log?: string;
-  // readonly tags: ReadonlyArray<Tag>;
-}
-
-export interface FailedTransaction {
-  /** height of the block that contains the transaction */
-  readonly height: number;
-  /** a unique identifier (hash of the transaction) */
-  readonly transactionId: TransactionId;
-  /**
-   * Application specific error code
-   */
-  readonly code: number;
-  /**
-   * Application specific, human-readable, non-localized error message
-   * in an arbitrary text format that may change at any time.
-   */
-  readonly message?: string;
-}
-
-export function isConfirmedTransaction<T extends LightTransaction>(
-  transaction: ConfirmedTransaction<T> | FailedTransaction,
-): transaction is ConfirmedTransaction<T> {
-  return typeof (transaction as any).transaction !== "undefined";
-}
-
-export function isFailedTransaction<T extends LightTransaction>(
-  transaction: ConfirmedTransaction<T> | FailedTransaction,
-): transaction is FailedTransaction {
-  return !isConfirmedTransaction(transaction);
 }
 
 export interface QueryTag {
