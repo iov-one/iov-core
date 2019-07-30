@@ -11,6 +11,7 @@ import {
   BlockHeader,
   BlockInfo,
   ChainId,
+  ConfirmedAndSignedTransaction,
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
@@ -30,6 +31,7 @@ import {
   PostTxResponse,
   Preimage,
   PubkeyQuery,
+  SendTransaction,
   SwapData,
   SwapId,
   SwapIdBytes,
@@ -53,7 +55,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
 
 import { Abi, SwapContractEvent } from "./abi";
-import { pubkeyToAddress } from "./address";
+import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20TokensMap } from "./erc20";
 import { Erc20Reader } from "./erc20reader";
@@ -680,7 +682,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return Stream.create(producer);
   }
 
-  public async getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction>> {
+  public async getTx(id: TransactionId): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction>> {
     const searchResults = await this.searchTransactionsById(id);
     if (searchResults.length === 0) {
       throw new Error("Transaction does not exist");
@@ -962,7 +964,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
   private async searchTransactionsById(
     id: TransactionId,
-  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
+  ): Promise<readonly ConfirmedAndSignedTransaction<UnsignedTransaction>[]> {
     const transactionsResponse = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getTransactionByHash",
@@ -1062,7 +1064,30 @@ export class EthereumConnection implements AtomicSwapConnection {
     if (responseBody.result !== null) {
       for (const transaction of responseBody.result) {
         if (transaction.isError === "0" && transaction.txreceipt_status === "1") {
-          out.push(transaction);
+          const confirmed: ConfirmedTransaction<SendTransaction> = {
+            transaction: {
+              kind: "bcp/send",
+              sender: toChecksummedAddress(transaction.from),
+              recipient: toChecksummedAddress(transaction.to),
+              amount: {
+                quantity: transaction.value,
+                fractionalDigits: constants.primaryTokenFractionalDigits,
+                tokenTicker: constants.primaryTokenTicker,
+              },
+              fee: {
+                gasLimit: transaction.gas,
+                gasPrice: {
+                  quantity: transaction.gasPrice,
+                  fractionalDigits: constants.primaryTokenFractionalDigits,
+                  tokenTicker: constants.primaryTokenTicker,
+                },
+              },
+            },
+            height: Number.parseInt(transaction.blockNumber, 10),
+            confirmations: Number.parseInt(transaction.confirmations, 10),
+            transactionId: Parse.transactionId(transaction.hash),
+          };
+          out.push(confirmed);
         }
       }
     }

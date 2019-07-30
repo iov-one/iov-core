@@ -15,10 +15,16 @@
   `isUint8Array`.
 - @iov/encoding: `TransactionEncoder` now skips dictionary entries with value
   `undefined` instead of throwing an error.
+- @iov/ethereum: Fix transactions data in `EthereumConnection.liveTx`.
 - @iov/keycontrol: Add `HdPaths.iovFaucet`.
 
 Breaking changes
 
+- @iov/bcp: `ConfirmedTransaction` does not extend `SignedTransaction` anymore,
+  allowing `BlockchainConnection.searchTx`, `.listenTx` and `.liveTx` to use
+  scrapers as a data source, that do not include signatures. The new type
+  `ConfirmedAndSignedTransaction` was added for cases when all data needs to be
+  available, like in `BlockchainConnection.getTx`.
 - @iov/bns: `ElectionRule`, `Proposal` and `VersionedId` all use numeric IDs now
   to conform with `Electorate`.
 - @iov/bns: Remove support for weave 0.16.x; add support for weave 0.19.x and

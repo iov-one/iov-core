@@ -551,9 +551,6 @@ describe("BnsConnection", () => {
       // make sure we have a txid
       expect(mine.height).toBeGreaterThan(initialHeight);
       expect(mine.transactionId).toMatch(/^[0-9A-F]{64}$/);
-      expect(mine.primarySignature.nonce).toEqual(nonce);
-      expect(mine.primarySignature.signature.length).toBeTruthy();
-      expect(mine.otherSignatures.length).toEqual(0);
       const tx = mine.transaction;
       if (!isSendTransaction(tx)) {
         throw new Error("Expected send transaction");

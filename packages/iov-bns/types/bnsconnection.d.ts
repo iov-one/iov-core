@@ -1,4 +1,4 @@
-import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionId, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
+import { Account, AccountQuery, AddressQuery, Amount, AtomicSwap, AtomicSwapConnection, AtomicSwapQuery, BlockHeader, ChainId, ConfirmedAndSignedTransaction, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PostableBytes, PostTxResponse, PubkeyQuery, Token, TokenTicker, TransactionId, TransactionQuery, UnsignedTransaction } from "@iov/bcp";
 import { Stream } from "xstream";
 import { BnsTx, BnsUsernameNft, BnsUsernamesQuery, ElectionRule, Electorate, Proposal, Result, Validator } from "./types";
 export interface QueryResponse {
@@ -55,7 +55,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
      * This includes an open swap beind claimed/aborted as well as a new matching swap being offered
      */
     watchSwaps(query: AtomicSwapQuery): Stream<AtomicSwap>;
-    getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
+    getTx(id: TransactionId): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction>;
     searchTx(query: TransactionQuery): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]>;
     /**
      * A stream of all transactions that match the tags from the present moment on

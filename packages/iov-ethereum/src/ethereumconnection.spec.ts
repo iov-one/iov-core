@@ -1168,7 +1168,6 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
-            expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
               // The order of the events 0, 1, 2 does not necessarily correspond to the send
@@ -1351,7 +1350,6 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
-            expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
               const receivedIds = new Set(events.map(e => e.transactionId));
@@ -1472,7 +1470,6 @@ describe("EthereumConnection", () => {
                 throw new Error("Unexpected transaction type");
               }
               expect(event.transaction.recipient).toEqual(recipientAddress);
-              expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
               if (events.length === 3) {
                 const receivedIds = new Set(events.map(e => e.transactionId));
@@ -1583,7 +1580,6 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
-            expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 3) {
               const receivedIds = new Set(events.map(e => e.transactionId));
@@ -1697,7 +1693,6 @@ describe("EthereumConnection", () => {
                 throw new Error("Unexpected transaction type");
               }
               expect(event.transaction.recipient).toEqual(recipientAddress);
-              expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
               if (events.length === 3) {
                 const receivedIds = new Set(events.map(e => e.transactionId));
@@ -1825,7 +1820,6 @@ describe("EthereumConnection", () => {
               throw new Error("Unexpected transaction type");
             }
             expect(event.transaction.recipient).toEqual(recipientAddress);
-            expect(event.primarySignature.pubkey).toEqual(sender.pubkey);
 
             if (events.length === 4) {
               const receivedIds = new Set(events.map(e => e.transactionId));

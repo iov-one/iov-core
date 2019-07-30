@@ -8,6 +8,7 @@ import {
   BlockId,
   BlockInfo,
   ChainId,
+  ConfirmedAndSignedTransaction,
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
@@ -307,7 +308,7 @@ export class RiseConnection implements BlockchainConnection {
     throw new Error("Not implemented");
   }
 
-  public async getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction>> {
+  public async getTx(id: TransactionId): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction>> {
     const searchResult = await this.searchSingleTransaction(id);
     if (searchResult === undefined) {
       throw new Error("Transaction does not exist");
@@ -418,7 +419,7 @@ export class RiseConnection implements BlockchainConnection {
 
   private async searchSingleTransaction(
     searchId: TransactionId,
-  ): Promise<ConfirmedTransaction<UnsignedTransaction> | undefined> {
+  ): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction> | undefined> {
     const result = await axios.get(`${this.baseUrl}/api/transactions/get`, {
       params: { id: searchId },
     });

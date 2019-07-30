@@ -8,6 +8,7 @@ import {
   BlockId,
   BlockInfo,
   ChainId,
+  ConfirmedAndSignedTransaction,
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
@@ -328,7 +329,7 @@ export class LiskConnection implements BlockchainConnection {
     return Stream.create(producer);
   }
 
-  public async getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction>> {
+  public async getTx(id: TransactionId): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction>> {
     const searchResults = await this.searchTransactions({ id: id }, undefined, undefined);
     if (searchResults.length === 0) {
       throw new Error("Transaction does not exist");
@@ -475,7 +476,7 @@ export class LiskConnection implements BlockchainConnection {
     searchParams: any,
     minHeight: number | undefined,
     maxHeight: number | undefined,
-  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
+  ): Promise<readonly ConfirmedAndSignedTransaction<UnsignedTransaction>[]> {
     if (minHeight !== undefined && maxHeight !== undefined && minHeight > maxHeight) {
       return [];
     }

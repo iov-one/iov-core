@@ -130,14 +130,49 @@ export interface WithCreator {
 }
 export declare type UnsignedTransaction = LightTransaction & WithCreator;
 export declare function isUnsignedTransaction(data: unknown): data is UnsignedTransaction;
-/** A signable transaction knows how to serialize itself and how to store signatures */
-export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction> {
-    /** transaction is the user request */
+/** An interface to ensure the transaction property of other types is in sync */
+export interface TransactionContainer<T extends LightTransaction> {
+    /** The transaction content */
     readonly transaction: T;
+}
+/** A signable transaction knows how to serialize itself and how to store signatures */
+export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction> extends TransactionContainer<T> {
     readonly primarySignature: FullSignature;
     /** signatures can be appended as this is signed */
     readonly otherSignatures: readonly FullSignature[];
 }
+export interface ConfirmedTransaction<T extends LightTransaction> extends TransactionContainer<T> {
+    readonly height: number;
+    /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
+    readonly confirmations: number;
+    /** a unique identifier (hash of the transaction) */
+    readonly transactionId: TransactionId;
+    /** application specific data from executing tx (result, code, tags...) */
+    readonly result?: Uint8Array;
+    /**
+     * Application specific logging output in an arbitrary text format that
+     * may change at any time.
+     */
+    readonly log?: string;
+}
+export interface FailedTransaction {
+    /** height of the block that contains the transaction */
+    readonly height: number;
+    /** a unique identifier (hash of the transaction) */
+    readonly transactionId: TransactionId;
+    /**
+     * Application specific error code
+     */
+    readonly code: number;
+    /**
+     * Application specific, human-readable, non-localized error message
+     * in an arbitrary text format that may change at any time.
+     */
+    readonly message?: string;
+}
+export declare function isConfirmedTransaction<T extends LightTransaction>(transaction: ConfirmedTransaction<T> | FailedTransaction): transaction is ConfirmedTransaction<T>;
+export declare function isFailedTransaction<T extends LightTransaction>(transaction: ConfirmedTransaction<T> | FailedTransaction): transaction is FailedTransaction;
+export declare type ConfirmedAndSignedTransaction<T extends LightTransaction> = ConfirmedTransaction<T> & SignedTransaction<T>;
 export interface SendTransaction extends LightTransaction {
     readonly kind: "bcp/send";
     readonly amount: Amount;
