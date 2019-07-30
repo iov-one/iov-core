@@ -16,14 +16,14 @@ Simplest usage, to use auto-detecting tendermint client and standard bns
 transaction parser:
 
 ```ts
-const connection = await BnsConnection.establish("wss://bns.hugnet.iov.one");
+const connection = await BnsConnection.establish("wss://rpc.lovenet.iov.one");
 ```
 
 ## Supported weave (bnsd) versions
 
 | IOV-Core version | Supported weave versions |
 | ---------------- | ------------------------ |
-| 0.16             | 0.19.x                   |
+| 0.16             | 0.19.x - 0.20.x          |
 | 0.15             | 0.16.x                   |
 | 0.14             | 0.14.x                   |
 | 0.12 – 0.13      | 0.10.x - 0.11.x          |

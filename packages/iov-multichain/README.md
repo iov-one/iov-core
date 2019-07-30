@@ -85,7 +85,7 @@ import { HdPaths } from "@iov/keycontrol";
 import { Encoding } from "@iov/encoding";
 const { fromHex, toHex } = Encoding;
 
-const chainId = "bov-hugnet" as ChainId;
+const chainId = "iov-lovenet" as ChainId;
 // this creates two different public key identities, generated from the
 // first mnemonic using two different SLIP-0010 paths
 const id1a = await profile.createIdentity(wallet1.id, chainId, HdPaths.iov(0));
@@ -140,14 +140,14 @@ can check out [bcp-demo](https://github.com/iov-one/bcp-demo), and build the
 `bov` and `tendermint` binaries, construct your genesis file and run the client
 against your one-node "dev net"...
 
-But, if you just want to see how the client works, let's run against iov's
-testnet and use the faucet to get some tokens. As of February 27, 2019, the
-current testnet is located at https://bov.hugnet.iov.one/.
+But, if you just want to see how the client works, let's run against IOV's
+testnet and use the faucet to get some tokens. As of July 29, 2019, the current
+testnet is located at https://rpc.lovenet.iov.one/.
 
 To connect, you need to know the address of the rpc server (above). It is also
 helpful to know the `chainId` of the chain. You can find that quite easily by
-looking at the [genesis file](https://bov.hugnet.iov.one/genesis) under
-`.result.genesis.chain_id`. In our case this is `bov-hugnet`.
+looking at the [genesis file](https://rpc.lovenet.iov.one/genesis) under
+`.result.genesis.chain_id`. In our case this is `iov-lovenet`.
 
 ### Executing the commands
 
@@ -170,7 +170,7 @@ Now, connect to the network:
 import { bnsConnector, MultiChainSigner } from "@iov/multichain";
 
 const signer = new MultiChainSigner(profile);
-await signer.addChain(bnsConnector("wss://bov.hugnet.iov.one/"));
+await signer.addChain(bnsConnector("wss://rpc.lovenet.iov.one/"));
 
 console.log(signer.chainIds()[0]); // is this what you got yourself?
 ```
@@ -201,7 +201,7 @@ If you are running the testnet faucet, just ask for some free money.
 import { TokenTicker } from "@iov/bcp";
 import { IovFaucet } from "@iov/faucets";
 
-const faucet = new IovFaucet("https://bov-faucet.hugnet.iov.one/");
+const faucet = new IovFaucet("https://bns-faucet.lovenet.iov.one/");
 await faucet.credit(addr, "ALT" as TokenTicker);
 ```
 

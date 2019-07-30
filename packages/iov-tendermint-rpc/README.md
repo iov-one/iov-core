@@ -16,7 +16,7 @@ automatically, and call:
 ```ts
 import { Client } from "@iov/tendermint-rpc";
 
-const client = await Client.connect("wss://bns.hugnet.iov.one");
+const client = await Client.connect("wss://rpc.lovenet.iov.one");
 
 const genesis = await client.genesis();
 const status = await client.status();

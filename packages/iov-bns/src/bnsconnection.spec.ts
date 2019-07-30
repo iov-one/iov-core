@@ -602,8 +602,10 @@ describe("BnsConnection", () => {
 
       await connection
         .postTx(bnsCodec.bytesToPost(signed))
-        .then(() => fail("promise must be rejected"))
-        .catch(err => expect(err).toMatch(/memo too long/i));
+        .then(
+          () => fail("promise must be rejected"),
+          error => expect(error).toMatch(/field \\"Memo\\": too long/i),
+        );
 
       connection.disconnect();
     });
