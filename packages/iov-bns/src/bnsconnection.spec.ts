@@ -106,6 +106,7 @@ function serializeBnsSwapId(id: SwapId): string {
   return toHex(id.data);
 }
 
+const bash = "BASH" as TokenTicker;
 const cash = "CASH" as TokenTicker;
 const blockTime = 1000;
 
@@ -138,6 +139,13 @@ describe("BnsConnection", () => {
   // This account has money in the genesis file (see scripts/bnsd/README.md).
   const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
   const faucetPath = HdPaths.iovFaucet();
+  // Dev admin
+  // path: m/44'/234'/0'
+  // pubkey: 418f88ff4876d33a3d6e2a17d0fe0e78dc3cb5e4b42c6c156ed1b8bfce5d46d1
+  // IOV address: tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea
+  // Same mnemonic as faucet.
+  // This account has money in the genesis file (see scripts/bnsd/README.md).
+  const adminPath = HdPaths.iov(0);
 
   const bnsdTendermintUrl = "ws://localhost:23456";
   const bnsdTendermintHttpUrl = "http://localhost:23456";
@@ -148,11 +156,13 @@ describe("BnsConnection", () => {
     readonly profile: UserProfile;
     readonly walletId: WalletId;
     readonly faucet: Identity;
+    readonly admin: Identity;
   }> {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
     const faucet = await profile.createIdentity(wallet.id, chainId, faucetPath);
-    return { profile: profile, walletId: wallet.id, faucet: faucet };
+    const admin = await profile.createIdentity(wallet.id, chainId, adminPath);
+    return { profile: profile, walletId: wallet.id, faucet: faucet, admin: admin };
   }
 
   async function ensureNonceNonZero(
@@ -288,9 +298,13 @@ describe("BnsConnection", () => {
         const account = responseFromAddress!;
         expect(account.address).toEqual(faucetAddress);
         expect(account.pubkey).toEqual(faucet.pubkey);
-        expect(account.balance.length).toEqual(1);
-        expect(account.balance[0].tokenTicker).toEqual(cash);
-        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+        expect(account.balance.length).toEqual(2);
+        const bashAccount = account.balance.find(({ tokenTicker }) => tokenTicker === bash);
+        expect(bashAccount).toBeDefined();
+        expect(Number.parseInt(bashAccount!.quantity, 10)).toBeGreaterThan(990000_000000000);
+        const cashAccount = account.balance.find(({ tokenTicker }) => tokenTicker === cash);
+        expect(cashAccount).toBeDefined();
+        expect(Number.parseInt(cashAccount!.quantity, 10)).toBeGreaterThan(990000_000000000);
       }
 
       // can get the faucet by publicKey, same result
@@ -300,9 +314,13 @@ describe("BnsConnection", () => {
         const account = responseFromPubkey!;
         expect(account.address).toEqual(faucetAddress);
         expect(account.pubkey).toEqual(faucet.pubkey);
-        expect(account.balance.length).toEqual(1);
-        expect(account.balance[0].tokenTicker).toEqual(cash);
-        expect(Number.parseInt(account.balance[0].quantity, 10)).toBeGreaterThan(1000000_000000000);
+        expect(account.balance.length).toEqual(2);
+        const bashAccount = account.balance.find(({ tokenTicker }) => tokenTicker === bash);
+        expect(bashAccount).toBeDefined();
+        expect(Number.parseInt(bashAccount!.quantity, 10)).toBeGreaterThan(990000_000000000);
+        const cashAccount = account.balance.find(({ tokenTicker }) => tokenTicker === cash);
+        expect(cashAccount).toBeDefined();
+        expect(Number.parseInt(cashAccount!.quantity, 10)).toBeGreaterThan(990000_000000000);
       }
 
       connection.disconnect();
@@ -1216,7 +1234,7 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
 
-      const { profile, faucet: author } = await userProfileWithFaucet(chainId);
+      const { profile, admin: author } = await userProfileWithFaucet(chainId);
       const authorAddress = identityToAddress(author);
 
       const someElectionRule = (await connection.getElectionRules()).find(
@@ -1972,7 +1990,7 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
 
-      const { profile, faucet: author } = await userProfileWithFaucet(chainId);
+      const { profile, admin: author } = await userProfileWithFaucet(chainId);
       const authorAddress = identityToAddress(author);
 
       const someElectionRule = (await connection.getElectionRules()).find(() => true);
@@ -2155,8 +2173,8 @@ describe("BnsConnection", () => {
     // make sure there are original values sent on the wire
     expect(rcptAcct.value()).toBeUndefined();
     expect(faucetAcct.value()).toBeDefined();
-    expect(faucetAcct.value()!.balance.length).toEqual(1);
-    const faucetStartBalance = faucetAcct.value()!.balance[0];
+    expect(faucetAcct.value()!.balance.length).toEqual(2);
+    const faucetStartBalance = faucetAcct.value()!.balance.find(({ tokenTicker }) => tokenTicker === cash)!;
 
     // send some cash
     const post = await sendCash(connection, profile, faucet, recipientAddr);
@@ -2168,12 +2186,14 @@ describe("BnsConnection", () => {
     // rcptAcct should now have a value
     expect(rcptAcct.value()).toBeDefined();
     expect(rcptAcct.value()!.balance.length).toEqual(1);
-    expect(rcptAcct.value()!.balance[0].quantity).toEqual("68000000000");
+    expect(rcptAcct.value()!.balance.find(({ tokenTicker }) => tokenTicker === cash)!.quantity).toEqual(
+      "68000000000",
+    );
 
     // facuetAcct should have gone down a bit
     expect(faucetAcct.value()).toBeDefined();
-    expect(faucetAcct.value()!.balance.length).toEqual(1);
-    const faucetEndBalance = faucetAcct.value()!.balance[0];
+    expect(faucetAcct.value()!.balance.length).toEqual(2);
+    const faucetEndBalance = faucetAcct.value()!.balance.find(({ tokenTicker }) => tokenTicker === cash)!;
     expect(faucetEndBalance).not.toEqual(faucetStartBalance);
     expect(faucetEndBalance.quantity).toEqual(
       Long.fromString(faucetStartBalance.quantity)
