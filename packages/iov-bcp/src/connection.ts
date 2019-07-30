@@ -8,6 +8,7 @@ import {
   Address,
   Amount,
   ChainId,
+  ConfirmedAndSignedTransaction,
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
@@ -221,7 +222,7 @@ export interface BlockchainConnection {
   // transactions
   readonly getTx: (
     id: TransactionId,
-  ) => Promise<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
+  ) => Promise<(ConfirmedAndSignedTransaction<UnsignedTransaction>) | FailedTransaction>;
   readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
   readonly searchTx: (
     query: TransactionQuery,

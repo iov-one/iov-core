@@ -216,7 +216,7 @@ export function isUnsignedTransaction(data: unknown): data is UnsignedTransactio
 
 /** A signable transaction knows how to serialize itself and how to store signatures */
 export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction> {
-  /** transaction is the user request */
+  /** The transaction content. Keep this compatible to the ConfirmedTransaction interface */
   readonly transaction: T;
 
   readonly primarySignature: FullSignature;
@@ -225,7 +225,10 @@ export interface SignedTransaction<T extends LightTransaction = UnsignedTransact
   readonly otherSignatures: readonly FullSignature[];
 }
 
-export interface ConfirmedTransaction<T extends LightTransaction> extends SignedTransaction<T> {
+export interface ConfirmedTransaction<T extends LightTransaction> {
+  /** The transaction content. Keep this compatible to the SignedTransaction interface */
+  readonly transaction: T;
+
   readonly height: number; // the block it was written to
   /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
   readonly confirmations: number;
@@ -268,6 +271,9 @@ export function isFailedTransaction<T extends LightTransaction>(
 ): transaction is FailedTransaction {
   return !isConfirmedTransaction(transaction);
 }
+
+export type ConfirmedAndSignedTransaction<T extends LightTransaction> = ConfirmedTransaction<T> &
+  SignedTransaction<T>;
 
 export interface SendTransaction extends LightTransaction {
   readonly kind: "bcp/send";

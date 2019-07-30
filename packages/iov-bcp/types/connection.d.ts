@@ -3,7 +3,7 @@ import { ReadonlyDate } from "readonly-date";
 import { As } from "type-tagger";
 import { Stream } from "xstream";
 import { PostableBytes } from "./codec";
-import { Address, Amount, ChainId, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PubkeyBundle, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
+import { Address, Amount, ChainId, ConfirmedAndSignedTransaction, ConfirmedTransaction, FailedTransaction, Fee, LightTransaction, Nonce, PubkeyBundle, TokenTicker, TransactionId, UnsignedTransaction } from "./transactions";
 export interface Account {
     readonly address: Address;
     /**
@@ -165,7 +165,7 @@ export interface BlockchainConnection {
     readonly getNonces: (query: AddressQuery | PubkeyQuery, count: number) => Promise<readonly Nonce[]>;
     readonly getBlockHeader: (height: number) => Promise<BlockHeader>;
     readonly watchBlockHeaders: () => Stream<BlockHeader>;
-    readonly getTx: (id: TransactionId) => Promise<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
+    readonly getTx: (id: TransactionId) => Promise<(ConfirmedAndSignedTransaction<UnsignedTransaction>) | FailedTransaction>;
     readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
     readonly searchTx: (query: TransactionQuery) => Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]>;
     /**

@@ -40,6 +40,7 @@ export {
   FailedTransaction,
   isConfirmedTransaction,
   isFailedTransaction,
+  ConfirmedAndSignedTransaction,
   SendTransaction,
   SwapTimeout,
   BlockHeightTimeout,

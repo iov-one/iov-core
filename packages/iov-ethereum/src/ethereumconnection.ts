@@ -11,6 +11,7 @@ import {
   BlockHeader,
   BlockInfo,
   ChainId,
+  ConfirmedAndSignedTransaction,
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
@@ -30,6 +31,7 @@ import {
   PostTxResponse,
   Preimage,
   PubkeyQuery,
+  SendTransaction,
   SwapData,
   SwapId,
   SwapIdBytes,
@@ -680,7 +682,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     return Stream.create(producer);
   }
 
-  public async getTx(id: TransactionId): Promise<ConfirmedTransaction<UnsignedTransaction>> {
+  public async getTx(id: TransactionId): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction>> {
     const searchResults = await this.searchTransactionsById(id);
     if (searchResults.length === 0) {
       throw new Error("Transaction does not exist");
@@ -962,7 +964,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
   private async searchTransactionsById(
     id: TransactionId,
-  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
+  ): Promise<readonly ConfirmedAndSignedTransaction<UnsignedTransaction>[]> {
     const transactionsResponse = await this.rpcClient.run({
       jsonrpc: "2.0",
       method: "eth_getTransactionByHash",

@@ -788,8 +788,7 @@ describe("RiseConnection", () => {
               expect(event.transaction.recipient).toEqual(recipientAddress);
 
               // correct order
-              expect(events[0].primarySignature.nonce).toEqual(nonceA);
-              expect(events[1].primarySignature.nonce).toEqual(nonceB);
+              expect(events[0].transactionId).toEqual(postResultA.transactionId);
 
               // in different blocks
               expect(events[1].height).toBeGreaterThan(events[0].height);

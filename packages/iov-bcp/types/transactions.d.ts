@@ -132,13 +132,15 @@ export declare type UnsignedTransaction = LightTransaction & WithCreator;
 export declare function isUnsignedTransaction(data: unknown): data is UnsignedTransaction;
 /** A signable transaction knows how to serialize itself and how to store signatures */
 export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction> {
-    /** transaction is the user request */
+    /** The transaction content. Keep this compatible to the ConfirmedTransaction interface */
     readonly transaction: T;
     readonly primarySignature: FullSignature;
     /** signatures can be appended as this is signed */
     readonly otherSignatures: readonly FullSignature[];
 }
-export interface ConfirmedTransaction<T extends LightTransaction> extends SignedTransaction<T> {
+export interface ConfirmedTransaction<T extends LightTransaction> {
+    /** The transaction content. Keep this compatible to the SignedTransaction interface */
+    readonly transaction: T;
     readonly height: number;
     /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
     readonly confirmations: number;
@@ -169,6 +171,7 @@ export interface FailedTransaction {
 }
 export declare function isConfirmedTransaction<T extends LightTransaction>(transaction: ConfirmedTransaction<T> | FailedTransaction): transaction is ConfirmedTransaction<T>;
 export declare function isFailedTransaction<T extends LightTransaction>(transaction: ConfirmedTransaction<T> | FailedTransaction): transaction is FailedTransaction;
+export declare type ConfirmedAndSignedTransaction<T extends LightTransaction> = ConfirmedTransaction<T> & SignedTransaction<T>;
 export interface SendTransaction extends LightTransaction {
     readonly kind: "bcp/send";
     readonly amount: Amount;

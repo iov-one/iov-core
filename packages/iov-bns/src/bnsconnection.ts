@@ -14,6 +14,7 @@ import {
   BlockInfoFailed,
   BlockInfoSucceeded,
   ChainId,
+  ConfirmedAndSignedTransaction,
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
@@ -450,12 +451,12 @@ export class BnsConnection implements AtomicSwapConnection {
    */
   public async getSwaps(query: AtomicSwapQuery): Promise<readonly AtomicSwap[]> {
     // we need to combine them all to see all transactions that affect the query
-    const setTxs: readonly ConfirmedTransaction<UnsignedTransaction>[] = (await this.searchTxUnsigned({
-      tags: [bnsSwapQueryTag(query, true)],
-    })).filter(isConfirmedTransaction);
-    const delTxs: readonly ConfirmedTransaction<UnsignedTransaction>[] = (await this.searchTxUnsigned({
-      tags: [bnsSwapQueryTag(query, false)],
-    })).filter(isConfirmedTransaction);
+    const setTxs = (await this.searchTxUnsigned({ tags: [bnsSwapQueryTag(query, true)] }))
+      .map((tx): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => tx)
+      .filter(isConfirmedTransaction);
+    const delTxs = (await this.searchTxUnsigned({ tags: [bnsSwapQueryTag(query, false)] }))
+      .map((tx): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => tx)
+      .filter(isConfirmedTransaction);
 
     const offers: readonly OpenSwap[] = setTxs
       .filter(isConfirmedWithSwapOfferTransaction)
@@ -510,7 +511,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public async getTx(
     id: TransactionId,
-  ): Promise<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
+  ): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction> {
     const searchResults = await this.searchTxUnsigned({ id: id });
     if (searchResults.length === 0) {
       throw new Error("Transaction does not exist");
@@ -764,14 +765,16 @@ export class BnsConnection implements AtomicSwapConnection {
    */
   private async searchTxUnsigned(
     query: TransactionQuery,
-  ): Promise<readonly (ConfirmedTransaction<UnsignedTransaction> | FailedTransaction)[]> {
+  ): Promise<readonly (ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction)[]> {
     // this will paginate over all transactions, even if multiple pages.
     // FIXME: consider making a streaming interface here, but that will break clients
     const res = await this.tmClient.txSearchAll({ query: buildQueryString(query) });
     const chainId = await this.chainId();
     const currentHeight = await this.height();
 
-    return res.txs.map((txResponse): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => {
+    return res.txs.map((txResponse):
+      | ConfirmedAndSignedTransaction<UnsignedTransaction>
+      | FailedTransaction => {
       const { tx, hash, height, result } = txResponse;
       const transactionId = Encoding.toHex(hash).toUpperCase() as TransactionId;
 
@@ -838,7 +841,10 @@ export class BnsConnection implements AtomicSwapConnection {
   private liveTxUnsigned(
     query: TransactionQuery,
   ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
-    const historyStream = fromListPromise(this.searchTxUnsigned(query));
+    const pendingSearchResults = this.searchTxUnsigned(query).then(results =>
+      results.map((tx): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => tx),
+    );
+    const historyStream = fromListPromise(pendingSearchResults);
     const updatesStream = this.listenTxUnsigned(query);
     const combinedStream = concat(historyStream, updatesStream);
     const deduplicatedStream = combinedStream.compose(dropDuplicates(ct => ct.transactionId));
