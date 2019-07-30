@@ -55,7 +55,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
 
 import { Abi, SwapContractEvent } from "./abi";
-import { pubkeyToAddress } from "./address";
+import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20TokensMap } from "./erc20";
 import { Erc20Reader } from "./erc20reader";
@@ -1064,7 +1064,30 @@ export class EthereumConnection implements AtomicSwapConnection {
     if (responseBody.result !== null) {
       for (const transaction of responseBody.result) {
         if (transaction.isError === "0" && transaction.txreceipt_status === "1") {
-          out.push(transaction);
+          const confirmed: ConfirmedTransaction<SendTransaction> = {
+            transaction: {
+              kind: "bcp/send",
+              sender: toChecksummedAddress(transaction.from),
+              recipient: toChecksummedAddress(transaction.to),
+              amount: {
+                quantity: transaction.value,
+                fractionalDigits: constants.primaryTokenFractionalDigits,
+                tokenTicker: constants.primaryTokenTicker,
+              },
+              fee: {
+                gasLimit: transaction.gas,
+                gasPrice: {
+                  quantity: transaction.gasPrice,
+                  fractionalDigits: constants.primaryTokenFractionalDigits,
+                  tokenTicker: constants.primaryTokenTicker,
+                },
+              },
+            },
+            height: Number.parseInt(transaction.blockNumber, 10),
+            confirmations: Number.parseInt(transaction.confirmations, 10),
+            transactionId: Parse.transactionId(transaction.hash),
+          };
+          out.push(confirmed);
         }
       }
     }

@@ -15,6 +15,7 @@
   `isUint8Array`.
 - @iov/encoding: `TransactionEncoder` now skips dictionary entries with value
   `undefined` instead of throwing an error.
+- @iov/ethereum: Fix transactions data in `EthereumConnection.liveTx`.
 - @iov/keycontrol: Add `HdPaths.iovFaucet`.
 
 Breaking changes
