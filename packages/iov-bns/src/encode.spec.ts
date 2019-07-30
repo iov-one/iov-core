@@ -612,6 +612,7 @@ describe("Encode", () => {
               messages: [
                 {
                   sendMsg: {
+                    metadata: { schema: 1 },
                     source: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
                     destination: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
                     amount: {
@@ -624,6 +625,7 @@ describe("Encode", () => {
                 },
                 {
                   sendMsg: {
+                    metadata: { schema: 1 },
                     source: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
                     destination: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
                     amount: {

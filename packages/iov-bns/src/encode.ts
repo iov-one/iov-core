@@ -329,6 +329,7 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
           }
           return {
             sendMsg: {
+              metadata: { schema: 1 },
               source: decodeBnsAddress(message.sender).data,
               destination: decodeBnsAddress(message.recipient).data,
               amount: encodeAmount(message.amount),
