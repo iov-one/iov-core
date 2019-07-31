@@ -12,6 +12,8 @@ export {
   isRegisterUsernameTx,
   UpdateTargetsOfUsernameTx,
   isUpdateTargetsOfUsernameTx,
+  TransferUsernameTx,
+  isTransferUsernameTx,
   Participant,
   CreateMultisignatureTx,
   isCreateMultisignatureTx,

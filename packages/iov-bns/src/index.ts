@@ -13,6 +13,8 @@ export {
   isRegisterUsernameTx,
   UpdateTargetsOfUsernameTx,
   isUpdateTargetsOfUsernameTx,
+  TransferUsernameTx,
+  isTransferUsernameTx,
   // Multisignature contracts
   Participant,
   CreateMultisignatureTx,
