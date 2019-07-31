@@ -3,67 +3,76 @@ import { Fraction } from "@iov/bns";
 import { ReadonlyDate } from "readonly-date";
 import { CommitteeId } from "./committees";
 export declare enum ProposalType {
-    AddCommitteeMember = 0,
-    RemoveCommitteeMember = 1,
-    AmendElectionRuleThreshold = 2,
-    AmendElectionRuleQuorum = 3,
-    AddValidator = 4,
-    RemoveValidator = 5,
-    ReleaseGuaranteeFunds = 6,
-    DistributeFunds = 7,
-    AmendProtocol = 8
+  AddCommitteeMember = 0,
+  RemoveCommitteeMember = 1,
+  AmendElectionRuleThreshold = 2,
+  AmendElectionRuleQuorum = 3,
+  AddValidator = 4,
+  RemoveValidator = 5,
+  ReleaseGuaranteeFunds = 6,
+  DistributeFunds = 7,
+  AmendProtocol = 8,
 }
 interface CommonProposalOptions {
-    readonly type: ProposalType;
-    readonly title: string;
-    readonly description: string;
-    readonly startTime: ReadonlyDate;
-    readonly electionRuleId: number;
+  readonly type: ProposalType;
+  readonly title: string;
+  readonly description: string;
+  readonly startTime: ReadonlyDate;
+  readonly electionRuleId: number;
 }
 export interface AddCommitteeMemberOptions extends CommonProposalOptions {
-    readonly type: ProposalType.AddCommitteeMember;
-    readonly committee: CommitteeId;
-    readonly address: Address;
-    readonly weight: number;
+  readonly type: ProposalType.AddCommitteeMember;
+  readonly committee: CommitteeId;
+  readonly address: Address;
+  readonly weight: number;
 }
 export interface RemoveCommitteeMemberOptions extends CommonProposalOptions {
-    readonly type: ProposalType.RemoveCommitteeMember;
-    readonly committee: CommitteeId;
-    readonly address: Address;
+  readonly type: ProposalType.RemoveCommitteeMember;
+  readonly committee: CommitteeId;
+  readonly address: Address;
 }
 export interface AmendElectionRuleThresholdOptions extends CommonProposalOptions {
-    readonly type: ProposalType.AmendElectionRuleThreshold;
-    readonly targetElectionRuleId: number;
-    readonly threshold: Fraction;
+  readonly type: ProposalType.AmendElectionRuleThreshold;
+  readonly targetElectionRuleId: number;
+  readonly threshold: Fraction;
 }
 export interface AmendElectionRuleQuorumOptions extends CommonProposalOptions {
-    readonly type: ProposalType.AmendElectionRuleQuorum;
-    readonly targetElectionRuleId: number;
-    readonly quorum: Fraction | null;
+  readonly type: ProposalType.AmendElectionRuleQuorum;
+  readonly targetElectionRuleId: number;
+  readonly quorum: Fraction | null;
 }
 export interface AddValidatorOptions extends CommonProposalOptions {
-    readonly type: ProposalType.AddValidator;
-    readonly pubkey: PubkeyBundle;
-    readonly power: number;
+  readonly type: ProposalType.AddValidator;
+  readonly pubkey: PubkeyBundle;
+  readonly power: number;
 }
 export interface RemoveValidatorOptions extends CommonProposalOptions {
-    readonly type: ProposalType.RemoveValidator;
-    readonly pubkey: PubkeyBundle;
+  readonly type: ProposalType.RemoveValidator;
+  readonly pubkey: PubkeyBundle;
 }
 export interface ReleaseGuaranteeFundsOptions extends CommonProposalOptions {
-    readonly type: ProposalType.ReleaseGuaranteeFunds;
-    readonly amount: Amount;
+  readonly type: ProposalType.ReleaseGuaranteeFunds;
+  readonly amount: Amount;
 }
 export interface DistributeFundsOptions extends CommonProposalOptions {
-    readonly type: ProposalType.DistributeFunds;
-    readonly recipients: readonly {
-        readonly address: Address;
-        readonly weight: number;
-    }[];
+  readonly type: ProposalType.DistributeFunds;
+  readonly recipients: readonly {
+    readonly address: Address;
+    readonly weight: number;
+  }[];
 }
 export interface AmendProtocolOptions extends CommonProposalOptions {
-    readonly type: ProposalType.AmendProtocol;
-    readonly text: string;
+  readonly type: ProposalType.AmendProtocol;
+  readonly text: string;
 }
-export declare type ProposalOptions = AddCommitteeMemberOptions | RemoveCommitteeMemberOptions | AmendElectionRuleThresholdOptions | AmendElectionRuleQuorumOptions | AddValidatorOptions | RemoveValidatorOptions | ReleaseGuaranteeFundsOptions | DistributeFundsOptions | AmendProtocolOptions;
+export declare type ProposalOptions =
+  | AddCommitteeMemberOptions
+  | RemoveCommitteeMemberOptions
+  | AmendElectionRuleThresholdOptions
+  | AmendElectionRuleQuorumOptions
+  | AddValidatorOptions
+  | RemoveValidatorOptions
+  | ReleaseGuaranteeFundsOptions
+  | DistributeFundsOptions
+  | AmendProtocolOptions;
 export {};

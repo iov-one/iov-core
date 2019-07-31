@@ -8,18 +8,18 @@ import { Stream } from "xstream";
  * to each JSON-RPC request. But this is how subscriptions work in Tendermint.
  */
 export interface SubscriptionEvent {
-    readonly query: string;
-    readonly data: {
-        readonly type: string;
-        readonly value: any;
-    };
+  readonly query: string;
+  readonly data: {
+    readonly type: string;
+    readonly value: any;
+  };
 }
 export interface RpcClient {
-    readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccessResponse>;
-    readonly disconnect: () => void;
+  readonly execute: (request: JsonRpcRequest) => Promise<JsonRpcSuccessResponse>;
+  readonly disconnect: () => void;
 }
 export interface RpcStreamingClient extends RpcClient {
-    readonly listen: (request: JsonRpcRequest) => Stream<SubscriptionEvent>;
+  readonly listen: (request: JsonRpcRequest) => Stream<SubscriptionEvent>;
 }
 export declare function instanceOfRpcStreamingClient(client: RpcClient): client is RpcStreamingClient;
 export declare function hasProtocol(url: string): boolean;

@@ -7,15 +7,15 @@ export declare type SearchFunction<T> = (value: T) => boolean;
  * and listen to to updates by suscribing to the .updates stream
  */
 export declare class ValueAndUpdates<T> {
-    readonly updates: MemoryStream<T>;
-    readonly value: T;
-    private readonly producer;
-    constructor(producer: DefaultValueProducer<T>);
-    /**
-     * Resolves as soon as search value is found.
-     *
-     * @param search either a value or a function that must return true when found
-     * @returns the value of the update that caused the search match
-     */
-    waitFor(search: SearchFunction<T> | T): Promise<T>;
+  readonly updates: MemoryStream<T>;
+  readonly value: T;
+  private readonly producer;
+  constructor(producer: DefaultValueProducer<T>);
+  /**
+   * Resolves as soon as search value is found.
+   *
+   * @param search either a value or a function that must return true when found
+   * @returns the value of the update that caused the search match
+   */
+  waitFor(search: SearchFunction<T> | T): Promise<T>;
 }

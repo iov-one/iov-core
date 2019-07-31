@@ -1,4 +1,10 @@
-import { JsonRpcErrorResponse, JsonRpcId, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccessResponse } from "./types";
+import {
+  JsonRpcErrorResponse,
+  JsonRpcId,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccessResponse,
+} from "./types";
 /**
  * Extracts ID field from request or response object.
  *
