@@ -2,9 +2,8 @@ import * as bech32 from "bech32";
 
 export class Bech32 {
   public static encode(prefix: string, data: Uint8Array): string {
-    const dataToWords = bech32.toWords(Buffer.from(data));
-    const encodedData = bech32.encode(prefix, dataToWords);
-    return encodedData;
+    const address = bech32.encode(prefix, bech32.toWords(data));
+    return address;
   }
 
   public static decode(address: string): { readonly prefix: string; readonly data: Uint8Array } {
