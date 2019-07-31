@@ -832,26 +832,25 @@ describe("BnsConnection", () => {
       }
 
       // Clear addresses
-      // TODO: Reactivate after https://github.com/iov-one/weave/issues/857
-      // const clearAddresses = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
-      //   kind: "bns/update_targets_of_username",
-      //   creator: identity,
-      //   username: username,
-      //   targets: [],
-      // });
-      // {
-      //   const response = await connection.postTx(
-      //     bnsCodec.bytesToPost(
-      //       await profile.signTransaction(
-      //         clearAddresses,
-      //         bnsCodec,
-      //         await connection.getNonce({ pubkey: identity.pubkey }),
-      //       ),
-      //     ),
-      //   );
-      //   const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-      //   expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-      // }
+      const clearAddresses = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
+        kind: "bns/update_targets_of_username",
+        creator: identity,
+        username: username,
+        targets: [],
+      });
+      {
+        const response = await connection.postTx(
+          bnsCodec.bytesToPost(
+            await profile.signTransaction(
+              clearAddresses,
+              bnsCodec,
+              await connection.getNonce({ pubkey: identity.pubkey }),
+            ),
+          ),
+        );
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+      }
 
       connection.disconnect();
     });
