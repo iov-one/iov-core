@@ -44,6 +44,7 @@ import {
   isRegisterUsernameTx,
   isReleaseEscrowTx,
   isReturnEscrowTx,
+  isTransferUsernameTx,
   isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
   isUpdateTargetsOfUsernameTx,
@@ -447,6 +448,21 @@ describe("Decode", () => {
         chainId: "chain2" as ChainId,
         address: "0x001100aabbccddffeeddaa8899776655" as Address,
       });
+    });
+
+    it("works for TransferUsernameTx", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        usernameTransferTokenMsg: {
+          username: "bobby",
+          newOwner: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isTransferUsernameTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.username).toEqual("bobby");
+      expect(parsed.newOwner).toEqual(defaultRecipient);
     });
 
     // Multisignature contracts

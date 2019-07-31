@@ -52,6 +52,7 @@ import {
   ReleaseEscrowTx,
   ReturnEscrowTx,
   SendAction,
+  TransferUsernameTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -532,6 +533,19 @@ function parseUpdateTargetsOfUsernameTx(
   };
 }
 
+function parseTransferUsernameTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.username.ITransferTokenMsg,
+): TransferUsernameTx & WithCreator {
+  const prefix = addressPrefix(base.creator.chainId);
+  return {
+    ...base,
+    kind: "bns/transfer_username",
+    username: ensure(msg.username, "username"),
+    newOwner: encodeBnsAddress(prefix, ensure(msg.newOwner, "newOwner")),
+  };
+}
+
 // Multisignature contracts
 
 function parseCreateMultisignatureTx(
@@ -677,6 +691,7 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.bnsd.ITx): Uns
   if (tx.usernameChangeTokenTargetsMsg) {
     return parseUpdateTargetsOfUsernameTx(base, tx.usernameChangeTokenTargetsMsg);
   }
+  if (tx.usernameTransferTokenMsg) return parseTransferUsernameTx(base, tx.usernameTransferTokenMsg);
 
   // Multisignature contracts
   if (tx.multisigCreateMsg) return parseCreateMultisignatureTx(base, tx.multisigCreateMsg);
