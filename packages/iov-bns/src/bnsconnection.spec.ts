@@ -54,7 +54,7 @@ import {
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
-  CreateTextResolution,
+  CreateTextResolutionAction,
   isCreateEscrowTx,
   isCreateMultisignatureTx,
   isRegisterUsernameTx,
@@ -1245,7 +1245,7 @@ describe("BnsConnection", () => {
 
       const title = `Hello ${Math.random()}`;
       const description = `Hello ${Math.random()}`;
-      const action: CreateTextResolution = {
+      const action: CreateTextResolutionAction = {
         kind: ActionKind.CreateTextResolution,
         resolution: `The winner is Alice ${Math.random()}`,
       };
@@ -1998,7 +1998,7 @@ describe("BnsConnection", () => {
 
       const title = `Hello ${Math.random()}`;
       const description = `Hello ${Math.random()}`;
-      const action: CreateTextResolution = {
+      const action: CreateTextResolutionAction = {
         kind: ActionKind.CreateTextResolution,
         resolution: `The winner is Alice ${Math.random()}`,
       };

@@ -51,7 +51,7 @@ import {
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
-  Send,
+  SendAction,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -364,7 +364,7 @@ function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array):
         if (!message.sendMsg) {
           throw new Error("Only send actions are currently supported in proposal batch");
         }
-        const messageWithoutMemo: Send = {
+        const messageWithoutMemo: SendAction = {
           kind: ActionKind.Send,
           sender: encodeBnsAddress(prefix, ensure(message.sendMsg.source, "source")),
           recipient: encodeBnsAddress(prefix, ensure(message.sendMsg.destination, "destination")),
