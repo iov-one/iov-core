@@ -3,13 +3,13 @@ declare module 'bech32' {
  * Takes a bech32 encoded string and returns the human readable part ("prefix") and
  * a list of character positions in the bech32 alphabet ("words").
  */
-export function decode(str: string, LIMIT?: number): { prefix: string, words: number[] };
+export function decode(str: string, limit?: number): { prefix: string, words: number[] };
 
 /**
  * Takes a human readable part ("prefix") and a list of character positions in the
  * bech32 alphabet ("words") and returns a bech32 encoded string.
  */
-export function encode(prefix: string, words: number[], LIMIT?: number): string;
+export function encode(prefix: string, words: number[], limit?: number): string;
 
 /**
  * Converts a list of character positions in the bech32 alphabet ("words")
