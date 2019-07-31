@@ -18,6 +18,7 @@
   `undefined` instead of throwing an error.
 - @iov/ethereum: Fix transactions data in `EthereumConnection.liveTx`.
 - @iov/keycontrol: Add `HdPaths.iovFaucet`.
+- @iov/multichain: Add optional error logging callback to `SigningServerCore`.
 
 Breaking changes
 

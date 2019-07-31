@@ -51,11 +51,13 @@ export declare class SigningServerCore {
   private readonly authorizeGetIdentities;
   private readonly authorizeSignAndPost;
   private readonly signedAndPostedProducer;
+  private readonly logError;
   constructor(
     profile: UserProfile,
     signer: MultiChainSigner,
     authorizeGetIdentities: GetIdentitiesAuthorization,
     authorizeSignAndPost: SignAndPostAuthorization,
+    logError?: (error: any) => void,
   );
   /**
    * Handles a identities request

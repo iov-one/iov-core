@@ -57,17 +57,20 @@ export class SigningServerCore {
   private readonly authorizeGetIdentities: GetIdentitiesAuthorization;
   private readonly authorizeSignAndPost: SignAndPostAuthorization;
   private readonly signedAndPostedProducer = new DefaultValueProducer<readonly SignedAndPosted[]>([]);
+  private readonly logError: (error: any) => void;
 
   public constructor(
     profile: UserProfile,
     signer: MultiChainSigner,
     authorizeGetIdentities: GetIdentitiesAuthorization,
     authorizeSignAndPost: SignAndPostAuthorization,
+    logError?: (error: any) => void,
   ) {
     this.signer = signer;
     this.profile = profile;
     this.authorizeGetIdentities = authorizeGetIdentities;
     this.authorizeSignAndPost = authorizeSignAndPost;
+    this.logError = logError || (() => 0);
 
     this.signedAndPosted = new ValueAndUpdates(this.signedAndPostedProducer);
   }
@@ -92,6 +95,7 @@ export class SigningServerCore {
     try {
       authorizedIdentities = await this.authorizeGetIdentities(reason, matchingIdentities, meta);
     } catch (error) {
+      this.logError(error);
       // don't expose callback error details over the server
       throw new Error("Internal server error");
     }
@@ -114,6 +118,7 @@ export class SigningServerCore {
     try {
       authorized = await this.authorizeSignAndPost(reason, transaction, meta);
     } catch (error) {
+      this.logError(error);
       // don't expose callback error details over the server
       throw new Error("Internal server error");
     }

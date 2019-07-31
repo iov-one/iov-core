@@ -226,12 +226,6 @@ describe("SigningServerCore", () => {
 
     it("handles exceptions in callback", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
-
-      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
-      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
-      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(2));
-      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(3));
 
       async function throwingCallback(_1: string, _2: readonly Identity[]): Promise<readonly Identity[]> {
         throw new Error("Something broken in here!");
@@ -244,6 +238,38 @@ describe("SigningServerCore", () => {
         .getIdentities("Login to XY service", [defaultChainId])
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/internal server error/i));
+
+      core.shutdown();
+    });
+
+    it("logs exceptions in callback", async () => {
+      const logger = { log: (_error: any) => 0 };
+      spyOn(logger, "log");
+
+      const profile = new UserProfile();
+
+      async function throwingCallback(_1: string, _2: readonly Identity[]): Promise<readonly Identity[]> {
+        throw new Error("Something broken in here!");
+      }
+
+      const signer = new MultiChainSigner(profile);
+      const core = new SigningServerCore(
+        profile,
+        signer,
+        throwingCallback,
+        defaultSignAndPostCallback,
+        logger.log,
+      );
+
+      await core
+        .getIdentities("Login to XY service", [defaultChainId])
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/internal server error/i));
+
+      expect(logger.log).toHaveBeenCalledTimes(1);
+      expect(logger.log).toHaveBeenCalledWith(
+        jasmine.objectContaining({ message: "Something broken in here!" }),
+      );
 
       core.shutdown();
     });
@@ -379,6 +405,54 @@ describe("SigningServerCore", () => {
         .signAndPost("Please sign now", send)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/internal server error/i));
+
+      core.shutdown();
+    });
+
+    it("logs exceptions in callback", async () => {
+      pendingWithoutBnsd();
+
+      const logger = { log: (_error: any) => 0 };
+      spyOn(logger, "log");
+
+      const profile = new UserProfile();
+      const signer = new MultiChainSigner(profile);
+      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const bnsChain = connection.chainId();
+
+      {
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
+        await sendTokensFromFaucet(connection, identity, minimalFee);
+      }
+
+      async function throwingCallback(_1: string, _2: UnsignedTransaction): Promise<boolean> {
+        throw new Error("Something broken in here!");
+      }
+      const core = new SigningServerCore(
+        profile,
+        signer,
+        defaultGetIdentitiesCallback,
+        throwingCallback,
+        logger.log,
+      );
+      const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
+      const send = await connection.withDefaultFee<SendTransaction & WithCreator>({
+        kind: "bcp/send",
+        creator: signingIdentity,
+        sender: bnsCodec.identityToAddress(signingIdentity),
+        amount: defaultAmount,
+        recipient: await randomBnsAddress(),
+      });
+      await core
+        .signAndPost("Please sign now", send)
+        .then(() => fail("must not resolve"))
+        .catch(error => expect(error).toMatch(/internal server error/i));
+
+      expect(logger.log).toHaveBeenCalledTimes(1);
+      expect(logger.log).toHaveBeenCalledWith(
+        jasmine.objectContaining({ message: "Something broken in here!" }),
+      );
 
       core.shutdown();
     });
