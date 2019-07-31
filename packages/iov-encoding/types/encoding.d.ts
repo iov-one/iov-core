@@ -12,10 +12,3 @@ export declare class Encoding {
     static toRfc3339(date: Date | ReadonlyDate): string;
     private static isValidUtf8;
 }
-export declare class Bech32 {
-    static encode(prefix: string, data: Uint8Array): string;
-    static decode(address: string): {
-        readonly prefix: string;
-        readonly data: Uint8Array;
-    };
-}
