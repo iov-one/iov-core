@@ -69,6 +69,7 @@ import {
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
+  TransferUsernameTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -832,26 +833,87 @@ describe("BnsConnection", () => {
       }
 
       // Clear addresses
-      // TODO: Reactivate after https://github.com/iov-one/weave/issues/857
-      // const clearAddresses = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
-      //   kind: "bns/update_targets_of_username",
-      //   creator: identity,
-      //   username: username,
-      //   targets: [],
-      // });
-      // {
-      //   const response = await connection.postTx(
-      //     bnsCodec.bytesToPost(
-      //       await profile.signTransaction(
-      //         clearAddresses,
-      //         bnsCodec,
-      //         await connection.getNonce({ pubkey: identity.pubkey }),
-      //       ),
-      //     ),
-      //   );
-      //   const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-      //   expect(blockInfo.state).toEqual(TransactionState.Succeeded);
-      // }
+      const clearAddresses = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
+        kind: "bns/update_targets_of_username",
+        creator: identity,
+        username: username,
+        targets: [],
+      });
+      {
+        const response = await connection.postTx(
+          bnsCodec.bytesToPost(
+            await profile.signTransaction(
+              clearAddresses,
+              bnsCodec,
+              await connection.getNonce({ pubkey: identity.pubkey }),
+            ),
+          ),
+        );
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+      }
+
+      connection.disconnect();
+    });
+
+    it("can transfer a username", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+      // we need funds to pay the fees
+      const myAddress = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, myAddress, registerAmount);
+
+      const targets1 = [{ chainId: "foobar" as ChainId, address: myAddress }] as const;
+
+      // Create and send registration
+      const username = `testuser_${Math.random()}*iov`;
+      const usernameRegistration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
+        kind: "bns/register_username",
+        creator: identity,
+        username: username,
+        targets: targets1,
+      });
+      {
+        const response = await connection.postTx(
+          bnsCodec.bytesToPost(
+            await profile.signTransaction(
+              usernameRegistration,
+              bnsCodec,
+              await connection.getNonce({ pubkey: identity.pubkey }),
+            ),
+          ),
+        );
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+      }
+
+      const transferUsername = await connection.withDefaultFee<TransferUsernameTx & WithCreator>({
+        kind: "bns/transfer_username",
+        creator: identity,
+        username: username,
+        newOwner: unusedAddress,
+      });
+      {
+        const response = await connection.postTx(
+          bnsCodec.bytesToPost(
+            await profile.signTransaction(
+              transferUsername,
+              bnsCodec,
+              await connection.getNonce({ pubkey: identity.pubkey }),
+            ),
+          ),
+        );
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+      }
+
+      const usernameAfterTransfer = (await connection.getUsernames({ username: username }))[0];
+      expect(usernameAfterTransfer.owner).toEqual(unusedAddress);
 
       connection.disconnect();
     });

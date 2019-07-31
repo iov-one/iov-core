@@ -236,6 +236,13 @@ export interface UpdateTargetsOfUsernameTx extends LightTransaction {
   readonly targets: readonly ChainAddressPair[];
 }
 export declare function isUpdateTargetsOfUsernameTx(tx: LightTransaction): tx is UpdateTargetsOfUsernameTx;
+export interface TransferUsernameTx extends LightTransaction {
+  readonly kind: "bns/transfer_username";
+  /** the username to be transferred, must exist on chain */
+  readonly username: string;
+  readonly newOwner: Address;
+}
+export declare function isTransferUsernameTx(tx: LightTransaction): tx is TransferUsernameTx;
 export interface Participant {
   readonly address: Address;
   readonly weight: number;
@@ -315,6 +322,7 @@ export declare type BnsTx =
   | SwapAbortTransaction
   | RegisterUsernameTx
   | UpdateTargetsOfUsernameTx
+  | TransferUsernameTx
   | CreateMultisignatureTx
   | UpdateMultisignatureTx
   | CreateEscrowTx

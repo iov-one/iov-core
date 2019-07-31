@@ -36,6 +36,7 @@ import {
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
+  TransferUsernameTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -213,6 +214,16 @@ function buildUpdateTargetsOfUsernameTx(tx: UpdateTargetsOfUsernameTx): codecImp
       metadata: { schema: 1 },
       username: tx.username,
       newTargets: tx.targets.map(encodeChainAddressPair),
+    },
+  };
+}
+
+function buildTransferUsernameTx(tx: TransferUsernameTx): codecImpl.bnsd.ITx {
+  return {
+    usernameTransferTokenMsg: {
+      metadata: { schema: 1 },
+      username: tx.username,
+      newOwner: decodeBnsAddress(tx.newOwner).data,
     },
   };
 }
@@ -436,6 +447,8 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
       return buildRegisterUsernameTx(tx);
     case "bns/update_targets_of_username":
       return buildUpdateTargetsOfUsernameTx(tx);
+    case "bns/transfer_username":
+      return buildTransferUsernameTx(tx);
 
     // BNS: Multisignature contracts
     case "bns/create_multisignature_contract":

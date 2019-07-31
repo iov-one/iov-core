@@ -318,6 +318,17 @@ export function isUpdateTargetsOfUsernameTx(tx: LightTransaction): tx is UpdateT
   return tx.kind === "bns/update_targets_of_username";
 }
 
+export interface TransferUsernameTx extends LightTransaction {
+  readonly kind: "bns/transfer_username";
+  /** the username to be transferred, must exist on chain */
+  readonly username: string;
+  readonly newOwner: Address;
+}
+
+export function isTransferUsernameTx(tx: LightTransaction): tx is TransferUsernameTx {
+  return tx.kind === "bns/transfer_username";
+}
+
 // Transactions: Multisignature contracts
 
 export interface Participant {
@@ -441,6 +452,7 @@ export type BnsTx =
   // BNS: Usernames
   | RegisterUsernameTx
   | UpdateTargetsOfUsernameTx
+  | TransferUsernameTx
   // BNS: Multisignature contracts
   | CreateMultisignatureTx
   | UpdateMultisignatureTx

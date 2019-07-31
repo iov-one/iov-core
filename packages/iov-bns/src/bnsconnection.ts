@@ -137,6 +137,8 @@ function mapKindToBnsPath(transaction: BnsTx): string | undefined {
       return "username/register_token";
     case "bns/update_targets_of_username":
       return "username/change_token_targets";
+    case "bns/transfer_username":
+      return "username/transfer_token";
     // Escrows
     case "bns/create_escrow":
       return "escrow/create";
