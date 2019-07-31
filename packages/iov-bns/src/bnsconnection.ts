@@ -146,6 +146,16 @@ function mapKindToBnsPath(transaction: BnsTx): string | undefined {
       return "escrow/return";
     case "bns/update_escrow_parties":
       return "escrow/update";
+    // Multisignature contracts
+    case "bns/create_multisignature_contract":
+      return "multisig/create";
+    case "bns/update_multisignature_contract":
+      return "multisig/update";
+    // Governance
+    case "bns/create_proposal":
+      return "gov/create_proposal";
+    case "bns/vote":
+      return "gov/vote";
     default:
       return undefined;
   }
