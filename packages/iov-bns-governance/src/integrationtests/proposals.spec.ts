@@ -1,7 +1,9 @@
 import {
+  Account,
   Address,
   isBlockInfoPending,
   isBlockInfoSucceeded,
+  TokenTicker,
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
@@ -9,12 +11,15 @@ import {
   ActionKind,
   bnsCodec,
   BnsConnection,
+  ExecuteProposalBatchAction,
   ProposalExecutorResult,
   ProposalStatus,
+  SendAction,
   VoteOption,
 } from "@iov/bns";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import BN from "bn.js";
 import { ReadonlyDate } from "readonly-date";
 
 import { CommitteeId } from "../committees";
@@ -29,8 +34,9 @@ import { ProposalOptions, ProposalType } from "../proposals";
 const adminMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 const adminPath = HdPaths.iov(0);
 const bnsdUrl = "ws://localhost:23456";
-const guaranteeFundEscrowId = Encoding.fromHex("88008800");
-const rewardFundAddress = "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address;
+const guaranteeFundEscrowId = Encoding.fromHex("0000000000000001");
+const guaranteeFundAddress = "tiov170qvwm0tscn5mza3vmaerkzqllvwc3kycrz6kr" as Address;
+const rewardFundAddress = "tiov1k0dp2fmdunscuwjjusqtk6mttx5ufk3z0mmp0z" as Address;
 
 function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {
@@ -73,6 +79,11 @@ async function signAndPost(
   if (!isBlockInfoSucceeded(blockInfo)) {
     throw new Error("Transaction failed");
   }
+}
+
+function getCashQuantity(account: Account): BN {
+  const cashBalance = account.balance.find(({ tokenTicker }) => tokenTicker === "CASH");
+  return cashBalance ? new BN(cashBalance.quantity) : new BN(0);
 }
 
 describe("Proposals", () => {
@@ -462,7 +473,162 @@ describe("Proposals", () => {
     connection.disconnect();
   }, 60_000);
 
-  it("works for releasing and distributing guarantee funds");
+  it("works for releasing and distributing guarantee funds", async () => {
+    pendingWithoutBnsd();
+    const governorOptions = await getGovernorOptions();
+    const { address, connection, profile } = governorOptions;
+    const governor = new Governor(governorOptions);
+    const numProposalsBefore = (await governor.getProposals()).length;
+    const guaranteeFundBeforeRelease = await connection.getAccount({ address: guaranteeFundAddress });
+    const guaranteeFundQuantityBeforeRelease = getCashQuantity(guaranteeFundBeforeRelease!);
+
+    const recipient1 = "tiov1xwvnaxahzcszkvmk362m7vndjkzumv8ufmzy3m" as Address;
+    const recipient2 = "tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp" as Address;
+    const recipientBeforeRelease1 = await connection.getAccount({ address: recipient1 });
+    const recipientBeforeRelease2 = await connection.getAccount({ address: recipient2 });
+    const recipientQuantityBeforeRelease1 = getCashQuantity(recipientBeforeRelease1!);
+    const recipientQuantityBeforeRelease2 = getCashQuantity(recipientBeforeRelease2!);
+
+    const electionRuleId = 2;
+    const amount = {
+      quantity: "2000000002",
+      fractionalDigits: 9,
+      tokenTicker: "CASH" as TokenTicker,
+    };
+
+    // Release funds
+
+    const startTime1 = new ReadonlyDate(Date.now() + 1_000);
+    const proposal1Options: ProposalOptions = {
+      type: ProposalType.ReleaseGuaranteeFunds,
+      title: "Release guarantee funds",
+      description: "Release guarantee funds in more detail",
+      startTime: startTime1,
+      electionRuleId: electionRuleId,
+      amount: amount,
+    };
+    const createProposal1Tx = await governor.buildCreateProposalTx(proposal1Options);
+    await signAndPost(createProposal1Tx, connection, profile);
+
+    const proposalsAfterCreate1 = await governor.getProposals();
+    expect(proposalsAfterCreate1.length).toEqual(numProposalsBefore + 1);
+    const proposal1Pre = proposalsAfterCreate1[proposalsAfterCreate1.length - 1];
+    expect(proposal1Pre.title).toEqual("Release guarantee funds");
+    expect(proposal1Pre.description).toEqual("Release guarantee funds in more detail");
+    expect(new ReadonlyDate(proposal1Pre.votingStartTime * 1000).toDateString()).toEqual(
+      startTime1.toDateString(),
+    );
+    expect(proposal1Pre.electionRule.id).toEqual(electionRuleId);
+    expect(proposal1Pre.author).toEqual(address);
+    expect(proposal1Pre.action).toEqual({
+      kind: ActionKind.ReleaseEscrow,
+      escrowId: guaranteeFundEscrowId,
+      amount: amount,
+    });
+    expect(proposal1Pre.status).toEqual(ProposalStatus.Submitted);
+
+    await sleep(7000);
+
+    const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
+    await signAndPost(vote1Tx, connection, profile);
+
+    await sleep(15000);
+
+    const proposalsAfterVote1 = await governor.getProposals();
+    expect(proposalsAfterVote1.length).toEqual(numProposalsBefore + 1);
+    const proposal1Post = proposalsAfterVote1[proposalsAfterVote1.length - 1];
+    expect(proposal1Post.id).toEqual(proposal1Pre.id);
+    expect(proposal1Post.title).toEqual("Release guarantee funds");
+    expect(proposal1Post.status).toEqual(ProposalStatus.Closed);
+    expect(proposal1Post.executorResult).toEqual(ProposalExecutorResult.Succeeded);
+
+    const guaranteeFundAfterRelease = await connection.getAccount({ address: guaranteeFundAddress });
+    const guaranteeFundQuantityAfterRelease = getCashQuantity(guaranteeFundAfterRelease!);
+    expect(guaranteeFundQuantityAfterRelease).toEqual(
+      guaranteeFundQuantityBeforeRelease.sub(new BN(amount.quantity)),
+    );
+
+    // Distribute funds
+
+    const startTime2 = new ReadonlyDate(Date.now() + 1_000);
+    const proposal2Options: ProposalOptions = {
+      type: ProposalType.DistributeFunds,
+      title: "Distribute funds",
+      description: "Distribute funds in more detail",
+      startTime: startTime2,
+      electionRuleId: electionRuleId,
+      recipients: [
+        {
+          address: recipient1,
+          weight: 3,
+        },
+        {
+          address: recipient2,
+          weight: 5,
+        },
+      ],
+    };
+    const createProposal2Tx = await governor.buildCreateProposalTx(proposal2Options);
+    await signAndPost(createProposal2Tx, connection, profile);
+
+    const proposalsAfterCreate2 = await governor.getProposals();
+    expect(proposalsAfterCreate2.length).toEqual(numProposalsBefore + 2);
+    const proposal2Pre = proposalsAfterCreate2[proposalsAfterCreate2.length - 1];
+    expect(proposal2Pre.title).toEqual("Distribute funds");
+    expect(proposal2Pre.description).toEqual("Distribute funds in more detail");
+    expect(new ReadonlyDate(proposal2Pre.votingStartTime * 1000).toDateString()).toEqual(
+      startTime2.toDateString(),
+    );
+    expect(proposal2Pre.electionRule.id).toEqual(electionRuleId);
+    expect(proposal2Pre.author).toEqual(address);
+    expect(proposal2Pre.action.kind).toEqual(ActionKind.ExecuteProposalBatch);
+    expect((proposal2Pre.action as ExecuteProposalBatchAction).messages.length).toEqual(2);
+    expect((proposal2Pre.action as ExecuteProposalBatchAction).messages[0].kind).toEqual(ActionKind.Send);
+    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[0] as SendAction).sender).toEqual(
+      rewardFundAddress,
+    );
+    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[0] as SendAction).recipient).toEqual(
+      recipient1,
+    );
+    expect((proposal2Pre.action as ExecuteProposalBatchAction).messages[1].kind).toEqual(ActionKind.Send);
+    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[1] as SendAction).sender).toEqual(
+      rewardFundAddress,
+    );
+    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[1] as SendAction).recipient).toEqual(
+      recipient2,
+    );
+    expect(proposal2Pre.status).toEqual(ProposalStatus.Submitted);
+
+    await sleep(7000);
+
+    const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
+    await signAndPost(vote2Tx, connection, profile);
+
+    await sleep(15000);
+
+    const proposalsAfterVote2 = await governor.getProposals();
+    expect(proposalsAfterVote2.length).toEqual(numProposalsBefore + 2);
+    const proposal2Post = proposalsAfterVote2[proposalsAfterVote2.length - 1];
+    expect(proposal2Post.id).toEqual(proposal2Pre.id);
+    expect(proposal2Post.title).toEqual("Distribute funds");
+    expect(proposal2Post.status).toEqual(ProposalStatus.Closed);
+    expect(proposal2Post.executorResult).toEqual(ProposalExecutorResult.Succeeded);
+
+    const recipientAfterRelease1 = await connection.getAccount({ address: recipient1 });
+    const recipientAfterRelease2 = await connection.getAccount({ address: recipient2 });
+    const recipientQuantityAfterRelease1 = getCashQuantity(recipientAfterRelease1!);
+    const recipientQuantityAfterRelease2 = getCashQuantity(recipientAfterRelease2!);
+
+    expect(recipientQuantityAfterRelease1.gt(recipientQuantityBeforeRelease1)).toEqual(true);
+    expect(recipientQuantityAfterRelease2.gt(recipientQuantityBeforeRelease2)).toEqual(true);
+    const diffRecipient1 = recipientQuantityAfterRelease1.sub(recipientQuantityBeforeRelease1);
+    const diffRecipient2 = recipientQuantityAfterRelease2.sub(recipientQuantityBeforeRelease2);
+
+    const amountMinusRemainder = new BN(2_000_000_001);
+    expect(diffRecipient1.add(diffRecipient2).toString()).toEqual(amountMinusRemainder.toString());
+
+    connection.disconnect();
+  }, 60_000);
 
   it("works for amending the protocol", async () => {
     pendingWithoutBnsd();
