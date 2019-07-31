@@ -391,6 +391,7 @@ function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array):
       quorum: option.govUpdateElectionRuleMsg.quorum
         ? decodeFraction(option.govUpdateElectionRuleMsg.quorum)
         : undefined,
+      votingPeriod: ensure(option.govUpdateElectionRuleMsg.votingPeriod, "votingPeriod"),
     };
   } else if (option.govUpdateElectorateMsg) {
     return {

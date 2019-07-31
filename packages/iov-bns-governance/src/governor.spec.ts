@@ -60,7 +60,7 @@ describe("Governor", () => {
       const options = await getGovernorOptions();
       const governor = new Governor(options);
 
-      const electorates = await governor.getElectorates();
+      const electorates = (await governor.getElectorates()).filter(({ version }) => version === 1);
       expect(electorates.length).toEqual(2);
       expect(electorates[0].id).toEqual(1);
       expect(electorates[1].id).toEqual(2);
@@ -103,7 +103,9 @@ describe("Governor", () => {
       const governor = new Governor(options);
 
       const electorateId = 1;
-      const electionRules = await governor.getElectionRules(electorateId);
+      const electionRules = (await governor.getElectionRules(electorateId)).filter(
+        ({ version }) => version === 1,
+      );
       expect(electionRules.length).toEqual(1);
       expect(electionRules[0].id).toEqual(1);
       expect(electionRules[0].version).toEqual(1);
@@ -274,6 +276,11 @@ describe("Governor", () => {
             numerator: 2,
             denominator: 7,
           },
+          quorum: {
+            numerator: 2,
+            denominator: 3,
+          },
+          votingPeriod: 10,
         },
         description: "Proposal to amend threshold to 2/7",
         electionRuleId: 1,
@@ -315,10 +322,15 @@ describe("Governor", () => {
         action: {
           kind: ActionKind.UpdateElectionRule,
           electionRuleId: 2,
+          threshold: {
+            numerator: 1,
+            denominator: 2,
+          },
           quorum: {
             numerator: 2,
             denominator: 7,
           },
+          votingPeriod: 10,
         },
         description: "Proposal to amend quorum to 2/7",
         electionRuleId: 1,

@@ -18,6 +18,10 @@ import { groupByCallback, maxWithComparatorCallback } from "./utils";
 
 const { toHex } = Encoding;
 
+function compareElectionRulesByVersion(rule1: ElectionRule, rule2: ElectionRule): number {
+  return rule1.version - rule2.version;
+}
+
 export interface GovernorOptions {
   readonly connection: BnsConnection;
   readonly identity: Identity;
@@ -54,9 +58,18 @@ export class Governor {
     }
 
     const groupedRules = groupByCallback(filteredRules, rule => rule.id);
-    return groupedRules.map(group =>
-      maxWithComparatorCallback(group.values, (rule1, rule2) => rule1.version - rule2.version),
+    return groupedRules.map(group => maxWithComparatorCallback(group.values, compareElectionRulesByVersion));
+  }
+
+  public async getElectionRuleById(electionRuleId: number): Promise<ElectionRule> {
+    const electionRules = (await this.connection.getElectionRules()).filter(
+      ({ id }) => id === electionRuleId,
     );
+    if (!electionRules.length) {
+      throw new Error("Election rule not found");
+    }
+    const electionRule = maxWithComparatorCallback(electionRules, compareElectionRulesByVersion);
+    return electionRule;
   }
 
   public async getProposals(): Promise<readonly Proposal[]> {
@@ -101,24 +114,32 @@ export class Governor {
             },
           },
         });
-      case ProposalType.AmendElectionRuleThreshold:
+      case ProposalType.AmendElectionRuleThreshold: {
+        const { quorum, votingPeriod } = await this.getElectionRuleById(options.targetElectionRuleId);
         return this.connection.withDefaultFee({
           ...commonProperties,
           action: {
             kind: ActionKind.UpdateElectionRule,
             electionRuleId: options.targetElectionRuleId,
             threshold: options.threshold,
+            quorum: quorum,
+            votingPeriod: votingPeriod,
           },
         });
-      case ProposalType.AmendElectionRuleQuorum:
+      }
+      case ProposalType.AmendElectionRuleQuorum: {
+        const { threshold, votingPeriod } = await this.getElectionRuleById(options.targetElectionRuleId);
         return this.connection.withDefaultFee({
           ...commonProperties,
           action: {
             kind: ActionKind.UpdateElectionRule,
             electionRuleId: options.targetElectionRuleId,
+            threshold: threshold,
             quorum: options.quorum,
+            votingPeriod: votingPeriod,
           },
         });
+      }
       case ProposalType.AddValidator:
         return this.connection.withDefaultFee({
           ...commonProperties,
