@@ -1958,7 +1958,7 @@ describe("BnsConnection", () => {
         admin: "tiov1k0dp2fmdunscuwjjusqtk6mttx5ufk3z0mmp0z" as Address,
         electorateId: 2,
         title: "barr",
-        votingPeriod: 7,
+        votingPeriod: 10,
         threshold: {
           numerator: 1,
           denominator: 2,

@@ -122,7 +122,7 @@ describe("Proposals", () => {
     });
     expect(proposal1Pre.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(4000);
+    await sleep(7000);
 
     const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
     await signAndPost(vote1Tx, connection, profile);
@@ -178,7 +178,7 @@ describe("Proposals", () => {
     });
     expect(proposal2Pre.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(4000);
+    await sleep(7000);
 
     const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
     await signAndPost(vote2Tx, connection, profile);
@@ -252,7 +252,7 @@ describe("Proposals", () => {
     });
     expect(proposal1Pre.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(6000);
+    await sleep(7000);
 
     const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
     await signAndPost(vote1Tx, connection, profile);
@@ -316,7 +316,7 @@ describe("Proposals", () => {
     });
     expect(proposal2Pre.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(6000);
+    await sleep(7000);
 
     const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
     await signAndPost(vote2Tx, connection, profile);
@@ -382,7 +382,7 @@ describe("Proposals", () => {
     });
     expect(proposal1Pre.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(5000);
+    await sleep(7000);
 
     const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
     await signAndPost(vote1Tx, connection, profile);
@@ -437,7 +437,7 @@ describe("Proposals", () => {
     });
     expect(proposal2Pre.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(5000);
+    await sleep(7000);
 
     const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
     await signAndPost(vote2Tx, connection, profile);
@@ -500,7 +500,7 @@ describe("Proposals", () => {
     });
     expect(proposal1.status).toEqual(ProposalStatus.Submitted);
 
-    await sleep(4000);
+    await sleep(7000);
 
     const voteTx = await governor.buildVoteTx(proposal1.id, VoteOption.Yes);
     await signAndPost(voteTx, connection, profile);

@@ -76,7 +76,7 @@
       {
         "admin": "cond:gov/rule/0000000000000002",
         "title": "barr",
-        "voting_period": "7s",
+        "voting_period": "10s",
         "threshold": {
           "numerator": 1,
           "denominator": 2
