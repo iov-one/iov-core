@@ -7,8 +7,8 @@ export declare type TxBytes = Uint8Array & As<"tx-bytes">;
 export declare type TxHash = Uint8Array & As<"tx-hash">;
 export declare type IpPortString = string & As<"ipport">;
 export interface ValidatorEd25519Pubkey {
-    readonly algorithm: "ed25519";
-    readonly data: Uint8Array;
+  readonly algorithm: "ed25519";
+  readonly data: Uint8Array;
 }
 /**
  * Union type for different possible pubkeys.
@@ -16,8 +16,8 @@ export interface ValidatorEd25519Pubkey {
  */
 export declare type ValidatorPubkey = ValidatorEd25519Pubkey;
 export interface ValidatorEd25519Signature {
-    readonly algorithm: "ed25519";
-    readonly data: Uint8Array;
+  readonly algorithm: "ed25519";
+  readonly data: Uint8Array;
 }
 /**
  * Union type for different possible voting signatures.

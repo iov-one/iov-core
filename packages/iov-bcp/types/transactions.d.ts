@@ -1,13 +1,13 @@
 import { As } from "type-tagger";
 import { Hash, Preimage } from "./atomicswaptypes";
 export declare enum Algorithm {
-    Ed25519 = "ed25519",
-    Secp256k1 = "secp256k1"
+  Ed25519 = "ed25519",
+  Secp256k1 = "secp256k1",
 }
 export declare type PubkeyBytes = Uint8Array & As<"pubkey-bytes">;
 export interface PubkeyBundle {
-    readonly algo: Algorithm;
-    readonly data: PubkeyBytes;
+  readonly algo: Algorithm;
+  readonly data: PubkeyBytes;
 }
 export declare function isPubkeyBundle(data: unknown): data is PubkeyBundle;
 /**
@@ -24,8 +24,8 @@ export declare function pubkeyBundleEquals(left: PubkeyBundle, right: PubkeyBund
 export declare type ChainId = string & As<"chain-id">;
 /** a public key we can identify with on a blockchain */
 export interface Identity {
-    readonly chainId: ChainId;
-    readonly pubkey: PubkeyBundle;
+  readonly chainId: ChainId;
+  readonly pubkey: PubkeyBundle;
 }
 export declare function isIdentity(data: unknown): data is Identity;
 /**
@@ -42,8 +42,8 @@ export declare type Nonce = number & As<"nonce">;
 export declare type TokenTicker = string & As<"token-ticker">;
 export declare type SwapIdBytes = Uint8Array & As<"swap-id">;
 export interface SwapId {
-    readonly prefix?: string;
-    readonly data: SwapIdBytes;
+  readonly prefix?: string;
+  readonly data: SwapIdBytes;
 }
 export declare function swapIdEquals(left: SwapId, right: SwapId): boolean;
 /**
@@ -56,183 +56,195 @@ export declare function swapIdEquals(left: SwapId, right: SwapId): boolean;
 export declare type TransactionId = string & As<"transaction-id">;
 export declare type SignableBytes = Uint8Array & As<"signable">;
 export declare enum PrehashType {
-    None = 0,
-    Sha512 = 1,
-    Sha256 = 2,
-    Keccak256 = 3
+  None = 0,
+  Sha512 = 1,
+  Sha256 = 2,
+  Keccak256 = 3,
 }
 export interface SigningJob {
-    readonly bytes: SignableBytes;
-    readonly prehashType: PrehashType;
+  readonly bytes: SignableBytes;
+  readonly prehashType: PrehashType;
 }
 export interface FullSignature {
-    readonly nonce: Nonce;
-    readonly pubkey: PubkeyBundle;
-    readonly signature: SignatureBytes;
+  readonly nonce: Nonce;
+  readonly pubkey: PubkeyBundle;
+  readonly signature: SignatureBytes;
 }
 /** A codec specific address encoded as a string */
 export declare type Address = string & As<"address">;
 export interface Amount {
-    /**
-     * The quantity expressed as atomic units.
-     *
-     * Convert to whole and fractional part using
-     *   const whole = amount.quantity.slice(0, -amount.fractionalDigits);
-     *   const fractional = amount.quantity.slice(-amount.fractionalDigits);
-     * or to a floating point approximation (not safe!)
-     *   const approx = whole + fractional / 10**amount.fractionalDigits
-     */
-    readonly quantity: string;
-    /**
-     * The number of fractional digits the token supports.
-     *
-     * A quantity is expressed as atomic units. 10^fractionalDigits of those
-     * atomic units make up 1 token.
-     *
-     * E.g. in Ethereum 10^18 wei are 1 ETH and from the quantity 123000000000000000000
-     * the last 18 digits are the fractional part and the rest the wole part.
-     */
-    readonly fractionalDigits: number;
-    readonly tokenTicker: TokenTicker;
+  /**
+   * The quantity expressed as atomic units.
+   *
+   * Convert to whole and fractional part using
+   *   const whole = amount.quantity.slice(0, -amount.fractionalDigits);
+   *   const fractional = amount.quantity.slice(-amount.fractionalDigits);
+   * or to a floating point approximation (not safe!)
+   *   const approx = whole + fractional / 10**amount.fractionalDigits
+   */
+  readonly quantity: string;
+  /**
+   * The number of fractional digits the token supports.
+   *
+   * A quantity is expressed as atomic units. 10^fractionalDigits of those
+   * atomic units make up 1 token.
+   *
+   * E.g. in Ethereum 10^18 wei are 1 ETH and from the quantity 123000000000000000000
+   * the last 18 digits are the fractional part and the rest the wole part.
+   */
+  readonly fractionalDigits: number;
+  readonly tokenTicker: TokenTicker;
 }
 export declare function isAmount(data: unknown): data is Amount;
 /** A general interface for blockchain fees */
 export interface Fee {
-    readonly tokens?: Amount;
-    readonly gasPrice?: Amount;
-    readonly gasLimit?: string;
+  readonly tokens?: Amount;
+  readonly gasPrice?: Amount;
+  readonly gasLimit?: string;
 }
 export declare function isFee(data: unknown): data is Fee;
 /** The basic transaction type all transactions should extend */
 export interface LightTransaction {
-    /**
-     * Kind describes the kind of transaction as a "<domain>/<concrete_type>" tuple.
-     *
-     * The domain acts as a namespace for the concreate type. Right now we use "bns",
-     * "ethereum", "lisk" and "rise" for chain-specific transactions. We also use the
-     * special domain "bcp" for any kind that can be supported in multiple chains.
-     *
-     * This should be used for type detection only and not be encoded somewhere. It
-     * might be migrated to a Java-style package names like "io.lisk.mainnet" or
-     * other way of namespacing later on, so don't use the `kind` property as a value.
-     */
-    readonly kind: string;
-    readonly fee?: Fee;
+  /**
+   * Kind describes the kind of transaction as a "<domain>/<concrete_type>" tuple.
+   *
+   * The domain acts as a namespace for the concreate type. Right now we use "bns",
+   * "ethereum", "lisk" and "rise" for chain-specific transactions. We also use the
+   * special domain "bcp" for any kind that can be supported in multiple chains.
+   *
+   * This should be used for type detection only and not be encoded somewhere. It
+   * might be migrated to a Java-style package names like "io.lisk.mainnet" or
+   * other way of namespacing later on, so don't use the `kind` property as a value.
+   */
+  readonly kind: string;
+  readonly fee?: Fee;
 }
 export declare function isLightTransaction(data: unknown): data is LightTransaction;
 export interface WithCreator {
-    /**
-     * The creator of the transaction.
-     *
-     * This implicitly fixes the chain ID this transaction can be used on.
-     */
-    readonly creator: Identity;
+  /**
+   * The creator of the transaction.
+   *
+   * This implicitly fixes the chain ID this transaction can be used on.
+   */
+  readonly creator: Identity;
 }
 export declare type UnsignedTransaction = LightTransaction & WithCreator;
 export declare function isUnsignedTransaction(data: unknown): data is UnsignedTransaction;
 /** An interface to ensure the transaction property of other types is in sync */
 export interface TransactionContainer<T extends LightTransaction> {
-    /** The transaction content */
-    readonly transaction: T;
+  /** The transaction content */
+  readonly transaction: T;
 }
 /** A signable transaction knows how to serialize itself and how to store signatures */
-export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction> extends TransactionContainer<T> {
-    readonly primarySignature: FullSignature;
-    /** signatures can be appended as this is signed */
-    readonly otherSignatures: readonly FullSignature[];
+export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction>
+  extends TransactionContainer<T> {
+  readonly primarySignature: FullSignature;
+  /** signatures can be appended as this is signed */
+  readonly otherSignatures: readonly FullSignature[];
 }
 export interface ConfirmedTransaction<T extends LightTransaction> extends TransactionContainer<T> {
-    readonly height: number;
-    /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
-    readonly confirmations: number;
-    /** a unique identifier (hash of the transaction) */
-    readonly transactionId: TransactionId;
-    /** application specific data from executing tx (result, code, tags...) */
-    readonly result?: Uint8Array;
-    /**
-     * Application specific logging output in an arbitrary text format that
-     * may change at any time.
-     */
-    readonly log?: string;
+  readonly height: number;
+  /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
+  readonly confirmations: number;
+  /** a unique identifier (hash of the transaction) */
+  readonly transactionId: TransactionId;
+  /** application specific data from executing tx (result, code, tags...) */
+  readonly result?: Uint8Array;
+  /**
+   * Application specific logging output in an arbitrary text format that
+   * may change at any time.
+   */
+  readonly log?: string;
 }
 export interface FailedTransaction {
-    /** height of the block that contains the transaction */
-    readonly height: number;
-    /** a unique identifier (hash of the transaction) */
-    readonly transactionId: TransactionId;
-    /**
-     * Application specific error code
-     */
-    readonly code: number;
-    /**
-     * Application specific, human-readable, non-localized error message
-     * in an arbitrary text format that may change at any time.
-     */
-    readonly message?: string;
+  /** height of the block that contains the transaction */
+  readonly height: number;
+  /** a unique identifier (hash of the transaction) */
+  readonly transactionId: TransactionId;
+  /**
+   * Application specific error code
+   */
+  readonly code: number;
+  /**
+   * Application specific, human-readable, non-localized error message
+   * in an arbitrary text format that may change at any time.
+   */
+  readonly message?: string;
 }
-export declare function isConfirmedTransaction<T extends LightTransaction>(transaction: ConfirmedTransaction<T> | FailedTransaction): transaction is ConfirmedTransaction<T>;
-export declare function isFailedTransaction<T extends LightTransaction>(transaction: ConfirmedTransaction<T> | FailedTransaction): transaction is FailedTransaction;
-export declare type ConfirmedAndSignedTransaction<T extends LightTransaction> = ConfirmedTransaction<T> & SignedTransaction<T>;
+export declare function isConfirmedTransaction<T extends LightTransaction>(
+  transaction: ConfirmedTransaction<T> | FailedTransaction,
+): transaction is ConfirmedTransaction<T>;
+export declare function isFailedTransaction<T extends LightTransaction>(
+  transaction: ConfirmedTransaction<T> | FailedTransaction,
+): transaction is FailedTransaction;
+export declare type ConfirmedAndSignedTransaction<T extends LightTransaction> = ConfirmedTransaction<T> &
+  SignedTransaction<T>;
 export interface SendTransaction extends LightTransaction {
-    readonly kind: "bcp/send";
-    readonly amount: Amount;
-    readonly sender: Address;
-    readonly recipient: Address;
-    readonly memo?: string;
+  readonly kind: "bcp/send";
+  readonly amount: Amount;
+  readonly sender: Address;
+  readonly recipient: Address;
+  readonly memo?: string;
 }
 export declare type SwapTimeout = BlockHeightTimeout | TimestampTimeout;
 export interface BlockHeightTimeout {
-    /** Absolute block height */
-    readonly height: number;
+  /** Absolute block height */
+  readonly height: number;
 }
 export declare function isBlockHeightTimeout(timeout: SwapTimeout): timeout is BlockHeightTimeout;
 export interface TimestampTimeout {
-    /** Unix timestamp in seconds */
-    readonly timestamp: number;
+  /** Unix timestamp in seconds */
+  readonly timestamp: number;
 }
 export declare function isTimestampTimeout(timeout: SwapTimeout): timeout is TimestampTimeout;
 export declare function createTimestampTimeout(secondsFromNow: number): TimestampTimeout;
 /** A swap offer or a counter offer */
 export interface SwapOfferTransaction extends LightTransaction {
-    readonly kind: "bcp/swap_offer";
-    /**
-     * The ID of the swap to aid coordination between the two parties.
-     *
-     * If required, the data should be generated randomly by the client to avoid
-     * collisions.
-     *
-     * The type of this may be extended with additional properties depending on
-     * the requirements of the individual chain.
-     */
-    readonly swapId?: SwapId;
-    readonly amounts: readonly Amount[];
-    readonly recipient: Address;
-    /**
-     * The first point in time at which the offer is expired.
-     *
-     * Can be represented as a block height or UNIX timestamp.
-     */
-    readonly timeout: SwapTimeout;
-    /**
-     * Locally calculated hash of the preimage.
-     *
-     * This is a SHA256 hash until we have a way to specifiy the hashing algorithm.
-     */
-    readonly hash: Hash;
-    readonly memo?: string;
+  readonly kind: "bcp/swap_offer";
+  /**
+   * The ID of the swap to aid coordination between the two parties.
+   *
+   * If required, the data should be generated randomly by the client to avoid
+   * collisions.
+   *
+   * The type of this may be extended with additional properties depending on
+   * the requirements of the individual chain.
+   */
+  readonly swapId?: SwapId;
+  readonly amounts: readonly Amount[];
+  readonly recipient: Address;
+  /**
+   * The first point in time at which the offer is expired.
+   *
+   * Can be represented as a block height or UNIX timestamp.
+   */
+  readonly timeout: SwapTimeout;
+  /**
+   * Locally calculated hash of the preimage.
+   *
+   * This is a SHA256 hash until we have a way to specifiy the hashing algorithm.
+   */
+  readonly hash: Hash;
+  readonly memo?: string;
 }
 export interface SwapClaimTransaction extends LightTransaction {
-    readonly kind: "bcp/swap_claim";
-    readonly preimage: Preimage;
-    readonly swapId: SwapId;
+  readonly kind: "bcp/swap_claim";
+  readonly preimage: Preimage;
+  readonly swapId: SwapId;
 }
 export interface SwapAbortTransaction extends LightTransaction {
-    readonly kind: "bcp/swap_abort";
-    readonly swapId: SwapId;
+  readonly kind: "bcp/swap_abort";
+  readonly swapId: SwapId;
 }
 export declare type SwapTransaction = SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
 export declare function isSendTransaction(transaction: LightTransaction): transaction is SendTransaction;
-export declare function isSwapOfferTransaction(transaction: LightTransaction): transaction is SwapOfferTransaction;
-export declare function isSwapClaimTransaction(transaction: LightTransaction): transaction is SwapClaimTransaction;
-export declare function isSwapAbortTransaction(transaction: LightTransaction): transaction is SwapAbortTransaction;
+export declare function isSwapOfferTransaction(
+  transaction: LightTransaction,
+): transaction is SwapOfferTransaction;
+export declare function isSwapClaimTransaction(
+  transaction: LightTransaction,
+): transaction is SwapClaimTransaction;
+export declare function isSwapAbortTransaction(
+  transaction: LightTransaction,
+): transaction is SwapAbortTransaction;
 export declare function isSwapTransaction(transaction: LightTransaction): transaction is SwapTransaction;

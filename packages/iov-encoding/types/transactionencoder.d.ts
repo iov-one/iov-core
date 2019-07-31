@@ -13,6 +13,6 @@ import { JsonCompatibleValue } from "./json";
  * - Uint8Array
  */
 export declare class TransactionEncoder {
-    static toJson(data: unknown): JsonCompatibleValue;
-    static fromJson(data: JsonCompatibleValue): any;
+  static toJson(data: unknown): JsonCompatibleValue;
+  static fromJson(data: JsonCompatibleValue): any;
 }

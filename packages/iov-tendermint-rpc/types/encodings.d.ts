@@ -52,17 +52,17 @@ export declare function optional<T>(value: T | null | undefined, fallback: T): T
 export declare function may<T, U>(transform: (val: T) => U, value: T | null | undefined): U | undefined;
 export declare function dictionaryToStringMap(obj: any): Map<string, string>;
 export declare class Integer {
-    static parse(input: IntegerString | number): number;
-    static encode(num: number): IntegerString;
+  static parse(input: IntegerString | number): number;
+  static encode(num: number): IntegerString;
 }
 export declare class Base64 {
-    static encode(data: Uint8Array): Base64String;
-    static decode(base64String: Base64String): Uint8Array;
+  static encode(data: Uint8Array): Base64String;
+  static decode(base64String: Base64String): Uint8Array;
 }
 export declare class DateTime {
-    static decode(dateTimeString: DateTimeString): ReadonlyDate;
+  static decode(dateTimeString: DateTimeString): ReadonlyDate;
 }
 export declare class Hex {
-    static encode(data: Uint8Array): HexString;
-    static decode(hexString: HexString): Uint8Array;
+  static encode(data: Uint8Array): HexString;
+  static decode(hexString: HexString): Uint8Array;
 }
