@@ -914,13 +914,6 @@
   resolved "https://registry.yarnpkg.com/@types/base64-js/-/base64-js-1.2.5.tgz#582b2476169a6cba460a214d476c744441d873d5"
   integrity sha1-WCskdhaabLpGCiFNR2x0REHYc9U=
 
-"@types/bech32@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@types/bech32/-/bech32-1.1.1.tgz#a8574f9519369c91d5e69287551f675621a67f44"
-  integrity sha512-Kggl80lb2fVzRUhJlkZlrN9BJqrKCPe+QfpZ/TgiPlPTKbWcrgWuDPEAODNOUzfxVJyL4tzkwhH4qCWysVKIhg==
-  dependencies:
-    "@types/node" "*"
-
 "@types/diff@^3.5.1":
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/@types/diff/-/diff-3.5.3.tgz#7c6c3721ba454d838790100faf7957116ee7deab"
