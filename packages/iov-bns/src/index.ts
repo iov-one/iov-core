@@ -39,7 +39,16 @@ export {
   isCreateProposalTx,
   VoteTx,
   isVoteTx,
-  // transactions
+  // Proposals
+  ProposalAction,
+  CreateTextResolutionAction,
+  ExecuteProposalBatchAction,
+  ReleaseEscrowAction,
+  SendAction,
+  SetValidatorsAction,
+  UpdateElectionRuleAction,
+  UpdateElectorateAction,
+  // Transactions
   BnsTx,
   isBnsTx,
 } from "./types";

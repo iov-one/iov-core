@@ -5,6 +5,7 @@
 - @iov/bcp: Migrate to a `Uint8Array` check that works across multiple
   instantiations of the JavaScript standard library.
 - @iov/bns: Add `BnsConnection.getValidators`.
+- @iov/bns: Add `ProposalAction` union type and specific proposal action types.
 - @iov/bns-governance: Add new package to help with common governance tasks.
   Includes `Governor` class (with `GovernorOptions`); `ProposalType` along with
   the union type `ProposalOptions` and individual options types for each
