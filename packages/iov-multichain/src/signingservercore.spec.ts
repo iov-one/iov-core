@@ -226,12 +226,6 @@ describe("SigningServerCore", () => {
 
     it("handles exceptions in callback", async () => {
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(untouchedMnemonicA));
-
-      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(0));
-      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(1));
-      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(2));
-      await profile.createIdentity(wallet.id, defaultChainId, HdPaths.iov(3));
 
       async function throwingCallback(_1: string, _2: readonly Identity[]): Promise<readonly Identity[]> {
         throw new Error("Something broken in here!");
