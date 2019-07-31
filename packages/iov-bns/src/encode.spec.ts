@@ -294,7 +294,7 @@ describe("Encode", () => {
       const addAddress: UpdateTargetsOfUsernameTx & WithCreator = {
         kind: "bns/update_targets_of_username",
         creator: defaultCreator,
-        username: "alice",
+        username: "alice*iov",
         targets: [
           {
             chainId: "other-land" as ChainId,
@@ -303,7 +303,7 @@ describe("Encode", () => {
         ],
       };
       const msg = buildMsg(addAddress).usernameChangeTokenTargetsMsg!;
-      expect(msg.username).toEqual("alice");
+      expect(msg.username).toEqual("alice*iov");
       expect(msg.newTargets![0].blockchainId).toEqual("other-land");
       expect(msg.newTargets![0].address).toEqual("865765858O");
     });
@@ -344,11 +344,11 @@ describe("Encode", () => {
       const transfer: TransferUsernameTx & WithCreator = {
         kind: "bns/transfer_username",
         creator: defaultCreator,
-        username: "alice",
+        username: "alice*iov",
         newOwner: defaultRecipient,
       };
       const msg = buildMsg(transfer).usernameTransferTokenMsg!;
-      expect(msg.username).toEqual("alice");
+      expect(msg.username).toEqual("alice*iov");
       expect(msg.newOwner).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
     });
 

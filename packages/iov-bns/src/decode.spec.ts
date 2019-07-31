@@ -396,7 +396,7 @@ describe("Decode", () => {
     it("works for UpdateTargetsOfUsernameTx", () => {
       const transactionMessage: codecImpl.bnsd.ITx = {
         usernameChangeTokenTargetsMsg: {
-          username: "alice",
+          username: "alice*iov",
           newTargets: [
             {
               blockchainId: "wonderland",
@@ -409,7 +409,7 @@ describe("Decode", () => {
       if (!isUpdateTargetsOfUsernameTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.username).toEqual("alice");
+      expect(parsed.username).toEqual("alice*iov");
       expect(parsed.targets).toEqual([
         {
           chainId: "wonderland" as ChainId,
@@ -421,7 +421,7 @@ describe("Decode", () => {
     it("works for RegisterUsernameTx", () => {
       const transactionMessage: codecImpl.bnsd.ITx = {
         usernameRegisterTokenMsg: {
-          username: "bobby",
+          username: "bobby*iov",
           targets: [
             {
               blockchainId: "chain1",
@@ -438,7 +438,7 @@ describe("Decode", () => {
       if (!isRegisterUsernameTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.username).toEqual("bobby");
+      expect(parsed.username).toEqual("bobby*iov");
       expect(parsed.targets.length).toEqual(2);
       expect(parsed.targets[0]).toEqual({
         chainId: "chain1" as ChainId,
@@ -453,7 +453,7 @@ describe("Decode", () => {
     it("works for TransferUsernameTx", () => {
       const transactionMessage: codecImpl.bnsd.ITx = {
         usernameTransferTokenMsg: {
-          username: "bobby",
+          username: "bobby*iov",
           newOwner: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
         },
       };
@@ -461,7 +461,7 @@ describe("Decode", () => {
       if (!isTransferUsernameTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.username).toEqual("bobby");
+      expect(parsed.username).toEqual("bobby*iov");
       expect(parsed.newOwner).toEqual(defaultRecipient);
     });
 
