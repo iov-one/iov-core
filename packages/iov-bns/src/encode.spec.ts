@@ -51,6 +51,7 @@ import {
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
+  TransferUsernameTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -239,6 +240,7 @@ describe("Encode", () => {
       },
     };
     const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
+    // weave address hex: b1ca7e78f74423ae01da3b51e676934d9105f282
     const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
     const defaultArbiter = "tiov17yp0mh3yxwv6yxx386mxyfzlqnhe6q58edka6r" as Address;
     const defaultAmount: Amount = {
@@ -336,6 +338,18 @@ describe("Encode", () => {
       expect(msg.targets![1].address).toEqual("0xddffeeffddaa44");
       expect(msg.targets![2].blockchainId).toEqual("chain2");
       expect(msg.targets![2].address).toEqual("0x00aabbddccffee");
+    });
+
+    it("works for TransferUsernameTx", () => {
+      const transfer: TransferUsernameTx & WithCreator = {
+        kind: "bns/transfer_username",
+        creator: defaultCreator,
+        username: "alice",
+        newOwner: defaultRecipient,
+      };
+      const msg = buildMsg(transfer).usernameTransferTokenMsg!;
+      expect(msg.username).toEqual("alice");
+      expect(msg.newOwner).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
     });
 
     // Multisignature contracts
