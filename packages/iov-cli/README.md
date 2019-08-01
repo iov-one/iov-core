@@ -158,17 +158,17 @@ const registrationTx = await connection.withDefaultFee<RegisterUsernameTx & With
   kind: "bns/register_username",
   creator: recipient,
   targets: [],
-  username: "hans",
+  username: "hans*iov",
 });
 ^D
 > await signer.signAndPost(registrationTx);
 > const bnsConnection = connection as BnsConnection;
 > await bnsConnection.getUsernames({ owner: recipientAddress });
-[ { id: 'hans',
+[ { username: 'hans*iov',
     owner: 'tiov14cn8m57wtrlewmlnjucctsahpnxlj92l0crkvq',
     targets: [] } ]
-> await bnsConnection.getUsernames({ username: "hans" });
-[ { id: 'hans',
+> await bnsConnection.getUsernames({ username: "hans*iov" });
+[ { username: 'hans*iov',
     owner: 'tiov14cn8m57wtrlewmlnjucctsahpnxlj92l0crkvq',
     targets: [] } ]
 ```
