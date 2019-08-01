@@ -36,7 +36,7 @@
     "bn.js": "^4.11.8",
     "elliptic": "^6.4.0",
     "js-sha3": "^0.8.0",
-    "libsodium-wrappers": "^0.7.5",
+    "libsodium-wrappers": "willclarktech/libsodium.js#nodejs-catch-exit-0.7.5-libsodium-wrappers",
     "pbkdf2": "^3.0.16",
     "sha.js": "^2.4.11",
     "type-tagger": "^1.0.0",
