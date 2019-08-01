@@ -81,7 +81,7 @@ $ iov-cli
 > const recipientAddress = signer.identityToAddress(recipient);
 
 > .editor
-const sendTx: SendTransaction = {
+const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
   kind: "bcp/send",
   creator: faucet,
   recipient: recipientAddress,
@@ -91,7 +91,7 @@ const sendTx: SendTransaction = {
     fractionalDigits: 9,
     tokenTicker: "CASH" as TokenTicker,
   },
-};
+});
 ^D
 > await signer.signAndPost(sendTx);
 > (await connection.getAccount({ address: recipientAddress })).balance;
@@ -147,21 +147,21 @@ UserProfile {
   ...
 ```
 
-### Register a BNS username NFT
+### Register a username on the IOV Name Service
 
 Assuming you have a `profile`, a `signer` and a `recipient` identity with
 transactions associated from above
 
 ```
 > .editor
-const registration: RegisterUsernameTx = {
+const registrationTx = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
   kind: "bns/register_username",
   creator: recipient,
   targets: [],
   username: "hans",
-};
+});
 ^D
-> await signer.signAndPost(registration);
+> await signer.signAndPost(registrationTx);
 > const bnsConnection = connection as BnsConnection;
 > await bnsConnection.getUsernames({ owner: recipientAddress });
 [ { id: 'hans',
