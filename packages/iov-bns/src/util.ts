@@ -26,10 +26,10 @@ import { QueryString } from "@iov/tendermint-rpc";
 import Long from "long";
 import { As } from "type-tagger";
 
-const bnsMainnetChainId = "PLEASE_INSERT_HERE_WHEN_GENESIS_EXISTS" as ChainId;
+import * as constants from "./constants";
 
 export function addressPrefix(chainId: ChainId): "iov" | "tiov" {
-  return chainId === bnsMainnetChainId ? "iov" : "tiov";
+  return chainId === constants.mainnetChainId ? "iov" : "tiov";
 }
 
 /** Encodes raw bytes into a bech32 address */

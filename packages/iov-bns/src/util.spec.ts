@@ -3,6 +3,7 @@ import { Encoding } from "@iov/encoding";
 
 import { address, pubJson } from "./testdata.spec";
 import {
+  addressPrefix,
   arraysEqual,
   buildQueryString,
   decodeBnsAddress,
@@ -15,6 +16,16 @@ import {
 const { fromHex, toAscii, toHex, toUtf8 } = Encoding;
 
 describe("Util", () => {
+  describe("addressPrefix", () => {
+    it("works for testnet", () => {
+      expect(addressPrefix("iov-lovenet" as ChainId)).toEqual("tiov");
+    });
+
+    it("works for mainnet", () => {
+      expect(addressPrefix("iov-mainnet" as ChainId)).toEqual("iov");
+    });
+  });
+
   it("has working identityToAddress", () => {
     const calculatedAddress = identityToAddress({ chainId: "testnet123" as ChainId, pubkey: pubJson });
     expect(calculatedAddress).toEqual(address);
