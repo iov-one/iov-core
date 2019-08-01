@@ -1,6 +1,6 @@
 {
   "name": "@iov/socket",
-  "version": "0.16.0-alpha.4",
+  "version": "0.16.0",
   "description": "Utility functions for working with WebSockets",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -30,7 +30,7 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/stream": "^0.16.0-alpha.4",
+    "@iov/stream": "^0.16.0",
     "isomorphic-ws": "^4.0.1",
     "ws": "^6.2.0",
     "xstream": "^11.10.0"
