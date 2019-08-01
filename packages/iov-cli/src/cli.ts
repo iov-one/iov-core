@@ -44,6 +44,7 @@ export function main(originalArgs: readonly string[]): void {
         "SendTransaction",
         "TokenTicker",
         "TransactionId",
+        "WithCreator",
       ],
     ],
     ["@iov/bns", ["bnsCodec", "BnsConnection", "bnsConnector", "RegisterUsernameTx"]],
