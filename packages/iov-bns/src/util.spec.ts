@@ -20,6 +20,10 @@ describe("Util", () => {
     it("works for testnet", () => {
       expect(addressPrefix("iov-lovenet" as ChainId)).toEqual("tiov");
     });
+
+    it("works for mainnet", () => {
+      expect(addressPrefix("iov-mainnet" as ChainId)).toEqual("iov");
+    });
   });
 
   it("has working identityToAddress", () => {

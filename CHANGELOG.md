@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.16.1
+
+- @iov/bns: Set chain ID for IOV mainnet (`iov-mainnet`).
+
 ## 0.16.0
 
 - @iov/bcp: Migrate to a `Uint8Array` check that works across multiple
