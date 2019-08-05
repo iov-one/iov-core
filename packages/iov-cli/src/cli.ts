@@ -47,7 +47,17 @@ export function main(originalArgs: readonly string[]): void {
         "WithCreator",
       ],
     ],
-    ["@iov/bns", ["bnsCodec", "BnsConnection", "bnsConnector", "RegisterUsernameTx"]],
+    [
+      "@iov/bns",
+      [
+        "bnsCodec",
+        "BnsConnection",
+        "bnsConnector",
+        "ChainAddressPair",
+        "UpdateTargetsOfUsernameTx",
+        "RegisterUsernameTx",
+      ],
+    ],
     [
       "@iov/crypto",
       [
