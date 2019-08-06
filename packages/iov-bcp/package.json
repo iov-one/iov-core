@@ -1,6 +1,6 @@
 {
   "name": "@iov/bcp",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "description": "General types and helpers for IOV's blockchain communication protocol",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -30,9 +30,9 @@
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari"
   },
   "dependencies": {
-    "@iov/crypto": "^0.16.0",
-    "@iov/encoding": "^0.16.0",
-    "@iov/stream": "^0.16.0",
+    "@iov/crypto": "^0.16.1",
+    "@iov/encoding": "^0.16.1",
+    "@iov/stream": "^0.16.1",
     "type-tagger": "^1.0.0",
     "xstream": "^11.10.0"
   }
