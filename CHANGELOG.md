@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.16.2
+
+- @iov/crypto: Add `EnglishMnemonic.wordlist`.
+
 ## 0.16.1
 
 - @iov/bns: Set chain ID for IOV mainnet (`iov-mainnet`).

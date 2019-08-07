@@ -1,6 +1,38 @@
+import { Encoding } from "@iov/encoding";
+
 import { EnglishMnemonic } from "./englishmnemonic";
+import { Sha256 } from "./sha";
+import wordlists from "./testdata/bip39_wordlists.json";
+
+const { fromAscii, fromBase64, fromHex } = Encoding;
 
 describe("EnglishMnemonic", () => {
+  describe("wordlist", () => {
+    it("matches the words from the bitcoin/bips/bip-0039 spec", () => {
+      const lineFeed = 0x0a;
+      const bip39EnglishTxt = fromBase64(wordlists.english);
+
+      // Ensure we loaded the correct english.txt from https://github.com/bitcoin/bips/tree/master/bip-0039
+      const checksum = new Sha256(bip39EnglishTxt).digest();
+      expect(checksum).toEqual(fromHex("2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda"));
+
+      // tslint:disable-next-line: readonly-array
+      const wordsFromSpec: string[] = [];
+
+      let start = 0; // the start cursor marks the first byte of the word
+      let end = 0; // the end cursor marks the line feed byte
+      while (end < bip39EnglishTxt.length - 1) {
+        end = start;
+        while (bip39EnglishTxt[end] !== lineFeed) end++;
+        const slice = bip39EnglishTxt.slice(start, end);
+        wordsFromSpec.push(fromAscii(slice));
+        start = end + 1;
+      }
+
+      expect(EnglishMnemonic.wordlist).toEqual(wordsFromSpec);
+    });
+  });
+
   // tslint:disable:no-unused-expression
 
   it("works for valid inputs", () => {
