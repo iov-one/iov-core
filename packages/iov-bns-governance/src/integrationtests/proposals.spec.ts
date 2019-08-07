@@ -289,8 +289,8 @@ describe("Proposals", () => {
     const startTime2 = new ReadonlyDate(Date.now() + 1_000);
     const proposalOptions2: ProposalOptions = {
       type: ProposalType.AmendElectionRuleQuorum,
-      title: "Amend election rule threshold",
-      description: "Amend the election rule threshold in more detail",
+      title: "Amend election rule quorum",
+      description: "Amend the election rule quorum in more detail",
       startTime: startTime2,
       electionRuleId: electionRuleId,
       targetElectionRuleId: electionRuleId,
@@ -305,8 +305,8 @@ describe("Proposals", () => {
     const proposalsAfterCreate2 = await governor.getProposals();
     expect(proposalsAfterCreate2.length).toEqual(numProposalsBefore + 2);
     const proposal2Pre = proposalsAfterCreate2[proposalsAfterCreate2.length - 1];
-    expect(proposal2Pre.title).toEqual("Amend election rule threshold");
-    expect(proposal2Pre.description).toEqual("Amend the election rule threshold in more detail");
+    expect(proposal2Pre.title).toEqual("Amend election rule quorum");
+    expect(proposal2Pre.description).toEqual("Amend the election rule quorum in more detail");
     expect(new ReadonlyDate(proposal2Pre.votingStartTime * 1000).toDateString()).toEqual(
       startTime2.toDateString(),
     );
@@ -338,7 +338,7 @@ describe("Proposals", () => {
     expect(proposalsAfterVote2.length).toEqual(numProposalsBefore + 2);
     const proposal2Post = proposalsAfterVote2[proposalsAfterVote2.length - 1];
     expect(proposal2Post.id).toEqual(proposal2Pre.id);
-    expect(proposal2Post.title).toEqual("Amend election rule threshold");
+    expect(proposal2Post.title).toEqual("Amend election rule quorum");
     expect(proposal2Post.status).toEqual(ProposalStatus.Closed);
     expect(proposal2Post.executorResult).toEqual(ProposalExecutorResult.Succeeded);
 
