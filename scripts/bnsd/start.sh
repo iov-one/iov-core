@@ -25,3 +25,5 @@ sleep 3
 # for debug output
 cat "$LOGS_FILE_TM"
 cat "$LOGS_FILE_APP"
+
+"${SCRIPT_DIR}"/init.sh
