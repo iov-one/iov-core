@@ -1,4 +1,4 @@
-import { Address, Identity, WithCreator } from "@iov/bcp";
+import { Address, Identity, isConfirmedTransaction, WithCreator } from "@iov/bcp";
 import {
   ActionKind,
   bnsCodec,
@@ -6,6 +6,7 @@ import {
   CreateProposalTx,
   ElectionRule,
   Electorate,
+  isVoteTx,
   Proposal,
   VoteOption,
   VoteTx,
@@ -79,6 +80,22 @@ export class Governor {
       const electorateId = new BN(electorate.id).toNumber();
       return electorates.some(({ id }) => id === electorateId);
     });
+  }
+
+  public async getVote(proposalId: number): Promise<VoteOption | null> {
+    const searchResults = await this.connection.searchTx({ signedBy: this.address });
+    const match = searchResults.find(
+      result =>
+        isConfirmedTransaction(result) &&
+        isVoteTx(result.transaction) &&
+        result.transaction.proposalId === proposalId,
+    );
+
+    if (!match) return null;
+    if (!isConfirmedTransaction(match) || !isVoteTx(match.transaction)) {
+      throw new Error("Received incompatible vote transaction.");
+    }
+    return match.transaction.selection;
   }
 
   public async buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithCreator> {

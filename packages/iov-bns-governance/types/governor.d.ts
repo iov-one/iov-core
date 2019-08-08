@@ -26,6 +26,7 @@ export declare class Governor {
   getElectionRules(electorateId: number): Promise<readonly ElectionRule[]>;
   getElectionRuleById(electionRuleId: number): Promise<ElectionRule>;
   getProposals(): Promise<readonly Proposal[]>;
+  getVote(proposalId: number): Promise<VoteOption | null>;
   buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithCreator>;
   buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx & WithCreator>;
 }
