@@ -81,6 +81,7 @@ import {
   Validator,
 } from "./types";
 import {
+  addressPrefix,
   buildQueryString,
   conditionToAddress,
   decodeBnsAddress,
@@ -227,6 +228,10 @@ export class BnsConnection implements AtomicSwapConnection {
   private readonly context: Context;
   // tslint:disable-next-line: readonly-keyword
   private tokensCache: readonly Token[] | undefined;
+
+  private get prefix(): "iov" | "tiov" {
+    return addressPrefix(this.chainId());
+  }
 
   /**
    * Private constructor to hide package private types from the public interface
@@ -663,21 +668,21 @@ export class BnsConnection implements AtomicSwapConnection {
   public async getElectorates(): Promise<readonly Electorate[]> {
     const results = (await this.query("/electorates?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.Electorate, "electorate:");
-    const electorates = results.map(parser).map(electorate => decodeElectorate("tiov", electorate));
+    const electorates = results.map(parser).map(electorate => decodeElectorate(this.prefix, electorate));
     return electorates;
   }
 
   public async getElectionRules(): Promise<readonly ElectionRule[]> {
     const results = (await this.query("/electionrules?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.ElectionRule, "electnrule:");
-    const rules = results.map(parser).map(rule => decodeElectionRule("tiov", rule));
+    const rules = results.map(parser).map(rule => decodeElectionRule(this.prefix, rule));
     return rules;
   }
 
   public async getProposals(): Promise<readonly Proposal[]> {
     const results = (await this.query("/proposals?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.Proposal, "proposal:");
-    const proposals = results.map(parser).map(rule => decodeProposal("tiov", rule));
+    const proposals = results.map(parser).map(rule => decodeProposal(this.prefix, rule));
     return proposals;
   }
 
