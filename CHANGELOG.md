@@ -2,6 +2,7 @@
 
 ## 0.16.2
 
+- @iov/bns-governance: Add `getVote` by proposal ID method to `Governor` class.
 - @iov/crypto: Add `EnglishMnemonic.wordlist`.
 
 ## 0.16.1
