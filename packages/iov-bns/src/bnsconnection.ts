@@ -682,7 +682,7 @@ export class BnsConnection implements AtomicSwapConnection {
   public async getProposals(): Promise<readonly Proposal[]> {
     const results = (await this.query("/proposals?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.Proposal, "proposal:");
-    const proposals = results.map(parser).map(rule => decodeProposal(this.prefix, rule));
+    const proposals = results.map(parser).map(proposal => decodeProposal(this.prefix, proposal));
     return proposals;
   }
 
