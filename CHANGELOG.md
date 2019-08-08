@@ -8,6 +8,7 @@ Breaking changes
   `jsonRpcCodeInvalidParams`, `jsonRpcCodeInvalidRequest`,
   `jsonRpcCodeMethodNotFound`, `jsonRpcCodeParseError`,
   `jsonRpcCodeServerErrorDefault`.
+- @iov/jsonrpc: Rename `parseJsonRpcResponse2` to `parseJsonRpcResponse`.
 
 ## 0.16.1
 
