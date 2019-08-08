@@ -1,4 +1,4 @@
-import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jsonrpc";
+import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse } from "@iov/jsonrpc";
 import { ReconnectingSocket, SocketWrapperMessageEvent } from "@iov/socket";
 import { Stream } from "xstream";
 
@@ -23,7 +23,7 @@ export class WsEthereumRpcClient implements EthereumRpcClient {
       this.socket.events
         .map(event => {
           try {
-            return parseJsonRpcResponse2(JSON.parse(event.data));
+            return parseJsonRpcResponse(JSON.parse(event.data));
           } catch (error) {
             return null;
           }

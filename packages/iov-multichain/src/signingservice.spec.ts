@@ -22,7 +22,7 @@ import {
   JsonRpcClient,
   JsonRpcRequest,
   JsonRpcResponse,
-  parseJsonRpcResponse2,
+  parseJsonRpcResponse,
   SimpleMessagingConnection,
 } from "@iov/jsonrpc";
 import { firstEvent } from "@iov/stream";
@@ -71,7 +71,7 @@ function makeSimpleMessagingConnection(
     start: listener => {
       // tslint:disable-next-line:no-object-mutation
       worker.onmessage = event => {
-        listener.next(parseJsonRpcResponse2(event.data));
+        listener.next(parseJsonRpcResponse(event.data));
       };
     },
     stop: () => {

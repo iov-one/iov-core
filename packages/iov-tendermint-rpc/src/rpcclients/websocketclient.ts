@@ -5,7 +5,7 @@ import {
   JsonRpcRequest,
   JsonRpcResponse,
   JsonRpcSuccessResponse,
-  parseJsonRpcResponse2,
+  parseJsonRpcResponse,
 } from "@iov/jsonrpc";
 import { ConnectionStatus, ReconnectingSocket, SocketWrapperMessageEvent } from "@iov/socket";
 import { firstEvent } from "@iov/stream";
@@ -23,7 +23,7 @@ function toJsonRpcResponse(message: SocketWrapperMessageEvent): JsonRpcResponse 
     throw new Error(`Unexcepted message type on websocket: ${message.type}`);
   }
 
-  const jsonRpcEvent = parseJsonRpcResponse2(JSON.parse(message.data));
+  const jsonRpcEvent = parseJsonRpcResponse(JSON.parse(message.data));
   return jsonRpcEvent;
 }
 
