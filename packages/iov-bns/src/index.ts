@@ -39,6 +39,7 @@ export {
   VoteOption,
   CreateProposalTx,
   isCreateProposalTx,
+  Vote,
   VoteTx,
   isVoteTx,
   // Proposals

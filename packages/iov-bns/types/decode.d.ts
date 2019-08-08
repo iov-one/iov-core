@@ -20,6 +20,7 @@ import {
   Participant,
   PrivkeyBundle,
   Proposal,
+  Vote,
 } from "./types";
 /**
  * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
@@ -60,5 +61,6 @@ export declare function decodeProposal(
   prefix: "iov" | "tiov",
   proposal: codecImpl.gov.IProposal & Keyed,
 ): Proposal;
+export declare function decodeVote(prefix: "iov" | "tiov", vote: codecImpl.gov.IVote & Keyed): Vote;
 export declare function parseMsg(base: UnsignedTransaction, tx: codecImpl.bnsd.ITx): UnsignedTransaction;
 export declare function parseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): SignedTransaction;

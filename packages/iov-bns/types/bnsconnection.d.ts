@@ -1,6 +1,7 @@
 import {
   Account,
   AccountQuery,
+  Address,
   AddressQuery,
   Amount,
   AtomicSwap,
@@ -33,6 +34,7 @@ import {
   Proposal,
   Result,
   Validator,
+  Vote,
 } from "./types";
 export interface QueryResponse {
   readonly height?: number;
@@ -114,6 +116,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
   getElectorates(): Promise<readonly Electorate[]>;
   getElectionRules(): Promise<readonly ElectionRule[]>;
   getProposals(): Promise<readonly Proposal[]>;
+  getVotes(voter: Address): Promise<readonly Vote[]>;
   getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]>;
   getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
   withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;

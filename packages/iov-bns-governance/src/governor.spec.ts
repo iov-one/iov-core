@@ -27,6 +27,10 @@ const bnsdUrl = "ws://localhost:23456";
 const guaranteeFundEscrowId = Encoding.fromHex("88008800");
 const rewardFundAddress = "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address;
 
+async function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function getGovernorOptions(
   path = adminPath,
 ): Promise<GovernorOptions & { readonly profile: UserProfile }> {
@@ -589,6 +593,48 @@ describe("Governor", () => {
       });
 
       options.connection.disconnect();
+    });
+  });
+
+  describe("getVotes", () => {
+    it("can get all votes cast by a governor", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const governor = new Governor(options);
+      const { connection, identity, profile } = options;
+
+      const createProposalTx = await governor.buildCreateProposalTx({
+        type: ProposalType.AmendProtocol,
+        title: "Test getVote",
+        description: "Proposal to test getVote",
+        startTime: new ReadonlyDate(Date.now() + 1000),
+        electionRuleId: 1,
+        text: "Get a vote",
+      });
+
+      const nonce1 = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed1 = await profile.signTransaction(createProposalTx, bnsCodec, nonce1);
+      const response1 = await connection.postTx(bnsCodec.bytesToPost(signed1));
+      await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+
+      await sleep(7000);
+
+      const votesPre = await governor.getVotes();
+
+      const proposals = await governor.getProposals();
+      const proposalId = proposals[proposals.length - 1].id;
+      const voteTx = await governor.buildVoteTx(proposalId, VoteOption.Yes);
+      const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed2 = await profile.signTransaction(voteTx, bnsCodec, nonce2);
+      const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
+      await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+
+      const votesPost = await governor.getVotes();
+      expect(votesPost.length).toEqual(votesPre.length + 1);
+      expect(votesPost[votesPost.length - 1].proposalId).toEqual(proposalId);
+      expect(votesPost[votesPost.length - 1].selection).toEqual(VoteOption.Yes);
+
+      connection.disconnect();
     });
   });
 });

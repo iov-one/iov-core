@@ -7,6 +7,7 @@ import {
   ElectionRule,
   Electorate,
   Proposal,
+  Vote,
   VoteOption,
   VoteTx,
 } from "@iov/bns";
@@ -79,6 +80,10 @@ export class Governor {
       const electorateId = new BN(electorate.id).toNumber();
       return electorates.some(({ id }) => id === electorateId);
     });
+  }
+
+  public async getVotes(): Promise<readonly Vote[]> {
+    return this.connection.getVotes(this.address);
   }
 
   public async buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithCreator> {

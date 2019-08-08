@@ -48,6 +48,10 @@ export interface ElectorProperties {
   readonly weight: number;
 }
 
+export interface Elector extends ElectorProperties {
+  readonly address: Address;
+}
+
 /** An unordered map from elector address to remaining properies */
 export interface Electors {
   readonly [index: string]: ElectorProperties;
@@ -239,6 +243,12 @@ export interface Proposal {
   readonly status: ProposalStatus;
   readonly result: ProposalResult;
   readonly executorResult: ProposalExecutorResult;
+}
+
+export interface Vote {
+  readonly proposalId: number;
+  readonly elector: Elector;
+  readonly selection: VoteOption;
 }
 
 // username NFT

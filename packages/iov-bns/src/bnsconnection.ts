@@ -1,6 +1,7 @@
 import {
   Account,
   AccountQuery,
+  Address,
   AddressQuery,
   Algorithm,
   Amount,
@@ -62,6 +63,7 @@ import {
   decodeToken,
   decodeUserData,
   decodeUsernameNft,
+  decodeVote,
 } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
@@ -79,6 +81,7 @@ import {
   Proposal,
   Result,
   Validator,
+  Vote,
 } from "./types";
 import {
   addressPrefix,
@@ -682,8 +685,16 @@ export class BnsConnection implements AtomicSwapConnection {
   public async getProposals(): Promise<readonly Proposal[]> {
     const results = (await this.query("/proposals?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.Proposal, "proposal:");
-    const proposals = results.map(parser).map(rule => decodeProposal(this.prefix, rule));
+    const proposals = results.map(parser).map(proposal => decodeProposal(this.prefix, proposal));
     return proposals;
+  }
+
+  public async getVotes(voter: Address): Promise<readonly Vote[]> {
+    const { data } = decodeBnsAddress(voter);
+    const { results } = await this.query("/votes/electors?prefix", data);
+    const parser = createParser(codecImpl.gov.Vote, "vote:");
+    const votes = results.map(parser).map(vote => decodeVote(this.prefix, vote));
+    return votes;
   }
 
   public async getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]> {
