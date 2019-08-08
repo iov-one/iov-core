@@ -1,7 +1,7 @@
 import {
   parseJsonRpcErrorResponse,
   parseJsonRpcId,
-  parseJsonRpcResponse2,
+  parseJsonRpcResponse,
   parseJsonRpcSuccessResponse,
 } from "./parse";
 import { jsonRpcCode, JsonRpcErrorResponse, JsonRpcRequest, JsonRpcSuccessResponse } from "./types";
@@ -341,14 +341,14 @@ describe("parse", () => {
     });
   });
 
-  describe("parseJsonRpcResponse2", () => {
+  describe("parseJsonRpcResponse", () => {
     it("works for success response", () => {
       const response: any = {
         jsonrpc: "2.0",
         id: 123,
         result: 3000,
       };
-      expect(parseJsonRpcResponse2(response)).toEqual(response);
+      expect(parseJsonRpcResponse(response)).toEqual(response);
     });
 
     it("works for error response", () => {
@@ -361,7 +361,7 @@ describe("parse", () => {
           data: [2, 3, 4],
         },
       };
-      expect(parseJsonRpcResponse2(response)).toEqual(response);
+      expect(parseJsonRpcResponse(response)).toEqual(response);
     });
 
     it("favours error if response is error and success at the same time", () => {
@@ -374,7 +374,7 @@ describe("parse", () => {
           message: "Something bad happened",
         },
       };
-      expect(parseJsonRpcResponse2(response)).toEqual({
+      expect(parseJsonRpcResponse(response)).toEqual({
         jsonrpc: "2.0",
         id: 123,
         error: {
@@ -386,14 +386,14 @@ describe("parse", () => {
 
     it("throws for invalid type", () => {
       const expectedError = /data must be JSON compatible dictionary/i;
-      expect(() => parseJsonRpcResponse2(undefined)).toThrowError(expectedError);
-      expect(() => parseJsonRpcResponse2(null)).toThrowError(expectedError);
-      expect(() => parseJsonRpcResponse2(false)).toThrowError(expectedError);
-      expect(() => parseJsonRpcResponse2("error")).toThrowError(expectedError);
-      expect(() => parseJsonRpcResponse2(42)).toThrowError(expectedError);
-      expect(() => parseJsonRpcResponse2(() => true)).toThrowError(expectedError);
-      expect(() => parseJsonRpcResponse2({ foo: () => true })).toThrowError(expectedError);
-      expect(() => parseJsonRpcResponse2({ foo: () => new Uint8Array([]) })).toThrowError(expectedError);
+      expect(() => parseJsonRpcResponse(undefined)).toThrowError(expectedError);
+      expect(() => parseJsonRpcResponse(null)).toThrowError(expectedError);
+      expect(() => parseJsonRpcResponse(false)).toThrowError(expectedError);
+      expect(() => parseJsonRpcResponse("error")).toThrowError(expectedError);
+      expect(() => parseJsonRpcResponse(42)).toThrowError(expectedError);
+      expect(() => parseJsonRpcResponse(() => true)).toThrowError(expectedError);
+      expect(() => parseJsonRpcResponse({ foo: () => true })).toThrowError(expectedError);
+      expect(() => parseJsonRpcResponse({ foo: () => new Uint8Array([]) })).toThrowError(expectedError);
     });
 
     it("throws for invalid version", () => {
@@ -405,7 +405,7 @@ describe("parse", () => {
           id: 123,
           result: 3000,
         };
-        expect(() => parseJsonRpcResponse2(response)).toThrowError(expectedError);
+        expect(() => parseJsonRpcResponse(response)).toThrowError(expectedError);
       }
       // wrong version
       {
@@ -414,7 +414,7 @@ describe("parse", () => {
           id: 123,
           result: 3000,
         };
-        expect(() => parseJsonRpcResponse2(response)).toThrowError(expectedError);
+        expect(() => parseJsonRpcResponse(response)).toThrowError(expectedError);
       }
       // unset
       {
@@ -422,7 +422,7 @@ describe("parse", () => {
           id: 123,
           result: 3000,
         };
-        expect(() => parseJsonRpcResponse2(response)).toThrowError(expectedError);
+        expect(() => parseJsonRpcResponse(response)).toThrowError(expectedError);
       }
     });
   });

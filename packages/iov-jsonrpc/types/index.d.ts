@@ -3,7 +3,7 @@ export { JsonRpcClient, SimpleMessagingConnection } from "./jsonrpcclient";
 export {
   parseJsonRpcId,
   parseJsonRpcRequest,
-  parseJsonRpcResponse2,
+  parseJsonRpcResponse,
   parseJsonRpcErrorResponse,
   parseJsonRpcSuccessResponse,
 } from "./parse";
