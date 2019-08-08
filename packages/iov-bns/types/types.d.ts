@@ -34,6 +34,9 @@ export interface ElectorProperties {
   /** The voting weight of this elector. Max value is 65535 (2^16-1). */
   readonly weight: number;
 }
+export interface Elector extends ElectorProperties {
+  readonly address: Address;
+}
 /** An unordered map from elector address to remaining properies */
 export interface Electors {
   readonly [index: string]: ElectorProperties;
@@ -185,6 +188,11 @@ export interface Proposal {
   readonly status: ProposalStatus;
   readonly result: ProposalResult;
   readonly executorResult: ProposalExecutorResult;
+}
+export interface Vote {
+  readonly proposalId: number;
+  readonly elector: Elector;
+  readonly selection: VoteOption;
 }
 export interface ChainAddressPair {
   readonly chainId: ChainId;
