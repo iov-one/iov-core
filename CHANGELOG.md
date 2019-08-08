@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.17.0
+
+Breaking changes
+
+- @iov/jsonrpc: Remove deprecated types: `jsonRpcCodeInternalError`,
+  `jsonRpcCodeInvalidParams`, `jsonRpcCodeInvalidRequest`,
+  `jsonRpcCodeMethodNotFound`, `jsonRpcCodeParseError`,
+  `jsonRpcCodeServerErrorDefault`.
+
 ## 0.16.1
 
 - @iov/bns: Set chain ID for IOV mainnet (`iov-mainnet`).
