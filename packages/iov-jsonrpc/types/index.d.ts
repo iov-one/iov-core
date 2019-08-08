@@ -17,10 +17,4 @@ export {
   JsonRpcResponse,
   JsonRpcSuccessResponse,
   jsonRpcCode,
-  jsonRpcCodeInternalError,
-  jsonRpcCodeInvalidParams,
-  jsonRpcCodeInvalidRequest,
-  jsonRpcCodeMethodNotFound,
-  jsonRpcCodeParseError,
-  jsonRpcCodeServerErrorDefault,
 } from "./types";
