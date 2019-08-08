@@ -57,16 +57,3 @@ export const jsonRpcCode = {
     default: -32000,
   },
 };
-
-/** @deprecated: use jsonRpcCode */
-export const jsonRpcCodeParseError = jsonRpcCode.parseError;
-/** @deprecated: use jsonRpcCode */
-export const jsonRpcCodeInvalidRequest = jsonRpcCode.invalidRequest;
-/** @deprecated: use jsonRpcCode */
-export const jsonRpcCodeMethodNotFound = jsonRpcCode.methodNotFound;
-/** @deprecated: use jsonRpcCode */
-export const jsonRpcCodeInvalidParams = jsonRpcCode.invalidParams;
-/** @deprecated: use jsonRpcCode */
-export const jsonRpcCodeInternalError = jsonRpcCode.internalError;
-/** @deprecated: use jsonRpcCode */
-export const jsonRpcCodeServerErrorDefault = jsonRpcCode.serverError.default;

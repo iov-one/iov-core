@@ -44,15 +44,3 @@ export declare const jsonRpcCode: {
     default: number;
   };
 };
-/** @deprecated: use jsonRpcCode */
-export declare const jsonRpcCodeParseError: number;
-/** @deprecated: use jsonRpcCode */
-export declare const jsonRpcCodeInvalidRequest: number;
-/** @deprecated: use jsonRpcCode */
-export declare const jsonRpcCodeMethodNotFound: number;
-/** @deprecated: use jsonRpcCode */
-export declare const jsonRpcCodeInvalidParams: number;
-/** @deprecated: use jsonRpcCode */
-export declare const jsonRpcCodeInternalError: number;
-/** @deprecated: use jsonRpcCode */
-export declare const jsonRpcCodeServerErrorDefault: number;
