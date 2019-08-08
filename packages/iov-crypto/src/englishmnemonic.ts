@@ -1,9 +1,7 @@
 import * as bip39 from "bip39";
-// tslint:disable-next-line:no-submodule-imports
-import bip39WordlistEnglish from "bip39/wordlists/english.json";
 
 export class EnglishMnemonic {
-  public static readonly wordlist: readonly string[] = bip39WordlistEnglish;
+  public static readonly wordlist: readonly string[] = bip39.wordlists.english;
 
   // list of space separated lower case words (1 or more)
   private static readonly mnemonicMatcher = /^[a-z]+( [a-z]+)*$/;
