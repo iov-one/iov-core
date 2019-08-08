@@ -3,6 +3,8 @@ import * as bip39 from "bip39";
 import bip39WordlistEnglish from "bip39/wordlists/english.json";
 
 export class EnglishMnemonic {
+  public static readonly wordlist: readonly string[] = bip39WordlistEnglish;
+
   // list of space separated lower case words (1 or more)
   private static readonly mnemonicMatcher = /^[a-z]+( [a-z]+)*$/;
 
@@ -22,7 +24,7 @@ export class EnglishMnemonic {
     }
 
     for (const word of words) {
-      if ((bip39WordlistEnglish as readonly string[]).indexOf(word) === -1) {
+      if (EnglishMnemonic.wordlist.indexOf(word) === -1) {
         throw new Error("Mnemonic contains invalid word");
       }
     }
