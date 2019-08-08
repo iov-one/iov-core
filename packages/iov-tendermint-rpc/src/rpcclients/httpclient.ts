@@ -2,7 +2,7 @@ import {
   isJsonRpcErrorResponse,
   JsonRpcRequest,
   JsonRpcSuccessResponse,
-  parseJsonRpcResponse2,
+  parseJsonRpcResponse,
 } from "@iov/jsonrpc";
 import axios from "axios";
 
@@ -48,7 +48,7 @@ export class HttpClient implements RpcClient {
   }
 
   public async execute(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse> {
-    const response = parseJsonRpcResponse2(await http("POST", this.url, request));
+    const response = parseJsonRpcResponse(await http("POST", this.url, request));
     if (isJsonRpcErrorResponse(response)) {
       throw new Error(JSON.stringify(response.error));
     }

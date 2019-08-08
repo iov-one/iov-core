@@ -1,4 +1,4 @@
-import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse2 } from "@iov/jsonrpc";
+import { JsonRpcRequest, JsonRpcResponse, parseJsonRpcResponse } from "@iov/jsonrpc";
 import axios from "axios";
 import xstream from "xstream";
 
@@ -17,7 +17,7 @@ export class HttpEthereumRpcClient implements EthereumRpcClient {
 
   public async run(request: JsonRpcRequest): Promise<JsonRpcResponse> {
     const result = await axios.post(this.baseUrl, request);
-    return parseJsonRpcResponse2(result.data);
+    return parseJsonRpcResponse(result.data);
   }
 
   public async socketSend(): Promise<void> {
