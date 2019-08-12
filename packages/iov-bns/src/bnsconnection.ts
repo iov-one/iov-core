@@ -1,6 +1,7 @@
 import {
   Account,
   AccountQuery,
+  Address,
   AddressQuery,
   Algorithm,
   Amount,
@@ -62,6 +63,7 @@ import {
   decodeToken,
   decodeUserData,
   decodeUsernameNft,
+  decodeVote,
 } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
@@ -79,8 +81,10 @@ import {
   Proposal,
   Result,
   Validator,
+  Vote,
 } from "./types";
 import {
+  addressPrefix,
   buildQueryString,
   conditionToAddress,
   decodeBnsAddress,
@@ -227,6 +231,10 @@ export class BnsConnection implements AtomicSwapConnection {
   private readonly context: Context;
   // tslint:disable-next-line: readonly-keyword
   private tokensCache: readonly Token[] | undefined;
+
+  private get prefix(): "iov" | "tiov" {
+    return addressPrefix(this.chainId());
+  }
 
   /**
    * Private constructor to hide package private types from the public interface
@@ -663,22 +671,30 @@ export class BnsConnection implements AtomicSwapConnection {
   public async getElectorates(): Promise<readonly Electorate[]> {
     const results = (await this.query("/electorates?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.Electorate, "electorate:");
-    const electorates = results.map(parser).map(electorate => decodeElectorate("tiov", electorate));
+    const electorates = results.map(parser).map(electorate => decodeElectorate(this.prefix, electorate));
     return electorates;
   }
 
   public async getElectionRules(): Promise<readonly ElectionRule[]> {
     const results = (await this.query("/electionrules?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.ElectionRule, "electnrule:");
-    const rules = results.map(parser).map(rule => decodeElectionRule("tiov", rule));
+    const rules = results.map(parser).map(rule => decodeElectionRule(this.prefix, rule));
     return rules;
   }
 
   public async getProposals(): Promise<readonly Proposal[]> {
     const results = (await this.query("/proposals?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.Proposal, "proposal:");
-    const proposals = results.map(parser).map(rule => decodeProposal("tiov", rule));
+    const proposals = results.map(parser).map(proposal => decodeProposal(this.prefix, proposal));
     return proposals;
+  }
+
+  public async getVotes(voter: Address): Promise<readonly Vote[]> {
+    const { data } = decodeBnsAddress(voter);
+    const { results } = await this.query("/votes/electors?prefix", data);
+    const parser = createParser(codecImpl.gov.Vote, "vote:");
+    const votes = results.map(parser).map(vote => decodeVote(this.prefix, vote));
+    return votes;
   }
 
   public async getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]> {

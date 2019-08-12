@@ -35,6 +35,7 @@ import {
   CreateMultisignatureTx,
   CreateProposalTx,
   ElectionRule,
+  Elector,
   Electorate,
   ElectorProperties,
   Electors,
@@ -58,6 +59,7 @@ import {
   UpdateTargetsOfUsernameTx,
   Validators,
   VersionedId,
+  Vote,
   VoteOption,
   VoteTx,
 } from "./types";
@@ -283,6 +285,13 @@ function decodeElectors(prefix: "iov" | "tiov", electors: readonly codecImpl.gov
       [address]: { weight: ensure(elector.weight, "weight") },
     };
   }, map);
+}
+
+function decodeElector(prefix: "iov" | "tiov", elector: codecImpl.gov.IElector): Elector {
+  return {
+    address: encodeBnsAddress(prefix, ensure(elector.address, "address")),
+    weight: ensure(elector.weight, "weight"),
+  };
 }
 
 function decodeProposalExecutorResult(result: codecImpl.gov.Proposal.ExecutorResult): ProposalExecutorResult {
@@ -666,6 +675,25 @@ function decodeVoteOption(option: codecImpl.gov.VoteOption): VoteOption {
     default:
       throw new Error("Received unknown value for vote option");
   }
+}
+
+function decodeVoteId(
+  prefix: "iov" | "tiov",
+  id: Uint8Array,
+): { readonly voterAddress: Address; readonly proposalId: number } {
+  return {
+    voterAddress: encodeBnsAddress(prefix, id.slice(0, 20)),
+    proposalId: decodeNumericId(id.slice(20)),
+  };
+}
+
+export function decodeVote(prefix: "iov" | "tiov", vote: codecImpl.gov.IVote & Keyed): Vote {
+  const { proposalId } = decodeVoteId(prefix, vote._id);
+  return {
+    proposalId: proposalId,
+    selection: decodeVoteOption(ensure(vote.voted, "voted")),
+    elector: decodeElector(prefix, ensure(vote.elector, "elector")),
+  };
 }
 
 function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): VoteTx & WithCreator {

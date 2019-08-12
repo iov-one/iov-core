@@ -10,6 +10,12 @@ Breaking changes
   `jsonRpcCodeServerErrorDefault`.
 - @iov/jsonrpc: Rename `parseJsonRpcResponse2` to `parseJsonRpcResponse`.
 
+## 0.16.2
+
+- @iov/bns: Add `getVotes` by voter address method to `BnsConnection` class.
+- @iov/bns-governance: Add `getVotes` method to `Governor` class.
+- @iov/crypto: Add `EnglishMnemonic.wordlist`.
+
 ## 0.16.1
 
 - @iov/bns: Set chain ID for IOV mainnet (`iov-mainnet`).
