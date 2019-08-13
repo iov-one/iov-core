@@ -20,9 +20,9 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { bnsConnector } from "@iov/bns";
+import { createBnsConnector } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
-import { Erc20ApproveTransaction, EthereumConnection, ethereumConnector } from "@iov/ethereum";
+import { createEthereumConnector, Erc20ApproveTransaction, EthereumConnection } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import BN from "bn.js";
 
@@ -96,9 +96,9 @@ class Actor {
     const secp256k1HdWallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(ethereumMnemonic));
     const signer = new MultiChainSigner(profile);
 
-    const bnsConnection = (await signer.addChain(bnsConnector("ws://localhost:23456"))).connection;
+    const bnsConnection = (await signer.addChain(createBnsConnector("ws://localhost:23456"))).connection;
     const ethereumConnection = (await signer.addChain(
-      ethereumConnector(ethereumBaseUrl, ethereumConnectionOptions),
+      createEthereumConnector(ethereumBaseUrl, ethereumConnectionOptions),
     )).connection;
 
     const bnsIdentity = await profile.createIdentity(ed25519HdWallet.id, bnsConnection.chainId(), bnsHdPath);

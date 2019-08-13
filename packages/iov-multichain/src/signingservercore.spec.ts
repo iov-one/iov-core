@@ -14,7 +14,7 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { bnsCodec, bnsConnector } from "@iov/bns";
+import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 
@@ -304,7 +304,7 @@ describe("SigningServerCore", () => {
 
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
-      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
       const bnsChain = connection.chainId();
 
       {
@@ -341,7 +341,7 @@ describe("SigningServerCore", () => {
 
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
-      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
       const bnsChain = connection.chainId();
 
       {
@@ -380,7 +380,7 @@ describe("SigningServerCore", () => {
 
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
-      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
       const bnsChain = connection.chainId();
 
       {
@@ -417,7 +417,7 @@ describe("SigningServerCore", () => {
 
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
-      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
       const bnsChain = connection.chainId();
 
       {
@@ -462,7 +462,7 @@ describe("SigningServerCore", () => {
 
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
-      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
       const bnsChain = connection.chainId();
 
       {
@@ -504,7 +504,7 @@ describe("SigningServerCore", () => {
 
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
-      const { connection } = await signer.addChain(bnsConnector(bnsdUrl));
+      const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
       const bnsChain = connection.chainId();
 
       {

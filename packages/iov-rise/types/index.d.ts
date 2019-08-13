@@ -1,6 +1,6 @@
 export { riseCodec } from "./risecodec";
 export { generateNonce, RiseConnection } from "./riseconnection";
-export { riseConnector } from "./riseconnector";
+export { createRiseConnector } from "./riseconnector";
 import { Derivation } from "@iov/dpos";
 /**
  * RISE-specific passphrase to Ed25519 keypair derivation

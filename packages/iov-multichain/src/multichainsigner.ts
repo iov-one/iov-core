@@ -24,7 +24,7 @@ interface Chain {
  */
 async function connectChain(x: ChainConnector): Promise<Chain> {
   return {
-    connection: await x.client(),
+    connection: await x.establishConnection(),
     codec: x.codec,
   };
 }

@@ -17,7 +17,7 @@ Lisk blockchain as follows.
 
 ```ts
 import { Ed25519Wallet } from "@iov/keycontrol";
-import { passphraseToKeypair, liskCodec, liskConnector } from "@iov/lisk";
+import { passphraseToKeypair, liskCodec, createLiskConnector } from "@iov/lisk";
 
 const wallet = new Ed25519Wallet();
 const mainIdentity = await wallet.createIdentity(
@@ -30,7 +30,7 @@ const profile = new UserProfile();
 profile.addWallet(wallet);
 
 const signer = new MultiChainSigner(profile);
-await signer.addChain(liskConnector("https://testnet.lisk.io"));
+await signer.addChain(createLiskConnector("https://testnet.lisk.io"));
 const chainId = signer.chainIds()[0];
 const connection = signer.connection(chainId);
 

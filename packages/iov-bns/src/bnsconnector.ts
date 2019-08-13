@@ -6,9 +6,9 @@ import { BnsConnection } from "./bnsconnection";
 /**
  * A helper to connect to a bns-based chain at a given url
  */
-export function bnsConnector(url: string, expectedChainId?: ChainId): ChainConnector {
+export function createBnsConnector(url: string, expectedChainId?: ChainId): ChainConnector {
   return {
-    client: async () => BnsConnection.establish(url),
+    establishConnection: async () => BnsConnection.establish(url),
     codec: bnsCodec,
     expectedChainId: expectedChainId,
   };

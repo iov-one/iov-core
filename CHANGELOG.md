@@ -7,11 +7,19 @@
 
 Breaking changes
 
+- @iov/bcp: `ChainConnector` type `client` property has been renamed to
+  `establishConnection` and `expectedChainId` property has been changed from
+  optional to `ChainId | undefined`.
+- @iov/bns: `bnsConnector` has been renamed to `createBnsConnector`.
+- @iov/ethereum: `ethereumConnector` has been renamed to
+  `createEthereumConnector`.
 - @iov/jsonrpc: Remove deprecated types: `jsonRpcCodeInternalError`,
   `jsonRpcCodeInvalidParams`, `jsonRpcCodeInvalidRequest`,
   `jsonRpcCodeMethodNotFound`, `jsonRpcCodeParseError`,
   `jsonRpcCodeServerErrorDefault`.
 - @iov/jsonrpc: Rename `parseJsonRpcResponse2` to `parseJsonRpcResponse`.
+- @iov/lisk: `liskConnector` has been renamed to `createLiskConnector`.
+- @iov/rise: `riseConnector` has been renamed to `createRiseConnector`.
 
 ## 0.16.2
 

@@ -15,7 +15,7 @@ import {
   TransactionId,
   WithCreator,
 } from "@iov/bcp";
-import { bnsCodec, bnsConnector } from "@iov/bns";
+import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding, TransactionEncoder } from "@iov/encoding";
 import {
@@ -210,7 +210,7 @@ describe("signingservice.worker", () => {
     pendingWithoutEthereum();
     pendingWithoutWorker();
 
-    const bnsConnection = await bnsConnector(bnsdUrl).client();
+    const bnsConnection = await createBnsConnector(bnsdUrl).establishConnection();
 
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);

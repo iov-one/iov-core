@@ -8,13 +8,13 @@ import { EthereumConnection, EthereumConnectionOptions } from "./ethereumconnect
  *
  * @param options An EthereumConnectionOptions object. If {}, all possible options are set to their default.
  */
-export function ethereumConnector(
+export function createEthereumConnector(
   url: string,
   options: EthereumConnectionOptions,
   expectedChainId?: ChainId,
 ): ChainConnector {
   return {
-    client: async () => EthereumConnection.establish(url, options),
+    establishConnection: async () => EthereumConnection.establish(url, options),
     codec: new EthereumCodec({
       erc20Tokens: options.erc20Tokens,
       atomicSwapEtherContractAddress: options.atomicSwapEtherContractAddress,

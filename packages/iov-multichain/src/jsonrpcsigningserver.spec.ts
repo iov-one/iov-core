@@ -13,10 +13,10 @@ import {
   TransactionId,
   WithCreator,
 } from "@iov/bcp";
-import { bnsCodec, bnsConnector } from "@iov/bns";
+import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding, TransactionEncoder } from "@iov/encoding";
-import { ethereumConnector } from "@iov/ethereum";
+import { createEthereumConnector } from "@iov/ethereum";
 import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import { firstEvent } from "@iov/stream";
@@ -80,8 +80,8 @@ async function makeBnsEthereumSigningServer(
   const signer = new MultiChainSigner(profile);
 
   // connect to chains
-  const bnsConnection = (await signer.addChain(bnsConnector(bnsdUrl))).connection;
-  const ethereumConnection = (await signer.addChain(ethereumConnector(ethereumUrl, {}))).connection;
+  const bnsConnection = (await signer.addChain(createBnsConnector(bnsdUrl))).connection;
+  const ethereumConnection = (await signer.addChain(createEthereumConnector(ethereumUrl, {}))).connection;
 
   // faucet identity
   await profile.createIdentity(ed25519Wallet.id, bnsConnection.chainId(), bnsdFaucetPath);
@@ -206,7 +206,7 @@ describe("JsonRpcSigningServer", () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
-    const bnsConnection = await bnsConnector(bnsdUrl).client();
+    const bnsConnection = await createBnsConnector(bnsdUrl).establishConnection();
 
     const server = await makeBnsEthereumSigningServer();
 

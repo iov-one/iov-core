@@ -1,5 +1,5 @@
 export { bnsCodec } from "./bnscodec";
-export { bnsConnector } from "./bnsconnector";
+export { createBnsConnector } from "./bnsconnector";
 export { BnsConnection } from "./bnsconnection";
 export { bnsSwapQueryTag } from "./tags";
 export {

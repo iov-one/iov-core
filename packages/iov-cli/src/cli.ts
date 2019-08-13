@@ -52,7 +52,7 @@ export function main(originalArgs: readonly string[]): void {
       [
         "bnsCodec",
         "BnsConnection",
-        "bnsConnector",
+        "createBnsConnector",
         "ChainAddressPair",
         "UpdateTargetsOfUsernameTx",
         "RegisterUsernameTx",
@@ -80,7 +80,7 @@ export function main(originalArgs: readonly string[]): void {
       [
         "EthereumConnection",
         "EthereumConnectionOptions",
-        "ethereumConnector",
+        "createEthereumConnector",
         "ethereumCodec",
         "pubkeyToAddress as ethereumPubkeyToAddress",
       ],
@@ -100,9 +100,9 @@ export function main(originalArgs: readonly string[]): void {
         "WalletSerializationString",
       ],
     ],
-    ["@iov/lisk", ["liskCodec", "LiskConnection", "liskConnector"]],
+    ["@iov/lisk", ["liskCodec", "LiskConnection", "createLiskConnector"]],
     ["@iov/multichain", ["MultiChainSigner"]],
-    ["@iov/rise", ["riseCodec", "RiseConnection", "riseConnector"]],
+    ["@iov/rise", ["riseCodec", "RiseConnection", "createRiseConnector"]],
   ]);
 
   console.info(colors.green("Initializing session for you. Have fun!"));
