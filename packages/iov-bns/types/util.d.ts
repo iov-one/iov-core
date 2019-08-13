@@ -5,6 +5,7 @@ import {
   Hash,
   Identity,
   Nonce,
+  PubkeyBundle,
   SignableBytes,
   SwapAbortTransaction,
   SwapClaimTransaction,
@@ -26,6 +27,10 @@ export declare function decodeBnsAddress(
   readonly prefix: string;
   readonly data: Uint8Array;
 };
+/**
+ * Creates an IOV address from a given Ed25519 pubkey and a prefix that represents the network
+ */
+export declare function pubkeyToAddress(pubkey: PubkeyBundle, prefix: "iov" | "tiov"): Address;
 export declare function identityToAddress(identity: Identity): Address;
 export declare type Condition = Uint8Array & As<"Condition">;
 export declare function swapCondition(swap: SwapData): Condition;
