@@ -1,2 +1,2 @@
-import { ChainConnector } from "@iov/bcp";
-export declare function liskConnector(url: string): ChainConnector;
+import { ChainConnector, ChainId } from "@iov/bcp";
+export declare function liskConnector(url: string, expectedChainId?: ChainId): ChainConnector;

@@ -210,7 +210,7 @@ describe("signingservice.worker", () => {
     pendingWithoutEthereum();
     pendingWithoutWorker();
 
-    const bnsConnection = await bnsConnector(bnsdUrl).client();
+    const bnsConnection = await bnsConnector(bnsdUrl).establishConnection();
 
     const worker = new Worker(signingserviceKarmaUrl);
     await sleep(signingserviceBootTime);

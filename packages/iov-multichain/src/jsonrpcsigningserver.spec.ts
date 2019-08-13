@@ -206,7 +206,7 @@ describe("JsonRpcSigningServer", () => {
     pendingWithoutBnsd();
     pendingWithoutEthereum();
 
-    const bnsConnection = await bnsConnector(bnsdUrl).client();
+    const bnsConnection = await bnsConnector(bnsdUrl).establishConnection();
 
     const server = await makeBnsEthereumSigningServer();
 

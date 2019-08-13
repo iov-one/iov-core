@@ -8,7 +8,7 @@ import { BnsConnection } from "./bnsconnection";
  */
 export function bnsConnector(url: string, expectedChainId?: ChainId): ChainConnector {
   return {
-    client: async () => BnsConnection.establish(url),
+    establishConnection: async () => BnsConnection.establish(url),
     codec: bnsCodec,
     expectedChainId: expectedChainId,
   };

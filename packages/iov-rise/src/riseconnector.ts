@@ -1,11 +1,12 @@
-import { ChainConnector } from "@iov/bcp";
+import { ChainConnector, ChainId } from "@iov/bcp";
 
 import { riseCodec } from "./risecodec";
 import { RiseConnection } from "./riseconnection";
 
-export function riseConnector(url: string): ChainConnector {
+export function riseConnector(url: string, expectedChainId?: ChainId): ChainConnector {
   return {
-    client: async () => RiseConnection.establish(url),
+    establishConnection: async () => RiseConnection.establish(url),
     codec: riseCodec,
+    expectedChainId: expectedChainId,
   };
 }
