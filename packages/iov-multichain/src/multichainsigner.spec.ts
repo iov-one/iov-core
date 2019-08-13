@@ -12,10 +12,10 @@ import {
   TransactionState,
   WithCreator,
 } from "@iov/bcp";
-import { bnsCodec, bnsConnector } from "@iov/bns";
+import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
-import { ethereumCodec, ethereumConnector } from "@iov/ethereum";
+import { createEthereumConnector, ethereumCodec } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 
 import { MultiChainSigner } from "./multichainsigner";
@@ -89,7 +89,7 @@ describe("MultiChainSigner", () => {
 
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
-      const { connection } = await signer.addChain(bnsConnector(bnsdTendermintUrl));
+      const { connection } = await signer.addChain(createBnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
       const chainId = connection.chainId();
 
@@ -142,13 +142,13 @@ describe("MultiChainSigner", () => {
       expect(signer.chainIds().length).toEqual(0);
 
       // add the bov chain
-      await signer.addChain(bnsConnector(bnsdTendermintUrl));
+      await signer.addChain(createBnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
       const bovId = signer.chainIds()[0];
       const { faucet } = await addWalletWithFaucet(profile, bovId);
 
       // add a ethereum chain
-      await signer.addChain(ethereumConnector(httpEthereumUrl, {}));
+      await signer.addChain(createEthereumConnector(httpEthereumUrl, {}));
       const ethereumChainId = signer.chainIds()[1];
       const twoChains = signer.chainIds();
       // it should store both chains
@@ -190,8 +190,8 @@ describe("MultiChainSigner", () => {
       const signer = new MultiChainSigner(profile);
       expect(signer.chainIds().length).toEqual(0);
 
-      const { connection: bnsConnection } = await signer.addChain(bnsConnector(bnsdTendermintUrl));
-      await signer.addChain(ethereumConnector(httpEthereumUrl, {}));
+      const { connection: bnsConnection } = await signer.addChain(createBnsConnector(bnsdTendermintUrl));
+      await signer.addChain(createEthereumConnector(httpEthereumUrl, {}));
       const [bnsId, ethereumChainId] = signer.chainIds();
 
       // Create sender identities
@@ -261,7 +261,7 @@ describe("MultiChainSigner", () => {
   it("optionally enforces chainId", async () => {
     pendingWithoutBnsd();
     const signer = new MultiChainSigner(new UserProfile());
-    const connector = bnsConnector(bnsdTendermintUrl);
+    const connector = createBnsConnector(bnsdTendermintUrl);
 
     // can add with unspecified expectedChainId
     const { connection } = await signer.addChain(connector);
@@ -274,12 +274,12 @@ describe("MultiChainSigner", () => {
 
     // success if adding with proper expectedChainId
     const signer2 = new MultiChainSigner(new UserProfile());
-    const secureConnector = bnsConnector(bnsdTendermintUrl, chainId);
+    const secureConnector = createBnsConnector(bnsdTendermintUrl, chainId);
     await signer2.addChain(secureConnector);
 
     // error if adding with false expectedChainId
     const signer3 = new MultiChainSigner(new UserProfile());
-    const invalidConnector = bnsConnector(bnsdTendermintUrl, "chain-is-not-right" as ChainId);
+    const invalidConnector = createBnsConnector(bnsdTendermintUrl, "chain-is-not-right" as ChainId);
     await signer3
       .addChain(invalidConnector)
       .then(() => fail("must not resolve"))
@@ -297,8 +297,9 @@ describe("MultiChainSigner", () => {
 
       const signer = new MultiChainSigner(new UserProfile());
 
-      const bnsConnection = (await signer.addChain(bnsConnector(bnsdTendermintUrl))).connection;
-      const ethereumConnection = (await signer.addChain(ethereumConnector(httpEthereumUrl, {}))).connection;
+      const bnsConnection = (await signer.addChain(createBnsConnector(bnsdTendermintUrl))).connection;
+      const ethereumConnection = (await signer.addChain(createEthereumConnector(httpEthereumUrl, {})))
+        .connection;
 
       const bnsChainId = bnsConnection.chainId();
       const ethereumChainId = ethereumConnection.chainId();

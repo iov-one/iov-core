@@ -1,2 +1,2 @@
 import { ChainConnector, ChainId } from "@iov/bcp";
-export declare function riseConnector(url: string, expectedChainId?: ChainId): ChainConnector;
+export declare function createRiseConnector(url: string, expectedChainId?: ChainId): ChainConnector;

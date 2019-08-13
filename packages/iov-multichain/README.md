@@ -167,10 +167,10 @@ genesis file, by running `bov init IOV $ADDR`.
 Now, connect to the network:
 
 ```ts
-import { bnsConnector, MultiChainSigner } from "@iov/multichain";
+import { createBnsConnector, MultiChainSigner } from "@iov/multichain";
 
 const signer = new MultiChainSigner(profile);
-await signer.addChain(bnsConnector("wss://rpc.lovenet.iov.one/"));
+await signer.addChain(createBnsConnector("wss://rpc.lovenet.iov.one/"));
 
 console.log(signer.chainIds()[0]); // is this what you got yourself?
 ```

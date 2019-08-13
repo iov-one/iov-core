@@ -17,7 +17,7 @@ RISE blockchain as follows.
 
 ```ts
 import { Ed25519Wallet } from "@iov/keycontrol";
-import { passphraseToKeypair, riseCodec, riseConnector } from "@iov/rise";
+import { passphraseToKeypair, riseCodec, createRiseConnector } from "@iov/rise";
 
 const wallet = new Ed25519Wallet();
 const mainIdentity = await wallet.createIdentity(
@@ -28,7 +28,7 @@ const profile = new UserProfile();
 profile.addWallet(wallet);
 
 const signer = new MultiChainSigner(profile);
-await signer.addChain(riseConnector("https://twallet.rise.vision"));
+await signer.addChain(createRiseConnector("https://twallet.rise.vision"));
 const chainId = signer.chainIds()[0];
 const connection = signer.connection(chainId);
 

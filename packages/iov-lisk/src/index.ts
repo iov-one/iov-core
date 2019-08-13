@@ -1,6 +1,6 @@
 export { liskCodec } from "./liskcodec";
 export { generateNonce, LiskConnection } from "./liskconnection";
-export { liskConnector } from "./liskconnector";
+export { createLiskConnector } from "./liskconnector";
 
 import { Derivation } from "@iov/dpos";
 /**

@@ -3,8 +3,8 @@
 // A proof-of-work RPC server implementation for the out of process signer.
 // This file belongs to the test code but is compiled separately to be usable in a WebWorker.
 
-import { bnsConnector } from "@iov/bns";
-import { ethereumConnector } from "@iov/ethereum";
+import { createBnsConnector } from "@iov/bns";
+import { createEthereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
 import { JsonRpcSigningServer } from "../jsonrpcsigningserver";
@@ -32,9 +32,9 @@ async function main(): Promise<void> {
   const secp256k1Wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(ganacheMnemonic));
   const signer = new MultiChainSigner(profile);
 
-  const bnsdConnection = (await signer.addChain(bnsConnector(bnsdUrl))).connection;
+  const bnsdConnection = (await signer.addChain(createBnsConnector(bnsdUrl))).connection;
   const bnsdChainId = bnsdConnection.chainId();
-  const ethereumConnection = (await signer.addChain(ethereumConnector(ethereumUrl, {}))).connection;
+  const ethereumConnection = (await signer.addChain(createEthereumConnector(ethereumUrl, {}))).connection;
   const ethereumChainId = ethereumConnection.chainId();
 
   // faucet identity

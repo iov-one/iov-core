@@ -8,7 +8,7 @@ import { EthereumConnection, EthereumConnectionOptions } from "./ethereumconnect
  *
  * @param options An EthereumConnectionOptions object. If {}, all possible options are set to their default.
  */
-export function ethereumConnector(
+export function createEthereumConnector(
   url: string,
   options: EthereumConnectionOptions,
   expectedChainId?: ChainId,
