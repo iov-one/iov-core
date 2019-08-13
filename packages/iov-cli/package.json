@@ -24,6 +24,13 @@
   "bin": {
     "iov-cli": "bin/iov-cli"
   },
+  "files": [
+    "build/",
+    "types/",
+    "*.md",
+    "!*.spec.*",
+    "!**/testdata/"
+  ],
   "dependencies": {
     "@iov/bns": "^0.16.2",
     "@iov/ethereum": "^0.16.2",
