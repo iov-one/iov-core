@@ -1,4 +1,4 @@
-import { Address, ChainId, TransactionId } from "@iov/bcp";
+import { Address, Algorithm, ChainId, PubkeyBundle, PubkeyBytes, TransactionId } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import * as testdata from "./testdata.spec";
@@ -11,6 +11,7 @@ import {
   identityToAddress,
   isHashIdentifier,
   isValidAddress,
+  pubkeyToAddress,
 } from "./util";
 
 const { fromHex, toAscii, toHex, toUtf8 } = Encoding;
@@ -23,6 +24,23 @@ describe("Util", () => {
 
     it("works for mainnet", () => {
       expect(addressPrefix("iov-mainnet" as ChainId)).toEqual("iov");
+    });
+  });
+
+  describe("pubkeyToAddress", () => {
+    it("is compatible to weave test data", () => {
+      const address = pubkeyToAddress(testdata.pubJson, "tiov");
+      expect(address).toEqual(testdata.address);
+    });
+
+    it("throws when pubkey is not Ed25519", () => {
+      const secpPubkey: PubkeyBundle = {
+        algo: Algorithm.Secp256k1,
+        data: fromHex(
+          "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
+        ) as PubkeyBytes,
+      };
+      expect(() => pubkeyToAddress(secpPubkey, "tiov")).toThrowError(/Public key must be Ed25519/i);
     });
   });
 
