@@ -6,6 +6,13 @@
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",
+  "files": [
+    "build/",
+    "types/",
+    "*.md",
+    "!*.spec.*",
+    "!**/testdata/"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-bns"
