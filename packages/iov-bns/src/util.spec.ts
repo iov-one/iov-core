@@ -1,7 +1,7 @@
 import { Address, ChainId, TransactionId } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { address, pubJson } from "./testdata.spec";
+import * as testdata from "./testdata.spec";
 import {
   addressPrefix,
   arraysEqual,
@@ -27,8 +27,8 @@ describe("Util", () => {
   });
 
   it("has working identityToAddress", () => {
-    const calculatedAddress = identityToAddress({ chainId: "testnet123" as ChainId, pubkey: pubJson });
-    expect(calculatedAddress).toEqual(address);
+    const address = identityToAddress({ chainId: "testnet123" as ChainId, pubkey: testdata.pubJson });
+    expect(address).toEqual(testdata.address);
   });
 
   it("verify array comparison", () => {
