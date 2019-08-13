@@ -32,11 +32,6 @@ fold_start "format-text"
 yarn format-text
 fold_end
 
-fold_start "update-npmipgnore"
-# This in combination with check-dirty (below) ensures .npmignore files are up-to-date
-./scripts/update_npmignore.sh
-fold_end
-
 fold_start "check-dirty"
 # Ensure build step didn't modify source files to avoid unprettified repository state
 SOURCE_CHANGES=$(git status --porcelain)
