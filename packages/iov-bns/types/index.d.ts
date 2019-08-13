@@ -50,3 +50,4 @@ export {
   BnsTx,
   isBnsTx,
 } from "./types";
+export { pubkeyToAddress } from "./util";

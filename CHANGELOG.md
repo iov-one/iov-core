@@ -2,6 +2,9 @@
 
 ## 0.17.0
 
+- @iov/bns: Export `pubkeyToAddress` for address generation with prefix instead
+  of chain ID.
+
 Breaking changes
 
 - @iov/jsonrpc: Remove deprecated types: `jsonRpcCodeInternalError`,

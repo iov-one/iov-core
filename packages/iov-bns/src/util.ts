@@ -57,10 +57,22 @@ function keyToIdentifier(key: PubkeyBundle): Uint8Array {
   return Uint8Array.from([...algoToPrefix(key.algo), ...key.data]);
 }
 
+/**
+ * Creates an IOV address from a given Ed25519 pubkey and
+ * a prefix that represents the network kind (i.e. mainnet or testnet)
+ */
+export function pubkeyToAddress(pubkey: PubkeyBundle, prefix: "iov" | "tiov"): Address {
+  if (pubkey.algo !== Algorithm.Ed25519) {
+    throw new Error("Public key must be Ed25519");
+  }
+
+  const bytes = new Sha256(keyToIdentifier(pubkey)).digest().slice(0, 20);
+  return encodeBnsAddress(prefix, bytes);
+}
+
 export function identityToAddress(identity: Identity): Address {
   const prefix = addressPrefix(identity.chainId);
-  const bytes = new Sha256(keyToIdentifier(identity.pubkey)).digest().slice(0, 20);
-  return encodeBnsAddress(prefix, bytes);
+  return pubkeyToAddress(identity.pubkey, prefix);
 }
 
 // TODO: this maps to weave code... maybe we change a bit??
