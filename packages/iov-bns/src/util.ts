@@ -58,7 +58,8 @@ function keyToIdentifier(key: PubkeyBundle): Uint8Array {
 }
 
 /**
- * Creates an IOV address from a given Ed25519 pubkey and a prefix that represents the network
+ * Creates an IOV address from a given Ed25519 pubkey and
+ * a prefix that represents the network kind (i.e. mainnet or testnet)
  */
 export function pubkeyToAddress(pubkey: PubkeyBundle, prefix: "iov" | "tiov"): Address {
   if (pubkey.algo !== Algorithm.Ed25519) {
