@@ -12,6 +12,7 @@ import { Bech32, Encoding } from "@iov/encoding";
 
 import {
   decodeAmount,
+  decodeCashConfiguration,
   decodeElectionRule,
   decodeElectorate,
   decodePrivkey,
@@ -191,6 +192,40 @@ describe("Decode", () => {
         };
         expect(() => decodeAmount(backendAmount)).toThrowError(/`fractional` must not be negative/i);
       }
+    });
+  });
+
+  describe("decodeCashConfiguration", () => {
+    it("can decode configuration with non-null minimal fee", () => {
+      const config: codecImpl.cash.IConfiguration = {
+        minimalFee: {
+          whole: 1234567890,
+          fractional: 123456789,
+          ticker: "ASH",
+        },
+      };
+      const decoded = decodeCashConfiguration(config);
+      expect(decoded).toEqual({
+        minimalFee: {
+          quantity: "1234567890123456789",
+          fractionalDigits: 9,
+          tokenTicker: "ASH" as TokenTicker,
+        },
+      });
+    });
+
+    it("can decode configuration with null minimal fee", () => {
+      const config: codecImpl.cash.IConfiguration = {
+        minimalFee: {
+          whole: 0,
+          fractional: 0,
+          ticker: "",
+        },
+      };
+      const decoded = decodeCashConfiguration(config);
+      expect(decoded).toEqual({
+        minimalFee: null,
+      });
     });
   });
 
