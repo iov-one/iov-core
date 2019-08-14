@@ -11,6 +11,8 @@ Breaking changes
   `establishConnection` and `expectedChainId` property has been changed from
   optional to `ChainId | undefined`.
 - @iov/bns: `bnsConnector` has been renamed to `createBnsConnector`.
+- @iov/bns: `CashConfiguration.minimalFee` is now nullable.
+- @iov/bns: `BnsConnection.getDefaultFee` can resolve to `undefined`.
 - @iov/ethereum: `ethereumConnector` has been renamed to
   `createEthereumConnector`.
 - @iov/jsonrpc: Remove deprecated types: `jsonRpcCodeInternalError`,

@@ -205,10 +205,14 @@ export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
   };
 }
 
-export function decodeCashConfiguration(config: codecImpl.cash.Configuration): CashConfiguration {
-  const minimalFee = decodeAmount(ensure(config.minimalFee, "minimalFee"));
+function isZeroCoin({ whole, fractional }: codecImpl.coin.ICoin): boolean {
+  return asIntegerNumber(whole) === 0 && asIntegerNumber(fractional) === 0;
+}
+
+export function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): CashConfiguration {
+  const minimalFee = ensure(config.minimalFee, "minimalFee");
   return {
-    minimalFee: minimalFee,
+    minimalFee: isZeroCoin(minimalFee) ? null : decodeAmount(minimalFee),
   };
 }
 

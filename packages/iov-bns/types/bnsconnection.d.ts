@@ -125,7 +125,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
   /**
    * Queries the blockchain for the enforced anti-spam fee
    */
-  protected getDefaultFee(): Promise<Amount>;
+  protected getDefaultFee(): Promise<Amount | undefined>;
   /**
    * Queries the blockchain for the enforced product fee for this kind of transaction.
    * Returns undefined if no product fee is defined
