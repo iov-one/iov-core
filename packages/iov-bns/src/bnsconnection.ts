@@ -718,10 +718,7 @@ export class BnsConnection implements AtomicSwapConnection {
       throw new Error("Received transaction of unsupported kind.");
     }
     // use product fee if it exists, otherwise fallback to default anti-spam fee
-    let fee = await this.getProductFee(transaction);
-    if (!fee) {
-      fee = await this.getDefaultFee();
-    }
+    const fee = (await this.getProductFee(transaction)) || (await this.getDefaultFee());
     return { tokens: fee };
   }
 
@@ -749,13 +746,13 @@ export class BnsConnection implements AtomicSwapConnection {
   /**
    * Queries the blockchain for the enforced anti-spam fee
    */
-  protected async getDefaultFee(): Promise<Amount> {
+  protected async getDefaultFee(): Promise<Amount | undefined> {
     const { results } = await this.query("/", Encoding.toAscii("_c:cash"));
     if (results.length !== 1) {
       throw new Error(`Unexpected number of results for minimal fee. Expected: 1 Got: ${results.length}`);
     }
     const { minimalFee } = decodeCashConfiguration(codecImpl.cash.Configuration.decode(results[0].value));
-    return minimalFee;
+    return minimalFee || undefined;
   }
 
   /**

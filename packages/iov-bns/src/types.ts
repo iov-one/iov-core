@@ -20,7 +20,7 @@ import { As } from "type-tagger";
 // config (those are not used outside of @iov/bns)
 
 export interface CashConfiguration {
-  readonly minimalFee: Amount;
+  readonly minimalFee: Amount | null;
 }
 
 // Governance

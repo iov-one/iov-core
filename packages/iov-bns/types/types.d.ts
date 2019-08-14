@@ -13,7 +13,7 @@ import {
 } from "@iov/bcp";
 import { As } from "type-tagger";
 export interface CashConfiguration {
-  readonly minimalFee: Amount;
+  readonly minimalFee: Amount | null;
 }
 export interface ValidatorProperties {
   readonly power: number;
