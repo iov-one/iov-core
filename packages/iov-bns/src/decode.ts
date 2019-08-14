@@ -209,7 +209,7 @@ function isZeroCoin({ whole, fractional }: codecImpl.coin.ICoin): boolean {
   return asIntegerNumber(whole) === 0 && asIntegerNumber(fractional) === 0;
 }
 
-export function decodeCashConfiguration(config: codecImpl.cash.Configuration): CashConfiguration {
+export function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): CashConfiguration {
   const minimalFee = ensure(config.minimalFee, "minimalFee");
   return {
     minimalFee: isZeroCoin(minimalFee) ? null : decodeAmount(minimalFee),

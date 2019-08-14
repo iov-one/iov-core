@@ -44,7 +44,7 @@ export declare function decodeSignature(signature: codecImpl.crypto.ISignature):
 export declare function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature;
 export declare function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token;
 export declare function decodeAmount(coin: codecImpl.coin.ICoin): Amount;
-export declare function decodeCashConfiguration(config: codecImpl.cash.Configuration): CashConfiguration;
+export declare function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): CashConfiguration;
 export declare function decodeParticipants(
   prefix: "iov" | "tiov",
   maybeParticipants?: codecImpl.multisig.IParticipant[] | null,
