@@ -14,6 +14,16 @@ function pendingWithoutTendermint(): void {
   }
 }
 
+function pendingWithoutManual(): void {
+  if (!process.env.MANUAL_TESTING) {
+    pending("Set MANUAL_TESTING to enable manual tests");
+  }
+}
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 describe("WebsocketClient", () => {
   const tendermintUrl = defaultInstance.url;
 
@@ -207,4 +217,40 @@ describe("WebsocketClient", () => {
     await client.connected();
     client.disconnect();
   });
+
+  it("can handle a reconnect", async () => {
+    pendingWithoutTendermint();
+    pendingWithoutManual();
+
+    const client = new WebsocketClient(tendermintUrl);
+
+    const query = "tm.event='NewBlockHeader'";
+    const req = createJsonRpcRequest("subscribe", { query: query });
+    const headers = client.listen(req);
+
+    // tslint:disable-next-line:readonly-array
+    const receivedEvents: SubscriptionEvent[] = [];
+
+    return new Promise(async (resolve, reject) => {
+      headers.subscribe({
+        next: event => receivedEvents.push(event),
+        error: err => {
+          // Subscriptions will not be found if reconnection is performed via new node instances
+          if (JSON.parse(err).data !== "subscription not found") reject(err);
+        },
+        complete: reject,
+      });
+
+      console.info("---DISCONNECT NOW---");
+      await sleep(10_000);
+      const receivedEventsBefore = receivedEvents.length;
+      expect(receivedEvents.length).toEqual(receivedEventsBefore);
+      console.info("---RECONNECT NOW---");
+      await sleep(20_000);
+
+      expect(receivedEvents.length).toBeGreaterThan(receivedEventsBefore);
+
+      resolve();
+    });
+  }, 45_000);
 });
