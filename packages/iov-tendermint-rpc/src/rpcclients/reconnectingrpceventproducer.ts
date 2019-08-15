@@ -1,4 +1,4 @@
-/* tslint:disable:readonly-keyword readonly-array no-object-mutation */
+/* tslint:disable:readonly-keyword no-object-mutation */
 import { JsonRpcRequest } from "@iov/jsonrpc";
 import { ReconnectingSocket } from "@iov/socket";
 import { Listener, Producer } from "xstream";
@@ -7,11 +7,12 @@ import { SubscriptionEvent } from "./rpcclient";
 import { RpcEventProducer } from "./rpceventproducer";
 
 export class ReconnectingRpcEventProducer implements Producer<SubscriptionEvent> {
-  public stopped: boolean = false;
-  private request: JsonRpcRequest;
-  private socket: ReconnectingSocket;
+  private readonly request: JsonRpcRequest;
+  private readonly socket: ReconnectingSocket;
+
   private producer: RpcEventProducer;
   private listener?: Listener<SubscriptionEvent>;
+  private stopped: boolean = false;
 
   public constructor(request: JsonRpcRequest, socket: ReconnectingSocket) {
     this.request = request;
