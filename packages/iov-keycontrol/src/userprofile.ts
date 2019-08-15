@@ -243,7 +243,7 @@ export class UserProfile {
   }
 
   /**
-   * Creates an identitiy in the wallet with the given ID in the primary keyring
+   * Creates an identity in the wallet with the given ID in the primary keyring
    *
    * The identity is bound to one chain ID to encourage using different
    * keypairs on different chains.
