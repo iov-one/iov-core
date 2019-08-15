@@ -7,6 +7,7 @@ export declare class WebsocketClient implements RpcStreamingClient {
   /** Same events as in socket.events but in the format we need */
   private readonly jsonRpcResponseStream;
   private readonly subscriptionStreams;
+  private producers;
   constructor(baseUrl?: string, onError?: (err: any) => void);
   execute(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse>;
   listen(request: JsonRpcRequest): Stream<SubscriptionEvent>;
@@ -17,4 +18,5 @@ export declare class WebsocketClient implements RpcStreamingClient {
   connected(): Promise<void>;
   disconnect(): void;
   protected responseForRequestId(id: JsonRpcId): Promise<JsonRpcResponse>;
+  private reconnectedHandler;
 }

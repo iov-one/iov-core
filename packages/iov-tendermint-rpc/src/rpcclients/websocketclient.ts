@@ -131,6 +131,40 @@ class RpcEventProducer implements Producer<SubscriptionEvent> {
   }
 }
 
+class ReconnectingRpcEventProducer implements Producer<SubscriptionEvent> {
+  public stopped: boolean = false;
+  private request: JsonRpcRequest;
+  private socket: ReconnectingSocket;
+  private producer: RpcEventProducer;
+  private listener?: Listener<SubscriptionEvent>;
+
+  public constructor(request: JsonRpcRequest, socket: ReconnectingSocket) {
+    this.request = request;
+    this.socket = socket;
+    this.producer = new RpcEventProducer(this.request, this.socket);
+  }
+
+  public start(listener: Listener<SubscriptionEvent>): void {
+    this.listener = listener;
+    this.producer.start(this.listener);
+  }
+
+  public stop(): void {
+    this.producer.stop();
+    this.stopped = true;
+  }
+
+  public reconnect(): void {
+    if (!this.stopped) {
+      this.producer.stop();
+      this.producer = new RpcEventProducer(this.request, this.socket);
+      if (this.listener) {
+        this.producer.start(this.listener);
+      }
+    }
+  }
+}
+
 export class WebsocketClient implements RpcStreamingClient {
   private readonly url: string;
   private readonly socket: ReconnectingSocket;
@@ -142,6 +176,7 @@ export class WebsocketClient implements RpcStreamingClient {
   // Creating streams is cheap since producer is not started as long as nobody listens to events. Thus this
   // map is never cleared and there is no need to do so. But unsubscribe all the subscriptions!
   private readonly subscriptionStreams = new Map<string, Stream<SubscriptionEvent>>();
+  private producers: ReconnectingRpcEventProducer[] = [];
 
   public constructor(
     baseUrl: string = "ws://localhost:46657",
@@ -153,7 +188,7 @@ export class WebsocketClient implements RpcStreamingClient {
     const cleanBaseUrl = hasProtocol(baseUrl) ? baseUrl : "ws://" + baseUrl;
     this.url = cleanBaseUrl + path;
 
-    this.socket = new ReconnectingSocket(this.url);
+    this.socket = new ReconnectingSocket(this.url, undefined, this.reconnectedHandler.bind(this));
 
     const errorSubscription = this.socket.events.subscribe({
       error: error => {
@@ -189,7 +224,8 @@ export class WebsocketClient implements RpcStreamingClient {
     }
 
     if (!this.subscriptionStreams.has(query)) {
-      const producer = new RpcEventProducer(request, this.socket);
+      const producer = new ReconnectingRpcEventProducer(request, this.socket);
+      this.producers.push(producer);
       const stream = Stream.create(producer);
       this.subscriptionStreams.set(query, stream);
     }
@@ -211,5 +247,9 @@ export class WebsocketClient implements RpcStreamingClient {
 
   protected async responseForRequestId(id: JsonRpcId): Promise<JsonRpcResponse> {
     return firstEvent(this.jsonRpcResponseStream.filter(r => r.id === id));
+  }
+
+  private reconnectedHandler(): void {
+    this.producers.forEach(producer => producer.reconnect());
   }
 }
