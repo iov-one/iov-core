@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.16.3
+
+- @iov/keycontrol: Add `UserProfile.identityExists`
+
 ## 0.16.2
 
 - @iov/bns: Add `getVotes` by voter address method to `BnsConnection` class.
