@@ -7,7 +7,7 @@ export declare class ReconnectingRpcEventProducer implements Producer<Subscripti
   private readonly socket;
   private producer;
   private listener?;
-  private stopped;
+  private running;
   constructor(request: JsonRpcRequest, socket: ReconnectingSocket);
   start(listener: Listener<SubscriptionEvent>): void;
   stop(): void;

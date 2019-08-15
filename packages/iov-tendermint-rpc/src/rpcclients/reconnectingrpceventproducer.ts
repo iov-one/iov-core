@@ -12,7 +12,7 @@ export class ReconnectingRpcEventProducer implements Producer<SubscriptionEvent>
 
   private producer: RpcEventProducer;
   private listener?: Listener<SubscriptionEvent>;
-  private stopped: boolean = false;
+  private running: boolean = false;
 
   public constructor(request: JsonRpcRequest, socket: ReconnectingSocket) {
     this.request = request;
@@ -21,17 +21,21 @@ export class ReconnectingRpcEventProducer implements Producer<SubscriptionEvent>
   }
 
   public start(listener: Listener<SubscriptionEvent>): void {
+    if (this.running) {
+      throw Error("Already started. Please stop first before restarting.");
+    }
+    this.running = true;
     this.listener = listener;
     this.producer.start(this.listener);
   }
 
   public stop(): void {
+    this.running = false;
     this.producer.stop();
-    this.stopped = true;
   }
 
   public reconnect(): void {
-    if (!this.stopped) {
+    if (this.running) {
       this.producer.stop();
       this.producer = new RpcEventProducer(this.request, this.socket);
       if (this.listener) {
