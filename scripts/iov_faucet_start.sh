@@ -13,7 +13,6 @@ DOCKER_HOST_IP=$(docker run --rm alpine ip route | awk 'NR==1 {print $3}')
 BLOCKCHAIN_URL="ws://$DOCKER_HOST_IP:23456"
 echo "Connecting to $BLOCKCHAIN_URL"
 
-docker pull "iov1/iov-faucet:${FAUCET_VERSION}"
 docker run --rm \
   --read-only \
   --env "FAUCET_CONCURRENCY=3" \
