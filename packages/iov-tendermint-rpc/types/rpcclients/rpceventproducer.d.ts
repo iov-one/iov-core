@@ -22,14 +22,3 @@ export declare class RpcEventProducer implements Producer<SubscriptionEvent> {
   protected connectToClient(listener: Listener<SubscriptionEvent>): void;
   protected closeSubscriptions(): void;
 }
-export declare class ReconnectingRpcEventProducer implements Producer<SubscriptionEvent> {
-  stopped: boolean;
-  private request;
-  private socket;
-  private producer;
-  private listener?;
-  constructor(request: JsonRpcRequest, socket: ReconnectingSocket);
-  start(listener: Listener<SubscriptionEvent>): void;
-  stop(): void;
-  reconnect(): void;
-}

@@ -10,8 +10,8 @@ import { ConnectionStatus, ReconnectingSocket } from "@iov/socket";
 import { firstEvent } from "@iov/stream";
 import { Stream } from "xstream";
 
+import { ReconnectingRpcEventProducer } from "./reconnectingrpceventproducer";
 import { hasProtocol, RpcStreamingClient, SubscriptionEvent } from "./rpcclient";
-import { ReconnectingRpcEventProducer } from "./rpceventproducer";
 import { defaultErrorHandler, toJsonRpcResponse } from "./utils";
 
 export class WebsocketClient implements RpcStreamingClient {
