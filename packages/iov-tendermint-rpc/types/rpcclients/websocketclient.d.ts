@@ -8,7 +8,7 @@ export declare class WebsocketClient implements RpcStreamingClient {
   private readonly jsonRpcResponseStream;
   private readonly subscriptionStreams;
   private producers;
-  constructor(baseUrl?: string, onError?: (err: any) => void);
+  constructor(baseUrl: string, onError?: (err: any) => void);
   execute(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse>;
   listen(request: JsonRpcRequest): Stream<SubscriptionEvent>;
   /**

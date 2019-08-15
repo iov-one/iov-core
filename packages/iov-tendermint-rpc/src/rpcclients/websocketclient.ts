@@ -27,10 +27,7 @@ export class WebsocketClient implements RpcStreamingClient {
   private readonly subscriptionStreams = new Map<string, Stream<SubscriptionEvent>>();
   private producers: ReconnectingRpcEventProducer[] = [];
 
-  public constructor(
-    baseUrl: string = "ws://localhost:46657",
-    onError: (err: any) => void = defaultErrorHandler,
-  ) {
+  public constructor(baseUrl: string, onError: (err: any) => void = defaultErrorHandler) {
     // accept host.name:port and assume ws protocol
     // make sure we don't end up with ...//websocket
     const path = baseUrl.endsWith("/") ? "websocket" : "/websocket";
