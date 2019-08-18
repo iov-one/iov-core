@@ -1,4 +1,5 @@
 import {
+  Address,
   Algorithm,
   Amount,
   ChainId,
@@ -44,30 +45,34 @@ describe("bnscodec", () => {
       { quantity: "1000000000", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
       { quantity: "7400000000", fractionalDigits: 9, tokenTicker: "IOV" as TokenTicker },
     ];
-    const recipients = [
-      encodeBnsAddress("tiov", Encoding.fromHex("0000000000000000000000000000000000000000")),
-      encodeBnsAddress("iov", Encoding.fromHex("020daec62066ec82a5a1b40378d87457ed88e4fc")),
-    ] as const;
     const memos: readonly (string | undefined)[] = [undefined, "", "some text", "text with emoji: 🐎"];
 
-    const creators: readonly Identity[] = [
+    const creatorRecipientPairs: readonly { readonly creator: Identity; readonly recipient: Address }[] = [
+      // Testnet
       {
-        chainId: "iov-lovenet" as ChainId,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: Encoding.fromHex(
-            "fa8c2a18b2854ab65207c0c727b825b6dbaa29379e6b2bb35ac778bfaa881e92",
-          ) as PubkeyBytes,
+        creator: {
+          chainId: "iov-lovenet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "fa8c2a18b2854ab65207c0c727b825b6dbaa29379e6b2bb35ac778bfaa881e92",
+            ) as PubkeyBytes,
+          },
         },
+        recipient: encodeBnsAddress("tiov", Encoding.fromHex("0000000000000000000000000000000000000000")),
       },
+      // Mainnet
       {
-        chainId: "iov-mainnet" as ChainId,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: Encoding.fromHex(
-            "34299fa3fe218a6210ace221f86597c800ecff3d27e1e6a7937248514a6784ee",
-          ) as PubkeyBytes,
+        creator: {
+          chainId: "iov-mainnet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "34299fa3fe218a6210ace221f86597c800ecff3d27e1e6a7937248514a6784ee",
+            ) as PubkeyBytes,
+          },
         },
+        recipient: encodeBnsAddress("iov", Encoding.fromHex("020daec62066ec82a5a1b40378d87457ed88e4fc")),
       },
     ];
 
@@ -76,26 +81,24 @@ describe("bnscodec", () => {
 
     for (const nonce of nonces) {
       for (const fee of fees) {
-        for (const recipient of recipients) {
-          for (const creator of creators) {
-            for (const amount of amounts) {
-              for (const memo of memos) {
-                const send: SendTransaction & WithCreator = {
-                  kind: "bcp/send",
-                  creator: creator,
-                  sender: bnsCodec.identityToAddress(creator),
-                  recipient: recipient,
-                  memo: memo,
-                  amount: amount,
-                  fee: fee,
-                };
-                const { bytes } = bnsCodec.bytesToSign(send, nonce);
-                out.push({
-                  transaction: TransactionEncoder.toJson(send),
-                  nonce: nonce,
-                  bytes: Encoding.toHex(bytes),
-                });
-              }
+        for (const { creator, recipient } of creatorRecipientPairs) {
+          for (const amount of amounts) {
+            for (const memo of memos) {
+              const send: SendTransaction & WithCreator = {
+                kind: "bcp/send",
+                creator: creator,
+                sender: bnsCodec.identityToAddress(creator),
+                recipient: recipient,
+                memo: memo,
+                amount: amount,
+                fee: fee,
+              };
+              const { bytes } = bnsCodec.bytesToSign(send, nonce);
+              out.push({
+                transaction: TransactionEncoder.toJson(send),
+                nonce: nonce,
+                bytes: Encoding.toHex(bytes),
+              });
             }
           }
         }
