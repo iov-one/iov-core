@@ -42,6 +42,7 @@ describe("bnscodec", () => {
     ];
     const amounts: readonly (Amount)[] = [
       { quantity: "0", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
+      { quantity: "1", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
       { quantity: "1000000000", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
       { quantity: "7400000000", fractionalDigits: 9, tokenTicker: "IOV" as TokenTicker },
     ];
