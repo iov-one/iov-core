@@ -13,6 +13,8 @@ Breaking changes
 - @iov/bns: `bnsConnector` has been renamed to `createBnsConnector`.
 - @iov/bns: `CashConfiguration.minimalFee` is now nullable.
 - @iov/bns: `BnsConnection.getDefaultFee` can resolve to `undefined`.
+- @iov/core: Re-implement `Random.getBytes` to use crypto APIs directly. It is
+  now synchronous.
 - @iov/ethereum: `ethereumConnector` has been renamed to
   `createEthereumConnector`.
 - @iov/jsonrpc: Remove deprecated types: `jsonRpcCodeInternalError`,

@@ -6,7 +6,6 @@ import {
   Argon2idOptions,
   Ed25519,
   Ed25519Keypair,
-  Random,
   Xchacha20poly1305Ietf,
   Xchacha20poly1305IetfCiphertext,
   Xchacha20poly1305IetfKey,
@@ -159,36 +158,6 @@ describe("Libsodium", () => {
       )
         .then(() => fail("Argon2id with invalid salt length must not resolve"))
         .catch(e => expect(e).toMatch(/invalid salt length/));
-    });
-  });
-
-  describe("Random", () => {
-    it("creates random bytes", async () => {
-      {
-        const bytes = await Random.getBytes(0);
-        expect(bytes.length).toEqual(0);
-      }
-
-      {
-        const bytes = await Random.getBytes(1);
-        expect(bytes.length).toEqual(1);
-      }
-
-      {
-        const bytes = await Random.getBytes(32);
-        expect(bytes.length).toEqual(32);
-      }
-
-      {
-        const bytes = await Random.getBytes(4096);
-        expect(bytes.length).toEqual(4096);
-      }
-
-      {
-        const bytes1 = await Random.getBytes(32);
-        const bytes2 = await Random.getBytes(32);
-        expect(bytes1).not.toEqual(bytes2);
-      }
     });
   });
 
