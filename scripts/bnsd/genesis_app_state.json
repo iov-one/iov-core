@@ -86,6 +86,20 @@
           "denominator": 3
         },
         "electorate_id": 2
+      },
+      {
+        "admin": "cond:gov/rule/0000000000000002",
+        "title": "frontend",
+        "voting_period": "10h",
+        "threshold": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "quorum": {
+          "numerator": 2,
+          "denominator": 3
+        },
+        "electorate_id": 2
       }
     ]
   },

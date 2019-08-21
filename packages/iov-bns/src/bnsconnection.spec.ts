@@ -2000,7 +2000,7 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
       const rules = await connection.getElectionRules();
-      expect(rules.length).toEqual(2);
+      expect(rules.length).toEqual(3);
       expect(rules[0]).toEqual({
         id: 1,
         version: 1,
@@ -2021,6 +2021,22 @@ describe("BnsConnection", () => {
         electorateId: 2,
         title: "barr",
         votingPeriod: 10,
+        threshold: {
+          numerator: 1,
+          denominator: 2,
+        },
+        quorum: {
+          numerator: 2,
+          denominator: 3,
+        },
+      });
+      expect(rules[2]).toEqual({
+        id: 3,
+        version: 1,
+        admin: "tiov1k0dp2fmdunscuwjjusqtk6mttx5ufk3z0mmp0z" as Address,
+        electorateId: 2,
+        title: "frontend",
+        votingPeriod: 10 * 3600,
         threshold: {
           numerator: 1,
           denominator: 2,
