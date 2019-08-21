@@ -12,7 +12,7 @@ const { Ed25519HdWallet, HdPaths, UserProfile } = require("@iov/keycontrol");
 const adminMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 const adminPath = HdPaths.iov(0);
 const committeeId = 2;
-const electionRuleId = 2;
+const electionRuleId = process.env.ELECTION_RULE_ID ? parseInt(process.env.ELECTION_RULE_ID, 10) : 3;
 const bnsdUrl = "ws://localhost:23456";
 const connectionPromise = BnsConnection.establish(bnsdUrl);
 
