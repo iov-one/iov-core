@@ -620,6 +620,35 @@ describe("UserProfile", () => {
     });
   });
 
+  describe("identityExists", () => {
+    const somePath = [Slip10RawIndex.hardened(2), Slip10RawIndex.hardened(3), Slip10RawIndex.hardened(4)];
+
+    it("returns false for non-existing identity", async () => {
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
+      expect(await profile.identityExists(wallet.id, defaultChain, somePath)).toEqual(false);
+    });
+
+    it("returns true for existing identity", async () => {
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(defaultMnemonic1));
+      await profile.createIdentity(wallet.id, defaultChain, somePath);
+      expect(await profile.identityExists(wallet.id, defaultChain, somePath)).toEqual(true);
+    });
+
+    it("throws for non-existing wallets", async () => {
+      const wallet = Ed25519HdWallet.fromMnemonic(defaultMnemonic1);
+      const profile = new UserProfile();
+
+      await profile
+        .identityExists(wallet.id, defaultChain, somePath)
+        .then(
+          () => fail("must not resolve"),
+          error => expect(error).toMatch(/wallet of id '.+' does not exist in keyring/i),
+        );
+    });
+  });
+
   describe("getAllIdentities", () => {
     it("works for no wallet", async () => {
       const profile = new UserProfile();

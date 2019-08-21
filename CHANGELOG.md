@@ -23,6 +23,10 @@ Breaking changes
 - @iov/lisk: `liskConnector` has been renamed to `createLiskConnector`.
 - @iov/rise: `riseConnector` has been renamed to `createRiseConnector`.
 
+## 0.16.3
+
+- @iov/keycontrol: Add `UserProfile.identityExists`
+
 ## 0.16.2
 
 - @iov/bns: Add `getVotes` by voter address method to `BnsConnection` class.

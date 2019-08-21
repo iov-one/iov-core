@@ -2,6 +2,7 @@ import {
   ChainId,
   FullSignature,
   Identity,
+  identityEquals,
   Nonce,
   SignedTransaction,
   TxCodec,
@@ -242,7 +243,7 @@ export class UserProfile {
   }
 
   /**
-   * Creates an identitiy in the wallet with the given ID in the primary keyring
+   * Creates an identity in the wallet with the given ID in the primary keyring
    *
    * The identity is bound to one chain ID to encourage using different
    * keypairs on different chains.
@@ -253,6 +254,32 @@ export class UserProfile {
     options: Ed25519Keypair | readonly Slip10RawIndex[] | number,
   ): Promise<Identity> {
     return this.primaryKeyring().createIdentity(walletId, chainId, options);
+  }
+
+  /**
+   * Checks if an identity exists in the wallet with the given ID in the primary keyring
+   *
+   * **Example usage**
+   *
+   * This allows you to detect which accounts of an HD wallet have been created. Pseudocode
+   *
+   * ```
+   * identityExists("m/44'/234'/0'") == true
+   * identityExists("m/44'/234'/1'") == true
+   * identityExists("m/44'/234'/2'") == true
+   * identityExists("m/44'/234'/3'") == false
+   * // Shows that identities with account indices 0–2 have been created.
+   * ```
+   */
+  public async identityExists(
+    walletId: WalletId,
+    chainId: ChainId,
+    options: Ed25519Keypair | readonly Slip10RawIndex[] | number,
+  ): Promise<boolean> {
+    const wallet = this.findWalletInPrimaryKeyring(walletId);
+    const previewIdentity = await wallet.previewIdentity(chainId, options);
+    const existingIdentities = wallet.getIdentities();
+    return existingIdentities.find(identity => identityEquals(identity, previewIdentity)) !== undefined;
   }
 
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */

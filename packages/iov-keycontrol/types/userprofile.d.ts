@@ -72,7 +72,7 @@ export declare class UserProfile {
   /** Sets the label of the wallet with the given ID in the primary keyring  */
   setWalletLabel(walletId: WalletId, label: string | undefined): void;
   /**
-   * Creates an identitiy in the wallet with the given ID in the primary keyring
+   * Creates an identity in the wallet with the given ID in the primary keyring
    *
    * The identity is bound to one chain ID to encourage using different
    * keypairs on different chains.
@@ -82,6 +82,26 @@ export declare class UserProfile {
     chainId: ChainId,
     options: Ed25519Keypair | readonly Slip10RawIndex[] | number,
   ): Promise<Identity>;
+  /**
+   * Checks if an identity exists in the wallet with the given ID in the primary keyring
+   *
+   * **Example usage**
+   *
+   * This allows you to detect which accounts of an HD wallet have been created. Pseudocode
+   *
+   * ```
+   * identityExists("m/44'/234'/0'") == true
+   * identityExists("m/44'/234'/1'") == true
+   * identityExists("m/44'/234'/2'") == true
+   * identityExists("m/44'/234'/3'") == false
+   * // Shows that identities with account indices 0–2 have been created.
+   * ```
+   */
+  identityExists(
+    walletId: WalletId,
+    chainId: ChainId,
+    options: Ed25519Keypair | readonly Slip10RawIndex[] | number,
+  ): Promise<boolean>;
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
   setIdentityLabel(identity: Identity, label: string | undefined): void;
   /**
