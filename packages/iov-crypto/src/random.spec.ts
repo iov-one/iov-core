@@ -1,6 +1,13 @@
+import { isUint8Array } from "@iov/encoding";
+
 import { Random } from "./random";
 
 describe("Random", () => {
+  it("returns an Uint8Array", () => {
+    const data = Random.getBytes(5);
+    expect(isUint8Array(data)).toEqual(true);
+  });
+
   it("creates random bytes", () => {
     {
       const bytes = Random.getBytes(0);
