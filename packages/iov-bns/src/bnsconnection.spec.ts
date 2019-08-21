@@ -96,7 +96,7 @@ async function tendermintSearchIndexUpdated(): Promise<void> {
 }
 
 async function randomBnsAddress(): Promise<Address> {
-  return encodeBnsAddress("tiov", await Random.getBytes(20));
+  return encodeBnsAddress("tiov", Random.getBytes(20));
 }
 
 function matchId(id: SwapId): (swap: AtomicSwap) => boolean {
@@ -696,7 +696,7 @@ describe("BnsConnection", () => {
       const registryChainId = connection.chainId();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
 
       // we need funds to pay the fees
@@ -738,7 +738,7 @@ describe("BnsConnection", () => {
       const registryChainId = connection.chainId();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
 
       // we need funds to pay the fees
@@ -780,7 +780,7 @@ describe("BnsConnection", () => {
       const registryChainId = connection.chainId();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       // we need funds to pay the fees
       const myAddress = identityToAddress(identity);
@@ -862,7 +862,7 @@ describe("BnsConnection", () => {
       const registryChainId = connection.chainId();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       // we need funds to pay the fees
       const myAddress = identityToAddress(identity);
@@ -924,7 +924,7 @@ describe("BnsConnection", () => {
       const registryChainId = connection.chainId();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
 
       // we need funds to pay the fees
@@ -1020,7 +1020,7 @@ describe("BnsConnection", () => {
       const registryChainId = connection.chainId();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const [sender, recipient, arbiter] = await Promise.all(
         [0, 10, 20].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       );
@@ -1110,7 +1110,7 @@ describe("BnsConnection", () => {
       const registryChainId = connection.chainId();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const [sender, recipient, arbiter] = await Promise.all(
         [0, 10, 20].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       );
@@ -1201,7 +1201,7 @@ describe("BnsConnection", () => {
       const registryChainId = connection.chainId();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const [sender, recipient, arbiter, newArbiter] = await Promise.all(
         [0, 10, 20, 21].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       );
@@ -2119,7 +2119,7 @@ describe("BnsConnection", () => {
       const registryChainId = connection.chainId();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       const identityAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, identityAddress, registerAmount);
@@ -2166,7 +2166,7 @@ describe("BnsConnection", () => {
       const registryChainId = connection.chainId();
 
       const profile = new UserProfile();
-      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(32)));
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       const identityAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, identityAddress, registerAmount);

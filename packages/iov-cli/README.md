@@ -196,7 +196,7 @@ When using a Testnet, you can use the IovFaucet to receive tokens.
 In this example we connect to a public test network.
 
 ```
-> const mnemonic = Bip39.encode(await Random.getBytes(16)).toString();
+> const mnemonic = Bip39.encode(Random.getBytes(16)).toString();
 > mnemonic
 'helmet album grow detail apology thank wire chef fame core private cargo'
 > const profile = new UserProfile();

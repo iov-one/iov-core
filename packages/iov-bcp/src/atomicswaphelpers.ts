@@ -4,7 +4,7 @@ import { Hash, Preimage } from "./atomicswaptypes";
 
 export class AtomicSwapHelpers {
   public static async createPreimage(): Promise<Preimage> {
-    const bytes = await Random.getBytes(32);
+    const bytes = Random.getBytes(32);
     return bytes as Preimage;
   }
 
