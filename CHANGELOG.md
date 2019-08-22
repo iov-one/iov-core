@@ -10,6 +10,8 @@ Breaking changes
 - @iov/bcp: `ChainConnector` type `client` property has been renamed to
   `establishConnection` and `expectedChainId` property has been changed from
   optional to `ChainId | undefined`.
+- @iov/bns: Remove support for weave 0.19.x and 0.20.x; add support for weave
+  0.21.x.
 - @iov/bns: `bnsConnector` has been renamed to `createBnsConnector`.
 - @iov/bns: `CashConfiguration.minimalFee` is now nullable.
 - @iov/bns: `BnsConnection.getDefaultFee` can resolve to `undefined`.
