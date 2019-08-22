@@ -7,7 +7,7 @@ export class Random {
    */
   public static getBytes(count: number): Uint8Array {
     try {
-      const globalObject = "object" === typeof window ? window : self;
+      const globalObject = typeof window === "object" ? window : self;
       const cryptoApi =
         typeof globalObject.crypto !== "undefined" ? globalObject.crypto : globalObject.msCrypto;
 
