@@ -21,7 +21,7 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint32, Uint64 } from "@iov/encoding";
 import BN from "bn.js";
 import * as Long from "long";
 
@@ -104,6 +104,14 @@ function decodeVersionedId(versionedId: codecImpl.orm.IVersionedIDRef): Versione
   return {
     id: decodeNumericId(ensure(versionedId.id, "id")),
     version: ensure(versionedId.version, "version"),
+  };
+}
+
+function decodeVersionedIdArray(versionedId: Uint8Array): VersionedId {
+  if (versionedId.length !== 12) throw new Error("Invalid ID length. Expected 12 bytes.");
+  return {
+    id: Uint64.fromBytesBigEndian(versionedId.slice(0, 8)).toNumber(),
+    version: Uint32.fromBigEndianBytes(versionedId.slice(8, 12)).toNumber(),
   };
 }
 
@@ -232,7 +240,7 @@ export function decodeElectorate(
   prefix: "iov" | "tiov",
   electorate: codecImpl.gov.IElectorate & Keyed,
 ): Electorate {
-  const { id } = decodeVersionedId(codecImpl.orm.VersionedIDRef.decode(electorate._id));
+  const { id } = decodeVersionedIdArray(electorate._id);
 
   // tslint:disable-next-line: readonly-keyword
   const electors: { [index: string]: ElectorProperties } = {};
@@ -267,7 +275,7 @@ export function decodeElectionRule(
   prefix: "iov" | "tiov",
   rule: codecImpl.gov.IElectionRule & Keyed,
 ): ElectionRule {
-  const { id } = decodeVersionedId(codecImpl.orm.VersionedIDRef.decode(rule._id));
+  const { id } = decodeVersionedIdArray(rule._id);
   return {
     id: id,
     version: asIntegerNumber(ensure(rule.version, "version")),

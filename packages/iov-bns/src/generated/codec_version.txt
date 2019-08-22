@@ -1,1 +1,1 @@
-0cbda30bb69c8b5af4712626efb112f2d5a89c00 (HEAD, tag: v0.19.0, origin/master, origin/HEAD) x/gov: add ElectionRule address and pregernate ID (#893)
+4a00f096f69e6371d284cc34ee48ed6d69b8d657 (HEAD, tag: v0.21.0, origin/master, origin/HEAD) weave 0.21.0 release (#983)
