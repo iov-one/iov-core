@@ -129,6 +129,11 @@
     },
     "migration": {
       "admin": "cond:multisig/usage/0000000000000001"
+    },
+    "username": {
+      "owner": "cond:gov/rule/0000000000000002",
+      "valid_username_name": "^[a-z0-9\\-_.]{3,64}$",
+      "valid_username_label": "^iov$"
     }
   },
   "msgfee": [
