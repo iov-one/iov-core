@@ -5531,6 +5531,494 @@ $root.username = (function() {
         return ChangeTokenTargetsMsg;
     })();
 
+    username.Configuration = (function() {
+
+        /**
+         * Properties of a Configuration.
+         * @memberof username
+         * @interface IConfiguration
+         * @property {weave.IMetadata|null} [metadata] Configuration metadata
+         * @property {Uint8Array|null} [owner] needed to make use of gconf.NewUpdateConfigurationHandler
+         * @property {string|null} [validUsernameName] part name must match (a username is <name>*<label>)
+         * @property {string|null} [validUsernameLabel] namespace label must match (a username is <name>*<label>)
+         */
+
+        /**
+         * Constructs a new Configuration.
+         * @memberof username
+         * @classdesc the functionality provided by gconf package.
+         * @implements IConfiguration
+         * @constructor
+         * @param {username.IConfiguration=} [properties] Properties to set
+         */
+        function Configuration(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Configuration metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof username.Configuration
+         * @instance
+         */
+        Configuration.prototype.metadata = null;
+
+        /**
+         * needed to make use of gconf.NewUpdateConfigurationHandler
+         * @member {Uint8Array} owner
+         * @memberof username.Configuration
+         * @instance
+         */
+        Configuration.prototype.owner = $util.newBuffer([]);
+
+        /**
+         * part name must match (a username is <name>*<label>)
+         * @member {string} validUsernameName
+         * @memberof username.Configuration
+         * @instance
+         */
+        Configuration.prototype.validUsernameName = "";
+
+        /**
+         * namespace label must match (a username is <name>*<label>)
+         * @member {string} validUsernameLabel
+         * @memberof username.Configuration
+         * @instance
+         */
+        Configuration.prototype.validUsernameLabel = "";
+
+        /**
+         * Creates a new Configuration instance using the specified properties.
+         * @function create
+         * @memberof username.Configuration
+         * @static
+         * @param {username.IConfiguration=} [properties] Properties to set
+         * @returns {username.Configuration} Configuration instance
+         */
+        Configuration.create = function create(properties) {
+            return new Configuration(properties);
+        };
+
+        /**
+         * Encodes the specified Configuration message. Does not implicitly {@link username.Configuration.verify|verify} messages.
+         * @function encode
+         * @memberof username.Configuration
+         * @static
+         * @param {username.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
+            if (message.validUsernameName != null && message.hasOwnProperty("validUsernameName"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.validUsernameName);
+            if (message.validUsernameLabel != null && message.hasOwnProperty("validUsernameLabel"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.validUsernameLabel);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Configuration message, length delimited. Does not implicitly {@link username.Configuration.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof username.Configuration
+         * @static
+         * @param {username.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer.
+         * @function decode
+         * @memberof username.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {username.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.username.Configuration();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.owner = reader.bytes();
+                    break;
+                case 3:
+                    message.validUsernameName = reader.string();
+                    break;
+                case 4:
+                    message.validUsernameLabel = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof username.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {username.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Configuration message.
+         * @function verify
+         * @memberof username.Configuration
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Configuration.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
+            if (message.validUsernameName != null && message.hasOwnProperty("validUsernameName"))
+                if (!$util.isString(message.validUsernameName))
+                    return "validUsernameName: string expected";
+            if (message.validUsernameLabel != null && message.hasOwnProperty("validUsernameLabel"))
+                if (!$util.isString(message.validUsernameLabel))
+                    return "validUsernameLabel: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof username.Configuration
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {username.Configuration} Configuration
+         */
+        Configuration.fromObject = function fromObject(object) {
+            if (object instanceof $root.username.Configuration)
+                return object;
+            var message = new $root.username.Configuration();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".username.Configuration.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
+            if (object.validUsernameName != null)
+                message.validUsernameName = String(object.validUsernameName);
+            if (object.validUsernameLabel != null)
+                message.validUsernameLabel = String(object.validUsernameLabel);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof username.Configuration
+         * @static
+         * @param {username.Configuration} message Configuration
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Configuration.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
+                object.validUsernameName = "";
+                object.validUsernameLabel = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            if (message.validUsernameName != null && message.hasOwnProperty("validUsernameName"))
+                object.validUsernameName = message.validUsernameName;
+            if (message.validUsernameLabel != null && message.hasOwnProperty("validUsernameLabel"))
+                object.validUsernameLabel = message.validUsernameLabel;
+            return object;
+        };
+
+        /**
+         * Converts this Configuration to JSON.
+         * @function toJSON
+         * @memberof username.Configuration
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Configuration.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Configuration;
+    })();
+
+    username.UpdateConfigurationMsg = (function() {
+
+        /**
+         * Properties of an UpdateConfigurationMsg.
+         * @memberof username
+         * @interface IUpdateConfigurationMsg
+         * @property {weave.IMetadata|null} [metadata] UpdateConfigurationMsg metadata
+         * @property {username.IConfiguration|null} [patch] UpdateConfigurationMsg patch
+         */
+
+        /**
+         * Constructs a new UpdateConfigurationMsg.
+         * @memberof username
+         * @classdesc configuration.
+         * @implements IUpdateConfigurationMsg
+         * @constructor
+         * @param {username.IUpdateConfigurationMsg=} [properties] Properties to set
+         */
+        function UpdateConfigurationMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdateConfigurationMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof username.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.metadata = null;
+
+        /**
+         * UpdateConfigurationMsg patch.
+         * @member {username.IConfiguration|null|undefined} patch
+         * @memberof username.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.patch = null;
+
+        /**
+         * Creates a new UpdateConfigurationMsg instance using the specified properties.
+         * @function create
+         * @memberof username.UpdateConfigurationMsg
+         * @static
+         * @param {username.IUpdateConfigurationMsg=} [properties] Properties to set
+         * @returns {username.UpdateConfigurationMsg} UpdateConfigurationMsg instance
+         */
+        UpdateConfigurationMsg.create = function create(properties) {
+            return new UpdateConfigurationMsg(properties);
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link username.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encode
+         * @memberof username.UpdateConfigurationMsg
+         * @static
+         * @param {username.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                $root.username.Configuration.encode(message.patch, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link username.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof username.UpdateConfigurationMsg
+         * @static
+         * @param {username.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof username.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {username.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.username.UpdateConfigurationMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.patch = $root.username.Configuration.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof username.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {username.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdateConfigurationMsg message.
+         * @function verify
+         * @memberof username.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdateConfigurationMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.patch != null && message.hasOwnProperty("patch")) {
+                var error = $root.username.Configuration.verify(message.patch);
+                if (error)
+                    return "patch." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof username.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {username.UpdateConfigurationMsg} UpdateConfigurationMsg
+         */
+        UpdateConfigurationMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.username.UpdateConfigurationMsg)
+                return object;
+            var message = new $root.username.UpdateConfigurationMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".username.UpdateConfigurationMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.patch != null) {
+                if (typeof object.patch !== "object")
+                    throw TypeError(".username.UpdateConfigurationMsg.patch: object expected");
+                message.patch = $root.username.Configuration.fromObject(object.patch);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof username.UpdateConfigurationMsg
+         * @static
+         * @param {username.UpdateConfigurationMsg} message UpdateConfigurationMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdateConfigurationMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.patch = null;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                object.patch = $root.username.Configuration.toObject(message.patch, options);
+            return object;
+        };
+
+        /**
+         * Converts this UpdateConfigurationMsg to JSON.
+         * @function toJSON
+         * @memberof username.UpdateConfigurationMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdateConfigurationMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateConfigurationMsg;
+    })();
+
     return username;
 })();
 
