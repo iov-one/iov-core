@@ -232,7 +232,7 @@ describe("Decode", () => {
   describe("decodeElectorate", () => {
     it("works", () => {
       const electorate: codecImpl.gov.IElectorate & Keyed = {
-        _id: fromHex("220800000000000000052801"),
+        _id: fromHex("000000000000000500000003"),
         metadata: { schema: 1 },
         version: 3,
         admin: fromHex("5555556688770011001100110011001100110011"),
@@ -272,7 +272,7 @@ describe("Decode", () => {
   describe("decodeElectionRule", () => {
     it("works", () => {
       const rule: codecImpl.gov.IElectionRule & Keyed = {
-        _id: fromHex("220800000000000000022801"),
+        _id: fromHex("000000000000000200000003"),
         metadata: { schema: 1 },
         version: 3,
         admin: fromHex("5555556688770011001100110011001100110011"),
