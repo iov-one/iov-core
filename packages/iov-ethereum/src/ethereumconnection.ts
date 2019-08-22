@@ -142,7 +142,7 @@ export interface EthereumConnectionOptions {
 
 export class EthereumConnection implements AtomicSwapConnection {
   public static async createEtherSwapId(): Promise<SwapId> {
-    const bytes = await Random.getBytes(32);
+    const bytes = Random.getBytes(32);
     return {
       prefix: SwapIdPrefix.Ether,
       data: bytes as SwapIdBytes,
@@ -150,7 +150,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   }
 
   public static async createErc20SwapId(): Promise<SwapId> {
-    const bytes = await Random.getBytes(32);
+    const bytes = Random.getBytes(32);
     return {
       prefix: SwapIdPrefix.Erc20,
       data: bytes as SwapIdBytes,

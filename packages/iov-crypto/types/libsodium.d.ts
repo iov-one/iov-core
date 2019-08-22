@@ -11,9 +11,6 @@ export interface Argon2idOptions {
 export declare class Argon2id {
   static execute(password: string, salt: Uint8Array, options: Argon2idOptions): Promise<Uint8Array>;
 }
-export declare class Random {
-  static getBytes(count: number): Promise<Uint8Array>;
-}
 export declare class Ed25519Keypair {
   static fromLibsodiumPrivkey(libsodiumPrivkey: Uint8Array): Ed25519Keypair;
   readonly privkey: Uint8Array;

@@ -28,7 +28,7 @@ function pendingWithoutBnsd(): void {
 }
 
 async function randomBnsAddress(): Promise<Address> {
-  const rawKeypair = await Ed25519.makeKeypair(await Random.getBytes(32));
+  const rawKeypair = await Ed25519.makeKeypair(Random.getBytes(32));
   const randomIdentity: Identity = {
     chainId: "some-testnet" as ChainId,
     pubkey: {
@@ -308,7 +308,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
         const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
         await sendTokensFromFaucet(connection, identity, minimalFee);
       }
@@ -345,7 +345,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
         const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
         await sendTokensFromFaucet(connection, identity, minimalFee);
       }
@@ -384,7 +384,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
         const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
         await sendTokensFromFaucet(connection, identity, minimalFee);
       }
@@ -421,7 +421,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
         const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
         await sendTokensFromFaucet(connection, identity, minimalFee);
       }
@@ -466,7 +466,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
         const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
         await sendTokensFromFaucet(connection, identity, minimalFee);
       }
@@ -508,7 +508,7 @@ describe("SigningServerCore", () => {
       const bnsChain = connection.chainId();
 
       {
-        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(await Random.getBytes(16)));
+        const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
         const identity = await profile.createIdentity(wallet.id, bnsChain, HdPaths.iov(0));
         await sendTokensFromFaucet(connection, identity, minimalFee);
       }

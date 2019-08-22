@@ -22,7 +22,7 @@ function pendingWithoutEthereum(): void {
 }
 
 async function randomAddress(): Promise<Address> {
-  const keypair = await Secp256k1.makeKeypair(await Random.getBytes(32));
+  const keypair = await Secp256k1.makeKeypair(Random.getBytes(32));
   return pubkeyToAddress({
     algo: Algorithm.Secp256k1,
     data: keypair.pubkey as PubkeyBytes,

@@ -485,7 +485,7 @@ describe("Governor", () => {
     it("works for DistributeFunds", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
-      const cleanRewardFundAddress = Bech32.encode("tiov", await Random.getBytes(20)) as Address;
+      const cleanRewardFundAddress = Bech32.encode("tiov", Random.getBytes(20)) as Address;
       const governor = new Governor({
         ...options,
         rewardFundAddress: cleanRewardFundAddress,

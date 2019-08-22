@@ -70,6 +70,6 @@ export class KeyringEncryptor {
   }
 
   private static async makeXchacha20poly1305IetfNonce(): Promise<Xchacha20poly1305IetfNonce> {
-    return (await Random.getBytes(24)) as Xchacha20poly1305IetfNonce;
+    return Random.getBytes(24) as Xchacha20poly1305IetfNonce;
   }
 }

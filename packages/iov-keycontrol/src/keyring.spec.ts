@@ -9,7 +9,7 @@ import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
 const { fromHex } = Encoding;
 
 async function makeRandomEd25519Keypair(): Promise<Ed25519Keypair> {
-  return Ed25519.makeKeypair(await Random.getBytes(32));
+  return Ed25519.makeKeypair(Random.getBytes(32));
 }
 
 describe("Keyring", () => {

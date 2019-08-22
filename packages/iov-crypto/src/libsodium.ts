@@ -39,14 +39,6 @@ export class Argon2id {
   }
 }
 
-export class Random {
-  // Get `count` bytes of cryptographically secure random bytes
-  public static async getBytes(count: number): Promise<Uint8Array> {
-    await sodium.ready;
-    return sodium.randombytes_buf(count);
-  }
-}
-
 export class Ed25519Keypair {
   // a libsodium privkey has the format `<ed25519 privkey> + <ed25519 pubkey>`
   public static fromLibsodiumPrivkey(libsodiumPrivkey: Uint8Array): Ed25519Keypair {

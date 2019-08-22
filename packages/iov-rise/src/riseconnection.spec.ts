@@ -46,7 +46,7 @@ function pendingWithoutRise(): void {
 }
 
 async function randomAddress(): Promise<Address> {
-  const pubkey = await Random.getBytes(32);
+  const pubkey = Random.getBytes(32);
   return pubkeyToAddress(pubkey);
 }
 
