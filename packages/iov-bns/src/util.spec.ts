@@ -42,6 +42,24 @@ describe("Util", () => {
         data: fromHex("aabbaabbaabbccddccddbb3344559900ffffdd22"),
       });
     });
+
+    it("throws for invalid prefix", () => {
+      // bech32 -e -h oiv aabbaabbaabbccddccddbb3344559900ffffdd22
+      expect(() => decodeBnsAddress("oiv142a64wa2h0xdmnxahve5g4veqrlllhfz6q2fp9" as Address)).toThrowError(
+        /Invalid bech32 prefix. Must be iov or tiov./,
+      );
+    });
+
+    it("throws for invalid data lengths", () => {
+      // bech32 -e -h iov aabbaabbaabbccddccddbb3344559900ffffdd
+      expect(() => decodeBnsAddress("iov142a64wa2h0xdmnxahve5g4veqrlllhghgawxy" as Address)).toThrowError(
+        /Invalid data length. Expected 20 bytes./,
+      );
+      // bech32 -e -h iov aabbaabbaabbccddccddbb3344559900ffffdd2233
+      expect(() => decodeBnsAddress("iov142a64wa2h0xdmnxahve5g4veqrlllhfzxvuu77m5" as Address)).toThrowError(
+        /Invalid data length. Expected 20 bytes./,
+      );
+    });
   });
 
   describe("pubkeyToAddress", () => {

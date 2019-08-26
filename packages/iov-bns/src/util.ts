@@ -39,7 +39,14 @@ export function encodeBnsAddress(prefix: "iov" | "tiov", bytes: Uint8Array): Add
 
 /** Decodes a printable address into bech32 object */
 export function decodeBnsAddress(address: Address): { readonly prefix: string; readonly data: Uint8Array } {
-  return Bech32.decode(address);
+  const { prefix, data } = Bech32.decode(address);
+  if (prefix !== "iov" && prefix !== "tiov") {
+    throw new Error("Invalid bech32 prefix. Must be iov or tiov.");
+  }
+  if (data.length !== 20) {
+    throw new Error("Invalid data length. Expected 20 bytes.");
+  }
+  return { prefix: prefix, data: data };
 }
 
 function algoToPrefix(algo: Algorithm): Uint8Array {
