@@ -24,7 +24,7 @@ export declare function encodeBnsAddress(prefix: "iov" | "tiov", bytes: Uint8Arr
 export declare function decodeBnsAddress(
   address: Address,
 ): {
-  readonly prefix: string;
+  readonly prefix: "iov" | "tiov";
   readonly data: Uint8Array;
 };
 /**
