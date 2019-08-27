@@ -22,6 +22,7 @@ import {
   Proposal,
   Vote,
 } from "./types";
+import { IovBech32Prefix } from "./util";
 /**
  * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
  * number.
@@ -46,21 +47,21 @@ export declare function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed)
 export declare function decodeAmount(coin: codecImpl.coin.ICoin): Amount;
 export declare function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): CashConfiguration;
 export declare function decodeParticipants(
-  prefix: "iov" | "tiov",
+  prefix: IovBech32Prefix,
   maybeParticipants?: codecImpl.multisig.IParticipant[] | null,
 ): readonly Participant[];
 export declare function decodeElectorate(
-  prefix: "iov" | "tiov",
+  prefix: IovBech32Prefix,
   electorate: codecImpl.gov.IElectorate & Keyed,
 ): Electorate;
 export declare function decodeElectionRule(
-  prefix: "iov" | "tiov",
+  prefix: IovBech32Prefix,
   rule: codecImpl.gov.IElectionRule & Keyed,
 ): ElectionRule;
 export declare function decodeProposal(
-  prefix: "iov" | "tiov",
+  prefix: IovBech32Prefix,
   proposal: codecImpl.gov.IProposal & Keyed,
 ): Proposal;
-export declare function decodeVote(prefix: "iov" | "tiov", vote: codecImpl.gov.IVote & Keyed): Vote;
+export declare function decodeVote(prefix: IovBech32Prefix, vote: codecImpl.gov.IVote & Keyed): Vote;
 export declare function parseMsg(base: UnsignedTransaction, tx: codecImpl.bnsd.ITx): UnsignedTransaction;
 export declare function parseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): SignedTransaction;

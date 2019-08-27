@@ -89,6 +89,7 @@ import {
   conditionToAddress,
   decodeBnsAddress,
   identityToAddress,
+  IovBech32Prefix,
   isConfirmedWithSwapClaimOrAbortTransaction,
   isConfirmedWithSwapOfferTransaction,
   swapCondition,
@@ -232,7 +233,7 @@ export class BnsConnection implements AtomicSwapConnection {
   // tslint:disable-next-line: readonly-keyword
   private tokensCache: readonly Token[] | undefined;
 
-  private get prefix(): "iov" | "tiov" {
+  private get prefix(): IovBech32Prefix {
     return addressPrefix(this.chainId());
   }
 

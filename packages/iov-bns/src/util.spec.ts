@@ -27,6 +27,42 @@ describe("Util", () => {
     });
   });
 
+  describe("decodeBnsAddress", () => {
+    it("works for simple testnet address", () => {
+      // bech32 -e -h tiov aabbaabbaabbccddccddbb3344559900ffffdd22
+      expect(decodeBnsAddress("tiov142a64wa2h0xdmnxahve5g4veqrlllhfzwgknfd" as Address)).toEqual({
+        prefix: "tiov",
+        data: fromHex("aabbaabbaabbccddccddbb3344559900ffffdd22"),
+      });
+    });
+
+    it("works for simple mainnet address", () => {
+      // bech32 -e -h iov aabbaabbaabbccddccddbb3344559900ffffdd22
+      expect(decodeBnsAddress("iov142a64wa2h0xdmnxahve5g4veqrlllhfzqalhfu" as Address)).toEqual({
+        prefix: "iov",
+        data: fromHex("aabbaabbaabbccddccddbb3344559900ffffdd22"),
+      });
+    });
+
+    it("throws for invalid prefix", () => {
+      // bech32 -e -h oiv aabbaabbaabbccddccddbb3344559900ffffdd22
+      expect(() => decodeBnsAddress("oiv142a64wa2h0xdmnxahve5g4veqrlllhfz6q2fp9" as Address)).toThrowError(
+        /Invalid bech32 prefix. Must be iov or tiov./,
+      );
+    });
+
+    it("throws for invalid data lengths", () => {
+      // bech32 -e -h iov aabbaabbaabbccddccddbb3344559900ffffdd
+      expect(() => decodeBnsAddress("iov142a64wa2h0xdmnxahve5g4veqrlllhghgawxy" as Address)).toThrowError(
+        /Invalid data length. Expected 20 bytes./,
+      );
+      // bech32 -e -h iov aabbaabbaabbccddccddbb3344559900ffffdd2233
+      expect(() => decodeBnsAddress("iov142a64wa2h0xdmnxahve5g4veqrlllhfzxvuu77m5" as Address)).toThrowError(
+        /Invalid data length. Expected 20 bytes./,
+      );
+    });
+  });
+
   describe("pubkeyToAddress", () => {
     it("is compatible to weave test data", () => {
       const address = pubkeyToAddress(testdata.pubJson, "tiov");
@@ -119,13 +155,6 @@ describe("Util", () => {
     // bech32 -e -h tiov f6cade229408c93a2a8d181d62efce46ff60d210
     const raw = fromHex("f6cade229408c93a2a8d181d62efce46ff60d210");
     expect(encodeBnsAddress("tiov", raw)).toEqual("tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky");
-  });
-
-  it("has working decodeBnsAddress", () => {
-    expect(decodeBnsAddress("tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky" as Address)).toEqual({
-      prefix: "tiov",
-      data: fromHex("f6cade229408c93a2a8d181d62efce46ff60d210"),
-    });
   });
 
   it("isValidAddress checks valid addresses", () => {
