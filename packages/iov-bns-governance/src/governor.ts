@@ -28,6 +28,7 @@ export interface GovernorOptions {
   readonly identity: Identity;
   readonly guaranteeFundEscrowId?: Uint8Array;
   readonly rewardFundAddress?: Address;
+  readonly treasuryAddress?: Address;
 }
 
 export class Governor {
@@ -36,13 +37,21 @@ export class Governor {
   private readonly address: Address;
   private readonly guaranteeFundEscrowId?: Uint8Array;
   private readonly rewardFundAddress?: Address;
+  private readonly treasuryAddress?: Address;
 
-  public constructor({ connection, identity, guaranteeFundEscrowId, rewardFundAddress }: GovernorOptions) {
+  public constructor({
+    connection,
+    identity,
+    guaranteeFundEscrowId,
+    rewardFundAddress,
+    treasuryAddress,
+  }: GovernorOptions) {
     this.connection = connection;
     this.identity = identity;
     this.address = bnsCodec.identityToAddress(this.identity);
     this.guaranteeFundEscrowId = guaranteeFundEscrowId;
     this.rewardFundAddress = rewardFundAddress;
+    this.treasuryAddress = treasuryAddress;
   }
 
   public async getElectorates(): Promise<readonly Electorate[]> {
@@ -222,6 +231,25 @@ export class Governor {
             resolution: options.text,
           },
         });
+      case ProposalType.TreasurySend: {
+        if (!this.treasuryAddress) {
+          throw new Error("This Governor instance was not initialised with a treasuryAddress");
+        }
+        const treasuryAddress = this.treasuryAddress;
+        const messages = options.recipients.map(({ address, amount }) => ({
+          kind: ActionKind.Send as ActionKind.Send,
+          sender: treasuryAddress,
+          recipient: address,
+          amount: amount,
+        }));
+        return this.connection.withDefaultFee({
+          ...commonProperties,
+          action: {
+            kind: ActionKind.ExecuteProposalBatch,
+            messages: messages,
+          },
+        });
+      }
       default:
         throw new Error("Proposal type not yet supported");
     }

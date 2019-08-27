@@ -15,6 +15,7 @@ export interface GovernorOptions {
   readonly identity: Identity;
   readonly guaranteeFundEscrowId?: Uint8Array;
   readonly rewardFundAddress?: Address;
+  readonly treasuryAddress?: Address;
 }
 export declare class Governor {
   private readonly connection;
@@ -22,7 +23,14 @@ export declare class Governor {
   private readonly address;
   private readonly guaranteeFundEscrowId?;
   private readonly rewardFundAddress?;
-  constructor({ connection, identity, guaranteeFundEscrowId, rewardFundAddress }: GovernorOptions);
+  private readonly treasuryAddress?;
+  constructor({
+    connection,
+    identity,
+    guaranteeFundEscrowId,
+    rewardFundAddress,
+    treasuryAddress,
+  }: GovernorOptions);
   getElectorates(): Promise<readonly Electorate[]>;
   getElectionRules(electorateId: number): Promise<readonly ElectionRule[]>;
   getElectionRuleById(electionRuleId: number): Promise<ElectionRule>;
