@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.17.1
+
+- @iov/bns-governance: Add `TreasurySend` proposal type and export
+  `TreasurySendOptions`.
+- @iov/bns-governance: Support `TreasurySend` proposals in
+  `Governor.buildCreateProposalTx`.
+
 ## 0.17.0
 
 - @iov/bns: Export `pubkeyToAddress` for address generation with prefix instead
