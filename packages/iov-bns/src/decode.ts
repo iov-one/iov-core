@@ -63,7 +63,7 @@ import {
   VoteOption,
   VoteTx,
 } from "./types";
-import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
+import { addressPrefix, encodeBnsAddress, identityToAddress, IovBech32Prefix } from "./util";
 
 const { fromUtf8 } = Encoding;
 
@@ -225,7 +225,7 @@ export function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): 
 }
 
 export function decodeParticipants(
-  prefix: "iov" | "tiov",
+  prefix: IovBech32Prefix,
   // tslint:disable-next-line:readonly-array
   maybeParticipants?: codecImpl.multisig.IParticipant[] | null,
 ): readonly Participant[] {
@@ -237,7 +237,7 @@ export function decodeParticipants(
 }
 
 export function decodeElectorate(
-  prefix: "iov" | "tiov",
+  prefix: IovBech32Prefix,
   electorate: codecImpl.gov.IElectorate & Keyed,
 ): Electorate {
   const { id } = decodeVersionedIdArray(electorate._id);
@@ -272,7 +272,7 @@ function decodeFraction(fraction: codecImpl.gov.IFraction): Fraction {
 }
 
 export function decodeElectionRule(
-  prefix: "iov" | "tiov",
+  prefix: IovBech32Prefix,
   rule: codecImpl.gov.IElectionRule & Keyed,
 ): ElectionRule {
   const { id } = decodeVersionedIdArray(rule._id);
@@ -288,7 +288,7 @@ export function decodeElectionRule(
   };
 }
 
-function decodeElectors(prefix: "iov" | "tiov", electors: readonly codecImpl.gov.IElector[]): Electors {
+function decodeElectors(prefix: IovBech32Prefix, electors: readonly codecImpl.gov.IElector[]): Electors {
   const map: Electors = {};
   return electors.reduce((accumulator, elector) => {
     const address = encodeBnsAddress(prefix, ensure(elector.address, "address"));
@@ -299,7 +299,7 @@ function decodeElectors(prefix: "iov" | "tiov", electors: readonly codecImpl.gov
   }, map);
 }
 
-function decodeElector(prefix: "iov" | "tiov", elector: codecImpl.gov.IElector): Elector {
+function decodeElector(prefix: IovBech32Prefix, elector: codecImpl.gov.IElector): Elector {
   return {
     address: encodeBnsAddress(prefix, ensure(elector.address, "address")),
     weight: ensure(elector.weight, "weight"),
@@ -365,7 +365,7 @@ function decodeValidators(validators: readonly codecImpl.weave.IValidatorUpdate[
   }, initialValidators);
 }
 
-function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array): ProposalAction {
+function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.bnsd.ProposalOptions.decode(rawOption);
   if (option.govCreateTextResolutionMsg) {
     return {
@@ -436,7 +436,7 @@ function decodeRawProposalOption(prefix: "iov" | "tiov", rawOption: Uint8Array):
   }
 }
 
-export function decodeProposal(prefix: "iov" | "tiov", proposal: codecImpl.gov.IProposal & Keyed): Proposal {
+export function decodeProposal(prefix: IovBech32Prefix, proposal: codecImpl.gov.IProposal & Keyed): Proposal {
   const voteState = ensure(proposal.voteState, "voteState");
   return {
     id: decodeNumericId(proposal._id),
@@ -690,7 +690,7 @@ function decodeVoteOption(option: codecImpl.gov.VoteOption): VoteOption {
 }
 
 function decodeVoteId(
-  prefix: "iov" | "tiov",
+  prefix: IovBech32Prefix,
   id: Uint8Array,
 ): { readonly voterAddress: Address; readonly proposalId: number } {
   return {
@@ -699,7 +699,7 @@ function decodeVoteId(
   };
 }
 
-export function decodeVote(prefix: "iov" | "tiov", vote: codecImpl.gov.IVote & Keyed): Vote {
+export function decodeVote(prefix: IovBech32Prefix, vote: codecImpl.gov.IVote & Keyed): Vote {
   const { proposalId } = decodeVoteId(prefix, vote._id);
   return {
     proposalId: proposalId,

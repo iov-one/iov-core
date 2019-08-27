@@ -28,19 +28,21 @@ import { As } from "type-tagger";
 
 import * as constants from "./constants";
 
-export function addressPrefix(chainId: ChainId): "iov" | "tiov" {
+export type IovBech32Prefix = "iov" | "tiov";
+
+export function addressPrefix(chainId: ChainId): IovBech32Prefix {
   return chainId === constants.mainnetChainId ? "iov" : "tiov";
 }
 
 /** Encodes raw bytes into a bech32 address */
-export function encodeBnsAddress(prefix: "iov" | "tiov", bytes: Uint8Array): Address {
+export function encodeBnsAddress(prefix: IovBech32Prefix, bytes: Uint8Array): Address {
   return Bech32.encode(prefix, bytes) as Address;
 }
 
 /** Decodes a printable address into bech32 object */
 export function decodeBnsAddress(
   address: Address,
-): { readonly prefix: "iov" | "tiov"; readonly data: Uint8Array } {
+): { readonly prefix: IovBech32Prefix; readonly data: Uint8Array } {
   const { prefix, data } = Bech32.decode(address);
   if (prefix !== "iov" && prefix !== "tiov") {
     throw new Error("Invalid bech32 prefix. Must be iov or tiov.");
@@ -70,7 +72,7 @@ function keyToIdentifier(key: PubkeyBundle): Uint8Array {
  * Creates an IOV address from a given Ed25519 pubkey and
  * a prefix that represents the network kind (i.e. mainnet or testnet)
  */
-export function pubkeyToAddress(pubkey: PubkeyBundle, prefix: "iov" | "tiov"): Address {
+export function pubkeyToAddress(pubkey: PubkeyBundle, prefix: IovBech32Prefix): Address {
   if (pubkey.algo !== Algorithm.Ed25519) {
     throw new Error("Public key must be Ed25519");
   }
