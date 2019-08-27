@@ -10,6 +10,7 @@ export {
   ReleaseGuaranteeFundsOptions,
   RemoveCommitteeMemberOptions,
   RemoveValidatorOptions,
+  TreasurySendOptions,
   ProposalOptions,
   ProposalType,
 } from "./proposals";
