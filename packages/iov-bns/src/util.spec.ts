@@ -29,9 +29,10 @@ describe("Util", () => {
 
   describe("decodeBnsAddress", () => {
     it("works for simple testnet address", () => {
-      expect(decodeBnsAddress("tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky" as Address)).toEqual({
+      // bech32 -e -h tiov aabbaabbaabbccddccddbb3344559900ffffdd22
+      expect(decodeBnsAddress("tiov142a64wa2h0xdmnxahve5g4veqrlllhfzwgknfd" as Address)).toEqual({
         prefix: "tiov",
-        data: fromHex("f6cade229408c93a2a8d181d62efce46ff60d210"),
+        data: fromHex("aabbaabbaabbccddccddbb3344559900ffffdd22"),
       });
     });
 
