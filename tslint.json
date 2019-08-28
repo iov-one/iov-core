@@ -24,7 +24,7 @@
     "no-method-signature": true,
     "no-mixed-interface": false,
     "no-object-mutation": true,
-    "no-parameter-reassignment": true,
+    "no-parameter-reassignment": false,
     "no-unnecessary-class": [true, "allow-static-only"],
     "no-unnecessary-type-assertion": true,
     "no-var-keyword": true,
