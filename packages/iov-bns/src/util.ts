@@ -102,6 +102,10 @@ export function swapCondition(swap: SwapData): Condition {
   return buildCondition("aswap", "pre_hash", weaveSwapId);
 }
 
+export function multisignatureCondition(multisignatureId: Uint8Array): Condition {
+  return buildCondition("multisig", "usage", multisignatureId);
+}
+
 export function conditionToAddress(chainId: ChainId, cond: Condition): Address {
   const prefix = addressPrefix(chainId);
   const bytes = new Sha256(cond).digest().slice(0, 20);
