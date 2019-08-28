@@ -37,6 +37,7 @@ export declare function identityToAddress(identity: Identity): Address;
 export declare type Condition = Uint8Array & As<"Condition">;
 export declare function swapCondition(swap: SwapData): Condition;
 export declare function multisignatureCondition(multisignatureId: Uint8Array): Condition;
+export declare function conditionToWeaveAddress(cond: Condition): Uint8Array;
 export declare function conditionToAddress(chainId: ChainId, cond: Condition): Address;
 export declare function isValidAddress(address: string): boolean;
 export declare function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce): SignableBytes;

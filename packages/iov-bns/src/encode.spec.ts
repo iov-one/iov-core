@@ -272,7 +272,7 @@ describe("Encode", () => {
       expect(msg.ref!.length).toEqual(0);
     });
 
-    it("throws for SendTransaction with mismatched sender and creator", () => {
+    it("works for SendTransaction with mismatched sender and creator", () => {
       const transaction: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: defaultCreator,
@@ -285,7 +285,14 @@ describe("Encode", () => {
         recipient: defaultRecipient,
         memo: "abc",
       };
-      expect(() => buildMsg(transaction)).toThrowError(/sender and creator do not match/i);
+      const msg = buildMsg(transaction).cashSendMsg!;
+      expect(msg.source).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
+      expect(msg.destination).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
+      expect(msg.memo).toEqual("abc");
+      expect(msg.amount!.whole).toEqual(1);
+      expect(msg.amount!.fractional).toEqual(1);
+      expect(msg.amount!.ticker).toEqual("CASH");
+      expect(msg.ref!.length).toEqual(0);
     });
 
     // Usernames
