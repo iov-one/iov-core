@@ -26,6 +26,7 @@ import {
   isBnsTx,
   isCreateTextResolution,
   isExecuteProposalBatch,
+  isMultisignatureTx,
   isReleaseEscrow,
   isSend,
   isSetValidators,
@@ -44,7 +45,12 @@ import {
   VoteOption,
   VoteTx,
 } from "./types";
-import { decodeBnsAddress, identityToAddress } from "./util";
+import {
+  conditionToWeaveAddress,
+  decodeBnsAddress,
+  identityToAddress,
+  multisignatureCondition,
+} from "./util";
 
 function encodeInt(intNumber: number): number | null {
   if (!Number.isInteger(intNumber)) {
@@ -128,15 +134,10 @@ function encodeNumericId(id: number): Uint8Array {
 // Token sends
 
 function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.bnsd.ITx {
-  const { prefix: prefix1, data: data1 } = decodeBnsAddress(identityToAddress(tx.creator));
-  const { prefix: prefix2, data: data2 } = decodeBnsAddress(tx.sender);
-  if (prefix1 !== prefix2 || data1.length !== data2.length || data1.some((b, i) => b !== data2[i])) {
-    throw new Error("Sender and creator do not match (currently unsupported)");
-  }
   return {
     cashSendMsg: codecImpl.cash.SendMsg.create({
       metadata: { schema: 1 },
-      source: decodeBnsAddress(identityToAddress(tx.creator)).data,
+      source: decodeBnsAddress(tx.sender).data,
       destination: decodeBnsAddress(tx.recipient).data,
       amount: encodeAmount(tx.amount),
       memo: encodeString(tx.memo),
@@ -479,15 +480,19 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
 
 export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   const msg = buildMsg(tx);
+  const feePayer = isMultisignatureTx(tx)
+    ? conditionToWeaveAddress(multisignatureCondition(tx.multisig[0]))
+    : decodeBnsAddress(identityToAddress(tx.creator)).data;
   return codecImpl.bnsd.Tx.create({
     ...msg,
     fees:
       tx.fee && tx.fee.tokens
         ? {
             fees: encodeAmount(tx.fee.tokens),
-            payer: decodeBnsAddress(identityToAddress(tx.creator)).data,
+            payer: feePayer,
           }
         : null,
+    multisig: isMultisignatureTx(tx) ? [...tx.multisig] : null,
   });
 }
 

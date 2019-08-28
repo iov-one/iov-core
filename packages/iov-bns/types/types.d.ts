@@ -340,3 +340,7 @@ export declare type BnsTx =
   | CreateProposalTx
   | VoteTx;
 export declare function isBnsTx(transaction: LightTransaction): transaction is BnsTx;
+export interface MultisignatureTx extends LightTransaction {
+  readonly multisig: readonly Uint8Array[];
+}
+export declare function isMultisignatureTx(transaction: LightTransaction): transaction is MultisignatureTx;

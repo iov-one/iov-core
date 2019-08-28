@@ -19,6 +19,8 @@ export {
   isCreateMultisignatureTx,
   UpdateMultisignatureTx,
   isUpdateMultisignatureTx,
+  MultisignatureTx,
+  isMultisignatureTx,
   ValidatorProperties,
   Validators,
   ActionKind,

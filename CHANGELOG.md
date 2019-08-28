@@ -2,6 +2,8 @@
 
 ## 0.17.1
 
+- @iov/bns: Add `MultisignatureTx` type and `isMultisignatureTx` helper function
+  to BNS.
 - @iov/bns-governance: Add `TreasurySend` proposal type and export
   `TreasurySendOptions`.
 - @iov/bns-governance: Support `TreasurySend` proposals in
