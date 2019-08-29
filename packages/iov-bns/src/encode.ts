@@ -481,7 +481,7 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
 export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   const msg = buildMsg(tx);
   const feePayer = isMultisignatureTx(tx)
-    ? conditionToWeaveAddress(multisignatureCondition(tx.multisig[0]))
+    ? conditionToWeaveAddress(multisignatureCondition(encodeNumericId(tx.multisig[0])))
     : decodeBnsAddress(identityToAddress(tx.creator)).data;
   return codecImpl.bnsd.Tx.create({
     ...msg,
@@ -492,7 +492,7 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
             payer: feePayer,
           }
         : null,
-    multisig: isMultisignatureTx(tx) ? [...tx.multisig] : null,
+    multisig: isMultisignatureTx(tx) ? tx.multisig.map(encodeNumericId) : null,
   });
 }
 
