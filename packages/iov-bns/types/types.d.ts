@@ -341,6 +341,6 @@ export declare type BnsTx =
   | VoteTx;
 export declare function isBnsTx(transaction: LightTransaction): transaction is BnsTx;
 export interface MultisignatureTx extends LightTransaction {
-  readonly multisig: readonly Uint8Array[];
+  readonly multisig: readonly number[];
 }
 export declare function isMultisignatureTx(transaction: LightTransaction): transaction is MultisignatureTx;

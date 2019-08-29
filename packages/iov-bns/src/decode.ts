@@ -763,7 +763,7 @@ function parseBaseTx(tx: codecImpl.bnsd.ITx, sig: FullSignature, chainId: ChainI
     base = { ...base, fee: { tokens: decodeAmount(tx.fees.fees) } };
   }
   if (tx.multisig && tx.multisig.length) {
-    base = { ...base, multisig: tx.multisig };
+    base = { ...base, multisig: tx.multisig.map(decodeNumericId) };
   }
   return base;
 }

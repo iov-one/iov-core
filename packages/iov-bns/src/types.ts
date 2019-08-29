@@ -15,7 +15,6 @@ import {
   SwapOfferTransaction,
   TimestampTimeout,
 } from "@iov/bcp";
-import { isUint8Array } from "@iov/encoding";
 import { As } from "type-tagger";
 
 // config (those are not used outside of @iov/bns)
@@ -490,9 +489,12 @@ export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
 }
 
 export interface MultisignatureTx extends LightTransaction {
-  readonly multisig: readonly Uint8Array[];
+  readonly multisig: readonly number[];
 }
 
 export function isMultisignatureTx(transaction: LightTransaction): transaction is MultisignatureTx {
-  return Array.isArray((transaction as any).multisig) && (transaction as any).multisig.every(isUint8Array);
+  return (
+    Array.isArray((transaction as any).multisig) &&
+    (transaction as any).multisig.every((id: any) => typeof id === "number")
+  );
 }

@@ -412,7 +412,7 @@ describe("Decode", () => {
             },
           },
         ],
-        multisig: [fromHex("8877665544332211")],
+        multisig: [fromHex("0000665544332211")],
         cashSendMsg: {
           metadata: { schema: 1 },
           source: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
@@ -441,7 +441,7 @@ describe("Decode", () => {
         sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
         recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
         memo: undefined,
-        multisig: [fromHex("8877665544332211")],
+        multisig: [112516402455057],
       });
     });
   });

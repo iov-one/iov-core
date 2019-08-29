@@ -156,7 +156,7 @@ class Actor {
   ): Promise<SendTransaction & WithCreator> {
     return this.connection.withDefaultFee<SendTransaction & WithCreator & MultisignatureTx>({
       kind: "bcp/send",
-      multisig: [multisignatureId],
+      multisig: [new BN(multisignatureId).toNumber()],
       creator: this.identity,
       sender: sender,
       recipient: recipient,
