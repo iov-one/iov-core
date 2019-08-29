@@ -41,6 +41,7 @@ import {
   Electors,
   Fraction,
   Keyed,
+  MultisignatureTx,
   Participant,
   PrivkeyBundle,
   PrivkeyBytes,
@@ -63,7 +64,7 @@ import {
   VoteOption,
   VoteTx,
 } from "./types";
-import { addressPrefix, encodeBnsAddress, identityToAddress, IovBech32Prefix } from "./util";
+import { addressPrefix, encodeBnsAddress, IovBech32Prefix } from "./util";
 
 const { fromUtf8 } = Encoding;
 
@@ -471,7 +472,7 @@ function parseSendTransaction(
   return {
     ...base,
     kind: "bcp/send",
-    sender: identityToAddress(base.creator),
+    sender: encodeBnsAddress(prefix, ensure(msg.source, "source")),
     recipient: encodeBnsAddress(prefix, ensure(msg.destination, "destination")),
     amount: decodeAmount(ensure(msg.amount)),
     memo: msg.memo || undefined,
@@ -751,7 +752,7 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.bnsd.ITx): Uns
 }
 
 function parseBaseTx(tx: codecImpl.bnsd.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
-  const base: UnsignedTransaction = {
+  let base: UnsignedTransaction | (UnsignedTransaction & MultisignatureTx) = {
     kind: "",
     creator: {
       chainId: chainId,
@@ -759,7 +760,10 @@ function parseBaseTx(tx: codecImpl.bnsd.ITx, sig: FullSignature, chainId: ChainI
     },
   };
   if (tx.fees && tx.fees.fees) {
-    return { ...base, fee: { tokens: decodeAmount(tx.fees.fees) } };
+    base = { ...base, fee: { tokens: decodeAmount(tx.fees.fees) } };
+  }
+  if (tx.multisig && tx.multisig.length) {
+    base = { ...base, multisig: tx.multisig };
   }
   return base;
 }

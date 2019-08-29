@@ -3,6 +3,7 @@ import {
   Algorithm,
   Amount,
   ChainId,
+  isSendTransaction,
   Nonce,
   PubkeyBytes,
   TokenTicker,
@@ -42,6 +43,7 @@ import {
   isCreateEscrowTx,
   isCreateMultisignatureTx,
   isCreateProposalTx,
+  isMultisignatureTx,
   isRegisterUsernameTx,
   isReleaseEscrowTx,
   isReturnEscrowTx,
@@ -393,6 +395,54 @@ describe("Decode", () => {
       const decoded = codecImpl.bnsd.Tx.decode(signedTxBin);
       const tx = parseTx(decoded, chainId);
       expect(tx.transaction).toEqual(sendTxJson);
+    });
+
+    it("decode multisig transaction", () => {
+      const decoded: codecImpl.bnsd.ITx = {
+        signatures: [
+          {
+            sequence: 0,
+            pubkey: {
+              ed25519: fromHex("c9df7bcba2238bedcc681e8b17bb21c1625d21d285b70c20cf53fdd473db9dfb"),
+            },
+            signature: {
+              ed25519: fromHex(
+                "7e899078b35b2d301893b82b0d840f4e1ceb715a86f4d28b2e88312ed605fea83d6b37f7ced4c8023a0d41f79ac9d5556df72c5ec58e26d7db4a6f8c6a537d0a",
+              ),
+            },
+          },
+        ],
+        multisig: [fromHex("8877665544332211")],
+        cashSendMsg: {
+          metadata: { schema: 1 },
+          source: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          destination: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+          amount: { whole: 1, fractional: 1, ticker: "CASH" },
+        },
+      };
+      const tx = parseTx(decoded, chainId);
+      if (!isSendTransaction(tx.transaction) || !isMultisignatureTx(tx.transaction)) {
+        throw new Error("Expected multisignature send tx");
+      }
+      expect(tx.transaction).toEqual({
+        kind: "bcp/send",
+        creator: {
+          chainId: chainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: fromHex("c9df7bcba2238bedcc681e8b17bb21c1625d21d285b70c20cf53fdd473db9dfb") as PubkeyBytes,
+          },
+        },
+        amount: {
+          quantity: "1000000001",
+          fractionalDigits: 9,
+          tokenTicker: "CASH" as TokenTicker,
+        },
+        sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
+        recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+        memo: undefined,
+        multisig: [fromHex("8877665544332211")],
+      });
     });
   });
 
