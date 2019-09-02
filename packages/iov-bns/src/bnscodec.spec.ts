@@ -49,6 +49,19 @@ describe("bnscodec", () => {
     const memos: readonly (string | undefined)[] = [undefined, "", "some text", "text with emoji: 🐎"];
 
     const creatorRecipientPairs: readonly { readonly creator: Identity; readonly recipient: Address }[] = [
+      // Local devnet
+      {
+        creator: {
+          chainId: "local-some.Net_123" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "82f1a2b41db4883adc37b5bd5e742dc039a0fee677bae0d5de88f8e37a8315ed",
+            ) as PubkeyBytes,
+          },
+        },
+        recipient: "tiov17urh302j7nrz2gnufgh47qdjgnm4ywhgwzhrdf" as Address,
+      },
       // Testnet
       {
         creator: {
