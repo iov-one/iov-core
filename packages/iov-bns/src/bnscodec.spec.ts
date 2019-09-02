@@ -30,6 +30,7 @@ import {
   swapClaimTxJson,
   swapOfferTxJson,
 } from "./testdata.spec";
+import { MultisignatureTx } from "./types";
 import { encodeBnsAddress } from "./util";
 
 describe("bnscodec", () => {
@@ -122,6 +123,85 @@ describe("bnscodec", () => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const fs = require("fs");
     fs.writeFileSync("sendtx_tests.json", JSON.stringify(out, null, 2) + "\n", "utf8");
+  });
+
+  fit("generate multisig test data", () => {
+    const nonce = 7 as Nonce;
+    const fee: Fee = {
+      tokens: { quantity: "100000000", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
+    };
+    const amount: Amount = { quantity: "8900000000", fractionalDigits: 9, tokenTicker: "IOV" as TokenTicker };
+    const memo =
+      "A very long memo lorem ipsum lorem ipsum. A very long memo lorem ipsum lorem ipsum. A very long memo lorem ipsum lorem ipsum!!11";
+
+    const creatorRecipientPairs: readonly {
+      readonly creator: Identity;
+      readonly sender: Address;
+      readonly recipient: Address;
+    }[] = [
+      // Testnet
+      {
+        creator: {
+          chainId: "iov-lovenet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "fa8c2a18b2854ab65207c0c727b825b6dbaa29379e6b2bb35ac778bfaa881e92",
+            ) as PubkeyBytes,
+          },
+        },
+        sender: encodeBnsAddress("tiov", Encoding.fromHex("abababab111222111222111222ccccccccdddddd")), // a multisig contract
+        recipient: encodeBnsAddress("tiov", Encoding.fromHex("0000000000000000000000000000000000000000")),
+      },
+      // Mainnet
+      {
+        creator: {
+          chainId: "iov-mainnet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "34299fa3fe218a6210ace221f86597c800ecff3d27e1e6a7937248514a6784ee",
+            ) as PubkeyBytes,
+          },
+        },
+        sender: encodeBnsAddress("iov", Encoding.fromHex("8787878787878787aaaaaaaaaaaaaaaa99999999")), // a multisig contract
+        recipient: encodeBnsAddress("iov", Encoding.fromHex("020daec62066ec82a5a1b40378d87457ed88e4fc")),
+      },
+    ];
+
+    const multisigs: readonly (readonly number[])[] = [
+      [42],
+      [0, Number.MAX_SAFE_INTEGER],
+      [1, 123, 455, 2877],
+    ];
+
+    // tslint:disable-next-line: readonly-array
+    const out: any[] = [];
+
+    for (const { creator, sender, recipient } of creatorRecipientPairs) {
+      for (const multisig of multisigs) {
+        const send: SendTransaction & MultisignatureTx & WithCreator = {
+          kind: "bcp/send",
+          creator: creator,
+          sender: sender,
+          recipient: recipient,
+          multisig: multisig,
+          memo: memo,
+          amount: amount,
+          fee: fee,
+        };
+        const { bytes } = bnsCodec.bytesToSign(send, nonce);
+        out.push({
+          transaction: TransactionEncoder.toJson(send),
+          nonce: nonce,
+          bytes: Encoding.toHex(bytes),
+        });
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs = require("fs");
+    fs.writeFileSync("sendtx_multisig_tests.json", JSON.stringify(out, null, 2) + "\n", "utf8");
   });
 
   it("properly encodes transactions", () => {
