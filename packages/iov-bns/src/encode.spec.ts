@@ -47,6 +47,7 @@ import {
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
+  MultisignatureTx,
   Participant,
   RegisterUsernameTx,
   ReleaseEscrowTx,
@@ -58,7 +59,7 @@ import {
   VoteOption,
   VoteTx,
 } from "./types";
-import { appendSignBytes } from "./util";
+import { appendSignBytes, conditionToWeaveAddress, multisignatureCondition } from "./util";
 
 const { fromHex } = Encoding;
 
@@ -226,6 +227,43 @@ describe("Encode", () => {
 
       expect(encoded.cashSendMsg).toBeDefined();
       expect(encoded.cashSendMsg!.memo).toEqual("paid transaction");
+    });
+
+    it("can encode transaction with multisig", () => {
+      const transaction: SendTransaction & MultisignatureTx & WithCreator = {
+        kind: "bcp/send",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        sender: defaultSender,
+        recipient: defaultRecipient,
+        fee: { tokens: defaultAmount },
+        multisig: [42, 1, Number.MAX_SAFE_INTEGER, 7],
+      };
+
+      const encoded = buildUnsignedTx(transaction);
+      expect(encoded.multisig).toEqual([
+        fromHex("000000000000002a"),
+        fromHex("0000000000000001"),
+        fromHex("001fffffffffffff"),
+        fromHex("0000000000000007"),
+      ]);
+      const firstContract = conditionToWeaveAddress(multisignatureCondition(fromHex("000000000000002a")));
+      expect(encoded.fees!.payer).toEqual(firstContract);
+    });
+
+    it("throws for multisig transaction with zero entries", () => {
+      const transaction: SendTransaction & MultisignatureTx & WithCreator = {
+        kind: "bcp/send",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        sender: defaultSender,
+        recipient: defaultRecipient,
+        fee: { tokens: defaultAmount },
+        multisig: [],
+      };
+      expect(() => buildUnsignedTx(transaction)).toThrowError(
+        /empty multisig arrays are currently unsupported/i,
+      );
     });
   });
 
