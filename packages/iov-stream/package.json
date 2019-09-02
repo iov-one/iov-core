@@ -1,6 +1,6 @@
 {
   "name": "@iov/stream",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "description": "Utility functions for producing and consuming Streams",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
