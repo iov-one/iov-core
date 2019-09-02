@@ -108,7 +108,7 @@ describe("bnscodec", () => {
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const fs = require("fs");
-    fs.writeFileSync("data.json", JSON.stringify(out), "utf8");
+    fs.writeFileSync("sendtx_tests.json", JSON.stringify(out, null, 2) + "\n", "utf8");
   });
 
   it("properly encodes transactions", () => {
