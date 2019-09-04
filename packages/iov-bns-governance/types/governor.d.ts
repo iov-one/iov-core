@@ -18,9 +18,9 @@ export interface GovernorOptions {
   readonly treasuryAddress?: Address;
 }
 export declare class Governor {
+  readonly address: Address;
   private readonly connection;
   private readonly identity;
-  private readonly address;
   private readonly guaranteeFundEscrowId?;
   private readonly rewardFundAddress?;
   private readonly treasuryAddress?;

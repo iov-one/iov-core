@@ -58,6 +58,17 @@ describe("Governor", () => {
     options.connection.disconnect();
   });
 
+  describe("address", () => {
+    it("returns correct address", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const governor = new Governor(options);
+      expect(governor.address).toEqual("tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea");
+
+      options.connection.disconnect();
+    });
+  });
+
   describe("getElectorates", () => {
     it("can get electorates", async () => {
       pendingWithoutBnsd();
