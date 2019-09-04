@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.2
+
+- @iov/bns-governance: Make `Governor.address` public
+
 ## 0.17.1
 
 - @iov/bns: Add `MultisignatureTx` type and `isMultisignatureTx` helper function

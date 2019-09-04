@@ -32,9 +32,10 @@ export interface GovernorOptions {
 }
 
 export class Governor {
+  public readonly address: Address;
+
   private readonly connection: BnsConnection;
   private readonly identity: Identity;
-  private readonly address: Address;
   private readonly guaranteeFundEscrowId?: Uint8Array;
   private readonly rewardFundAddress?: Address;
   private readonly treasuryAddress?: Address;
