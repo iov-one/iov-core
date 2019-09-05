@@ -1976,7 +1976,7 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
       const electorates = await connection.getElectorates();
-      expect(electorates.length).toEqual(2);
+      expect(electorates.length).toBeGreaterThanOrEqual(1);
       expect(electorates[0]).toEqual({
         id: 1,
         version: 1,

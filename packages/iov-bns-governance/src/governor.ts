@@ -55,9 +55,19 @@ export class Governor {
     this.treasuryAddress = treasuryAddress;
   }
 
-  public async getElectorates(): Promise<readonly Electorate[]> {
+  /**
+   * Returns a list of electorates that contain the current governor as one of the electors
+   *
+   * @param skipFiltering if set to true, the list is not filtered by electors anymore
+   */
+  public async getElectorates(skipFiltering: boolean = false): Promise<readonly Electorate[]> {
     const electorates = await this.connection.getElectorates();
-    return electorates.filter(({ electors }) => Object.keys(electors).some(key => key === this.address));
+
+    const filterFunction = skipFiltering
+      ? () => true
+      : ({ electors }: Electorate) => Object.keys(electors).some(key => key === this.address);
+
+    return electorates.filter(filterFunction);
   }
 
   public async getElectionRules(electorateId: number): Promise<readonly ElectionRule[]> {

@@ -31,7 +31,12 @@ export declare class Governor {
     rewardFundAddress,
     treasuryAddress,
   }: GovernorOptions);
-  getElectorates(): Promise<readonly Electorate[]>;
+  /**
+   * Returns a list of electorates that contain the current governor as one of the electors
+   *
+   * @param skipFiltering if set to true, the list is not filtered by electors anymore
+   */
+  getElectorates(skipFiltering?: boolean): Promise<readonly Electorate[]>;
   getElectionRules(electorateId: number): Promise<readonly ElectionRule[]>;
   getElectionRuleById(electionRuleId: number): Promise<ElectionRule>;
   getProposals(): Promise<readonly Proposal[]>;
