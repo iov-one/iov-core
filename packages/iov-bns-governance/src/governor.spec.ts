@@ -83,6 +83,21 @@ describe("Governor", () => {
       options.connection.disconnect();
     });
 
+    it("only lists electorates that contain the governor by default", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const governor = new Governor(options);
+
+      const electorates = await governor.getElectorates();
+      expect(electorates.length).toBeGreaterThanOrEqual(1);
+      for (const electorate of electorates) {
+        const electorAddresses = Object.keys(electorate.electors);
+        expect(electorAddresses).toContain(governor.address);
+      }
+
+      options.connection.disconnect();
+    });
+
     it("can get empty list of electorates", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions(HdPaths.iov(100));
