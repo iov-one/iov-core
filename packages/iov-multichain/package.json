@@ -1,6 +1,6 @@
 {
   "name": "@iov/multichain",
-  "version": "0.17.2",
+  "version": "0.17.3",
   "description": "Functionality to work with multiple blockchains",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -38,16 +38,16 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp": "^0.17.2",
-    "@iov/encoding": "^0.17.2",
-    "@iov/jsonrpc": "^0.17.2",
-    "@iov/keycontrol": "^0.17.2",
+    "@iov/bcp": "^0.17.3",
+    "@iov/encoding": "^0.17.3",
+    "@iov/jsonrpc": "^0.17.3",
+    "@iov/keycontrol": "^0.17.3",
     "@types/long": "^4.0.0",
     "long": "^4.0.0"
   },
   "devDependencies": {
-    "@iov/bns": "^0.17.2",
-    "@iov/ethereum": "^0.17.2",
+    "@iov/bns": "^0.17.3",
+    "@iov/ethereum": "^0.17.3",
     "bn.js": "^4.11.8"
   }
 }
