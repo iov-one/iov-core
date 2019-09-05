@@ -60,6 +60,16 @@
             "address": "bech32:tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea"
           }
         ]
+      },
+      {
+        "admin": "cond:gov/rule/0000000000000003",
+        "title": "Some other club without the admin",
+        "electors": [
+          {
+            "weight": 10,
+            "address": "bech32:tiov18mgvcwg4339w40ktv0hmmln80ttvza2n6hjaxh"
+          }
+        ]
       }
     ],
     "rules": [

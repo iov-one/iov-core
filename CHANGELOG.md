@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.3
+
+- @iov/bns-governance: Allow skipping filter in `Governor.getElectorates`.
+
 ## 0.17.2
 
 - @iov/bns-governance: Make `Governor.address` public

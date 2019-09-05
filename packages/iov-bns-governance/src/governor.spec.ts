@@ -108,6 +108,20 @@ describe("Governor", () => {
 
       options.connection.disconnect();
     });
+
+    it("can get all electorates when filtering is skipped", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const governor = new Governor(options);
+
+      const electorates = await governor.getElectorates(true);
+      expect(electorates.length).toBeGreaterThanOrEqual(3);
+      expect(electorates[0].id).toEqual(1);
+      expect(electorates[1].id).toEqual(2);
+      expect(electorates[2].id).toEqual(3);
+
+      options.connection.disconnect();
+    });
   });
 
   describe("getElectionRules", () => {
