@@ -17,6 +17,18 @@
       "coins": ["4000 BASH"]
     }
   ],
+  "username": [
+    {
+      "username": "ledger-dev*iov",
+      "owner": "bech32:tiov1l678408y7a64cj66s8j64fevmspyfxdmv38cxw",
+      "targets": [
+        {
+          "blockchain_id": "local-iov-devnet",
+          "address": "tiov1l678408y7a64cj66s8j64fevmspyfxdmv38cxw"
+        }
+      ]
+    }
+  ],
   "currencies": [
     {
       "ticker": "CASH",
