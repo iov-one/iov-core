@@ -7087,7 +7087,7 @@ tslint-immutable@^5.5.2:
   dependencies:
     tsutils "^2.28.0 || ^3.0.0"
 
-tslint@^5.12.1:
+tslint@^5.19.0:
   version "5.19.0"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.19.0.tgz#a2cbd4a7699386da823f6b499b8394d6c47bb968"
   integrity sha512-1LwwtBxfRJZnUvoS9c0uj8XQtAnyhWr9KlNvDIdB+oXyT+VpsOAaEhEgKi1HrZ8rq0ki/AAnbGSv4KM6/AfVZw==
