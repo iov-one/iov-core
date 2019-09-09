@@ -818,25 +818,20 @@ export class EthereumConnection implements AtomicSwapConnection {
     }
 
     if (query.id !== undefined) {
-      const searchId = query.id;
-      const resultPromise = new Promise<ConfirmedTransaction<LightTransaction>>(async (resolve, reject) => {
-        try {
-          // eslint-disable-next-line no-constant-condition
-          while (true) {
-            const searchResult = await this.searchTransactionsById(searchId);
-            if (searchResult.length > 0) {
-              resolve(searchResult[0]);
-            } else {
-              await sleep(this.pollIntervalMs);
-            }
+      const searchUntilFound = async (id: TransactionId): Promise<ConfirmedTransaction<LightTransaction>> => {
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const searchResult = await this.searchTransactionsById(id);
+          if (searchResult.length > 0) {
+            return searchResult[0];
+          } else {
+            await sleep(this.pollIntervalMs);
           }
-        } catch (error) {
-          reject(error);
         }
-      });
+      };
 
       // concat never() because we want non-completing streams consistently
-      return concat(Stream.fromPromise(resultPromise), Stream.never());
+      return concat(Stream.fromPromise(searchUntilFound(query.id)), Stream.never());
     } else if (query.sentFromOrTo) {
       const sentFromOrTo = query.sentFromOrTo;
 
