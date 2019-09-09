@@ -1,6 +1,6 @@
 {
   "name": "@iov/encoding",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "description": "Encoding helpers for IOV projects",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
