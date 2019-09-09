@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.17.4
+
+- @iov/bns-governance: Let `Governor.getElectorates` return latest version only
+  (like `.getElectionRules`).
+
 ## 0.17.3
 
 - @iov/bns-governance: Allow skipping filter in `Governor.getElectorates`.

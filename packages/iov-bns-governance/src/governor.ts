@@ -19,8 +19,8 @@ import { groupByCallback, maxWithComparatorCallback } from "./utils";
 
 const { toHex } = Encoding;
 
-function compareElectionRulesByVersion(rule1: ElectionRule, rule2: ElectionRule): number {
-  return rule1.version - rule2.version;
+function compareByVersion<E extends { readonly version: number }>(element1: E, element2: E): number {
+  return element1.version - element2.version;
 }
 
 export interface GovernorOptions {
@@ -61,13 +61,15 @@ export class Governor {
    * @param skipFiltering if set to true, the list is not filtered by electors anymore
    */
   public async getElectorates(skipFiltering: boolean = false): Promise<readonly Electorate[]> {
-    const electorates = await this.connection.getElectorates();
-
     const filterFunction = skipFiltering
       ? () => true
       : ({ electors }: Electorate) => Object.keys(electors).some(key => key === this.address);
 
-    return electorates.filter(filterFunction);
+    const all = await this.connection.getElectorates();
+    const filtered = all.filter(filterFunction);
+    const groupedById = groupByCallback(filtered, rule => rule.id);
+    const maxVersion = groupedById.map(group => maxWithComparatorCallback(group.values, compareByVersion));
+    return maxVersion;
   }
 
   public async getElectionRules(electorateId: number): Promise<readonly ElectionRule[]> {
@@ -79,7 +81,7 @@ export class Governor {
     }
 
     const groupedRules = groupByCallback(filteredRules, rule => rule.id);
-    return groupedRules.map(group => maxWithComparatorCallback(group.values, compareElectionRulesByVersion));
+    return groupedRules.map(group => maxWithComparatorCallback(group.values, compareByVersion));
   }
 
   public async getElectionRuleById(electionRuleId: number): Promise<ElectionRule> {
@@ -89,7 +91,7 @@ export class Governor {
     if (!electionRules.length) {
       throw new Error("Election rule not found");
     }
-    const electionRule = maxWithComparatorCallback(electionRules, compareElectionRulesByVersion);
+    const electionRule = maxWithComparatorCallback(electionRules, compareByVersion);
     return electionRule;
   }
 

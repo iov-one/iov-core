@@ -75,7 +75,7 @@ describe("Governor", () => {
       const options = await getGovernorOptions();
       const governor = new Governor(options);
 
-      const electorates = (await governor.getElectorates()).filter(({ version }) => version === 1);
+      const electorates = await governor.getElectorates();
       expect(electorates.length).toEqual(2);
       expect(electorates[0].id).toEqual(1);
       expect(electorates[1].id).toEqual(2);
@@ -119,6 +119,19 @@ describe("Governor", () => {
       expect(electorates[0].id).toEqual(1);
       expect(electorates[1].id).toEqual(2);
       expect(electorates[2].id).toEqual(3);
+
+      options.connection.disconnect();
+    });
+
+    it("lists each ID only once", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const governor = new Governor(options);
+
+      const electorates = await governor.getElectorates(true);
+
+      const uniqueIds = new Set(electorates.map(electorate => electorate.id));
+      expect(uniqueIds.size).toEqual(electorates.length);
 
       options.connection.disconnect();
     });
