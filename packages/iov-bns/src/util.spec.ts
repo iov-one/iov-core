@@ -5,7 +5,9 @@ import * as testdata from "./testdata.spec";
 import {
   addressPrefix,
   arraysEqual,
+  buildEscrowCondition,
   buildQueryString,
+  conditionToWeaveAddress,
   decodeBnsAddress,
   encodeBnsAddress,
   identityToAddress,
@@ -155,6 +157,13 @@ describe("Util", () => {
     // bech32 -e -h tiov f6cade229408c93a2a8d181d62efce46ff60d210
     const raw = fromHex("f6cade229408c93a2a8d181d62efce46ff60d210");
     expect(encodeBnsAddress("tiov", raw)).toEqual("tiov17m9dug55pryn525drqwk9m7wgmlkp5ss4j2mky");
+  });
+
+  describe("buildEscrowCondition", () => {
+    it("leads to known address", () => {
+      const condition = buildEscrowCondition(fromHex("0000000000000001"));
+      expect(conditionToWeaveAddress(condition)).toEqual(fromHex("f3c0c76deb86274d8bb166fb91d840ffd8ec46c4"));
+    });
   });
 
   it("isValidAddress checks valid addresses", () => {

@@ -91,7 +91,7 @@ export function identityToAddress(identity: Identity): Address {
 export type Condition = Uint8Array & As<"Condition">;
 
 function buildCondition(extension: string, typ: string, id: Uint8Array): Condition {
-  // https://github.com/iov-one/weave/blob/v0.13.0/conditions.go#L33-L36
+  // https://github.com/iov-one/weave/blob/v0.21.0/conditions.go#L35-L38
   const res = Uint8Array.from([...Encoding.toAscii(`${extension}/${typ}/`), ...id]);
   return res as Condition;
 }
@@ -104,6 +104,11 @@ export function swapCondition(swap: SwapData): Condition {
 
 export function multisignatureCondition(multisignatureId: Uint8Array): Condition {
   return buildCondition("multisig", "usage", multisignatureId);
+}
+
+export function buildEscrowCondition(id: Uint8Array): Condition {
+  // https://github.com/iov-one/weave/blob/v0.21.0/x/escrow/model.go#L83-L87
+  return buildCondition("escrow", "seq", id);
 }
 
 export function conditionToWeaveAddress(cond: Condition): Uint8Array {
