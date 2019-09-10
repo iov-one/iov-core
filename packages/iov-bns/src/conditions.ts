@@ -1,4 +1,4 @@
-import { Address, ChainId, SwapData } from "@iov/bcp";
+import { Address, ChainId, Hash, SwapId } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { As } from "type-tagger";
@@ -14,7 +14,7 @@ function buildCondition(extension: string, typ: string, id: Uint8Array): Conditi
   return res as Condition;
 }
 
-export function buildSwapCondition(swap: SwapData): Condition {
+export function buildSwapCondition(swap: { readonly id: SwapId; readonly hash: Hash }): Condition {
   // https://github.com/iov-one/weave/blob/v0.15.0/x/aswap/handler.go#L287
   const weaveSwapId = new Uint8Array([...swap.id.data, "|".charCodeAt(0), ...swap.hash]);
   return buildCondition("aswap", "pre_hash", weaveSwapId);
@@ -37,4 +37,16 @@ export function conditionToAddress(chainId: ChainId, cond: Condition): Address {
   const prefix = addressPrefix(chainId);
   const bytes = conditionToWeaveAddress(cond);
   return encodeBnsAddress(prefix, bytes);
+}
+
+export function swapToAddress(chainId: ChainId, swap: { readonly id: SwapId; readonly hash: Hash }): Address {
+  return conditionToAddress(chainId, buildSwapCondition(swap));
+}
+
+export function multisignatureIdToAddress(chainId: ChainId, multisignatureId: Uint8Array): Address {
+  return conditionToAddress(chainId, buildMultisignatureCondition(multisignatureId));
+}
+
+export function escrowIdToAddress(chainId: ChainId, escrowId: Uint8Array): Address {
+  return conditionToAddress(chainId, buildEscrowCondition(escrowId));
 }

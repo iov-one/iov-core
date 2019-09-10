@@ -17,7 +17,7 @@ import BN from "bn.js";
 
 import { bnsCodec } from "../bnscodec";
 import { BnsConnection } from "../bnsconnection";
-import { buildMultisignatureCondition, conditionToAddress } from "../conditions";
+import { multisignatureIdToAddress } from "../conditions";
 import { CreateMultisignatureTx, MultisignatureTx, Participant } from "../types";
 
 const CASH = "CASH" as TokenTicker;
@@ -191,8 +191,7 @@ describe("Multisignature wallets", () => {
       adminThreshold,
     );
 
-    const condition = buildMultisignatureCondition(multisignatureId);
-    const multisignatureAddress = conditionToAddress(chainId, condition);
+    const multisignatureAddress = multisignatureIdToAddress(chainId, multisignatureId);
 
     // Fund multisignature account
     await alice.sendCash(multisignatureAddress, "1234567890");
@@ -247,8 +246,7 @@ describe("Multisignature wallets", () => {
       adminThreshold,
     );
 
-    const condition = buildMultisignatureCondition(multisignatureId);
-    const multisignatureAddress = conditionToAddress(chainId, condition);
+    const multisignatureAddress = multisignatureIdToAddress(chainId, multisignatureId);
 
     // Fund multisignature account
     await alice.sendCash(multisignatureAddress, "1234567890");

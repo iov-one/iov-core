@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.17.5
+
+- @iov/bns: Create exported `swapToAddress`, `multisignatureIdToAddress` and
+  `escrowIdToAddress`
+
 ## 0.17.4
 
 - @iov/bns-governance: Let `Governor.getElectorates` return latest version only
