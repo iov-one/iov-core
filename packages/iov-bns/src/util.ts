@@ -86,8 +86,7 @@ export function identityToAddress(identity: Identity): Address {
   return pubkeyToAddress(identity.pubkey, prefix);
 }
 
-// TODO: this maps to weave code... maybe we change a bit??
-// This is the same logic as keyToIdentifier...
+/** A package-internal type representing a Weave Condition */
 export type Condition = Uint8Array & As<"Condition">;
 
 function buildCondition(extension: string, typ: string, id: Uint8Array): Condition {

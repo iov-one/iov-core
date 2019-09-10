@@ -34,6 +34,7 @@ export declare function decodeBnsAddress(
  */
 export declare function pubkeyToAddress(pubkey: PubkeyBundle, prefix: IovBech32Prefix): Address;
 export declare function identityToAddress(identity: Identity): Address;
+/** A package-internal type representing a Weave Condition */
 export declare type Condition = Uint8Array & As<"Condition">;
 export declare function swapCondition(swap: SwapData): Condition;
 export declare function multisignatureCondition(multisignatureId: Uint8Array): Condition;
