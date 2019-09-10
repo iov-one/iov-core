@@ -46,10 +46,10 @@ import {
   VoteTx,
 } from "./types";
 import {
+  buildMultisignatureCondition,
   conditionToWeaveAddress,
   decodeBnsAddress,
   identityToAddress,
-  multisignatureCondition,
 } from "./util";
 
 function encodeInt(intNumber: number): number | null {
@@ -485,7 +485,7 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   if (isMultisignatureTx(tx)) {
     const firstContract = tx.multisig.find(() => true);
     if (firstContract === undefined) throw new Error("Empty multisig arrays are currently unsupported");
-    feePayer = conditionToWeaveAddress(multisignatureCondition(encodeNumericId(firstContract)));
+    feePayer = conditionToWeaveAddress(buildMultisignatureCondition(encodeNumericId(firstContract)));
   } else {
     feePayer = decodeBnsAddress(identityToAddress(tx.creator)).data;
   }

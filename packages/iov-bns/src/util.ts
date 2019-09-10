@@ -95,13 +95,13 @@ function buildCondition(extension: string, typ: string, id: Uint8Array): Conditi
   return res as Condition;
 }
 
-export function swapCondition(swap: SwapData): Condition {
+export function buildSwapCondition(swap: SwapData): Condition {
   // https://github.com/iov-one/weave/blob/v0.15.0/x/aswap/handler.go#L287
   const weaveSwapId = new Uint8Array([...swap.id.data, "|".charCodeAt(0), ...swap.hash]);
   return buildCondition("aswap", "pre_hash", weaveSwapId);
 }
 
-export function multisignatureCondition(multisignatureId: Uint8Array): Condition {
+export function buildMultisignatureCondition(multisignatureId: Uint8Array): Condition {
   return buildCondition("multisig", "usage", multisignatureId);
 }
 

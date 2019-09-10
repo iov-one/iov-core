@@ -59,7 +59,7 @@ import {
   VoteOption,
   VoteTx,
 } from "./types";
-import { appendSignBytes, conditionToWeaveAddress, multisignatureCondition } from "./util";
+import { appendSignBytes, buildMultisignatureCondition, conditionToWeaveAddress } from "./util";
 
 const { fromHex } = Encoding;
 
@@ -247,7 +247,9 @@ describe("Encode", () => {
         fromHex("001fffffffffffff"),
         fromHex("0000000000000007"),
       ]);
-      const firstContract = conditionToWeaveAddress(multisignatureCondition(fromHex("000000000000002a")));
+      const firstContract = conditionToWeaveAddress(
+        buildMultisignatureCondition(fromHex("000000000000002a")),
+      );
       expect(encoded.fees!.payer).toEqual(firstContract);
     });
 
