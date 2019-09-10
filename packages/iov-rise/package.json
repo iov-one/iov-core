@@ -1,6 +1,6 @@
 {
   "name": "@iov/rise",
-  "version": "0.17.4",
+  "version": "0.17.5",
   "description": "Transaction codec and client to communicate with the RISE blockchain",
   "author": "Andrea Baccega <vekexasia@gmail.com>, IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -37,12 +37,12 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp": "^0.17.4",
-    "@iov/crypto": "^0.17.4",
-    "@iov/dpos": "^0.17.4",
-    "@iov/encoding": "^0.17.4",
-    "@iov/keycontrol": "^0.17.4",
-    "@iov/stream": "^0.17.4",
+    "@iov/bcp": "^0.17.5",
+    "@iov/crypto": "^0.17.5",
+    "@iov/dpos": "^0.17.5",
+    "@iov/encoding": "^0.17.5",
+    "@iov/keycontrol": "^0.17.5",
+    "@iov/stream": "^0.17.5",
     "@types/long": "^4.0.0",
     "axios": "^0.19.0",
     "fast-deep-equal": "^2.0.1",
