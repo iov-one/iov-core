@@ -1,6 +1,7 @@
 export { bnsCodec } from "./bnscodec";
 export { createBnsConnector } from "./bnsconnector";
 export { BnsConnection } from "./bnsconnection";
+export { swapToAddress, multisignatureIdToAddress, escrowIdToAddress } from "./conditions";
 export { bnsSwapQueryTag } from "./tags";
 export {
   // Usernames

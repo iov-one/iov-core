@@ -1,6 +1,7 @@
 import {
   Account,
   Address,
+  ChainId,
   isBlockInfoPending,
   isBlockInfoSucceeded,
   SendTransaction,
@@ -12,6 +13,7 @@ import {
   ActionKind,
   bnsCodec,
   BnsConnection,
+  escrowIdToAddress,
   ExecuteProposalBatchAction,
   ProposalExecutorResult,
   ProposalStatus,
@@ -36,7 +38,7 @@ const adminMnemonic = "degree tackle suggest window test behind mesh extra cover
 const adminPath = HdPaths.iov(0);
 const bnsdUrl = "ws://localhost:23456";
 const guaranteeFundEscrowId = Encoding.fromHex("0000000000000001");
-const guaranteeFundAddress = "tiov170qvwm0tscn5mza3vmaerkzqllvwc3kycrz6kr" as Address;
+const guaranteeFundAddress = escrowIdToAddress("local-iov-devnet" as ChainId, guaranteeFundEscrowId);
 // The reward fund and treasury have the same address because they are both covered by the same rule
 const rewardFundAddress = "tiov1k0dp2fmdunscuwjjusqtk6mttx5ufk3z0mmp0z" as Address;
 const treasuryAddress = rewardFundAddress;

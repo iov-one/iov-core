@@ -52,6 +52,7 @@ import equal from "fast-deep-equal";
 import { Stream, Subscription } from "xstream";
 
 import { bnsCodec } from "./bnscodec";
+import { swapToAddress } from "./conditions";
 import { ChainData, Context } from "./context";
 import {
   decodeAmount,
@@ -86,13 +87,11 @@ import {
 import {
   addressPrefix,
   buildQueryString,
-  conditionToAddress,
   decodeBnsAddress,
   identityToAddress,
   IovBech32Prefix,
   isConfirmedWithSwapClaimOrAbortTransaction,
   isConfirmedWithSwapOfferTransaction,
-  swapCondition,
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
@@ -738,7 +737,7 @@ export class BnsConnection implements AtomicSwapConnection {
   // updateEscrowBalance will query for the proper balance and then update the accounts of escrow before
   // returning it. Designed to be used in a map chain.
   protected async updateSwapAmounts<T extends AtomicSwap>(swap: T): Promise<T> {
-    const addr = conditionToAddress(this.chainId(), swapCondition(swap.data));
+    const addr = swapToAddress(this.chainId(), swap.data);
     const account = await this.getAccount({ address: addr });
     const balance = account ? account.balance : [];
     return { ...swap, data: { ...swap.data, amounts: balance } };

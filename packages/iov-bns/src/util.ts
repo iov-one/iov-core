@@ -14,7 +14,6 @@ import {
   SignableBytes,
   SwapAbortTransaction,
   SwapClaimTransaction,
-  SwapData,
   SwapOfferTransaction,
   TransactionQuery,
   UnsignedTransaction,
@@ -84,36 +83,6 @@ export function pubkeyToAddress(pubkey: PubkeyBundle, prefix: IovBech32Prefix): 
 export function identityToAddress(identity: Identity): Address {
   const prefix = addressPrefix(identity.chainId);
   return pubkeyToAddress(identity.pubkey, prefix);
-}
-
-// TODO: this maps to weave code... maybe we change a bit??
-// This is the same logic as keyToIdentifier...
-export type Condition = Uint8Array & As<"Condition">;
-
-function buildCondition(extension: string, typ: string, id: Uint8Array): Condition {
-  // https://github.com/iov-one/weave/blob/v0.13.0/conditions.go#L33-L36
-  const res = Uint8Array.from([...Encoding.toAscii(`${extension}/${typ}/`), ...id]);
-  return res as Condition;
-}
-
-export function swapCondition(swap: SwapData): Condition {
-  // https://github.com/iov-one/weave/blob/v0.15.0/x/aswap/handler.go#L287
-  const weaveSwapId = new Uint8Array([...swap.id.data, "|".charCodeAt(0), ...swap.hash]);
-  return buildCondition("aswap", "pre_hash", weaveSwapId);
-}
-
-export function multisignatureCondition(multisignatureId: Uint8Array): Condition {
-  return buildCondition("multisig", "usage", multisignatureId);
-}
-
-export function conditionToWeaveAddress(cond: Condition): Uint8Array {
-  return new Sha256(cond).digest().slice(0, 20);
-}
-
-export function conditionToAddress(chainId: ChainId, cond: Condition): Address {
-  const prefix = addressPrefix(chainId);
-  const bytes = conditionToWeaveAddress(cond);
-  return encodeBnsAddress(prefix, bytes);
 }
 
 export function isValidAddress(address: string): boolean {
