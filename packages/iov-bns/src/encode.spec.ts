@@ -18,6 +18,7 @@ import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import Long from "long";
 
+import { buildMultisignatureCondition, conditionToWeaveAddress } from "./conditions";
 import {
   buildMsg,
   buildSignedTx,
@@ -59,7 +60,7 @@ import {
   VoteOption,
   VoteTx,
 } from "./types";
-import { appendSignBytes, buildMultisignatureCondition, conditionToWeaveAddress } from "./util";
+import { appendSignBytes } from "./util";
 
 const { fromHex } = Encoding;
 

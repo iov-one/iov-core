@@ -52,6 +52,7 @@ import equal from "fast-deep-equal";
 import { Stream, Subscription } from "xstream";
 
 import { bnsCodec } from "./bnscodec";
+import { buildSwapCondition, conditionToAddress } from "./conditions";
 import { ChainData, Context } from "./context";
 import {
   decodeAmount,
@@ -86,8 +87,6 @@ import {
 import {
   addressPrefix,
   buildQueryString,
-  buildSwapCondition,
-  conditionToAddress,
   decodeBnsAddress,
   identityToAddress,
   IovBech32Prefix,

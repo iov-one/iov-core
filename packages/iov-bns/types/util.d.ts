@@ -9,7 +9,6 @@ import {
   SignableBytes,
   SwapAbortTransaction,
   SwapClaimTransaction,
-  SwapData,
   SwapOfferTransaction,
   TransactionQuery,
   UnsignedTransaction,
@@ -34,13 +33,6 @@ export declare function decodeBnsAddress(
  */
 export declare function pubkeyToAddress(pubkey: PubkeyBundle, prefix: IovBech32Prefix): Address;
 export declare function identityToAddress(identity: Identity): Address;
-/** A package-internal type representing a Weave Condition */
-export declare type Condition = Uint8Array & As<"Condition">;
-export declare function swapCondition(swap: SwapData): Condition;
-export declare function multisignatureCondition(multisignatureId: Uint8Array): Condition;
-export declare function buildEscrowCondition(id: Uint8Array): Condition;
-export declare function conditionToWeaveAddress(cond: Condition): Uint8Array;
-export declare function conditionToAddress(chainId: ChainId, cond: Condition): Address;
 export declare function isValidAddress(address: string): boolean;
 export declare function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce): SignableBytes;
 export declare function arraysEqual(a: Uint8Array, b: Uint8Array): boolean;

@@ -17,6 +17,7 @@ import {
 import { Encoding, Int53 } from "@iov/encoding";
 import BN from "bn.js";
 
+import { buildMultisignatureCondition, conditionToWeaveAddress } from "./conditions";
 import * as codecImpl from "./generated/codecimpl";
 import {
   ChainAddressPair,
@@ -45,12 +46,7 @@ import {
   VoteOption,
   VoteTx,
 } from "./types";
-import {
-  buildMultisignatureCondition,
-  conditionToWeaveAddress,
-  decodeBnsAddress,
-  identityToAddress,
-} from "./util";
+import { decodeBnsAddress, identityToAddress } from "./util";
 
 function encodeInt(intNumber: number): number | null {
   if (!Number.isInteger(intNumber)) {

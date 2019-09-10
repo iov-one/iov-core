@@ -17,8 +17,8 @@ import BN from "bn.js";
 
 import { bnsCodec } from "../bnscodec";
 import { BnsConnection } from "../bnsconnection";
+import { buildMultisignatureCondition, conditionToAddress } from "../conditions";
 import { CreateMultisignatureTx, MultisignatureTx, Participant } from "../types";
-import { buildMultisignatureCondition, conditionToAddress } from "../util";
 
 const CASH = "CASH" as TokenTicker;
 const bnsUrl = "ws://localhost:23456";
