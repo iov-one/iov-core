@@ -1,6 +1,6 @@
 import { Address, ChainId, Hash, SwapId } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint64 } from "@iov/encoding";
 import { As } from "type-tagger";
 
 import { addressPrefix, encodeBnsAddress } from "./util";
@@ -8,10 +8,10 @@ import { addressPrefix, encodeBnsAddress } from "./util";
 /** A package-internal type representing a Weave Condition */
 export type Condition = Uint8Array & As<"Condition">;
 
-function buildCondition(extension: string, typ: string, id: Uint8Array): Condition {
+function buildCondition(extension: string, type: string, idBytes: Iterable<number>): Condition {
   // https://github.com/iov-one/weave/blob/v0.21.0/conditions.go#L35-L38
-  const res = Uint8Array.from([...Encoding.toAscii(`${extension}/${typ}/`), ...id]);
-  return res as Condition;
+  const out = Uint8Array.from([...Encoding.toAscii(`${extension}/${type}/`), ...idBytes]);
+  return out as Condition;
 }
 
 export function buildSwapCondition(swap: { readonly id: SwapId; readonly hash: Hash }): Condition {
@@ -27,6 +27,10 @@ export function buildMultisignatureCondition(multisignatureId: Uint8Array): Cond
 export function buildEscrowCondition(id: Uint8Array): Condition {
   // https://github.com/iov-one/weave/blob/v0.21.0/x/escrow/model.go#L83-L87
   return buildCondition("escrow", "seq", id);
+}
+
+function buildElectionRuleCondition(id: number): Condition {
+  return buildCondition("gov", "rule", Uint64.fromNumber(id).toBytesBigEndian());
 }
 
 export function conditionToWeaveAddress(cond: Condition): Uint8Array {
@@ -49,4 +53,8 @@ export function multisignatureIdToAddress(chainId: ChainId, multisignatureId: Ui
 
 export function escrowIdToAddress(chainId: ChainId, escrowId: Uint8Array): Address {
   return conditionToAddress(chainId, buildEscrowCondition(escrowId));
+}
+
+export function electionRuleIdToAddress(chainId: ChainId, electionRule: number): Address {
+  return conditionToAddress(chainId, buildElectionRuleCondition(electionRule));
 }

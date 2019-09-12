@@ -13,6 +13,7 @@ import {
   ActionKind,
   bnsCodec,
   BnsConnection,
+  electionRuleIdToAddress,
   escrowIdToAddress,
   ExecuteProposalBatchAction,
   ProposalExecutorResult,
@@ -40,8 +41,8 @@ const bnsdUrl = "ws://localhost:23456";
 const guaranteeFundEscrowId = Encoding.fromHex("0000000000000001");
 const guaranteeFundAddress = escrowIdToAddress("local-iov-devnet" as ChainId, guaranteeFundEscrowId);
 // The reward fund and treasury have the same address because they are both covered by the same rule
-const rewardFundAddress = "tiov1k0dp2fmdunscuwjjusqtk6mttx5ufk3z0mmp0z" as Address;
-const treasuryAddress = rewardFundAddress;
+const rewardFundAddress = electionRuleIdToAddress("local-iov-devnet" as ChainId, 2);
+const treasuryAddress = electionRuleIdToAddress("local-iov-devnet" as ChainId, 2);
 
 function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {

@@ -4,6 +4,7 @@ import { Encoding } from "@iov/encoding";
 import {
   buildEscrowCondition,
   conditionToWeaveAddress,
+  electionRuleIdToAddress,
   escrowIdToAddress,
   multisignatureIdToAddress,
   swapToAddress,
@@ -43,6 +44,13 @@ describe("conditions", () => {
     it("leads to known address", () => {
       const address = escrowIdToAddress("local-iov-devnet" as ChainId, fromHex("0000000000000001"));
       expect(address).toEqual("tiov170qvwm0tscn5mza3vmaerkzqllvwc3kycrz6kr");
+    });
+  });
+
+  describe("electionRuleIdToAddress", () => {
+    it("leads to known address", () => {
+      const address = electionRuleIdToAddress("local-iov-devnet" as ChainId, 2);
+      expect(address).toEqual("tiov1k0dp2fmdunscuwjjusqtk6mttx5ufk3z0mmp0z");
     });
   });
 });
