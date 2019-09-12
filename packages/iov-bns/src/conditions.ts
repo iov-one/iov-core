@@ -20,13 +20,13 @@ export function buildSwapCondition(swap: { readonly id: SwapId; readonly hash: H
   return buildCondition("aswap", "pre_hash", weaveSwapId);
 }
 
-export function buildMultisignatureCondition(multisignatureId: Uint8Array): Condition {
-  return buildCondition("multisig", "usage", multisignatureId);
+export function buildMultisignatureCondition(id: number): Condition {
+  return buildCondition("multisig", "usage", Uint64.fromNumber(id).toBytesBigEndian());
 }
 
-export function buildEscrowCondition(id: Uint8Array): Condition {
+export function buildEscrowCondition(id: number): Condition {
   // https://github.com/iov-one/weave/blob/v0.21.0/x/escrow/model.go#L83-L87
-  return buildCondition("escrow", "seq", id);
+  return buildCondition("escrow", "seq", Uint64.fromNumber(id).toBytesBigEndian());
 }
 
 function buildElectionRuleCondition(id: number): Condition {
@@ -48,11 +48,15 @@ export function swapToAddress(chainId: ChainId, swap: { readonly id: SwapId; rea
 }
 
 export function multisignatureIdToAddress(chainId: ChainId, multisignatureId: Uint8Array): Address {
-  return conditionToAddress(chainId, buildMultisignatureCondition(multisignatureId));
+  // TODO: remove this intermediate step in https://github.com/iov-one/iov-core/issues/1231
+  const numericId = Uint64.fromBytesBigEndian(multisignatureId).toNumber();
+  return conditionToAddress(chainId, buildMultisignatureCondition(numericId));
 }
 
 export function escrowIdToAddress(chainId: ChainId, escrowId: Uint8Array): Address {
-  return conditionToAddress(chainId, buildEscrowCondition(escrowId));
+  // TODO: remove this intermediate step in https://github.com/iov-one/iov-core/issues/1231
+  const numericId = Uint64.fromBytesBigEndian(escrowId).toNumber();
+  return conditionToAddress(chainId, buildEscrowCondition(numericId));
 }
 
 export function electionRuleIdToAddress(chainId: ChainId, electionRule: number): Address {
