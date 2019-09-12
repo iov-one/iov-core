@@ -481,7 +481,7 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   if (isMultisignatureTx(tx)) {
     const firstContract = tx.multisig.find(() => true);
     if (firstContract === undefined) throw new Error("Empty multisig arrays are currently unsupported");
-    feePayer = conditionToWeaveAddress(buildMultisignatureCondition(encodeNumericId(firstContract)));
+    feePayer = conditionToWeaveAddress(buildMultisignatureCondition(firstContract));
   } else {
     feePayer = decodeBnsAddress(identityToAddress(tx.creator)).data;
   }

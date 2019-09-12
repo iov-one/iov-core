@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.6
+
+- @iov/bns: Create exported `electionRuleIdToAddress`
+
 ## 0.17.5
 
 - @iov/bns: Create exported `swapToAddress`, `multisignatureIdToAddress` and

@@ -248,9 +248,7 @@ describe("Encode", () => {
         fromHex("001fffffffffffff"),
         fromHex("0000000000000007"),
       ]);
-      const firstContract = conditionToWeaveAddress(
-        buildMultisignatureCondition(fromHex("000000000000002a")),
-      );
+      const firstContract = conditionToWeaveAddress(buildMultisignatureCondition(42));
       expect(encoded.fees!.payer).toEqual(firstContract);
     });
 
