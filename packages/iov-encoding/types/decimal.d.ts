@@ -5,8 +5,7 @@
  */
 export declare class Decimal {
   static fromUserInput(input: string, fractionalDigits: number): Decimal;
-  private readonly quantity;
-  private readonly fractionalDigits;
+  readonly atomics: string;
+  private readonly data;
   private constructor();
-  getQuantity(): string;
 }

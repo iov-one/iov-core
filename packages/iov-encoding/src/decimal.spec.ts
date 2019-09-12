@@ -47,43 +47,43 @@ describe("Decimal", () => {
     });
 
     it("returns correct value", () => {
-      expect(Decimal.fromUserInput("44", 0).getQuantity()).toEqual("44");
-      expect(Decimal.fromUserInput("44", 1).getQuantity()).toEqual("440");
-      expect(Decimal.fromUserInput("44", 2).getQuantity()).toEqual("4400");
-      expect(Decimal.fromUserInput("44", 3).getQuantity()).toEqual("44000");
+      expect(Decimal.fromUserInput("44", 0).atomics).toEqual("44");
+      expect(Decimal.fromUserInput("44", 1).atomics).toEqual("440");
+      expect(Decimal.fromUserInput("44", 2).atomics).toEqual("4400");
+      expect(Decimal.fromUserInput("44", 3).atomics).toEqual("44000");
 
-      expect(Decimal.fromUserInput("44.2", 1).getQuantity()).toEqual("442");
-      expect(Decimal.fromUserInput("44.2", 2).getQuantity()).toEqual("4420");
-      expect(Decimal.fromUserInput("44.2", 3).getQuantity()).toEqual("44200");
+      expect(Decimal.fromUserInput("44.2", 1).atomics).toEqual("442");
+      expect(Decimal.fromUserInput("44.2", 2).atomics).toEqual("4420");
+      expect(Decimal.fromUserInput("44.2", 3).atomics).toEqual("44200");
 
-      expect(Decimal.fromUserInput("44.1", 6).getQuantity()).toEqual("44100000");
-      expect(Decimal.fromUserInput("44.12", 6).getQuantity()).toEqual("44120000");
-      expect(Decimal.fromUserInput("44.123", 6).getQuantity()).toEqual("44123000");
-      expect(Decimal.fromUserInput("44.1234", 6).getQuantity()).toEqual("44123400");
-      expect(Decimal.fromUserInput("44.12345", 6).getQuantity()).toEqual("44123450");
-      expect(Decimal.fromUserInput("44.123456", 6).getQuantity()).toEqual("44123456");
+      expect(Decimal.fromUserInput("44.1", 6).atomics).toEqual("44100000");
+      expect(Decimal.fromUserInput("44.12", 6).atomics).toEqual("44120000");
+      expect(Decimal.fromUserInput("44.123", 6).atomics).toEqual("44123000");
+      expect(Decimal.fromUserInput("44.1234", 6).atomics).toEqual("44123400");
+      expect(Decimal.fromUserInput("44.12345", 6).atomics).toEqual("44123450");
+      expect(Decimal.fromUserInput("44.123456", 6).atomics).toEqual("44123456");
     });
 
     it("cuts leading zeros", () => {
-      expect(Decimal.fromUserInput("4", 2).getQuantity()).toEqual("400");
-      expect(Decimal.fromUserInput("04", 2).getQuantity()).toEqual("400");
-      expect(Decimal.fromUserInput("004", 2).getQuantity()).toEqual("400");
+      expect(Decimal.fromUserInput("4", 2).atomics).toEqual("400");
+      expect(Decimal.fromUserInput("04", 2).atomics).toEqual("400");
+      expect(Decimal.fromUserInput("004", 2).atomics).toEqual("400");
     });
 
     it("cuts tailing zeros", () => {
-      expect(Decimal.fromUserInput("4.12", 5).getQuantity()).toEqual("412000");
-      expect(Decimal.fromUserInput("4.120", 5).getQuantity()).toEqual("412000");
-      expect(Decimal.fromUserInput("4.1200", 5).getQuantity()).toEqual("412000");
-      expect(Decimal.fromUserInput("4.12000", 5).getQuantity()).toEqual("412000");
-      expect(Decimal.fromUserInput("4.120000", 5).getQuantity()).toEqual("412000");
-      expect(Decimal.fromUserInput("4.1200000", 5).getQuantity()).toEqual("412000");
+      expect(Decimal.fromUserInput("4.12", 5).atomics).toEqual("412000");
+      expect(Decimal.fromUserInput("4.120", 5).atomics).toEqual("412000");
+      expect(Decimal.fromUserInput("4.1200", 5).atomics).toEqual("412000");
+      expect(Decimal.fromUserInput("4.12000", 5).atomics).toEqual("412000");
+      expect(Decimal.fromUserInput("4.120000", 5).atomics).toEqual("412000");
+      expect(Decimal.fromUserInput("4.1200000", 5).atomics).toEqual("412000");
     });
 
     it("interpretes the empty string as zero", () => {
-      expect(Decimal.fromUserInput("", 0).getQuantity()).toEqual("0");
-      expect(Decimal.fromUserInput("", 1).getQuantity()).toEqual("0");
-      expect(Decimal.fromUserInput("", 2).getQuantity()).toEqual("0");
-      expect(Decimal.fromUserInput("", 3).getQuantity()).toEqual("0");
+      expect(Decimal.fromUserInput("", 0).atomics).toEqual("0");
+      expect(Decimal.fromUserInput("", 1).atomics).toEqual("0");
+      expect(Decimal.fromUserInput("", 2).atomics).toEqual("0");
+      expect(Decimal.fromUserInput("", 3).atomics).toEqual("0");
     });
   });
 });

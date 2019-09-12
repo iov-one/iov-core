@@ -31,15 +31,19 @@ export class Decimal {
     return new Decimal(quantity, fractionalDigits);
   }
 
-  private readonly quantity: BN;
-  private readonly fractionalDigits: number;
-
-  private constructor(quantity: string, fractionalDigits: number) {
-    this.quantity = new BN(quantity);
-    this.fractionalDigits = fractionalDigits;
+  public get atomics(): string {
+    return this.data.atomics.toString();
   }
 
-  public getQuantity(): string {
-    return this.quantity.toString();
+  private readonly data: {
+    readonly atomics: BN;
+    readonly fractionalDigits: number;
+  };
+
+  private constructor(atomics: string, fractionalDigits: number) {
+    this.data = {
+      atomics: new BN(atomics),
+      fractionalDigits: fractionalDigits,
+    };
   }
 }
