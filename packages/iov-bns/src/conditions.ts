@@ -14,7 +14,7 @@ function buildCondition(extension: string, type: string, idBytes: Iterable<numbe
   return out as Condition;
 }
 
-export function buildSwapCondition(swap: { readonly id: SwapId; readonly hash: Hash }): Condition {
+function buildSwapCondition(swap: { readonly id: SwapId; readonly hash: Hash }): Condition {
   // https://github.com/iov-one/weave/blob/v0.15.0/x/aswap/handler.go#L287
   const weaveSwapId = new Uint8Array([...swap.id.data, "|".charCodeAt(0), ...swap.hash]);
   return buildCondition("aswap", "pre_hash", weaveSwapId);

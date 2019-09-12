@@ -2,7 +2,6 @@ import { Address, ChainId, Hash, SwapId } from "@iov/bcp";
 import { As } from "type-tagger";
 /** A package-internal type representing a Weave Condition */
 export declare type Condition = Uint8Array & As<"Condition">;
-export declare function buildSwapCondition(swap: { readonly id: SwapId; readonly hash: Hash }): Condition;
 export declare function buildMultisignatureCondition(id: number): Condition;
 export declare function buildEscrowCondition(id: number): Condition;
 export declare function conditionToWeaveAddress(cond: Condition): Uint8Array;

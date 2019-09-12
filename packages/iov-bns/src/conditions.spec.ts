@@ -13,6 +13,8 @@ import {
 const { fromHex } = Encoding;
 
 describe("conditions", () => {
+  // TODO: test buildMultisignatureCondition
+
   describe("buildEscrowCondition", () => {
     it("leads to known address", () => {
       const condition = buildEscrowCondition(1);
