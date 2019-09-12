@@ -86,4 +86,30 @@ describe("Decimal", () => {
       expect(Decimal.fromUserInput("", 3).atomics).toEqual("0");
     });
   });
+
+  describe("toString", () => {
+    it("displays no decimal point for full numbers", () => {
+      expect(Decimal.fromUserInput("44", 0).toString()).toEqual("44");
+      expect(Decimal.fromUserInput("44", 1).toString()).toEqual("44");
+      expect(Decimal.fromUserInput("44", 2).toString()).toEqual("44");
+
+      expect(Decimal.fromUserInput("44", 2).toString()).toEqual("44");
+      expect(Decimal.fromUserInput("44.0", 2).toString()).toEqual("44");
+      expect(Decimal.fromUserInput("44.00", 2).toString()).toEqual("44");
+      expect(Decimal.fromUserInput("44.000", 2).toString()).toEqual("44");
+    });
+
+    it("only shows significant digits", () => {
+      expect(Decimal.fromUserInput("44.1", 2).toString()).toEqual("44.1");
+      expect(Decimal.fromUserInput("44.10", 2).toString()).toEqual("44.1");
+      expect(Decimal.fromUserInput("44.100", 2).toString()).toEqual("44.1");
+    });
+
+    it("fills up leading zeros", () => {
+      expect(Decimal.fromAtomics("3", 0).toString()).toEqual("3");
+      expect(Decimal.fromAtomics("3", 1).toString()).toEqual("0.3");
+      expect(Decimal.fromAtomics("3", 2).toString()).toEqual("0.03");
+      expect(Decimal.fromAtomics("3", 3).toString()).toEqual("0.003");
+    });
+  });
 });

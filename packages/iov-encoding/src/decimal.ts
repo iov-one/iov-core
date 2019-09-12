@@ -31,6 +31,12 @@ export class Decimal {
     return new Decimal(quantity, fractionalDigits);
   }
 
+  public static fromAtomics(atomics: string, fractionalDigits: number): Decimal {
+    if (!Number.isInteger(fractionalDigits)) throw new Error("Fractional digits is not an integer");
+    if (fractionalDigits < 0) throw new Error("Fractional digits must not be negative");
+    return new Decimal(atomics, fractionalDigits);
+  }
+
   public get atomics(): string {
     return this.data.atomics.toString();
   }
@@ -45,5 +51,19 @@ export class Decimal {
       atomics: new BN(atomics),
       fractionalDigits: fractionalDigits,
     };
+  }
+
+  public toString(): string {
+    const factor = new BN(10).pow(new BN(this.data.fractionalDigits));
+    const whole = this.data.atomics.div(factor);
+    const fractional = this.data.atomics.mod(factor);
+
+    if (fractional.isZero()) {
+      return whole.toString();
+    } else {
+      const fullFractionalPart = fractional.toString().padStart(this.data.fractionalDigits, "0");
+      const trimmedFractionalPart = fullFractionalPart.replace(/0+$/, "");
+      return `${whole.toString()}.${trimmedFractionalPart}`;
+    }
   }
 }
