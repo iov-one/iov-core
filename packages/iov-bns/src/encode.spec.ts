@@ -929,6 +929,38 @@ describe("Encode", () => {
         expect(buildMsg(memoUnset)).toEqual(buildMsg(memoEmpty));
       }
     });
+
+    it("throws for transactions with invalid memo length", () => {
+      {
+        const transaction: SendTransaction & WithCreator = {
+          kind: "bcp/send",
+          creator: defaultCreator,
+          amount: {
+            quantity: "1000000001",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+          sender: defaultRecipient,
+          recipient: defaultRecipient,
+          // max length is 128; this emoji has string length 3 but byte length 7
+          memo: "a".repeat(122) + "7️⃣",
+        };
+        expect(() => buildMsg(transaction)).toThrowError(/invalid memo length/i);
+      }
+      {
+        const transaction: SwapOfferTransaction & WithCreator = {
+          kind: "bcp/swap_offer",
+          creator: defaultCreator,
+          amounts: [],
+          recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
+          timeout: { timestamp: 22 },
+          hash: fromHex("aabbccdd") as Hash,
+          // max length is 128; this emoji has string length 3 but byte length 7
+          memo: "a".repeat(122) + "7️⃣",
+        };
+        expect(() => buildMsg(transaction)).toThrowError(/invalid memo length/i);
+      }
+    });
   });
 });
 
