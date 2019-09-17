@@ -97,7 +97,7 @@ async function tendermintSearchIndexUpdated(): Promise<void> {
 
 function getRandomInteger(min: number, max: number): number {
   if (!Number.isInteger(min)) throw new Error("Argument min is not an integer");
-  if (!Number.isInteger(max)) throw new Error("Argument min is not an integer");
+  if (!Number.isInteger(max)) throw new Error("Argument max is not an integer");
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
@@ -1111,7 +1111,7 @@ describe("BnsConnection", () => {
       connection.disconnect();
     });
 
-    it("any account can return an escrow", async () => {
+    it("any account can return an escrow (after the timeout)", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const chainId = connection.chainId();
@@ -1133,7 +1133,7 @@ describe("BnsConnection", () => {
           sender: senderAddress,
           arbiter: encodeBnsAddress("tiov", fromHex("0000000000000000000000000000000000000000")),
           recipient: encodeBnsAddress("tiov", fromHex("0000000000000000000000000000000000000000")),
-          amounts: [defaultAmount], // no tokens
+          amounts: [defaultAmount],
           timeout: { timestamp: timeout },
         });
 
