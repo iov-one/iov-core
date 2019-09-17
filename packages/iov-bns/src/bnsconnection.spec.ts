@@ -95,6 +95,12 @@ async function tendermintSearchIndexUpdated(): Promise<void> {
   return sleep(50);
 }
 
+function getRandomInteger(min: number, max: number): number {
+  if (!Number.isInteger(min)) throw new Error("Argument min is not an integer");
+  if (!Number.isInteger(max)) throw new Error("Argument max is not an integer");
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 async function randomBnsAddress(): Promise<Address> {
   return encodeBnsAddress("tiov", Random.getBytes(20));
 }
@@ -117,6 +123,7 @@ describe("BnsConnection", () => {
     fractionalDigits: 9,
     tokenTicker: cash,
   };
+
   // this is enough money in an account that registers names... twice the cost of one name registration product fee
   const registerAmount: Amount = {
     quantity: "10000000000",
@@ -1102,6 +1109,63 @@ describe("BnsConnection", () => {
       expect(secondSearchResultTransaction.amounts).toEqual([defaultAmount]);
 
       connection.disconnect();
+    });
+
+    it("any account can return an escrow (after the timeout)", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+
+      let escrowId: Uint8Array;
+      {
+        const sender = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(0));
+        const senderAddress = identityToAddress(sender);
+        await sendTokensFromFaucet(connection, senderAddress, registerAmount);
+
+        const timeout = Math.floor(Date.now() / 1000) + 3;
+
+        const createEscrowTx = await connection.withDefaultFee<CreateEscrowTx & WithCreator>({
+          kind: "bns/create_escrow",
+          creator: sender,
+          sender: senderAddress,
+          arbiter: encodeBnsAddress("tiov", fromHex("0000000000000000000000000000000000000000")),
+          recipient: encodeBnsAddress("tiov", fromHex("0000000000000000000000000000000000000000")),
+          amounts: [defaultAmount],
+          timeout: { timestamp: timeout },
+        });
+
+        const nonce = await connection.getNonce({ pubkey: sender.pubkey });
+        const signed = await profile.signTransaction(createEscrowTx, bnsCodec, nonce);
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo)) throw new Error("Transaction did not succeed");
+        escrowId = blockInfo.result || fromHex("");
+      }
+
+      await sleep(5_000);
+
+      {
+        // Use an external helper account (random path from random wallet) that returns the escrow for source
+        const addressIndex = getRandomInteger(100, 2 ** 31);
+        const helperIdentity = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(addressIndex));
+        const helperAddress = identityToAddress(helperIdentity);
+        await sendTokensFromFaucet(connection, helperAddress);
+
+        const returnEscrowTx = await connection.withDefaultFee<ReturnEscrowTx & WithCreator>({
+          kind: "bns/return_escrow",
+          creator: helperIdentity,
+          escrowId: escrowId,
+        });
+
+        const nonce = await connection.getNonce({ pubkey: helperIdentity.pubkey });
+        const signed = await profile.signTransaction(returnEscrowTx, bnsCodec, nonce);
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+      }
     });
 
     it("can create and return an escrow", async () => {
