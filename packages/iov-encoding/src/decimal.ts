@@ -16,11 +16,28 @@ export class Decimal {
       }
     }
 
-    const parts = input.split(".");
-    if (parts.length > 2) throw new Error("More than one separator found");
+    let whole: string;
+    let fractional: string;
 
-    const whole = parts[0] || "";
-    const fractional = (parts[1] || "").replace(/0+$/, "");
+    if (input.search(/\./) === -1) {
+      // integer format, no separator
+      whole = input;
+      fractional = "";
+    } else {
+      const parts = input.split(".");
+      switch (parts.length) {
+        case 0:
+        case 1:
+          throw new Error("Less than two elements in split result. This must not happen here.");
+        case 2:
+          if (!parts[1]) throw new Error("Fractional part missing");
+          whole = parts[0];
+          fractional = parts[1].replace(/0+$/, "");
+          break;
+        default:
+          throw new Error("More than one separator found");
+      }
+    }
 
     if (fractional.length > fractionalDigits) {
       throw new Error("Got more fractional digits than supported");

@@ -13,6 +13,11 @@ describe("Decimal", () => {
     it("throws for more than one separators", () => {
       expect(() => Decimal.fromUserInput("1.3.5", 5)).toThrowError(/more than one separator found/i);
       expect(() => Decimal.fromUserInput("1..3", 5)).toThrowError(/more than one separator found/i);
+      expect(() => Decimal.fromUserInput("..", 5)).toThrowError(/more than one separator found/i);
+    });
+
+    it("throws for separator only", () => {
+      expect(() => Decimal.fromUserInput(".", 5)).toThrowError(/fractional part missing/i);
     });
 
     it("throws for more fractional digits than supported", () => {
