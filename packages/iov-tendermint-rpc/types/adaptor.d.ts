@@ -52,4 +52,4 @@ export interface Responses {
  *
  * @param version full Tendermint version string, e.g. "0.20.1"
  */
-export declare function adatorForVersion(version: string): Adaptor;
+export declare function adaptorForVersion(version: string): Adaptor;

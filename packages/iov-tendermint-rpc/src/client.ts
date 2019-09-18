@@ -1,6 +1,6 @@
 import { Stream } from "xstream";
 
-import { Adaptor, adatorForVersion, Decoder, Encoder, Params, Responses } from "./adaptor";
+import { Adaptor, adaptorForVersion, Decoder, Encoder, Params, Responses } from "./adaptor";
 import { createJsonRpcRequest } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
@@ -33,7 +33,7 @@ export class Client {
       throw new Error("Unrecognized version format: must be string");
     }
 
-    return new Client(client, adatorForVersion(version));
+    return new Client(client, adaptorForVersion(version));
   }
 
   private readonly client: RpcClient;

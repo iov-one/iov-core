@@ -68,7 +68,7 @@ export interface Responses {
  *
  * @param version full Tendermint version string, e.g. "0.20.1"
  */
-export function adatorForVersion(version: string): Adaptor {
+export function adaptorForVersion(version: string): Adaptor {
   if (version.startsWith("0.29.") || version.startsWith("0.30.")) {
     return v0_29;
   } else if (version.startsWith("0.31.")) {
