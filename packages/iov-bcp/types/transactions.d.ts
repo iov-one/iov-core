@@ -70,6 +70,7 @@ export interface FullSignature {
   readonly pubkey: PubkeyBundle;
   readonly signature: SignatureBytes;
 }
+export declare function isFullSignature(data: unknown): data is FullSignature;
 /** A codec specific address encoded as a string */
 export declare type Address = string & As<"address">;
 export interface Amount {

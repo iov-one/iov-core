@@ -25,6 +25,7 @@ export {
   PrehashType,
   SigningJob,
   FullSignature,
+  isFullSignature,
   Address,
   Amount,
   isAmount,
