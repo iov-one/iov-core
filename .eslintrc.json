@@ -9,12 +9,13 @@
   "parserOptions": {
     "ecmaVersion": 2018
   },
-  "plugins": ["@typescript-eslint", "prettier", "simple-import-sort"],
+  "plugins": ["@typescript-eslint", "prettier", "simple-import-sort", "import"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier/@typescript-eslint",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "plugin:import/typescript"
   ],
   "rules": {
     "curly": ["warn", "multi-line", "consistent"],
@@ -23,6 +24,7 @@
     "no-shadow": "warn",
     "prefer-const": "warn",
     "spaced-comment": ["warn", "always", { "line": { "markers": ["/ <reference"] } }],
+    "import/no-cycle": "warn",
     "simple-import-sort/sort": "warn",
     "@typescript-eslint/explicit-function-return-type": ["warn", { "allowExpressions": true }],
     "@typescript-eslint/no-empty-interface": "off",
