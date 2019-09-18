@@ -3,6 +3,8 @@
 ## 0.17.7
 
 - @iov/bns: Validate memo length when encoding transactions.
+- @iov/bns-governance: `Governor.getElectionRules` now returns an empty array
+  instead of throwing if no election rules are found.
 
 ## 0.17.6
 
