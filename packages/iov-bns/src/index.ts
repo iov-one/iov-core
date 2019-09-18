@@ -29,6 +29,15 @@ export {
   isUpdateMultisignatureTx,
   MultisignatureTx,
   isMultisignatureTx,
+  // Escrows
+  CreateEscrowTx,
+  isCreateEscrowTx,
+  ReleaseEscrowTx,
+  isReleaseEscrowTx,
+  ReturnEscrowTx,
+  isReturnEscrowTx,
+  UpdateEscrowPartiesTx,
+  isUpdateEscrowPartiesTx,
   // Governance
   ValidatorProperties,
   Validators,
