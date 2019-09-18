@@ -75,11 +75,6 @@ export class Governor {
   public async getElectionRules(electorateId: number): Promise<readonly ElectionRule[]> {
     const electionRules = await this.connection.getElectionRules();
     const filteredRules = electionRules.filter(rule => rule.electorateId === electorateId);
-
-    if (filteredRules.length === 0) {
-      throw new Error("No election rule found for electorate");
-    }
-
     const groupedRules = groupByCallback(filteredRules, rule => rule.id);
     return groupedRules.map(group => maxWithComparatorCallback(group.values, compareByVersion));
   }
