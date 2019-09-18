@@ -71,21 +71,24 @@ function encodeMemo(data: string | undefined): string | null {
   return encodeString(data);
 }
 
-export function encodePubkey(publicKey: PubkeyBundle): codecImpl.crypto.IPublicKey {
-  switch (publicKey.algo) {
+export function encodePubkey(pubkey: PubkeyBundle): codecImpl.crypto.IPublicKey {
+  switch (pubkey.algo) {
     case Algorithm.Ed25519:
-      return { ed25519: publicKey.data };
+      if (pubkey.data.length !== 32) {
+        throw new Error("Invalid pubkey size: must be 32 bytes");
+      }
+      return { ed25519: pubkey.data };
     default:
-      throw new Error("unsupported algorithm: " + publicKey.algo);
+      throw new Error("unsupported algorithm: " + pubkey.algo);
   }
 }
 
-export function encodePrivkey(privateKey: PrivkeyBundle): codecImpl.crypto.IPrivateKey {
-  switch (privateKey.algo) {
+export function encodePrivkey(privkey: PrivkeyBundle): codecImpl.crypto.IPrivateKey {
+  switch (privkey.algo) {
     case Algorithm.Ed25519:
-      return { ed25519: privateKey.data };
+      return { ed25519: privkey.data };
     default:
-      throw new Error("unsupported algorithm: " + privateKey.algo);
+      throw new Error("unsupported algorithm: " + privkey.algo);
   }
 }
 

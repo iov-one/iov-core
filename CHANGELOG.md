@@ -3,6 +3,7 @@
 ## 0.17.7
 
 - @iov/bns: Validate memo length when encoding transactions.
+- @iov/bns: Validate pubkey length when encoding.
 - @iov/bns-governance: `Governor.getElectionRules` now returns an empty array
   instead of throwing if no election rules are found.
 
