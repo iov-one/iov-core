@@ -3,9 +3,15 @@ import {
   Algorithm,
   Amount,
   ChainId,
+  Hash,
   isSendTransaction,
+  isSwapAbortTransaction,
+  isSwapClaimTransaction,
+  isSwapOfferTransaction,
   Nonce,
+  Preimage,
   PubkeyBytes,
+  SwapIdBytes,
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -467,14 +473,97 @@ describe("Decode", () => {
       fractionalDigits: 9,
       tokenTicker: "CASH" as TokenTicker,
     };
+    const defaultSwapId = {
+      data: fromHex("aabbccdd") as SwapIdBytes,
+    };
+    const defaultPreimage = fromHex("22334455") as Preimage;
+    const defaultHash = fromHex("0033669900336699003366990033669900336699003366990033669900336699") as Hash;
+    const defaultTimeout = {
+      timestamp: 1568814406426,
+    };
 
     // Token sends
 
-    // TODO: add missing tests here
+    it("works for SendTransaction", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        cashSendMsg: {
+          source: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          destination: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+          amount: {
+            whole: 1,
+            fractional: 1,
+            ticker: "CASH",
+          },
+          memo: "some memo",
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isSendTransaction(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.amount).toEqual(defaultAmount);
+      expect(parsed.sender).toEqual(defaultSender);
+      expect(parsed.recipient).toEqual(defaultRecipient);
+      expect(parsed.memo).toEqual("some memo");
+    });
 
     // Atomic swaps
 
-    // TODO: add missing tests here
+    it("works for SwapOfferTransaction", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        aswapCreateMsg: {
+          source: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          destination: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+          preimageHash: defaultHash,
+          timeout: defaultTimeout.timestamp,
+          amount: [
+            {
+              whole: 1,
+              fractional: 1,
+              ticker: "CASH",
+            },
+          ],
+          memo: "some memo",
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isSwapOfferTransaction(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.amounts).toEqual([defaultAmount]);
+      expect(parsed.recipient).toEqual(defaultRecipient);
+      expect(parsed.timeout).toEqual(defaultTimeout);
+      expect(parsed.hash).toEqual(defaultHash);
+      expect(parsed.memo).toEqual("some memo");
+    });
+
+    it("works for SwapClaimTransaction", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        aswapReleaseMsg: {
+          swapId: defaultSwapId.data,
+          preimage: defaultPreimage,
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isSwapClaimTransaction(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.preimage).toEqual(defaultPreimage);
+      expect(parsed.swapId).toEqual(defaultSwapId);
+    });
+
+    it("works for SwapAbortTransaction", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        aswapReturnMsg: {
+          swapId: defaultSwapId.data,
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isSwapAbortTransaction(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.swapId).toEqual(defaultSwapId);
+    });
 
     // Usernames
 

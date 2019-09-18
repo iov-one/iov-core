@@ -490,14 +490,15 @@ function parseSwapOfferTx(
     throw new Error("Hash must be 32 bytes (sha256)");
   }
   const prefix = addressPrefix(base.creator.chainId);
-  return {
+  const parsed = {
     ...base,
-    kind: "bcp/swap_offer",
+    kind: "bcp/swap_offer" as const,
     hash: hash as Hash,
     recipient: encodeBnsAddress(prefix, ensure(msg.destination, "destination")),
     timeout: { timestamp: asIntegerNumber(ensure(msg.timeout, "timeout")) },
     amounts: (msg.amount || []).map(decodeAmount),
   };
+  return msg.memo ? { ...parsed, memo: msg.memo } : parsed;
 }
 
 function parseSwapClaimTx(
