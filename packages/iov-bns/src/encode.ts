@@ -80,12 +80,12 @@ export function encodePubkey(publicKey: PubkeyBundle): codecImpl.crypto.IPublicK
   }
 }
 
-export function encodePrivkey(privateKey: PrivkeyBundle): codecImpl.crypto.IPrivateKey {
-  switch (privateKey.algo) {
+export function encodePrivkey(privkey: PrivkeyBundle): codecImpl.crypto.IPrivateKey {
+  switch (privkey.algo) {
     case Algorithm.Ed25519:
-      return { ed25519: privateKey.data };
+      return { ed25519: privkey.data };
     default:
-      throw new Error("unsupported algorithm: " + privateKey.algo);
+      throw new Error("unsupported algorithm: " + privkey.algo);
   }
 }
 

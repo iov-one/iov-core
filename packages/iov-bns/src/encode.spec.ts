@@ -73,10 +73,12 @@ describe("Encode", () => {
     expect(Uint8Array.from(encoded)).toEqual(pubBin);
   });
 
-  it("encode private key", () => {
-    const privkey = encodePrivkey(privJson);
-    const encoded = codecImpl.crypto.PublicKey.encode(privkey).finish();
-    expect(Uint8Array.from(encoded)).toEqual(privBin);
+  describe("encodePrivkey", () => {
+    it("can encode a privkey", () => {
+      const privkey = encodePrivkey(privJson);
+      const encoded = codecImpl.crypto.PrivateKey.encode(privkey).finish();
+      expect(Uint8Array.from(encoded)).toEqual(privBin);
+    });
   });
 
   describe("encodeAmount", () => {
