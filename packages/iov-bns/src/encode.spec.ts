@@ -65,12 +65,19 @@ import { appendSignBytes } from "./util";
 const { fromHex } = Encoding;
 
 describe("Encode", () => {
-  it("encode pubkey", () => {
-    const pubkey = encodePubkey(pubJson);
-    const encoded = codecImpl.crypto.PublicKey.encode(pubkey).finish();
-    // force result into Uint8Array for tests so it passes
-    // if buffer of correct type as well
-    expect(Uint8Array.from(encoded)).toEqual(pubBin);
+  describe("encodePubkey", () => {
+    it("can encode a pubkey", () => {
+      const pubkey = encodePubkey(pubJson);
+      const encoded = codecImpl.crypto.PublicKey.encode(pubkey).finish();
+      // force result into Uint8Array for tests so it passes
+      // if buffer of correct type as well
+      expect(Uint8Array.from(encoded)).toEqual(pubBin);
+    });
+
+    it("throws for invalid size", () => {
+      const pubkey = { algo: Algorithm.Ed25519, data: fromHex("ab") as PubkeyBytes };
+      expect(() => encodePubkey(pubkey)).toThrowError(/invalid pubkey size/i);
+    });
   });
 
   describe("encodePrivkey", () => {
@@ -162,13 +169,15 @@ describe("Encode", () => {
       nonce: 123 as Nonce,
       pubkey: {
         algo: Algorithm.Ed25519,
-        data: fromHex("00aa1122bbddffeeddcc") as PubkeyBytes,
+        data: fromHex("00aa1122bbddffeeddcc00aa1122bbddffeeddcc00aa1122bbddffeeddcc00aa") as PubkeyBytes,
       },
       signature: fromHex("aabbcc22334455") as SignatureBytes,
     };
     const encoded = encodeFullSignature(fullSignature);
     expect(encoded.sequence).toEqual(123);
-    expect(encoded.pubkey!.ed25519!).toEqual(fromHex("00aa1122bbddffeeddcc"));
+    expect(encoded.pubkey!.ed25519!).toEqual(
+      fromHex("00aa1122bbddffeeddcc00aa1122bbddffeeddcc00aa1122bbddffeeddcc00aa"),
+    );
     expect(encoded.signature!.ed25519).toEqual(fromHex("aabbcc22334455"));
   });
 
