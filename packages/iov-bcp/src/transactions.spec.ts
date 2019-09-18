@@ -3,13 +3,17 @@ import { Encoding } from "@iov/encoding";
 import {
   Algorithm,
   ChainId,
+  FullSignature,
   Identity,
   isBlockHeightTimeout,
+  isFullSignature,
   isIdentity,
   isPubkeyBundle,
   isTimestampTimeout,
+  Nonce,
   PubkeyBundle,
   PubkeyBytes,
+  SignatureBytes,
 } from "./transactions";
 
 const { fromHex } = Encoding;
@@ -114,6 +118,77 @@ describe("transactions", () => {
         chainId: "foobar" as ChainId,
       };
       expect(isIdentity(missingPubkey)).toEqual(false);
+    });
+  });
+
+  describe("isFullSignature", () => {
+    it("returns true for valid FullSignature", () => {
+      const good: FullSignature = {
+        nonce: 66 as Nonce,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("aabbccdd") as PubkeyBytes,
+        },
+        signature: fromHex("eeff0011") as SignatureBytes,
+      };
+      expect(isFullSignature(good)).toEqual(true);
+    });
+
+    it("returns true for FullSignature as deserialized from json", () => {
+      const good = {
+        nonce: 66,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("aabbccdd"),
+        },
+        signature: fromHex("eeff0011"),
+      };
+      expect(isFullSignature(good)).toEqual(true);
+    });
+
+    it("ignores additional fields", () => {
+      const withOtherData: FullSignature & { readonly other: number } = {
+        nonce: 66 as Nonce,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("aabbccdd") as PubkeyBytes,
+        },
+        signature: fromHex("eeff0011") as SignatureBytes,
+        other: 123,
+      };
+      expect(isFullSignature(withOtherData)).toEqual(true);
+    });
+
+    it("returns false for a bunch of other stuff", () => {
+      expect(isFullSignature("abc")).toEqual(false);
+      expect(isFullSignature({})).toEqual(false);
+      expect(isFullSignature(null)).toEqual(false);
+      expect(isFullSignature(undefined)).toEqual(false);
+      expect(isFullSignature(fromHex("aabb"))).toEqual(false);
+
+      const missingNonce: Omit<FullSignature, "nonce"> = {
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("aabbccdd") as PubkeyBytes,
+        },
+        signature: fromHex("eeff0011") as SignatureBytes,
+      };
+      expect(isFullSignature(missingNonce)).toEqual(false);
+
+      const missingPubkey: Omit<FullSignature, "pubkey"> = {
+        nonce: 66 as Nonce,
+        signature: fromHex("eeff0011") as SignatureBytes,
+      };
+      expect(isFullSignature(missingPubkey)).toEqual(false);
+
+      const missingSignature: Omit<FullSignature, "signature"> = {
+        nonce: 66 as Nonce,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: fromHex("aabbccdd") as PubkeyBytes,
+        },
+      };
+      expect(isFullSignature(missingSignature)).toEqual(false);
     });
   });
 

@@ -124,6 +124,12 @@ export interface FullSignature {
   readonly signature: SignatureBytes;
 }
 
+export function isFullSignature(data: unknown): data is FullSignature {
+  if (!isNonNullObject(data)) return false;
+  const fs = data as FullSignature;
+  return typeof fs.nonce === "number" && isPubkeyBundle(fs.pubkey) && isUint8Array(fs.signature);
+}
+
 /** A codec specific address encoded as a string */
 export type Address = string & As<"address">;
 

@@ -2,6 +2,7 @@
 
 ## 0.17.7
 
+- @iov/bcp: Add `isFullSignature` typechecker.
 - @iov/bns: Validate memo length when encoding transactions.
 - @iov/bns: Validate pubkey length when encoding.
 - @iov/bns: Export escrow transaction types.
