@@ -138,18 +138,14 @@ describe("Governor", () => {
   });
 
   describe("getElectionRules", () => {
-    it("throws for non-existent electorateId", async () => {
+    it("returns an empty array for non-existent electorateId", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
       const governor = new Governor(options);
 
       const electorateId = 100;
-      await governor
-        .getElectionRules(electorateId)
-        .then(
-          () => fail("Expected promise to be rejected"),
-          err => expect(err.message).toMatch(/no election rule found/i),
-        );
+      const electionRules = await governor.getElectionRules(electorateId);
+      expect(electionRules.length).toEqual(0);
 
       options.connection.disconnect();
     });
