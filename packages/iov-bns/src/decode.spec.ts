@@ -470,7 +470,28 @@ describe("Decode", () => {
 
     // Token sends
 
-    // TODO: add missing tests here
+    it("works for SendTransaction", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        cashSendMsg: {
+          source: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+          destination: fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"),
+          amount: {
+            whole: 1,
+            fractional: 1,
+            ticker: "CASH",
+          },
+          memo: "some memo",
+        },
+      };
+      const parsed = parseMsg(defaultBaseTx, transactionMessage);
+      if (!isSendTransaction(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.amount).toEqual(defaultAmount);
+      expect(parsed.sender).toEqual(defaultSender);
+      expect(parsed.recipient).toEqual(defaultRecipient);
+      expect(parsed.memo).toEqual("some memo");
+    });
 
     // Atomic swaps
 
