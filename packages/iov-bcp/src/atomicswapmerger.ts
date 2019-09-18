@@ -1,5 +1,11 @@
-import { AtomicSwap, OpenSwap, SwapProcessState } from "./atomicswaptypes";
-import { SwapAbortTransaction, SwapClaimTransaction, swapIdEquals } from "./transactions";
+import {
+  AtomicSwap,
+  OpenSwap,
+  SwapAbortTransaction,
+  SwapClaimTransaction,
+  SwapProcessState,
+} from "./atomicswaptypes";
+import { swapIdEquals } from "./transactions";
 
 function settleAtomicSwap(swap: OpenSwap, tx: SwapClaimTransaction | SwapAbortTransaction): AtomicSwap {
   if (tx.kind === "bcp/swap_claim") {

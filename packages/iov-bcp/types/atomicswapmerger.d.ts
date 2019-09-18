@@ -1,5 +1,4 @@
-import { AtomicSwap, OpenSwap } from "./atomicswaptypes";
-import { SwapAbortTransaction, SwapClaimTransaction } from "./transactions";
+import { AtomicSwap, OpenSwap, SwapAbortTransaction, SwapClaimTransaction } from "./atomicswaptypes";
 export declare class AtomicSwapMerger {
   private readonly open;
   private readonly settling;

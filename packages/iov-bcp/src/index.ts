@@ -50,13 +50,5 @@ export {
   TimestampTimeout,
   isTimestampTimeout,
   createTimestampTimeout,
-  SwapOfferTransaction,
-  SwapClaimTransaction,
-  SwapAbortTransaction,
-  SwapTransaction,
   isSendTransaction,
-  isSwapOfferTransaction,
-  isSwapClaimTransaction,
-  isSwapAbortTransaction,
-  isSwapTransaction,
 } from "./transactions";
