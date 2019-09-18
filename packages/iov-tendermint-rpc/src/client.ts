@@ -1,6 +1,7 @@
 import { Stream } from "xstream";
 
-import { Adaptor, adaptorForVersion, Decoder, Encoder, Params, Responses } from "./adaptor";
+import { Adaptor, Decoder, Encoder, Params, Responses } from "./adaptor";
+import { adaptorForVersion } from "./adaptorforversion";
 import { createJsonRpcRequest } from "./jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";

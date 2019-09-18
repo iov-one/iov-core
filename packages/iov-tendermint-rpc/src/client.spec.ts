@@ -4,7 +4,8 @@ import { firstEvent, toListPromise } from "@iov/stream";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { Adaptor, adaptorForVersion } from "./adaptor";
+import { Adaptor } from "./adaptor";
+import { adaptorForVersion } from "./adaptorforversion";
 import { Client } from "./client";
 import { tendermintInstances } from "./config.spec";
 import { buildQuery } from "./requests";
