@@ -6,6 +6,8 @@
 - @iov/bns: Validate pubkey length when encoding.
 - @iov/bns: Export escrow transaction types.
 - @iov/bns: Export proposal action checkers.
+- @iov/bns: Fixed a bug where memo fields of swap offer transactions were not
+  parsed during decoding.
 - @iov/bns-governance: `Governor.getElectionRules` now returns an empty array
   instead of throwing if no election rules are found.
 

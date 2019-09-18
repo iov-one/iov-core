@@ -523,6 +523,7 @@ describe("Decode", () => {
               ticker: "CASH",
             },
           ],
+          memo: "some memo",
         },
       };
       const parsed = parseMsg(defaultBaseTx, transactionMessage);
@@ -533,6 +534,7 @@ describe("Decode", () => {
       expect(parsed.recipient).toEqual(defaultRecipient);
       expect(parsed.timeout).toEqual(defaultTimeout);
       expect(parsed.hash).toEqual(defaultHash);
+      expect(parsed.memo).toEqual("some memo");
     });
 
     it("works for SwapClaimTransaction", () => {
