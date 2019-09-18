@@ -619,8 +619,10 @@ describe("BnsConnection", () => {
         creator: faucet,
         sender: bnsCodec.identityToAddress(faucet),
         recipient: await randomBnsAddress(),
-        memo: "too long".repeat(100),
-        amount: defaultAmount,
+        amount: {
+          ...defaultAmount,
+          tokenTicker: "UNKNOWN" as TokenTicker,
+        },
       });
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
@@ -629,7 +631,7 @@ describe("BnsConnection", () => {
         .postTx(bnsCodec.bytesToPost(signed))
         .then(
           () => fail("promise must be rejected"),
-          error => expect(error).toMatch(/field \\"Memo\\": too long/i),
+          error => expect(error).toMatch(/field \\"Amount\\": invalid currency: UNKNOWN/i),
         );
 
       connection.disconnect();

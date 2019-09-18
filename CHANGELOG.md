@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.7
+
+- @iov/bns: Validate memo length when encoding transactions.
+
 ## 0.17.6
 
 - @iov/bns: Create exported `electionRuleIdToAddress`

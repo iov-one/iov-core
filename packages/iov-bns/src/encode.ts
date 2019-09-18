@@ -62,6 +62,15 @@ function encodeString(data: string | undefined): string | null {
   return data || null;
 }
 
+const maxMemoLength = 128;
+
+function encodeMemo(data: string | undefined): string | null {
+  if (data && Encoding.toUtf8(data).length > maxMemoLength) {
+    throw new Error(`Invalid memo length: maximum ${maxMemoLength} bytes`);
+  }
+  return encodeString(data);
+}
+
 export function encodePubkey(publicKey: PubkeyBundle): codecImpl.crypto.IPublicKey {
   switch (publicKey.algo) {
     case Algorithm.Ed25519:
@@ -136,7 +145,7 @@ function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.bnsd
       source: decodeBnsAddress(tx.sender).data,
       destination: decodeBnsAddress(tx.recipient).data,
       amount: encodeAmount(tx.amount),
-      memo: encodeString(tx.memo),
+      memo: encodeMemo(tx.memo),
     }),
   };
 }
@@ -156,7 +165,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.bns
       destination: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: encodeInt(tx.timeout.timestamp),
-      memo: encodeString(tx.memo),
+      memo: encodeMemo(tx.memo),
     }),
   };
 }
@@ -261,7 +270,7 @@ function buildCreateEscrowTx(tx: CreateEscrowTx): codecImpl.bnsd.ITx {
       destination: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
       timeout: encodeInt(tx.timeout.timestamp),
-      memo: encodeString(tx.memo),
+      memo: encodeMemo(tx.memo),
     },
   };
 }
@@ -341,7 +350,7 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
               source: decodeBnsAddress(message.sender).data,
               destination: decodeBnsAddress(message.recipient).data,
               amount: encodeAmount(message.amount),
-              memo: encodeString(message.memo),
+              memo: encodeMemo(message.memo),
             },
           };
         }),
