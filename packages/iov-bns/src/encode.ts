@@ -25,14 +25,14 @@ import {
   CreateMultisignatureTx,
   CreateProposalTx,
   isBnsTx,
-  isCreateTextResolution,
-  isExecuteProposalBatch,
+  isCreateTextResolutionAction,
+  isExecuteProposalBatchAction,
   isMultisignatureTx,
-  isReleaseEscrow,
-  isSend,
-  isSetValidators,
-  isUpdateElectionRule,
-  isUpdateElectorate,
+  isReleaseEscrowAction,
+  isSendAction,
+  isSetValidatorsAction,
+  isUpdateElectionRuleAction,
+  isUpdateElectorateAction,
   Participant,
   PrivkeyBundle,
   RegisterUsernameTx,
@@ -333,18 +333,18 @@ function encodeValidators(validators: Validators): codecImpl.weave.IValidatorUpd
 function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
   const { action } = tx;
   let option: codecImpl.bnsd.IProposalOptions;
-  if (isCreateTextResolution(action)) {
+  if (isCreateTextResolutionAction(action)) {
     option = {
       govCreateTextResolutionMsg: {
         metadata: { schema: 1 },
         resolution: action.resolution,
       },
     };
-  } else if (isExecuteProposalBatch(action)) {
+  } else if (isExecuteProposalBatchAction(action)) {
     option = {
       executeProposalBatchMsg: {
         messages: action.messages.map(message => {
-          if (!isSend(message)) {
+          if (!isSendAction(message)) {
             throw new Error("Only send actions are currently supported in proposal batch");
           }
           return {
@@ -359,7 +359,7 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
         }),
       },
     };
-  } else if (isReleaseEscrow(action)) {
+  } else if (isReleaseEscrowAction(action)) {
     option = {
       escrowReleaseMsg: {
         metadata: { schema: 1 },
@@ -367,14 +367,14 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
         amount: [encodeAmount(action.amount)],
       },
     };
-  } else if (isSetValidators(action)) {
+  } else if (isSetValidatorsAction(action)) {
     option = {
       validatorsApplyDiffMsg: {
         metadata: { schema: 1 },
         validatorUpdates: encodeValidators(action.validatorUpdates),
       },
     };
-  } else if (isUpdateElectorate(action)) {
+  } else if (isUpdateElectorateAction(action)) {
     option = {
       govUpdateElectorateMsg: {
         metadata: { schema: 1 },
@@ -385,7 +385,7 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
         })),
       },
     };
-  } else if (isUpdateElectionRule(tx.action)) {
+  } else if (isUpdateElectionRuleAction(tx.action)) {
     option = {
       govUpdateElectionRuleMsg: {
         metadata: { schema: 1 },

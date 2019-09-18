@@ -115,18 +115,22 @@ export interface CreateTextResolutionAction {
   readonly kind: ActionKind.CreateTextResolution;
   readonly resolution: string;
 }
-export declare function isCreateTextResolution(action: ProposalAction): action is CreateTextResolutionAction;
+export declare function isCreateTextResolutionAction(
+  action: ProposalAction,
+): action is CreateTextResolutionAction;
 export interface ExecuteProposalBatchAction {
   readonly kind: ActionKind.ExecuteProposalBatch;
   readonly messages: readonly ProposalAction[];
 }
-export declare function isExecuteProposalBatch(action: ProposalAction): action is ExecuteProposalBatchAction;
+export declare function isExecuteProposalBatchAction(
+  action: ProposalAction,
+): action is ExecuteProposalBatchAction;
 export interface ReleaseEscrowAction {
   readonly kind: ActionKind.ReleaseEscrow;
   readonly escrowId: Uint8Array;
   readonly amount: Amount;
 }
-export declare function isReleaseEscrow(action: ProposalAction): action is ReleaseEscrowAction;
+export declare function isReleaseEscrowAction(action: ProposalAction): action is ReleaseEscrowAction;
 export interface SendAction {
   readonly kind: ActionKind.Send;
   readonly sender: Address;
@@ -134,12 +138,12 @@ export interface SendAction {
   readonly amount: Amount;
   readonly memo?: string;
 }
-export declare function isSend(action: ProposalAction): action is SendAction;
+export declare function isSendAction(action: ProposalAction): action is SendAction;
 export interface SetValidatorsAction {
   readonly kind: ActionKind.SetValidators;
   readonly validatorUpdates: Validators;
 }
-export declare function isSetValidators(action: ProposalAction): action is SetValidatorsAction;
+export declare function isSetValidatorsAction(action: ProposalAction): action is SetValidatorsAction;
 export interface UpdateElectionRuleAction {
   readonly kind: ActionKind.UpdateElectionRule;
   readonly electionRuleId: number;
@@ -147,13 +151,15 @@ export interface UpdateElectionRuleAction {
   readonly quorum?: Fraction | null;
   readonly votingPeriod: number;
 }
-export declare function isUpdateElectionRule(action: ProposalAction): action is UpdateElectionRuleAction;
+export declare function isUpdateElectionRuleAction(
+  action: ProposalAction,
+): action is UpdateElectionRuleAction;
 export interface UpdateElectorateAction {
   readonly kind: ActionKind.UpdateElectorate;
   readonly electorateId: number;
   readonly diffElectors: Electors;
 }
-export declare function isUpdateElectorate(action: ProposalAction): action is UpdateElectorateAction;
+export declare function isUpdateElectorateAction(action: ProposalAction): action is UpdateElectorateAction;
 /** The action to be executed when the proposal is accepted */
 export declare type ProposalAction =
   | CreateTextResolutionAction

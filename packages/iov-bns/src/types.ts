@@ -142,7 +142,7 @@ export interface CreateTextResolutionAction {
   readonly resolution: string;
 }
 
-export function isCreateTextResolution(action: ProposalAction): action is CreateTextResolutionAction {
+export function isCreateTextResolutionAction(action: ProposalAction): action is CreateTextResolutionAction {
   return action.kind === ActionKind.CreateTextResolution;
 }
 
@@ -151,7 +151,7 @@ export interface ExecuteProposalBatchAction {
   readonly messages: readonly ProposalAction[];
 }
 
-export function isExecuteProposalBatch(action: ProposalAction): action is ExecuteProposalBatchAction {
+export function isExecuteProposalBatchAction(action: ProposalAction): action is ExecuteProposalBatchAction {
   return action.kind === ActionKind.ExecuteProposalBatch;
 }
 
@@ -161,7 +161,7 @@ export interface ReleaseEscrowAction {
   readonly amount: Amount;
 }
 
-export function isReleaseEscrow(action: ProposalAction): action is ReleaseEscrowAction {
+export function isReleaseEscrowAction(action: ProposalAction): action is ReleaseEscrowAction {
   return action.kind === ActionKind.ReleaseEscrow;
 }
 
@@ -173,7 +173,7 @@ export interface SendAction {
   readonly memo?: string;
 }
 
-export function isSend(action: ProposalAction): action is SendAction {
+export function isSendAction(action: ProposalAction): action is SendAction {
   return action.kind === ActionKind.Send;
 }
 
@@ -182,7 +182,7 @@ export interface SetValidatorsAction {
   readonly validatorUpdates: Validators;
 }
 
-export function isSetValidators(action: ProposalAction): action is SetValidatorsAction {
+export function isSetValidatorsAction(action: ProposalAction): action is SetValidatorsAction {
   return action.kind === ActionKind.SetValidators;
 }
 
@@ -194,7 +194,7 @@ export interface UpdateElectionRuleAction {
   readonly votingPeriod: number;
 }
 
-export function isUpdateElectionRule(action: ProposalAction): action is UpdateElectionRuleAction {
+export function isUpdateElectionRuleAction(action: ProposalAction): action is UpdateElectionRuleAction {
   return action.kind === ActionKind.UpdateElectionRule;
 }
 
@@ -204,7 +204,7 @@ export interface UpdateElectorateAction {
   readonly diffElectors: Electors;
 }
 
-export function isUpdateElectorate(action: ProposalAction): action is UpdateElectorateAction {
+export function isUpdateElectorateAction(action: ProposalAction): action is UpdateElectorateAction {
   return action.kind === ActionKind.UpdateElectorate;
 }
 
