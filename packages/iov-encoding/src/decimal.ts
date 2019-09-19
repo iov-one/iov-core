@@ -7,8 +7,7 @@ import BN from "bn.js";
  */
 export class Decimal {
   public static fromUserInput(input: string, fractionalDigits: number): Decimal {
-    if (!Number.isInteger(fractionalDigits)) throw new Error("Fractional digits is not an integer");
-    if (fractionalDigits < 0) throw new Error("Fractional digits must not be negative");
+    Decimal.verifyFractionalDigits(fractionalDigits);
 
     const badCharacter = input.match(/[^0-9.]/);
     if (badCharacter) {
@@ -49,9 +48,13 @@ export class Decimal {
   }
 
   public static fromAtomics(atomics: string, fractionalDigits: number): Decimal {
+    Decimal.verifyFractionalDigits(fractionalDigits);
+    return new Decimal(atomics, fractionalDigits);
+  }
+
+  private static verifyFractionalDigits(fractionalDigits: number): void {
     if (!Number.isInteger(fractionalDigits)) throw new Error("Fractional digits is not an integer");
     if (fractionalDigits < 0) throw new Error("Fractional digits must not be negative");
-    return new Decimal(atomics, fractionalDigits);
   }
 
   public get atomics(): string {
