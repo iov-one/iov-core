@@ -11,6 +11,7 @@
   parsed during decoding.
 - @iov/bns-governance: `Governor.getElectionRules` now returns an empty array
   instead of throwing if no election rules are found.
+- @iov/encoding: Add `Decimal` class.
 
 ## 0.17.6
 
