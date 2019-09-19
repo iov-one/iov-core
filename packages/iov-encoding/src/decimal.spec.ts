@@ -1,6 +1,37 @@
 import { Decimal } from "./decimal";
 
 describe("Decimal", () => {
+  describe("fromAtomics", () => {
+    it("leads to correct atomics value", () => {
+      expect(Decimal.fromAtomics("1", 0).atomics).toEqual("1");
+      expect(Decimal.fromAtomics("1", 1).atomics).toEqual("1");
+      expect(Decimal.fromAtomics("1", 2).atomics).toEqual("1");
+
+      expect(Decimal.fromAtomics("1", 5).atomics).toEqual("1");
+      expect(Decimal.fromAtomics("2", 5).atomics).toEqual("2");
+      expect(Decimal.fromAtomics("3", 5).atomics).toEqual("3");
+      expect(Decimal.fromAtomics("10", 5).atomics).toEqual("10");
+      expect(Decimal.fromAtomics("20", 5).atomics).toEqual("20");
+      expect(Decimal.fromAtomics("30", 5).atomics).toEqual("30");
+      expect(Decimal.fromAtomics("100000000000000000000000", 5).atomics).toEqual("100000000000000000000000");
+      expect(Decimal.fromAtomics("200000000000000000000000", 5).atomics).toEqual("200000000000000000000000");
+      expect(Decimal.fromAtomics("300000000000000000000000", 5).atomics).toEqual("300000000000000000000000");
+
+      expect(Decimal.fromAtomics("44", 5).atomics).toEqual("44");
+      expect(Decimal.fromAtomics("044", 5).atomics).toEqual("44");
+      expect(Decimal.fromAtomics("0044", 5).atomics).toEqual("44");
+      expect(Decimal.fromAtomics("00044", 5).atomics).toEqual("44");
+    });
+
+    it("reads fractional digits correctly", () => {
+      expect(Decimal.fromAtomics("44", 0).toString()).toEqual("44");
+      expect(Decimal.fromAtomics("44", 1).toString()).toEqual("4.4");
+      expect(Decimal.fromAtomics("44", 2).toString()).toEqual("0.44");
+      expect(Decimal.fromAtomics("44", 3).toString()).toEqual("0.044");
+      expect(Decimal.fromAtomics("44", 4).toString()).toEqual("0.0044");
+    });
+  });
+
   describe("fromUserInput", () => {
     it("throws helpful error message for invalid characters", () => {
       expect(() => Decimal.fromUserInput(" 13", 5)).toThrowError(/invalid character at position 1/i);
