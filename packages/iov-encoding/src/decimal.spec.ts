@@ -10,7 +10,7 @@ describe("Decimal", () => {
       expect(() => Decimal.fromUserInput("13\\", 5)).toThrowError(/invalid character at position 3/i);
     });
 
-    it("throws for more than one separators", () => {
+    it("throws for more than one separator", () => {
       expect(() => Decimal.fromUserInput("1.3.5", 5)).toThrowError(/more than one separator found/i);
       expect(() => Decimal.fromUserInput("1..3", 5)).toThrowError(/more than one separator found/i);
       expect(() => Decimal.fromUserInput("..", 5)).toThrowError(/more than one separator found/i);
@@ -84,7 +84,7 @@ describe("Decimal", () => {
       expect(Decimal.fromUserInput("4.1200000", 5).atomics).toEqual("412000");
     });
 
-    it("interpretes the empty string as zero", () => {
+    it("interprets the empty string as zero", () => {
       expect(Decimal.fromUserInput("", 0).atomics).toEqual("0");
       expect(Decimal.fromUserInput("", 1).atomics).toEqual("0");
       expect(Decimal.fromUserInput("", 2).atomics).toEqual("0");

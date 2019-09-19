@@ -28,7 +28,7 @@ export class Decimal {
       switch (parts.length) {
         case 0:
         case 1:
-          throw new Error("Less than two elements in split result. This must not happen here.");
+          throw new Error("Fewer than two elements in split result. This must not happen here.");
         case 2:
           if (!parts[1]) throw new Error("Fractional part missing");
           whole = parts[0];
