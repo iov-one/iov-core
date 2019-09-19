@@ -10,10 +10,10 @@ export class Decimal {
     if (!Number.isInteger(fractionalDigits)) throw new Error("Fractional digits is not an integer");
     if (fractionalDigits < 0) throw new Error("Fractional digits must not be negative");
 
-    for (let index = 0; index < input.length; index++) {
-      if (!input[index].match(/^[0-9.]$/)) {
-        throw new Error(`Invalid character at position ${index + 1}`);
-      }
+    const badCharacter = input.match(/[^0-9.]/);
+    if (badCharacter) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      throw new Error(`Invalid character at position ${badCharacter.index! + 1}`);
     }
 
     let whole: string;
