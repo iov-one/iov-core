@@ -2,7 +2,77 @@ import { As } from "type-tagger";
 import { Stream } from "xstream";
 
 import { BlockchainConnection } from "./connection";
-import { Address, Amount, SwapId, SwapTimeout } from "./transactions";
+import { Address, Amount, LightTransaction, SwapId, SwapTimeout } from "./transactions";
+
+export type Preimage = Uint8Array & As<"preimage">;
+export type Hash = Uint8Array & As<"hash">;
+
+// Transactions
+
+/** A swap offer or a counter offer */
+export interface SwapOfferTransaction extends LightTransaction {
+  readonly kind: "bcp/swap_offer";
+  /**
+   * The ID of the swap to aid coordination between the two parties.
+   *
+   * If required, the data should be generated randomly by the client to avoid
+   * collisions.
+   *
+   * The type of this may be extended with additional properties depending on
+   * the requirements of the individual chain.
+   */
+  readonly swapId?: SwapId;
+  readonly amounts: readonly Amount[];
+  readonly recipient: Address;
+  /**
+   * The first point in time at which the offer is expired.
+   *
+   * Can be represented as a block height or UNIX timestamp.
+   */
+  readonly timeout: SwapTimeout;
+  /**
+   * Locally calculated hash of the preimage.
+   *
+   * This is a SHA256 hash until we have a way to specifiy the hashing algorithm.
+   */
+  readonly hash: Hash;
+  readonly memo?: string;
+}
+
+export interface SwapClaimTransaction extends LightTransaction {
+  readonly kind: "bcp/swap_claim";
+  readonly preimage: Preimage;
+  readonly swapId: SwapId; // pulled from the offer transaction
+}
+
+export interface SwapAbortTransaction extends LightTransaction {
+  readonly kind: "bcp/swap_abort";
+  readonly swapId: SwapId; // pulled from the offer transaction
+}
+
+export type SwapTransaction = SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
+
+export function isSwapOfferTransaction(transaction: LightTransaction): transaction is SwapOfferTransaction {
+  return (transaction as SwapOfferTransaction).kind === "bcp/swap_offer";
+}
+
+export function isSwapClaimTransaction(transaction: LightTransaction): transaction is SwapClaimTransaction {
+  return (transaction as SwapClaimTransaction).kind === "bcp/swap_claim";
+}
+
+export function isSwapAbortTransaction(transaction: LightTransaction): transaction is SwapAbortTransaction {
+  return (transaction as SwapAbortTransaction).kind === "bcp/swap_abort";
+}
+
+export function isSwapTransaction(transaction: LightTransaction): transaction is SwapTransaction {
+  return (
+    isSwapOfferTransaction(transaction) ||
+    isSwapClaimTransaction(transaction) ||
+    isSwapAbortTransaction(transaction)
+  );
+}
+
+// Non-transactions
 
 export enum SwapProcessState {
   Open = "open",
@@ -21,9 +91,6 @@ export function isSwapProcessStateClaimed(state: SwapProcessState): state is Swa
 export function isSwapProcessStateAborted(state: SwapProcessState): state is SwapProcessState.Aborted {
   return state === SwapProcessState.Aborted;
 }
-
-export type Preimage = Uint8Array & As<"preimage">;
-export type Hash = Uint8Array & As<"hash">;
 
 export interface SwapData {
   readonly id: SwapId;

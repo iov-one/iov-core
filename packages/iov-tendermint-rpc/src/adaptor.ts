@@ -1,14 +1,9 @@
-// This module exposes translators for multiple tendermint versions
-// Pick a version that matches the server to properly encode the data types
-
 import { JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
 
 import * as requests from "./requests";
 import * as responses from "./responses";
 import { SubscriptionEvent } from "./rpcclients";
 import { TxBytes, TxHash } from "./types";
-import { v0_29 } from "./v0-29";
-import { v0_31 } from "./v0-31";
 
 export interface Adaptor {
   readonly params: Params;
@@ -60,20 +55,4 @@ export interface Responses {
   readonly decodeNewBlockEvent: (response: SubscriptionEvent) => responses.NewBlockEvent;
   readonly decodeNewBlockHeaderEvent: (response: SubscriptionEvent) => responses.NewBlockHeaderEvent;
   readonly decodeTxEvent: (response: SubscriptionEvent) => responses.TxEvent;
-}
-
-/**
- * Returns an Adaptor implementation for a given tendermint version.
- * Throws when version is not supported.
- *
- * @param version full Tendermint version string, e.g. "0.20.1"
- */
-export function adatorForVersion(version: string): Adaptor {
-  if (version.startsWith("0.29.") || version.startsWith("0.30.")) {
-    return v0_29;
-  } else if (version.startsWith("0.31.")) {
-    return v0_31;
-  } else {
-    throw new Error(`Unsupported tendermint version: ${version}`);
-  }
 }

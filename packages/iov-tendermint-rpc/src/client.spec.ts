@@ -4,7 +4,8 @@ import { firstEvent, toListPromise } from "@iov/stream";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
-import { Adaptor, adatorForVersion } from "./adaptor";
+import { Adaptor } from "./adaptor";
+import { adaptorForVersion } from "./adaptorforversion";
 import { Client } from "./client";
 import { tendermintInstances } from "./config.spec";
 import { buildQuery } from "./requests";
@@ -528,7 +529,7 @@ for (const { url, version, appCreator } of tendermintInstances) {
     });
 
     describe("With HttpClient", () => {
-      const adaptor = adatorForVersion(version);
+      const adaptor = adaptorForVersion(version);
       defaultTestSuite(() => new HttpClient(url), adaptor);
     });
 
@@ -536,7 +537,7 @@ for (const { url, version, appCreator } of tendermintInstances) {
       // don't print out WebSocket errors if marked pending
       const onError = skipTests() ? () => 0 : console.error;
       const factory = (): WebsocketClient => new WebsocketClient(url, onError);
-      const adaptor = adatorForVersion(version);
+      const adaptor = adaptorForVersion(version);
       defaultTestSuite(factory, adaptor);
       websocketTestSuite(factory, adaptor, appCreator);
     });

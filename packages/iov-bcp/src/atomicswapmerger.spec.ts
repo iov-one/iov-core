@@ -2,7 +2,7 @@ import { Encoding } from "@iov/encoding";
 
 import { AtomicSwapHelpers } from "./atomicswaphelpers";
 import { AtomicSwapMerger } from "./atomicswapmerger";
-import { ClaimedSwap, OpenSwap, Preimage, SwapProcessState } from "./atomicswaptypes";
+import { ClaimedSwap, OpenSwap, Preimage, SwapClaimTransaction, SwapProcessState } from "./atomicswaptypes";
 import {
   Address,
   Algorithm,
@@ -10,7 +10,6 @@ import {
   ChainId,
   PubkeyBundle,
   PubkeyBytes,
-  SwapClaimTransaction,
   SwapId,
   SwapIdBytes,
   TokenTicker,
