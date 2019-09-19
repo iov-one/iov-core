@@ -184,23 +184,27 @@ export interface Vote {
   readonly blockId: BlockId;
   readonly signature: ValidatorSignature;
 }
+export interface Version {
+  readonly block: number;
+  readonly app: number;
+}
 export interface Header {
+  readonly version: Version;
   readonly chainId: string;
   readonly height: number;
   readonly time: ReadonlyDate;
   readonly numTxs: number;
-  readonly lastBlockId: BlockId;
   readonly totalTxs: number;
-  readonly appHash: Uint8Array;
-  readonly consensusHash: Uint8Array;
-  /** empty when number of transaction is 0 */
-  readonly dataHash: Uint8Array;
-  /** this can be empty */
-  readonly evidenceHash: Uint8Array;
+  readonly lastBlockId: BlockId;
   readonly lastCommitHash: Uint8Array;
-  /** this can be empty */
-  readonly lastResultsHash: Uint8Array;
+  readonly dataHash: Uint8Array;
   readonly validatorsHash: Uint8Array;
+  readonly nextValidatorsHash: Uint8Array;
+  readonly consensusHash: Uint8Array;
+  readonly appHash: Uint8Array;
+  readonly lastResultsHash: Uint8Array;
+  readonly evidenceHash: Uint8Array;
+  readonly proposerAddress: Uint8Array;
 }
 export interface NodeInfo {
   readonly id: Uint8Array;
