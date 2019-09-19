@@ -1,9 +1,65 @@
-export * from "./atomicswaptypes";
+export {
+  Preimage,
+  Hash,
+  SwapOfferTransaction,
+  SwapClaimTransaction,
+  SwapAbortTransaction,
+  SwapTransaction,
+  isSwapOfferTransaction,
+  isSwapClaimTransaction,
+  isSwapAbortTransaction,
+  isSwapTransaction,
+  SwapProcessState,
+  isSwapProcessStateOpen,
+  isSwapProcessStateClaimed,
+  isSwapProcessStateAborted,
+  SwapData,
+  OpenSwap,
+  ClaimedSwap,
+  AbortedSwap,
+  AtomicSwap,
+  isOpenSwap,
+  isClaimedSwap,
+  isAbortedSwap,
+  AtomicSwapRecipientQuery,
+  AtomicSwapSenderQuery,
+  AtomicSwapIdQuery,
+  AtomicSwapHashQuery,
+  AtomicSwapQuery,
+  isAtomicSwapRecipientQuery,
+  isAtomicSwapSenderQuery,
+  isAtomicSwapIdQuery,
+  isAtomicSwapHashQuery,
+  AtomicSwapConnection,
+  isAtomicSwapConnection,
+} from "./atomicswaptypes";
 export { AtomicSwapHelpers } from "./atomicswaphelpers";
 export { AtomicSwapMerger } from "./atomicswapmerger";
-export * from "./chainconnector";
-export * from "./codec";
-export * from "./connection";
+export { ChainConnector } from "./chainconnector";
+export { PostableBytes, TxReadCodec, TxCodec } from "./codec";
+export {
+  Account,
+  Token,
+  TransactionState,
+  BlockInfoPending,
+  BlockInfoSucceeded,
+  BlockInfoFailed,
+  BlockInfo,
+  isBlockInfoPending,
+  isBlockInfoSucceeded,
+  isBlockInfoFailed,
+  PostTxResponse,
+  QueryTag,
+  TransactionQuery,
+  AddressQuery,
+  PubkeyQuery,
+  AccountQuery,
+  isAddressQuery,
+  isPubkeyQuery,
+  BlockId,
+  BlockHeader,
+  BlockchainConnection,
+} from "./connection";
 export {
   Algorithm,
   PubkeyBytes,
