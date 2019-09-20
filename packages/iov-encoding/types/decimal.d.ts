@@ -8,6 +8,7 @@ export declare class Decimal {
   static fromAtomics(atomics: string, fractionalDigits: number): Decimal;
   private static verifyFractionalDigits;
   readonly atomics: string;
+  readonly fractionalDigits: number;
   private readonly data;
   private constructor();
   toString(): string;

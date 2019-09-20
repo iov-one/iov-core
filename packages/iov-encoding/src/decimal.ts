@@ -68,6 +68,10 @@ export class Decimal {
     return this.data.atomics.toString();
   }
 
+  public get fractionalDigits(): number {
+    return this.data.fractionalDigits;
+  }
+
   private readonly data: {
     readonly atomics: BN;
     readonly fractionalDigits: number;
