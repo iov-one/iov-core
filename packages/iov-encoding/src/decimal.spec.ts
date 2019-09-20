@@ -80,6 +80,9 @@ describe("Decimal", () => {
       expect(() => Decimal.fromUserInput("1", Number.MIN_SAFE_INTEGER)).toThrowError(
         /fractional digits must not be negative/i,
       );
+
+      // exceeds supported range
+      expect(() => Decimal.fromUserInput("1", 101)).toThrowError(/fractional digits must not exceed 100/i);
     });
 
     it("returns correct value", () => {

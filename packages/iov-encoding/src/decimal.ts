@@ -1,5 +1,9 @@
 import BN from "bn.js";
 
+// Too large values lead to massive memory usage. Limit to something sensible.
+// The largest value we need is 18 (Ether).
+const maxFractionalDigits = 100;
+
 /**
  * A type for arbitrary precision, non-negative decimals.
  *
@@ -55,6 +59,9 @@ export class Decimal {
   private static verifyFractionalDigits(fractionalDigits: number): void {
     if (!Number.isInteger(fractionalDigits)) throw new Error("Fractional digits is not an integer");
     if (fractionalDigits < 0) throw new Error("Fractional digits must not be negative");
+    if (fractionalDigits > maxFractionalDigits) {
+      throw new Error(`Fractional digits must not exceed ${maxFractionalDigits}`);
+    }
   }
 
   public get atomics(): string {
