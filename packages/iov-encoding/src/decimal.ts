@@ -97,4 +97,15 @@ export class Decimal {
       return `${whole.toString()}.${trimmedFractionalPart}`;
     }
   }
+
+  /**
+   * a.plus(b) returns a+b.
+   *
+   * Both values need to have the same fractional digits.
+   */
+  public plus(b: Decimal): Decimal {
+    if (this.fractionalDigits !== b.fractionalDigits) throw new Error("Fractional digits do not match");
+    const sum = this.data.atomics.add(new BN(b.atomics));
+    return new Decimal(sum.toString(), this.fractionalDigits);
+  }
 }

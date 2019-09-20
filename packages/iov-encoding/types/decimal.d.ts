@@ -12,4 +12,10 @@ export declare class Decimal {
   private readonly data;
   private constructor();
   toString(): string;
+  /**
+   * a.plus(b) returns a+b.
+   *
+   * Both values need to have the same fractional digits.
+   */
+  plus(b: Decimal): Decimal;
 }
