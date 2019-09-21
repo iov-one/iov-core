@@ -13,6 +13,11 @@ export declare class Decimal {
   private constructor();
   toString(): string;
   /**
+   * Returns an approximation as a float type. Only use this if no
+   * exact calculation is required.
+   */
+  toFloatApproximation(): number;
+  /**
    * a.plus(b) returns a+b.
    *
    * Both values need to have the same fractional digits.

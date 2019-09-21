@@ -99,6 +99,16 @@ export class Decimal {
   }
 
   /**
+   * Returns an approximation as a float type. Only use this if no
+   * exact calculation is required.
+   */
+  public toFloatApproximation(): number {
+    const out = Number(this.toString());
+    if (Number.isNaN(out)) throw new Error("Conversion to number failed");
+    return out;
+  }
+
+  /**
    * a.plus(b) returns a+b.
    *
    * Both values need to have the same fractional digits.

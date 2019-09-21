@@ -158,6 +158,18 @@ describe("Decimal", () => {
     });
   });
 
+  describe("toFloatApproximation", () => {
+    it("works", () => {
+      expect(Decimal.fromUserInput("0", 5).toFloatApproximation()).toEqual(0);
+      expect(Decimal.fromUserInput("1", 5).toFloatApproximation()).toEqual(1);
+      expect(Decimal.fromUserInput("1.5", 5).toFloatApproximation()).toEqual(1.5);
+      expect(Decimal.fromUserInput("0.1", 5).toFloatApproximation()).toEqual(0.1);
+
+      expect(Decimal.fromUserInput("1234500000000000", 5).toFloatApproximation()).toEqual(1.2345e15);
+      expect(Decimal.fromUserInput("1234500000000000.002", 5).toFloatApproximation()).toEqual(1.2345e15);
+    });
+  });
+
   describe("plus", () => {
     it("returns correct values", () => {
       const zero = Decimal.fromUserInput("0", 5);
