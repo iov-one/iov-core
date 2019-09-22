@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.17.8
+
+- @iov/encoding: Add `Decimal.fractionalDigits`, `.plus` and
+  `.toFloatApproximation`.
+
 ## 0.17.7
 
 - @iov/bcp: Add `isFullSignature` typechecker.
