@@ -45,6 +45,14 @@ export function main(originalArgs: readonly string[]): void {
         "TokenTicker",
         "TransactionId",
         "WithCreator",
+        // block info
+        "BlockInfoPending",
+        "BlockInfoSucceeded",
+        "BlockInfoFailed",
+        "BlockInfo",
+        "isBlockInfoPending",
+        "isBlockInfoSucceeded",
+        "isBlockInfoFailed",
       ],
     ],
     [
@@ -53,9 +61,31 @@ export function main(originalArgs: readonly string[]): void {
         "bnsCodec",
         "BnsConnection",
         "createBnsConnector",
+        // Conditions
+        "electionRuleIdToAddress",
+        "escrowIdToAddress",
+        "multisignatureIdToAddress",
+        "swapToAddress",
+        // Usernames
         "ChainAddressPair",
-        "UpdateTargetsOfUsernameTx",
+        "BnsUsernamesByOwnerQuery",
+        "BnsUsernamesByUsernameQuery",
+        "BnsUsernamesQuery",
+        "BnsUsernameNft",
         "RegisterUsernameTx",
+        "isRegisterUsernameTx",
+        "UpdateTargetsOfUsernameTx",
+        "isUpdateTargetsOfUsernameTx",
+        "TransferUsernameTx",
+        "isTransferUsernameTx",
+        // Multisignature contracts
+        "Participant",
+        "CreateMultisignatureTx",
+        "isCreateMultisignatureTx",
+        "UpdateMultisignatureTx",
+        "isUpdateMultisignatureTx",
+        "MultisignatureTx",
+        "isMultisignatureTx",
       ],
     ],
     [
@@ -74,7 +104,18 @@ export function main(originalArgs: readonly string[]): void {
         "Slip10RawIndex",
       ],
     ],
-    ["@iov/encoding", ["Bech32", "Encoding"]],
+    [
+      "@iov/encoding",
+      [
+        "Bech32",
+        "Encoding",
+        // integers
+        "Int53",
+        "Uint32",
+        "Uint53",
+        "Uint64",
+      ],
+    ],
     [
       "@iov/ethereum",
       [
