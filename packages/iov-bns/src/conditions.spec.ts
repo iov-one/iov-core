@@ -37,7 +37,7 @@ describe("conditions", () => {
 
   describe("multisignatureIdToAddress", () => {
     it("leads to known address", () => {
-      const address = multisignatureIdToAddress("local-iov-devnet" as ChainId, fromHex("0000000000000002"));
+      const address = multisignatureIdToAddress("local-iov-devnet" as ChainId, 2);
       expect(address).toEqual("tiov1zd573wa38pxfvn9mxvpkjm6a8vteqvaryc8xs7");
     });
   });

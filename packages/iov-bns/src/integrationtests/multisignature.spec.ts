@@ -12,6 +12,7 @@ import {
   WithCreator,
 } from "@iov/bcp";
 import { Slip10RawIndex } from "@iov/crypto";
+import { Uint64 } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import BN from "bn.js";
 
@@ -133,7 +134,7 @@ class Actor {
     participants: readonly Participant[],
     activationThreshold: number,
     adminThreshold: number,
-  ): Promise<Uint8Array> {
+  ): Promise<number> {
     const tx = await this.connection.withDefaultFee<CreateMultisignatureTx & WithCreator>({
       kind: "bns/create_multisignature_contract",
       creator: this.identity,
@@ -145,18 +146,18 @@ class Actor {
     if (result === undefined) {
       throw new Error("Created a multisignature contract but received no ID back");
     }
-    return result;
+    return Uint64.fromBytesBigEndian(result).toNumber();
   }
 
   public async createSendTransaction(
-    multisignatureId: Uint8Array,
+    multisignatureId: number,
     sender: Address,
     recipient: Address,
     amount: Amount,
   ): Promise<SendTransaction & WithCreator> {
     return this.connection.withDefaultFee<SendTransaction & WithCreator & MultisignatureTx>({
       kind: "bcp/send",
-      multisig: [new BN(multisignatureId).toNumber()],
+      multisig: [multisignatureId],
       creator: this.identity,
       sender: sender,
       recipient: recipient,

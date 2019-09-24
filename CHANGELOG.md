@@ -4,6 +4,7 @@
 
 Breaking changes
 
+- @iov/bns: Change multisig ID type to `number` in `multisignatureIdToAddress`.
 - @iov/keycontrol: Remove unused `ReadonlyWallet.canSign` from interface and
   implementations.
 
