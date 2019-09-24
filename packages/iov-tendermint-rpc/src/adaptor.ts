@@ -3,12 +3,13 @@ import { JsonRpcRequest, JsonRpcSuccessResponse } from "@iov/jsonrpc";
 import * as requests from "./requests";
 import * as responses from "./responses";
 import { SubscriptionEvent } from "./rpcclients";
-import { TxBytes, TxHash } from "./types";
+import { BlockHash, TxBytes, TxHash } from "./types";
 
 export interface Adaptor {
   readonly params: Params;
   readonly responses: Responses;
   readonly hashTx: (tx: TxBytes) => TxHash;
+  readonly hashBlock: (header: responses.Header) => BlockHash;
 }
 
 // Encoder is a generic that matches all methods of Params
