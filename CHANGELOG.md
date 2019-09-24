@@ -5,8 +5,11 @@
 Breaking changes
 
 - @iov/bns: Change multisig ID type to `number` in `multisignatureIdToAddress`.
+- @iov/encoding: Remove deprecated `EnglishMnemonic.asString` use `.toString`
+  instead.
 - @iov/keycontrol: Remove unused `ReadonlyWallet.canSign` from interface and
   implementations.
+- @iov/keycontrol: Remove deprecated `HdPaths.simpleAddress`.
 
 ## 0.17.8
 

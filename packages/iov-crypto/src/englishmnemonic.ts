@@ -37,9 +37,4 @@ export class EnglishMnemonic {
   public toString(): string {
     return this.data;
   }
-
-  /** @deprecated use toString */
-  public asString(): string {
-    return this.toString();
-  }
 }

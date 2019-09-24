@@ -1,13 +1,6 @@
 import { Slip10RawIndex } from "@iov/crypto";
 export declare class HdPaths {
   /**
-   * IOV's SimpleAddress derivation path
-   *
-   * @see https://github.com/iov-one/iov-core/blob/v0.16.0-alpha.3/docs/address-derivation-v1.md#simple-addresses-deprecated
-   * @deprecated we use IOV HD paths in the form m/44'/234'/a' now
-   */
-  static simpleAddress(index: number): readonly Slip10RawIndex[];
-  /**
    * Only use this for the real BIP-0044 with
    * - 5 component path (m / purpose' / coin_type' / account' / change / address_index)
    * - no ed25519 support (due to the use of unhardened path components)
