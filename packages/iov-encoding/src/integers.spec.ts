@@ -282,106 +282,116 @@ describe("Integers", () => {
   });
 
   describe("Uint64", () => {
-    it("can be constructed from bytes", () => {
-      Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
-      Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
-      Uint64.fromBytesBigEndian([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
+    describe("fromBigEndianBytes", () => {
+      it("can be constructed from bytes", () => {
+        Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+        Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
+        Uint64.fromBytesBigEndian([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
+      });
+
+      it("can be constructed from Uint8Array", () => {
+        Uint64.fromBytesBigEndian(new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]));
+      });
+
+      it("throws for wrong number of bytes", () => {
+        expect(() => Uint64.fromBytesBigEndian([])).toThrowError(/invalid input length/i);
+        expect(() => Uint64.fromBytesBigEndian([0x00])).toThrowError(/invalid input length/i);
+        expect(() => Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])).toThrowError(
+          /invalid input length/i,
+        );
+        expect(() =>
+          Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+        ).toThrowError(/invalid input length/i);
+      });
+
+      it("throws for wrong byte value", () => {
+        expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, 256])).toThrowError(
+          /invalid value in byte/i,
+        );
+        expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, -1])).toThrowError(
+          /invalid value in byte/i,
+        );
+        expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, 1.5])).toThrowError(
+          /invalid value in byte/i,
+        );
+        expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.NEGATIVE_INFINITY])).toThrowError(
+          /invalid value in byte/i,
+        );
+        expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.POSITIVE_INFINITY])).toThrowError(
+          /invalid value in byte/i,
+        );
+        expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.NaN])).toThrowError(
+          /invalid value in byte/i,
+        );
+      });
     });
 
-    it("can be constructed from Uint8Array", () => {
-      Uint64.fromBytesBigEndian(new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]));
+    describe("fromString", () => {
+      it("can be constructed from string", () => {
+        {
+          const a = Uint64.fromString("0");
+          expect(a).toBeTruthy();
+        }
+        {
+          const a = Uint64.fromString("1");
+          expect(a).toBeTruthy();
+        }
+        {
+          const a = Uint64.fromString("01");
+          expect(a).toBeTruthy();
+        }
+        {
+          const a = Uint64.fromString("9999999999999999999");
+          expect(a).toBeTruthy();
+        }
+        {
+          const a = Uint64.fromString("18446744073709551615");
+          expect(a).toBeTruthy();
+        }
+      });
+
+      it("throws for invalid string values", () => {
+        expect(() => Uint64.fromString(" 1")).toThrowError(/invalid string format/i);
+        expect(() => Uint64.fromString("-1")).toThrowError(/invalid string format/i);
+        expect(() => Uint64.fromString("+1")).toThrowError(/invalid string format/i);
+        expect(() => Uint64.fromString("1e6")).toThrowError(/invalid string format/i);
+      });
+
+      it("throws for string values exceeding uint64", () => {
+        expect(() => Uint64.fromString("18446744073709551616")).toThrowError(/input exceeds uint64 range/i);
+        expect(() => Uint64.fromString("99999999999999999999")).toThrowError(/input exceeds uint64 range/i);
+      });
     });
 
-    it("throws for wrong number of bytes", () => {
-      expect(() => Uint64.fromBytesBigEndian([])).toThrowError(/invalid input length/i);
-      expect(() => Uint64.fromBytesBigEndian([0x00])).toThrowError(/invalid input length/i);
-      expect(() => Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])).toThrowError(
-        /invalid input length/i,
-      );
-      expect(() =>
-        Uint64.fromBytesBigEndian([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
-      ).toThrowError(/invalid input length/i);
-    });
+    describe("fromNumber", () => {
+      it("can be constructed from number", () => {
+        const a = Uint64.fromNumber(0);
+        expect(a.toNumber()).toEqual(0);
+        const b = Uint64.fromNumber(1);
+        expect(b.toNumber()).toEqual(1);
+        const c = Uint64.fromNumber(Number.MAX_SAFE_INTEGER);
+        expect(c.toNumber()).toEqual(Number.MAX_SAFE_INTEGER);
+      });
 
-    it("throws for wrong byte value", () => {
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, 256])).toThrowError(
-        /invalid value in byte/i,
-      );
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, -1])).toThrowError(
-        /invalid value in byte/i,
-      );
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, 1.5])).toThrowError(
-        /invalid value in byte/i,
-      );
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.NEGATIVE_INFINITY])).toThrowError(
-        /invalid value in byte/i,
-      );
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.POSITIVE_INFINITY])).toThrowError(
-        /invalid value in byte/i,
-      );
-      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.NaN])).toThrowError(
-        /invalid value in byte/i,
-      );
-    });
+      it("throws when constructed from wrong numbers", () => {
+        // not a number
+        expect(() => Uint64.fromNumber(Number.NaN)).toThrowError(/input is not a number/i);
 
-    it("can be constructed from string", () => {
-      {
-        const a = Uint64.fromString("0");
-        expect(a).toBeTruthy();
-      }
-      {
-        const a = Uint64.fromString("1");
-        expect(a).toBeTruthy();
-      }
-      {
-        const a = Uint64.fromString("01");
-        expect(a).toBeTruthy();
-      }
-      {
-        const a = Uint64.fromString("9999999999999999999");
-        expect(a).toBeTruthy();
-      }
-      {
-        const a = Uint64.fromString("18446744073709551615");
-        expect(a).toBeTruthy();
-      }
-    });
+        // not an integer
+        expect(() => Uint64.fromNumber(Number.NEGATIVE_INFINITY)).toThrowError(
+          /input is not a safe integer/i,
+        );
+        expect(() => Uint64.fromNumber(Number.POSITIVE_INFINITY)).toThrowError(
+          /input is not a safe integer/i,
+        );
+        expect(() => Uint64.fromNumber(Number.MAX_SAFE_INTEGER + 1)).toThrowError(
+          /input is not a safe integer/i,
+        );
 
-    it("throws for invalid string values", () => {
-      expect(() => Uint64.fromString(" 1")).toThrowError(/invalid string format/i);
-      expect(() => Uint64.fromString("-1")).toThrowError(/invalid string format/i);
-      expect(() => Uint64.fromString("+1")).toThrowError(/invalid string format/i);
-      expect(() => Uint64.fromString("1e6")).toThrowError(/invalid string format/i);
-    });
-
-    it("throws for string values exceeding uint64", () => {
-      expect(() => Uint64.fromString("18446744073709551616")).toThrowError(/input exceeds uint64 range/i);
-      expect(() => Uint64.fromString("99999999999999999999")).toThrowError(/input exceeds uint64 range/i);
-    });
-
-    it("can be constructed from number", () => {
-      const a = Uint64.fromNumber(0);
-      expect(a.toNumber()).toEqual(0);
-      const b = Uint64.fromNumber(1);
-      expect(b.toNumber()).toEqual(1);
-      const c = Uint64.fromNumber(Number.MAX_SAFE_INTEGER);
-      expect(c.toNumber()).toEqual(Number.MAX_SAFE_INTEGER);
-    });
-
-    it("throws when constructed from wrong numbers", () => {
-      // not a number
-      expect(() => Uint64.fromNumber(Number.NaN)).toThrowError(/input is not a number/i);
-
-      // not an integer
-      expect(() => Uint64.fromNumber(Number.NEGATIVE_INFINITY)).toThrowError(/input is not a safe integer/i);
-      expect(() => Uint64.fromNumber(Number.POSITIVE_INFINITY)).toThrowError(/input is not a safe integer/i);
-      expect(() => Uint64.fromNumber(Number.MAX_SAFE_INTEGER + 1)).toThrowError(
-        /input is not a safe integer/i,
-      );
-
-      // negative integer
-      expect(() => Uint64.fromNumber(-1)).toThrowError(/input is negative/i);
-      expect(() => Uint64.fromNumber(Number.MIN_SAFE_INTEGER)).toThrowError(/input is negative/i);
+        // negative integer
+        expect(() => Uint64.fromNumber(-1)).toThrowError(/input is negative/i);
+        expect(() => Uint64.fromNumber(Number.MIN_SAFE_INTEGER)).toThrowError(/input is negative/i);
+      });
     });
 
     it("can export bytes (big endian)", () => {
