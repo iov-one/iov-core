@@ -16,6 +16,9 @@ Breaking changes
   `createBnsConnector`, `createEthereumConnector`, `createLiskConnector`,
   `createRiseConnector` accordingly.
 - @iov/bns: Change multisig ID type to `number` in `multisignatureIdToAddress`.
+- @iov/bns-governance: Remove `CommitteeIds` type as well as `committeeIds` and
+  `guaranteeFundEscrowIds` constants. These are now the responsibility of the
+  consumer.
 - @iov/encoding: Remove deprecated `EnglishMnemonic.asString` use `.toString`
   instead.
 - @iov/encoding: Change return type of `Uint32.toBytesBigEndian`,

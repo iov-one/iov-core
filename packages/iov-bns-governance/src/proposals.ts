@@ -1,8 +1,9 @@
 import { Address, Amount, PubkeyBundle } from "@iov/bcp";
 import { Fraction } from "@iov/bns";
 import { ReadonlyDate } from "readonly-date";
+import { As } from "type-tagger";
 
-import { CommitteeId } from "./committees";
+export type CommitteeId = number & As<"committee">;
 
 export enum ProposalType {
   AddCommitteeMember,
