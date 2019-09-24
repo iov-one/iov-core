@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0
+
+Breaking changes
+
+- @iov/bns: Change multisig ID type to `number` in `multisignatureIdToAddress`.
+
 ## 0.17.7
 
 - @iov/bcp: Add `isFullSignature` typechecker.

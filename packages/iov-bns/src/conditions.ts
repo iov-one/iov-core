@@ -47,10 +47,8 @@ export function swapToAddress(chainId: ChainId, swap: { readonly id: SwapId; rea
   return conditionToAddress(chainId, buildSwapCondition(swap));
 }
 
-export function multisignatureIdToAddress(chainId: ChainId, multisignatureId: Uint8Array): Address {
-  // TODO: remove this intermediate step in https://github.com/iov-one/iov-core/issues/1231
-  const numericId = Uint64.fromBytesBigEndian(multisignatureId).toNumber();
-  return conditionToAddress(chainId, buildMultisignatureCondition(numericId));
+export function multisignatureIdToAddress(chainId: ChainId, multisignatureId: number): Address {
+  return conditionToAddress(chainId, buildMultisignatureCondition(multisignatureId));
 }
 
 export function escrowIdToAddress(chainId: ChainId, escrowId: Uint8Array): Address {
