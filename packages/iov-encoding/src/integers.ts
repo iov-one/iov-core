@@ -17,7 +17,7 @@ export class Uint32 implements Integer {
 
     // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < bytes.length; ++i) {
-      if (bytes[i] > 255 || bytes[i] < 0 || Number.isNaN(bytes[i])) {
+      if (!Number.isInteger(bytes[i]) || bytes[i] > 255 || bytes[i] < 0) {
         throw new Error("Invalid value in byte. Found: " + bytes[i]);
       }
     }
@@ -134,7 +134,7 @@ export class Uint64 implements Integer {
 
     // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < bytes.length; ++i) {
-      if (bytes[i] > 255 || bytes[i] < 0 || Number.isNaN(bytes[i])) {
+      if (!Number.isInteger(bytes[i]) || bytes[i] > 255 || bytes[i] < 0) {
         throw new Error("Invalid value in byte. Found: " + bytes[i]);
       }
     }

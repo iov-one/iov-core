@@ -4,6 +4,8 @@
 
 - @iov/cli: Automatically import types necessary for creating and updating
   multisignature contracts
+- @iov/encoding: Add missing integer check on input bytes in
+  `Uint32.fromBigEndianBytes` and `Uint64.fromBytesBigEndian`
 
 ## 0.17.7
 
