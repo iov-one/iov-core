@@ -26,11 +26,6 @@ export interface ReadonlyWallet {
    */
   readonly getIdentities: () => readonly Identity[];
 
-  // canSign flag means the private key material is currently accessible.
-  // If a hardware ledger is not plugged in, we may see the public keys,
-  // but have it "inactive" as long as this flag is false.
-  readonly canSign: ValueAndUpdates<boolean>;
-
   // A string identifying the concrete implementation of this interface
   // for deserialization purpose
   readonly implementationId: WalletImplementationIdString;

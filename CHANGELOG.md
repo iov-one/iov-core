@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0
+
+Breaking changes
+
+- @iov/keycontrol: Remove unused `ReadonlyWallet.canSign` from interface and
+  implementations.
+
 ## 0.17.8
 
 - @iov/cli: Automatically import types necessary for creating and updating

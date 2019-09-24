@@ -17,7 +17,6 @@ export interface ReadonlyWallet {
    * Returns all identities currently registered
    */
   readonly getIdentities: () => readonly Identity[];
-  readonly canSign: ValueAndUpdates<boolean>;
   readonly implementationId: WalletImplementationIdString;
   /**
    * Creates a new identity from the wallet's secret but does not store it.

@@ -369,8 +369,6 @@ describe("Slip10Wallet", () => {
     const wallet = new Slip10Wallet(emptyWallet);
     const newIdentity = await wallet.createIdentity(defaultChain, [Slip10RawIndex.hardened(0)]);
 
-    expect(wallet.canSign.value).toEqual(true);
-
     const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
     const signature = await wallet.createTransactionSignature(newIdentity, tx, PrehashType.None);
     expect(signature).toBeTruthy();
