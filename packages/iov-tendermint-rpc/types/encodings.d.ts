@@ -1,5 +1,5 @@
-import { ReadonlyDate } from "readonly-date";
 import { As } from "type-tagger";
+import { BlockId, ReadonlyDateWithNanoseconds, Version } from "./responses";
 export declare type Base64String = string & As<"base64">;
 export declare type HexString = string & As<"hex">;
 export declare type IntegerString = string & As<"integer">;
@@ -60,9 +60,15 @@ export declare class Base64 {
   static decode(base64String: Base64String): Uint8Array;
 }
 export declare class DateTime {
-  static decode(dateTimeString: DateTimeString): ReadonlyDate;
+  static decode(dateTimeString: DateTimeString): ReadonlyDateWithNanoseconds;
 }
 export declare class Hex {
   static encode(data: Uint8Array): HexString;
   static decode(hexString: HexString): Uint8Array;
 }
+export declare function encodeString(s: string): Uint8Array;
+export declare function encodeInt(n: number): Uint8Array;
+export declare function encodeTime(time: ReadonlyDateWithNanoseconds): Uint8Array;
+export declare function encodeBytes(bytes: Uint8Array): Uint8Array;
+export declare function encodeVersion(version: Version): Uint8Array;
+export declare function encodeBlockId(blockId: BlockId): Uint8Array;
