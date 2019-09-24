@@ -14,6 +14,7 @@ Breaking changes
 - @iov/keycontrol: Remove unused `ReadonlyWallet.canSign` from interface and
   implementations.
 - @iov/keycontrol: Remove deprecated `HdPaths.simpleAddress`.
+- @iov/tendermint-rpc: Remove support for Tendermint 0.29.x – 0.30.x.
 
 ## 0.17.8
 
