@@ -239,25 +239,6 @@ export class Governor {
             resolution: options.text,
           },
         });
-      case ProposalType.TreasurySend: {
-        if (!this.treasuryAddress) {
-          throw new Error("This Governor instance was not initialised with a treasuryAddress");
-        }
-        const treasuryAddress = this.treasuryAddress;
-        const messages = options.recipients.map(({ address, amount }) => ({
-          kind: ActionKind.Send as ActionKind.Send,
-          sender: treasuryAddress,
-          recipient: address,
-          amount: amount,
-        }));
-        return this.connection.withDefaultFee({
-          ...commonProperties,
-          action: {
-            kind: ActionKind.ExecuteProposalBatch,
-            messages: messages,
-          },
-        });
-      }
       default:
         throw new Error("Proposal type not yet supported");
     }
