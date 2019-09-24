@@ -2,7 +2,13 @@
 
 ## 1.0.0
 
+- @iov/bns: Populate the correct block ID in `BnsConnection.watchBlockHeaders`.
 - @iov/encoding: Add `Uint32.toBytesLittleEndian`.
+- @iov/tendermint-rpc: Add `hashBlock` to `Adaptor` type and implement for
+  `v0-31`.
+- @iov/tendermint-rpc: Add `ReadonlyDateWithNanoseconds` and `Version` types.
+- @iov/tendermint-rpc: Fill out `Header` type with missing fields and use new
+  `ReadonlyDateWithNanoseconds` type for `time` field.
 
 Breaking changes
 

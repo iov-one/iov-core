@@ -230,25 +230,43 @@ export interface Vote {
   readonly signature: ValidatorSignature;
 }
 
+export interface Version {
+  readonly block: number;
+  readonly app: number;
+}
+
+export interface ReadonlyDateWithNanoseconds extends ReadonlyDate {
+  /* Nanoseconds after the time stored in a vanilla ReadonlyDate (millisecond granularity) */
+  readonly nanoseconds?: number;
+}
+
+// https://github.com/tendermint/tendermint/blob/v0.31.8/docs/spec/blockchain/blockchain.md
 export interface Header {
+  // basic block info
+  readonly version: Version;
   readonly chainId: string;
   readonly height: number;
-  readonly time: ReadonlyDate;
+  readonly time: ReadonlyDateWithNanoseconds;
   readonly numTxs: number;
-  readonly lastBlockId: BlockId;
   readonly totalTxs: number;
 
-  // merkle roots for proofs
-  readonly appHash: Uint8Array;
-  readonly consensusHash: Uint8Array;
-  /** empty when number of transaction is 0 */
-  readonly dataHash: Uint8Array;
-  /** this can be empty */
-  readonly evidenceHash: Uint8Array;
+  // prev block info
+  readonly lastBlockId: BlockId;
+
+  // hashes of block data
   readonly lastCommitHash: Uint8Array;
-  /** this can be empty */
-  readonly lastResultsHash: Uint8Array;
+  readonly dataHash: Uint8Array; // empty when number of transaction is 0
+
+  // hashes from the app output from the prev block
   readonly validatorsHash: Uint8Array;
+  readonly nextValidatorsHash: Uint8Array;
+  readonly consensusHash: Uint8Array;
+  readonly appHash: Uint8Array;
+  readonly lastResultsHash: Uint8Array;
+
+  // consensus info
+  readonly evidenceHash: Uint8Array;
+  readonly proposerAddress: Uint8Array;
 }
 
 export interface NodeInfo {

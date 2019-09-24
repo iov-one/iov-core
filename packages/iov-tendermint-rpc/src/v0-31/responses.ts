@@ -235,40 +235,63 @@ function decodeBlockId(data: RpcBlockId): responses.BlockId {
   };
 }
 
+interface RpcBlockVersion {
+  readonly block: IntegerString;
+  readonly app: IntegerString;
+}
+
+function decodeBlockVersion(data: RpcBlockVersion): responses.Version {
+  return {
+    block: Integer.parse(data.block),
+    app: Integer.parse(data.app),
+  };
+}
+
 interface RpcHeader {
+  readonly version: RpcBlockVersion;
   readonly chain_id: string;
   readonly height: IntegerString;
   readonly time: DateTimeString;
   readonly num_txs: IntegerString;
-  readonly last_block_id: RpcBlockId;
   readonly total_txs: IntegerString;
 
-  // merkle roots for proofs
-  readonly app_hash: HexString;
-  readonly consensus_hash: HexString;
-  readonly data_hash: HexString;
-  readonly evidence_hash: HexString;
+  readonly last_block_id: RpcBlockId;
+
   readonly last_commit_hash: HexString;
-  readonly last_results_hash: HexString;
+  readonly data_hash: HexString;
+
   readonly validators_hash: HexString;
+  readonly next_validators_hash: HexString;
+  readonly consensus_hash: HexString;
+  readonly app_hash: HexString;
+  readonly last_results_hash: HexString;
+
+  readonly evidence_hash: HexString;
+  readonly proposer_address: HexString;
 }
 
 function decodeHeader(data: RpcHeader): responses.Header {
   return {
+    version: decodeBlockVersion(data.version),
     chainId: assertNotEmpty(data.chain_id),
     height: Integer.parse(assertNotEmpty(data.height)),
     time: DateTime.decode(assertNotEmpty(data.time)),
     numTxs: Integer.parse(assertNotEmpty(data.num_txs)),
     totalTxs: Integer.parse(assertNotEmpty(data.total_txs)),
+
     lastBlockId: decodeBlockId(data.last_block_id),
 
-    appHash: Encoding.fromHex(assertNotEmpty(data.app_hash)),
-    consensusHash: Encoding.fromHex(assertNotEmpty(data.consensus_hash)),
-    dataHash: Encoding.fromHex(assertSet(data.data_hash)),
-    evidenceHash: Encoding.fromHex(assertSet(data.evidence_hash)),
     lastCommitHash: Encoding.fromHex(assertNotEmpty(data.last_commit_hash)),
-    lastResultsHash: Encoding.fromHex(assertSet(data.last_results_hash)),
+    dataHash: Encoding.fromHex(assertSet(data.data_hash)),
+
     validatorsHash: Encoding.fromHex(assertNotEmpty(data.validators_hash)),
+    nextValidatorsHash: Encoding.fromHex(assertNotEmpty(data.next_validators_hash)),
+    consensusHash: Encoding.fromHex(assertNotEmpty(data.consensus_hash)),
+    appHash: Encoding.fromHex(assertNotEmpty(data.app_hash)),
+    lastResultsHash: Encoding.fromHex(assertSet(data.last_results_hash)),
+
+    evidenceHash: Encoding.fromHex(assertSet(data.evidence_hash)),
+    proposerAddress: Encoding.fromHex(assertNotEmpty(data.proposer_address)),
   };
 }
 
