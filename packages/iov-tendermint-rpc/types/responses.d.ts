@@ -188,11 +188,14 @@ export interface Version {
   readonly block: number;
   readonly app: number;
 }
+export interface ReadonlyDateWithNanoseconds extends ReadonlyDate {
+  readonly nanoseconds?: number;
+}
 export interface Header {
   readonly version: Version;
   readonly chainId: string;
   readonly height: number;
-  readonly time: ReadonlyDate;
+  readonly time: ReadonlyDateWithNanoseconds;
   readonly numTxs: number;
   readonly totalTxs: number;
   readonly lastBlockId: BlockId;

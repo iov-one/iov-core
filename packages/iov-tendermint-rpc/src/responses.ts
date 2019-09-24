@@ -235,13 +235,18 @@ export interface Version {
   readonly app: number;
 }
 
+export interface ReadonlyDateWithNanoseconds extends ReadonlyDate {
+  /* Nanoseconds after the time stored in a vanilla ReadonlyDate (millisecond granularity) */
+  readonly nanoseconds?: number;
+}
+
 // https://github.com/tendermint/tendermint/blob/v0.31.8/docs/spec/blockchain/blockchain.md
 export interface Header {
   // basic block info
   readonly version: Version;
   readonly chainId: string;
   readonly height: number;
-  readonly time: ReadonlyDate;
+  readonly time: ReadonlyDateWithNanoseconds;
   readonly numTxs: number;
   readonly totalTxs: number;
 
