@@ -18,16 +18,6 @@ export interface TendermintInstance {
  */
 export const tendermintInstances: readonly TendermintInstance[] = [
   {
-    url: "localhost:11129",
-    version: "0.29.x",
-    appCreator: "Cosmoshi Netowoko",
-  },
-  {
-    url: "localhost:11130",
-    version: "0.30.x",
-    appCreator: "Cosmoshi Netowoko",
-  },
-  {
     url: "localhost:11131",
     version: "0.31.x",
     appCreator: "Cosmoshi Netowoko",
