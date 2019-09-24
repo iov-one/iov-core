@@ -9,7 +9,6 @@ export declare class Ed25519Wallet implements Wallet {
   private static algorithmFromString;
   private static buildIdentity;
   readonly label: ValueAndUpdates<string | undefined>;
-  readonly canSign: ValueAndUpdates<boolean>;
   readonly implementationId: WalletImplementationIdString;
   readonly id: WalletId;
   private readonly labelProducer;

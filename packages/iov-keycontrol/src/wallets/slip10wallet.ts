@@ -178,7 +178,6 @@ export class Slip10Wallet implements Wallet {
   }
 
   public readonly label: ValueAndUpdates<string | undefined>;
-  public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "override me!" as WalletImplementationIdString;
   public readonly id: WalletId;
 

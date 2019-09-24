@@ -24,7 +24,6 @@ export declare class Slip10Wallet implements Wallet {
   private static buildIdentity;
   private static algorithmFromString;
   readonly label: ValueAndUpdates<string | undefined>;
-  readonly canSign: ValueAndUpdates<boolean>;
   readonly implementationId: WalletImplementationIdString;
   readonly id: WalletId;
   private readonly secret;

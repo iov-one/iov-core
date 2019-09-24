@@ -163,8 +163,6 @@ describe("Ed25519Wallet", () => {
     const wallet = new Ed25519Wallet();
     const newIdentity = await wallet.createIdentity(defaultChain, defaultKeypair);
 
-    expect(wallet.canSign.value).toEqual(true);
-
     const tx = new Uint8Array([0x11, 0x22, 0x33]) as SignableBytes;
     const signature = await wallet.createTransactionSignature(newIdentity, tx, PrehashType.None);
     expect(signature).toBeTruthy();

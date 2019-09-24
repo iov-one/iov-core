@@ -119,7 +119,6 @@ export class Ed25519Wallet implements Wallet {
   }
 
   public readonly label: ValueAndUpdates<string | undefined>;
-  public readonly canSign = new ValueAndUpdates(new DefaultValueProducer(true));
   public readonly implementationId = "ed25519" as WalletImplementationIdString;
   public readonly id: WalletId;
 
