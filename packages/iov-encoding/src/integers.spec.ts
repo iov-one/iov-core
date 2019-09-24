@@ -103,6 +103,7 @@ describe("Integers", () => {
 
       it("throws for invalid values", () => {
         expect(() => Uint32.fromBigEndianBytes([0, 0, 0, -1])).toThrowError(/Invalid value in byte/);
+        expect(() => Uint32.fromBigEndianBytes([0, 0, 0, 1.5])).toThrowError(/Invalid value in byte/);
         expect(() => Uint32.fromBigEndianBytes([0, 0, 0, 256])).toThrowError(/Invalid value in byte/);
         expect(() => Uint32.fromBigEndianBytes([0, 0, 0, NaN])).toThrowError(/Invalid value in byte/);
         expect(() => Uint32.fromBigEndianBytes([0, 0, 0, Number.NEGATIVE_INFINITY])).toThrowError(
@@ -307,6 +308,9 @@ describe("Integers", () => {
         /invalid value in byte/i,
       );
       expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, -1])).toThrowError(
+        /invalid value in byte/i,
+      );
+      expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, 1.5])).toThrowError(
         /invalid value in byte/i,
       );
       expect(() => Uint64.fromBytesBigEndian([0, 0, 0, 0, 0, 0, 0, Number.NEGATIVE_INFINITY])).toThrowError(

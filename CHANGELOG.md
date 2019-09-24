@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.17.8
+
+- @iov/encoding: Add missing integer check on input bytes in
+  `Uint32.fromBigEndianBytes` and `Uint64.fromBytesBigEndian`
+
 ## 0.17.7
 
 - @iov/bcp: Add `isFullSignature` typechecker.
