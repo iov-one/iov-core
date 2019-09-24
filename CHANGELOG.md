@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.17.8
+
+- @iov/cli: Automatically import types necessary for creating and updating
+  multisignature contracts
+
 ## 0.17.7
 
 - @iov/bcp: Add `isFullSignature` typechecker.
