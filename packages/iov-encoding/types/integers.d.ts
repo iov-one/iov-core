@@ -4,15 +4,15 @@ interface Integer {
   readonly toString: () => string;
 }
 interface WithByteConverters {
-  readonly toBytesBigEndian: () => readonly number[];
-  readonly toBytesLittleEndian: () => readonly number[];
+  readonly toBytesBigEndian: () => Uint8Array;
+  readonly toBytesLittleEndian: () => Uint8Array;
 }
 export declare class Uint32 implements Integer, WithByteConverters {
   static fromBigEndianBytes(bytes: ArrayLike<number>): Uint32;
   protected readonly data: number;
   constructor(input: number);
-  toBytesBigEndian(): readonly number[];
-  toBytesLittleEndian(): readonly number[];
+  toBytesBigEndian(): Uint8Array;
+  toBytesLittleEndian(): Uint8Array;
   toNumber(): number;
   toString(): string;
 }
@@ -36,8 +36,8 @@ export declare class Uint64 implements Integer, WithByteConverters {
   static fromNumber(input: number): Uint64;
   private readonly data;
   private constructor();
-  toBytesBigEndian(): readonly number[];
-  toBytesLittleEndian(): readonly number[];
+  toBytesBigEndian(): Uint8Array;
+  toBytesLittleEndian(): Uint8Array;
   toString(): string;
   toNumber(): number;
 }

@@ -10,8 +10,8 @@ interface Integer {
 }
 
 interface WithByteConverters {
-  readonly toBytesBigEndian: () => readonly number[];
-  readonly toBytesLittleEndian: () => readonly number[];
+  readonly toBytesBigEndian: () => Uint8Array;
+  readonly toBytesLittleEndian: () => Uint8Array;
 }
 
 export class Uint32 implements Integer, WithByteConverters {
@@ -50,26 +50,26 @@ export class Uint32 implements Integer, WithByteConverters {
     this.data = input;
   }
 
-  public toBytesBigEndian(): readonly number[] {
+  public toBytesBigEndian(): Uint8Array {
     // Use division instead of shifting since bitwise operators are defined
     // on SIGNED int32 in JavaScript and we don't want to risk surprises
-    return [
+    return new Uint8Array([
       Math.floor(this.data / 2 ** 24) & 0xff,
       Math.floor(this.data / 2 ** 16) & 0xff,
       Math.floor(this.data / 2 ** 8) & 0xff,
       Math.floor(this.data / 2 ** 0) & 0xff,
-    ];
+    ]);
   }
 
-  public toBytesLittleEndian(): readonly number[] {
+  public toBytesLittleEndian(): Uint8Array {
     // Use division instead of shifting since bitwise operators are defined
     // on SIGNED int32 in JavaScript and we don't want to risk surprises
-    return [
+    return new Uint8Array([
       Math.floor(this.data / 2 ** 0) & 0xff,
       Math.floor(this.data / 2 ** 8) & 0xff,
       Math.floor(this.data / 2 ** 16) & 0xff,
       Math.floor(this.data / 2 ** 24) & 0xff,
-    ];
+    ]);
   }
 
   public toNumber(): number {
@@ -198,12 +198,12 @@ export class Uint64 implements Integer, WithByteConverters {
     this.data = data;
   }
 
-  public toBytesBigEndian(): readonly number[] {
-    return this.data.toArray("be", 8);
+  public toBytesBigEndian(): Uint8Array {
+    return this.data.toArrayLike(Uint8Array, "be", 8);
   }
 
-  public toBytesLittleEndian(): readonly number[] {
-    return this.data.toArray("le", 8);
+  public toBytesLittleEndian(): Uint8Array {
+    return this.data.toArrayLike(Uint8Array, "le", 8);
   }
 
   public toString(): string {
