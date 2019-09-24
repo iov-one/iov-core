@@ -3,6 +3,11 @@
 
 import { As } from "type-tagger";
 
+/**
+ * Merkle root
+ */
+export type BlockHash = Uint8Array & As<"block-hash">;
+
 /** Raw transaction bytes */
 export type TxBytes = Uint8Array & As<"tx-bytes">;
 
