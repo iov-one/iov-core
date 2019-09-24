@@ -12,7 +12,7 @@ export function createEthereumConnector(
   url: string,
   options: EthereumConnectionOptions,
   expectedChainId?: ChainId,
-): ChainConnector {
+): ChainConnector<EthereumConnection> {
   return {
     establishConnection: async () => EthereumConnection.establish(url, options),
     codec: new EthereumCodec({

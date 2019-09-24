@@ -1,5 +1,5 @@
 import { ChainConnector, ChainId } from "@iov/bcp";
-import { EthereumConnectionOptions } from "./ethereumconnection";
+import { EthereumConnection, EthereumConnectionOptions } from "./ethereumconnection";
 /**
  * A helper to connect to a ethereum-based chain at a given url
  *
@@ -9,4 +9,4 @@ export declare function createEthereumConnector(
   url: string,
   options: EthereumConnectionOptions,
   expectedChainId?: ChainId,
-): ChainConnector;
+): ChainConnector<EthereumConnection>;

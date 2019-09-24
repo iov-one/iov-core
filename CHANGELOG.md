@@ -6,6 +6,9 @@
 
 Breaking changes
 
+- @iov/bcp: Add connection type parameter to `ChainConnector` and adapt
+  `createBnsConnector`, `createEthereumConnector`, `createLiskConnector`,
+  `createRiseConnector` accordingly.
 - @iov/bns: Change multisig ID type to `number` in `multisignatureIdToAddress`.
 - @iov/encoding: Remove deprecated `EnglishMnemonic.asString` use `.toString`
   instead.

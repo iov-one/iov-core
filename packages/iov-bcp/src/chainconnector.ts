@@ -2,8 +2,8 @@ import { TxCodec } from "./codec";
 import { BlockchainConnection } from "./connection";
 import { ChainId } from "./transactions";
 
-export interface ChainConnector {
-  readonly establishConnection: () => Promise<BlockchainConnection>;
+export interface ChainConnector<T extends BlockchainConnection = BlockchainConnection> {
+  readonly establishConnection: () => Promise<T>;
   readonly codec: TxCodec;
   readonly expectedChainId: ChainId | undefined;
 }
