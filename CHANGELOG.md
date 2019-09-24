@@ -6,6 +6,7 @@ Breaking changes
 
 - @iov/encoding: Remove deprecated `EnglishMnemonic.asString` use `.toString`
   instead.
+- @iov/keycontrol: Remove deprecated `HdPaths.simpleAddress`.
 
 ## 0.17.7
 
