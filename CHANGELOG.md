@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0
+
+Breaking changes
+
+- @iov/encoding: Remove deprecated `EnglishMnemonic.asString` use `.toString`
+  instead.
+
 ## 0.17.7
 
 - @iov/bcp: Add `isFullSignature` typechecker.
