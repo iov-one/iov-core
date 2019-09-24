@@ -80,6 +80,9 @@ describe("Decimal", () => {
       expect(() => Decimal.fromUserInput("1", Number.MIN_SAFE_INTEGER)).toThrowError(
         /fractional digits must not be negative/i,
       );
+
+      // exceeds supported range
+      expect(() => Decimal.fromUserInput("1", 101)).toThrowError(/fractional digits must not exceed 100/i);
     });
 
     it("returns correct value", () => {
@@ -152,6 +155,59 @@ describe("Decimal", () => {
       expect(Decimal.fromAtomics("3", 1).toString()).toEqual("0.3");
       expect(Decimal.fromAtomics("3", 2).toString()).toEqual("0.03");
       expect(Decimal.fromAtomics("3", 3).toString()).toEqual("0.003");
+    });
+  });
+
+  describe("toFloatApproximation", () => {
+    it("works", () => {
+      expect(Decimal.fromUserInput("0", 5).toFloatApproximation()).toEqual(0);
+      expect(Decimal.fromUserInput("1", 5).toFloatApproximation()).toEqual(1);
+      expect(Decimal.fromUserInput("1.5", 5).toFloatApproximation()).toEqual(1.5);
+      expect(Decimal.fromUserInput("0.1", 5).toFloatApproximation()).toEqual(0.1);
+
+      expect(Decimal.fromUserInput("1234500000000000", 5).toFloatApproximation()).toEqual(1.2345e15);
+      expect(Decimal.fromUserInput("1234500000000000.002", 5).toFloatApproximation()).toEqual(1.2345e15);
+    });
+  });
+
+  describe("plus", () => {
+    it("returns correct values", () => {
+      const zero = Decimal.fromUserInput("0", 5);
+      expect(zero.plus(Decimal.fromUserInput("0", 5)).toString()).toEqual("0");
+      expect(zero.plus(Decimal.fromUserInput("1", 5)).toString()).toEqual("1");
+      expect(zero.plus(Decimal.fromUserInput("2", 5)).toString()).toEqual("2");
+      expect(zero.plus(Decimal.fromUserInput("2.8", 5)).toString()).toEqual("2.8");
+      expect(zero.plus(Decimal.fromUserInput("0.12345", 5)).toString()).toEqual("0.12345");
+
+      const one = Decimal.fromUserInput("1", 5);
+      expect(one.plus(Decimal.fromUserInput("0", 5)).toString()).toEqual("1");
+      expect(one.plus(Decimal.fromUserInput("1", 5)).toString()).toEqual("2");
+      expect(one.plus(Decimal.fromUserInput("2", 5)).toString()).toEqual("3");
+      expect(one.plus(Decimal.fromUserInput("2.8", 5)).toString()).toEqual("3.8");
+      expect(one.plus(Decimal.fromUserInput("0.12345", 5)).toString()).toEqual("1.12345");
+
+      const oneDotFive = Decimal.fromUserInput("1.5", 5);
+      expect(oneDotFive.plus(Decimal.fromUserInput("0", 5)).toString()).toEqual("1.5");
+      expect(oneDotFive.plus(Decimal.fromUserInput("1", 5)).toString()).toEqual("2.5");
+      expect(oneDotFive.plus(Decimal.fromUserInput("2", 5)).toString()).toEqual("3.5");
+      expect(oneDotFive.plus(Decimal.fromUserInput("2.8", 5)).toString()).toEqual("4.3");
+      expect(oneDotFive.plus(Decimal.fromUserInput("0.12345", 5)).toString()).toEqual("1.62345");
+
+      // original value remain unchanged
+      expect(zero.toString()).toEqual("0");
+      expect(one.toString()).toEqual("1");
+      expect(oneDotFive.toString()).toEqual("1.5");
+    });
+
+    it("throws for different fractional digits", () => {
+      const zero = Decimal.fromUserInput("0", 5);
+      expect(() => zero.plus(Decimal.fromUserInput("1", 1))).toThrowError(/do not match/i);
+      expect(() => zero.plus(Decimal.fromUserInput("1", 2))).toThrowError(/do not match/i);
+      expect(() => zero.plus(Decimal.fromUserInput("1", 3))).toThrowError(/do not match/i);
+      expect(() => zero.plus(Decimal.fromUserInput("1", 4))).toThrowError(/do not match/i);
+
+      expect(() => zero.plus(Decimal.fromUserInput("1", 6))).toThrowError(/do not match/i);
+      expect(() => zero.plus(Decimal.fromUserInput("1", 7))).toThrowError(/do not match/i);
     });
   });
 });

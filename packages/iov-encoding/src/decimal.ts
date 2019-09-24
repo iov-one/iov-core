@@ -1,5 +1,9 @@
 import BN from "bn.js";
 
+// Too large values lead to massive memory usage. Limit to something sensible.
+// The largest value we need is 18 (Ether).
+const maxFractionalDigits = 100;
+
 /**
  * A type for arbitrary precision, non-negative decimals.
  *
@@ -55,10 +59,17 @@ export class Decimal {
   private static verifyFractionalDigits(fractionalDigits: number): void {
     if (!Number.isInteger(fractionalDigits)) throw new Error("Fractional digits is not an integer");
     if (fractionalDigits < 0) throw new Error("Fractional digits must not be negative");
+    if (fractionalDigits > maxFractionalDigits) {
+      throw new Error(`Fractional digits must not exceed ${maxFractionalDigits}`);
+    }
   }
 
   public get atomics(): string {
     return this.data.atomics.toString();
+  }
+
+  public get fractionalDigits(): number {
+    return this.data.fractionalDigits;
   }
 
   private readonly data: {
@@ -85,5 +96,26 @@ export class Decimal {
       const trimmedFractionalPart = fullFractionalPart.replace(/0+$/, "");
       return `${whole.toString()}.${trimmedFractionalPart}`;
     }
+  }
+
+  /**
+   * Returns an approximation as a float type. Only use this if no
+   * exact calculation is required.
+   */
+  public toFloatApproximation(): number {
+    const out = Number(this.toString());
+    if (Number.isNaN(out)) throw new Error("Conversion to number failed");
+    return out;
+  }
+
+  /**
+   * a.plus(b) returns a+b.
+   *
+   * Both values need to have the same fractional digits.
+   */
+  public plus(b: Decimal): Decimal {
+    if (this.fractionalDigits !== b.fractionalDigits) throw new Error("Fractional digits do not match");
+    const sum = this.data.atomics.add(new BN(b.atomics));
+    return new Decimal(sum.toString(), this.fractionalDigits);
   }
 }
