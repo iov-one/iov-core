@@ -86,6 +86,15 @@ export function main(originalArgs: readonly string[]): void {
         "isUpdateMultisignatureTx",
         "MultisignatureTx",
         "isMultisignatureTx",
+        // Escrows
+        "CreateEscrowTx",
+        "isCreateEscrowTx",
+        "ReleaseEscrowTx",
+        "isReleaseEscrowTx",
+        "ReturnEscrowTx",
+        "isReturnEscrowTx",
+        "UpdateEscrowPartiesTx",
+        "isUpdateEscrowPartiesTx",
       ],
     ],
     [
