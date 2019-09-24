@@ -8,4 +8,7 @@ export const v0_31: Adaptor = {
   params: Params,
   responses: Responses,
   hashTx: hashTx,
+  hashBlock: () => {
+    throw new Error("Not implemented");
+  },
 };
