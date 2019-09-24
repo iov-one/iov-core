@@ -2,11 +2,15 @@
 
 ## 1.0.0
 
+- @iov/encoding: Add `Uint32.toBytesLittleEndian`.
+
 Breaking changes
 
 - @iov/bns: Change multisig ID type to `number` in `multisignatureIdToAddress`.
 - @iov/encoding: Remove deprecated `EnglishMnemonic.asString` use `.toString`
   instead.
+- @iov/encoding: Change return type of `Uint32.toBytesBigEndian`,
+  `Uint64.toBytesBigEndian` and `Uint64.toBytesLittleEndian` to `Uint8Array`.
 - @iov/keycontrol: Remove unused `ReadonlyWallet.canSign` from interface and
   implementations.
 - @iov/keycontrol: Remove deprecated `HdPaths.simpleAddress`.

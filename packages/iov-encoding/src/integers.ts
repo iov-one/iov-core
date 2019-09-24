@@ -3,13 +3,18 @@ import BN from "bn.js";
 
 const uint64MaxValue = new BN("18446744073709551615", 10, "be");
 
-// internal interface to ensure all integer types can be used equally
+/** Internal interface to ensure all integer types can be used equally */
 interface Integer {
   readonly toNumber: () => number;
   readonly toString: () => string;
 }
 
-export class Uint32 implements Integer {
+interface WithByteConverters {
+  readonly toBytesBigEndian: () => Uint8Array;
+  readonly toBytesLittleEndian: () => Uint8Array;
+}
+
+export class Uint32 implements Integer, WithByteConverters {
   public static fromBigEndianBytes(bytes: ArrayLike<number>): Uint32 {
     if (bytes.length !== 4) {
       throw new Error("Invalid input length. Expected 4 bytes.");
@@ -45,15 +50,26 @@ export class Uint32 implements Integer {
     this.data = input;
   }
 
-  public toBytesBigEndian(): readonly number[] {
+  public toBytesBigEndian(): Uint8Array {
     // Use division instead of shifting since bitwise operators are defined
     // on SIGNED int32 in JavaScript and we don't want to risk surprises
-    return [
+    return new Uint8Array([
       Math.floor(this.data / 2 ** 24) & 0xff,
       Math.floor(this.data / 2 ** 16) & 0xff,
       Math.floor(this.data / 2 ** 8) & 0xff,
       Math.floor(this.data / 2 ** 0) & 0xff,
-    ];
+    ]);
+  }
+
+  public toBytesLittleEndian(): Uint8Array {
+    // Use division instead of shifting since bitwise operators are defined
+    // on SIGNED int32 in JavaScript and we don't want to risk surprises
+    return new Uint8Array([
+      Math.floor(this.data / 2 ** 0) & 0xff,
+      Math.floor(this.data / 2 ** 8) & 0xff,
+      Math.floor(this.data / 2 ** 16) & 0xff,
+      Math.floor(this.data / 2 ** 24) & 0xff,
+    ]);
   }
 
   public toNumber(): number {
@@ -126,7 +142,7 @@ export class Uint53 implements Integer {
   }
 }
 
-export class Uint64 implements Integer {
+export class Uint64 implements Integer, WithByteConverters {
   public static fromBytesBigEndian(bytes: ArrayLike<number>): Uint64 {
     if (bytes.length !== 8) {
       throw new Error("Invalid input length. Expected 8 bytes.");
@@ -182,12 +198,12 @@ export class Uint64 implements Integer {
     this.data = data;
   }
 
-  public toBytesBigEndian(): readonly number[] {
-    return this.data.toArray("be", 8);
+  public toBytesBigEndian(): Uint8Array {
+    return this.data.toArrayLike(Uint8Array, "be", 8);
   }
 
-  public toBytesLittleEndian(): readonly number[] {
-    return this.data.toArray("le", 8);
+  public toBytesLittleEndian(): Uint8Array {
+    return this.data.toArrayLike(Uint8Array, "le", 8);
   }
 
   public toString(): string {
