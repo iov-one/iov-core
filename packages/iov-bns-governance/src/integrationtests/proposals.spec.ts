@@ -26,9 +26,8 @@ import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import BN from "bn.js";
 import { ReadonlyDate } from "readonly-date";
 
-import { CommitteeId } from "../committees";
 import { Governor, GovernorOptions } from "../governor";
-import { ProposalOptions, ProposalType } from "../proposals";
+import { CommitteeId, ProposalOptions, ProposalType } from "../proposals";
 
 // Dev admin
 // path: m/44'/234'/0'

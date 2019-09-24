@@ -1,6 +1,6 @@
-export { CommitteeId, CommitteeIds, committeeIds, guaranteeFundEscrowIds } from "./committees";
 export { Governor, GovernorOptions } from "./governor";
 export {
+  CommitteeId,
   AddCommitteeMemberOptions,
   AddValidatorOptions,
   AmendElectionRuleThresholdOptions,

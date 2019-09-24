@@ -6,9 +6,8 @@ import { Bech32, Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { ReadonlyDate } from "readonly-date";
 
-import { CommitteeId } from "./committees";
 import { Governor, GovernorOptions } from "./governor";
-import { ProposalType } from "./proposals";
+import { CommitteeId, ProposalType } from "./proposals";
 
 function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {
