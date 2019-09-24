@@ -490,15 +490,15 @@ describe("BnsConnection", () => {
       const headerFromGet = await connection.getBlockHeader(lastHeight);
 
       // first header
+      expect(headers[0].id).not.toEqual(headerFromGet.id);
       expect(headers[0].height).toEqual(headerFromGet.height - 1);
-      // expect(headers[0].id).not.toEqual(headerFromGet.id);
       expect(headers[0].transactionCount).toBeGreaterThanOrEqual(0);
       expect(headers[0].time.getTime()).toBeGreaterThan(headerFromGet.time.getTime() - blockTime - 200);
       expect(headers[0].time.getTime()).toBeLessThan(headerFromGet.time.getTime() - blockTime + 200);
 
       // second header
+      expect(headers[1].id).toEqual(headerFromGet.id);
       expect(headers[1].height).toEqual(headerFromGet.height);
-      // expect(headers[1].id).toEqual(headerFromGet.id);
       expect(headers[1].transactionCount).toEqual(headerFromGet.transactionCount);
       expect(headers[1].time).toEqual(headerFromGet.time);
 

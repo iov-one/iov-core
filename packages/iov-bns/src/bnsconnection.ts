@@ -47,7 +47,7 @@ import {
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
-import { broadcastTxSyncSuccess, Client as TendermintClient } from "@iov/tendermint-rpc";
+import { broadcastTxSyncSuccess, Client as TendermintClient, v0_31 } from "@iov/tendermint-rpc";
 import equal from "fast-deep-equal";
 import { Stream, Subscription } from "xstream";
 
@@ -618,15 +618,10 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public watchBlockHeaders(): Stream<BlockHeader> {
-    // TODO: ID unavailable because
-    // - we cannot trivially calculate it https://github.com/iov-one/iov-core/issues/618 and
-    // - want to avoid an extra query to the node which causes issues when trying to send to a disconnected socket
-    // Leave it a dummy as long as no application strictly requires the ID
-    const dummyBlockId = "block ID not implemented for Tendermint" as BlockId;
-
     return this.tmClient.subscribeNewBlockHeader().map(tmHeader => {
+      const blockId = Encoding.toHex(v0_31.hashBlock(tmHeader)).toUpperCase() as BlockId;
       return {
-        id: dummyBlockId,
+        id: blockId,
         height: tmHeader.height,
         time: tmHeader.time,
         transactionCount: tmHeader.numTxs,
