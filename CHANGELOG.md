@@ -3,6 +3,7 @@
 ## 1.0.0
 
 - @iov/bns: Populate the correct block ID in `BnsConnection.watchBlockHeaders`.
+- @iov/cli: Automatically import types necessary for working with escrows.
 - @iov/encoding: Add `Uint32.toBytesLittleEndian`.
 - @iov/tendermint-rpc: Add `hashBlock` to `Adaptor` type and implement for
   `v0-31`.
