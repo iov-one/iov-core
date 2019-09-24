@@ -2,6 +2,8 @@
 
 ## 1.0.0
 
+- @iov/encoding: Add `Uint32.toBytesLittleEndian`.
+
 Breaking changes
 
 - @iov/bns: Change multisig ID type to `number` in `multisignatureIdToAddress`.

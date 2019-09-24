@@ -56,14 +56,28 @@ describe("Integers", () => {
       expect(new Uint32(4294967295).toString()).toEqual("4294967295");
     });
 
-    it("can convert to byte array", () => {
-      expect(new Uint32(0).toBytesBigEndian()).toEqual([0, 0, 0, 0]);
-      expect(new Uint32(1).toBytesBigEndian()).toEqual([0, 0, 0, 1]);
-      expect(new Uint32(42).toBytesBigEndian()).toEqual([0, 0, 0, 42]);
-      expect(new Uint32(1000000000).toBytesBigEndian()).toEqual([0x3b, 0x9a, 0xca, 0x00]);
-      expect(new Uint32(2147483647).toBytesBigEndian()).toEqual([0x7f, 0xff, 0xff, 0xff]);
-      expect(new Uint32(2147483648).toBytesBigEndian()).toEqual([0x80, 0x00, 0x00, 0x00]);
-      expect(new Uint32(4294967295).toBytesBigEndian()).toEqual([0xff, 0xff, 0xff, 0xff]);
+    describe("toBytesBigEndian", () => {
+      it("works", () => {
+        expect(new Uint32(0).toBytesBigEndian()).toEqual([0, 0, 0, 0]);
+        expect(new Uint32(1).toBytesBigEndian()).toEqual([0, 0, 0, 1]);
+        expect(new Uint32(42).toBytesBigEndian()).toEqual([0, 0, 0, 42]);
+        expect(new Uint32(1000000000).toBytesBigEndian()).toEqual([0x3b, 0x9a, 0xca, 0x00]);
+        expect(new Uint32(2147483647).toBytesBigEndian()).toEqual([0x7f, 0xff, 0xff, 0xff]);
+        expect(new Uint32(2147483648).toBytesBigEndian()).toEqual([0x80, 0x00, 0x00, 0x00]);
+        expect(new Uint32(4294967295).toBytesBigEndian()).toEqual([0xff, 0xff, 0xff, 0xff]);
+      });
+    });
+
+    describe("toBytesLittleEndian", () => {
+      it("works", () => {
+        expect(new Uint32(0).toBytesLittleEndian()).toEqual([0, 0, 0, 0]);
+        expect(new Uint32(1).toBytesLittleEndian()).toEqual([1, 0, 0, 0]);
+        expect(new Uint32(42).toBytesLittleEndian()).toEqual([42, 0, 0, 0]);
+        expect(new Uint32(1000000000).toBytesLittleEndian()).toEqual([0x00, 0xca, 0x9a, 0x3b]);
+        expect(new Uint32(2147483647).toBytesLittleEndian()).toEqual([0xff, 0xff, 0xff, 0x7f]);
+        expect(new Uint32(2147483648).toBytesLittleEndian()).toEqual([0x00, 0x00, 0x00, 0x80]);
+        expect(new Uint32(4294967295).toBytesLittleEndian()).toEqual([0xff, 0xff, 0xff, 0xff]);
+      });
     });
 
     describe("fromBigEndianBytes", () => {

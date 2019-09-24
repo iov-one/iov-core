@@ -3,13 +3,18 @@ import BN from "bn.js";
 
 const uint64MaxValue = new BN("18446744073709551615", 10, "be");
 
-// internal interface to ensure all integer types can be used equally
+/** Internal interface to ensure all integer types can be used equally */
 interface Integer {
   readonly toNumber: () => number;
   readonly toString: () => string;
 }
 
-export class Uint32 implements Integer {
+interface WithByteConverters {
+  readonly toBytesBigEndian: () => readonly number[];
+  readonly toBytesLittleEndian: () => readonly number[];
+}
+
+export class Uint32 implements Integer, WithByteConverters {
   public static fromBigEndianBytes(bytes: ArrayLike<number>): Uint32 {
     if (bytes.length !== 4) {
       throw new Error("Invalid input length. Expected 4 bytes.");
@@ -53,6 +58,17 @@ export class Uint32 implements Integer {
       Math.floor(this.data / 2 ** 16) & 0xff,
       Math.floor(this.data / 2 ** 8) & 0xff,
       Math.floor(this.data / 2 ** 0) & 0xff,
+    ];
+  }
+
+  public toBytesLittleEndian(): readonly number[] {
+    // Use division instead of shifting since bitwise operators are defined
+    // on SIGNED int32 in JavaScript and we don't want to risk surprises
+    return [
+      Math.floor(this.data / 2 ** 0) & 0xff,
+      Math.floor(this.data / 2 ** 8) & 0xff,
+      Math.floor(this.data / 2 ** 16) & 0xff,
+      Math.floor(this.data / 2 ** 24) & 0xff,
     ];
   }
 
@@ -126,7 +142,7 @@ export class Uint53 implements Integer {
   }
 }
 
-export class Uint64 implements Integer {
+export class Uint64 implements Integer, WithByteConverters {
   public static fromBytesBigEndian(bytes: ArrayLike<number>): Uint64 {
     if (bytes.length !== 8) {
       throw new Error("Invalid input length. Expected 8 bytes.");
