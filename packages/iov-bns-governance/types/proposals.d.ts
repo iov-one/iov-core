@@ -13,7 +13,6 @@ export declare enum ProposalType {
   ReleaseGuaranteeFunds = 6,
   DistributeFunds = 7,
   AmendProtocol = 8,
-  TreasurySend = 9,
 }
 interface CommonProposalOptions {
   readonly type: ProposalType;
@@ -67,13 +66,6 @@ export interface AmendProtocolOptions extends CommonProposalOptions {
   readonly type: ProposalType.AmendProtocol;
   readonly text: string;
 }
-export interface TreasurySendOptions extends CommonProposalOptions {
-  readonly type: ProposalType.TreasurySend;
-  readonly recipients: readonly {
-    readonly address: Address;
-    readonly amount: Amount;
-  }[];
-}
 export declare type ProposalOptions =
   | AddCommitteeMemberOptions
   | RemoveCommitteeMemberOptions
@@ -83,6 +75,5 @@ export declare type ProposalOptions =
   | RemoveValidatorOptions
   | ReleaseGuaranteeFundsOptions
   | DistributeFundsOptions
-  | AmendProtocolOptions
-  | TreasurySendOptions;
+  | AmendProtocolOptions;
 export {};

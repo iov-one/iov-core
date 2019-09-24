@@ -4,7 +4,6 @@ import {
   ChainId,
   isBlockInfoPending,
   isBlockInfoSucceeded,
-  SendTransaction,
   TokenTicker,
   UnsignedTransaction,
   WithCreator,
@@ -686,123 +685,6 @@ describe("Proposals", () => {
     expect(proposal2.title).toEqual("Amend protocol");
     expect(proposal2.status).toEqual(ProposalStatus.Closed);
     expect(proposal2.executorResult).toEqual(ProposalExecutorResult.Succeeded);
-
-    connection.disconnect();
-  }, 60_000);
-
-  it("works for sending from the treasury", async () => {
-    pendingWithoutBnsd();
-    const governorOptions = await getGovernorOptions();
-    const { address, connection, identity, profile } = governorOptions;
-    const governor = new Governor(governorOptions);
-    const numProposalsBefore = (await governor.getProposals()).length;
-    const electionRuleId = 2;
-
-    const recipient1 = "tiov1xwvnaxahzcszkvmk362m7vndjkzumv8ufmzy3m" as Address;
-    const recipient2 = "tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp" as Address;
-    const recipientBeforeRelease1 = await connection.getAccount({ address: recipient1 });
-    const recipientBeforeRelease2 = await connection.getAccount({ address: recipient2 });
-    const recipientQuantityBeforeRelease1 = getCashQuantity(recipientBeforeRelease1!);
-    const recipientQuantityBeforeRelease2 = getCashQuantity(recipientBeforeRelease2!);
-
-    const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
-      kind: "bcp/send",
-      creator: identity,
-      sender: address,
-      recipient: treasuryAddress,
-      amount: {
-        quantity: "5000075000",
-        fractionalDigits: 9,
-        tokenTicker: "CASH" as TokenTicker,
-      },
-    });
-    await signAndPost(sendTx, connection, profile);
-
-    // Send from treasury
-
-    const startTime = new ReadonlyDate(Date.now() + 1_000);
-    const proposalOptions: ProposalOptions = {
-      type: ProposalType.TreasurySend,
-      title: "Send from treasury",
-      description: "Send from treasury in more detail",
-      startTime: startTime,
-      electionRuleId: electionRuleId,
-      recipients: [
-        {
-          address: recipient1,
-          amount: {
-            quantity: "1234567890",
-            fractionalDigits: 9,
-            tokenTicker: "CASH" as TokenTicker,
-          },
-        },
-        {
-          address: recipient2,
-          amount: {
-            quantity: "123",
-            fractionalDigits: 9,
-            tokenTicker: "CASH" as TokenTicker,
-          },
-        },
-      ],
-    };
-    const createProposalTx = await governor.buildCreateProposalTx(proposalOptions);
-    await signAndPost(createProposalTx, connection, profile);
-
-    const proposalsAfterCreate = await governor.getProposals();
-    expect(proposalsAfterCreate.length).toEqual(numProposalsBefore + 1);
-    const proposalPre = proposalsAfterCreate[proposalsAfterCreate.length - 1];
-    expect(proposalPre.title).toEqual("Send from treasury");
-    expect(proposalPre.description).toEqual("Send from treasury in more detail");
-    expect(new ReadonlyDate(proposalPre.votingStartTime * 1000).toDateString()).toEqual(
-      startTime.toDateString(),
-    );
-    expect(proposalPre.electionRule.id).toEqual(electionRuleId);
-    expect(proposalPre.author).toEqual(address);
-    expect(proposalPre.action.kind).toEqual(ActionKind.ExecuteProposalBatch);
-    expect((proposalPre.action as ExecuteProposalBatchAction).messages.length).toEqual(2);
-    expect((proposalPre.action as ExecuteProposalBatchAction).messages[0].kind).toEqual(ActionKind.Send);
-    expect(((proposalPre.action as ExecuteProposalBatchAction).messages[0] as SendAction).sender).toEqual(
-      rewardFundAddress,
-    );
-    expect(((proposalPre.action as ExecuteProposalBatchAction).messages[0] as SendAction).recipient).toEqual(
-      recipient1,
-    );
-    expect((proposalPre.action as ExecuteProposalBatchAction).messages[1].kind).toEqual(ActionKind.Send);
-    expect(((proposalPre.action as ExecuteProposalBatchAction).messages[1] as SendAction).sender).toEqual(
-      rewardFundAddress,
-    );
-    expect(((proposalPre.action as ExecuteProposalBatchAction).messages[1] as SendAction).recipient).toEqual(
-      recipient2,
-    );
-    expect(proposalPre.status).toEqual(ProposalStatus.Submitted);
-
-    await sleep(7000);
-
-    const voteTx = await governor.buildVoteTx(proposalPre.id, VoteOption.Yes);
-    await signAndPost(voteTx, connection, profile);
-
-    await sleep(15000);
-
-    const proposalsAfterVote = await governor.getProposals();
-    expect(proposalsAfterVote.length).toEqual(numProposalsBefore + 1);
-    const proposalPost = proposalsAfterVote[proposalsAfterVote.length - 1];
-    expect(proposalPost.id).toEqual(proposalPre.id);
-    expect(proposalPost.title).toEqual("Send from treasury");
-    expect(proposalPost.status).toEqual(ProposalStatus.Closed);
-    expect(proposalPost.executorResult).toEqual(ProposalExecutorResult.Succeeded);
-
-    const recipientAfterRelease1 = await connection.getAccount({ address: recipient1 });
-    const recipientAfterRelease2 = await connection.getAccount({ address: recipient2 });
-    const recipientQuantityAfterRelease1 = getCashQuantity(recipientAfterRelease1!);
-    const recipientQuantityAfterRelease2 = getCashQuantity(recipientAfterRelease2!);
-
-    expect(recipientQuantityAfterRelease1.gt(recipientQuantityBeforeRelease1)).toEqual(true);
-    expect(recipientQuantityAfterRelease2.gt(recipientQuantityBeforeRelease2)).toEqual(true);
-    const diffRecipient1 = recipientQuantityAfterRelease1.sub(recipientQuantityBeforeRelease1);
-    const diffRecipient2 = recipientQuantityAfterRelease2.sub(recipientQuantityBeforeRelease2);
-    expect(diffRecipient1.eq(new BN("1234567890"))).toEqual(true);
-    expect(diffRecipient2.eq(new BN("123"))).toEqual(true);
 
     connection.disconnect();
   }, 60_000);

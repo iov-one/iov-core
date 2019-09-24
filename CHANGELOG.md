@@ -20,6 +20,8 @@ Breaking changes
 - @iov/bns-governance: Remove `CommitteeIds` type as well as `committeeIds` and
   `guaranteeFundEscrowIds` constants. These are now the responsibility of the
   consumer.
+- @iov/bns-governance: Remove `TreasurySend` proposal type and
+  `TreasurySendOptions` type.
 - @iov/encoding: Remove deprecated `EnglishMnemonic.asString` use `.toString`
   instead.
 - @iov/encoding: Change return type of `Uint32.toBytesBigEndian`,
