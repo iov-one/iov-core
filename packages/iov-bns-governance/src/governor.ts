@@ -26,7 +26,7 @@ function compareByVersion<E extends { readonly version: number }>(element1: E, e
 export interface GovernorOptions {
   readonly connection: BnsConnection;
   readonly identity: Identity;
-  readonly guaranteeFundEscrowId?: Uint8Array;
+  readonly guaranteeFundEscrowId?: number;
   readonly rewardFundAddress?: Address;
   readonly treasuryAddress?: Address;
 }
@@ -36,7 +36,7 @@ export class Governor {
 
   private readonly connection: BnsConnection;
   private readonly identity: Identity;
-  private readonly guaranteeFundEscrowId?: Uint8Array;
+  private readonly guaranteeFundEscrowId?: number;
   private readonly rewardFundAddress?: Address;
   private readonly treasuryAddress?: Address;
 

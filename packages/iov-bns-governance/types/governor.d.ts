@@ -13,7 +13,7 @@ import { ProposalOptions } from "./proposals";
 export interface GovernorOptions {
   readonly connection: BnsConnection;
   readonly identity: Identity;
-  readonly guaranteeFundEscrowId?: Uint8Array;
+  readonly guaranteeFundEscrowId?: number;
   readonly rewardFundAddress?: Address;
   readonly treasuryAddress?: Address;
 }
