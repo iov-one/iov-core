@@ -445,7 +445,7 @@ export function decodeProposal(prefix: IovBech32Prefix, proposal: codecImpl.gov.
     description: ensure(proposal.description, "description"),
     electionRule: decodeVersionedId(ensure(proposal.electionRuleRef, "electionRuleRef")),
     electorate: decodeVersionedId(ensure(proposal.electorateRef, "electorateRef")),
-    votingStartTime: asIntegerNumber(ensure(proposal.votingStartTime, "votinStartTime")),
+    votingStartTime: asIntegerNumber(ensure(proposal.votingStartTime, "votingStartTime")),
     votingEndTime: asIntegerNumber(ensure(proposal.votingEndTime, "votingEndTime")),
     submissionTime: asIntegerNumber(ensure(proposal.submissionTime, "submissionTime")),
     author: encodeBnsAddress(prefix, ensure(proposal.author, "author")),
