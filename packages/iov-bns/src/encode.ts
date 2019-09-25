@@ -135,7 +135,7 @@ export function encodeParticipants(
   );
 }
 
-function encodeNumericId(id: number): Uint8Array {
+export function encodeNumericId(id: number): Uint8Array {
   return new BN(id).toArrayLike(Uint8Array, "be", 8);
 }
 
@@ -282,7 +282,7 @@ function buildReleaseEscrowTx(tx: ReleaseEscrowTx): codecImpl.bnsd.ITx {
   return {
     escrowReleaseMsg: {
       metadata: { schema: 1 },
-      escrowId: tx.escrowId,
+      escrowId: encodeNumericId(tx.escrowId),
       amount: tx.amounts.map(encodeAmount),
     },
   };
@@ -292,7 +292,7 @@ function buildReturnEscrowTx(tx: ReturnEscrowTx): codecImpl.bnsd.ITx {
   return {
     escrowReturnMsg: {
       metadata: { schema: 1 },
-      escrowId: tx.escrowId,
+      escrowId: encodeNumericId(tx.escrowId),
     },
   };
 }
@@ -305,7 +305,7 @@ function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.bnsd.I
   return {
     escrowUpdatePartiesMsg: {
       metadata: { schema: 1 },
-      escrowId: tx.escrowId,
+      escrowId: encodeNumericId(tx.escrowId),
       source: tx.sender && decodeBnsAddress(tx.sender).data,
       arbiter: tx.arbiter && decodeBnsAddress(tx.arbiter).data,
       destination: tx.recipient && decodeBnsAddress(tx.recipient).data,
@@ -363,7 +363,7 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
     option = {
       escrowReleaseMsg: {
         metadata: { schema: 1 },
-        escrowId: action.escrowId,
+        escrowId: encodeNumericId(action.escrowId),
         amount: [encodeAmount(action.amount)],
       },
     };

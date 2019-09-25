@@ -97,7 +97,7 @@ export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
   return maybe;
 }
 
-function decodeNumericId(id: Uint8Array): number {
+export function decodeNumericId(id: Uint8Array): number {
   return new BN(id).toNumber();
 }
 
@@ -376,8 +376,7 @@ function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint8Array)
   } else if (option.escrowReleaseMsg) {
     return {
       kind: ActionKind.ReleaseEscrow,
-      // codecImpl.bnsd.ProposalOptions.decode returns a Buffer
-      escrowId: Uint8Array.from(ensure(option.escrowReleaseMsg.escrowId, "escrowId")),
+      escrowId: decodeNumericId(ensure(option.escrowReleaseMsg.escrowId, "escrowId")),
       amount: ensure(ensure(option.escrowReleaseMsg.amount, "amount").map(decodeAmount)[0], "amount.0"),
     };
   } else if (option.executeProposalBatchMsg) {
@@ -626,7 +625,7 @@ function parseReleaseEscrowTx(
   return {
     ...base,
     kind: "bns/release_escrow",
-    escrowId: ensure(msg.escrowId, "escrowId"),
+    escrowId: decodeNumericId(ensure(msg.escrowId, "escrowId")),
     amounts: ensure(msg.amount, "amount").map(decodeAmount),
   };
 }
@@ -638,7 +637,7 @@ function parseReturnEscrowTx(
   return {
     ...base,
     kind: "bns/return_escrow",
-    escrowId: ensure(msg.escrowId, "escrowId"),
+    escrowId: decodeNumericId(ensure(msg.escrowId, "escrowId")),
   };
 }
 
@@ -650,7 +649,7 @@ function parseUpdateEscrowPartiesTx(
   return {
     ...base,
     kind: "bns/update_escrow_parties",
-    escrowId: ensure(msg.escrowId, "escrowId"),
+    escrowId: decodeNumericId(ensure(msg.escrowId, "escrowId")),
     sender: msg.source ? encodeBnsAddress(prefix, msg.source) : undefined,
     arbiter: msg.arbiter ? encodeBnsAddress(prefix, msg.arbiter) : undefined,
     recipient: msg.destination ? encodeBnsAddress(prefix, msg.destination) : undefined,

@@ -298,7 +298,7 @@ describe("Encode", () => {
       fractionalDigits: 9,
       tokenTicker: "CASH" as TokenTicker,
     };
-    const defaultEscrowId = fromHex("0000000000000004");
+    const defaultEscrowId = 4;
 
     // Token sends
 
@@ -540,7 +540,7 @@ describe("Encode", () => {
       const msg = buildMsg(releaseEscrow).escrowReleaseMsg!;
 
       expect(msg.metadata).toEqual({ schema: 1 });
-      expect(msg.escrowId).toEqual(defaultEscrowId);
+      expect(msg.escrowId).toEqual(fromHex("0000000000000004"));
       expect(msg.amount!.length).toEqual(1);
       expect(msg.amount![0].whole).toEqual(1);
       expect(msg.amount![0].fractional).toEqual(1);
@@ -556,7 +556,7 @@ describe("Encode", () => {
       const msg = buildMsg(returnEscrow).escrowReturnMsg!;
 
       expect(msg.metadata).toEqual({ schema: 1 });
-      expect(msg.escrowId).toEqual(defaultEscrowId);
+      expect(msg.escrowId).toEqual(fromHex("0000000000000004"));
     });
 
     it("works for UpdateEscrowPartiesTx", () => {
@@ -569,7 +569,7 @@ describe("Encode", () => {
       const msg1 = buildMsg(updateEscrowSender).escrowUpdatePartiesMsg!;
 
       expect(msg1.metadata).toEqual({ schema: 1 });
-      expect(msg1.escrowId).toEqual(defaultEscrowId);
+      expect(msg1.escrowId).toEqual(fromHex("0000000000000004"));
       expect(msg1.source).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
 
       const updateEscrowRecipient: UpdateEscrowPartiesTx & WithCreator = {
@@ -581,7 +581,7 @@ describe("Encode", () => {
       const msg2 = buildMsg(updateEscrowRecipient).escrowUpdatePartiesMsg!;
 
       expect(msg2.metadata).toEqual({ schema: 1 });
-      expect(msg2.escrowId).toEqual(defaultEscrowId);
+      expect(msg2.escrowId).toEqual(fromHex("0000000000000004"));
       expect(msg2.destination).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
 
       const updateEscrowArbiter: UpdateEscrowPartiesTx & WithCreator = {
@@ -593,7 +593,7 @@ describe("Encode", () => {
       const msg3 = buildMsg(updateEscrowArbiter).escrowUpdatePartiesMsg!;
 
       expect(msg3.metadata).toEqual({ schema: 1 });
-      expect(msg3.escrowId).toEqual(defaultEscrowId);
+      expect(msg3.escrowId).toEqual(fromHex("0000000000000004"));
       expect(msg3.arbiter).toEqual(fromHex("f102fdde243399a218d13eb662245f04ef9d0287"));
     });
 
@@ -738,7 +738,7 @@ describe("Encode", () => {
           rawOption: codecImpl.bnsd.ProposalOptions.encode({
             escrowReleaseMsg: {
               metadata: { schema: 1 },
-              escrowId: defaultEscrowId,
+              escrowId: fromHex("0000000000000004"),
               amount: [
                 {
                   whole: 1,

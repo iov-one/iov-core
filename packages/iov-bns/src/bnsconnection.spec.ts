@@ -48,6 +48,7 @@ import Long from "long";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
+import { decodeNumericId } from "./decode";
 import { bnsSwapQueryTag } from "./tags";
 import {
   ActionKind,
@@ -1070,7 +1071,7 @@ describe("BnsConnection", () => {
         isConfirmedTransaction,
       );
       expect(searchResult1.length).toEqual(1);
-      const { result: escrowId, transaction: firstSearchResultTransaction } = searchResult1[0];
+      const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
       if (!isCreateEscrowTx(firstSearchResultTransaction)) {
         throw new Error("Unexpected transaction kind");
       }
@@ -1080,13 +1081,15 @@ describe("BnsConnection", () => {
       expect(firstSearchResultTransaction.amounts).toEqual([defaultAmount]);
       expect(firstSearchResultTransaction.timeout).toEqual(timeout);
       expect(firstSearchResultTransaction.memo).toEqual(memo);
-      expect(escrowId).toBeDefined();
+      expect(result).toBeDefined();
+
+      const escrowId = decodeNumericId(result!);
 
       // Release escrow
       const tx2 = await connection.withDefaultFee<ReleaseEscrowTx & WithCreator>({
         kind: "bns/release_escrow",
         creator: arbiter,
-        escrowId: escrowId!,
+        escrowId: escrowId,
         amounts: [defaultAmount],
       });
       const nonce2 = await connection.getNonce({ pubkey: arbiter.pubkey });
@@ -1107,7 +1110,7 @@ describe("BnsConnection", () => {
       if (!isReleaseEscrowTx(secondSearchResultTransaction)) {
         throw new Error("Unexpected transaction kind");
       }
-      expect(secondSearchResultTransaction.escrowId).toEqual(escrowId!);
+      expect(secondSearchResultTransaction.escrowId).toEqual(escrowId);
       expect(secondSearchResultTransaction.amounts).toEqual([defaultAmount]);
 
       connection.disconnect();
@@ -1159,7 +1162,7 @@ describe("BnsConnection", () => {
         const returnEscrowTx = await connection.withDefaultFee<ReturnEscrowTx & WithCreator>({
           kind: "bns/return_escrow",
           creator: helperIdentity,
-          escrowId: escrowId,
+          escrowId: decodeNumericId(escrowId),
         });
 
         const nonce = await connection.getNonce({ pubkey: helperIdentity.pubkey });
@@ -1217,7 +1220,7 @@ describe("BnsConnection", () => {
         isConfirmedTransaction,
       );
       expect(searchResult1.length).toEqual(1);
-      const { result: escrowId, transaction: firstSearchResultTransaction } = searchResult1[0];
+      const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
       if (!isCreateEscrowTx(firstSearchResultTransaction)) {
         throw new Error("Unexpected transaction kind");
       }
@@ -1227,7 +1230,9 @@ describe("BnsConnection", () => {
       expect(firstSearchResultTransaction.amounts).toEqual([defaultAmount]);
       expect(firstSearchResultTransaction.timeout).toEqual(timeout);
       expect(firstSearchResultTransaction.memo).toEqual(memo);
-      expect(escrowId).toBeDefined();
+      expect(result).toBeDefined();
+
+      const escrowId = decodeNumericId(result!);
 
       // Wait for timeout to pass
       await sleep(7000);
@@ -1236,7 +1241,7 @@ describe("BnsConnection", () => {
       const tx2 = await connection.withDefaultFee<ReturnEscrowTx & WithCreator>({
         kind: "bns/return_escrow",
         creator: arbiter,
-        escrowId: escrowId!,
+        escrowId: escrowId,
       });
       const nonce2 = await connection.getNonce({ pubkey: arbiter.pubkey });
       const signed2 = await profile.signTransaction(tx2, bnsCodec, nonce2);
@@ -1256,7 +1261,7 @@ describe("BnsConnection", () => {
       if (!isReturnEscrowTx(secondSearchResultTransaction)) {
         throw new Error("Unexpected transaction kind");
       }
-      expect(secondSearchResultTransaction.escrowId).toEqual(escrowId!);
+      expect(secondSearchResultTransaction.escrowId).toEqual(escrowId);
 
       connection.disconnect();
     });
@@ -1311,7 +1316,7 @@ describe("BnsConnection", () => {
         isConfirmedTransaction,
       );
       expect(searchResult1.length).toEqual(1);
-      const { result: escrowId, transaction: firstSearchResultTransaction } = searchResult1[0];
+      const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
       if (!isCreateEscrowTx(firstSearchResultTransaction)) {
         throw new Error("Unexpected transaction kind");
       }
@@ -1321,13 +1326,15 @@ describe("BnsConnection", () => {
       expect(firstSearchResultTransaction.amounts).toEqual([defaultAmount]);
       expect(firstSearchResultTransaction.timeout).toEqual(timeout);
       expect(firstSearchResultTransaction.memo).toEqual(memo);
-      expect(escrowId).toBeDefined();
+      expect(result).toBeDefined();
+
+      const escrowId = decodeNumericId(result!);
 
       // Update escrow
       const tx2 = await connection.withDefaultFee<UpdateEscrowPartiesTx & WithCreator>({
         kind: "bns/update_escrow_parties",
         creator: arbiter,
-        escrowId: escrowId!,
+        escrowId: escrowId,
         arbiter: newArbiterAddress,
       });
       const nonce2 = await connection.getNonce({ pubkey: arbiter.pubkey });
@@ -1348,7 +1355,7 @@ describe("BnsConnection", () => {
       if (!isUpdateEscrowPartiesTx(secondSearchResultTransaction)) {
         throw new Error("Unexpected transaction kind");
       }
-      expect(secondSearchResultTransaction.escrowId).toEqual(escrowId!);
+      expect(secondSearchResultTransaction.escrowId).toEqual(escrowId);
       expect(secondSearchResultTransaction.arbiter).toEqual(newArbiterAddress);
 
       connection.disconnect();

@@ -791,7 +791,7 @@ describe("Decode", () => {
       if (!isReleaseEscrowTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.escrowId).toEqual(defaultEscrowId);
+      expect(parsed.escrowId).toEqual(4);
       expect(parsed.amounts).toEqual([
         {
           quantity: "3123456789",
@@ -811,7 +811,7 @@ describe("Decode", () => {
       if (!isReturnEscrowTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.escrowId).toEqual(defaultEscrowId);
+      expect(parsed.escrowId).toEqual(4);
     });
 
     it("works for UpdateEscrowPartiesTx", () => {
@@ -827,7 +827,7 @@ describe("Decode", () => {
       if (!isUpdateEscrowPartiesTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.escrowId).toEqual(defaultEscrowId);
+      expect(parsed.escrowId).toEqual(4);
       expect(parsed.sender).toEqual(defaultSender);
       expect(parsed.arbiter).toEqual(defaultArbiter);
       expect(parsed.recipient).toEqual(defaultRecipient);
@@ -966,7 +966,7 @@ describe("Decode", () => {
         expect(parsed.title).toEqual("This will happen next");
         expect(parsed.action).toEqual({
           kind: ActionKind.ReleaseEscrow,
-          escrowId: defaultEscrowId,
+          escrowId: 4,
           amount: defaultAmount,
         });
         expect(parsed.description).toEqual("foo bar");
