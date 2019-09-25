@@ -51,10 +51,8 @@ export function multisignatureIdToAddress(chainId: ChainId, multisignatureId: nu
   return conditionToAddress(chainId, buildMultisignatureCondition(multisignatureId));
 }
 
-export function escrowIdToAddress(chainId: ChainId, escrowId: Uint8Array): Address {
-  // TODO: remove this intermediate step in https://github.com/iov-one/iov-core/issues/1231
-  const numericId = Uint64.fromBytesBigEndian(escrowId).toNumber();
-  return conditionToAddress(chainId, buildEscrowCondition(numericId));
+export function escrowIdToAddress(chainId: ChainId, escrowId: number): Address {
+  return conditionToAddress(chainId, buildEscrowCondition(escrowId));
 }
 
 export function electionRuleIdToAddress(chainId: ChainId, electionRule: number): Address {

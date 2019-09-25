@@ -18,6 +18,7 @@ Breaking changes
   `createRiseConnector` accordingly.
 - @iov/bns: Change multisig ID type to `number` in `multisignatureIdToAddress`.
 - @iov/bns: Make escrow IDs numeric in transaction/action types.
+- @iov/bns: Take a numeric escrow ID as an argument in `escrowIdToAddress`.
 - @iov/bns-governance: Remove `CommitteeIds` type as well as `committeeIds` and
   `guaranteeFundEscrowIds` constants. These are now the responsibility of the
   consumer.
