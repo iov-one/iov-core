@@ -43,6 +43,7 @@ if [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_NODE_VERSION" == "8" ]] && 
     cd "iov-core-docs"
     git checkout gh-pages
     git reset master
+    git clean -xdf
   )
 
   ./scripts/copy_docs.sh
