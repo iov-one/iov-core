@@ -805,7 +805,7 @@ export class BnsConnection implements AtomicSwapConnection {
           transactionId: transactionId,
           log: result.log,
           result: result.data,
-          ...this.codec.parseBytes(new Uint8Array(tx) as PostableBytes, chainId),
+          ...this.codec.parseBytes((tx as Uint8Array) as PostableBytes, chainId),
         };
       } else {
         const failed: FailedTransaction = {
@@ -840,7 +840,7 @@ export class BnsConnection implements AtomicSwapConnection {
           transactionId: transactionId,
           log: transaction.result.log,
           result: transaction.result.data,
-          ...this.codec.parseBytes(new Uint8Array(transaction.tx) as PostableBytes, chainId),
+          ...this.codec.parseBytes((transaction.tx as Uint8Array) as PostableBytes, chainId),
         };
       } else {
         const failed: FailedTransaction = {
