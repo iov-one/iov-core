@@ -284,7 +284,7 @@ describe("Decode", () => {
         metadata: { schema: 1 },
         version: 3,
         admin: fromHex("5555556688770011001100110011001100110011"),
-        electorateId: fromHex("000007"),
+        electorateId: fromHex("0000000000000007"),
         title: "This is how it works",
         votingPeriod: 11223344556677,
         threshold: {
@@ -329,7 +329,7 @@ describe("Decode", () => {
         }).finish(),
         description: "foo bar",
         electionRuleRef: {
-          id: fromHex("aabbccddbbff"),
+          id: fromHex("0000aabbccddbbff"),
           version: 28,
         },
         electorateRef: {
@@ -791,7 +791,7 @@ describe("Decode", () => {
       if (!isReleaseEscrowTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.escrowId).toEqual(defaultEscrowId);
+      expect(parsed.escrowId).toEqual(4);
       expect(parsed.amounts).toEqual([
         {
           quantity: "3123456789",
@@ -811,7 +811,7 @@ describe("Decode", () => {
       if (!isReturnEscrowTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.escrowId).toEqual(defaultEscrowId);
+      expect(parsed.escrowId).toEqual(4);
     });
 
     it("works for UpdateEscrowPartiesTx", () => {
@@ -827,7 +827,7 @@ describe("Decode", () => {
       if (!isUpdateEscrowPartiesTx(parsed)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.escrowId).toEqual(defaultEscrowId);
+      expect(parsed.escrowId).toEqual(4);
       expect(parsed.sender).toEqual(defaultSender);
       expect(parsed.arbiter).toEqual(defaultArbiter);
       expect(parsed.recipient).toEqual(defaultRecipient);
@@ -847,7 +847,7 @@ describe("Decode", () => {
               },
             }).finish(),
             description: "foo bar",
-            electionRuleId: fromHex("bbccddbbff"),
+            electionRuleId: fromHex("000000bbccddbbff"),
             startTime: 42424242,
             author: fromHex("0011223344556677889900112233445566778899"),
           },
@@ -898,7 +898,7 @@ describe("Decode", () => {
               },
             }).finish(),
             description: "foo bar",
-            electionRuleId: fromHex("bbccddbbff"),
+            electionRuleId: fromHex("000000bbccddbbff"),
             startTime: 42424242,
             author: fromHex("0011223344556677889900112233445566778899"),
           },
@@ -954,7 +954,7 @@ describe("Decode", () => {
               },
             }).finish(),
             description: "foo bar",
-            electionRuleId: fromHex("bbccddbbff"),
+            electionRuleId: fromHex("000000bbccddbbff"),
             startTime: 42424242,
             author: fromHex("0011223344556677889900112233445566778899"),
           },
@@ -966,7 +966,7 @@ describe("Decode", () => {
         expect(parsed.title).toEqual("This will happen next");
         expect(parsed.action).toEqual({
           kind: ActionKind.ReleaseEscrow,
-          escrowId: defaultEscrowId,
+          escrowId: 4,
           amount: defaultAmount,
         });
         expect(parsed.description).toEqual("foo bar");
@@ -989,7 +989,7 @@ describe("Decode", () => {
               },
             }).finish(),
             description: "foo bar",
-            electionRuleId: fromHex("bbccddbbff"),
+            electionRuleId: fromHex("000000bbccddbbff"),
             startTime: 42424242,
             author: fromHex("0011223344556677889900112233445566778899"),
           },
@@ -1034,7 +1034,7 @@ describe("Decode", () => {
               },
             }).finish(),
             description: "foo bar",
-            electionRuleId: Encoding.fromHex("bbccddbbff"),
+            electionRuleId: Encoding.fromHex("000000bbccddbbff"),
             startTime: 42424242,
             author: Encoding.fromHex("0011223344556677889900112233445566778899"),
           },
@@ -1080,7 +1080,7 @@ describe("Decode", () => {
               },
             }).finish(),
             description: "foo bar",
-            electionRuleId: fromHex("bbccddbbff"),
+            electionRuleId: fromHex("000000bbccddbbff"),
             startTime: 42424242,
             author: fromHex("0011223344556677889900112233445566778899"),
           },
@@ -1108,7 +1108,7 @@ describe("Decode", () => {
       const transactionMessage: codecImpl.bnsd.ITx = {
         govVoteMsg: {
           metadata: { schema: 1 },
-          proposalId: fromHex("aabbddeeffff"),
+          proposalId: fromHex("0000aabbddeeffff"),
           selected: codecImpl.gov.VoteOption.VOTE_OPTION_YES,
         },
       };

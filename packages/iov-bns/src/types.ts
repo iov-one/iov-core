@@ -157,7 +157,7 @@ export function isExecuteProposalBatchAction(action: ProposalAction): action is 
 
 export interface ReleaseEscrowAction {
   readonly kind: ActionKind.ReleaseEscrow;
-  readonly escrowId: Uint8Array;
+  readonly escrowId: number;
   readonly amount: Amount;
 }
 
@@ -387,7 +387,7 @@ export function isCreateEscrowTx(tx: LightTransaction): tx is CreateEscrowTx {
 
 export interface ReleaseEscrowTx extends LightTransaction {
   readonly kind: "bns/release_escrow";
-  readonly escrowId: Uint8Array;
+  readonly escrowId: number;
   readonly amounts: readonly Amount[];
 }
 
@@ -397,7 +397,7 @@ export function isReleaseEscrowTx(tx: LightTransaction): tx is ReleaseEscrowTx {
 
 export interface ReturnEscrowTx extends LightTransaction {
   readonly kind: "bns/return_escrow";
-  readonly escrowId: Uint8Array;
+  readonly escrowId: number;
 }
 
 export function isReturnEscrowTx(tx: LightTransaction): tx is ReturnEscrowTx {
@@ -406,7 +406,7 @@ export function isReturnEscrowTx(tx: LightTransaction): tx is ReturnEscrowTx {
 
 export interface UpdateEscrowPartiesTx extends LightTransaction {
   readonly kind: "bns/update_escrow_parties";
-  readonly escrowId: Uint8Array;
+  readonly escrowId: number;
   readonly sender?: Address;
   readonly arbiter?: Address;
   readonly recipient?: Address;

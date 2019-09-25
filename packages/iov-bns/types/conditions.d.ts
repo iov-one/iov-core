@@ -14,5 +14,5 @@ export declare function swapToAddress(
   },
 ): Address;
 export declare function multisignatureIdToAddress(chainId: ChainId, multisignatureId: number): Address;
-export declare function escrowIdToAddress(chainId: ChainId, escrowId: Uint8Array): Address;
+export declare function escrowIdToAddress(chainId: ChainId, escrowId: number): Address;
 export declare function electionRuleIdToAddress(chainId: ChainId, electionRule: number): Address;

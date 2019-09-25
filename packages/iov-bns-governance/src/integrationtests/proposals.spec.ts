@@ -36,7 +36,7 @@ import { CommitteeId, ProposalOptions, ProposalType } from "../proposals";
 const adminMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 const adminPath = HdPaths.iov(0);
 const bnsdUrl = "ws://localhost:23456";
-const guaranteeFundEscrowId = Encoding.fromHex("0000000000000001");
+const guaranteeFundEscrowId = 1;
 const guaranteeFundAddress = escrowIdToAddress("local-iov-devnet" as ChainId, guaranteeFundEscrowId);
 // The reward fund and treasury have the same address because they are both covered by the same rule
 const rewardFundAddress = electionRuleIdToAddress("local-iov-devnet" as ChainId, 2);

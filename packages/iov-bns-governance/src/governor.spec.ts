@@ -23,7 +23,7 @@ function pendingWithoutBnsd(): void {
 const adminMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
 const adminPath = HdPaths.iov(0);
 const bnsdUrl = "ws://localhost:23456";
-const guaranteeFundEscrowId = Encoding.fromHex("88008800");
+const guaranteeFundEscrowId = 6;
 const rewardFundAddress = "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address;
 
 async function sleep(ms: number): Promise<void> {

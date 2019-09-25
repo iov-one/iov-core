@@ -127,7 +127,7 @@ export declare function isExecuteProposalBatchAction(
 ): action is ExecuteProposalBatchAction;
 export interface ReleaseEscrowAction {
   readonly kind: ActionKind.ReleaseEscrow;
-  readonly escrowId: Uint8Array;
+  readonly escrowId: number;
   readonly amount: Amount;
 }
 export declare function isReleaseEscrowAction(action: ProposalAction): action is ReleaseEscrowAction;
@@ -288,18 +288,18 @@ export interface CreateEscrowTx extends LightTransaction {
 export declare function isCreateEscrowTx(tx: LightTransaction): tx is CreateEscrowTx;
 export interface ReleaseEscrowTx extends LightTransaction {
   readonly kind: "bns/release_escrow";
-  readonly escrowId: Uint8Array;
+  readonly escrowId: number;
   readonly amounts: readonly Amount[];
 }
 export declare function isReleaseEscrowTx(tx: LightTransaction): tx is ReleaseEscrowTx;
 export interface ReturnEscrowTx extends LightTransaction {
   readonly kind: "bns/return_escrow";
-  readonly escrowId: Uint8Array;
+  readonly escrowId: number;
 }
 export declare function isReturnEscrowTx(tx: LightTransaction): tx is ReturnEscrowTx;
 export interface UpdateEscrowPartiesTx extends LightTransaction {
   readonly kind: "bns/update_escrow_parties";
-  readonly escrowId: Uint8Array;
+  readonly escrowId: number;
   readonly sender?: Address;
   readonly arbiter?: Address;
   readonly recipient?: Address;
