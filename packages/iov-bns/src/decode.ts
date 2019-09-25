@@ -98,7 +98,7 @@ export function ensure<T>(maybe: T | null | undefined, msg?: string): T {
 }
 
 export function decodeNumericId(id: Uint8Array): number {
-  return new BN(id).toNumber();
+  return Uint64.fromBytesBigEndian(id).toNumber();
 }
 
 function decodeVersionedId(versionedId: codecImpl.orm.IVersionedIDRef): VersionedId {
