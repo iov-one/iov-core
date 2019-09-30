@@ -5,7 +5,7 @@ import { As } from "type-tagger";
 
 import { addressPrefix, encodeBnsAddress } from "./util";
 
-/** A package-internal type representing a Weave Condition */
+/** A Weave condition */
 export type Condition = Uint8Array & As<"Condition">;
 
 export function buildCondition(extension: string, type: string, data: Uint8Array): Condition {

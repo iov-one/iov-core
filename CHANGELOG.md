@@ -3,6 +3,7 @@
 ## 1.0.0
 
 - @iov/bns: Populate the correct block ID in `BnsConnection.watchBlockHeaders`.
+- @iov/bns: Export `Condition`, `buildCondition` and `conditionToAddress`.
 - @iov/cli: Add missing `tsconfig_repl.json` to the npm package, which prevented
   the tool from starting when installed via npm.
 - @iov/cli: Automatically import types necessary for working with escrows.

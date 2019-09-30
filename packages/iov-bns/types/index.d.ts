@@ -2,6 +2,9 @@ export { bnsCodec } from "./bnscodec";
 export { createBnsConnector } from "./bnsconnector";
 export { BnsConnection } from "./bnsconnection";
 export {
+  Condition,
+  buildCondition,
+  conditionToAddress,
   electionRuleIdToAddress,
   escrowIdToAddress,
   multisignatureIdToAddress,
