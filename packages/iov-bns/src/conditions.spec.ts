@@ -2,6 +2,7 @@ import { ChainId, Hash, SwapIdBytes } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import {
+  buildCondition,
   buildEscrowCondition,
   conditionToWeaveAddress,
   electionRuleIdToAddress,
@@ -10,9 +11,16 @@ import {
   swapToAddress,
 } from "./conditions";
 
-const { fromHex } = Encoding;
+const { fromHex, toAscii } = Encoding;
 
 describe("conditions", () => {
+  describe("buildCondition", () => {
+    it("works", () => {
+      const condition = buildCondition("foo", "bar", toAscii("123!"));
+      expect(condition).toEqual(toAscii("foo/bar/123!"));
+    });
+  });
+
   // TODO: test buildMultisignatureCondition
 
   describe("buildEscrowCondition", () => {

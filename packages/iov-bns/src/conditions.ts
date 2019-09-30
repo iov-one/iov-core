@@ -8,9 +8,9 @@ import { addressPrefix, encodeBnsAddress } from "./util";
 /** A package-internal type representing a Weave Condition */
 export type Condition = Uint8Array & As<"Condition">;
 
-function buildCondition(extension: string, type: string, idBytes: Iterable<number>): Condition {
+export function buildCondition(extension: string, type: string, data: Uint8Array): Condition {
   // https://github.com/iov-one/weave/blob/v0.21.0/conditions.go#L35-L38
-  const out = Uint8Array.from([...Encoding.toAscii(`${extension}/${type}/`), ...idBytes]);
+  const out = Uint8Array.from([...Encoding.toAscii(`${extension}/${type}/`), ...data]);
   return out as Condition;
 }
 
