@@ -28,6 +28,8 @@ Breaking changes
 - @iov/bns-governance: Remove `TreasurySend` proposal type,
   `TreasurySendOptions` type and `GovernorOptions.treasuryAddress`.
 - @iov/bns-governance: Make `guaranteeFundEscrowId` `Governor` option numeric.
+- @iov/bns-governance: Require a non-empty list of recipients when building a
+  `DistributeFunds` create proposal tx.
 - @iov/encoding: Remove deprecated `EnglishMnemonic.asString` use `.toString`
   instead.
 - @iov/encoding: Change return type of `Uint32.toBytesBigEndian`,
