@@ -10,14 +10,17 @@ chmod 777 "$TMP_DIR"
 echo "Using temporary dir $TMP_DIR"
 LOGFILE="$TMP_DIR/gaia.log"
 CURRENT_DIR="$(realpath "$(dirname "$0")")"
+HOME_DIR="/home"
 
 docker run \
   --rm \
   --user="$UID" \
   -t \
   --name gaiad \
-  -v "$CURRENT_DIR/.gaiad:/root/.gaiad" \
-  -v "$CURRENT_DIR/.gaiacli:/root/.gaiacli" \
+  -v "$CURRENT_DIR/.gaiad:$HOME_DIR/.gaiad" \
+  -v "$CURRENT_DIR/.gaiacli:$HOME_DIR/.gaiacli" \
+  -w "$HOME_DIR" \
+  --env "HOME=$HOME_DIR" \
   "tendermint/gaia:${VERSION}" \
   gaiad start \
   > "$LOGFILE" &
