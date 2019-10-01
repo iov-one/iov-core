@@ -15,7 +15,6 @@ export interface GovernorOptions {
   readonly identity: Identity;
   readonly guaranteeFundEscrowId?: number;
   readonly rewardFundAddress?: Address;
-  readonly treasuryAddress?: Address;
 }
 export declare class Governor {
   readonly address: Address;
@@ -23,14 +22,7 @@ export declare class Governor {
   private readonly identity;
   private readonly guaranteeFundEscrowId?;
   private readonly rewardFundAddress?;
-  private readonly treasuryAddress?;
-  constructor({
-    connection,
-    identity,
-    guaranteeFundEscrowId,
-    rewardFundAddress,
-    treasuryAddress,
-  }: GovernorOptions);
+  constructor({ connection, identity, guaranteeFundEscrowId, rewardFundAddress }: GovernorOptions);
   /**
    * Returns a list of electorates that contain the current governor as one of the electors
    *
