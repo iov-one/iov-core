@@ -42,6 +42,8 @@ if command -v docker > /dev/null ; then
   fold_end
 
   fold_start "cosmos-start"
+  mkdir -p ./scripts/cosmos/.gaiad/data
+  cp ./scripts/cosmos/priv_validator_state.template.json ./scripts/cosmos/.gaiad/data/priv_validator_state.json
   ./scripts/cosmos/start.sh
   export COSMOS_ENABLED=1
   fold_end
