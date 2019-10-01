@@ -14,7 +14,7 @@ import {
   BnsConnection,
   electionRuleIdToAddress,
   escrowIdToAddress,
-  ExecuteProposalBatchAction,
+  isExecuteProposalBatchAction,
   ProposalExecutorResult,
   ProposalStatus,
   SendAction,
@@ -583,22 +583,16 @@ describe("Proposals", () => {
     );
     expect(proposal2Pre.electionRule.id).toEqual(electionRuleId);
     expect(proposal2Pre.author).toEqual(address);
-    expect(proposal2Pre.action.kind).toEqual(ActionKind.ExecuteProposalBatch);
-    expect((proposal2Pre.action as ExecuteProposalBatchAction).messages.length).toEqual(2);
-    expect((proposal2Pre.action as ExecuteProposalBatchAction).messages[0].kind).toEqual(ActionKind.Send);
-    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[0] as SendAction).sender).toEqual(
-      rewardFundAddress,
-    );
-    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[0] as SendAction).recipient).toEqual(
-      recipient1,
-    );
-    expect((proposal2Pre.action as ExecuteProposalBatchAction).messages[1].kind).toEqual(ActionKind.Send);
-    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[1] as SendAction).sender).toEqual(
-      rewardFundAddress,
-    );
-    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[1] as SendAction).recipient).toEqual(
-      recipient2,
-    );
+    if (!isExecuteProposalBatchAction(proposal2Pre.action)) {
+      throw new Error("Action is not ExecuteProposalBatchAction");
+    }
+    expect(proposal2Pre.action.messages.length).toEqual(2);
+    expect(proposal2Pre.action.messages[0].kind).toEqual(ActionKind.Send);
+    expect((proposal2Pre.action.messages[0] as SendAction).sender).toEqual(rewardFundAddress);
+    expect((proposal2Pre.action.messages[0] as SendAction).recipient).toEqual(recipient1);
+    expect(proposal2Pre.action.messages[1].kind).toEqual(ActionKind.Send);
+    expect((proposal2Pre.action.messages[1] as SendAction).sender).toEqual(rewardFundAddress);
+    expect((proposal2Pre.action.messages[1] as SendAction).recipient).toEqual(recipient2);
     expect(proposal2Pre.status).toEqual(ProposalStatus.Submitted);
 
     await sleep(7000);
