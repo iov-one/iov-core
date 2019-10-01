@@ -198,6 +198,9 @@ export class Governor {
         if (!this.rewardFundAddress) {
           throw new Error("This Governor instance was not initialised with a rewardFundAddress");
         }
+        if (!options.recipients.length) {
+          throw new Error("Cannot distribute funds to 0 recipients");
+        }
         const rewardFundAddress = this.rewardFundAddress;
         const rewardFund = await this.connection.getAccount({ address: rewardFundAddress });
         if (!rewardFund) {
