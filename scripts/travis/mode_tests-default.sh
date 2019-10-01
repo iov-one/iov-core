@@ -177,6 +177,13 @@ if [[ -n ${COSMOS_ENABLED:-} ]]; then
   fold_end
 fi
 
+if [[ -n ${LISK_ENABLED:-} ]]; then
+  fold_start "lisk-stop"
+  unset LISK_ENABLED
+  ./scripts/lisk/stop.sh
+  fold_end
+fi
+
 if [[ -n ${TENDERMINT_ENABLED:-} ]]; then
   fold_start "tendermint-stop"
   unset TENDERMINT_ENABLED
