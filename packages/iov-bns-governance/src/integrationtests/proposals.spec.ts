@@ -38,9 +38,7 @@ const adminPath = HdPaths.iov(0);
 const bnsdUrl = "ws://localhost:23456";
 const guaranteeFundEscrowId = 1;
 const guaranteeFundAddress = escrowIdToAddress("local-iov-devnet" as ChainId, guaranteeFundEscrowId);
-// The reward fund and treasury have the same address because they are both covered by the same rule
 const rewardFundAddress = electionRuleIdToAddress("local-iov-devnet" as ChainId, 2);
-const treasuryAddress = electionRuleIdToAddress("local-iov-devnet" as ChainId, 2);
 
 function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {
@@ -66,7 +64,6 @@ async function getGovernorOptions(
     identity: identity,
     guaranteeFundEscrowId: guaranteeFundEscrowId,
     rewardFundAddress: rewardFundAddress,
-    treasuryAddress: treasuryAddress,
     profile: profile,
   };
 }

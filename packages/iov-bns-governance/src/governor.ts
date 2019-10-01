@@ -28,7 +28,6 @@ export interface GovernorOptions {
   readonly identity: Identity;
   readonly guaranteeFundEscrowId?: number;
   readonly rewardFundAddress?: Address;
-  readonly treasuryAddress?: Address;
 }
 
 export class Governor {
@@ -38,21 +37,13 @@ export class Governor {
   private readonly identity: Identity;
   private readonly guaranteeFundEscrowId?: number;
   private readonly rewardFundAddress?: Address;
-  private readonly treasuryAddress?: Address;
 
-  public constructor({
-    connection,
-    identity,
-    guaranteeFundEscrowId,
-    rewardFundAddress,
-    treasuryAddress,
-  }: GovernorOptions) {
+  public constructor({ connection, identity, guaranteeFundEscrowId, rewardFundAddress }: GovernorOptions) {
     this.connection = connection;
     this.identity = identity;
     this.address = bnsCodec.identityToAddress(this.identity);
     this.guaranteeFundEscrowId = guaranteeFundEscrowId;
     this.rewardFundAddress = rewardFundAddress;
-    this.treasuryAddress = treasuryAddress;
   }
 
   /**
