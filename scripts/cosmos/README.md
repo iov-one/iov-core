@@ -10,13 +10,15 @@ Run the following:
 
 ## CLI
 
-Docker-friendly access to `gaiacli` is provided. Just use the `./cli.sh` script. For example:
+Docker-friendly access to `gaiacli` is provided. Just use the `./cli.sh` script.
+For example:
 
 ```
 ./cli.sh status
 ```
 
-This should give you output similar to the following if your blockchain is running:
+This should give you output similar to the following if your blockchain is
+running:
 
 ```json
 {
@@ -50,13 +52,16 @@ This should give you output similar to the following if your blockchain is runni
 
 ## Adding the validator key to your keybase
 
-The Cosmos test network is initialised with a validator (see `.gaiad/config/genesis.json`). This validator has the following mnemonic:
+The Cosmos test network is initialised with a validator (see
+`.gaiad/config/genesis.json`). This validator has the following mnemonic:
 
 ```
 economy stock theory fatal elder harbor betray wasp final emotion task crumble siren bottom lizard educate guess current outdoor pair theory focus wife stone
 ```
 
-To add the validator key to your local keybase run the following, choose an encryption passphrase (e.g. `testing123`) and enter the above mnemonic when prompted:
+To add the validator key to your local keybase run the following, choose an
+encryption passphrase (e.g. `testing123`) and enter the above mnemonic when
+prompted:
 
 ```
 ./cli.sh keys add validator --recover
