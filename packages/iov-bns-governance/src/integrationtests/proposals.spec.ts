@@ -484,6 +484,10 @@ describe("Proposals", () => {
     const guaranteeFundBeforeRelease = await connection.getAccount({ address: guaranteeFundAddress });
     const guaranteeFundQuantityBeforeRelease = getCashQuantity(guaranteeFundBeforeRelease);
 
+    const rewardFundInitial = await connection.getAccount({ address: rewardFundAddress });
+    const rewardFundInitialQuantity = getCashQuantity(rewardFundInitial);
+    expect(rewardFundInitialQuantity.toString()).toEqual("0"); // if this is not 0, the remainder test below will not work
+
     const recipient1 = "tiov1xwvnaxahzcszkvmk362m7vndjkzumv8ufmzy3m" as Address;
     const recipient2 = "tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp" as Address;
     const recipientBeforeRelease1 = await connection.getAccount({ address: recipient1 });
