@@ -14,7 +14,7 @@ import {
   BnsConnection,
   electionRuleIdToAddress,
   escrowIdToAddress,
-  ExecuteProposalBatchAction,
+  isExecuteProposalBatchAction,
   ProposalExecutorResult,
   ProposalStatus,
   SendAction,
@@ -83,9 +83,9 @@ async function signAndPost(
   }
 }
 
-function getCashQuantity(account: Account): BN {
-  const cashBalance = account.balance.find(({ tokenTicker }) => tokenTicker === "CASH");
-  return cashBalance ? new BN(cashBalance.quantity) : new BN(0);
+function getCashQuantity(account: Account | undefined): BN {
+  const cash = account ? account.balance.find(({ tokenTicker }) => tokenTicker === "CASH") : undefined;
+  return cash ? new BN(cash.quantity) : new BN(0);
 }
 
 describe("Proposals", () => {
@@ -482,14 +482,18 @@ describe("Proposals", () => {
     const governor = new Governor(governorOptions);
     const numProposalsBefore = (await governor.getProposals()).length;
     const guaranteeFundBeforeRelease = await connection.getAccount({ address: guaranteeFundAddress });
-    const guaranteeFundQuantityBeforeRelease = getCashQuantity(guaranteeFundBeforeRelease!);
+    const guaranteeFundQuantityBeforeRelease = getCashQuantity(guaranteeFundBeforeRelease);
+
+    const rewardFundInitial = await connection.getAccount({ address: rewardFundAddress });
+    const rewardFundInitialQuantity = getCashQuantity(rewardFundInitial);
+    expect(rewardFundInitialQuantity.toString()).toEqual("0"); // if this is not 0, the remainder test below will not work
 
     const recipient1 = "tiov1xwvnaxahzcszkvmk362m7vndjkzumv8ufmzy3m" as Address;
     const recipient2 = "tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp" as Address;
     const recipientBeforeRelease1 = await connection.getAccount({ address: recipient1 });
     const recipientBeforeRelease2 = await connection.getAccount({ address: recipient2 });
-    const recipientQuantityBeforeRelease1 = getCashQuantity(recipientBeforeRelease1!);
-    const recipientQuantityBeforeRelease2 = getCashQuantity(recipientBeforeRelease2!);
+    const recipientQuantityBeforeRelease1 = getCashQuantity(recipientBeforeRelease1);
+    const recipientQuantityBeforeRelease2 = getCashQuantity(recipientBeforeRelease2);
 
     const electionRuleId = 2;
     const amount = {
@@ -545,7 +549,7 @@ describe("Proposals", () => {
     expect(proposal1Post.executorResult).toEqual(ProposalExecutorResult.Succeeded);
 
     const guaranteeFundAfterRelease = await connection.getAccount({ address: guaranteeFundAddress });
-    const guaranteeFundQuantityAfterRelease = getCashQuantity(guaranteeFundAfterRelease!);
+    const guaranteeFundQuantityAfterRelease = getCashQuantity(guaranteeFundAfterRelease);
     expect(guaranteeFundQuantityAfterRelease).toEqual(
       guaranteeFundQuantityBeforeRelease.sub(new BN(amount.quantity)),
     );
@@ -583,22 +587,16 @@ describe("Proposals", () => {
     );
     expect(proposal2Pre.electionRule.id).toEqual(electionRuleId);
     expect(proposal2Pre.author).toEqual(address);
-    expect(proposal2Pre.action.kind).toEqual(ActionKind.ExecuteProposalBatch);
-    expect((proposal2Pre.action as ExecuteProposalBatchAction).messages.length).toEqual(2);
-    expect((proposal2Pre.action as ExecuteProposalBatchAction).messages[0].kind).toEqual(ActionKind.Send);
-    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[0] as SendAction).sender).toEqual(
-      rewardFundAddress,
-    );
-    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[0] as SendAction).recipient).toEqual(
-      recipient1,
-    );
-    expect((proposal2Pre.action as ExecuteProposalBatchAction).messages[1].kind).toEqual(ActionKind.Send);
-    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[1] as SendAction).sender).toEqual(
-      rewardFundAddress,
-    );
-    expect(((proposal2Pre.action as ExecuteProposalBatchAction).messages[1] as SendAction).recipient).toEqual(
-      recipient2,
-    );
+    if (!isExecuteProposalBatchAction(proposal2Pre.action)) {
+      throw new Error("Action is not ExecuteProposalBatchAction");
+    }
+    expect(proposal2Pre.action.messages.length).toEqual(2);
+    expect(proposal2Pre.action.messages[0].kind).toEqual(ActionKind.Send);
+    expect((proposal2Pre.action.messages[0] as SendAction).sender).toEqual(rewardFundAddress);
+    expect((proposal2Pre.action.messages[0] as SendAction).recipient).toEqual(recipient1);
+    expect(proposal2Pre.action.messages[1].kind).toEqual(ActionKind.Send);
+    expect((proposal2Pre.action.messages[1] as SendAction).sender).toEqual(rewardFundAddress);
+    expect((proposal2Pre.action.messages[1] as SendAction).recipient).toEqual(recipient2);
     expect(proposal2Pre.status).toEqual(ProposalStatus.Submitted);
 
     await sleep(7000);
@@ -618,8 +616,8 @@ describe("Proposals", () => {
 
     const recipientAfterRelease1 = await connection.getAccount({ address: recipient1 });
     const recipientAfterRelease2 = await connection.getAccount({ address: recipient2 });
-    const recipientQuantityAfterRelease1 = getCashQuantity(recipientAfterRelease1!);
-    const recipientQuantityAfterRelease2 = getCashQuantity(recipientAfterRelease2!);
+    const recipientQuantityAfterRelease1 = getCashQuantity(recipientAfterRelease1);
+    const recipientQuantityAfterRelease2 = getCashQuantity(recipientAfterRelease2);
 
     expect(recipientQuantityAfterRelease1.gt(recipientQuantityBeforeRelease1)).toEqual(true);
     expect(recipientQuantityAfterRelease2.gt(recipientQuantityBeforeRelease2)).toEqual(true);
