@@ -12,6 +12,10 @@ LOGFILE="$TMP_DIR/gaia.log"
 CURRENT_DIR="$(realpath "$(dirname "$0")")"
 HOME_DIR="/home"
 
+rm -rf "$CURRENT_DIR/.gaiad/data"
+mkdir -p "$CURRENT_DIR/.gaiad/data"
+cp "$CURRENT_DIR/priv_validator_state.template.json" "$CURRENT_DIR/.gaiad/data/priv_validator_state.json"
+
 docker run \
   --rm \
   --user="$UID" \
