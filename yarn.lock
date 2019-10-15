@@ -935,6 +935,11 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
+"@tendermint/amino-js@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@tendermint/amino-js/-/amino-js-0.4.4.tgz#4d97d6e2cf7612dedc3dd87906fa4ead509db991"
+  integrity sha512-4TrZh2+zemBkc6qJSEBSlUQkG1bSLsOqTnba4Djm/DwGguANuCxWbjdJLVqeaivQyIvusodsrHrLgT7KPqffpw==
+
 "@types/abstract-leveldown@*", "@types/abstract-leveldown@^5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@types/abstract-leveldown/-/abstract-leveldown-5.0.1.tgz#3c7750d0186b954c7f2d2f6acc8c3c7ba0c3412e"
