@@ -19,4 +19,10 @@ describe("cosmoscodec", () => {
     expect(id).toMatch(/^[0-9A-F]{64}$/);
     expect(id).toEqual(txId);
   });
+
+  it("round trip works", () => {
+    const encoded = cosmosCodec.bytesToPost(signedTxJson);
+    const decoded = cosmosCodec.parseBytes(encoded, chainId);
+    expect(decoded).toEqual(signedTxJson);
+  });
 });
