@@ -14,9 +14,10 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
-import { marshalTx } from "@tendermint/amino-js";
+import { marshalTx, unmarshalTx } from "@tendermint/amino-js";
 
 import { isValidAddress, pubkeyToAddress } from "./address";
+import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
 
 const { toUtf8 } = Encoding;
@@ -72,7 +73,8 @@ export class CosmosCodec implements TxCodec {
   }
 
   public parseBytes(bytes: PostableBytes, chainId: ChainId): SignedTransaction {
-    throw new Error("not implemented");
+    const parsed = unmarshalTx(bytes);
+    return parseTx(parsed, chainId);
   }
 
   public identityToAddress(identity: Identity): Address {
