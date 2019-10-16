@@ -13,6 +13,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
+import { Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { marshalTx, unmarshalTx } from "@tendermint/amino-js";
 
@@ -20,7 +21,7 @@ import { isValidAddress, pubkeyToAddress } from "./address";
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
 
-const { toUtf8 } = Encoding;
+const { toHex, toUtf8 } = Encoding;
 
 function sortJson(json: any): any {
   if (typeof json !== "object" || json === null) {
@@ -69,7 +70,9 @@ export class CosmosCodec implements TxCodec {
   }
 
   public identifier(signed: SignedTransaction): TransactionId {
-    throw new Error("not implemented");
+    const bytes = this.bytesToPost(signed);
+    const hash = new Sha256(bytes).digest();
+    return toHex(hash).toUpperCase() as TransactionId;
   }
 
   public parseBytes(bytes: PostableBytes, chainId: ChainId): SignedTransaction {
