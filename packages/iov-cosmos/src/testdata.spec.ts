@@ -10,6 +10,7 @@ import {
   SignatureBytes,
   SignedTransaction,
   TokenTicker,
+  TransactionId,
   WithCreator,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
@@ -64,3 +65,5 @@ export const signedTxJson: SignedTransaction = {
 };
 
 export const signedTxBin = fromBase64(data.tx_data);
+
+export const txId = data.id as TransactionId;
