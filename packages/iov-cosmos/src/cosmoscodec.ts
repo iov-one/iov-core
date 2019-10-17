@@ -81,7 +81,8 @@ export class CosmosCodec implements TxCodec {
   }
 
   public identityToAddress(identity: Identity): Address {
-    return pubkeyToAddress(identity.pubkey);
+    const prefix = "cosmos";
+    return pubkeyToAddress(identity.pubkey, prefix);
   }
 
   public isValidAddress(address: string): boolean {

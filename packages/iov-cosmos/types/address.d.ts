@@ -9,4 +9,4 @@ export declare function decodeCosmosAddress(
   readonly data: Uint8Array;
 };
 export declare function isValidAddress(address: string): boolean;
-export declare function pubkeyToAddress(pubkey: PubkeyBundle): Address;
+export declare function pubkeyToAddress(pubkey: PubkeyBundle, prefix: CosmosBech32Prefix): Address;
