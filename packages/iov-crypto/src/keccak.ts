@@ -1,6 +1,6 @@
 import jssha3 from "js-sha3";
 
-import { HashFunction } from "./sha";
+import { HashFunction } from "./hash";
 
 export class Keccak256 implements HashFunction {
   public readonly blockSize = 512 / 8;

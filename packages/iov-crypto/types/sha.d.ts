@@ -1,8 +1,4 @@
-export interface HashFunction {
-  readonly blockSize: number;
-  readonly update: (_: Uint8Array) => HashFunction;
-  readonly digest: () => Uint8Array;
-}
+import { HashFunction } from "./hash";
 export declare class Sha1 implements HashFunction {
   readonly blockSize: number;
   private readonly impl;

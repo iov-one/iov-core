@@ -1,4 +1,4 @@
-import { HashFunction } from "./sha";
+import { HashFunction } from "./hash";
 export declare class Hmac<H extends HashFunction> implements HashFunction {
   readonly blockSize: number;
   private readonly messageHasher;
