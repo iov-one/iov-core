@@ -23,6 +23,11 @@ import {
 import { Stream } from "xstream";
 export declare class CosmosConnection implements BlockchainConnection {
   static establish(url: string): Promise<CosmosConnection>;
+  private static initialize;
+  private readonly restClient;
+  private readonly chainData;
+  private readonly prefix;
+  private constructor();
   disconnect(): void;
   chainId(): ChainId;
   height(): Promise<number>;

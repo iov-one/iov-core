@@ -1,19 +1,23 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/camelcase,@typescript-eslint/no-unused-vars */
 import {
   Account,
   AccountQuery,
   AddressQuery,
+  Algorithm,
   BlockchainConnection,
   BlockHeader,
+  BlockId,
   ChainId,
   ConfirmedAndSignedTransaction,
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
+  isPubkeyQuery,
   LightTransaction,
   Nonce,
   PostableBytes,
   PostTxResponse,
+  PubkeyBytes,
   PubkeyQuery,
   Token,
   TokenTicker,
@@ -21,23 +25,55 @@ import {
   TransactionQuery,
   UnsignedTransaction,
 } from "@iov/bcp";
+import { Encoding } from "@iov/encoding";
+import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
+
+import { CosmosBech32Prefix, pubkeyToAddress } from "./address";
+import { decodeAmount } from "./decode";
+import { RestClient } from "./restclient";
+
+const { fromBase64 } = Encoding;
+
+interface ChainData {
+  readonly chainId: ChainId;
+}
 
 export class CosmosConnection implements BlockchainConnection {
   public static async establish(url: string): Promise<CosmosConnection> {
-    throw new Error("not implemented");
+    const restClient = new RestClient(url);
+    const chainData = await this.initialize(restClient);
+    return new CosmosConnection(restClient, chainData);
+  }
+
+  private static async initialize(restClient: RestClient): Promise<ChainData> {
+    const { node_info } = await restClient.nodeInfo();
+    return { chainId: node_info.network as ChainId };
+  }
+
+  private readonly restClient: RestClient;
+  private readonly chainData: ChainData;
+
+  private get prefix(): CosmosBech32Prefix {
+    return "cosmos";
+  }
+
+  private constructor(restClient: RestClient, chainData: ChainData) {
+    this.restClient = restClient;
+    this.chainData = chainData;
   }
 
   public disconnect(): void {
-    throw new Error("not implemented");
+    return;
   }
 
   public chainId(): ChainId {
-    throw new Error("not implemented");
+    return this.chainData.chainId;
   }
 
   public async height(): Promise<number> {
-    throw new Error("not implemented");
+    const { block_meta } = await this.restClient.blocksLatest();
+    return block_meta.header.height;
   }
 
   public async getToken(ticker: TokenTicker): Promise<Token | undefined> {
@@ -49,7 +85,19 @@ export class CosmosConnection implements BlockchainConnection {
   }
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
-    throw new Error("not implemented");
+    const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey, this.prefix) : query.address;
+    const { result } = await this.restClient.authAccounts(address);
+    const account = result.value;
+    return account.public_key === null
+      ? undefined
+      : {
+          address: address,
+          balance: account.coins.map(decodeAmount),
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: fromBase64(account.public_key.value) as PubkeyBytes,
+          },
+        };
   }
 
   public watchAccount(account: AccountQuery): Stream<Account | undefined> {
@@ -65,7 +113,13 @@ export class CosmosConnection implements BlockchainConnection {
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {
-    throw new Error("not implemented");
+    const { block_meta } = await this.restClient.blocks(height);
+    return {
+      id: block_meta.block_id.hash as BlockId,
+      height: block_meta.header.height,
+      time: new ReadonlyDate(block_meta.header.time),
+      transactionCount: block_meta.header.num_txs,
+    };
   }
 
   public watchBlockHeaders(): Stream<BlockHeader> {
