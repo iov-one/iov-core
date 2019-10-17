@@ -38,8 +38,8 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp": "^0.17.8",
-    "@iov/encoding": "^0.17.8",
+    "@iov/bcp": "^1.0.0",
+    "@iov/encoding": "^1.0.0",
     "@tendermint/amino-js": "^0.4.4"
   }
 }
