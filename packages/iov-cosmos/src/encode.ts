@@ -4,6 +4,7 @@ import {
   Fee,
   FullSignature,
   isSendTransaction,
+  PubkeyBundle,
   SignedTransaction,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -11,6 +12,13 @@ import { Encoding } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
 const { toBase64 } = Encoding;
+
+export function encodePubkey(pubkey: PubkeyBundle): amino.PubKey {
+  return {
+    type: "tendermint/PubKeySecp256k1",
+    value: toBase64(pubkey.data),
+  };
+}
 
 export function encodeAmount(amount: Amount): readonly amino.Coin[] {
   return [

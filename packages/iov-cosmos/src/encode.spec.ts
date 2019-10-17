@@ -12,18 +12,26 @@ import {
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { buildSignedTx, buildUnsignedTx, encodeAmount, encodeFee, encodeFullSignature } from "./encode";
+import {
+  buildSignedTx,
+  buildUnsignedTx,
+  encodeAmount,
+  encodeFee,
+  encodeFullSignature,
+  encodePubkey,
+} from "./encode";
 
-const { fromBase64, fromHex } = Encoding;
+const { fromBase64 } = Encoding;
 
 describe("encode", () => {
+  // https://rpc.cosmos.network:26657/tx?hash=0x2268EB5AB730B45F8426078827BB5BB49819CE2B0D74B2C1D191070BADB379F1&prove=true
+  const defaultPubkey = {
+    algo: Algorithm.Secp256k1,
+    data: fromBase64("AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP") as PubkeyBytes,
+  };
   const defaultCreator: Identity = {
     chainId: "not-used" as ChainId,
-    pubkey: {
-      algo: Algorithm.Secp256k1,
-      // https://rpc.cosmos.network:26657/tx?hash=0x2268EB5AB730B45F8426078827BB5BB49819CE2B0D74B2C1D191070BADB379F1&prove=true
-      data: fromHex("02d41a0aa167b21699429eab224bc03f2cd386f0af5d20cefbd0336f1544aea24f") as PubkeyBytes,
-    },
+    pubkey: defaultPubkey,
   };
   const defaultSender = "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r" as Address;
   const defaultRecipient = "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e" as Address;
@@ -33,6 +41,15 @@ describe("encode", () => {
     tokenTicker: "vatom" as TokenTicker,
   };
   const defaultMemo = "hello cosmos hub";
+
+  describe("encodePubKey", () => {
+    it("encodes a Secp256k1 pubkey", () => {
+      expect(encodePubkey(defaultPubkey)).toEqual({
+        type: "tendermint/PubKeySecp256k1",
+        value: "AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP",
+      });
+    });
+  });
 
   describe("encodeAmount", () => {
     it("encodes an amount", () => {
