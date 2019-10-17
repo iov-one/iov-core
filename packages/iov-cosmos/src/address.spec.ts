@@ -1,9 +1,9 @@
-import { Address } from "@iov/bcp";
+import { Address, Algorithm, PubkeyBytes } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { decodeCosmosAddress, isValidAddress } from "./address";
+import { decodeCosmosAddress, isValidAddress, pubkeyToAddress } from "./address";
 
-const { fromHex } = Encoding;
+const { fromBase64, fromHex } = Encoding;
 
 describe("address", () => {
   // Bech32 encoding/decoding data generated using https://github.com/bitcoinjs/bech32
@@ -42,6 +42,17 @@ describe("address", () => {
       expect(isValidAddress("cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs7")).toEqual(false);
       // Bad prefix
       expect(isValidAddress("cosmot10q82zkzzmaku5lazhsvxv7hsg4ntpuhd8j5266")).toEqual(false);
+    });
+  });
+
+  describe("pubkeyToAddress", () => {
+    it("works for Secp256k1", () => {
+      const prefix = "cosmos";
+      const pubkey = {
+        algo: Algorithm.Secp256k1,
+        data: fromBase64("AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP") as PubkeyBytes,
+      };
+      expect(pubkeyToAddress(pubkey, prefix)).toEqual("cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r");
     });
   });
 });
