@@ -14,5 +14,6 @@ export declare class Secp256k1 {
     pubkey: Uint8Array,
   ): Promise<boolean>;
   static recoverPubkey(signature: ExtendedSecp256k1Signature, messageHash: Uint8Array): Uint8Array;
+  static compressPubkey(pubkey: Uint8Array): Uint8Array;
 }
 export {};
