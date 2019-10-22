@@ -94,6 +94,10 @@ export class HdPaths {
     return HdPaths.bip44(HdPaths.coinTypes.eth, 0, 0, account);
   }
 
+  public static cosmos(account: number): readonly Slip10RawIndex[] {
+    return HdPaths.bip44(HdPaths.coinTypes.atom, 0, 0, account);
+  }
+
   private static readonly purposes = {
     bip44: 44,
     iov: 4804438,
@@ -106,6 +110,7 @@ export class HdPaths {
   private static readonly coinTypes = {
     testnet: 1,
     eth: 60,
+    atom: 118,
     iov: 234,
   };
 }
