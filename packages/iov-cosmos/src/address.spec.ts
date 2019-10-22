@@ -46,13 +46,24 @@ describe("address", () => {
   });
 
   describe("pubkeyToAddress", () => {
-    it("works for Secp256k1", () => {
+    it("works for Secp256k1 compressed", () => {
       const prefix = "cosmos";
       const pubkey = {
         algo: Algorithm.Secp256k1,
         data: fromBase64("AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP") as PubkeyBytes,
       };
       expect(pubkeyToAddress(pubkey, prefix)).toEqual("cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r");
+    });
+
+    it("works for Secp256k1 uncompressed", () => {
+      const prefix = "cosmos";
+      const pubkey = {
+        algo: Algorithm.Secp256k1,
+        data: fromBase64(
+          "BE8EGB7ro1ORuFhjOnZcSgwYlpe0DSFjVNUIkNNQxwKQE7WHpoHoNswYeoFkuYpYSKK4mzFzMV/dB0DVAy4lnNU=",
+        ) as PubkeyBytes,
+      };
+      expect(pubkeyToAddress(pubkey, prefix)).toEqual("cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs6");
     });
   });
 });

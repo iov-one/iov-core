@@ -1,5 +1,5 @@
-import { Address, Algorithm, PubkeyBundle } from "@iov/bcp";
-import { Ripemd160, Sha256 } from "@iov/crypto";
+import { Address, Algorithm, PubkeyBundle, PubkeyBytes } from "@iov/bcp";
+import { Ripemd160, Secp256k1, Sha256 } from "@iov/crypto";
 import { Bech32 } from "@iov/encoding";
 import { marshalPubKey } from "@tendermint/amino-js";
 
@@ -37,7 +37,11 @@ export function isValidAddress(address: string): boolean {
 
 // See https://github.com/tendermint/tendermint/blob/f2ada0a604b4c0763bda2f64fac53d506d3beca7/docs/spec/blockchain/encoding.md#public-key-cryptography
 export function pubkeyToAddress(pubkey: PubkeyBundle, prefix: CosmosBech32Prefix): Address {
-  const encoded = encodePubkey(pubkey);
+  const compressedPubkey = {
+    ...pubkey,
+    data: Secp256k1.compressPubkey(pubkey.data) as PubkeyBytes,
+  };
+  const encoded = encodePubkey(compressedPubkey);
   const marshalled = marshalPubKey(encoded).slice(6);
 
   switch (pubkey.algo) {
