@@ -25,7 +25,7 @@ import {
   TransactionQuery,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint53 } from "@iov/encoding";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
@@ -107,11 +107,19 @@ export class CosmosConnection implements BlockchainConnection {
   }
 
   public async getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce> {
-    throw new Error("not implemented");
+    const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey, this.prefix) : query.address;
+    const { result } = await this.restClient.authAccounts(address);
+    const account = result.value;
+    return parseInt(account.sequence, 10) as Nonce;
   }
 
   public async getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]> {
-    throw new Error("not implemented");
+    const checkedCount = new Uint53(count).toNumber();
+    if (checkedCount === 0) {
+      return [];
+    }
+    const firstNonce = await this.getNonce(query);
+    return [...new Array(checkedCount)].map((_, i) => (firstNonce + i) as Nonce);
   }
 
   public async getBlockHeader(height: number): Promise<BlockHeader> {
