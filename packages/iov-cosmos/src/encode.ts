@@ -8,6 +8,7 @@ import {
   SignedTransaction,
   UnsignedTransaction,
 } from "@iov/bcp";
+import { Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
@@ -51,9 +52,10 @@ export function encodeFullSignature(fullSignature: FullSignature): amino.StdSign
   return {
     pub_key: {
       type: "tendermint/PubKeySecp256k1",
-      value: toBase64(fullSignature.pubkey.data),
+      value: toBase64(Secp256k1.compressPubkey(fullSignature.pubkey.data)),
     },
-    signature: toBase64(fullSignature.signature),
+    // Recovery seems to be unused
+    signature: toBase64(fullSignature.signature.slice(0, 64)),
   };
 }
 
