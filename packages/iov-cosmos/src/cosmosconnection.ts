@@ -35,6 +35,8 @@ import { RestClient } from "./restclient";
 
 const { fromBase64 } = Encoding;
 
+const vatom = "vatom" as TokenTicker;
+
 interface ChainData {
   readonly chainId: ChainId;
 }
@@ -157,6 +159,15 @@ export class CosmosConnection implements BlockchainConnection {
   }
 
   public async withDefaultFee<T extends UnsignedTransaction>(tx: T): Promise<T> {
-    throw new Error("not implemented");
+    return {
+      ...tx,
+      fee: {
+        tokens: {
+          quantity: "5000",
+          tokenTicker: vatom,
+        },
+        gasLimit: "200000",
+      },
+    };
   }
 }
