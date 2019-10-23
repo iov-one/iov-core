@@ -7,6 +7,7 @@ import {
   BlockchainConnection,
   BlockHeader,
   BlockId,
+  BlockInfo,
   ChainId,
   ConfirmedAndSignedTransaction,
   ConfirmedTransaction,
@@ -23,14 +24,16 @@ import {
   TokenTicker,
   TransactionId,
   TransactionQuery,
+  TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
+import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import { CosmosBech32Prefix, pubkeyToAddress } from "./address";
-import { decodeAmount } from "./decode";
+import { decodeAmount, parseTx } from "./decode";
 import { RestClient } from "./restclient";
 
 const { fromBase64 } = Encoding;
@@ -139,11 +142,37 @@ export class CosmosConnection implements BlockchainConnection {
   public async getTx(
     id: TransactionId,
   ): Promise<(ConfirmedAndSignedTransaction<UnsignedTransaction>) | FailedTransaction> {
-    throw new Error("not implemented");
+    try {
+      const response = await this.restClient.txsById(id);
+      const height = parseInt(response.height, 10);
+
+      const currentHeight = await this.height();
+
+      return {
+        ...parseTx(response.tx, this.chainId()),
+        height: height,
+        confirmations: currentHeight - height + 1,
+        transactionId: response.txhash as TransactionId,
+        log: response.raw_log,
+      };
+    } catch (error) {
+      if (error.response.status === 404) {
+        throw new Error("Transaction does not exist");
+      }
+      throw error;
+    }
   }
 
   public async postTx(tx: PostableBytes): Promise<PostTxResponse> {
-    throw new Error("not implemented");
+    const { txhash, raw_log } = await this.restClient.postTx(tx);
+    const transactionId = txhash as TransactionId;
+    const firstEvent: BlockInfo = { state: TransactionState.Pending };
+    const producer = new DefaultValueProducer<BlockInfo>(firstEvent);
+    return {
+      blockInfo: new ValueAndUpdates<BlockInfo>(producer),
+      transactionId: transactionId,
+      log: raw_log,
+    };
   }
 
   public async searchTx(
