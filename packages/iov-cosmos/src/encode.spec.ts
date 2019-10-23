@@ -117,6 +117,51 @@ describe("encode", () => {
         signature: "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
       });
     });
+
+    it("compresses uncompressed public keys", () => {
+      const signature = {
+        nonce: 0 as Nonce,
+        pubkey: {
+          algo: Algorithm.Secp256k1,
+          data: fromBase64(
+            "BE8EGB7ro1ORuFhjOnZcSgwYlpe0DSFjVNUIkNNQxwKQE7WHpoHoNswYeoFkuYpYSKK4mzFzMV/dB0DVAy4lnNU=",
+          ) as PubkeyBytes,
+        },
+        signature: fromBase64(
+          "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
+        ) as SignatureBytes,
+      };
+      expect(encodeFullSignature(signature)).toEqual({
+        pub_key: {
+          type: "tendermint/PubKeySecp256k1",
+          value: "A08EGB7ro1ORuFhjOnZcSgwYlpe0DSFjVNUIkNNQxwKQ",
+        },
+        signature: "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
+      });
+    });
+
+    it("removes recovery values from signature data", () => {
+      const signature = {
+        nonce: 0 as Nonce,
+        pubkey: {
+          algo: Algorithm.Secp256k1,
+          data: fromBase64("AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP") as PubkeyBytes,
+        },
+        signature: Uint8Array.from([
+          ...fromBase64(
+            "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
+          ),
+          99,
+        ]) as SignatureBytes,
+      };
+      expect(encodeFullSignature(signature)).toEqual({
+        pub_key: {
+          type: "tendermint/PubKeySecp256k1",
+          value: "AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP",
+        },
+        signature: "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
+      });
+    });
   });
 
   describe("buildUnsignedTx", () => {
