@@ -1,6 +1,6 @@
-import { Address } from "@iov/bcp";
-import amino from "@tendermint/amino-js";
-import axios from "axios";
+import { Address, PostableBytes, TransactionId } from "@iov/bcp";
+import amino, { unmarshalTx } from "@tendermint/amino-js";
+import axios, { AxiosRequestConfig } from "axios";
 
 interface NodeInfo {
   readonly network: string;
@@ -38,18 +38,51 @@ interface AuthAccountsResponse {
   };
 }
 
-type RestClientResponse = NodeInfoResponse | BlocksResponse | AuthAccountsResponse;
+interface TxsResponse {
+  readonly height: string;
+  readonly txhash: string;
+  readonly raw_log: string;
+  readonly tx: amino.Tx;
+}
+
+interface PostTxsParams {}
+
+interface PostTxsResponse {
+  readonly height: string;
+  readonly txhash: string;
+  readonly code?: number;
+  readonly raw_log?: string;
+}
+
+type RestClientResponse = NodeInfoResponse | BlocksResponse | AuthAccountsResponse | PostTxsResponse;
+
+type BroadcastMode = "block" | "sync" | "async";
 
 export class RestClient {
   private readonly baseUrl: string;
+  private readonly postConfig: AxiosRequestConfig;
+  // From https://cosmos.network/rpc/#/ICS0/post_txs
+  // The supported broadcast modes include "block"(return after tx commit), "sync"(return afer CheckTx) and "async"(return right away).
+  private readonly mode: BroadcastMode;
 
-  public constructor(url: string) {
+  public constructor(url: string, mode: BroadcastMode = "block") {
     this.baseUrl = url;
+    this.postConfig = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    this.mode = mode;
   }
 
   public async get(path: string): Promise<RestClientResponse> {
     const url = this.baseUrl + path;
-    return axios.request({ url: url, method: "GET" }).then(res => res.data);
+    return axios.get(url).then(res => res.data);
+  }
+
+  public async post(path: string, params: PostTxsParams): Promise<RestClientResponse> {
+    const url = this.baseUrl + path;
+    return axios.post(url, params, this.postConfig).then(res => res.data);
   }
 
   public async nodeInfo(): Promise<NodeInfoResponse> {
@@ -82,5 +115,20 @@ export class RestClient {
       throw new Error("Unexpected response data format");
     }
     return responseData as AuthAccountsResponse;
+  }
+
+  public async txsById(id: TransactionId): Promise<TxsResponse> {
+    const responseData = await this.get(`/txs/${id}`);
+    return responseData as TxsResponse;
+  }
+
+  public async postTx(tx: PostableBytes): Promise<PostTxsResponse> {
+    const unmarshalled = unmarshalTx(tx, true);
+    const params = {
+      tx: unmarshalled.value,
+      mode: this.mode,
+    };
+    const responseData = await this.post("/txs", params);
+    return responseData as PostTxsResponse;
   }
 }
