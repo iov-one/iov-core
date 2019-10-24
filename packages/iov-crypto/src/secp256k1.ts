@@ -122,4 +122,15 @@ export class Secp256k1 {
         throw new Error("Invalid pubkey length");
     }
   }
+
+  public static trimRecoveryByte(signature: Uint8Array): Uint8Array {
+    switch (signature.length) {
+      case 64:
+        return signature;
+      case 65:
+        return signature.slice(0, 64);
+      default:
+        throw new Error("Invalid signature length");
+    }
+  }
 }

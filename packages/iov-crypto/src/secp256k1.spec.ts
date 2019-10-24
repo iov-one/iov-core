@@ -577,4 +577,21 @@ describe("Secp256k1", () => {
       expect(toHex(Secp256k1.compressPubkey(pubkey))).toEqual(compressed);
     });
   });
+
+  describe("trimRecoveryByte", () => {
+    it("throws for a signature with invalid length", () => {
+      const signature = fromHex("aa".repeat(66));
+      expect(() => Secp256k1.trimRecoveryByte(signature)).toThrowError(/invalid signature length/i);
+    });
+
+    it("returns a trimmed signature", () => {
+      const signature = fromHex("aa".repeat(64));
+      expect(Secp256k1.trimRecoveryByte(signature)).toEqual(signature);
+    });
+
+    it("trims a signature with recovery byte", () => {
+      const signature = fromHex("aa".repeat(64) + "bb");
+      expect(Secp256k1.trimRecoveryByte(signature)).toEqual(fromHex("aa".repeat(64)));
+    });
+  });
 });
