@@ -107,7 +107,7 @@ describe("CosmosConnection", () => {
     });
   });
 
-  describe("integration: postTx and getTx", () => {
+  describe("integration tests", () => {
     it("can post and get a transaction", async () => {
       pendingWithoutCosmos();
       const connection = await CosmosConnection.establish(httpUrl);
@@ -166,6 +166,124 @@ describe("CosmosConnection", () => {
         toHex(Secp256k1.trimRecoveryByte(signed.primarySignature.signature)),
       );
       expect(otherSignatures).toEqual(signed.otherSignatures);
+
+      connection.disconnect();
+    });
+
+    it("can post and search for a transaction", async () => {
+      pendingWithoutCosmos();
+      const connection = await CosmosConnection.establish(httpUrl);
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(faucetMnemonic));
+      const faucet = await profile.createIdentity(wallet.id, defaultChainId, faucetPath);
+      const faucetAddress = cosmosCodec.identityToAddress(faucet);
+
+      const unsigned = await connection.withDefaultFee<SendTransaction & WithCreator>({
+        kind: "bcp/send",
+        creator: faucet,
+        sender: faucetAddress,
+        recipient: defaultRecipient,
+        memo: "My first payment",
+        amount: {
+          quantity: "75000",
+          fractionalDigits: 9,
+          tokenTicker: vatom,
+        },
+      });
+      const nonce = await connection.getNonce({ address: faucetAddress });
+      const signed = await profile.signTransaction(unsigned, cosmosCodec, nonce);
+      const postableBytes = cosmosCodec.bytesToPost(signed);
+      const { transactionId } = await connection.postTx(postableBytes);
+
+      // search by id
+
+      const idSearchResponse = await connection.searchTx({ id: transactionId });
+      expect(idSearchResponse).toBeTruthy();
+      expect(idSearchResponse.length).toEqual(1);
+
+      const idResult = idSearchResponse[0];
+      expect(idResult.transactionId).toEqual(transactionId);
+      if (isFailedTransaction(idResult)) {
+        throw new Error("Expected transaction to succeed");
+      }
+      expect(idResult.log).toMatch(/success/i);
+      const { transaction: idTransaction } = idResult;
+      if (!isSendTransaction(idTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(idTransaction.kind).toEqual(unsigned.kind);
+      expect(idTransaction.sender).toEqual(unsigned.sender);
+      expect(idTransaction.recipient).toEqual(unsigned.recipient);
+      expect(idTransaction.memo).toEqual(unsigned.memo);
+      expect(idTransaction.amount).toEqual(unsigned.amount);
+
+      // search by sender address
+
+      const senderAddressSearchResponse = await connection.searchTx({ sentFromOrTo: faucetAddress });
+      expect(senderAddressSearchResponse).toBeTruthy();
+      expect(senderAddressSearchResponse.length).toBeGreaterThanOrEqual(1);
+
+      const senderAddressResult = senderAddressSearchResponse[senderAddressSearchResponse.length - 1];
+      expect(senderAddressResult.transactionId).toEqual(transactionId);
+      if (isFailedTransaction(senderAddressResult)) {
+        throw new Error("Expected transaction to succeed");
+      }
+      expect(senderAddressResult.log).toMatch(/success/i);
+      const { transaction: senderAddressTransaction } = senderAddressResult;
+      if (!isSendTransaction(senderAddressTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(senderAddressTransaction.kind).toEqual(unsigned.kind);
+      expect(senderAddressTransaction.sender).toEqual(unsigned.sender);
+      expect(senderAddressTransaction.recipient).toEqual(unsigned.recipient);
+      expect(senderAddressTransaction.memo).toEqual(unsigned.memo);
+      expect(senderAddressTransaction.amount).toEqual(unsigned.amount);
+
+      // search by recipient address
+      // TODO: Support searching by recipient
+
+      // const recipientAddressSearchResponse = await connection.searchTx({ sentFromOrTo: defaultRecipient });
+      // expect(recipientAddressSearchResponse).toBeTruthy();
+      // expect(recipientAddressSearchResponse.length).toBeGreaterThanOrEqual(1);
+
+      // const recipientAddressResult =
+      //   recipientAddressSearchResponse[recipientAddressSearchResponse.length - 1];
+      // expect(recipientAddressResult.transactionId).toEqual(transactionId);
+      // if (isFailedTransaction(recipientAddressResult)) {
+      //   throw new Error("Expected transaction to succeed");
+      // }
+      // expect(recipientAddressResult.log).toMatch(/success/i);
+      // const { transaction: recipientAddressTransaction } = recipientAddressResult;
+      // if (!isSendTransaction(recipientAddressTransaction)) {
+      //   throw new Error("Expected send transaction");
+      // }
+      // expect(recipientAddressTransaction.kind).toEqual(unsigned.kind);
+      // expect(recipientAddressTransaction.sender).toEqual(unsigned.sender);
+      // expect(recipientAddressTransaction.recipient).toEqual(unsigned.recipient);
+      // expect(recipientAddressTransaction.memo).toEqual(unsigned.memo);
+      // expect(recipientAddressTransaction.amount).toEqual(unsigned.amount);
+
+      // search by height
+
+      const heightSearchResponse = await connection.searchTx({ height: idResult.height });
+      expect(heightSearchResponse).toBeTruthy();
+      expect(heightSearchResponse.length).toEqual(1);
+
+      const heightResult = heightSearchResponse[0];
+      expect(heightResult.transactionId).toEqual(transactionId);
+      if (isFailedTransaction(heightResult)) {
+        throw new Error("Expected transaction to succeed");
+      }
+      expect(heightResult.log).toMatch(/success/i);
+      const { transaction: heightTransaction } = heightResult;
+      if (!isSendTransaction(heightTransaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(heightTransaction.kind).toEqual(unsigned.kind);
+      expect(heightTransaction.sender).toEqual(unsigned.sender);
+      expect(heightTransaction.recipient).toEqual(unsigned.recipient);
+      expect(heightTransaction.memo).toEqual(unsigned.memo);
+      expect(heightTransaction.amount).toEqual(unsigned.amount);
 
       connection.disconnect();
     });
