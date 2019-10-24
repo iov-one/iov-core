@@ -46,4 +46,4 @@ docker exec "$CONTAINER_NAME" \
   --laddr tcp://0.0.0.0:1317 \
   > "$REST_SERVER_LOGFILE" &
 
-echo "rest server running and logging into $REST_SERVER_LOGFILE"
+echo "rest server running on http://localhost:1317 and logging into $REST_SERVER_LOGFILE"
