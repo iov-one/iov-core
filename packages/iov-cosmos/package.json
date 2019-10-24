@@ -43,6 +43,7 @@
     "@iov/encoding": "^1.0.0",
     "@iov/stream": "^1.0.0",
     "@tendermint/amino-js": "^0.4.5",
+    "axios": "^0.19.0",
     "xstream": "^11.11.0"
   }
 }
