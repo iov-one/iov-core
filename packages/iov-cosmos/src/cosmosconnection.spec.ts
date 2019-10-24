@@ -24,10 +24,6 @@ function pendingWithoutCosmos(): void {
   }
 }
 
-async function sleep(ms: number = 6000): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 describe("CosmosConnection", () => {
   const vatom = "vatom" as TokenTicker;
   const httpUrl = "http://localhost:1317";
@@ -136,8 +132,6 @@ describe("CosmosConnection", () => {
       const signed = await profile.signTransaction(unsigned, cosmosCodec, nonce);
       const postableBytes = cosmosCodec.bytesToPost(signed);
       const { transactionId } = await connection.postTx(postableBytes);
-
-      await sleep();
 
       const getResponse = await connection.getTx(transactionId);
       expect(getResponse).toBeTruthy();
