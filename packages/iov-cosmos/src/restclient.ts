@@ -38,7 +38,7 @@ interface AuthAccountsResponse {
   };
 }
 
-interface TxsResponse {
+export interface TxsResponse {
   readonly height: string;
   readonly txhash: string;
   readonly raw_log: string;
