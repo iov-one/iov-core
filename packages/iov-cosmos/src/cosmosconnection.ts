@@ -14,6 +14,7 @@ import {
   FailedTransaction,
   Fee,
   isPubkeyQuery,
+  isSendTransaction,
   LightTransaction,
   Nonce,
   PostableBytes,
@@ -192,19 +193,23 @@ export class CosmosConnection implements BlockchainConnection {
   }
 
   public async getFeeQuote(tx: UnsignedTransaction): Promise<Fee> {
-    throw new Error("not implemented");
+    if (!isSendTransaction(tx)) {
+      throw new Error("Received transaction of unsupported kind.");
+    }
+    return {
+      tokens: {
+        fractionalDigits: 9,
+        quantity: "5000",
+        tokenTicker: vatom,
+      },
+      gasLimit: "200000",
+    };
   }
 
   public async withDefaultFee<T extends UnsignedTransaction>(tx: T): Promise<T> {
     return {
       ...tx,
-      fee: {
-        tokens: {
-          quantity: "5000",
-          tokenTicker: vatom,
-        },
-        gasLimit: "200000",
-      },
+      fee: await this.getFeeQuote(tx),
     };
   }
 }
