@@ -2,18 +2,21 @@ import {
   Address,
   Algorithm,
   ChainId,
+  isFailedTransaction,
+  isSendTransaction,
   PubkeyBytes,
   SendTransaction,
   TokenTicker,
   WithCreator,
 } from "@iov/bcp";
+import { Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
 import { cosmosCodec } from "./cosmoscodec";
 import { CosmosConnection } from "./cosmosconnection";
 
-const { fromBase64 } = Encoding;
+const { fromBase64, toHex } = Encoding;
 
 function pendingWithoutCosmos(): void {
   if (!process.env.COSMOS_ENABLED) {
@@ -21,7 +24,7 @@ function pendingWithoutCosmos(): void {
   }
 }
 
-async function sleep(ms: number = 5000): Promise<void> {
+async function sleep(ms: number = 6000): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -138,6 +141,37 @@ describe("CosmosConnection", () => {
 
       const getResponse = await connection.getTx(transactionId);
       expect(getResponse).toBeTruthy();
+      expect(getResponse.transactionId).toEqual(transactionId);
+      if (isFailedTransaction(getResponse)) {
+        throw new Error("Expected transaction to succeed");
+      }
+      expect(getResponse.log).toMatch(/success/i);
+      const { transaction, primarySignature, otherSignatures } = getResponse;
+      if (!isSendTransaction(transaction)) {
+        throw new Error("Expected send transaction");
+      }
+      expect(transaction.kind).toEqual(unsigned.kind);
+      expect(transaction.sender).toEqual(unsigned.sender);
+      expect(transaction.recipient).toEqual(unsigned.recipient);
+      expect(transaction.memo).toEqual(unsigned.memo);
+      expect(transaction.amount).toEqual(unsigned.amount);
+      expect(transaction.creator.chainId).toEqual(unsigned.creator.chainId);
+      expect(transaction.creator.pubkey.algo).toEqual(unsigned.creator.pubkey.algo);
+      expect(toHex(transaction.creator.pubkey.data)).toEqual(
+        toHex(Secp256k1.compressPubkey(unsigned.creator.pubkey.data)),
+      );
+
+      // TODO: Enable when Cosmos-SDK supports this
+      // See https://github.com/cosmos/cosmos-sdk/issues/4713
+      // expect(primarySignature.nonce).toEqual(signed.primarySignature.nonce);
+      expect(primarySignature.pubkey.algo).toEqual(signed.primarySignature.pubkey.algo);
+      expect(toHex(primarySignature.pubkey.data)).toEqual(
+        toHex(Secp256k1.compressPubkey(signed.primarySignature.pubkey.data)),
+      );
+      expect(toHex(primarySignature.signature)).toEqual(
+        toHex(Secp256k1.trimRecoveryByte(signed.primarySignature.signature)),
+      );
+      expect(otherSignatures).toEqual(signed.otherSignatures);
 
       connection.disconnect();
     });
