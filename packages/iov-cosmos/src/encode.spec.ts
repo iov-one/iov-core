@@ -53,12 +53,10 @@ describe("encode", () => {
 
   describe("encodeAmount", () => {
     it("encodes an amount", () => {
-      expect(encodeAmount(defaultAmount)).toEqual([
-        {
-          denom: "vatom",
-          amount: "11657995",
-        },
-      ]);
+      expect(encodeAmount(defaultAmount)).toEqual({
+        denom: "vatom",
+        amount: "11657995",
+      });
     });
   });
 
