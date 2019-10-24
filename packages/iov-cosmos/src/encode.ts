@@ -21,13 +21,11 @@ export function encodePubkey(pubkey: PubkeyBundle): amino.PubKey {
   };
 }
 
-export function encodeAmount(amount: Amount): readonly amino.Coin[] {
-  return [
-    {
-      denom: amount.tokenTicker,
-      amount: amount.quantity,
-    },
-  ];
+export function encodeAmount(amount: Amount): amino.Coin {
+  return {
+    denom: amount.tokenTicker,
+    amount: amount.quantity,
+  };
 }
 
 export function encodeFee(fee: Fee): amino.StdFee {
@@ -72,7 +70,7 @@ export function buildUnsignedTx(tx: UnsignedTransaction): amino.Tx {
           value: {
             from_address: tx.sender,
             to_address: tx.recipient,
-            amount: encodeAmount(tx.amount),
+            amount: [encodeAmount(tx.amount)],
           },
         },
       ],
