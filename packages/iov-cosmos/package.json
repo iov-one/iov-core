@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@iov/bcp": "^1.0.0",
+    "@iov/crypto": "^1.0.0",
     "@iov/encoding": "^1.0.0",
     "@tendermint/amino-js": "^0.4.4"
   }
