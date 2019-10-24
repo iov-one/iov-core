@@ -45,6 +45,15 @@ export interface TxsResponse {
   readonly tx: amino.Tx;
 }
 
+interface SearchTxsResponse {
+  readonly total_count: string;
+  readonly count: string;
+  readonly page_number: string;
+  readonly page_total: string;
+  readonly limit: string;
+  readonly txs: readonly TxsResponse[];
+}
+
 interface PostTxsParams {}
 
 interface PostTxsResponse {
@@ -54,7 +63,13 @@ interface PostTxsResponse {
   readonly raw_log?: string;
 }
 
-type RestClientResponse = NodeInfoResponse | BlocksResponse | AuthAccountsResponse | PostTxsResponse;
+type RestClientResponse =
+  | NodeInfoResponse
+  | BlocksResponse
+  | AuthAccountsResponse
+  | TxsResponse
+  | SearchTxsResponse
+  | PostTxsResponse;
 
 type BroadcastMode = "block" | "sync" | "async";
 
@@ -115,6 +130,14 @@ export class RestClient {
       throw new Error("Unexpected response data format");
     }
     return responseData as AuthAccountsResponse;
+  }
+
+  public async txs(query: string): Promise<SearchTxsResponse> {
+    const responseData = await this.get(`/txs?${query}`);
+    if (!(responseData as any).txs) {
+      throw new Error("Unexpected response data format");
+    }
+    return responseData as SearchTxsResponse;
   }
 
   public async txsById(id: TransactionId): Promise<TxsResponse> {
