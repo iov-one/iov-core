@@ -12,8 +12,9 @@ import {
   parseFee,
   parseMsg,
   parseTx,
+  parseTxsResponse,
 } from "./decode";
-import { chainId, nonce, signedTxJson } from "./testdata.spec";
+import { chainId, nonce, signedTxJson, txId } from "./testdata.spec";
 import data from "./testdata/cosmoshub.json";
 
 const { fromBase64 } = Encoding;
@@ -146,6 +147,26 @@ describe("decode", () => {
   describe("parseTx", () => {
     it("works", () => {
       expect(parseTx(data.tx, chainId, nonce)).toEqual(signedTxJson);
+    });
+  });
+
+  describe("parseTxsResponse", () => {
+    it("works", () => {
+      const currentHeight = 2923;
+      const txsResponse = {
+        height: "2823",
+        txhash: txId,
+        raw_log: '[{"msg_index":0,"success":true,"log":""}]',
+        tx: data.tx,
+      };
+      const expected = {
+        ...signedTxJson,
+        height: 2823,
+        confirmations: 101,
+        transactionId: txId,
+        log: '[{"msg_index":0,"success":true,"log":""}]',
+      };
+      expect(parseTxsResponse(chainId, currentHeight, nonce, txsResponse)).toEqual(expected);
     });
   });
 });
