@@ -92,7 +92,11 @@ export class RestClient {
 
   public async get(path: string): Promise<RestClientResponse> {
     const url = this.baseUrl + path;
-    return axios.get(url).then(res => res.data);
+    const { data } = await axios.get(url);
+    if (data === null) {
+      throw new Error("Received null response from server");
+    }
+    return data;
   }
 
   public async post(path: string, params: PostTxsParams): Promise<RestClientResponse> {
