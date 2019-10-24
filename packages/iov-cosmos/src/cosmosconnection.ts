@@ -34,7 +34,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import { CosmosBech32Prefix, pubkeyToAddress } from "./address";
-import { decodeAmount, parseTx } from "./decode";
+import { decodeAmount, parseTxsResponse } from "./decode";
 import { RestClient } from "./restclient";
 
 const { fromBase64 } = Encoding;
@@ -43,6 +43,27 @@ const vatom = "vatom" as TokenTicker;
 
 interface ChainData {
   readonly chainId: ChainId;
+}
+
+function buildQueryString({
+  height,
+  id,
+  maxHeight,
+  minHeight,
+  sentFromOrTo,
+  signedBy,
+  tags,
+}: TransactionQuery): string {
+  if ([maxHeight, minHeight, signedBy, tags].some(component => component !== undefined)) {
+    throw new Error("Transaction query by maxHeight, minHeight, signedBy or tags not yet supported");
+  }
+  const heightComponent = height !== undefined ? `tx.height=${height}` : null;
+  const hashComponent = id !== undefined ? `tx.hash=${id}` : null;
+  const sentFromOrToComponent = sentFromOrTo !== undefined ? `message.sender=${sentFromOrTo}` : null;
+  // TODO: Support senders and recipients
+  // const sentFromOrToComponent = sentFromOrTo !== undefined ? `transfer.recipient=${sentFromOrTo}` : null;
+  const components: readonly (string | null)[] = [heightComponent, hashComponent, sentFromOrToComponent];
+  return components.filter(Boolean).join("&");
 }
 
 export class CosmosConnection implements BlockchainConnection {
@@ -145,17 +166,10 @@ export class CosmosConnection implements BlockchainConnection {
   ): Promise<(ConfirmedAndSignedTransaction<UnsignedTransaction>) | FailedTransaction> {
     try {
       const response = await this.restClient.txsById(id);
-      const height = parseInt(response.height, 10);
-
+      const chainId = await this.chainId();
       const currentHeight = await this.height();
 
-      return {
-        ...parseTx(response.tx, this.chainId()),
-        height: height,
-        confirmations: currentHeight - height + 1,
-        transactionId: response.txhash as TransactionId,
-        log: response.raw_log,
-      };
+      return parseTxsResponse(chainId, currentHeight, response);
     } catch (error) {
       if (error.response.status === 404) {
         throw new Error("Transaction does not exist");
@@ -179,7 +193,11 @@ export class CosmosConnection implements BlockchainConnection {
   public async searchTx(
     query: TransactionQuery,
   ): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]> {
-    throw new Error("not implemented");
+    const queryString = buildQueryString(query);
+    const chainId = await this.chainId();
+    const currentHeight = await this.height();
+    const { txs } = await this.restClient.txs(queryString);
+    return txs.map(parseTxsResponse.bind(null, chainId, currentHeight));
   }
 
   public listenTx(
