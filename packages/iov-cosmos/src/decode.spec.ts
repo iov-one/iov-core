@@ -26,8 +26,9 @@ describe("decode", () => {
   const defaultSignature = fromBase64(
     "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
   );
+  const defaultNonce = 99 as Nonce;
   const defaultFullSignature = {
-    nonce: 0 as Nonce,
+    nonce: defaultNonce,
     pubkey: defaultPubkey,
     signature: defaultSignature,
   };
@@ -83,7 +84,7 @@ describe("decode", () => {
         },
         signature: "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
       };
-      expect(decodeFullSignature(fullSignature)).toEqual(defaultFullSignature);
+      expect(decodeFullSignature(fullSignature, defaultNonce)).toEqual(defaultFullSignature);
     });
   });
 
