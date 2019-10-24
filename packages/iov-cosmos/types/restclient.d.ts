@@ -36,6 +36,14 @@ export interface TxsResponse {
   readonly raw_log: string;
   readonly tx: amino.Tx;
 }
+interface SearchTxsResponse {
+  readonly total_count: string;
+  readonly count: string;
+  readonly page_number: string;
+  readonly page_total: string;
+  readonly limit: string;
+  readonly txs: readonly TxsResponse[];
+}
 interface PostTxsParams {}
 interface PostTxsResponse {
   readonly height: string;
@@ -43,7 +51,13 @@ interface PostTxsResponse {
   readonly code?: number;
   readonly raw_log?: string;
 }
-declare type RestClientResponse = NodeInfoResponse | BlocksResponse | AuthAccountsResponse | PostTxsResponse;
+declare type RestClientResponse =
+  | NodeInfoResponse
+  | BlocksResponse
+  | AuthAccountsResponse
+  | TxsResponse
+  | SearchTxsResponse
+  | PostTxsResponse;
 declare type BroadcastMode = "block" | "sync" | "async";
 export declare class RestClient {
   private readonly baseUrl;
@@ -56,6 +70,7 @@ export declare class RestClient {
   blocksLatest(): Promise<BlocksResponse>;
   blocks(height: number): Promise<BlocksResponse>;
   authAccounts(address: Address): Promise<AuthAccountsResponse>;
+  txs(query: string): Promise<SearchTxsResponse>;
   txsById(id: TransactionId): Promise<TxsResponse>;
   postTx(tx: PostableBytes): Promise<PostTxsResponse>;
 }
