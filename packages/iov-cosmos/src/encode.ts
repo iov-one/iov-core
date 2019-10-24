@@ -53,7 +53,7 @@ export function encodeFullSignature(fullSignature: FullSignature): amino.StdSign
       value: toBase64(Secp256k1.compressPubkey(fullSignature.pubkey.data)),
     },
     // Recovery seems to be unused
-    signature: toBase64(fullSignature.signature.slice(0, 64)),
+    signature: toBase64(Secp256k1.trimRecoveryByte(fullSignature.signature)),
   };
 }
 
