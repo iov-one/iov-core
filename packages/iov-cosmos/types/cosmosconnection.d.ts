@@ -48,4 +48,5 @@ export declare class CosmosConnection implements BlockchainConnection {
   liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
   getFeeQuote(tx: UnsignedTransaction): Promise<Fee>;
   withDefaultFee<T extends UnsignedTransaction>(tx: T): Promise<T>;
+  private parseAndPopulateTxResponse;
 }
