@@ -13,7 +13,7 @@ import {
   parseMsg,
   parseTx,
 } from "./decode";
-import { signedTxJson } from "./testdata.spec";
+import { chainId, nonce, signedTxJson } from "./testdata.spec";
 import data from "./testdata/cosmoshub.json";
 
 const { fromBase64 } = Encoding;
@@ -26,9 +26,8 @@ describe("decode", () => {
   const defaultSignature = fromBase64(
     "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
   );
-  const defaultNonce = 99 as Nonce;
   const defaultFullSignature = {
-    nonce: defaultNonce,
+    nonce: nonce,
     pubkey: defaultPubkey,
     signature: defaultSignature,
   };
@@ -51,10 +50,9 @@ describe("decode", () => {
     },
     gasLimit: "200000",
   };
-  const defaultChainId = "cosmoshub-2" as ChainId;
   const defaultCreator = {
     pubkey: defaultPubkey,
-    chainId: defaultChainId,
+    chainId: chainId,
   };
 
   describe("decodePubkey", () => {
@@ -84,7 +82,7 @@ describe("decode", () => {
         },
         signature: "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
       };
-      expect(decodeFullSignature(fullSignature, defaultNonce)).toEqual(defaultFullSignature);
+      expect(decodeFullSignature(fullSignature, nonce)).toEqual(defaultFullSignature);
     });
   });
 
@@ -145,13 +143,13 @@ describe("decode", () => {
         },
         signature: "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
       };
-      expect(parseCreator(signature, defaultChainId)).toEqual(defaultCreator);
+      expect(parseCreator(signature, chainId)).toEqual(defaultCreator);
     });
   });
 
   describe("parseTx", () => {
     it("works", () => {
-      expect(parseTx(data.tx, defaultChainId)).toEqual(signedTxJson);
+      expect(parseTx(data.tx, chainId, nonce)).toEqual(signedTxJson);
     });
   });
 });
