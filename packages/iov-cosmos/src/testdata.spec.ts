@@ -26,7 +26,7 @@ export const pubJson: PubkeyBundle = {
 
 export const chainId = "cosmoshub-2" as ChainId;
 
-export const nonce = 0 as Nonce;
+export const nonce = 99 as Nonce;
 
 export const sendTxJson: SendTransaction & WithCreator = {
   kind: "bcp/send",
