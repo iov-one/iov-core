@@ -75,9 +75,12 @@ export class CosmosCodec implements TxCodec {
     return toHex(hash).toUpperCase() as TransactionId;
   }
 
-  public parseBytes(bytes: PostableBytes, chainId: ChainId): SignedTransaction {
+  public parseBytes(bytes: PostableBytes, chainId: ChainId, nonce?: Nonce): SignedTransaction {
+    if (nonce === undefined) {
+      throw new Error("Nonce is required");
+    }
     const parsed = unmarshalTx(bytes);
-    return parseTx(parsed, chainId);
+    return parseTx(parsed, chainId, nonce);
   }
 
   public identityToAddress(identity: Identity): Address {
