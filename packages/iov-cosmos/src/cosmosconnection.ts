@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase,@typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/camelcase */
 import {
   Account,
   AccountQuery,
@@ -103,7 +103,7 @@ export class CosmosConnection implements BlockchainConnection {
     return block_meta.header.height;
   }
 
-  public async getToken(ticker: TokenTicker): Promise<Token | undefined> {
+  public async getToken(_ticker: TokenTicker): Promise<Token | undefined> {
     throw new Error("not implemented");
   }
 
@@ -127,7 +127,7 @@ export class CosmosConnection implements BlockchainConnection {
         };
   }
 
-  public watchAccount(account: AccountQuery): Stream<Account | undefined> {
+  public watchAccount(_account: AccountQuery): Stream<Account | undefined> {
     throw new Error("not implemented");
   }
 
@@ -198,12 +198,14 @@ export class CosmosConnection implements BlockchainConnection {
   }
 
   public listenTx(
-    query: TransactionQuery,
+    _query: TransactionQuery,
   ): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
     throw new Error("not implemented");
   }
 
-  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+  public liveTx(
+    _query: TransactionQuery,
+  ): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
     throw new Error("not implemented");
   }
 
