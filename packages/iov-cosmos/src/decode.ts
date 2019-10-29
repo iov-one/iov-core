@@ -91,7 +91,7 @@ export function parseCreator(signature: amino.StdSignature, chainId: ChainId): I
   };
 }
 
-export function parseTx(tx: amino.Tx, chainId: ChainId): SignedTransaction {
+export function parseTx(tx: amino.Tx, chainId: ChainId, nonce: Nonce): SignedTransaction {
   const txValue: TxValue = tx.value;
   if (!txValue.signatures) {
     throw new Error("No signatures");
@@ -103,12 +103,7 @@ export function parseTx(tx: amino.Tx, chainId: ChainId): SignedTransaction {
     throw new Error("No fee");
   }
 
-  // TODO: Use real nonce when Cosmos-SDK supports this
-  // See https://github.com/cosmos/cosmos-sdk/issues/4713
-  const placeholderNonce = 0;
-  const [primarySignature] = txValue.signatures.map(signature =>
-    decodeFullSignature(signature, placeholderNonce),
-  );
+  const [primarySignature] = txValue.signatures.map(signature => decodeFullSignature(signature, nonce));
   const msg = parseMsg(txValue.msg);
   const fee = parseFee(txValue.fee);
   const creator = parseCreator(txValue.signatures[0], chainId);

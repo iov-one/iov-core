@@ -4,6 +4,7 @@ import {
   Fee,
   FullSignature,
   Identity,
+  Nonce,
   PubkeyBundle,
   SendTransaction,
   SignatureBytes,
@@ -17,4 +18,4 @@ export declare function decodeAmount(amount: readonly amino.Coin[]): Amount;
 export declare function parseMsg(msgs: readonly amino.Msg[]): SendTransaction;
 export declare function parseFee(fee: amino.StdFee): Fee;
 export declare function parseCreator(signature: amino.StdSignature, chainId: ChainId): Identity;
-export declare function parseTx(tx: amino.Tx, chainId: ChainId): SignedTransaction;
+export declare function parseTx(tx: amino.Tx, chainId: ChainId, nonce: Nonce): SignedTransaction;
