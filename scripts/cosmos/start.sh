@@ -37,7 +37,7 @@ docker run \
 
 echo "gaiad running and logging into $GAIAD_LOGFILE"
 
-sleep 2
+sleep 10
 
 docker exec "$CONTAINER_NAME" \
   gaiacli rest-server \
