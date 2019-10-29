@@ -155,9 +155,7 @@ describe("CosmosConnection", () => {
         toHex(Secp256k1.compressPubkey(unsigned.creator.pubkey.data)),
       );
 
-      // TODO: Enable when Cosmos-SDK supports this
-      // See https://github.com/cosmos/cosmos-sdk/issues/4713
-      // expect(primarySignature.nonce).toEqual(signed.primarySignature.nonce);
+      expect(primarySignature.nonce).toEqual(signed.primarySignature.nonce);
       expect(primarySignature.pubkey.algo).toEqual(signed.primarySignature.pubkey.algo);
       expect(toHex(primarySignature.pubkey.data)).toEqual(
         toHex(Secp256k1.compressPubkey(signed.primarySignature.pubkey.data)),
