@@ -31,10 +31,10 @@ export declare class CosmosConnection implements BlockchainConnection {
   disconnect(): void;
   chainId(): ChainId;
   height(): Promise<number>;
-  getToken(ticker: TokenTicker): Promise<Token | undefined>;
+  getToken(_ticker: TokenTicker): Promise<Token | undefined>;
   getAllTokens(): Promise<readonly Token[]>;
   getAccount(query: AccountQuery): Promise<Account | undefined>;
-  watchAccount(account: AccountQuery): Stream<Account | undefined>;
+  watchAccount(_account: AccountQuery): Stream<Account | undefined>;
   getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce>;
   getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]>;
   getBlockHeader(height: number): Promise<BlockHeader>;
@@ -44,8 +44,8 @@ export declare class CosmosConnection implements BlockchainConnection {
   searchTx(
     query: TransactionQuery,
   ): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]>;
-  listenTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
-  liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
+  listenTx(_query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
+  liveTx(_query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
   getFeeQuote(tx: UnsignedTransaction): Promise<Fee>;
   withDefaultFee<T extends UnsignedTransaction>(tx: T): Promise<T>;
   private parseAndPopulateTxResponse;
