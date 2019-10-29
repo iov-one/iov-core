@@ -128,8 +128,10 @@ export class RestClient {
     return responseData as BlocksResponse;
   }
 
-  public async authAccounts(address: Address): Promise<AuthAccountsResponse> {
-    const responseData = await this.get(`/auth/accounts/${address}`);
+  public async authAccounts(address: Address, height?: string): Promise<AuthAccountsResponse> {
+    const path =
+      height === undefined ? `/auth/accounts/${address}` : `/auth/accounts/${address}?tx.height=${height}`;
+    const responseData = await this.get(path);
     if ((responseData as any).result.type !== "cosmos-sdk/Account") {
       throw new Error("Unexpected response data format");
     }
