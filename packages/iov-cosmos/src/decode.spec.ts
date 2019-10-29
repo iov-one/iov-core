@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Address, Algorithm, ChainId, Nonce, TokenTicker } from "@iov/bcp";
+import { Address, Algorithm, TokenTicker } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
