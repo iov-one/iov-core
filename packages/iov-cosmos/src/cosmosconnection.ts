@@ -166,10 +166,13 @@ export class CosmosConnection implements BlockchainConnection {
   ): Promise<(ConfirmedAndSignedTransaction<UnsignedTransaction>) | FailedTransaction> {
     try {
       const response = await this.restClient.txsById(id);
+      const sender = (response.tx.value as any).msg[0].value.from_address;
       const chainId = await this.chainId();
       const currentHeight = await this.height();
+      const accountForHeight = await this.restClient.authAccounts(sender, response.height);
+      const nonce = (parseInt(accountForHeight.result.value.sequence, 10) - 1) as Nonce;
 
-      return parseTxsResponse(chainId, currentHeight, response);
+      return parseTxsResponse(chainId, currentHeight, nonce, response);
     } catch (error) {
       if (error.response.status === 404) {
         throw new Error("Transaction does not exist");
@@ -197,7 +200,14 @@ export class CosmosConnection implements BlockchainConnection {
     const chainId = await this.chainId();
     const currentHeight = await this.height();
     const { txs } = await this.restClient.txs(queryString);
-    return txs.map(parseTxsResponse.bind(null, chainId, currentHeight));
+    return Promise.all(
+      txs.map(async tx => {
+        const sender = (tx.tx.value as any).msg[0].value.from_address;
+        const accountForHeight = await this.restClient.authAccounts(sender, tx.height);
+        const nonce = (parseInt(accountForHeight.result.value.sequence, 10) - 1) as Nonce;
+        return parseTxsResponse(chainId, currentHeight, nonce, tx);
+      }),
+    );
   }
 
   public listenTx(
