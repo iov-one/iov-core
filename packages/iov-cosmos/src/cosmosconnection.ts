@@ -35,7 +35,7 @@ import { Stream } from "xstream";
 
 import { CosmosBech32Prefix, pubkeyToAddress } from "./address";
 import { decodeAmount, parseTxsResponse } from "./decode";
-import { RestClient } from "./restclient";
+import { RestClient, TxsResponse } from "./restclient";
 
 const { fromBase64 } = Encoding;
 
@@ -166,13 +166,8 @@ export class CosmosConnection implements BlockchainConnection {
   ): Promise<(ConfirmedAndSignedTransaction<UnsignedTransaction>) | FailedTransaction> {
     try {
       const response = await this.restClient.txsById(id);
-      const sender = (response.tx.value as any).msg[0].value.from_address;
       const chainId = await this.chainId();
-      const currentHeight = await this.height();
-      const accountForHeight = await this.restClient.authAccounts(sender, response.height);
-      const nonce = (parseInt(accountForHeight.result.value.sequence, 10) - 1) as Nonce;
-
-      return parseTxsResponse(chainId, currentHeight, nonce, response);
+      return this.parseAndPopulateTxResponse(response, chainId);
     } catch (error) {
       if (error.response.status === 404) {
         throw new Error("Transaction does not exist");
@@ -198,16 +193,8 @@ export class CosmosConnection implements BlockchainConnection {
   ): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]> {
     const queryString = buildQueryString(query);
     const chainId = await this.chainId();
-    const currentHeight = await this.height();
-    const { txs } = await this.restClient.txs(queryString);
-    return Promise.all(
-      txs.map(async tx => {
-        const sender = (tx.tx.value as any).msg[0].value.from_address;
-        const accountForHeight = await this.restClient.authAccounts(sender, tx.height);
-        const nonce = (parseInt(accountForHeight.result.value.sequence, 10) - 1) as Nonce;
-        return parseTxsResponse(chainId, currentHeight, nonce, tx);
-      }),
-    );
+    const { txs: responses } = await this.restClient.txs(queryString);
+    return Promise.all(responses.map(response => this.parseAndPopulateTxResponse(response, chainId)));
   }
 
   public listenTx(
@@ -239,5 +226,15 @@ export class CosmosConnection implements BlockchainConnection {
       ...tx,
       fee: await this.getFeeQuote(tx),
     };
+  }
+
+  private async parseAndPopulateTxResponse(
+    response: TxsResponse,
+    chainId: ChainId,
+  ): Promise<(ConfirmedAndSignedTransaction<UnsignedTransaction>) | FailedTransaction> {
+    const sender = (response.tx.value as any).msg[0].value.from_address;
+    const accountForHeight = await this.restClient.authAccounts(sender, response.height);
+    const nonce = (parseInt(accountForHeight.result.value.sequence, 10) - 1) as Nonce;
+    return parseTxsResponse(chainId, parseInt(response.height, 10), nonce, response);
   }
 }
