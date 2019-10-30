@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import {
+  Algorithm,
   Amount,
   Fee,
   FullSignature,
@@ -15,10 +16,20 @@ import amino from "@tendermint/amino-js";
 const { toBase64 } = Encoding;
 
 export function encodePubkey(pubkey: PubkeyBundle): amino.PubKey {
-  return {
-    type: "tendermint/PubKeySecp256k1",
-    value: toBase64(pubkey.data),
-  };
+  switch (pubkey.algo) {
+    case Algorithm.Secp256k1:
+      return {
+        type: "tendermint/PubKeySecp256k1",
+        value: toBase64(pubkey.data),
+      };
+    case Algorithm.Ed25519:
+      return {
+        type: "tendermint/PubKeyEd25519",
+        value: toBase64(pubkey.data),
+      };
+    default:
+      throw new Error("Unsupported pubkey algo");
+  }
 }
 
 export function encodeAmount(amount: Amount): amino.Coin {
