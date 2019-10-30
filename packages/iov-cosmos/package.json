@@ -32,7 +32,7 @@
     "test-node": "node jasmine-testrunner.js",
     "test-edge": "yarn pack-web && karma start --single-run --browsers Edge",
     "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
-    "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
+    "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadlessInsecure",
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari",
     "test": "yarn build-or-skip && yarn test-node",
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
