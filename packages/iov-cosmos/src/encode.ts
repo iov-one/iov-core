@@ -36,12 +36,7 @@ export function encodeFee(fee: Fee): amino.StdFee {
     throw new Error("Cannot encode fee without gas limit");
   }
   return {
-    amount: [
-      {
-        denom: fee.tokens.tokenTicker,
-        amount: fee.tokens.quantity,
-      },
-    ],
+    amount: [encodeAmount(fee.tokens)],
     gas: fee.gasLimit,
   };
 }

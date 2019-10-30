@@ -45,11 +45,11 @@ export function decodeFullSignature(signature: amino.StdSignature, nonce: number
   };
 }
 
-export function decodeAmount(amount: readonly amino.Coin[]): Amount {
+export function decodeAmount(amount: amino.Coin): Amount {
   return {
     fractionalDigits: 9,
-    quantity: amount[0].amount,
-    tokenTicker: amount[0].denom as TokenTicker,
+    quantity: amount.amount,
+    tokenTicker: amount.denom as TokenTicker,
   };
 }
 
@@ -62,11 +62,14 @@ export function parseMsg(msgs: readonly amino.Msg[]): SendTransaction {
     throw new Error("Only MsgSend is supported");
   }
   const msgValue = msg.value as amino.MsgSend;
+  if (msgValue.amount.length !== 1) {
+    throw new Error("MsgSend with more than one amount is not supported");
+  }
   return {
     kind: "bcp/send",
     sender: msgValue.from_address as Address,
     recipient: msgValue.to_address as Address,
-    amount: decodeAmount(msgValue.amount),
+    amount: decodeAmount(msgValue.amount[0]),
   };
 }
 
