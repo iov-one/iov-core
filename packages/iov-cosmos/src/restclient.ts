@@ -1,6 +1,6 @@
 import { Address, PostableBytes, TransactionId } from "@iov/bcp";
 import amino, { unmarshalTx } from "@tendermint/amino-js";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosInstance } from "axios";
 
 interface NodeInfo {
   readonly network: string;
@@ -74,25 +74,24 @@ type RestClientResponse =
 type BroadcastMode = "block" | "sync" | "async";
 
 export class RestClient {
-  private readonly baseUrl: string;
-  private readonly postConfig: AxiosRequestConfig;
+  private readonly client: AxiosInstance;
   // From https://cosmos.network/rpc/#/ICS0/post_txs
   // The supported broadcast modes include "block"(return after tx commit), "sync"(return afer CheckTx) and "async"(return right away).
   private readonly mode: BroadcastMode;
 
   public constructor(url: string, mode: BroadcastMode = "block") {
-    this.baseUrl = url;
-    this.postConfig = {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const headers = {
+      post: { "Content-Type": "application/json" },
     };
+    this.client = axios.create({
+      baseURL: url,
+      headers: headers,
+    });
     this.mode = mode;
   }
 
   public async get(path: string): Promise<RestClientResponse> {
-    const url = this.baseUrl + path;
-    const { data } = await axios.get(url);
+    const { data } = await this.client.get(path);
     if (data === null) {
       throw new Error("Received null response from server");
     }
@@ -100,8 +99,11 @@ export class RestClient {
   }
 
   public async post(path: string, params: PostTxsParams): Promise<RestClientResponse> {
-    const url = this.baseUrl + path;
-    return axios.post(url, params, this.postConfig).then(res => res.data);
+    const { data } = await this.client.post(path, params);
+    if (data === null) {
+      throw new Error("Received null response from server");
+    }
+    return data;
   }
 
   public async nodeInfo(): Promise<NodeInfoResponse> {

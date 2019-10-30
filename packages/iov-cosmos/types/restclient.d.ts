@@ -60,8 +60,7 @@ declare type RestClientResponse =
   | PostTxsResponse;
 declare type BroadcastMode = "block" | "sync" | "async";
 export declare class RestClient {
-  private readonly baseUrl;
-  private readonly postConfig;
+  private readonly client;
   private readonly mode;
   constructor(url: string, mode?: BroadcastMode);
   get(path: string): Promise<RestClientResponse>;
