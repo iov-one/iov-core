@@ -3,12 +3,8 @@ import { createJsonRpcRequest } from "../jsonrpc";
 import { Method } from "../requests";
 import { HttpClient } from "./httpclient";
 
-function skipTests(): boolean {
-  return !process.env.TENDERMINT_ENABLED;
-}
-
 function pendingWithoutTendermint(): void {
-  if (skipTests()) {
+  if (!process.env.TENDERMINT_ENABLED) {
     pending("Set TENDERMINT_ENABLED to enable tendermint rpc tests");
   }
 }

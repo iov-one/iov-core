@@ -5,12 +5,8 @@ import { HttpClient } from "./httpclient";
 import { instanceOfRpcStreamingClient } from "./rpcclient";
 import { WebsocketClient } from "./websocketclient";
 
-function skipTests(): boolean {
-  return !process.env.TENDERMINT_ENABLED;
-}
-
 function pendingWithoutTendermint(): void {
-  if (skipTests()) {
+  if (!process.env.TENDERMINT_ENABLED) {
     pending("Set TENDERMINT_ENABLED to enable tendermint rpc tests");
   }
 }
