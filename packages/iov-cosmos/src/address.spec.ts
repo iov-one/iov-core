@@ -65,5 +65,14 @@ describe("address", () => {
       };
       expect(pubkeyToAddress(pubkey, prefix)).toEqual("cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs6");
     });
+
+    it("works for Ed25519", () => {
+      const prefix = "cosmos";
+      const pubkey = {
+        algo: Algorithm.Ed25519,
+        data: fromHex("12ee6f581fe55673a1e9e1382a0829e32075a0aa4763c968bc526e1852e78c95") as PubkeyBytes,
+      };
+      expect(pubkeyToAddress(pubkey, prefix)).toEqual("cosmos1pfq05em6sfkls66ut4m2257p7qwlk448h8mysz");
+    });
   });
 });
