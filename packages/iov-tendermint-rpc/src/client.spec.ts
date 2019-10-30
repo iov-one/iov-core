@@ -400,7 +400,12 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
     expect(events.length).toEqual(2);
     // Meta
     expect(events[1].height).toEqual(events[0].height + 1);
-    expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+    if (events[1].result.tags && events[0].result.tags) {
+      expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+    }
+    if (events[1].result.events && events[0].result.events) {
+      expect(events[1].result.events).not.toEqual(events[0].result.events);
+    }
     // Content
     expect(events[0].tx).toEqual(transactionData1);
     expect(events[1].tx).toEqual(transactionData2);
@@ -442,7 +447,12 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
     expect(events.length).toEqual(2);
     // Meta
     expect(events[1].height).toEqual(events[0].height + 1);
-    expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+    if (events[1].result.tags && events[0].result.tags) {
+      expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+    }
+    if (events[1].result.events && events[0].result.events) {
+      expect(events[1].result.events).not.toEqual(events[0].result.events);
+    }
     // Content
     expect(events[0].tx).toEqual(transactionData1);
     expect(events[1].tx).toEqual(transactionData2);
