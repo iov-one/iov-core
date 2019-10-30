@@ -1,5 +1,6 @@
 import { Address, PostableBytes, TransactionId } from "@iov/bcp";
 import amino from "@tendermint/amino-js";
+import { AminoTx } from "./types";
 interface NodeInfo {
   readonly network: string;
 }
@@ -34,7 +35,7 @@ export interface TxsResponse {
   readonly height: string;
   readonly txhash: string;
   readonly raw_log: string;
-  readonly tx: amino.Tx;
+  readonly tx: AminoTx;
 }
 interface SearchTxsResponse {
   readonly total_count: string;

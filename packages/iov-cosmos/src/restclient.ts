@@ -2,6 +2,8 @@ import { Address, PostableBytes, TransactionId } from "@iov/bcp";
 import amino, { unmarshalTx } from "@tendermint/amino-js";
 import axios, { AxiosInstance } from "axios";
 
+import { AminoTx } from "./types";
+
 interface NodeInfo {
   readonly network: string;
 }
@@ -42,7 +44,7 @@ export interface TxsResponse {
   readonly height: string;
   readonly txhash: string;
   readonly raw_log: string;
-  readonly tx: amino.Tx;
+  readonly tx: AminoTx;
 }
 
 interface SearchTxsResponse {
@@ -150,6 +152,9 @@ export class RestClient {
 
   public async txsById(id: TransactionId): Promise<TxsResponse> {
     const responseData = await this.get(`/txs/${id}`);
+    if (!(responseData as any).tx) {
+      throw new Error("Unexpected response data format");
+    }
     return responseData as TxsResponse;
   }
 
@@ -160,6 +165,9 @@ export class RestClient {
       mode: this.mode,
     };
     const responseData = await this.post("/txs", params);
+    if (!(responseData as any).txhash) {
+      throw new Error("Unexpected response data format");
+    }
     return responseData as PostTxsResponse;
   }
 }
