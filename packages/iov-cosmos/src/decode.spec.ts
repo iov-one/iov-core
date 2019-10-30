@@ -88,12 +88,10 @@ describe("decode", () => {
 
   describe("decodeAmount", () => {
     it("works", () => {
-      const amount: readonly amino.Coin[] = [
-        {
-          denom: "uatom",
-          amount: "11657995",
-        },
-      ];
+      const amount: amino.Coin = {
+        denom: "uatom",
+        amount: "11657995",
+      };
       expect(decodeAmount(amount)).toEqual(defaultAmount);
     });
   });
