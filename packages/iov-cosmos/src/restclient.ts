@@ -1,14 +1,12 @@
 import { Address, PostableBytes, TransactionId } from "@iov/bcp";
-import { unmarshalTx } from "@tendermint/amino-js";
+import amino, { unmarshalTx } from "@tendermint/amino-js";
 import axios, { AxiosInstance } from "axios";
 
 import {
   AuthAccountsResponse,
-  Block,
   BlocksResponse,
   BroadcastMode,
   CosmosClient,
-  NodeInfo,
   NodeInfoResponse,
   PostTxsParams,
   PostTxsResponse,
@@ -19,8 +17,16 @@ import { AminoTx } from "./types";
 
 // These types are the same as for CosmosClient but snake_cased
 
+interface GaiaAuthAccountsResponse {
+  readonly result: {
+    readonly value: amino.BaseAccount;
+  };
+}
+
 interface GaiaNodeInfoResponse {
-  readonly node_info: NodeInfo;
+  readonly node_info: {
+    readonly network: string;
+  };
 }
 
 interface GaiaBlockMeta {
@@ -36,7 +42,11 @@ interface GaiaBlockMeta {
 
 interface GaiaBlocksResponse {
   readonly block_meta: GaiaBlockMeta;
-  readonly block: Block;
+  readonly block: {
+    readonly header: {
+      readonly height: number;
+    };
+  };
 }
 
 export interface GaiaTxsResponse {
@@ -63,12 +73,63 @@ interface GaiaPostTxsResponse {
 }
 
 type GaiaResponse =
-  | AuthAccountsResponse
-  | GaiaNodeInfoResponse
+  | GaiaAuthAccountsResponse
   | GaiaBlocksResponse
-  | GaiaTxsResponse
+  | GaiaNodeInfoResponse
   | GaiaSearchTxsResponse
+  | GaiaTxsResponse
   | GaiaPostTxsResponse;
+
+function parseAuthAccountsResponse(response: GaiaAuthAccountsResponse): AuthAccountsResponse {
+  return {
+    ...response,
+  };
+}
+
+function parseNodeInfoResponse(response: GaiaNodeInfoResponse): NodeInfoResponse {
+  return {
+    ...response,
+    nodeInfo: response.node_info,
+  };
+}
+
+function parseBlocksResponse(response: GaiaBlocksResponse): BlocksResponse {
+  return {
+    ...response,
+    blockMeta: {
+      ...response.block_meta,
+      blockId: response.block_meta.block_id,
+      header: {
+        ...response.block_meta.header,
+        numTxs: response.block_meta.header.num_txs,
+      },
+    },
+  };
+}
+
+function parseTxsResponse(response: GaiaTxsResponse): TxsResponse {
+  return {
+    ...response,
+    rawLog: response.raw_log,
+  };
+}
+
+function parseSearchTxsResponse(response: GaiaSearchTxsResponse): SearchTxsResponse {
+  return {
+    ...response,
+    totalCount: response.total_count,
+    pageNumber: response.page_number,
+    pageTotal: response.page_total,
+    txs: response.txs.map(parseTxsResponse),
+  };
+}
+
+function parsePostTxsResponse(response: GaiaPostTxsResponse): PostTxsResponse {
+  return {
+    ...response,
+    rawLog: response.raw_log,
+  };
+}
 
 export class RestClient implements CosmosClient {
   private readonly client: AxiosInstance;
@@ -104,90 +165,53 @@ export class RestClient implements CosmosClient {
   }
 
   public async nodeInfo(): Promise<NodeInfoResponse> {
-    const responseData = (await this.get("/node_info")) as any;
-    if (!responseData.node_info || !responseData.node_info.network) {
+    const response = (await this.get("/node_info")) as any;
+    if (!response.node_info || !response.node_info.network) {
       throw new Error("Unexpected response data format");
     }
-    return {
-      ...responseData,
-      nodeInfo: responseData.node_info,
-    };
+    return parseNodeInfoResponse(response);
   }
 
   public async blocksLatest(): Promise<BlocksResponse> {
-    const responseData = (await this.get("/blocks/latest")) as any;
-    if (!responseData.block || !responseData.block_meta) {
+    const response = (await this.get("/blocks/latest")) as any;
+    if (!response.block || !response.block_meta) {
       throw new Error("Unexpected response data format");
     }
-    return {
-      ...responseData,
-      blockMeta: {
-        ...responseData.block_meta,
-        blockId: responseData.block_meta.block_id,
-        header: {
-          ...responseData.block_meta.header,
-          numTxs: responseData.block_meta.header.num_txs,
-        },
-      },
-    };
+    return parseBlocksResponse(response);
   }
 
   public async blocks(height: number): Promise<BlocksResponse> {
-    const responseData = (await this.get(`/blocks/${height}`)) as any;
-    if (!responseData.block || !responseData.block_meta) {
+    const response = (await this.get(`/blocks/${height}`)) as any;
+    if (!response.block || !response.block_meta) {
       throw new Error("Unexpected response data format");
     }
-    return {
-      ...responseData,
-      blockMeta: {
-        ...responseData.block_meta,
-        blockId: responseData.block_meta.block_id,
-        header: {
-          ...responseData.block_meta.header,
-          numTxs: responseData.block_meta.header.num_txs,
-        },
-      },
-    };
+    return parseBlocksResponse(response);
   }
 
   public async authAccounts(address: Address, height?: string): Promise<AuthAccountsResponse> {
     const path =
       height === undefined ? `/auth/accounts/${address}` : `/auth/accounts/${address}?tx.height=${height}`;
-    const responseData = (await this.get(path)) as any;
-    if (responseData.result.type !== "cosmos-sdk/Account") {
+    const response = (await this.get(path)) as any;
+    if (response.result.type !== "cosmos-sdk/Account") {
       throw new Error("Unexpected response data format");
     }
-    return {
-      ...responseData,
-    };
+    return parseAuthAccountsResponse(response);
   }
 
   public async txs(query: string): Promise<SearchTxsResponse> {
-    const responseData = (await this.get(`/txs?${query}`)) as any;
-    if (!responseData.txs) {
+    const response = (await this.get(`/txs?${query}`)) as any;
+    if (!response.txs) {
       throw new Error("Unexpected response data format");
     }
-    return {
-      ...responseData,
-      totalCount: responseData.total_count,
-      pageNumber: responseData.page_number,
-      pageTotal: responseData.page_total,
-      txs: responseData.txs.map((tx: GaiaTxsResponse) => ({
-        ...tx,
-        rawLog: tx.raw_log,
-      })),
-    };
+    return parseSearchTxsResponse(response);
   }
 
   public async txsById(id: TransactionId): Promise<TxsResponse> {
-    const responseData = (await this.get(`/txs/${id}`)) as any;
-    if (!responseData.tx) {
+    const response = (await this.get(`/txs/${id}`)) as any;
+    if (!response.tx) {
       throw new Error("Unexpected response data format");
     }
-    return {
-      ...responseData,
-      rawLog: responseData.raw_log,
-    };
+    return parseTxsResponse(response);
   }
 
   public async postTx(tx: PostableBytes): Promise<PostTxsResponse> {
@@ -196,13 +220,10 @@ export class RestClient implements CosmosClient {
       tx: unmarshalled.value,
       mode: this.mode,
     };
-    const responseData = (await this.post("/txs", params)) as any;
-    if (!responseData.txhash) {
+    const response = (await this.post("/txs", params)) as any;
+    if (!response.txhash) {
       throw new Error("Unexpected response data format");
     }
-    return {
-      ...responseData,
-      rawLog: responseData.raw_log,
-    };
+    return parsePostTxsResponse(response);
   }
 }

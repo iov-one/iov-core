@@ -1,11 +1,10 @@
 import { Address, PostableBytes, TransactionId } from "@iov/bcp";
+import amino from "@tendermint/amino-js";
 import {
   AuthAccountsResponse,
-  Block,
   BlocksResponse,
   BroadcastMode,
   CosmosClient,
-  NodeInfo,
   NodeInfoResponse,
   PostTxsParams,
   PostTxsResponse,
@@ -13,8 +12,15 @@ import {
   TxsResponse,
 } from "./cosmosclient";
 import { AminoTx } from "./types";
+interface GaiaAuthAccountsResponse {
+  readonly result: {
+    readonly value: amino.BaseAccount;
+  };
+}
 interface GaiaNodeInfoResponse {
-  readonly node_info: NodeInfo;
+  readonly node_info: {
+    readonly network: string;
+  };
 }
 interface GaiaBlockMeta {
   readonly header: {
@@ -28,7 +34,11 @@ interface GaiaBlockMeta {
 }
 interface GaiaBlocksResponse {
   readonly block_meta: GaiaBlockMeta;
-  readonly block: Block;
+  readonly block: {
+    readonly header: {
+      readonly height: number;
+    };
+  };
 }
 export interface GaiaTxsResponse {
   readonly height: string;
@@ -51,11 +61,11 @@ interface GaiaPostTxsResponse {
   readonly raw_log?: string;
 }
 declare type GaiaResponse =
-  | AuthAccountsResponse
-  | GaiaNodeInfoResponse
+  | GaiaAuthAccountsResponse
   | GaiaBlocksResponse
-  | GaiaTxsResponse
+  | GaiaNodeInfoResponse
   | GaiaSearchTxsResponse
+  | GaiaTxsResponse
   | GaiaPostTxsResponse;
 export declare class RestClient implements CosmosClient {
   private readonly client;
