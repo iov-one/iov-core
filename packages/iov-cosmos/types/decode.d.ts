@@ -13,7 +13,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import amino from "@tendermint/amino-js";
-import { TxsResponse } from "./restclient";
+import { TxsResponse } from "./cosmosclient";
 import { AminoTx } from "./types";
 export declare function decodePubkey(pubkey: amino.PubKey): PubkeyBundle;
 export declare function decodeSignature(signature: string): SignatureBytes;

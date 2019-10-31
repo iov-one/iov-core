@@ -24,7 +24,7 @@ import { Stream } from "xstream";
 export declare class CosmosConnection implements BlockchainConnection {
   static establish(url: string): Promise<CosmosConnection>;
   private static initialize;
-  private readonly restClient;
+  private readonly client;
   private readonly chainData;
   private readonly supportedTokens;
   private readonly prefix;

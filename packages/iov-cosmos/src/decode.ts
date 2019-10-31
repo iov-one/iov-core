@@ -20,7 +20,7 @@ import {
 import { Encoding } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
-import { TxsResponse } from "./restclient";
+import { TxsResponse } from "./cosmosclient";
 import { AminoTx } from "./types";
 
 const { fromBase64 } = Encoding;
@@ -142,6 +142,6 @@ export function parseTxsResponse(
     height: height,
     confirmations: currentHeight - height + 1,
     transactionId: response.txhash as TransactionId,
-    log: response.raw_log,
+    log: response.rawLog,
   };
 }

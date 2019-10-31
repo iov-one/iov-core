@@ -1,13 +1,22 @@
 import { Address, PostableBytes, TransactionId } from "@iov/bcp";
-import amino from "@tendermint/amino-js";
+import {
+  AuthAccountsResponse,
+  Block,
+  BlocksResponse,
+  BroadcastMode,
+  CosmosClient,
+  NodeInfo,
+  NodeInfoResponse,
+  PostTxsParams,
+  PostTxsResponse,
+  SearchTxsResponse,
+  TxsResponse,
+} from "./cosmosclient";
 import { AminoTx } from "./types";
-interface NodeInfo {
-  readonly network: string;
-}
-interface NodeInfoResponse {
+interface GaiaNodeInfoResponse {
   readonly node_info: NodeInfo;
 }
-interface BlockMeta {
+interface GaiaBlockMeta {
   readonly header: {
     readonly height: number;
     readonly time: string;
@@ -17,55 +26,43 @@ interface BlockMeta {
     readonly hash: string;
   };
 }
-interface Block {
-  readonly header: {
-    readonly height: number;
-  };
-}
-interface BlocksResponse {
-  readonly block_meta: BlockMeta;
+interface GaiaBlocksResponse {
+  readonly block_meta: GaiaBlockMeta;
   readonly block: Block;
 }
-interface AuthAccountsResponse {
-  readonly result: {
-    readonly value: amino.BaseAccount;
-  };
-}
-export interface TxsResponse {
+export interface GaiaTxsResponse {
   readonly height: string;
   readonly txhash: string;
   readonly raw_log: string;
   readonly tx: AminoTx;
 }
-interface SearchTxsResponse {
+interface GaiaSearchTxsResponse {
   readonly total_count: string;
   readonly count: string;
   readonly page_number: string;
   readonly page_total: string;
   readonly limit: string;
-  readonly txs: readonly TxsResponse[];
+  readonly txs: readonly GaiaTxsResponse[];
 }
-interface PostTxsParams {}
-interface PostTxsResponse {
+interface GaiaPostTxsResponse {
   readonly height: string;
   readonly txhash: string;
   readonly code?: number;
   readonly raw_log?: string;
 }
-declare type RestClientResponse =
-  | NodeInfoResponse
-  | BlocksResponse
+declare type GaiaResponse =
   | AuthAccountsResponse
-  | TxsResponse
-  | SearchTxsResponse
-  | PostTxsResponse;
-declare type BroadcastMode = "block" | "sync" | "async";
-export declare class RestClient {
+  | GaiaNodeInfoResponse
+  | GaiaBlocksResponse
+  | GaiaTxsResponse
+  | GaiaSearchTxsResponse
+  | GaiaPostTxsResponse;
+export declare class RestClient implements CosmosClient {
   private readonly client;
   private readonly mode;
   constructor(url: string, mode?: BroadcastMode);
-  get(path: string): Promise<RestClientResponse>;
-  post(path: string, params: PostTxsParams): Promise<RestClientResponse>;
+  get(path: string): Promise<GaiaResponse>;
+  post(path: string, params: PostTxsParams): Promise<GaiaResponse>;
   nodeInfo(): Promise<NodeInfoResponse>;
   blocksLatest(): Promise<BlocksResponse>;
   blocks(height: number): Promise<BlocksResponse>;

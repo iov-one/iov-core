@@ -156,7 +156,7 @@ describe("decode", () => {
       const txsResponse = {
         height: "2823",
         txhash: txId,
-        raw_log: '[{"msg_index":0,"success":true,"log":""}]',
+        rawLog: '[{"msg_index":0,"success":true,"log":""}]',
         tx: data.tx,
       };
       const expected = {
