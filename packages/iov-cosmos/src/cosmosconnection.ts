@@ -37,6 +37,7 @@ import { CosmosBech32Prefix, pubkeyToAddress } from "./address";
 import { CosmosClient, TxsResponse } from "./cosmosclient";
 import { decodeAmount, parseTxsResponse } from "./decode";
 import { RestClient } from "./restclient";
+import { RpcClient } from "./rpcclient";
 
 const { fromBase64 } = Encoding;
 
@@ -67,11 +68,18 @@ function buildQueryString({
   return components.filter(Boolean).join("&");
 }
 
+type ProtocolPrefix = "http://" | "rpc://";
+const supportedPrefixes: readonly ProtocolPrefix[] = ["http://", "rpc://"];
+
 export class CosmosConnection implements BlockchainConnection {
   public static async establish(url: string): Promise<CosmosConnection> {
-    const restClient = new RestClient(url);
-    const chainData = await this.initialize(restClient);
-    return new CosmosConnection(restClient, chainData);
+    const supportedPrefix = supportedPrefixes.find(prefix => url.startsWith(prefix));
+    if (!supportedPrefix) {
+      throw new Error("Unsupported protocol");
+    }
+    const client = supportedPrefix === "http://" ? new RestClient(url) : await RpcClient.establish(url);
+    const chainData = await this.initialize(client);
+    return new CosmosConnection(client, chainData);
   }
 
   private static async initialize(client: CosmosClient): Promise<ChainData> {

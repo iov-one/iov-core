@@ -24,9 +24,10 @@ function pendingWithoutCosmos(): void {
   }
 }
 
-describe("CosmosConnection", () => {
+fdescribe("CosmosConnection", () => {
   const atom = "ATOM" as TokenTicker;
   const httpUrl = "http://localhost:1317";
+  const rpcUrl = "rpc://localhost:46657";
   const defaultChainId = "testing" as ChainId;
   const defaultEmptyAddress = "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r" as Address;
   const defaultAddress = "cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs6" as Address;
@@ -46,12 +47,19 @@ describe("CosmosConnection", () => {
       expect(connection).toBeTruthy();
       connection.disconnect();
     });
+
+    it("can connect to Cosmos via rpc", async () => {
+      pendingWithoutCosmos();
+      const connection = await CosmosConnection.establish(rpcUrl);
+      expect(connection).toBeTruthy();
+      connection.disconnect();
+    });
   });
 
   describe("chainId", () => {
     it("displays the chain ID", async () => {
       pendingWithoutCosmos();
-      const connection = await CosmosConnection.establish(httpUrl);
+      const connection = await CosmosConnection.establish(rpcUrl);
       const chainId = connection.chainId();
       expect(chainId).toEqual(defaultChainId);
       connection.disconnect();
@@ -61,7 +69,7 @@ describe("CosmosConnection", () => {
   describe("height", () => {
     it("displays the current height", async () => {
       pendingWithoutCosmos();
-      const connection = await CosmosConnection.establish(httpUrl);
+      const connection = await CosmosConnection.establish(rpcUrl);
       const height = await connection.height();
       expect(height).toBeGreaterThan(0);
       connection.disconnect();
@@ -69,9 +77,9 @@ describe("CosmosConnection", () => {
   });
 
   describe("getAccount", () => {
-    it("gets an empty account by address", async () => {
+    fit("gets an empty account by address", async () => {
       pendingWithoutCosmos();
-      const connection = await CosmosConnection.establish(httpUrl);
+      const connection = await CosmosConnection.establish(rpcUrl);
       const account = await connection.getAccount({ address: defaultEmptyAddress });
       expect(account).toBeUndefined();
       connection.disconnect();
@@ -79,7 +87,7 @@ describe("CosmosConnection", () => {
 
     it("gets an account by address", async () => {
       pendingWithoutCosmos();
-      const connection = await CosmosConnection.establish(httpUrl);
+      const connection = await CosmosConnection.establish(rpcUrl);
       const account = await connection.getAccount({ address: defaultAddress });
       if (account === undefined) {
         throw new Error("Expected account not to be undefined");
@@ -93,7 +101,7 @@ describe("CosmosConnection", () => {
 
     it("gets an account by pubkey", async () => {
       pendingWithoutCosmos();
-      const connection = await CosmosConnection.establish(httpUrl);
+      const connection = await CosmosConnection.establish(rpcUrl);
       const account = await connection.getAccount({ pubkey: defaultPubkey });
       if (account === undefined) {
         throw new Error("Expected account not to be undefined");
@@ -112,7 +120,7 @@ describe("CosmosConnection", () => {
   describe("integration tests", () => {
     it("can post and get a transaction", async () => {
       pendingWithoutCosmos();
-      const connection = await CosmosConnection.establish(httpUrl);
+      const connection = await CosmosConnection.establish(rpcUrl);
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(faucetMnemonic));
       const faucet = await profile.createIdentity(wallet.id, defaultChainId, faucetPath);
@@ -172,7 +180,7 @@ describe("CosmosConnection", () => {
 
     it("can post and search for a transaction", async () => {
       pendingWithoutCosmos();
-      const connection = await CosmosConnection.establish(httpUrl);
+      const connection = await CosmosConnection.establish(rpcUrl);
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(faucetMnemonic));
       const faucet = await profile.createIdentity(wallet.id, defaultChainId, faucetPath);

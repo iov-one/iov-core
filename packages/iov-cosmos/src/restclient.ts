@@ -169,6 +169,7 @@ export class RestClient implements CosmosClient {
     if (!response.node_info || !response.node_info.network) {
       throw new Error("Unexpected response data format");
     }
+    console.log(response);
     return parseNodeInfoResponse(response);
   }
 
