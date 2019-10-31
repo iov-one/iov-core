@@ -199,7 +199,6 @@ describe("encode", () => {
               },
             },
           ],
-          fee: null,
           signatures: [],
           memo: defaultMemo,
         },

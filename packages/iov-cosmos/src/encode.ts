@@ -13,6 +13,8 @@ import { Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
+import { AminoTx } from "./types";
+
 const { toBase64 } = Encoding;
 
 export function encodePubkey(pubkey: PubkeyBundle): amino.PubKey {
@@ -63,11 +65,11 @@ export function encodeFullSignature(fullSignature: FullSignature): amino.StdSign
   };
 }
 
-export function buildUnsignedTx(tx: UnsignedTransaction): amino.Tx {
+export function buildUnsignedTx(tx: UnsignedTransaction): AminoTx {
   if (!isSendTransaction(tx)) {
     throw new Error("Received transaction of unsupported kind");
   }
-  return {
+  const txWithoutFee = {
     type: "auth/StdTx",
     value: {
       msg: [
@@ -81,13 +83,21 @@ export function buildUnsignedTx(tx: UnsignedTransaction): amino.Tx {
         },
       ],
       memo: tx.memo,
-      fee: tx.fee ? encodeFee(tx.fee) : null,
       signatures: [],
     },
   };
+  return tx.fee
+    ? {
+        ...txWithoutFee,
+        value: {
+          ...txWithoutFee.value,
+          fee: encodeFee(tx.fee),
+        },
+      }
+    : txWithoutFee;
 }
 
-export function buildSignedTx(tx: SignedTransaction): amino.Tx {
+export function buildSignedTx(tx: SignedTransaction): AminoTx {
   const signatures: readonly FullSignature[] = [tx.primarySignature, ...tx.otherSignatures];
   const built = buildUnsignedTx(tx.transaction);
   return {

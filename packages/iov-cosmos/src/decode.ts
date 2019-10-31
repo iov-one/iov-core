@@ -17,14 +17,9 @@ import {
 import { Encoding } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
-const { fromBase64 } = Encoding;
+import { AminoTx } from "./types";
 
-interface TxValue {
-  readonly msg?: readonly amino.Msg[];
-  readonly fee?: amino.StdFee;
-  readonly signatures?: readonly amino.StdSignature[];
-  readonly memo?: string;
-}
+const { fromBase64 } = Encoding;
 
 export function decodePubkey(pubkey: amino.PubKey): PubkeyBundle {
   return {
@@ -94,8 +89,8 @@ export function parseCreator(signature: amino.StdSignature, chainId: ChainId): I
   };
 }
 
-export function parseTx(tx: amino.Tx, chainId: ChainId, nonce: Nonce): SignedTransaction {
-  const txValue: TxValue = tx.value;
+export function parseTx(tx: AminoTx, chainId: ChainId, nonce: Nonce): SignedTransaction {
+  const txValue = tx.value;
   if (!txValue.signatures) {
     throw new Error("No signatures");
   }
