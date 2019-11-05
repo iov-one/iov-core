@@ -117,7 +117,7 @@ export class Secp256k1 {
       case 33:
         return pubkey;
       case 65:
-        return secp256k1.keyFromPublic(pubkey).pub.encodeCompressed();
+        return Uint8Array.from(secp256k1.keyFromPublic(pubkey).pub.encodeCompressed());
       default:
         throw new Error("Invalid pubkey length");
     }
