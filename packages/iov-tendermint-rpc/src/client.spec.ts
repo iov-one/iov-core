@@ -13,12 +13,8 @@ import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclients";
 import { TxBytes } from "./types";
 
-function skipTests(): boolean {
-  return !process.env.TENDERMINT_ENABLED;
-}
-
 function pendingWithoutTendermint(): void {
-  if (skipTests()) {
+  if (!process.env.TENDERMINT_ENABLED) {
     pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
   }
 }
@@ -545,7 +541,7 @@ for (const { url, version, appCreator } of tendermintInstances) {
 
     describe("With WebsocketClient", () => {
       // don't print out WebSocket errors if marked pending
-      const onError = skipTests() ? () => 0 : console.error;
+      const onError = process.env.TENDERMINT_ENABLED ? console.error : () => 0;
       const factory = (): WebsocketClient => new WebsocketClient(url, onError);
       const adaptor = adaptorForVersion(version);
       defaultTestSuite(factory, adaptor);
