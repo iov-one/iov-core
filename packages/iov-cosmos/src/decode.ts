@@ -42,7 +42,7 @@ export function decodeFullSignature(signature: amino.StdSignature, nonce: number
 
 export function decodeAmount(amount: amino.Coin): Amount {
   return {
-    fractionalDigits: 9,
+    fractionalDigits: 0,
     quantity: amount.amount,
     tokenTicker: amount.denom as TokenTicker,
   };
@@ -70,7 +70,7 @@ export function parseMsg(msg: amino.Msg): SendTransaction {
 export function parseFee(fee: amino.StdFee): Fee {
   return {
     tokens: {
-      fractionalDigits: 9,
+      fractionalDigits: 0,
       quantity: fee.amount[0].amount,
       tokenTicker: fee.amount[0].denom as TokenTicker,
     },
