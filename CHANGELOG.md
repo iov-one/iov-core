@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+- @iov/tendermint-rpc: Add support for Tendermint RPC v0.32.
+
 ## 1.0.0
 
 - @iov/bns: Populate the correct block ID in `BnsConnection.watchBlockHeaders`.

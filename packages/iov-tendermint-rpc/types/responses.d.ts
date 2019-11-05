@@ -122,11 +122,16 @@ export interface Tag {
   readonly key: Uint8Array;
   readonly value: Uint8Array;
 }
+export interface Event {
+  readonly type: string;
+  readonly attributes: readonly Tag[];
+}
 export interface TxData {
   readonly code: number;
   readonly log?: string;
   readonly data?: Uint8Array;
   readonly tags?: readonly Tag[];
+  readonly events?: readonly Event[];
 }
 export interface TxProof {
   readonly data: Uint8Array;

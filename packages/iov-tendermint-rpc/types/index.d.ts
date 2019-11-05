@@ -1,4 +1,5 @@
 export { v0_31 } from "./v0-31";
+export { v0_32 } from "./v0-32";
 export { Client } from "./client";
 export {
   AbciInfoRequest,

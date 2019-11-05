@@ -68,6 +68,7 @@ function decodeAbciQuery(data: RpcAbciQueryResponse): responses.AbciQueryRespons
     log: data.log,
   };
 }
+
 interface RpcTag {
   readonly key: Base64String;
   readonly value: Base64String;
@@ -84,11 +85,27 @@ function decodeTags(tags: readonly RpcTag[]): readonly responses.Tag[] {
   return assertArray(tags).map(decodeTag);
 }
 
+interface RpcEvent {
+  readonly type: string;
+  readonly attributes: readonly RpcTag[];
+}
+
+function decodeEvent(event: RpcEvent): responses.Event {
+  return {
+    type: event.type,
+    attributes: decodeTags(event.attributes),
+  };
+}
+
+function decodeEvents(events: readonly RpcEvent[]): readonly responses.Event[] {
+  return assertArray(events).map(decodeEvent);
+}
+
 interface RpcTxData {
   readonly code?: number;
   readonly log?: string;
   readonly data?: Base64String;
-  readonly tags?: readonly RpcTag[];
+  readonly events?: readonly RpcEvent[];
 }
 
 function decodeTxData(data: RpcTxData): responses.TxData {
@@ -96,7 +113,7 @@ function decodeTxData(data: RpcTxData): responses.TxData {
     data: may(Base64.decode, data.data),
     log: data.log,
     code: Integer.parse(assertNumber(optional<number>(data.code, 0))),
-    tags: may(decodeTags, data.tags),
+    events: may(decodeEvents, data.events),
   };
 }
 
@@ -193,8 +210,8 @@ function decodeConsensusParams(data: RpcConsensusParams): responses.ConsensusPar
 interface RpcBlockResultsResponse {
   readonly height: IntegerString;
   readonly results: {
-    readonly DeliverTx: readonly RpcTxData[];
-    readonly EndBlock: {
+    readonly deliver_tx: readonly RpcTxData[];
+    readonly end_block: {
       readonly validator_updates?: readonly RpcValidatorUpdate[];
       readonly consensus_param_updates?: RpcConsensusParams;
       readonly tags?: readonly RpcTag[];
@@ -203,8 +220,8 @@ interface RpcBlockResultsResponse {
 }
 
 function decodeBlockResults(data: RpcBlockResultsResponse): responses.BlockResultsResponse {
-  const res = optional(data.results.DeliverTx, [] as readonly RpcTxData[]);
-  const end = data.results.EndBlock;
+  const res = optional(data.results.deliver_tx, [] as readonly RpcTxData[]);
+  const end = data.results.end_block;
   const validators = optional(end.validator_updates, [] as readonly RpcValidatorUpdate[]);
   return {
     height: Integer.parse(assertNotEmpty(data.height)),

@@ -158,11 +158,17 @@ export interface Tag {
   readonly value: Uint8Array;
 }
 
+export interface Event {
+  readonly type: string;
+  readonly attributes: readonly Tag[];
+}
+
 export interface TxData {
   readonly code: number;
   readonly log?: string;
   readonly data?: Uint8Array;
   readonly tags?: readonly Tag[];
+  readonly events?: readonly Event[];
   // readonly fees?: any;
 }
 

@@ -13,12 +13,8 @@ import * as responses from "./responses";
 import { HttpClient, RpcClient, WebsocketClient } from "./rpcclients";
 import { TxBytes } from "./types";
 
-function skipTests(): boolean {
-  return !process.env.TENDERMINT_ENABLED;
-}
-
 function pendingWithoutTendermint(): void {
-  if (skipTests()) {
+  if (!process.env.TENDERMINT_ENABLED) {
     pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
   }
 }
@@ -400,7 +396,12 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
     expect(events.length).toEqual(2);
     // Meta
     expect(events[1].height).toEqual(events[0].height + 1);
-    expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+    if (events[1].result.tags && events[0].result.tags) {
+      expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+    }
+    if (events[1].result.events && events[0].result.events) {
+      expect(events[1].result.events).not.toEqual(events[0].result.events);
+    }
     // Content
     expect(events[0].tx).toEqual(transactionData1);
     expect(events[1].tx).toEqual(transactionData2);
@@ -442,7 +443,12 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
     expect(events.length).toEqual(2);
     // Meta
     expect(events[1].height).toEqual(events[0].height + 1);
-    expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+    if (events[1].result.tags && events[0].result.tags) {
+      expect(events[1].result.tags).not.toEqual(events[0].result.tags);
+    }
+    if (events[1].result.events && events[0].result.events) {
+      expect(events[1].result.events).not.toEqual(events[0].result.events);
+    }
     // Content
     expect(events[0].tx).toEqual(transactionData1);
     expect(events[1].tx).toEqual(transactionData2);
@@ -535,7 +541,7 @@ for (const { url, version, appCreator } of tendermintInstances) {
 
     describe("With WebsocketClient", () => {
       // don't print out WebSocket errors if marked pending
-      const onError = skipTests() ? () => 0 : console.error;
+      const onError = process.env.TENDERMINT_ENABLED ? console.error : () => 0;
       const factory = (): WebsocketClient => new WebsocketClient(url, onError);
       const adaptor = adaptorForVersion(version);
       defaultTestSuite(factory, adaptor);
