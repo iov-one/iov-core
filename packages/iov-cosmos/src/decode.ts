@@ -48,8 +48,7 @@ export function decodeAmount(amount: amino.Coin): Amount {
   };
 }
 
-export function parseMsg(msgs: readonly amino.Msg[]): SendTransaction {
-  const msg = msgs[0];
+export function parseMsg(msg: amino.Msg): SendTransaction {
   if (msg.type !== "cosmos-sdk/MsgSend") {
     throw new Error("Unknown message type in transaction");
   }
@@ -94,15 +93,18 @@ export function parseTx(tx: AminoTx, chainId: ChainId, nonce: Nonce): SignedTran
   if (!txValue.signatures) {
     throw new Error("No signatures");
   }
-  if (!txValue.msg) {
+  if (!txValue.msg || !txValue.msg.length) {
     throw new Error("No msg");
+  }
+  if (txValue.msg.length !== 1) {
+    throw new Error("Only single-message transactions currently supported");
   }
   if (!txValue.fee) {
     throw new Error("No fee");
   }
 
   const [primarySignature] = txValue.signatures.map(signature => decodeFullSignature(signature, nonce));
-  const msg = parseMsg(txValue.msg);
+  const msg = parseMsg(txValue.msg[0]);
   const fee = parseFee(txValue.fee);
   const creator = parseCreator(txValue.signatures[0], chainId);
 

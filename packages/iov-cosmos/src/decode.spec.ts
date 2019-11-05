@@ -98,21 +98,19 @@ describe("decode", () => {
 
   describe("parseMsg", () => {
     it("works", () => {
-      const msg: readonly amino.Msg[] = [
-        {
-          type: "cosmos-sdk/MsgSend",
-          value: {
-            from_address: "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r",
-            to_address: "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e",
-            amount: [
-              {
-                denom: "uatom",
-                amount: "11657995",
-              },
-            ],
-          },
+      const msg: amino.Msg = {
+        type: "cosmos-sdk/MsgSend",
+        value: {
+          from_address: "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r",
+          to_address: "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e",
+          amount: [
+            {
+              denom: "uatom",
+              amount: "11657995",
+            },
+          ],
         },
-      ];
+      };
       expect(parseMsg(msg)).toEqual(defaultSendTransaction);
     });
   });
