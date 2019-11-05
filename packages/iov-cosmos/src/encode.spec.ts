@@ -36,9 +36,9 @@ describe("encode", () => {
   const defaultSender = "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r" as Address;
   const defaultRecipient = "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e" as Address;
   const defaultAmount: Amount = {
-    quantity: "11657995",
     fractionalDigits: 0,
-    tokenTicker: "vatom" as TokenTicker,
+    quantity: "11657995",
+    tokenTicker: "ATOM" as TokenTicker,
   };
   const defaultMemo = "hello cosmos hub";
 
@@ -54,7 +54,7 @@ describe("encode", () => {
   describe("encodeAmount", () => {
     it("encodes an amount", () => {
       expect(encodeAmount(defaultAmount)).toEqual({
-        denom: "vatom",
+        denom: "uatom",
         amount: "11657995",
       });
     });
@@ -71,9 +71,9 @@ describe("encode", () => {
     it("throws without gas limit", () => {
       const fee = {
         tokens: {
-          quantity: "5000",
           fractionalDigits: 0,
-          tokenTicker: "vatom" as TokenTicker,
+          quantity: "5000",
+          tokenTicker: "ATOM" as TokenTicker,
         },
       };
       expect(() => encodeFee(fee)).toThrowError(/cannot encode fee without gas limit/i);
@@ -82,14 +82,14 @@ describe("encode", () => {
     it("encodes a fee", () => {
       const fee = {
         tokens: {
-          quantity: "5000",
           fractionalDigits: 0,
-          tokenTicker: "vatom" as TokenTicker,
+          quantity: "5000",
+          tokenTicker: "ATOM" as TokenTicker,
         },
         gasLimit: "200000",
       };
       expect(encodeFee(fee)).toEqual({
-        amount: [{ denom: "vatom", amount: "5000" }],
+        amount: [{ denom: "uatom", amount: "5000" }],
         gas: "200000",
       });
     });
@@ -192,7 +192,7 @@ describe("encode", () => {
                 to_address: "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e",
                 amount: [
                   {
-                    denom: "vatom",
+                    denom: "uatom",
                     amount: "11657995",
                   },
                 ],
@@ -215,9 +215,9 @@ describe("encode", () => {
         memo: defaultMemo,
         fee: {
           tokens: {
-            quantity: "5000",
             fractionalDigits: 0,
-            tokenTicker: "vatom" as TokenTicker,
+            quantity: "5000",
+            tokenTicker: "ATOM" as TokenTicker,
           },
           gasLimit: "200000",
         },
@@ -233,7 +233,7 @@ describe("encode", () => {
                 to_address: "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e",
                 amount: [
                   {
-                    denom: "vatom",
+                    denom: "uatom",
                     amount: "11657995",
                   },
                 ],
@@ -241,7 +241,7 @@ describe("encode", () => {
             },
           ],
           fee: {
-            amount: [{ denom: "vatom", amount: "5000" }],
+            amount: [{ denom: "uatom", amount: "5000" }],
             gas: "200000",
           },
           signatures: [],
@@ -263,9 +263,9 @@ describe("encode", () => {
           memo: defaultMemo,
           fee: {
             tokens: {
-              quantity: "5000",
               fractionalDigits: 0,
-              tokenTicker: "vatom" as TokenTicker,
+              quantity: "5000",
+              tokenTicker: "ATOM" as TokenTicker,
             },
             gasLimit: "200000",
           },
@@ -293,7 +293,7 @@ describe("encode", () => {
                 to_address: "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e",
                 amount: [
                   {
-                    denom: "vatom",
+                    denom: "uatom",
                     amount: "11657995",
                   },
                 ],
@@ -301,7 +301,7 @@ describe("encode", () => {
             },
           ],
           fee: {
-            amount: [{ denom: "vatom", amount: "5000" }],
+            amount: [{ denom: "uatom", amount: "5000" }],
             gas: "200000",
           },
           signatures: [

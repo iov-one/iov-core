@@ -21,6 +21,8 @@ import { AminoTx } from "./types";
 
 const { fromBase64 } = Encoding;
 
+const atom = "ATOM" as TokenTicker;
+
 export function decodePubkey(pubkey: amino.PubKey): PubkeyBundle {
   return {
     algo: Algorithm.Secp256k1,
@@ -41,10 +43,13 @@ export function decodeFullSignature(signature: amino.StdSignature, nonce: number
 }
 
 export function decodeAmount(amount: amino.Coin): Amount {
+  if (amount.denom !== "uatom") {
+    throw new Error("Only ATOM amounts are supported");
+  }
   return {
-    fractionalDigits: 0,
+    fractionalDigits: 6,
     quantity: amount.amount,
-    tokenTicker: amount.denom as TokenTicker,
+    tokenTicker: atom,
   };
 }
 
@@ -68,12 +73,11 @@ export function parseMsg(msg: amino.Msg): SendTransaction {
 }
 
 export function parseFee(fee: amino.StdFee): Fee {
+  if (fee.amount.length !== 1) {
+    throw new Error("Fee with more than one amount is not supported");
+  }
   return {
-    tokens: {
-      fractionalDigits: 0,
-      quantity: fee.amount[0].amount,
-      tokenTicker: fee.amount[0].denom as TokenTicker,
-    },
+    tokens: decodeAmount(fee.amount[0]),
     gasLimit: fee.gas,
   };
 }

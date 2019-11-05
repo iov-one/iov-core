@@ -38,15 +38,15 @@ export const sendTxJson: SendTransaction & WithCreator = {
   recipient: data.tx.value.msg[0].value.to_address as Address,
   memo: data.tx.value.memo,
   amount: {
+    fractionalDigits: 6,
     quantity: data.tx.value.msg[0].value.amount[0].amount,
-    fractionalDigits: 0,
-    tokenTicker: data.tx.value.msg[0].value.amount[0].denom as TokenTicker,
+    tokenTicker: "ATOM" as TokenTicker,
   },
   fee: {
     tokens: {
-      tokenTicker: data.tx.value.fee.amount[0].denom as TokenTicker,
+      fractionalDigits: 6,
       quantity: data.tx.value.fee.amount[0].amount,
-      fractionalDigits: 0,
+      tokenTicker: "ATOM" as TokenTicker,
     },
     gasLimit: data.tx.value.fee.gas,
   },

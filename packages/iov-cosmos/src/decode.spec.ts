@@ -32,9 +32,9 @@ describe("decode", () => {
     signature: defaultSignature,
   };
   const defaultAmount = {
-    fractionalDigits: 0,
+    fractionalDigits: 6,
     quantity: "11657995",
-    tokenTicker: "uatom" as TokenTicker,
+    tokenTicker: "ATOM" as TokenTicker,
   };
   const defaultSendTransaction = {
     kind: "bcp/send" as const,
@@ -44,9 +44,9 @@ describe("decode", () => {
   };
   const defaultFee = {
     tokens: {
-      tokenTicker: "uatom" as TokenTicker,
+      fractionalDigits: 6,
       quantity: "5000",
-      fractionalDigits: 0,
+      tokenTicker: "ATOM" as TokenTicker,
     },
     gasLimit: "200000",
   };
