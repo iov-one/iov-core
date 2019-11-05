@@ -73,10 +73,10 @@ interface RpcTag {
   readonly value: Base64String;
 }
 
-function decodeTag(data: RpcTag): responses.Tag {
+function decodeTag(tag: RpcTag): responses.Tag {
   return {
-    key: Base64.decode(assertNotEmpty(data.key)),
-    value: Base64.decode(assertNotEmpty(data.value)),
+    key: Base64.decode(assertNotEmpty(tag.key)),
+    value: Base64.decode(assertNotEmpty(tag.value)),
   };
 }
 
