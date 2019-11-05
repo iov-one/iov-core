@@ -62,7 +62,7 @@ export function parseMsg(msg: amino.Msg): SendTransaction {
   }
   const msgValue = msg.value as amino.MsgSend;
   if (msgValue.amount.length !== 1) {
-    throw new Error("MsgSend with more than one amount is not supported");
+    throw new Error("Only MsgSend with one amount is supported");
   }
   return {
     kind: "bcp/send",
@@ -74,7 +74,7 @@ export function parseMsg(msg: amino.Msg): SendTransaction {
 
 export function parseFee(fee: amino.StdFee): Fee {
   if (fee.amount.length !== 1) {
-    throw new Error("Fee with more than one amount is not supported");
+    throw new Error("Only fee with one amount is supported");
   }
   return {
     tokens: decodeAmount(fee.amount[0]),
