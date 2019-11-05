@@ -5,7 +5,7 @@ import { Secp256k1 } from "./secp256k1";
 import { ExtendedSecp256k1Signature, Secp256k1Signature } from "./secp256k1signature";
 import { Sha256 } from "./sha";
 
-const { fromHex, toHex } = Encoding;
+const { fromHex } = Encoding;
 
 describe("Secp256k1", () => {
   // How to generate Secp256k1 test vectors:
@@ -573,8 +573,8 @@ describe("Secp256k1", () => {
       const pubkey = fromHex(
         "044f04181eeba35391b858633a765c4a0c189697b40d216354d50890d350c7029013b587a681e836cc187a8164b98a5848a2b89b3173315fdd0740d5032e259cd5",
       );
-      const compressed = "034f04181eeba35391b858633a765c4a0c189697b40d216354d50890d350c70290";
-      expect(toHex(Secp256k1.compressPubkey(pubkey))).toEqual(compressed);
+      const compressed = fromHex("034f04181eeba35391b858633a765c4a0c189697b40d216354d50890d350c70290");
+      expect(Secp256k1.compressPubkey(pubkey)).toEqual(compressed);
     });
   });
 

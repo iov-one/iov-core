@@ -3,7 +3,7 @@ import { Encoding } from "@iov/encoding";
 import { Ripemd160 } from "./ripemd";
 import ripemdVectors from "./testdata/ripemd.json";
 
-const { toHex, fromHex } = Encoding;
+const { fromHex } = Encoding;
 
 describe("Ripemd160", () => {
   it("exists", () => {
@@ -13,11 +13,11 @@ describe("Ripemd160", () => {
   it("works for empty input", () => {
     {
       const hash = new Ripemd160(new Uint8Array([])).digest();
-      expect(toHex(hash)).toEqual("9c1185a5c5e9fc54612808977ee8f548b2258d31");
+      expect(hash).toEqual(fromHex("9c1185a5c5e9fc54612808977ee8f548b2258d31"));
     }
     {
       const hash = new Ripemd160().digest();
-      expect(toHex(hash)).toEqual("9c1185a5c5e9fc54612808977ee8f548b2258d31");
+      expect(hash).toEqual(fromHex("9c1185a5c5e9fc54612808977ee8f548b2258d31"));
     }
   });
 
