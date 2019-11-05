@@ -39,14 +39,14 @@ export const sendTxJson: SendTransaction & WithCreator = {
   memo: data.tx.value.memo,
   amount: {
     quantity: data.tx.value.msg[0].value.amount[0].amount,
-    fractionalDigits: 9,
+    fractionalDigits: 0,
     tokenTicker: data.tx.value.msg[0].value.amount[0].denom as TokenTicker,
   },
   fee: {
     tokens: {
       tokenTicker: data.tx.value.fee.amount[0].denom as TokenTicker,
       quantity: data.tx.value.fee.amount[0].amount,
-      fractionalDigits: 9,
+      fractionalDigits: 0,
     },
     gasLimit: data.tx.value.fee.gas,
   },

@@ -37,7 +37,7 @@ describe("encode", () => {
   const defaultRecipient = "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e" as Address;
   const defaultAmount: Amount = {
     quantity: "11657995",
-    fractionalDigits: 9,
+    fractionalDigits: 0,
     tokenTicker: "vatom" as TokenTicker,
   };
   const defaultMemo = "hello cosmos hub";
@@ -72,7 +72,7 @@ describe("encode", () => {
       const fee = {
         tokens: {
           quantity: "5000",
-          fractionalDigits: 9,
+          fractionalDigits: 0,
           tokenTicker: "vatom" as TokenTicker,
         },
       };
@@ -83,7 +83,7 @@ describe("encode", () => {
       const fee = {
         tokens: {
           quantity: "5000",
-          fractionalDigits: 9,
+          fractionalDigits: 0,
           tokenTicker: "vatom" as TokenTicker,
         },
         gasLimit: "200000",
@@ -216,7 +216,7 @@ describe("encode", () => {
         fee: {
           tokens: {
             quantity: "5000",
-            fractionalDigits: 9,
+            fractionalDigits: 0,
             tokenTicker: "vatom" as TokenTicker,
           },
           gasLimit: "200000",
@@ -264,7 +264,7 @@ describe("encode", () => {
           fee: {
             tokens: {
               quantity: "5000",
-              fractionalDigits: 9,
+              fractionalDigits: 0,
               tokenTicker: "vatom" as TokenTicker,
             },
             gasLimit: "200000",

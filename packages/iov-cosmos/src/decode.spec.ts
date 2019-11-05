@@ -32,7 +32,7 @@ describe("decode", () => {
     signature: defaultSignature,
   };
   const defaultAmount = {
-    fractionalDigits: 9,
+    fractionalDigits: 0,
     quantity: "11657995",
     tokenTicker: "uatom" as TokenTicker,
   };
@@ -46,7 +46,7 @@ describe("decode", () => {
     tokens: {
       tokenTicker: "uatom" as TokenTicker,
       quantity: "5000",
-      fractionalDigits: 9,
+      fractionalDigits: 0,
     },
     gasLimit: "200000",
   };
