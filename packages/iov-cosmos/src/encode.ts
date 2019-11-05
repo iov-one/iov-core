@@ -35,8 +35,11 @@ export function encodePubkey(pubkey: PubkeyBundle): amino.PubKey {
 }
 
 export function encodeAmount(amount: Amount): amino.Coin {
+  if (amount.tokenTicker !== "ATOM") {
+    throw new Error("Only ATOM amounts are supported");
+  }
   return {
-    denom: amount.tokenTicker,
+    denom: "uatom",
     amount: amount.quantity,
   };
 }
