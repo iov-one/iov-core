@@ -28,13 +28,13 @@ function sortJson(json: any): any {
     return json;
   }
   if (Array.isArray(json)) {
-    return (json as readonly any[]).map(sortJson);
+    return json.map(sortJson);
   }
   const sortedKeys = Object.keys(json).sort();
   const result = sortedKeys.reduce(
-    (acc, k) => ({
-      ...acc,
-      [k]: sortJson(json[k]),
+    (accumulator, key) => ({
+      ...accumulator,
+      [key]: sortJson(json[key]),
     }),
     {},
   );
