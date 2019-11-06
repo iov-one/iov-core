@@ -86,7 +86,8 @@ describe("CosmosConnection", () => {
       }
       expect(account.address).toEqual(defaultAddress);
       expect(account.pubkey).toEqual(defaultPubkey);
-      expect(account.balance.length).toEqual(2);
+      // Unsupported coins are filtered out
+      expect(account.balance.length).toEqual(1);
       connection.disconnect();
     });
 
@@ -102,7 +103,8 @@ describe("CosmosConnection", () => {
         algo: Algorithm.Secp256k1,
         data: fromBase64("A08EGB7ro1ORuFhjOnZcSgwYlpe0DSFjVNUIkNNQxwKQ"),
       });
-      expect(account.balance.length).toEqual(2);
+      // Unsupported coins are filtered out
+      expect(account.balance.length).toEqual(1);
       connection.disconnect();
     });
   });
