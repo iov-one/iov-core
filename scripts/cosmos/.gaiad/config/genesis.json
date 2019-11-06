@@ -173,7 +173,7 @@
             "amount": "1000000000"
           },
           {
-            "denom": "vatom",
+            "denom": "uatom",
             "amount": "1000000000"
           }
         ],

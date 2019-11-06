@@ -24,6 +24,7 @@ import {
 const { fromBase64 } = Encoding;
 
 describe("encode", () => {
+  const atom = "ATOM" as TokenTicker;
   // https://rpc.cosmos.network:26657/tx?hash=0x2268EB5AB730B45F8426078827BB5BB49819CE2B0D74B2C1D191070BADB379F1&prove=true
   const defaultPubkey = {
     algo: Algorithm.Secp256k1,
@@ -36,9 +37,9 @@ describe("encode", () => {
   const defaultSender = "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r" as Address;
   const defaultRecipient = "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e" as Address;
   const defaultAmount: Amount = {
-    fractionalDigits: 0,
+    fractionalDigits: 6,
     quantity: "11657995",
-    tokenTicker: "ATOM" as TokenTicker,
+    tokenTicker: atom,
   };
   const defaultMemo = "hello cosmos hub";
 
@@ -71,9 +72,9 @@ describe("encode", () => {
     it("throws without gas limit", () => {
       const fee = {
         tokens: {
-          fractionalDigits: 0,
+          fractionalDigits: 6,
           quantity: "5000",
-          tokenTicker: "ATOM" as TokenTicker,
+          tokenTicker: atom,
         },
       };
       expect(() => encodeFee(fee)).toThrowError(/cannot encode fee without gas limit/i);
@@ -82,9 +83,9 @@ describe("encode", () => {
     it("encodes a fee", () => {
       const fee = {
         tokens: {
-          fractionalDigits: 0,
+          fractionalDigits: 6,
           quantity: "5000",
-          tokenTicker: "ATOM" as TokenTicker,
+          tokenTicker: atom,
         },
         gasLimit: "200000",
       };
@@ -215,9 +216,9 @@ describe("encode", () => {
         memo: defaultMemo,
         fee: {
           tokens: {
-            fractionalDigits: 0,
+            fractionalDigits: 6,
             quantity: "5000",
-            tokenTicker: "ATOM" as TokenTicker,
+            tokenTicker: atom,
           },
           gasLimit: "200000",
         },
@@ -263,9 +264,9 @@ describe("encode", () => {
           memo: defaultMemo,
           fee: {
             tokens: {
-              fractionalDigits: 0,
+              fractionalDigits: 6,
               quantity: "5000",
-              tokenTicker: "ATOM" as TokenTicker,
+              tokenTicker: atom,
             },
             gasLimit: "200000",
           },

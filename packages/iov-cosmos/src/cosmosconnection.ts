@@ -39,7 +39,7 @@ import { RestClient, TxsResponse } from "./restclient";
 
 const { fromBase64 } = Encoding;
 
-const vatom = "vatom" as TokenTicker;
+const atom = "ATOM" as TokenTicker;
 
 interface ChainData {
   readonly chainId: ChainId;
@@ -215,9 +215,9 @@ export class CosmosConnection implements BlockchainConnection {
     }
     return {
       tokens: {
-        fractionalDigits: 9,
+        fractionalDigits: 6,
         quantity: "5000",
-        tokenTicker: vatom,
+        tokenTicker: atom,
       },
       gasLimit: "200000",
     };
