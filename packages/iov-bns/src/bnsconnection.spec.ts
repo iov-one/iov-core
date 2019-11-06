@@ -243,10 +243,10 @@ describe("BnsConnection", () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-      const token = await connection.getToken("ASH" as TokenTicker);
+      const token = await connection.getToken("MASH" as TokenTicker);
       expect(token).toEqual({
-        tokenTicker: "ASH" as TokenTicker,
-        tokenName: "Let the Phoenix arise",
+        tokenTicker: "MASH" as TokenTicker,
+        tokenName: "The mashed coin",
         fractionalDigits: 9,
       });
 
@@ -270,23 +270,23 @@ describe("BnsConnection", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
       const tokens = await connection.getAllTokens();
-      expect(tokens.length).toEqual(3);
-
-      expect(tokens[0]).toEqual({
-        tokenTicker: "ASH" as TokenTicker,
-        tokenName: "Let the Phoenix arise",
-        fractionalDigits: 9,
-      });
-      expect(tokens[1]).toEqual({
-        tokenTicker: "BASH" as TokenTicker,
-        tokenName: "Another token of this chain",
-        fractionalDigits: 9,
-      });
-      expect(tokens[2]).toEqual({
-        tokenTicker: "CASH" as TokenTicker,
-        tokenName: "Main token of this chain",
-        fractionalDigits: 9,
-      });
+      expect(tokens).toEqual([
+        {
+          tokenTicker: "BASH" as TokenTicker,
+          tokenName: "Another token of this chain",
+          fractionalDigits: 9,
+        },
+        {
+          tokenTicker: "CASH" as TokenTicker,
+          tokenName: "Main token of this chain",
+          fractionalDigits: 9,
+        },
+        {
+          tokenTicker: "MASH" as TokenTicker,
+          tokenName: "The mashed coin",
+          fractionalDigits: 9,
+        },
+      ]);
 
       connection.disconnect();
     });
