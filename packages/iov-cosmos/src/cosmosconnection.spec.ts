@@ -25,7 +25,7 @@ function pendingWithoutCosmos(): void {
 }
 
 describe("CosmosConnection", () => {
-  const vatom = "vatom" as TokenTicker;
+  const atom = "ATOM" as TokenTicker;
   const httpUrl = "http://localhost:1317";
   const defaultChainId = "testing" as ChainId;
   const defaultEmptyAddress = "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r" as Address;
@@ -124,8 +124,8 @@ describe("CosmosConnection", () => {
         memo: "My first payment",
         amount: {
           quantity: "75000",
-          fractionalDigits: 9,
-          tokenTicker: vatom,
+          fractionalDigits: 6,
+          tokenTicker: atom,
         },
       });
       const nonce = await connection.getNonce({ address: faucetAddress });
@@ -184,8 +184,8 @@ describe("CosmosConnection", () => {
         memo: "My first payment",
         amount: {
           quantity: "75000",
-          fractionalDigits: 9,
-          tokenTicker: vatom,
+          fractionalDigits: 6,
+          tokenTicker: atom,
         },
       });
       const nonce = await connection.getNonce({ address: faucetAddress });
