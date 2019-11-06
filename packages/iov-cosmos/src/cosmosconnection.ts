@@ -80,6 +80,7 @@ export class CosmosConnection implements BlockchainConnection {
 
   private readonly restClient: RestClient;
   private readonly chainData: ChainData;
+  private readonly supportedTokens: readonly string[];
 
   private get prefix(): CosmosBech32Prefix {
     return "cosmos";
@@ -88,6 +89,7 @@ export class CosmosConnection implements BlockchainConnection {
   private constructor(restClient: RestClient, chainData: ChainData) {
     this.restClient = restClient;
     this.chainData = chainData;
+    this.supportedTokens = ["uatom"];
   }
 
   public disconnect(): void {
@@ -115,11 +117,12 @@ export class CosmosConnection implements BlockchainConnection {
     const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey, this.prefix) : query.address;
     const { result } = await this.restClient.authAccounts(address);
     const account = result.value;
+    const supportedCoins = account.coins.filter(coin => this.supportedTokens.includes(coin.denom));
     return account.public_key === null
       ? undefined
       : {
           address: address,
-          balance: account.coins.map(decodeAmount),
+          balance: supportedCoins.map(decodeAmount),
           pubkey: {
             algo: Algorithm.Secp256k1,
             data: fromBase64(account.public_key.value) as PubkeyBytes,
