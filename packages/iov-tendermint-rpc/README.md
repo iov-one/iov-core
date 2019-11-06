@@ -35,7 +35,7 @@ const results = await client.abciQuery({
 
 | IOV-Core version | Supported Tendermint versions |
 | ---------------- | ----------------------------- |
-| Next             | 0.31.x – 0.32.x               |
+| 1.1              | 0.31.x – 0.32.x               |
 | 1.0              | 0.31.x                        |
 | 0.15 – 0.17      | 0.29.x – 0.31.x               |
 | 0.12 – 0.14      | 0.25.x, 0.27.x – 0.29.x       |

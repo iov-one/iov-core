@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 1.1.0
 
 - @iov/tendermint-rpc: Add support for Tendermint RPC v0.32.
 
