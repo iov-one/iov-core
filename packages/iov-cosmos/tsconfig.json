@@ -4,8 +4,7 @@
     "baseUrl": ".",
     "outDir": "build",
     "declarationDir": "build/types",
-    "rootDir": "src",
-    "lib": ["es6", "dom"]
+    "rootDir": "src"
   },
   "include": ["src/**/*"]
 }

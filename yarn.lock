@@ -891,10 +891,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@tendermint/amino-js@^0.4.5":
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/@tendermint/amino-js/-/amino-js-0.4.5.tgz#05146e598bc514349d1d8f640a91de42d01a4f41"
-  integrity sha512-VTnobJluk5ebg1f036mA+Z7iORd171YjBh43onyt4iRJbYvEdt++ZyCyJA602kzolQmB5SixgAkLjqzCu++YEg==
+"@tendermint/amino-js@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@tendermint/amino-js/-/amino-js-0.5.1.tgz#018fb5c8bc162c6d7be0547222964be8e52c1cea"
+  integrity sha512-BUb6gNE/mVYuuQ8/Nst/5S6z532wgoZJGwYYhTlIfAMJDXeVFxsOPltd2VYzTZl01OkUUOgNCoewx0zFss+nOA==
 
 "@types/abstract-leveldown@*", "@types/abstract-leveldown@^5.0.1":
   version "5.0.1"
