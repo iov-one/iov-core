@@ -48,21 +48,21 @@ install:
   - true
 
 before_script:
-# Make variables and function from Travis available in our script
-# See implementation https://github.com/travis-ci/travis-build/blob/4041ba116ddb3bdfd66ab8acbb7094dee28d6797/lib/travis/build/templates/header.sh
-# and http://www.garbers.co.za/2017/11/01/code-folding-and-timing-in-travis-ci/
-- export ANSI_CLEAR
-- export -f travis_nanoseconds travis_fold travis_time_start travis_time_finish
+  # Make variables and function from Travis available in our script
+  # See implementation https://github.com/travis-ci/travis-build/blob/4041ba116ddb3bdfd66ab8acbb7094dee28d6797/lib/travis/build/templates/header.sh
+  # and http://www.garbers.co.za/2017/11/01/code-folding-and-timing-in-travis-ci/
+  - export ANSI_CLEAR
+  - export -f travis_nanoseconds travis_fold travis_time_start travis_time_finish
 
 script:
-- ./scripts/travis/main.sh
+  - ./scripts/travis/main.sh
 
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
 branches:
   only:
-  - master
-  # Minor version branches: 0.9, 0.10 etc.
-  - /^0\.[0-9]+$/
+    - master
+    # Minor version branches: 0.9, 0.10, 1.2 etc.
+    - /^[0-9]+\.[0-9]+$/
 
 notifications:
   email: false
