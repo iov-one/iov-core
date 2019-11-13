@@ -2,7 +2,8 @@
 
 ## 1.2.0
 
--@iov/bns: Upgrade weave to v0.21.3
+- @iov/bns: Upgrade weave to v0.21.3.
+- @iov/bns: Support SetMsgFee in CreateProposal transactions.
 
 ## 1.1.0
 
