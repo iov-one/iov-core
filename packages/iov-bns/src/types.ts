@@ -125,6 +125,7 @@ export enum ActionKind {
   ExecuteProposalBatch = "execute_proposal_batch",
   ReleaseEscrow = "escrow_release",
   Send = "cash_send",
+  SetMsgFee = "msgfee_set_msg_fee",
   SetValidators = "validators_apply_diff",
   UpdateElectionRule = "gov_update_election_rule",
   UpdateElectorate = "gov_update_electorate",
@@ -177,6 +178,16 @@ export function isSendAction(action: ProposalAction): action is SendAction {
   return action.kind === ActionKind.Send;
 }
 
+export interface SetMsgFeeAction {
+  readonly kind: ActionKind.SetMsgFee;
+  readonly msgPath: string;
+  readonly fee: Amount;
+}
+
+export function isSetMsgFeeAction(action: ProposalAction): action is SetMsgFeeAction {
+  return action.kind === ActionKind.SetMsgFee;
+}
+
 export interface SetValidatorsAction {
   readonly kind: ActionKind.SetValidators;
   readonly validatorUpdates: Validators;
@@ -214,6 +225,7 @@ export type ProposalAction =
   | ExecuteProposalBatchAction
   | ReleaseEscrowAction
   | SendAction
+  | SetMsgFeeAction
   | SetValidatorsAction
   | UpdateElectorateAction
   | UpdateElectionRuleAction;

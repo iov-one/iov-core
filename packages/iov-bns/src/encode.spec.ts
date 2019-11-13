@@ -880,6 +880,47 @@ describe("Encode", () => {
           author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
         });
       });
+
+      it("works with SetMsgFee action", () => {
+        const createProposal: CreateProposalTx & WithCreator = {
+          kind: "bns/create_proposal",
+          creator: defaultCreator,
+          title: "Why not try this?",
+          action: {
+            kind: ActionKind.SetMsgFee,
+            msgPath: "username/register_token",
+            fee: {
+              fractionalDigits: 9,
+              quantity: "10000000001",
+              tokenTicker: "CASH" as TokenTicker,
+            },
+          },
+          description: "foo bar",
+          electionRuleId: 4822531585417728,
+          startTime: 1122334455,
+          author: defaultSender,
+        };
+        const msg = buildMsg(createProposal).govCreateProposalMsg!;
+        expect(msg).toEqual({
+          metadata: { schema: 1 },
+          title: "Why not try this?",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            msgfeeSetMsgFeeMsg: {
+              metadata: { schema: 1 },
+              msgPath: "username/register_token",
+              fee: {
+                whole: 10,
+                fractional: 1,
+                ticker: "CASH",
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("0011221122112200"),
+          startTime: 1122334455,
+          author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+        });
+      });
     });
 
     it("works for VoteTx", () => {

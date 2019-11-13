@@ -431,6 +431,12 @@ function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint8Array)
         ensure(option.validatorsApplyDiffMsg.validatorUpdates, "validatorUpdates"),
       ),
     };
+  } else if (option.msgfeeSetMsgFeeMsg) {
+    return {
+      kind: ActionKind.SetMsgFee,
+      msgPath: ensure(option.msgfeeSetMsgFeeMsg.msgPath, "msgPath"),
+      fee: decodeAmount(ensure(option.msgfeeSetMsgFeeMsg.fee, "fee")),
+    };
   } else {
     throw new Error("Unsupported ProposalOptions");
   }
