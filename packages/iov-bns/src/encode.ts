@@ -30,6 +30,7 @@ import {
   isMultisignatureTx,
   isReleaseEscrowAction,
   isSendAction,
+  isSetMsgFeeAction,
   isSetValidatorsAction,
   isUpdateElectionRuleAction,
   isUpdateElectorateAction,
@@ -385,14 +386,22 @@ function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
         })),
       },
     };
-  } else if (isUpdateElectionRuleAction(tx.action)) {
+  } else if (isUpdateElectionRuleAction(action)) {
     option = {
       govUpdateElectionRuleMsg: {
         metadata: { schema: 1 },
-        electionRuleId: encodeNumericId(tx.action.electionRuleId),
-        threshold: tx.action.threshold,
-        quorum: tx.action.quorum,
-        votingPeriod: tx.action.votingPeriod,
+        electionRuleId: encodeNumericId(action.electionRuleId),
+        threshold: action.threshold,
+        quorum: action.quorum,
+        votingPeriod: action.votingPeriod,
+      },
+    };
+  } else if (isSetMsgFeeAction(action)) {
+    option = {
+      msgfeeSetMsgFeeMsg: {
+        metadata: { schema: 1 },
+        msgPath: action.msgPath,
+        fee: encodeAmount(action.fee),
       },
     };
   } else {
