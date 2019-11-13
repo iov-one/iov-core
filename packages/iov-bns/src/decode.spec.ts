@@ -1102,6 +1102,47 @@ describe("Decode", () => {
         expect(parsed.startTime).toEqual(42424242);
         expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
       });
+
+      it("works with SetMsgFee action", () => {
+        const transactionMessage: codecImpl.bnsd.ITx = {
+          govCreateProposalMsg: {
+            title: "This will happen next",
+            rawOption: codecImpl.bnsd.ProposalOptions.encode({
+              msgfeeSetMsgFeeMsg: {
+                metadata: { schema: 1 },
+                msgPath: "username/register_token",
+                fee: {
+                  whole: 10,
+                  fractional: 1,
+                  ticker: "CASH",
+                },
+              },
+            }).finish(),
+            description: "foo bar",
+            electionRuleId: fromHex("000000bbccddbbff"),
+            startTime: 42424242,
+            author: fromHex("0011223344556677889900112233445566778899"),
+          },
+        };
+        const parsed = parseMsg(defaultBaseTx, transactionMessage);
+        if (!isCreateProposalTx(parsed)) {
+          throw new Error("unexpected transaction kind");
+        }
+        expect(parsed.title).toEqual("This will happen next");
+        expect(parsed.action).toEqual({
+          kind: ActionKind.SetMsgFee,
+          msgPath: "username/register_token",
+          fee: {
+            fractionalDigits: 9,
+            quantity: "10000000001",
+            tokenTicker: "CASH" as TokenTicker,
+          },
+        });
+        expect(parsed.description).toEqual("foo bar");
+        expect(parsed.electionRuleId).toEqual(806595967999);
+        expect(parsed.startTime).toEqual(42424242);
+        expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      });
     });
 
     it("works for VoteTx", () => {
