@@ -244,7 +244,7 @@ $root.bnsd = (function() {
          * @interface ITx
          * @property {cash.IFeeInfo|null} [fees] Tx fees
          * @property {Array.<sigs.IStdSignature>|null} [signatures] Tx signatures
-         * @property {Array.<Uint8Array>|null} [multisig] ID of a multisig contract.
+         * @property {Array.<Uint8Array>|null} [multisig] as if it never got supplied.
          * @property {cash.ISendMsg|null} [cashSendMsg] Tx cashSendMsg
          * @property {escrow.ICreateMsg|null} [escrowCreateMsg] Tx escrowCreateMsg
          * @property {escrow.IReleaseMsg|null} [escrowReleaseMsg] Tx escrowReleaseMsg
@@ -270,6 +270,7 @@ $root.bnsd = (function() {
          * @property {gov.IVoteMsg|null} [govVoteMsg] Tx govVoteMsg
          * @property {gov.IUpdateElectorateMsg|null} [govUpdateElectorateMsg] gov.TallyMsg gov_tally_msg = 76;
          * @property {gov.IUpdateElectionRuleMsg|null} [govUpdateElectionRuleMsg] Tx govUpdateElectionRuleMsg
+         * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] 79 is reserved (see ProposalOptions: TextResolutionMsg)
          */
 
         /**
@@ -306,7 +307,7 @@ $root.bnsd = (function() {
         Tx.prototype.signatures = $util.emptyArray;
 
         /**
-         * ID of a multisig contract.
+         * as if it never got supplied.
          * @member {Array.<Uint8Array>} multisig
          * @memberof bnsd.Tx
          * @instance
@@ -513,17 +514,25 @@ $root.bnsd = (function() {
          */
         Tx.prototype.govUpdateElectionRuleMsg = null;
 
+        /**
+         * 79 is reserved (see ProposalOptions: TextResolutionMsg)
+         * @member {msgfee.ISetMsgFeeMsg|null|undefined} msgfeeSetMsgFeeMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.msgfeeSetMsgFeeMsg = null;
+
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * msg is a sum type over all allowed messages on this chain.
-         * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"aswapCreateMsg"|"aswapReleaseMsg"|"aswapReturnMsg"|"govCreateProposalMsg"|"govDeleteProposalMsg"|"govVoteMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|undefined} sum
+         * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"aswapCreateMsg"|"aswapReleaseMsg"|"aswapReturnMsg"|"govCreateProposalMsg"|"govDeleteProposalMsg"|"govVoteMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"msgfeeSetMsgFeeMsg"|undefined} sum
          * @memberof bnsd.Tx
          * @instance
          */
         Object.defineProperty(Tx.prototype, "sum", {
-            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "aswapCreateMsg", "aswapReleaseMsg", "aswapReturnMsg", "govCreateProposalMsg", "govDeleteProposalMsg", "govVoteMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "aswapCreateMsg", "aswapReleaseMsg", "aswapReturnMsg", "govCreateProposalMsg", "govDeleteProposalMsg", "govVoteMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "msgfeeSetMsgFeeMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -609,6 +618,8 @@ $root.bnsd = (function() {
                 $root.gov.UpdateElectorateMsg.encode(message.govUpdateElectorateMsg, writer.uint32(/* id 77, wireType 2 =*/618).fork()).ldelim();
             if (message.govUpdateElectionRuleMsg != null && message.hasOwnProperty("govUpdateElectionRuleMsg"))
                 $root.gov.UpdateElectionRuleMsg.encode(message.govUpdateElectionRuleMsg, writer.uint32(/* id 78, wireType 2 =*/626).fork()).ldelim();
+            if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg"))
+                $root.msgfee.SetMsgFeeMsg.encode(message.msgfeeSetMsgFeeMsg, writer.uint32(/* id 80, wireType 2 =*/642).fork()).ldelim();
             return writer;
         };
 
@@ -730,6 +741,9 @@ $root.bnsd = (function() {
                     break;
                 case 78:
                     message.govUpdateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.decode(reader, reader.uint32());
+                    break;
+                case 80:
+                    message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1036,6 +1050,16 @@ $root.bnsd = (function() {
                         return "govUpdateElectionRuleMsg." + error;
                 }
             }
+            if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.msgfee.SetMsgFeeMsg.verify(message.msgfeeSetMsgFeeMsg);
+                    if (error)
+                        return "msgfeeSetMsgFeeMsg." + error;
+                }
+            }
             return null;
         };
 
@@ -1201,6 +1225,11 @@ $root.bnsd = (function() {
                     throw TypeError(".bnsd.Tx.govUpdateElectionRuleMsg: object expected");
                 message.govUpdateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.fromObject(object.govUpdateElectionRuleMsg);
             }
+            if (object.msgfeeSetMsgFeeMsg != null) {
+                if (typeof object.msgfeeSetMsgFeeMsg !== "object")
+                    throw TypeError(".bnsd.Tx.msgfeeSetMsgFeeMsg: object expected");
+                message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.fromObject(object.msgfeeSetMsgFeeMsg);
+            }
             return message;
         };
 
@@ -1359,6 +1388,11 @@ $root.bnsd = (function() {
                 object.govUpdateElectionRuleMsg = $root.gov.UpdateElectionRuleMsg.toObject(message.govUpdateElectionRuleMsg, options);
                 if (options.oneofs)
                     object.sum = "govUpdateElectionRuleMsg";
+            }
+            if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg")) {
+                object.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.toObject(message.msgfeeSetMsgFeeMsg, options);
+                if (options.oneofs)
+                    object.sum = "msgfeeSetMsgFeeMsg";
             }
             return object;
         };
@@ -1603,6 +1637,7 @@ $root.bnsd = (function() {
              * @property {distribution.ICreateMsg|null} [distributionCreateMsg] Union distributionCreateMsg
              * @property {distribution.IDistributeMsg|null} [distributionMsg] Union distributionMsg
              * @property {distribution.IResetMsg|null} [distributionResetMsg] Union distributionResetMsg
+             * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] aswap and gov don't make much sense as part of a batch (no vote buying)
              */
 
             /**
@@ -1740,17 +1775,25 @@ $root.bnsd = (function() {
              */
             Union.prototype.distributionResetMsg = null;
 
+            /**
+             * aswap and gov don't make much sense as part of a batch (no vote buying)
+             * @member {msgfee.ISetMsgFeeMsg|null|undefined} msgfeeSetMsgFeeMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.msgfeeSetMsgFeeMsg = null;
+
             // OneOf field names bound to virtual getters and setters
             var $oneOfFields;
 
             /**
              * Union sum.
-             * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|undefined} sum
+             * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"msgfeeSetMsgFeeMsg"|undefined} sum
              * @memberof bnsd.ExecuteBatchMsg.Union
              * @instance
              */
             Object.defineProperty(Union.prototype, "sum", {
-                get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg"]),
+                get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "msgfeeSetMsgFeeMsg"]),
                 set: $util.oneOfSetter($oneOfFields)
             });
 
@@ -1808,6 +1851,8 @@ $root.bnsd = (function() {
                     $root.distribution.DistributeMsg.encode(message.distributionMsg, writer.uint32(/* id 67, wireType 2 =*/538).fork()).ldelim();
                 if (message.distributionResetMsg != null && message.hasOwnProperty("distributionResetMsg"))
                     $root.distribution.ResetMsg.encode(message.distributionResetMsg, writer.uint32(/* id 68, wireType 2 =*/546).fork()).ldelim();
+                if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg"))
+                    $root.msgfee.SetMsgFeeMsg.encode(message.msgfeeSetMsgFeeMsg, writer.uint32(/* id 80, wireType 2 =*/642).fork()).ldelim();
                 return writer;
             };
 
@@ -1886,6 +1931,9 @@ $root.bnsd = (function() {
                         break;
                     case 68:
                         message.distributionResetMsg = $root.distribution.ResetMsg.decode(reader, reader.uint32());
+                        break;
+                    case 80:
+                        message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.decode(reader, reader.uint32());
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -2071,6 +2119,16 @@ $root.bnsd = (function() {
                             return "distributionResetMsg." + error;
                     }
                 }
+                if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.msgfee.SetMsgFeeMsg.verify(message.msgfeeSetMsgFeeMsg);
+                        if (error)
+                            return "msgfeeSetMsgFeeMsg." + error;
+                    }
+                }
                 return null;
             };
 
@@ -2160,6 +2218,11 @@ $root.bnsd = (function() {
                     if (typeof object.distributionResetMsg !== "object")
                         throw TypeError(".bnsd.ExecuteBatchMsg.Union.distributionResetMsg: object expected");
                     message.distributionResetMsg = $root.distribution.ResetMsg.fromObject(object.distributionResetMsg);
+                }
+                if (object.msgfeeSetMsgFeeMsg != null) {
+                    if (typeof object.msgfeeSetMsgFeeMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.msgfeeSetMsgFeeMsg: object expected");
+                    message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.fromObject(object.msgfeeSetMsgFeeMsg);
                 }
                 return message;
             };
@@ -2252,6 +2315,11 @@ $root.bnsd = (function() {
                     if (options.oneofs)
                         object.sum = "distributionResetMsg";
                 }
+                if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg")) {
+                    object.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.toObject(message.msgfeeSetMsgFeeMsg, options);
+                    if (options.oneofs)
+                        object.sum = "msgfeeSetMsgFeeMsg";
+                }
                 return object;
             };
 
@@ -2295,6 +2363,7 @@ $root.bnsd = (function() {
          * @property {gov.IUpdateElectorateMsg|null} [govUpdateElectorateMsg] ProposalOptions govUpdateElectorateMsg
          * @property {gov.IUpdateElectionRuleMsg|null} [govUpdateElectionRuleMsg] ProposalOptions govUpdateElectionRuleMsg
          * @property {gov.ICreateTextResolutionMsg|null} [govCreateTextResolutionMsg] ProposalOptions govCreateTextResolutionMsg
+         * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] ProposalOptions msgfeeSetMsgFeeMsg
          */
 
         /**
@@ -2448,17 +2517,25 @@ $root.bnsd = (function() {
          */
         ProposalOptions.prototype.govCreateTextResolutionMsg = null;
 
+        /**
+         * ProposalOptions msgfeeSetMsgFeeMsg.
+         * @member {msgfee.ISetMsgFeeMsg|null|undefined} msgfeeSetMsgFeeMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.msgfeeSetMsgFeeMsg = null;
+
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * ProposalOptions option.
-         * @member {"cashSendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeProposalBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|undefined} option
+         * @member {"cashSendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeProposalBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|undefined} option
          * @memberof bnsd.ProposalOptions
          * @instance
          */
         Object.defineProperty(ProposalOptions.prototype, "option", {
-            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeProposalBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeProposalBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -2520,6 +2597,8 @@ $root.bnsd = (function() {
                 $root.gov.UpdateElectionRuleMsg.encode(message.govUpdateElectionRuleMsg, writer.uint32(/* id 78, wireType 2 =*/626).fork()).ldelim();
             if (message.govCreateTextResolutionMsg != null && message.hasOwnProperty("govCreateTextResolutionMsg"))
                 $root.gov.CreateTextResolutionMsg.encode(message.govCreateTextResolutionMsg, writer.uint32(/* id 79, wireType 2 =*/634).fork()).ldelim();
+            if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg"))
+                $root.msgfee.SetMsgFeeMsg.encode(message.msgfeeSetMsgFeeMsg, writer.uint32(/* id 80, wireType 2 =*/642).fork()).ldelim();
             return writer;
         };
 
@@ -2604,6 +2683,9 @@ $root.bnsd = (function() {
                     break;
                 case 79:
                     message.govCreateTextResolutionMsg = $root.gov.CreateTextResolutionMsg.decode(reader, reader.uint32());
+                    break;
+                case 80:
+                    message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -2809,6 +2891,16 @@ $root.bnsd = (function() {
                         return "govCreateTextResolutionMsg." + error;
                 }
             }
+            if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.msgfee.SetMsgFeeMsg.verify(message.msgfeeSetMsgFeeMsg);
+                    if (error)
+                        return "msgfeeSetMsgFeeMsg." + error;
+                }
+            }
             return null;
         };
 
@@ -2908,6 +3000,11 @@ $root.bnsd = (function() {
                 if (typeof object.govCreateTextResolutionMsg !== "object")
                     throw TypeError(".bnsd.ProposalOptions.govCreateTextResolutionMsg: object expected");
                 message.govCreateTextResolutionMsg = $root.gov.CreateTextResolutionMsg.fromObject(object.govCreateTextResolutionMsg);
+            }
+            if (object.msgfeeSetMsgFeeMsg != null) {
+                if (typeof object.msgfeeSetMsgFeeMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.msgfeeSetMsgFeeMsg: object expected");
+                message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.fromObject(object.msgfeeSetMsgFeeMsg);
             }
             return message;
         };
@@ -3009,6 +3106,11 @@ $root.bnsd = (function() {
                 object.govCreateTextResolutionMsg = $root.gov.CreateTextResolutionMsg.toObject(message.govCreateTextResolutionMsg, options);
                 if (options.oneofs)
                     object.option = "govCreateTextResolutionMsg";
+            }
+            if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg")) {
+                object.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.toObject(message.msgfeeSetMsgFeeMsg, options);
+                if (options.oneofs)
+                    object.option = "msgfeeSetMsgFeeMsg";
             }
             return object;
         };
@@ -3252,6 +3354,7 @@ $root.bnsd = (function() {
              * @property {gov.IUpdateElectorateMsg|null} [govUpdateElectorateMsg] don't allow UpgradeSchema as part of a batch, as effects are too confusing
              * @property {gov.IUpdateElectionRuleMsg|null} [govUpdateElectionRuleMsg] Union govUpdateElectionRuleMsg
              * @property {gov.ICreateTextResolutionMsg|null} [govCreateTextResolutionMsg] Union govCreateTextResolutionMsg
+             * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] Union msgfeeSetMsgFeeMsg
              */
 
             /**
@@ -3381,17 +3484,25 @@ $root.bnsd = (function() {
              */
             Union.prototype.govCreateTextResolutionMsg = null;
 
+            /**
+             * Union msgfeeSetMsgFeeMsg.
+             * @member {msgfee.ISetMsgFeeMsg|null|undefined} msgfeeSetMsgFeeMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.msgfeeSetMsgFeeMsg = null;
+
             // OneOf field names bound to virtual getters and setters
             var $oneOfFields;
 
             /**
              * Union sum.
-             * @member {"sendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|undefined} sum
+             * @member {"sendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|undefined} sum
              * @memberof bnsd.ExecuteProposalBatchMsg.Union
              * @instance
              */
             Object.defineProperty(Union.prototype, "sum", {
-                get: $util.oneOfGetter($oneOfFields = ["sendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg"]),
+                get: $util.oneOfGetter($oneOfFields = ["sendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg"]),
                 set: $util.oneOfSetter($oneOfFields)
             });
 
@@ -3447,6 +3558,8 @@ $root.bnsd = (function() {
                     $root.gov.UpdateElectionRuleMsg.encode(message.govUpdateElectionRuleMsg, writer.uint32(/* id 78, wireType 2 =*/626).fork()).ldelim();
                 if (message.govCreateTextResolutionMsg != null && message.hasOwnProperty("govCreateTextResolutionMsg"))
                     $root.gov.CreateTextResolutionMsg.encode(message.govCreateTextResolutionMsg, writer.uint32(/* id 79, wireType 2 =*/634).fork()).ldelim();
+                if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg"))
+                    $root.msgfee.SetMsgFeeMsg.encode(message.msgfeeSetMsgFeeMsg, writer.uint32(/* id 80, wireType 2 =*/642).fork()).ldelim();
                 return writer;
             };
 
@@ -3522,6 +3635,9 @@ $root.bnsd = (function() {
                         break;
                     case 79:
                         message.govCreateTextResolutionMsg = $root.gov.CreateTextResolutionMsg.decode(reader, reader.uint32());
+                        break;
+                    case 80:
+                        message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.decode(reader, reader.uint32());
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -3697,6 +3813,16 @@ $root.bnsd = (function() {
                             return "govCreateTextResolutionMsg." + error;
                     }
                 }
+                if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.msgfee.SetMsgFeeMsg.verify(message.msgfeeSetMsgFeeMsg);
+                        if (error)
+                            return "msgfeeSetMsgFeeMsg." + error;
+                    }
+                }
                 return null;
             };
 
@@ -3781,6 +3907,11 @@ $root.bnsd = (function() {
                     if (typeof object.govCreateTextResolutionMsg !== "object")
                         throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.govCreateTextResolutionMsg: object expected");
                     message.govCreateTextResolutionMsg = $root.gov.CreateTextResolutionMsg.fromObject(object.govCreateTextResolutionMsg);
+                }
+                if (object.msgfeeSetMsgFeeMsg != null) {
+                    if (typeof object.msgfeeSetMsgFeeMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.msgfeeSetMsgFeeMsg: object expected");
+                    message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.fromObject(object.msgfeeSetMsgFeeMsg);
                 }
                 return message;
             };
@@ -3867,6 +3998,11 @@ $root.bnsd = (function() {
                     object.govCreateTextResolutionMsg = $root.gov.CreateTextResolutionMsg.toObject(message.govCreateTextResolutionMsg, options);
                     if (options.oneofs)
                         object.sum = "govCreateTextResolutionMsg";
+                }
+                if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg")) {
+                    object.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.toObject(message.msgfeeSetMsgFeeMsg, options);
+                    if (options.oneofs)
+                        object.sum = "msgfeeSetMsgFeeMsg";
                 }
                 return object;
             };
@@ -20771,6 +20907,723 @@ $root.msgfee = (function() {
         };
 
         return MsgFee;
+    })();
+
+    msgfee.SetMsgFeeMsg = (function() {
+
+        /**
+         * Properties of a SetMsgFeeMsg.
+         * @memberof msgfee
+         * @interface ISetMsgFeeMsg
+         * @property {weave.IMetadata|null} [metadata] SetMsgFeeMsg metadata
+         * @property {string|null} [msgPath] SetMsgFeeMsg msgPath
+         * @property {coin.ICoin|null} [fee] SetMsgFeeMsg fee
+         */
+
+        /**
+         * Constructs a new SetMsgFeeMsg.
+         * @memberof msgfee
+         * @classdesc zero value coin to unset a fee.
+         * @implements ISetMsgFeeMsg
+         * @constructor
+         * @param {msgfee.ISetMsgFeeMsg=} [properties] Properties to set
+         */
+        function SetMsgFeeMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * SetMsgFeeMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof msgfee.SetMsgFeeMsg
+         * @instance
+         */
+        SetMsgFeeMsg.prototype.metadata = null;
+
+        /**
+         * SetMsgFeeMsg msgPath.
+         * @member {string} msgPath
+         * @memberof msgfee.SetMsgFeeMsg
+         * @instance
+         */
+        SetMsgFeeMsg.prototype.msgPath = "";
+
+        /**
+         * SetMsgFeeMsg fee.
+         * @member {coin.ICoin|null|undefined} fee
+         * @memberof msgfee.SetMsgFeeMsg
+         * @instance
+         */
+        SetMsgFeeMsg.prototype.fee = null;
+
+        /**
+         * Creates a new SetMsgFeeMsg instance using the specified properties.
+         * @function create
+         * @memberof msgfee.SetMsgFeeMsg
+         * @static
+         * @param {msgfee.ISetMsgFeeMsg=} [properties] Properties to set
+         * @returns {msgfee.SetMsgFeeMsg} SetMsgFeeMsg instance
+         */
+        SetMsgFeeMsg.create = function create(properties) {
+            return new SetMsgFeeMsg(properties);
+        };
+
+        /**
+         * Encodes the specified SetMsgFeeMsg message. Does not implicitly {@link msgfee.SetMsgFeeMsg.verify|verify} messages.
+         * @function encode
+         * @memberof msgfee.SetMsgFeeMsg
+         * @static
+         * @param {msgfee.ISetMsgFeeMsg} message SetMsgFeeMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        SetMsgFeeMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.msgPath != null && message.hasOwnProperty("msgPath"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.msgPath);
+            if (message.fee != null && message.hasOwnProperty("fee"))
+                $root.coin.Coin.encode(message.fee, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified SetMsgFeeMsg message, length delimited. Does not implicitly {@link msgfee.SetMsgFeeMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof msgfee.SetMsgFeeMsg
+         * @static
+         * @param {msgfee.ISetMsgFeeMsg} message SetMsgFeeMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        SetMsgFeeMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a SetMsgFeeMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof msgfee.SetMsgFeeMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {msgfee.SetMsgFeeMsg} SetMsgFeeMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        SetMsgFeeMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msgfee.SetMsgFeeMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.msgPath = reader.string();
+                    break;
+                case 3:
+                    message.fee = $root.coin.Coin.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a SetMsgFeeMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof msgfee.SetMsgFeeMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {msgfee.SetMsgFeeMsg} SetMsgFeeMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        SetMsgFeeMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a SetMsgFeeMsg message.
+         * @function verify
+         * @memberof msgfee.SetMsgFeeMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        SetMsgFeeMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.msgPath != null && message.hasOwnProperty("msgPath"))
+                if (!$util.isString(message.msgPath))
+                    return "msgPath: string expected";
+            if (message.fee != null && message.hasOwnProperty("fee")) {
+                var error = $root.coin.Coin.verify(message.fee);
+                if (error)
+                    return "fee." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a SetMsgFeeMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof msgfee.SetMsgFeeMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {msgfee.SetMsgFeeMsg} SetMsgFeeMsg
+         */
+        SetMsgFeeMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.msgfee.SetMsgFeeMsg)
+                return object;
+            var message = new $root.msgfee.SetMsgFeeMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".msgfee.SetMsgFeeMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.msgPath != null)
+                message.msgPath = String(object.msgPath);
+            if (object.fee != null) {
+                if (typeof object.fee !== "object")
+                    throw TypeError(".msgfee.SetMsgFeeMsg.fee: object expected");
+                message.fee = $root.coin.Coin.fromObject(object.fee);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a SetMsgFeeMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof msgfee.SetMsgFeeMsg
+         * @static
+         * @param {msgfee.SetMsgFeeMsg} message SetMsgFeeMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        SetMsgFeeMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.msgPath = "";
+                object.fee = null;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.msgPath != null && message.hasOwnProperty("msgPath"))
+                object.msgPath = message.msgPath;
+            if (message.fee != null && message.hasOwnProperty("fee"))
+                object.fee = $root.coin.Coin.toObject(message.fee, options);
+            return object;
+        };
+
+        /**
+         * Converts this SetMsgFeeMsg to JSON.
+         * @function toJSON
+         * @memberof msgfee.SetMsgFeeMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        SetMsgFeeMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return SetMsgFeeMsg;
+    })();
+
+    msgfee.Configuration = (function() {
+
+        /**
+         * Properties of a Configuration.
+         * @memberof msgfee
+         * @interface IConfiguration
+         * @property {weave.IMetadata|null} [metadata] Configuration metadata
+         * @property {Uint8Array|null} [owner] needed to make use of gconf.NewUpdateConfigurationHandler
+         * @property {Uint8Array|null} [feeAdmin] FeeAdmin is an address that is allowed to change the fee.
+         */
+
+        /**
+         * Constructs a new Configuration.
+         * @memberof msgfee
+         * @classdesc Represents a Configuration.
+         * @implements IConfiguration
+         * @constructor
+         * @param {msgfee.IConfiguration=} [properties] Properties to set
+         */
+        function Configuration(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Configuration metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof msgfee.Configuration
+         * @instance
+         */
+        Configuration.prototype.metadata = null;
+
+        /**
+         * needed to make use of gconf.NewUpdateConfigurationHandler
+         * @member {Uint8Array} owner
+         * @memberof msgfee.Configuration
+         * @instance
+         */
+        Configuration.prototype.owner = $util.newBuffer([]);
+
+        /**
+         * FeeAdmin is an address that is allowed to change the fee.
+         * @member {Uint8Array} feeAdmin
+         * @memberof msgfee.Configuration
+         * @instance
+         */
+        Configuration.prototype.feeAdmin = $util.newBuffer([]);
+
+        /**
+         * Creates a new Configuration instance using the specified properties.
+         * @function create
+         * @memberof msgfee.Configuration
+         * @static
+         * @param {msgfee.IConfiguration=} [properties] Properties to set
+         * @returns {msgfee.Configuration} Configuration instance
+         */
+        Configuration.create = function create(properties) {
+            return new Configuration(properties);
+        };
+
+        /**
+         * Encodes the specified Configuration message. Does not implicitly {@link msgfee.Configuration.verify|verify} messages.
+         * @function encode
+         * @memberof msgfee.Configuration
+         * @static
+         * @param {msgfee.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
+            if (message.feeAdmin != null && message.hasOwnProperty("feeAdmin"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.feeAdmin);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Configuration message, length delimited. Does not implicitly {@link msgfee.Configuration.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof msgfee.Configuration
+         * @static
+         * @param {msgfee.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer.
+         * @function decode
+         * @memberof msgfee.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {msgfee.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msgfee.Configuration();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.owner = reader.bytes();
+                    break;
+                case 3:
+                    message.feeAdmin = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof msgfee.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {msgfee.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Configuration message.
+         * @function verify
+         * @memberof msgfee.Configuration
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Configuration.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
+            if (message.feeAdmin != null && message.hasOwnProperty("feeAdmin"))
+                if (!(message.feeAdmin && typeof message.feeAdmin.length === "number" || $util.isString(message.feeAdmin)))
+                    return "feeAdmin: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof msgfee.Configuration
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {msgfee.Configuration} Configuration
+         */
+        Configuration.fromObject = function fromObject(object) {
+            if (object instanceof $root.msgfee.Configuration)
+                return object;
+            var message = new $root.msgfee.Configuration();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".msgfee.Configuration.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
+            if (object.feeAdmin != null)
+                if (typeof object.feeAdmin === "string")
+                    $util.base64.decode(object.feeAdmin, message.feeAdmin = $util.newBuffer($util.base64.length(object.feeAdmin)), 0);
+                else if (object.feeAdmin.length)
+                    message.feeAdmin = object.feeAdmin;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof msgfee.Configuration
+         * @static
+         * @param {msgfee.Configuration} message Configuration
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Configuration.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
+                if (options.bytes === String)
+                    object.feeAdmin = "";
+                else {
+                    object.feeAdmin = [];
+                    if (options.bytes !== Array)
+                        object.feeAdmin = $util.newBuffer(object.feeAdmin);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            if (message.feeAdmin != null && message.hasOwnProperty("feeAdmin"))
+                object.feeAdmin = options.bytes === String ? $util.base64.encode(message.feeAdmin, 0, message.feeAdmin.length) : options.bytes === Array ? Array.prototype.slice.call(message.feeAdmin) : message.feeAdmin;
+            return object;
+        };
+
+        /**
+         * Converts this Configuration to JSON.
+         * @function toJSON
+         * @memberof msgfee.Configuration
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Configuration.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Configuration;
+    })();
+
+    msgfee.UpdateConfigurationMsg = (function() {
+
+        /**
+         * Properties of an UpdateConfigurationMsg.
+         * @memberof msgfee
+         * @interface IUpdateConfigurationMsg
+         * @property {weave.IMetadata|null} [metadata] UpdateConfigurationMsg metadata
+         * @property {msgfee.IConfiguration|null} [patch] UpdateConfigurationMsg patch
+         */
+
+        /**
+         * Constructs a new UpdateConfigurationMsg.
+         * @memberof msgfee
+         * @classdesc Represents an UpdateConfigurationMsg.
+         * @implements IUpdateConfigurationMsg
+         * @constructor
+         * @param {msgfee.IUpdateConfigurationMsg=} [properties] Properties to set
+         */
+        function UpdateConfigurationMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdateConfigurationMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.metadata = null;
+
+        /**
+         * UpdateConfigurationMsg patch.
+         * @member {msgfee.IConfiguration|null|undefined} patch
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.patch = null;
+
+        /**
+         * Creates a new UpdateConfigurationMsg instance using the specified properties.
+         * @function create
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @static
+         * @param {msgfee.IUpdateConfigurationMsg=} [properties] Properties to set
+         * @returns {msgfee.UpdateConfigurationMsg} UpdateConfigurationMsg instance
+         */
+        UpdateConfigurationMsg.create = function create(properties) {
+            return new UpdateConfigurationMsg(properties);
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link msgfee.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encode
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @static
+         * @param {msgfee.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                $root.msgfee.Configuration.encode(message.patch, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link msgfee.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @static
+         * @param {msgfee.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {msgfee.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msgfee.UpdateConfigurationMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.patch = $root.msgfee.Configuration.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {msgfee.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdateConfigurationMsg message.
+         * @function verify
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdateConfigurationMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.patch != null && message.hasOwnProperty("patch")) {
+                var error = $root.msgfee.Configuration.verify(message.patch);
+                if (error)
+                    return "patch." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {msgfee.UpdateConfigurationMsg} UpdateConfigurationMsg
+         */
+        UpdateConfigurationMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.msgfee.UpdateConfigurationMsg)
+                return object;
+            var message = new $root.msgfee.UpdateConfigurationMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".msgfee.UpdateConfigurationMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.patch != null) {
+                if (typeof object.patch !== "object")
+                    throw TypeError(".msgfee.UpdateConfigurationMsg.patch: object expected");
+                message.patch = $root.msgfee.Configuration.fromObject(object.patch);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @static
+         * @param {msgfee.UpdateConfigurationMsg} message UpdateConfigurationMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdateConfigurationMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.patch = null;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                object.patch = $root.msgfee.Configuration.toObject(message.patch, options);
+            return object;
+        };
+
+        /**
+         * Converts this UpdateConfigurationMsg to JSON.
+         * @function toJSON
+         * @memberof msgfee.UpdateConfigurationMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdateConfigurationMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateConfigurationMsg;
     })();
 
     return msgfee;

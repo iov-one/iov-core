@@ -1,1 +1,1 @@
-4a00f096f69e6371d284cc34ee48ed6d69b8d657 (HEAD, tag: v0.21.0, origin/master, origin/HEAD) weave 0.21.0 release (#983)
+ea73c9ce47eed49f6eb03b353202dc34a010e481 (HEAD, tag: v0.21.3) improve multisig comment on bnsd.tx (#1030)
