@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+-@iov/bns: Upgrade weave to v0.21.3
+
 ## 1.1.0
 
 - @iov/tendermint-rpc: Add support for Tendermint RPC v0.32.
