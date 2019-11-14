@@ -99,7 +99,7 @@ export class Xchacha20poly1305Ietf {
   ): Promise<Xchacha20poly1305IetfCiphertext> {
     await sodium.ready;
 
-    const additionalData = undefined;
+    const additionalData = null;
 
     return sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
       message,
@@ -117,7 +117,7 @@ export class Xchacha20poly1305Ietf {
   ): Promise<Xchacha20poly1305IetfMessage> {
     await sodium.ready;
 
-    const additionalData = undefined;
+    const additionalData = null;
 
     return sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
       null, // secret nonce: unused and should be null (https://download.libsodium.org/doc/secret-key_cryptography/aead/chacha20-poly1305/xchacha20-poly1305_construction)

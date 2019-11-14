@@ -4,6 +4,8 @@
 
 - @iov/bns: Upgrade weave to v0.21.3.
 - @iov/bns: Support SetMsgFee in CreateProposal transactions.
+- @iov/crypto: Upgrade to libsodium-wrappers v0.7.6. This means @iov/cli now
+  supports Node v12.
 
 ## 1.1.0
 
