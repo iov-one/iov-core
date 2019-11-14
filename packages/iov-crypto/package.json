@@ -50,6 +50,6 @@
     "unorm": "^1.5.0"
   },
   "devDependencies": {
-    "@types/libsodium-wrappers": "^0.7.5"
+    "@types/libsodium-wrappers": "^0.7.6"
   }
 }
