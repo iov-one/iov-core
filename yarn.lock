@@ -891,10 +891,25 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@tendermint/amino-js@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@tendermint/amino-js/-/amino-js-0.5.1.tgz#018fb5c8bc162c6d7be0547222964be8e52c1cea"
-  integrity sha512-BUb6gNE/mVYuuQ8/Nst/5S6z532wgoZJGwYYhTlIfAMJDXeVFxsOPltd2VYzTZl01OkUUOgNCoewx0zFss+nOA==
+"@tendermint/amino-js@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@tendermint/amino-js/-/amino-js-0.6.2.tgz#1548787efb5778f0b48d723342dedfc03e52e498"
+  integrity sha512-HpC7MWLTDEi/ETjDSy63WQR1mdIuk5WUZcJq7URE9+1VgjrdmRUD2KG6vy7IaeBXpZ8Lg35jbg2mpIQZjBn47Q==
+  dependencies:
+    "@tendermint/belt" "0.2.1"
+    "@tendermint/types" "0.1.1"
+
+"@tendermint/belt@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@tendermint/belt/-/belt-0.2.1.tgz#f1f0df8f2c1847d175b5aa6968b3389de34f3f2b"
+  integrity sha512-Z3byTEpbSfrMaNx431pr8P4nrFshWz7WiFqxv/cTVgRENCVfndygOz0W15qC1pgqBhhnQPLEnmdP/GIyiS7JWg==
+  dependencies:
+    "@tendermint/types" "0.1.1"
+
+"@tendermint/types@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@tendermint/types/-/types-0.1.1.tgz#7e50643a6e634d9a47aa746c50653811a83c72e2"
+  integrity sha512-jMEz5tJ3ncA8903N2DoPD6EJawSyORRSyWvQbmxyz8ONiugjOKvoesMzz/xIioe1Ekzf6YJnw/3RI+kT9qdNyg==
 
 "@types/abstract-leveldown@*", "@types/abstract-leveldown@^5.0.1":
   version "5.0.1"
