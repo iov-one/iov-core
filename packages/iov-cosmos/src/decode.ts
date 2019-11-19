@@ -17,7 +17,7 @@ import {
 import { Encoding } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
-import { AminoTx } from "./types";
+import { isAminoStdTx } from "./types";
 
 const { fromBase64 } = Encoding;
 
@@ -92,19 +92,13 @@ export function parseCreator(signature: amino.StdSignature, chainId: ChainId): I
   };
 }
 
-export function parseTx(tx: AminoTx, chainId: ChainId, nonce: Nonce): SignedTransaction {
+export function parseTx(tx: amino.Tx, chainId: ChainId, nonce: Nonce): SignedTransaction {
   const txValue = tx.value;
-  if (!txValue.signatures) {
-    throw new Error("No signatures");
-  }
-  if (!txValue.msg || !txValue.msg.length) {
-    throw new Error("No msg");
+  if (!isAminoStdTx(txValue)) {
+    throw new Error("Only Amino StdTx is supported");
   }
   if (txValue.msg.length !== 1) {
     throw new Error("Only single-message transactions currently supported");
-  }
-  if (!txValue.fee) {
-    throw new Error("No fee");
   }
 
   const [primarySignature] = txValue.signatures.map(signature => decodeFullSignature(signature, nonce));

@@ -72,7 +72,7 @@ export function buildUnsignedTx(tx: UnsignedTransaction): AminoTx {
   if (!isSendTransaction(tx)) {
     throw new Error("Received transaction of unsupported kind");
   }
-  const txWithoutFee = {
+  return {
     type: "auth/StdTx",
     value: {
       msg: [
@@ -85,19 +85,16 @@ export function buildUnsignedTx(tx: UnsignedTransaction): AminoTx {
           },
         },
       ],
-      memo: tx.memo,
+      memo: tx.memo || "",
       signatures: [],
+      fee: tx.fee
+        ? encodeFee(tx.fee)
+        : {
+            amount: [],
+            gas: "",
+          },
     },
   };
-  return tx.fee
-    ? {
-        ...txWithoutFee,
-        value: {
-          ...txWithoutFee.value,
-          fee: encodeFee(tx.fee),
-        },
-      }
-    : txWithoutFee;
 }
 
 export function buildSignedTx(tx: SignedTransaction): AminoTx {

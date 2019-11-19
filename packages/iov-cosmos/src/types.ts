@@ -1,11 +1,10 @@
 import amino from "@tendermint/amino-js";
 
-export interface TxValue {
-  readonly msg?: readonly amino.Msg[];
-  readonly fee?: amino.StdFee;
-  readonly signatures?: readonly amino.StdSignature[];
-  readonly memo?: string;
-}
+export type AminoTx = amino.Tx & { readonly value: amino.StdTx };
 
-// Temporary solution until amino-js provides a fleshed-out type
-export type AminoTx = amino.Tx & { readonly value: TxValue };
+export function isAminoStdTx(txValue: amino.TxValue): txValue is amino.StdTx {
+  const { memo, msg, fee, signatures } = txValue as amino.StdTx;
+  return (
+    typeof memo === "string" && Array.isArray(msg) && typeof fee === "object" && Array.isArray(signatures)
+  );
+}

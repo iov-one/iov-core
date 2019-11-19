@@ -201,6 +201,10 @@ describe("encode", () => {
           ],
           signatures: [],
           memo: defaultMemo,
+          fee: {
+            amount: [],
+            gas: "",
+          },
         },
       });
     });
