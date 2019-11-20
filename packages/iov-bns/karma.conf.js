@@ -41,5 +41,8 @@ module.exports = function(config) {
 
     // Keep brower open for debugging. This is overridden by yarn scripts
     singleRun: false,
+
+    // Some of our tests take a long time...
+    browserNoActivityTimeout: 60000,
   });
 };
