@@ -52,6 +52,7 @@ import { decodeNumericId } from "./decode";
 import { bnsSwapQueryTag } from "./tags";
 import {
   ActionKind,
+  ChainAddressPair,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
@@ -2878,6 +2879,88 @@ describe("BnsConnection", () => {
       kind: SwapProcessState.Open,
       data: open3!.data,
     });
+
+    connection.disconnect();
+  });
+
+  it("can register/transfer and update a username for an empty account", async () => {
+    pendingWithoutBnsd();
+    const connection = await BnsConnection.establish(bnsdTendermintUrl);
+    const chainId = connection.chainId();
+
+    const { profile, faucet, walletId } = await userProfileWithFaucet(chainId);
+    const brokeAccountPath = HdPaths.iov(666);
+    const user = await profile.createIdentity(walletId, chainId, brokeAccountPath);
+    const userAddress = identityToAddress(user);
+    const username = `user${Math.random()}*iov`;
+
+    const userAccount = await connection.getAccount({ address: userAddress });
+    if (userAccount && userAccount.balance.length) {
+      throw new Error("Test should be run using empty account");
+    }
+
+    const initialTargets: readonly ChainAddressPair[] = [
+      {
+        chainId: "some-initial-chain" as ChainId,
+        address: "some-initial-address" as Address,
+      },
+    ];
+    const registerUsernameTx = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
+      kind: "bns/register_username",
+      creator: faucet,
+      username: username,
+      targets: initialTargets,
+    });
+    const nonce1 = await connection.getNonce({ pubkey: faucet.pubkey });
+    const signed1 = await profile.signTransaction(registerUsernameTx, bnsCodec, nonce1);
+    const txBytes1 = bnsCodec.bytesToPost(signed1);
+    const response1 = await connection.postTx(txBytes1);
+    const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    expect(blockInfo1.state).toEqual(TransactionState.Succeeded);
+
+    const transferUsernameTx = await connection.withDefaultFee<TransferUsernameTx & WithCreator>({
+      kind: "bns/transfer_username",
+      creator: faucet,
+      username: username,
+      newOwner: userAddress,
+    });
+    const nonce2 = await connection.getNonce({ pubkey: faucet.pubkey });
+    const signed2 = await profile.signTransaction(transferUsernameTx, bnsCodec, nonce2);
+    const txBytes2 = bnsCodec.bytesToPost(signed2);
+    const response2 = await connection.postTx(txBytes2);
+    const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+    const retrieved1 = await connection.getUsernames({ username: username });
+    expect(retrieved1.length).toEqual(1);
+    expect(retrieved1[0].owner).toEqual(userAddress);
+    expect(retrieved1[0].targets).toEqual(initialTargets);
+
+    const updatedTargets: readonly ChainAddressPair[] = [
+      {
+        chainId: "some-updated-chain" as ChainId,
+        address: "some-updated-address" as Address,
+      },
+    ];
+    const updateTargetsTx = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithCreator>({
+      kind: "bns/update_targets_of_username",
+      creator: faucet,
+      username: username,
+      targets: updatedTargets,
+    });
+    const nonce3 = await connection.getNonce({ pubkey: faucet.pubkey });
+    const signed3 = await profile.signTransaction(updateTargetsTx, bnsCodec, nonce3);
+    const nonce4 = await connection.getNonce({ pubkey: user.pubkey });
+    const doubleSigned = await profile.appendSignature(user, signed3, bnsCodec, nonce4);
+    const txBytes3 = bnsCodec.bytesToPost(doubleSigned);
+    const response3 = await connection.postTx(txBytes3);
+    const blockInfo3 = await response3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    expect(blockInfo3.state).toEqual(TransactionState.Succeeded);
+
+    const retrieved2 = await connection.getUsernames({ username: username });
+    expect(retrieved2.length).toEqual(1);
+    expect(retrieved2[0].owner).toEqual(userAddress);
+    expect(retrieved2[0].targets).toEqual(updatedTargets);
 
     connection.disconnect();
   });
