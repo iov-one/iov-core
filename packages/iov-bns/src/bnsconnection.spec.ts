@@ -70,6 +70,7 @@ import {
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
+  SetMsgFeeAction,
   TransferUsernameTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
@@ -1465,6 +1466,155 @@ describe("BnsConnection", () => {
 
       connection.disconnect();
     }, 30_000);
+
+    it("can create and vote on a proposal, and see the effects", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const chainId = connection.chainId();
+
+      const { profile, admin: author } = await userProfileWithFaucet(chainId);
+      const authorAddress = identityToAddress(author);
+
+      const someElectionRule = (await connection.getElectionRules()).find(
+        // Dictatorship electorate
+        ({ electorateId }) => electorateId === 2,
+      );
+      if (!someElectionRule) {
+        throw new Error("No election rule found");
+      }
+
+      const fee1 = {
+        fractionalDigits: 9,
+        quantity: "50",
+        tokenTicker: bash,
+      };
+      let proposalId1: number;
+
+      {
+        const startTime = Math.floor(Date.now() / 1000) + 3;
+        const title = `Hello ${Math.random()}`;
+        const description = `Hello ${Math.random()}`;
+        const action: SetMsgFeeAction = {
+          kind: ActionKind.SetMsgFee,
+          msgPath: "username/register_token",
+          fee: fee1,
+        };
+        const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
+          kind: "bns/create_proposal",
+          creator: author,
+          title: title,
+          description: description,
+          author: authorAddress,
+          electionRuleId: someElectionRule.id,
+          action: action,
+          startTime: startTime,
+        });
+        const nonce = await connection.getNonce({ pubkey: author.pubkey });
+        const signed = await profile.signTransaction(createProposal, bnsCodec, nonce);
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo)) {
+          throw new Error("Transaction did not succeed");
+        }
+        if (!blockInfo.result) {
+          throw new Error("Transaction result missing");
+        }
+        proposalId1 = new BN(blockInfo.result).toNumber();
+      }
+
+      await sleep(6_000);
+
+      {
+        const voteForProposal = await connection.withDefaultFee<VoteTx & WithCreator>({
+          kind: "bns/vote",
+          creator: author,
+          proposalId: proposalId1,
+          selection: VoteOption.Yes,
+        });
+        const nonce = await connection.getNonce({ pubkey: author.pubkey });
+        const signed = await profile.signTransaction(voteForProposal, bnsCodec, nonce);
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo)) {
+          throw new Error("Transaction did not succeed");
+        }
+      }
+
+      await sleep(15_000);
+
+      const registerUsernameTx: RegisterUsernameTx & UnsignedTransaction = {
+        kind: "bns/register_username",
+        creator: author,
+        username: "TestyMcTestface",
+        targets: [],
+      };
+      const productFee1 = await connection.getFeeQuote(registerUsernameTx);
+      expect(productFee1.tokens).toEqual(fee1);
+
+      const fee2 = {
+        fractionalDigits: 9,
+        quantity: "5000000000",
+        tokenTicker: cash,
+      };
+      let proposalId2: number;
+
+      {
+        const startTime = Math.floor(Date.now() / 1000) + 3;
+        const title = `Hello ${Math.random()}`;
+        const description = `Hello ${Math.random()}`;
+        const action: SetMsgFeeAction = {
+          kind: ActionKind.SetMsgFee,
+          msgPath: "username/register_token",
+          fee: fee2,
+        };
+        const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
+          kind: "bns/create_proposal",
+          creator: author,
+          title: title,
+          description: description,
+          author: authorAddress,
+          electionRuleId: someElectionRule.id,
+          action: action,
+          startTime: startTime,
+        });
+        const nonce = await connection.getNonce({ pubkey: author.pubkey });
+        const signed = await profile.signTransaction(createProposal, bnsCodec, nonce);
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo)) {
+          throw new Error("Transaction did not succeed");
+        }
+        if (!blockInfo.result) {
+          throw new Error("Transaction result missing");
+        }
+        proposalId2 = new BN(blockInfo.result).toNumber();
+      }
+
+      await sleep(6_000);
+
+      {
+        const voteForProposal = await connection.withDefaultFee<VoteTx & WithCreator>({
+          kind: "bns/vote",
+          creator: author,
+          proposalId: proposalId2,
+          selection: VoteOption.Yes,
+        });
+        const nonce = await connection.getNonce({ pubkey: author.pubkey });
+        const signed = await profile.signTransaction(voteForProposal, bnsCodec, nonce);
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        if (!isBlockInfoSucceeded(blockInfo)) {
+          throw new Error("Transaction did not succeed");
+        }
+      }
+
+      await sleep(15_000);
+
+      const productFee2 = await connection.getFeeQuote(registerUsernameTx);
+      expect(productFee2.tokens).toEqual(fee2);
+
+      connection.disconnect();
+    }, 60_000);
   });
 
   describe("getTx", () => {
