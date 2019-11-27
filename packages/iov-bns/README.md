@@ -23,7 +23,7 @@ const connection = await BnsConnection.establish("wss://rpc.lovenet.iov.one");
 
 | IOV-Core version | Supported weave versions |
 | ---------------- | ------------------------ |
-| 1.2              | 0.21.x                   |
+| 1.2              | 0.22.x                   |
 | 1.1              | 0.21.x                   |
 | 1.0              | 0.21.x                   |
 | 0.17             | 0.21.x                   |

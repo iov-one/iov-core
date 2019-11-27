@@ -1,1 +1,1 @@
-ea73c9ce47eed49f6eb03b353202dc34a010e481 (HEAD, tag: v0.21.3) improve multisig comment on bnsd.tx (#1030)
+4f11e0457b1dd4aeac73a014e8e20c4959e9d2ef (HEAD, tag: v0.22.0, origin/master, origin/HEAD) v0.22.0 release (#1058)
