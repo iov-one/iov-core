@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0
+
+Breaking changes
+
+- ALL: With v2.0.0 we are moving to the new native `BigInt` type. As a result
+  the minimum Node.js version is now 10.13. Only browsers which support `BigInt`
+  will be compatible with IOV Core. This currently includes Chrome, Firefox and
+  Opera, but not Edge, Internet Explorer or Safari.
+
 ## 1.2.0
 
 - @iov/bns: Upgrade weave to v0.22.0.
