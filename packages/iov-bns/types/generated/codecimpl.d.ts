@@ -145,6 +145,9 @@ export namespace bnsd {
     /** Tx usernameChangeTokenTargetsMsg */
     usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
 
+    /** Tx usernameUpdateConfigurationMsg */
+    usernameUpdateConfigurationMsg?: username.IUpdateConfigurationMsg | null;
+
     /** Tx distributionCreateMsg */
     distributionCreateMsg?: distribution.ICreateMsg | null;
 
@@ -241,6 +244,9 @@ export namespace bnsd {
     /** Tx usernameChangeTokenTargetsMsg. */
     public usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
 
+    /** Tx usernameUpdateConfigurationMsg. */
+    public usernameUpdateConfigurationMsg?: username.IUpdateConfigurationMsg | null;
+
     /** Tx distributionCreateMsg. */
     public distributionCreateMsg?: distribution.ICreateMsg | null;
 
@@ -295,6 +301,7 @@ export namespace bnsd {
       | "usernameRegisterTokenMsg"
       | "usernameTransferTokenMsg"
       | "usernameChangeTokenTargetsMsg"
+      | "usernameUpdateConfigurationMsg"
       | "distributionCreateMsg"
       | "distributionMsg"
       | "distributionResetMsg"
@@ -513,6 +520,9 @@ export namespace bnsd {
       /** Union usernameChangeTokenTargetsMsg */
       usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
 
+      /** Union usernameUpdateConfigurationMsg */
+      usernameUpdateConfigurationMsg?: username.IUpdateConfigurationMsg | null;
+
       /** Union distributionCreateMsg */
       distributionCreateMsg?: distribution.ICreateMsg | null;
 
@@ -570,6 +580,9 @@ export namespace bnsd {
       /** Union usernameChangeTokenTargetsMsg. */
       public usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
 
+      /** Union usernameUpdateConfigurationMsg. */
+      public usernameUpdateConfigurationMsg?: username.IUpdateConfigurationMsg | null;
+
       /** Union distributionCreateMsg. */
       public distributionCreateMsg?: distribution.ICreateMsg | null;
 
@@ -596,6 +609,7 @@ export namespace bnsd {
         | "usernameRegisterTokenMsg"
         | "usernameTransferTokenMsg"
         | "usernameChangeTokenTargetsMsg"
+        | "usernameUpdateConfigurationMsg"
         | "distributionCreateMsg"
         | "distributionMsg"
         | "distributionResetMsg"
@@ -714,6 +728,9 @@ export namespace bnsd {
     /** ProposalOptions usernameChangeTokenTargetsMsg */
     usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
 
+    /** ProposalOptions usernameUpdateConfigurationMsg */
+    usernameUpdateConfigurationMsg?: username.IUpdateConfigurationMsg | null;
+
     /** ProposalOptions distributionCreateMsg */
     distributionCreateMsg?: distribution.ICreateMsg | null;
 
@@ -777,6 +794,9 @@ export namespace bnsd {
     /** ProposalOptions usernameChangeTokenTargetsMsg. */
     public usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
 
+    /** ProposalOptions usernameUpdateConfigurationMsg. */
+    public usernameUpdateConfigurationMsg?: username.IUpdateConfigurationMsg | null;
+
     /** ProposalOptions distributionCreateMsg. */
     public distributionCreateMsg?: distribution.ICreateMsg | null;
 
@@ -813,6 +833,7 @@ export namespace bnsd {
       | "usernameRegisterTokenMsg"
       | "usernameTransferTokenMsg"
       | "usernameChangeTokenTargetsMsg"
+      | "usernameUpdateConfigurationMsg"
       | "distributionCreateMsg"
       | "distributionMsg"
       | "distributionResetMsg"
@@ -1023,6 +1044,9 @@ export namespace bnsd {
       /** Union usernameChangeTokenTargetsMsg */
       usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
 
+      /** Union usernameUpdateConfigurationMsg */
+      usernameUpdateConfigurationMsg?: username.IUpdateConfigurationMsg | null;
+
       /** Union distributionCreateMsg */
       distributionCreateMsg?: distribution.ICreateMsg | null;
 
@@ -1077,6 +1101,9 @@ export namespace bnsd {
       /** Union usernameChangeTokenTargetsMsg. */
       public usernameChangeTokenTargetsMsg?: username.IChangeTokenTargetsMsg | null;
 
+      /** Union usernameUpdateConfigurationMsg. */
+      public usernameUpdateConfigurationMsg?: username.IUpdateConfigurationMsg | null;
+
       /** Union distributionCreateMsg. */
       public distributionCreateMsg?: distribution.ICreateMsg | null;
 
@@ -1108,6 +1135,7 @@ export namespace bnsd {
         | "usernameRegisterTokenMsg"
         | "usernameTransferTokenMsg"
         | "usernameChangeTokenTargetsMsg"
+        | "usernameUpdateConfigurationMsg"
         | "distributionCreateMsg"
         | "distributionMsg"
         | "distributionResetMsg"
@@ -1328,6 +1356,1580 @@ export namespace bnsd {
 
     /**
      * Converts this CronTask to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
+/** Namespace blueaccount. */
+export namespace blueaccount {
+  /** Properties of a Domain. */
+  interface IDomain {
+    /** Domain metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Domain domain */
+    domain?: string | null;
+
+    /** belong to this domain. */
+    owner?: Uint8Array | null;
+
+    /** domain can be used of modified as well. */
+    validUntil?: number | Long | null;
+  }
+
+  /** functionality. */
+  class Domain implements IDomain {
+    /**
+     * Constructs a new Domain.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IDomain);
+
+    /** Domain metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Domain domain. */
+    public domain: string;
+
+    /** belong to this domain. */
+    public owner: Uint8Array;
+
+    /** domain can be used of modified as well. */
+    public validUntil: number | Long;
+
+    /**
+     * Creates a new Domain instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Domain instance
+     */
+    public static create(properties?: blueaccount.IDomain): blueaccount.Domain;
+
+    /**
+     * Encodes the specified Domain message. Does not implicitly {@link blueaccount.Domain.verify|verify} messages.
+     * @param message Domain message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: blueaccount.IDomain, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Domain message, length delimited. Does not implicitly {@link blueaccount.Domain.verify|verify} messages.
+     * @param message Domain message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: blueaccount.IDomain, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Domain message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Domain
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blueaccount.Domain;
+
+    /**
+     * Decodes a Domain message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Domain
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.Domain;
+
+    /**
+     * Verifies a Domain message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Domain message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Domain
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.Domain;
+
+    /**
+     * Creates a plain object from a Domain message. Also converts values to other types if specified.
+     * @param message Domain
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.Domain,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Domain to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an Account. */
+  interface IAccount {
+    /** Account metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Domain references a domain that this account belongs to. */
+    domain?: string | null;
+
+    /** Account name */
+    name?: string | null;
+
+    /** to manage selected account. */
+    owner?: Uint8Array | null;
+
+    /** Account targets */
+    targets?: blueaccount.IBlockchainAddress[] | null;
+  }
+
+  /** An account must always belong to an existing domain. */
+  class Account implements IAccount {
+    /**
+     * Constructs a new Account.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IAccount);
+
+    /** Account metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Domain references a domain that this account belongs to. */
+    public domain: string;
+
+    /** Account name. */
+    public name: string;
+
+    /** to manage selected account. */
+    public owner: Uint8Array;
+
+    /** Account targets. */
+    public targets: blueaccount.IBlockchainAddress[];
+
+    /**
+     * Creates a new Account instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Account instance
+     */
+    public static create(properties?: blueaccount.IAccount): blueaccount.Account;
+
+    /**
+     * Encodes the specified Account message. Does not implicitly {@link blueaccount.Account.verify|verify} messages.
+     * @param message Account message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: blueaccount.IAccount, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Account message, length delimited. Does not implicitly {@link blueaccount.Account.verify|verify} messages.
+     * @param message Account message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: blueaccount.IAccount, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an Account message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Account
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blueaccount.Account;
+
+    /**
+     * Decodes an Account message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Account
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.Account;
+
+    /**
+     * Verifies an Account message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an Account message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Account
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.Account;
+
+    /**
+     * Creates a plain object from an Account message. Also converts values to other types if specified.
+     * @param message Account
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.Account,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Account to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a BlockchainAddress. */
+  interface IBlockchainAddress {
+    /** An arbitrary blockchain ID. */
+    blockchainId?: string | null;
+
+    /** to use. */
+    address?: string | null;
+  }
+
+  /** to an address on any blockchain network. */
+  class BlockchainAddress implements IBlockchainAddress {
+    /**
+     * Constructs a new BlockchainAddress.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IBlockchainAddress);
+
+    /** An arbitrary blockchain ID. */
+    public blockchainId: string;
+
+    /** to use. */
+    public address: string;
+
+    /**
+     * Creates a new BlockchainAddress instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns BlockchainAddress instance
+     */
+    public static create(properties?: blueaccount.IBlockchainAddress): blueaccount.BlockchainAddress;
+
+    /**
+     * Encodes the specified BlockchainAddress message. Does not implicitly {@link blueaccount.BlockchainAddress.verify|verify} messages.
+     * @param message BlockchainAddress message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: blueaccount.IBlockchainAddress,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified BlockchainAddress message, length delimited. Does not implicitly {@link blueaccount.BlockchainAddress.verify|verify} messages.
+     * @param message BlockchainAddress message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.IBlockchainAddress,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a BlockchainAddress message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns BlockchainAddress
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): blueaccount.BlockchainAddress;
+
+    /**
+     * Decodes a BlockchainAddress message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns BlockchainAddress
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.BlockchainAddress;
+
+    /**
+     * Verifies a BlockchainAddress message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a BlockchainAddress message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns BlockchainAddress
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.BlockchainAddress;
+
+    /**
+     * Creates a plain object from a BlockchainAddress message. Also converts values to other types if specified.
+     * @param message BlockchainAddress
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.BlockchainAddress,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this BlockchainAddress to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Configuration. */
+  interface IConfiguration {
+    /** Configuration metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** needed to make use of gconf.NewUpdateConfigurationHandler */
+    owner?: Uint8Array | null;
+
+    /** account must match. Rule must not include the asterisk (*) character. */
+    validDomain?: string | null;
+
+    /** account must match. Rule must not include the asterisk (*) character. */
+    validName?: string | null;
+
+    /** Domain review defines the duration of the domain renewal period. */
+    domainRenew?: number | Long | null;
+  }
+
+  /** the functionality provided by gconf package. */
+  class Configuration implements IConfiguration {
+    /**
+     * Constructs a new Configuration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IConfiguration);
+
+    /** Configuration metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** needed to make use of gconf.NewUpdateConfigurationHandler */
+    public owner: Uint8Array;
+
+    /** account must match. Rule must not include the asterisk (*) character. */
+    public validDomain: string;
+
+    /** account must match. Rule must not include the asterisk (*) character. */
+    public validName: string;
+
+    /** Domain review defines the duration of the domain renewal period. */
+    public domainRenew: number | Long;
+
+    /**
+     * Creates a new Configuration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Configuration instance
+     */
+    public static create(properties?: blueaccount.IConfiguration): blueaccount.Configuration;
+
+    /**
+     * Encodes the specified Configuration message. Does not implicitly {@link blueaccount.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: blueaccount.IConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Configuration message, length delimited. Does not implicitly {@link blueaccount.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.IConfiguration,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blueaccount.Configuration;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.Configuration;
+
+    /**
+     * Verifies a Configuration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Configuration
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.Configuration;
+
+    /**
+     * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+     * @param message Configuration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.Configuration,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Configuration to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an UpdateConfigurationMsg. */
+  interface IUpdateConfigurationMsg {
+    /** UpdateConfigurationMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch */
+    patch?: blueaccount.IConfiguration | null;
+  }
+
+  /** configuration. */
+  class UpdateConfigurationMsg implements IUpdateConfigurationMsg {
+    /**
+     * Constructs a new UpdateConfigurationMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IUpdateConfigurationMsg);
+
+    /** UpdateConfigurationMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch. */
+    public patch?: blueaccount.IConfiguration | null;
+
+    /**
+     * Creates a new UpdateConfigurationMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns UpdateConfigurationMsg instance
+     */
+    public static create(
+      properties?: blueaccount.IUpdateConfigurationMsg,
+    ): blueaccount.UpdateConfigurationMsg;
+
+    /**
+     * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link blueaccount.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: blueaccount.IUpdateConfigurationMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link blueaccount.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.IUpdateConfigurationMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns UpdateConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): blueaccount.UpdateConfigurationMsg;
+
+    /**
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns UpdateConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.UpdateConfigurationMsg;
+
+    /**
+     * Verifies an UpdateConfigurationMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns UpdateConfigurationMsg
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.UpdateConfigurationMsg;
+
+    /**
+     * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+     * @param message UpdateConfigurationMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.UpdateConfigurationMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this UpdateConfigurationMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a RegisterDomainMsg. */
+  interface IRegisterDomainMsg {
+    /** RegisterDomainMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** main signer is used. */
+    owner?: Uint8Array | null;
+
+    /** Domain part of the account that should be registered. */
+    domain?: string | null;
+
+    /** helps identify contribution of such party later. */
+    thirdPartyToken?: Uint8Array | null;
+  }
+
+  /** domain. */
+  class RegisterDomainMsg implements IRegisterDomainMsg {
+    /**
+     * Constructs a new RegisterDomainMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IRegisterDomainMsg);
+
+    /** RegisterDomainMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** main signer is used. */
+    public owner: Uint8Array;
+
+    /** Domain part of the account that should be registered. */
+    public domain: string;
+
+    /** helps identify contribution of such party later. */
+    public thirdPartyToken: Uint8Array;
+
+    /**
+     * Creates a new RegisterDomainMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns RegisterDomainMsg instance
+     */
+    public static create(properties?: blueaccount.IRegisterDomainMsg): blueaccount.RegisterDomainMsg;
+
+    /**
+     * Encodes the specified RegisterDomainMsg message. Does not implicitly {@link blueaccount.RegisterDomainMsg.verify|verify} messages.
+     * @param message RegisterDomainMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: blueaccount.IRegisterDomainMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified RegisterDomainMsg message, length delimited. Does not implicitly {@link blueaccount.RegisterDomainMsg.verify|verify} messages.
+     * @param message RegisterDomainMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.IRegisterDomainMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a RegisterDomainMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns RegisterDomainMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): blueaccount.RegisterDomainMsg;
+
+    /**
+     * Decodes a RegisterDomainMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns RegisterDomainMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.RegisterDomainMsg;
+
+    /**
+     * Verifies a RegisterDomainMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a RegisterDomainMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns RegisterDomainMsg
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.RegisterDomainMsg;
+
+    /**
+     * Creates a plain object from a RegisterDomainMsg message. Also converts values to other types if specified.
+     * @param message RegisterDomainMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.RegisterDomainMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this RegisterDomainMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a TransferDomainMsg. */
+  interface ITransferDomainMsg {
+    /** TransferDomainMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Name of the domain that is transferred. */
+    domain?: string | null;
+
+    /** transferred to. */
+    newOwner?: Uint8Array | null;
+  }
+
+  /** TransferDomainMsg is issuing an ownership transfer over specified domain. */
+  class TransferDomainMsg implements ITransferDomainMsg {
+    /**
+     * Constructs a new TransferDomainMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.ITransferDomainMsg);
+
+    /** TransferDomainMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Name of the domain that is transferred. */
+    public domain: string;
+
+    /** transferred to. */
+    public newOwner: Uint8Array;
+
+    /**
+     * Creates a new TransferDomainMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns TransferDomainMsg instance
+     */
+    public static create(properties?: blueaccount.ITransferDomainMsg): blueaccount.TransferDomainMsg;
+
+    /**
+     * Encodes the specified TransferDomainMsg message. Does not implicitly {@link blueaccount.TransferDomainMsg.verify|verify} messages.
+     * @param message TransferDomainMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: blueaccount.ITransferDomainMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified TransferDomainMsg message, length delimited. Does not implicitly {@link blueaccount.TransferDomainMsg.verify|verify} messages.
+     * @param message TransferDomainMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.ITransferDomainMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a TransferDomainMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns TransferDomainMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): blueaccount.TransferDomainMsg;
+
+    /**
+     * Decodes a TransferDomainMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns TransferDomainMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.TransferDomainMsg;
+
+    /**
+     * Verifies a TransferDomainMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a TransferDomainMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns TransferDomainMsg
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.TransferDomainMsg;
+
+    /**
+     * Creates a plain object from a TransferDomainMsg message. Also converts values to other types if specified.
+     * @param message TransferDomainMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.TransferDomainMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this TransferDomainMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a RenewDomainMsg. */
+  interface IRenewDomainMsg {
+    /** RenewDomainMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Name of the domain that is transferred. */
+    domain?: string | null;
+
+    /** identify contribution of such party later. */
+    thirdPartyToken?: Uint8Array | null;
+  }
+
+  /** period is defined by the configuration entity. */
+  class RenewDomainMsg implements IRenewDomainMsg {
+    /**
+     * Constructs a new RenewDomainMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IRenewDomainMsg);
+
+    /** RenewDomainMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Name of the domain that is transferred. */
+    public domain: string;
+
+    /** identify contribution of such party later. */
+    public thirdPartyToken: Uint8Array;
+
+    /**
+     * Creates a new RenewDomainMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns RenewDomainMsg instance
+     */
+    public static create(properties?: blueaccount.IRenewDomainMsg): blueaccount.RenewDomainMsg;
+
+    /**
+     * Encodes the specified RenewDomainMsg message. Does not implicitly {@link blueaccount.RenewDomainMsg.verify|verify} messages.
+     * @param message RenewDomainMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: blueaccount.IRenewDomainMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified RenewDomainMsg message, length delimited. Does not implicitly {@link blueaccount.RenewDomainMsg.verify|verify} messages.
+     * @param message RenewDomainMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.IRenewDomainMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a RenewDomainMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns RenewDomainMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blueaccount.RenewDomainMsg;
+
+    /**
+     * Decodes a RenewDomainMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns RenewDomainMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.RenewDomainMsg;
+
+    /**
+     * Verifies a RenewDomainMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a RenewDomainMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns RenewDomainMsg
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.RenewDomainMsg;
+
+    /**
+     * Creates a plain object from a RenewDomainMsg message. Also converts values to other types if specified.
+     * @param message RenewDomainMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.RenewDomainMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this RenewDomainMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a DeleteDomainMsg. */
+  interface IDeleteDomainMsg {
+    /** DeleteDomainMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Name of the domain that is deleted. */
+    domain?: string | null;
+  }
+
+  /** that domain. */
+  class DeleteDomainMsg implements IDeleteDomainMsg {
+    /**
+     * Constructs a new DeleteDomainMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IDeleteDomainMsg);
+
+    /** DeleteDomainMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Name of the domain that is deleted. */
+    public domain: string;
+
+    /**
+     * Creates a new DeleteDomainMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns DeleteDomainMsg instance
+     */
+    public static create(properties?: blueaccount.IDeleteDomainMsg): blueaccount.DeleteDomainMsg;
+
+    /**
+     * Encodes the specified DeleteDomainMsg message. Does not implicitly {@link blueaccount.DeleteDomainMsg.verify|verify} messages.
+     * @param message DeleteDomainMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: blueaccount.IDeleteDomainMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified DeleteDomainMsg message, length delimited. Does not implicitly {@link blueaccount.DeleteDomainMsg.verify|verify} messages.
+     * @param message DeleteDomainMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.IDeleteDomainMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a DeleteDomainMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns DeleteDomainMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blueaccount.DeleteDomainMsg;
+
+    /**
+     * Decodes a DeleteDomainMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns DeleteDomainMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.DeleteDomainMsg;
+
+    /**
+     * Verifies a DeleteDomainMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a DeleteDomainMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns DeleteDomainMsg
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.DeleteDomainMsg;
+
+    /**
+     * Creates a plain object from a DeleteDomainMsg message. Also converts values to other types if specified.
+     * @param message DeleteDomainMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.DeleteDomainMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this DeleteDomainMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a RegisterAccountMsg. */
+  interface IRegisterAccountMsg {
+    /** RegisterAccountMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Domain that a new account is the be registered under. */
+    domain?: string | null;
+
+    /** Name that a new account is the be registered with. */
+    name?: string | null;
+
+    /** leave the administration to the domain owner only. */
+    owner?: Uint8Array | null;
+
+    /** RegisterAccountMsg targets */
+    targets?: blueaccount.IBlockchainAddress[] | null;
+
+    /** identify contribution of such party later. */
+    thirdPartyToken?: Uint8Array | null;
+  }
+
+  /** exist and belong to the same user that signs this message. */
+  class RegisterAccountMsg implements IRegisterAccountMsg {
+    /**
+     * Constructs a new RegisterAccountMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IRegisterAccountMsg);
+
+    /** RegisterAccountMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Domain that a new account is the be registered under. */
+    public domain: string;
+
+    /** Name that a new account is the be registered with. */
+    public name: string;
+
+    /** leave the administration to the domain owner only. */
+    public owner: Uint8Array;
+
+    /** RegisterAccountMsg targets. */
+    public targets: blueaccount.IBlockchainAddress[];
+
+    /** identify contribution of such party later. */
+    public thirdPartyToken: Uint8Array;
+
+    /**
+     * Creates a new RegisterAccountMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns RegisterAccountMsg instance
+     */
+    public static create(properties?: blueaccount.IRegisterAccountMsg): blueaccount.RegisterAccountMsg;
+
+    /**
+     * Encodes the specified RegisterAccountMsg message. Does not implicitly {@link blueaccount.RegisterAccountMsg.verify|verify} messages.
+     * @param message RegisterAccountMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: blueaccount.IRegisterAccountMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified RegisterAccountMsg message, length delimited. Does not implicitly {@link blueaccount.RegisterAccountMsg.verify|verify} messages.
+     * @param message RegisterAccountMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.IRegisterAccountMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a RegisterAccountMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns RegisterAccountMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): blueaccount.RegisterAccountMsg;
+
+    /**
+     * Decodes a RegisterAccountMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns RegisterAccountMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.RegisterAccountMsg;
+
+    /**
+     * Verifies a RegisterAccountMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a RegisterAccountMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns RegisterAccountMsg
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.RegisterAccountMsg;
+
+    /**
+     * Creates a plain object from a RegisterAccountMsg message. Also converts values to other types if specified.
+     * @param message RegisterAccountMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.RegisterAccountMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this RegisterAccountMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a TransferAccountMsg. */
+  interface ITransferAccountMsg {
+    /** TransferAccountMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** TransferAccountMsg domain */
+    domain?: string | null;
+
+    /** TransferAccountMsg name */
+    name?: string | null;
+
+    /** transferred to. */
+    newOwner?: Uint8Array | null;
+  }
+
+  /** permissions to administrate that account. */
+  class TransferAccountMsg implements ITransferAccountMsg {
+    /**
+     * Constructs a new TransferAccountMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.ITransferAccountMsg);
+
+    /** TransferAccountMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** TransferAccountMsg domain. */
+    public domain: string;
+
+    /** TransferAccountMsg name. */
+    public name: string;
+
+    /** transferred to. */
+    public newOwner: Uint8Array;
+
+    /**
+     * Creates a new TransferAccountMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns TransferAccountMsg instance
+     */
+    public static create(properties?: blueaccount.ITransferAccountMsg): blueaccount.TransferAccountMsg;
+
+    /**
+     * Encodes the specified TransferAccountMsg message. Does not implicitly {@link blueaccount.TransferAccountMsg.verify|verify} messages.
+     * @param message TransferAccountMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: blueaccount.ITransferAccountMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified TransferAccountMsg message, length delimited. Does not implicitly {@link blueaccount.TransferAccountMsg.verify|verify} messages.
+     * @param message TransferAccountMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.ITransferAccountMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a TransferAccountMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns TransferAccountMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): blueaccount.TransferAccountMsg;
+
+    /**
+     * Decodes a TransferAccountMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns TransferAccountMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.TransferAccountMsg;
+
+    /**
+     * Verifies a TransferAccountMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a TransferAccountMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns TransferAccountMsg
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.TransferAccountMsg;
+
+    /**
+     * Creates a plain object from a TransferAccountMsg message. Also converts values to other types if specified.
+     * @param message TransferAccountMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.TransferAccountMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this TransferAccountMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a ReplaceAccountTargetsMsg. */
+  interface IReplaceAccountTargetsMsg {
+    /** ReplaceAccountTargetsMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** ReplaceAccountTargetsMsg domain */
+    domain?: string | null;
+
+    /** ReplaceAccountTargetsMsg name */
+    name?: string | null;
+
+    /** ReplaceAccountTargetsMsg newTargets */
+    newTargets?: blueaccount.IBlockchainAddress[] | null;
+  }
+
+  /** account points to. */
+  class ReplaceAccountTargetsMsg implements IReplaceAccountTargetsMsg {
+    /**
+     * Constructs a new ReplaceAccountTargetsMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IReplaceAccountTargetsMsg);
+
+    /** ReplaceAccountTargetsMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** ReplaceAccountTargetsMsg domain. */
+    public domain: string;
+
+    /** ReplaceAccountTargetsMsg name. */
+    public name: string;
+
+    /** ReplaceAccountTargetsMsg newTargets. */
+    public newTargets: blueaccount.IBlockchainAddress[];
+
+    /**
+     * Creates a new ReplaceAccountTargetsMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ReplaceAccountTargetsMsg instance
+     */
+    public static create(
+      properties?: blueaccount.IReplaceAccountTargetsMsg,
+    ): blueaccount.ReplaceAccountTargetsMsg;
+
+    /**
+     * Encodes the specified ReplaceAccountTargetsMsg message. Does not implicitly {@link blueaccount.ReplaceAccountTargetsMsg.verify|verify} messages.
+     * @param message ReplaceAccountTargetsMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: blueaccount.IReplaceAccountTargetsMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ReplaceAccountTargetsMsg message, length delimited. Does not implicitly {@link blueaccount.ReplaceAccountTargetsMsg.verify|verify} messages.
+     * @param message ReplaceAccountTargetsMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.IReplaceAccountTargetsMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a ReplaceAccountTargetsMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ReplaceAccountTargetsMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): blueaccount.ReplaceAccountTargetsMsg;
+
+    /**
+     * Decodes a ReplaceAccountTargetsMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ReplaceAccountTargetsMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(
+      reader: $protobuf.Reader | Uint8Array,
+    ): blueaccount.ReplaceAccountTargetsMsg;
+
+    /**
+     * Verifies a ReplaceAccountTargetsMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ReplaceAccountTargetsMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ReplaceAccountTargetsMsg
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.ReplaceAccountTargetsMsg;
+
+    /**
+     * Creates a plain object from a ReplaceAccountTargetsMsg message. Also converts values to other types if specified.
+     * @param message ReplaceAccountTargetsMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.ReplaceAccountTargetsMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ReplaceAccountTargetsMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a DeleteAccountMsg. */
+  interface IDeleteAccountMsg {
+    /** DeleteAccountMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** DeleteAccountMsg domain */
+    domain?: string | null;
+
+    /** DeleteAccountMsg name */
+    name?: string | null;
+  }
+
+  /** Message must be signed by the domain owner. */
+  class DeleteAccountMsg implements IDeleteAccountMsg {
+    /**
+     * Constructs a new DeleteAccountMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IDeleteAccountMsg);
+
+    /** DeleteAccountMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** DeleteAccountMsg domain. */
+    public domain: string;
+
+    /** DeleteAccountMsg name. */
+    public name: string;
+
+    /**
+     * Creates a new DeleteAccountMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns DeleteAccountMsg instance
+     */
+    public static create(properties?: blueaccount.IDeleteAccountMsg): blueaccount.DeleteAccountMsg;
+
+    /**
+     * Encodes the specified DeleteAccountMsg message. Does not implicitly {@link blueaccount.DeleteAccountMsg.verify|verify} messages.
+     * @param message DeleteAccountMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: blueaccount.IDeleteAccountMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified DeleteAccountMsg message, length delimited. Does not implicitly {@link blueaccount.DeleteAccountMsg.verify|verify} messages.
+     * @param message DeleteAccountMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.IDeleteAccountMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a DeleteAccountMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns DeleteAccountMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): blueaccount.DeleteAccountMsg;
+
+    /**
+     * Decodes a DeleteAccountMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns DeleteAccountMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.DeleteAccountMsg;
+
+    /**
+     * Verifies a DeleteAccountMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a DeleteAccountMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns DeleteAccountMsg
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.DeleteAccountMsg;
+
+    /**
+     * Creates a plain object from a DeleteAccountMsg message. Also converts values to other types if specified.
+     * @param message DeleteAccountMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.DeleteAccountMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this DeleteAccountMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a FlushDomainMsg. */
+  interface IFlushDomainMsg {
+    /** FlushDomainMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** FlushDomainMsg domain */
+    domain?: string | null;
+  }
+
+  /** Message must be signed by the domain owner. */
+  class FlushDomainMsg implements IFlushDomainMsg {
+    /**
+     * Constructs a new FlushDomainMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: blueaccount.IFlushDomainMsg);
+
+    /** FlushDomainMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** FlushDomainMsg domain. */
+    public domain: string;
+
+    /**
+     * Creates a new FlushDomainMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns FlushDomainMsg instance
+     */
+    public static create(properties?: blueaccount.IFlushDomainMsg): blueaccount.FlushDomainMsg;
+
+    /**
+     * Encodes the specified FlushDomainMsg message. Does not implicitly {@link blueaccount.FlushDomainMsg.verify|verify} messages.
+     * @param message FlushDomainMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: blueaccount.IFlushDomainMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified FlushDomainMsg message, length delimited. Does not implicitly {@link blueaccount.FlushDomainMsg.verify|verify} messages.
+     * @param message FlushDomainMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: blueaccount.IFlushDomainMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a FlushDomainMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns FlushDomainMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): blueaccount.FlushDomainMsg;
+
+    /**
+     * Decodes a FlushDomainMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns FlushDomainMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): blueaccount.FlushDomainMsg;
+
+    /**
+     * Verifies a FlushDomainMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a FlushDomainMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns FlushDomainMsg
+     */
+    public static fromObject(object: { [k: string]: any }): blueaccount.FlushDomainMsg;
+
+    /**
+     * Creates a plain object from a FlushDomainMsg message. Also converts values to other types if specified.
+     * @param message FlushDomainMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: blueaccount.FlushDomainMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this FlushDomainMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -3061,6 +4663,9 @@ export namespace migration {
 
     /** Name of the package that schema version upgrade is made for. */
     pkg?: string | null;
+
+    /** version are rejected. */
+    toVersion?: number | null;
   }
 
   /** by one version. */
@@ -3076,6 +4681,9 @@ export namespace migration {
 
     /** Name of the package that schema version upgrade is made for. */
     public pkg: string;
+
+    /** version are rejected. */
+    public toVersion: number;
 
     /**
      * Creates a new UpgradeSchemaMsg instance using the specified properties.
@@ -3431,6 +5039,103 @@ export namespace orm {
 
     /**
      * Converts this VersionedIDRef to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a CounterWithID. */
+  interface ICounterWithID {
+    /** CounterWithID primaryKey */
+    primaryKey?: Uint8Array | null;
+
+    /** CounterWithID count */
+    count?: number | Long | null;
+  }
+
+  /** CounterWithID could be used for sequence, but mainly just for test */
+  class CounterWithID implements ICounterWithID {
+    /**
+     * Constructs a new CounterWithID.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: orm.ICounterWithID);
+
+    /** CounterWithID primaryKey. */
+    public primaryKey: Uint8Array;
+
+    /** CounterWithID count. */
+    public count: number | Long;
+
+    /**
+     * Creates a new CounterWithID instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns CounterWithID instance
+     */
+    public static create(properties?: orm.ICounterWithID): orm.CounterWithID;
+
+    /**
+     * Encodes the specified CounterWithID message. Does not implicitly {@link orm.CounterWithID.verify|verify} messages.
+     * @param message CounterWithID message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: orm.ICounterWithID, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified CounterWithID message, length delimited. Does not implicitly {@link orm.CounterWithID.verify|verify} messages.
+     * @param message CounterWithID message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: orm.ICounterWithID, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a CounterWithID message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns CounterWithID
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): orm.CounterWithID;
+
+    /**
+     * Decodes a CounterWithID message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns CounterWithID
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): orm.CounterWithID;
+
+    /**
+     * Verifies a CounterWithID message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a CounterWithID message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns CounterWithID
+     */
+    public static fromObject(object: { [k: string]: any }): orm.CounterWithID;
+
+    /**
+     * Creates a plain object from a CounterWithID message. Also converts values to other types if specified.
+     * @param message CounterWithID
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: orm.CounterWithID,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this CounterWithID to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
