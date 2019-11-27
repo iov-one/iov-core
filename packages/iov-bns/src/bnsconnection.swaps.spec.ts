@@ -1,110 +1,42 @@
 import {
-  Address,
-  Amount,
   AtomicSwap,
   AtomicSwapHelpers,
   AtomicSwapQuery,
-  ChainId,
   createTimestampTimeout,
-  Hash,
-  Identity,
   isBlockInfoPending,
   isBlockInfoSucceeded,
   isConfirmedTransaction,
   isSwapOfferTransaction,
-  PostTxResponse,
-  Preimage,
-  SwapClaimTransaction,
   SwapData,
   SwapId,
   SwapIdBytes,
-  swapIdEquals,
   SwapOfferTransaction,
   SwapProcessState,
   SwapTimeout,
-  TokenTicker,
   WithCreator,
 } from "@iov/bcp";
-import { Random } from "@iov/crypto";
-import { Encoding, Uint64 } from "@iov/encoding";
-import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
+import { Uint64 } from "@iov/encoding";
 import { asArray } from "@iov/stream";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { bnsSwapQueryTag } from "./tags";
-import { encodeBnsAddress, identityToAddress } from "./util";
+import {
+  bnsdTendermintUrl,
+  cash,
+  claimSwap,
+  defaultAmount,
+  matchId,
+  openSwap,
+  pendingWithoutBnsd,
+  randomBnsAddress,
+  serializeBnsSwapId,
+  tendermintSearchIndexUpdated,
+  userProfileWithFaucet,
+} from "./testutils.spec";
+import { identityToAddress } from "./util";
 
-const { toHex } = Encoding;
-
-function pendingWithoutBnsd(): void {
-  if (!process.env.BNSD_ENABLED) {
-    pending("Set BNSD_ENABLED to enable bnsd-based tests");
-  }
-}
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function tendermintSearchIndexUpdated(): Promise<void> {
-  // Tendermint needs some time before a committed transaction is found in search
-  return sleep(50);
-}
-
-async function randomBnsAddress(): Promise<Address> {
-  return encodeBnsAddress("tiov", Random.getBytes(20));
-}
-
-function matchId(id: SwapId): (swap: AtomicSwap) => boolean {
-  return s => swapIdEquals(id, s.data.id);
-}
-
-function serializeBnsSwapId(id: SwapId): string {
-  return toHex(id.data);
-}
-
-const cash = "CASH" as TokenTicker;
-
-fdescribe("BnsConnection (swaps)", () => {
-  const defaultAmount: Amount = {
-    quantity: "1000000001",
-    fractionalDigits: 9,
-    tokenTicker: cash,
-  };
-
-  // Dev faucet
-  // path: m/1229936198'/1'/0'/0'
-  // pubkey: e05f47e7639b47625c23738e2e46d092819abd6039c5fc550d9aa37f1a2556a1
-  // IOV address: tiov1q5lyl7asgr2dcweqrhlfyexqpkgcuzrm4e0cku
-  // This account has money in the genesis file (see scripts/bnsd/README.md).
-  const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-  const faucetPath = HdPaths.iovFaucet();
-  // Dev admin
-  // path: m/44'/234'/0'
-  // pubkey: 418f88ff4876d33a3d6e2a17d0fe0e78dc3cb5e4b42c6c156ed1b8bfce5d46d1
-  // IOV address: tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea
-  // Same mnemonic as faucet.
-  // This account has money in the genesis file (see scripts/bnsd/README.md).
-  const adminPath = HdPaths.iov(0);
-
-  const bnsdTendermintUrl = "ws://localhost:23456";
-
-  async function userProfileWithFaucet(
-    chainId: ChainId,
-  ): Promise<{
-    readonly profile: UserProfile;
-    readonly walletId: WalletId;
-    readonly faucet: Identity;
-    readonly admin: Identity;
-  }> {
-    const profile = new UserProfile();
-    const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
-    const faucet = await profile.createIdentity(wallet.id, chainId, faucetPath);
-    const admin = await profile.createIdentity(wallet.id, chainId, adminPath);
-    return { profile: profile, walletId: wallet.id, faucet: faucet, admin: admin };
-  }
-
+describe("BnsConnection (swaps)", () => {
   it("can start atomic swap", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
@@ -320,55 +252,6 @@ fdescribe("BnsConnection (swaps)", () => {
       connection.disconnect();
     });
   });
-
-  const openSwap = async (
-    connection: BnsConnection,
-    profile: UserProfile,
-    creator: Identity,
-    rcptAddr: Address,
-    hash: Hash,
-  ): Promise<PostTxResponse> => {
-    // construct a swapOfferTx, sign and post to the chain
-    const swapOfferTimeout = createTimestampTimeout(48 * 3600);
-    const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
-      kind: "bcp/swap_offer",
-      creator: creator,
-      recipient: rcptAddr,
-      amounts: [
-        {
-          quantity: "21000000000",
-          fractionalDigits: 9,
-          tokenTicker: cash,
-        },
-      ],
-      timeout: swapOfferTimeout,
-      hash: hash,
-    });
-    const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-    const signed = await profile.signTransaction(swapOfferTx, bnsCodec, nonce);
-    const txBytes = bnsCodec.bytesToPost(signed);
-    return connection.postTx(txBytes);
-  };
-
-  const claimSwap = async (
-    connection: BnsConnection,
-    profile: UserProfile,
-    creator: Identity,
-    swapId: SwapId,
-    preimage: Preimage,
-  ): Promise<PostTxResponse> => {
-    // construct a swapOfferTx, sign and post to the chain
-    const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction & WithCreator>({
-      kind: "bcp/swap_claim",
-      creator: creator,
-      swapId: swapId,
-      preimage: preimage,
-    });
-    const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-    const signed = await profile.signTransaction(swapClaimTx, bnsCodec, nonce);
-    const txBytes = bnsCodec.bytesToPost(signed);
-    return connection.postTx(txBytes);
-  };
 
   it("can start and watch an atomic swap lifecycle", async () => {
     pendingWithoutBnsd();
