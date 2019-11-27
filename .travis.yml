@@ -13,7 +13,7 @@ services:
 
 language: node_js
 node_js:
-  - "8"
+  - "10.13"
 
 addons:
   chrome: stable
