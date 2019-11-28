@@ -8,6 +8,9 @@ Breaking changes
   the minimum Node.js version is now 10.13. Only browsers which support `BigInt`
   will be compatible with IOV Core. This currently includes Chrome, Firefox and
   Opera, but not Edge, Internet Explorer or Safari.
+- ALL: Upgrade TypeScript from 3.5 to 3.7. This changes the signature of getters
+  in declaration files (see
+  https://devblogs.microsoft.com/typescript/announcing-typescript-3-6/#get-and-set-accessors-allowed-in-ambient-contexts)
 
 ## 1.2.0
 
