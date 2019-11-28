@@ -45,8 +45,8 @@ The following projects use IOV-Core (add yourself via a PR):
 ## Compatibility
 
 The compiled code from this package, which is published on npm, should work on
-any modern (2018) browser, and node 8+. The development environment has been
-tested on node 8.7.0 LTS and node 10.x.
+any modern (2018) browser, and node 10.13+. The development environment has been
+tested on node 10.13.
 
 **Yarn not Npm** Please `npm install -g yarn` and use `yarn install`,
 `yarn build`, etc. Developers who installed with `npm i` have reported problems
@@ -54,11 +54,9 @@ in compiling, so wipe out `node_modules` and enjoy `yarn`.
 
 CI Tests:
 
-- Linux: node 8, chrome, (electron manually)
-- OSX: node 8, chrome, firefox, safari, (electron manually)
-- Windows: node 8, (edge, electron manually)
-
-(Node 10 tested on many dev machines)
+- Linux: node 10.13, chrome, (electron manually)
+- OSX: node 10.13, chrome, firefox, safari, (electron manually)
+- Windows: node 10.13, (edge, electron manually)
 
 ## Getting Started
 
@@ -201,7 +199,7 @@ For Ubuntu, try the following:
 needed to compile the usb driver.
 
 Sometimes compiling native code with `node-pre-gyp` causes issues in very recent
-versions of Node.js. At the moment, Node.js 8, 10 and 11 should work.
+versions of Node.js. At the moment, Node.js 10 and 11 should work.
 
 ### Docker fails to run a test server
 
