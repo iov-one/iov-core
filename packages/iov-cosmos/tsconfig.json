@@ -6,7 +6,5 @@
     "declarationDir": "build/types",
     "rootDir": "src"
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }

@@ -111,4 +111,26 @@ export class Secp256k1 {
     const keypair = secp256k1.keyFromPublic(point);
     return Encoding.fromHex(keypair.getPublic(false, "hex"));
   }
+
+  public static compressPubkey(pubkey: Uint8Array): Uint8Array {
+    switch (pubkey.length) {
+      case 33:
+        return pubkey;
+      case 65:
+        return Uint8Array.from(secp256k1.keyFromPublic(pubkey).pub.encodeCompressed());
+      default:
+        throw new Error("Invalid pubkey length");
+    }
+  }
+
+  public static trimRecoveryByte(signature: Uint8Array): Uint8Array {
+    switch (signature.length) {
+      case 64:
+        return signature;
+      case 65:
+        return signature.slice(0, 64);
+      default:
+        throw new Error("Invalid signature length");
+    }
+  }
 }
