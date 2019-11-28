@@ -8,7 +8,7 @@ export declare type SearchFunction<T> = (value: T) => boolean;
  */
 export declare class ValueAndUpdates<T> {
   readonly updates: MemoryStream<T>;
-  readonly value: T;
+  get value(): T;
   private readonly producer;
   constructor(producer: DefaultValueProducer<T>);
   /**

@@ -4,7 +4,7 @@ export interface DefaultValueProducerCallsbacks {
   readonly onStop: () => void;
 }
 export declare class DefaultValueProducer<T> implements Producer<T> {
-  readonly value: T;
+  get value(): T;
   private readonly callbacks;
   private internalValue;
   private listener;
