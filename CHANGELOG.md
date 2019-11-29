@@ -2,6 +2,8 @@
 
 ## 2.0.0
 
+- @iov/bns: Add support for weave to v0.23.0.
+
 Breaking changes
 
 - ALL: With v2.0.0 we are moving to the new native `BigInt` type. As a result

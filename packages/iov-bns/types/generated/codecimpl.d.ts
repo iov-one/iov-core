@@ -3151,6 +3151,9 @@ export namespace username {
 
     /** Targets is a blockchain address list that this token should point to. */
     targets?: username.IBlockchainAddress[] | null;
+
+    /** Owner is the address that the newly created token will belong to. */
+    owner?: Uint8Array | null;
   }
 
   /** to the main signer. */
@@ -3169,6 +3172,9 @@ export namespace username {
 
     /** Targets is a blockchain address list that this token should point to. */
     public targets: username.IBlockchainAddress[];
+
+    /** Owner is the address that the newly created token will belong to. */
+    public owner: Uint8Array;
 
     /**
      * Creates a new RegisterTokenMsg instance using the specified properties.
@@ -11164,9 +11170,12 @@ export namespace sigs {
 
     /** total increment value, including the default increment. */
     increment?: number | null;
+
+    /** User is the address of a user that sequence is to be incremented for. */
+    user?: Uint8Array | null;
   }
 
-  /** that signed the transaction. */
+  /** BumpSequenceMsg increments a sequence counter by given amount for a user. */
   class BumpSequenceMsg implements IBumpSequenceMsg {
     /**
      * Constructs a new BumpSequenceMsg.
@@ -11179,6 +11188,9 @@ export namespace sigs {
 
     /** total increment value, including the default increment. */
     public increment: number;
+
+    /** User is the address of a user that sequence is to be incremented for. */
+    public user: Uint8Array;
 
     /**
      * Creates a new BumpSequenceMsg instance using the specified properties.
