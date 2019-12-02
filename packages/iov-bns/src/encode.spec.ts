@@ -241,6 +241,32 @@ describe("Encode", () => {
       expect(encoded.cashSendMsg!.memo).toEqual("paid transaction");
     });
 
+    it("can encode transaction with fees when fee payer is not the main signer", () => {
+      const defaultRecipientWeaveAddress = fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282");
+      const transaction: SendTransaction & WithCreator = {
+        kind: "bcp/send",
+        creator: defaultCreator,
+        amount: defaultAmount,
+        sender: defaultSender,
+        recipient: defaultRecipient,
+        memo: "paid transaction",
+        fee: {
+          tokens: defaultAmount,
+        },
+        feePayer: defaultRecipient,
+      };
+
+      const encoded = buildUnsignedTx(transaction);
+      expect(encoded.fees).toBeDefined();
+      expect(encoded.fees!.fees!.whole).toEqual(1);
+      expect(encoded.fees!.fees!.fractional).toEqual(1);
+      expect(encoded.fees!.fees!.ticker).toEqual("CASH");
+      expect(encoded.fees!.payer!).toEqual(defaultRecipientWeaveAddress);
+
+      expect(encoded.cashSendMsg).toBeDefined();
+      expect(encoded.cashSendMsg!.memo).toEqual("paid transaction");
+    });
+
     it("can encode transaction with multisig", () => {
       const transaction: SendTransaction & MultisignatureTx & WithCreator = {
         kind: "bcp/send",
