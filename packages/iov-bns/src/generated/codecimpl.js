@@ -8716,6 +8716,7 @@ $root.username = (function() {
          * @property {weave.IMetadata|null} [metadata] RegisterTokenMsg metadata
          * @property {string|null} [username] Username is the unique name of the token, for example alice*iov
          * @property {Array.<username.IBlockchainAddress>|null} [targets] Targets is a blockchain address list that this token should point to.
+         * @property {Uint8Array|null} [owner] Owner is the address that the newly created token will belong to.
          */
 
         /**
@@ -8759,6 +8760,14 @@ $root.username = (function() {
         RegisterTokenMsg.prototype.targets = $util.emptyArray;
 
         /**
+         * Owner is the address that the newly created token will belong to.
+         * @member {Uint8Array} owner
+         * @memberof username.RegisterTokenMsg
+         * @instance
+         */
+        RegisterTokenMsg.prototype.owner = $util.newBuffer([]);
+
+        /**
          * Creates a new RegisterTokenMsg instance using the specified properties.
          * @function create
          * @memberof username.RegisterTokenMsg
@@ -8789,6 +8798,8 @@ $root.username = (function() {
             if (message.targets != null && message.targets.length)
                 for (var i = 0; i < message.targets.length; ++i)
                     $root.username.BlockchainAddress.encode(message.targets[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.owner);
             return writer;
         };
 
@@ -8833,6 +8844,9 @@ $root.username = (function() {
                     if (!(message.targets && message.targets.length))
                         message.targets = [];
                     message.targets.push($root.username.BlockchainAddress.decode(reader, reader.uint32()));
+                    break;
+                case 4:
+                    message.owner = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -8886,6 +8900,9 @@ $root.username = (function() {
                         return "targets." + error;
                 }
             }
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
             return null;
         };
 
@@ -8918,6 +8935,11 @@ $root.username = (function() {
                     message.targets[i] = $root.username.BlockchainAddress.fromObject(object.targets[i]);
                 }
             }
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
             return message;
         };
 
@@ -8939,6 +8961,13 @@ $root.username = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 object.username = "";
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -8949,6 +8978,8 @@ $root.username = (function() {
                 for (var j = 0; j < message.targets.length; ++j)
                     object.targets[j] = $root.username.BlockchainAddress.toObject(message.targets[j], options);
             }
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
             return object;
         };
 
@@ -28918,12 +28949,13 @@ $root.sigs = (function() {
          * @interface IBumpSequenceMsg
          * @property {weave.IMetadata|null} [metadata] BumpSequenceMsg metadata
          * @property {number|null} [increment] total increment value, including the default increment.
+         * @property {Uint8Array|null} [user] User is the address of a user that sequence is to be incremented for.
          */
 
         /**
          * Constructs a new BumpSequenceMsg.
          * @memberof sigs
-         * @classdesc that signed the transaction.
+         * @classdesc BumpSequenceMsg increments a sequence counter by given amount for a user.
          * @implements IBumpSequenceMsg
          * @constructor
          * @param {sigs.IBumpSequenceMsg=} [properties] Properties to set
@@ -28950,6 +28982,14 @@ $root.sigs = (function() {
          * @instance
          */
         BumpSequenceMsg.prototype.increment = 0;
+
+        /**
+         * User is the address of a user that sequence is to be incremented for.
+         * @member {Uint8Array} user
+         * @memberof sigs.BumpSequenceMsg
+         * @instance
+         */
+        BumpSequenceMsg.prototype.user = $util.newBuffer([]);
 
         /**
          * Creates a new BumpSequenceMsg instance using the specified properties.
@@ -28979,6 +29019,8 @@ $root.sigs = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.increment != null && message.hasOwnProperty("increment"))
                 writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.increment);
+            if (message.user != null && message.hasOwnProperty("user"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.user);
             return writer;
         };
 
@@ -29018,6 +29060,9 @@ $root.sigs = (function() {
                     break;
                 case 2:
                     message.increment = reader.uint32();
+                    break;
+                case 3:
+                    message.user = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -29062,6 +29107,9 @@ $root.sigs = (function() {
             if (message.increment != null && message.hasOwnProperty("increment"))
                 if (!$util.isInteger(message.increment))
                     return "increment: integer expected";
+            if (message.user != null && message.hasOwnProperty("user"))
+                if (!(message.user && typeof message.user.length === "number" || $util.isString(message.user)))
+                    return "user: buffer expected";
             return null;
         };
 
@@ -29084,6 +29132,11 @@ $root.sigs = (function() {
             }
             if (object.increment != null)
                 message.increment = object.increment >>> 0;
+            if (object.user != null)
+                if (typeof object.user === "string")
+                    $util.base64.decode(object.user, message.user = $util.newBuffer($util.base64.length(object.user)), 0);
+                else if (object.user.length)
+                    message.user = object.user;
             return message;
         };
 
@@ -29103,11 +29156,20 @@ $root.sigs = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 object.increment = 0;
+                if (options.bytes === String)
+                    object.user = "";
+                else {
+                    object.user = [];
+                    if (options.bytes !== Array)
+                        object.user = $util.newBuffer(object.user);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.increment != null && message.hasOwnProperty("increment"))
                 object.increment = message.increment;
+            if (message.user != null && message.hasOwnProperty("user"))
+                object.user = options.bytes === String ? $util.base64.encode(message.user, 0, message.user.length) : options.bytes === Array ? Array.prototype.slice.call(message.user) : message.user;
             return object;
         };
 
