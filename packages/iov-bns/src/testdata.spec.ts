@@ -130,6 +130,7 @@ const randomMsg: SendTransaction & WithCreator = {
       tokenTicker: "PSQL" as TokenTicker,
     },
   },
+  feePayer: address,
 };
 
 export const randomTxJson: SignedTransaction = {

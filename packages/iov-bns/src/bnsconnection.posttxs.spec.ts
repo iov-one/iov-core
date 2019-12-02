@@ -84,6 +84,7 @@ describe("BnsConnection (txs)", () => {
       const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
         kind: "bcp/send",
         creator: faucet,
+        feePayer: faucetAddr,
         sender: bnsCodec.identityToAddress(faucet),
         recipient: recipient,
         memo: "My first payment",
