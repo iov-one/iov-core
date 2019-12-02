@@ -118,6 +118,7 @@ export interface LightTransaction {
    */
   readonly kind: string;
   readonly fee?: Fee;
+  readonly feePayer?: Address;
 }
 export declare function isLightTransaction(data: unknown): data is LightTransaction;
 export interface WithCreator {

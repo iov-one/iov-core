@@ -194,6 +194,7 @@ export interface LightTransaction {
    */
   readonly kind: string;
   readonly fee?: Fee;
+  readonly feePayer?: Address;
 }
 
 export function isLightTransaction(data: unknown): data is LightTransaction {
