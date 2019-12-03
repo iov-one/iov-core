@@ -3,6 +3,7 @@ import {
   Algorithm,
   Amount,
   ChainId,
+  ConfirmedAndSignedTransaction,
   Fee,
   FullSignature,
   Identity,
@@ -13,10 +14,13 @@ import {
   SignatureBytes,
   SignedTransaction,
   TokenTicker,
+  TransactionId,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
+import { TxsResponse } from "./restclient";
 import { isAminoStdTx } from "./types";
 
 const { fromBase64 } = Encoding;
@@ -117,5 +121,21 @@ export function parseTx(tx: amino.Tx, chainId: ChainId, nonce: Nonce): SignedTra
     transaction: transaction,
     primarySignature: primarySignature,
     otherSignatures: [],
+  };
+}
+
+export function parseTxsResponse(
+  chainId: ChainId,
+  currentHeight: number,
+  nonce: Nonce,
+  response: TxsResponse,
+): ConfirmedAndSignedTransaction<UnsignedTransaction> {
+  const height = parseInt(response.height, 10);
+  return {
+    ...parseTx(response.tx, chainId, nonce),
+    height: height,
+    confirmations: currentHeight - height + 1,
+    transactionId: response.txhash as TransactionId,
+    log: response.raw_log,
   };
 }

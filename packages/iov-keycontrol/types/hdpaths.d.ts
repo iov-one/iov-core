@@ -58,6 +58,7 @@ export declare class HdPaths {
    * @param account The account index `a` starting at 0
    */
   static ethereum(account: number): readonly Slip10RawIndex[];
+  static cosmos(account: number): readonly Slip10RawIndex[];
   private static readonly purposes;
   /**
    * Coin types as registered at
