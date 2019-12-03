@@ -717,8 +717,9 @@ export class BnsConnection implements AtomicSwapConnection {
     return { tokens: fee };
   }
 
-  public async withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T> {
-    return { ...transaction, fee: await this.getFeeQuote(transaction) };
+  public async withDefaultFee<T extends UnsignedTransaction>(transaction: T, feePayer?: Address): Promise<T> {
+    const feeQuote = await this.getFeeQuote(transaction);
+    return { ...transaction, fee: { ...feeQuote, feePayer: feePayer } };
   }
 
   protected async query(path: string, data: Uint8Array): Promise<QueryResponse> {
