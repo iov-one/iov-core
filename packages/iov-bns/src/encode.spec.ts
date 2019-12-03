@@ -252,8 +252,8 @@ describe("Encode", () => {
         memo: "paid transaction",
         fee: {
           tokens: defaultAmount,
+          feePayer: defaultRecipient,
         },
-        feePayer: defaultRecipient,
       };
 
       const encoded = buildUnsignedTx(transaction);

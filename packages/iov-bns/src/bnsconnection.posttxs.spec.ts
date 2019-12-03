@@ -81,19 +81,21 @@ describe("BnsConnection (txs)", () => {
       const recipient = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
-        kind: "bcp/send",
-        creator: faucet,
-        feePayer: faucetAddr,
-        sender: bnsCodec.identityToAddress(faucet),
-        recipient: recipient,
-        memo: "My first payment",
-        amount: {
-          quantity: "5000075000",
-          fractionalDigits: 9,
-          tokenTicker: cash,
+      const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>(
+        {
+          kind: "bcp/send",
+          creator: faucet,
+          sender: bnsCodec.identityToAddress(faucet),
+          recipient: recipient,
+          memo: "My first payment",
+          amount: {
+            quantity: "5000075000",
+            fractionalDigits: 9,
+            tokenTicker: cash,
+          },
         },
-      });
+        faucetAddr,
+      );
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);
@@ -514,13 +516,15 @@ describe("BnsConnection (txs)", () => {
           address: "some-initial-address" as Address,
         },
       ];
-      const registerUsernameTx = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
-        kind: "bns/register_username",
-        creator: user,
-        username: username,
-        targets: initialTargets,
-        feePayer: faucetAddress,
-      });
+      const registerUsernameTx = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>(
+        {
+          kind: "bns/register_username",
+          creator: user,
+          username: username,
+          targets: initialTargets,
+        },
+        faucetAddress,
+      );
       const nonceUser1 = await connection.getNonce({ pubkey: user.pubkey });
       const signed1 = await profile.signTransaction(registerUsernameTx, bnsCodec, nonceUser1);
       const nonceFaucet1 = await connection.getNonce({ pubkey: faucet.pubkey });

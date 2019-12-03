@@ -129,8 +129,8 @@ const randomMsg: SendTransaction & WithCreator = {
       fractionalDigits: 9,
       tokenTicker: "PSQL" as TokenTicker,
     },
+    feePayer: address,
   },
-  feePayer: address,
 };
 
 export const randomTxJson: SignedTransaction = {
