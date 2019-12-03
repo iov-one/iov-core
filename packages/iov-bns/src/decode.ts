@@ -767,8 +767,8 @@ function parseBaseTx(tx: codecImpl.bnsd.ITx, sig: FullSignature, chainId: ChainI
   };
   if (tx.fees && tx.fees.fees) {
     const prefix = addressPrefix(base.creator.chainId);
-    const feePayer = tx.fees.payer ? encodeBnsAddress(prefix, tx.fees.payer) : undefined;
-    base = { ...base, fee: { tokens: decodeAmount(tx.fees.fees), feePayer: feePayer } };
+    const payer = tx.fees.payer ? encodeBnsAddress(prefix, tx.fees.payer) : undefined;
+    base = { ...base, fee: { tokens: decodeAmount(tx.fees.fees), payer: payer } };
   }
   if (tx.multisig && tx.multisig.length) {
     base = { ...base, multisig: tx.multisig.map(decodeNumericId) };

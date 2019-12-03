@@ -252,7 +252,7 @@ describe("Encode", () => {
         memo: "paid transaction",
         fee: {
           tokens: defaultAmount,
-          feePayer: defaultRecipient,
+          payer: defaultRecipient,
         },
       };
 

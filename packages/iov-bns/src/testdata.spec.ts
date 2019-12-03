@@ -129,7 +129,7 @@ const randomMsg: SendTransaction & WithCreator = {
       fractionalDigits: 9,
       tokenTicker: "PSQL" as TokenTicker,
     },
-    feePayer: address,
+    payer: address,
   },
 };
 
