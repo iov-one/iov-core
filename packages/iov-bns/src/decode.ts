@@ -766,11 +766,9 @@ function parseBaseTx(tx: codecImpl.bnsd.ITx, sig: FullSignature, chainId: ChainI
     },
   };
   if (tx.fees && tx.fees.fees) {
-    base = { ...base, fee: { tokens: decodeAmount(tx.fees.fees) } };
-  }
-  if (tx.fees && tx.fees.payer) {
     const prefix = addressPrefix(base.creator.chainId);
-    base = { ...base, feePayer: encodeBnsAddress(prefix, tx.fees.payer) };
+    const feePayer = tx.fees.payer ? encodeBnsAddress(prefix, tx.fees.payer) : undefined;
+    base = { ...base, fee: { tokens: decodeAmount(tx.fees.fees), feePayer: feePayer } };
   }
   if (tx.multisig && tx.multisig.length) {
     base = { ...base, multisig: tx.multisig.map(decodeNumericId) };

@@ -169,6 +169,7 @@ export interface Fee {
   readonly tokens?: Amount;
   readonly gasPrice?: Amount;
   readonly gasLimit?: string;
+  readonly feePayer?: Address;
 }
 
 export function isFee(data: unknown): data is Fee {
@@ -194,7 +195,6 @@ export interface LightTransaction {
    */
   readonly kind: string;
   readonly fee?: Fee;
-  readonly feePayer?: Address;
 }
 
 export function isLightTransaction(data: unknown): data is LightTransaction {

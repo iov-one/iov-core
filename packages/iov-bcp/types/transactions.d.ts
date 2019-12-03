@@ -101,6 +101,7 @@ export interface Fee {
   readonly tokens?: Amount;
   readonly gasPrice?: Amount;
   readonly gasLimit?: string;
+  readonly feePayer?: Address;
 }
 export declare function isFee(data: unknown): data is Fee;
 /** The basic transaction type all transactions should extend */
@@ -118,7 +119,6 @@ export interface LightTransaction {
    */
   readonly kind: string;
   readonly fee?: Fee;
-  readonly feePayer?: Address;
 }
 export declare function isLightTransaction(data: unknown): data is LightTransaction;
 export interface WithCreator {

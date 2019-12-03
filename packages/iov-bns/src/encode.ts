@@ -499,8 +499,8 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   const msg = buildMsg(tx);
 
   let feePayerAddressBytes: Uint8Array;
-  if (tx.feePayer) {
-    feePayerAddressBytes = decodeBnsAddress(tx.feePayer).data;
+  if (tx.fee && tx.fee.feePayer) {
+    feePayerAddressBytes = decodeBnsAddress(tx.fee.feePayer).data;
   } else if (isMultisignatureTx(tx)) {
     const firstContract = tx.multisig.find(() => true);
     if (firstContract === undefined) throw new Error("Empty multisig arrays are currently unsupported");
