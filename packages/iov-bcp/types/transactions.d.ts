@@ -101,6 +101,7 @@ export interface Fee {
   readonly tokens?: Amount;
   readonly gasPrice?: Amount;
   readonly gasLimit?: string;
+  readonly payer?: Address;
 }
 export declare function isFee(data: unknown): data is Fee;
 /** The basic transaction type all transactions should extend */

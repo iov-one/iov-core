@@ -498,13 +498,15 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
 export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   const msg = buildMsg(tx);
 
-  let feePayer: Uint8Array;
-  if (isMultisignatureTx(tx)) {
+  let feePayerAddressBytes: Uint8Array;
+  if (tx.fee && tx.fee.payer) {
+    feePayerAddressBytes = decodeBnsAddress(tx.fee.payer).data;
+  } else if (isMultisignatureTx(tx)) {
     const firstContract = tx.multisig.find(() => true);
     if (firstContract === undefined) throw new Error("Empty multisig arrays are currently unsupported");
-    feePayer = conditionToWeaveAddress(buildMultisignatureCondition(firstContract));
+    feePayerAddressBytes = conditionToWeaveAddress(buildMultisignatureCondition(firstContract));
   } else {
-    feePayer = decodeBnsAddress(identityToAddress(tx.creator)).data;
+    feePayerAddressBytes = decodeBnsAddress(identityToAddress(tx.creator)).data;
   }
 
   return codecImpl.bnsd.Tx.create({
@@ -513,7 +515,7 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
       tx.fee && tx.fee.tokens
         ? {
             fees: encodeAmount(tx.fee.tokens),
-            payer: feePayer,
+            payer: feePayerAddressBytes,
           }
         : null,
     multisig: isMultisignatureTx(tx) ? tx.multisig.map(encodeNumericId) : null,

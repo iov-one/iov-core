@@ -3,6 +3,8 @@
 ## 2.0.0
 
 - @iov/bns: Add support for weave to v0.23.0.
+- @iov/bcp: Add optional payer field to Fee type.
+- @iov/bns: Add optional payer parameter to BnsConnection.withDefaultFee.
 
 Breaking changes
 

@@ -211,6 +211,7 @@ describe("Governor", () => {
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
+          payer: undefined,
         },
       });
 
@@ -253,6 +254,7 @@ describe("Governor", () => {
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
+          payer: undefined,
         },
       });
 
@@ -294,6 +296,7 @@ describe("Governor", () => {
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
+          payer: undefined,
         },
       });
 
@@ -344,6 +347,7 @@ describe("Governor", () => {
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
+          payer: undefined,
         },
       });
 
@@ -394,6 +398,7 @@ describe("Governor", () => {
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
+          payer: undefined,
         },
       });
 
@@ -437,6 +442,7 @@ describe("Governor", () => {
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
+          payer: undefined,
         },
       });
 
@@ -479,6 +485,7 @@ describe("Governor", () => {
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
+          payer: undefined,
         },
       });
 
@@ -525,6 +532,7 @@ describe("Governor", () => {
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
+          payer: undefined,
         },
       });
       options.connection.disconnect();
@@ -612,6 +620,7 @@ describe("Governor", () => {
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
+          payer: undefined,
         },
       });
 
@@ -637,6 +646,7 @@ describe("Governor", () => {
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
+          payer: undefined,
         },
       });
 

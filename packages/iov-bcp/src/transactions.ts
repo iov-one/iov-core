@@ -169,6 +169,7 @@ export interface Fee {
   readonly tokens?: Amount;
   readonly gasPrice?: Amount;
   readonly gasLimit?: string;
+  readonly payer?: Address;
 }
 
 export function isFee(data: unknown): data is Fee {
