@@ -937,7 +937,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
   public async getSwaps(
     query: AtomicSwapQuery,
-    minHeight: number = 0,
+    minHeight = 0,
     maxHeight: number = Number.MAX_SAFE_INTEGER,
   ): Promise<readonly AtomicSwap[]> {
     if (isAtomicSwapIdQuery(query)) {
@@ -1046,16 +1046,18 @@ export class EthereumConnection implements AtomicSwapConnection {
     const out: ConfirmedTransaction<LightTransaction>[] = [];
 
     // API: https://etherscan.io/apis#accounts
-    const responseBody = (await axios.get(this.scraperApiUrl, {
-      params: {
-        module: "account",
-        action: "txlist",
-        address: address,
-        startblock: minHeight,
-        endblock: maxHeight,
-        sort: "desc",
-      },
-    })).data;
+    const responseBody = (
+      await axios.get(this.scraperApiUrl, {
+        params: {
+          module: "account",
+          action: "txlist",
+          address: address,
+          startblock: minHeight,
+          endblock: maxHeight,
+          sort: "desc",
+        },
+      })
+    ).data;
     if (responseBody.result !== null) {
       for (const transaction of responseBody.result) {
         if (transaction.isError === "0" && transaction.txreceipt_status === "1") {

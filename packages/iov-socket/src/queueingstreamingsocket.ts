@@ -28,7 +28,7 @@ export class QueueingStreamingSocket {
   private connectionStatusProducer: DefaultValueProducer<ConnectionStatus>;
   private reconnectedHandler?: () => void;
 
-  public constructor(url: string, timeout: number = 10_000, reconnectedHandler?: () => void) {
+  public constructor(url: string, timeout = 10_000, reconnectedHandler?: () => void) {
     this.url = url;
     this.timeout = timeout;
     this.reconnectedHandler = reconnectedHandler;

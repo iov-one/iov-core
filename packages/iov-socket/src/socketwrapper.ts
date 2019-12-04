@@ -56,7 +56,7 @@ export class SocketWrapper {
     errorHandler: (event: SocketWrapperErrorEvent) => void,
     openHandler?: () => void,
     closeHandler?: (event: SocketWrapperCloseEvent) => void,
-    timeout: number = 10_000,
+    timeout = 10_000,
   ) {
     this.connected = new Promise((resolve, reject) => {
       this.connectedResolver = resolve;

@@ -97,9 +97,9 @@ class Actor {
     const signer = new MultiChainSigner(profile);
 
     const bnsConnection = (await signer.addChain(createBnsConnector("ws://localhost:23456"))).connection;
-    const ethereumConnection = (await signer.addChain(
-      createEthereumConnector(ethereumBaseUrl, ethereumConnectionOptions),
-    )).connection;
+    const ethereumConnection = (
+      await signer.addChain(createEthereumConnector(ethereumBaseUrl, ethereumConnectionOptions))
+    ).connection;
 
     const bnsIdentity = await profile.createIdentity(ed25519HdWallet.id, bnsConnection.chainId(), bnsHdPath);
     const ethereumIdentity = await profile.createIdentity(

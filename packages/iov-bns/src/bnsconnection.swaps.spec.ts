@@ -126,9 +126,11 @@ describe("BnsConnection (swaps)", () => {
     expect(txBySender.length).toBeGreaterThanOrEqual(1);
     expect(txBySender[txBySender.length - 1].transactionId).toEqual(transactionId);
 
-    const txByRecipient = (await connection.searchTx({
-      tags: [bnsSwapQueryTag(querySwapRecipient)],
-    })).filter(isConfirmedTransaction);
+    const txByRecipient = (
+      await connection.searchTx({
+        tags: [bnsSwapQueryTag(querySwapRecipient)],
+      })
+    ).filter(isConfirmedTransaction);
     expect(txByRecipient.length).toEqual(1);
     expect(txByRecipient[0].transactionId).toEqual(transactionId);
 

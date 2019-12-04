@@ -27,7 +27,7 @@ export declare class CosmosConnection implements BlockchainConnection {
   private readonly restClient;
   private readonly chainData;
   private readonly supportedTokens;
-  private readonly prefix;
+  private get prefix();
   private constructor();
   disconnect(): void;
   chainId(): ChainId;
@@ -40,7 +40,7 @@ export declare class CosmosConnection implements BlockchainConnection {
   getNonces(query: AddressQuery | PubkeyQuery, count: number): Promise<readonly Nonce[]>;
   getBlockHeader(height: number): Promise<BlockHeader>;
   watchBlockHeaders(): Stream<BlockHeader>;
-  getTx(id: TransactionId): Promise<(ConfirmedAndSignedTransaction<UnsignedTransaction>) | FailedTransaction>;
+  getTx(id: TransactionId): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction>;
   postTx(tx: PostableBytes): Promise<PostTxResponse>;
   searchTx(
     query: TransactionQuery,

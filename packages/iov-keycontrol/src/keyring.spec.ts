@@ -39,7 +39,8 @@ describe("Keyring", () => {
     });
 
     it("can deserialize one ed25519-hd wallet", () => {
-      const keyring = new Keyring(`
+      const keyring = new Keyring(
+        `
         {
           "formatVersion": 1,
           "wallets": [
@@ -48,7 +49,8 @@ describe("Keyring", () => {
               "data": "{\\"formatVersion\\":2,\\"id\\":\\"f49h7gh34\\",\\"secret\\":\\"side ripple bachelor banner word swear buzz try situate rent desk carry scorpion uphold undo account pumpkin throw\\",\\"curve\\":\\"ed25519 seed\\",\\"identities\\":[]}"
             }
           ]
-        }` as KeyringSerializationString);
+        }` as KeyringSerializationString,
+      );
 
       expect(keyring.getWallets().length).toEqual(1);
       expect(keyring.getWallets()[0]).toEqual(jasmine.any(Ed25519HdWallet));

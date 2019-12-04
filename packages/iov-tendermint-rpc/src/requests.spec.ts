@@ -13,7 +13,12 @@ describe("Requests", () => {
     });
 
     it("works for two tags", () => {
-      const query = buildQuery({ tags: [{ key: "k", value: "9" }, { key: "L", value: "7" }] });
+      const query = buildQuery({
+        tags: [
+          { key: "k", value: "9" },
+          { key: "L", value: "7" },
+        ],
+      });
       expect(query).toEqual("k='9' AND L='7'");
     });
 
@@ -24,7 +29,10 @@ describe("Requests", () => {
 
     it("works for mixed input", () => {
       const query = buildQuery({
-        tags: [{ key: "k", value: "9" }, { key: "L", value: "7" }],
+        tags: [
+          { key: "k", value: "9" },
+          { key: "L", value: "7" },
+        ],
         raw: "aabbCCDD" as QueryString,
       });
       expect(query).toEqual("k='9' AND L='7' AND aabbCCDD");

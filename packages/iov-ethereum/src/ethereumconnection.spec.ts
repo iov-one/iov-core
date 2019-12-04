@@ -2236,7 +2236,7 @@ describe("EthereumConnection", () => {
         rcptAddr: Address,
         hash: Hash,
         swapId: SwapId,
-        timeoutOffset: number = 1000,
+        timeoutOffset = 1000,
       ): Promise<PostTxResponse> => {
         // construct a swapOfferTx, sign and post to the chain
         const swapOfferTimeout: SwapTimeout = {
@@ -2605,7 +2605,7 @@ describe("EthereumConnection", () => {
         rcptAddr: Address,
         hash: Hash,
         swapId: SwapId,
-        timeoutOffset: number = 1000,
+        timeoutOffset = 1000,
       ): Promise<PostTxResponse> => {
         const amount: Amount = {
           quantity: "21000",

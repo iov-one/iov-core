@@ -202,7 +202,12 @@ describe("Util", () => {
     });
 
     it("handles two tags", () => {
-      const query = buildQueryString({ tags: [{ key: "k", value: "9" }, { key: "L", value: "7" }] });
+      const query = buildQueryString({
+        tags: [
+          { key: "k", value: "9" },
+          { key: "L", value: "7" },
+        ],
+      });
       expect(query).toEqual("k='9' AND L='7'");
     });
 

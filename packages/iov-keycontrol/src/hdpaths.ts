@@ -69,8 +69,8 @@ export class HdPaths {
    */
   public static iovFaucet(
     coinType: number = HdPaths.coinTypes.testnet,
-    instanceIndex: number = 0,
-    accountIndex: number = 0,
+    instanceIndex = 0,
+    accountIndex = 0,
   ): readonly Slip10RawIndex[] {
     return [
       Slip10RawIndex.hardened(HdPaths.purposes.iovFaucet),

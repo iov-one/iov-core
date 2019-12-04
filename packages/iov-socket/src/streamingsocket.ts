@@ -15,7 +15,7 @@ export class StreamingSocket {
   private eventProducerListener: Listener<SocketWrapperMessageEvent> | undefined;
   private readonly socket: SocketWrapper;
 
-  public constructor(url: string, timeout: number = 10_000) {
+  public constructor(url: string, timeout = 10_000) {
     this.socket = new SocketWrapper(
       url,
       event => {

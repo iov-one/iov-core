@@ -193,12 +193,10 @@ describe("BnsConnection (txs)", () => {
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
 
-      await connection
-        .postTx(bnsCodec.bytesToPost(signed))
-        .then(
-          () => fail("promise must be rejected"),
-          error => expect(error).toMatch(/field \\"Amount\\": invalid currency: UNKNOWN/i),
-        );
+      await connection.postTx(bnsCodec.bytesToPost(signed)).then(
+        () => fail("promise must be rejected"),
+        error => expect(error).toMatch(/field \\"Amount\\": invalid currency: UNKNOWN/i),
+      );
 
       connection.disconnect();
     });
@@ -622,9 +620,11 @@ describe("BnsConnection (txs)", () => {
       expect(contractId).toBeDefined();
 
       // Update multisignature
-      const participantsUpdated: readonly Participant[] = (await Promise.all(
-        [15, 16, 17].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
-      )).map(id => ({
+      const participantsUpdated: readonly Participant[] = (
+        await Promise.all(
+          [15, 16, 17].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+        )
+      ).map(id => ({
         address: identityToAddress(id),
         weight: 6,
       }));

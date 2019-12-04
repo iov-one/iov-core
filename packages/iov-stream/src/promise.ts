@@ -17,6 +17,7 @@ export function fromListPromise<T>(promise: Promise<Iterable<T>>): Stream<T> {
         .catch(error => listener.error(error));
     },
     // tslint:disable:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     stop: () => {},
   };
 

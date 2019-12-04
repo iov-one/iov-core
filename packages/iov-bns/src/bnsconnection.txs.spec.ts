@@ -293,10 +293,12 @@ describe("BnsConnection (txs)", () => {
 
       {
         // finds transaction using sentFromOrTo and minHeight = initialHeight
-        const results = (await connection.searchTx({
-          sentFromOrTo: recipientAddress,
-          minHeight: initialHeight,
-        })).filter(isConfirmedTransaction);
+        const results = (
+          await connection.searchTx({
+            sentFromOrTo: recipientAddress,
+            minHeight: initialHeight,
+          })
+        ).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -307,10 +309,12 @@ describe("BnsConnection (txs)", () => {
 
       {
         // finds transaction using sentFromOrTo and maxHeight = 500 million
-        const results = (await connection.searchTx({
-          sentFromOrTo: recipientAddress,
-          maxHeight: 500_000_000,
-        })).filter(isConfirmedTransaction);
+        const results = (
+          await connection.searchTx({
+            sentFromOrTo: recipientAddress,
+            maxHeight: 500_000_000,
+          })
+        ).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -321,10 +325,12 @@ describe("BnsConnection (txs)", () => {
 
       {
         // finds transaction using sentFromOrTo and maxHeight = initialHeight + 10
-        const results = (await connection.searchTx({
-          sentFromOrTo: recipientAddress,
-          maxHeight: initialHeight + 10,
-        })).filter(isConfirmedTransaction);
+        const results = (
+          await connection.searchTx({
+            sentFromOrTo: recipientAddress,
+            maxHeight: initialHeight + 10,
+          })
+        ).filter(isConfirmedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {

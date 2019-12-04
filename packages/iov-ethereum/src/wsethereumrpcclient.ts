@@ -42,7 +42,7 @@ export class WsEthereumRpcClient implements EthereumRpcClient {
     return response;
   }
 
-  public async socketSend(request: JsonRpcRequest, ignoreNetworkError: boolean = false): Promise<void> {
+  public async socketSend(request: JsonRpcRequest, ignoreNetworkError = false): Promise<void> {
     const data = JSON.stringify(request);
     try {
       this.socket.queueRequest(data);
