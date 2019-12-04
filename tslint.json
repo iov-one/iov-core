@@ -14,6 +14,7 @@
     "no-conditional-assignment": false,
     "no-console": [true, "log"],
     "no-delete": true,
+    "no-empty": false,
     "no-empty-interface": false,
     "no-expression-statement": false,
     "no-floating-promises": true,
