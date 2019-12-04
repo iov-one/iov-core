@@ -640,12 +640,10 @@ describe("UserProfile", () => {
       const wallet = Ed25519HdWallet.fromMnemonic(defaultMnemonic1);
       const profile = new UserProfile();
 
-      await profile
-        .identityExists(wallet.id, defaultChain, somePath)
-        .then(
-          () => fail("must not resolve"),
-          error => expect(error).toMatch(/wallet of id '.+' does not exist in keyring/i),
-        );
+      await profile.identityExists(wallet.id, defaultChain, somePath).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/wallet of id '.+' does not exist in keyring/i),
+      );
     });
   });
 

@@ -84,7 +84,10 @@ describe("dropDuplicates", () => {
     instream.compose(operand).subscribe({
       next: value => events.push(value),
       complete: () => {
-        expect(events).toEqual([{ first: "Daria", last: "" }, { first: "Regina", last: "Mustermann" }]);
+        expect(events).toEqual([
+          { first: "Daria", last: "" },
+          { first: "Regina", last: "Mustermann" },
+        ]);
         done();
       },
     });

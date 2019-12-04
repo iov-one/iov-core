@@ -188,7 +188,8 @@ export class EthereumCodec implements TxCodec {
       | Erc20ApproveTransaction
       | SwapOfferTransaction
       | SwapClaimTransaction
-      | SwapAbortTransaction) &
+      | SwapAbortTransaction
+    ) &
       WithCreator;
 
     if (atomicSwapContractAddress) {

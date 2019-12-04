@@ -514,7 +514,8 @@ describe("Slip10Wallet", () => {
   it("can deserialize", () => {
     {
       // empty
-      const wallet = new Slip10Wallet(`
+      const wallet = new Slip10Wallet(
+        `
         {
           "formatVersion": 2,
           "id": "eMpTy",
@@ -522,7 +523,8 @@ describe("Slip10Wallet", () => {
           "curve": "ed25519 seed",
           "identities": []
         }
-        ` as WalletSerializationString);
+        ` as WalletSerializationString,
+      );
       expect(wallet).toBeTruthy();
       expect(wallet.getIdentities().length).toEqual(0);
       expect(wallet.id).toEqual("eMpTy");

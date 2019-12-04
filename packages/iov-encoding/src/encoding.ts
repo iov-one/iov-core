@@ -143,7 +143,7 @@ export class Encoding {
   }
 
   public static toRfc3339(date: Date | ReadonlyDate): string {
-    function padded(integer: number, length: number = 2): string {
+    function padded(integer: number, length = 2): string {
       const filled = "00000" + integer.toString();
       return filled.substring(filled.length - length);
     }

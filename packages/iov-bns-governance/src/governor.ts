@@ -51,7 +51,7 @@ export class Governor {
    *
    * @param skipFiltering if set to true, the list is not filtered by electors anymore
    */
-  public async getElectorates(skipFiltering: boolean = false): Promise<readonly Electorate[]> {
+  public async getElectorates(skipFiltering = false): Promise<readonly Electorate[]> {
     const filterFunction = skipFiltering
       ? () => true
       : ({ electors }: Electorate) => Object.keys(electors).some(key => key === this.address);

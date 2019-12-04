@@ -19,12 +19,12 @@ export class ReconnectingSocket {
 
   private readonly socket: QueueingStreamingSocket;
   private eventProducerListener: Listener<SocketWrapperMessageEvent> | undefined;
-  private unconnected: boolean = true;
-  private disconnected: boolean = false;
+  private unconnected = true;
+  private disconnected = false;
   private timeoutIndex = 0;
   private reconnectTimeout: NodeJS.Timeout | null = null;
 
-  public constructor(url: string, timeout: number = 10_000, reconnectedHandler?: () => void) {
+  public constructor(url: string, timeout = 10_000, reconnectedHandler?: () => void) {
     const eventProducer: Producer<any> = {
       start: listener => (this.eventProducerListener = listener),
       stop: () => (this.eventProducerListener = undefined),

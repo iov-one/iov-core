@@ -25,7 +25,7 @@ export class TsRepl {
   public constructor(
     tsconfigPath: string,
     initialTypeScript: string,
-    debuggingEnabled: boolean = false,
+    debuggingEnabled = false,
     installationDir?: string, // required when the current working directory is not the installation path
   ) {
     this.typeScriptService = register({

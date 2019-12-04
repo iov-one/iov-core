@@ -166,7 +166,7 @@ export class CosmosConnection implements BlockchainConnection {
 
   public async getTx(
     id: TransactionId,
-  ): Promise<(ConfirmedAndSignedTransaction<UnsignedTransaction>) | FailedTransaction> {
+  ): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction> {
     try {
       const response = await this.restClient.txsById(id);
       const chainId = await this.chainId();
@@ -236,7 +236,7 @@ export class CosmosConnection implements BlockchainConnection {
   private async parseAndPopulateTxResponse(
     response: TxsResponse,
     chainId: ChainId,
-  ): Promise<(ConfirmedAndSignedTransaction<UnsignedTransaction>) | FailedTransaction> {
+  ): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction> {
     const sender = (response.tx.value as any).msg[0].value.from_address;
     const accountForHeight = await this.restClient.authAccounts(sender, response.height);
     const nonce = (parseInt(accountForHeight.result.value.sequence, 10) - 1) as Nonce;

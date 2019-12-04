@@ -16,8 +16,21 @@ describe("utils", () => {
       ];
       const grouped = groupByCallback(values, value => value.id);
       expect(grouped).toEqual([
-        { key: 1, values: [{ id: 1, version: 1 }, { id: 1, version: 2 }, { id: 1, version: 3 }] },
-        { key: 2, values: [{ id: 2, version: 1 }, { id: 2, version: 2 }] },
+        {
+          key: 1,
+          values: [
+            { id: 1, version: 1 },
+            { id: 1, version: 2 },
+            { id: 1, version: 3 },
+          ],
+        },
+        {
+          key: 2,
+          values: [
+            { id: 2, version: 1 },
+            { id: 2, version: 2 },
+          ],
+        },
         {
           key: 3,
           values: [

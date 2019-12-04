@@ -38,7 +38,10 @@ export class AtomicSwapMerger {
         if (matchingSettlingElement) {
           // we can settle
           const settled = settleAtomicSwap(event, matchingSettlingElement);
-          this.settling.splice(this.settling.findIndex(s => swapIdEquals(s.swapId, eventId)), 1);
+          this.settling.splice(
+            this.settling.findIndex(s => swapIdEquals(s.swapId, eventId)),
+            1,
+          );
           return settled;
         } else {
           // store for later
@@ -55,7 +58,10 @@ export class AtomicSwapMerger {
         const matchingOpenElement = this.open.find(o => swapIdEquals(o.data.id, eventId));
         if (matchingOpenElement) {
           const settled = settleAtomicSwap(matchingOpenElement, event);
-          this.open.splice(this.open.findIndex(o => swapIdEquals(o.data.id, eventId)), 1);
+          this.open.splice(
+            this.open.findIndex(o => swapIdEquals(o.data.id, eventId)),
+            1,
+          );
           return settled;
         } else {
           // store swap claim/abort in case a matching open comes in delayed
