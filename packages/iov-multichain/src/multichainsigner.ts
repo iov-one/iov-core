@@ -113,15 +113,12 @@ export class MultiChainSigner {
 
   /**
    * Queries the nonce, signs the transaction and posts it to the blockchain.
-   *
-   * The signing keypair is determined by the `creator` field of the transaction.
    */
-  public async signAndPost(transaction: UnsignedTransaction): Promise<PostTxResponse> {
-    const { connection, codec } = this.getChain(transaction.creator.chainId);
+  public async signAndPost(identity: Identity, transaction: UnsignedTransaction): Promise<PostTxResponse> {
+    const { connection, codec } = this.getChain(identity.chainId);
+    const nonce = await connection.getNonce({ pubkey: identity.pubkey });
 
-    const nonce = await connection.getNonce({ pubkey: transaction.creator.pubkey });
-
-    const signed = await this.profile.signTransaction(transaction.creator, transaction, codec, nonce);
+    const signed = await this.profile.signTransaction(identity, transaction, codec, nonce);
     const txBytes = codec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     return post;

@@ -111,7 +111,7 @@ describe("MultiChainSigner", () => {
           tokenTicker: cash,
         },
       });
-      const postResponse = await signer.signAndPost(sendTx);
+      const postResponse = await signer.signAndPost(faucet, sendTx);
       await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
       // we should be a little bit richer
@@ -221,7 +221,7 @@ describe("MultiChainSigner", () => {
             tokenTicker: cash,
           },
         });
-        const postResponse = await signer.signAndPost(sendOnBns);
+        const postResponse = await signer.signAndPost(bnsFaucet, sendOnBns);
         const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
@@ -249,7 +249,7 @@ describe("MultiChainSigner", () => {
             gasLimit: "2100000",
           },
         };
-        const postResponse = await signer.signAndPost(sendOnEthereum);
+        const postResponse = await signer.signAndPost(ganacheMainIdentity, sendOnEthereum);
         const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }

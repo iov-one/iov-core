@@ -180,7 +180,7 @@ class Actor {
   }
 
   public async sendTransaction(transaction: UnsignedTransaction): Promise<Uint8Array | undefined> {
-    const post = await this.signer.signAndPost(transaction);
+    const post = await this.signer.signAndPost(transaction.creator, transaction);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");

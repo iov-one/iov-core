@@ -73,7 +73,12 @@ export declare class SigningServerCore {
    * @returns the transaction ID in case the user authorized the signing
    * and `null` in case the user rejected.
    */
-  signAndPost(reason: string, transaction: UnsignedTransaction, meta?: any): Promise<TransactionId | null>;
+  signAndPost(
+    identity: Identity,
+    reason: string,
+    transaction: UnsignedTransaction,
+    meta?: any,
+  ): Promise<TransactionId | null>;
   /**
    * Call this to free ressources when server is not needed anymore
    */

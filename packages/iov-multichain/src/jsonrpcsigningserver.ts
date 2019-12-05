@@ -167,7 +167,12 @@ export class JsonRpcSigningServer {
           break;
         }
         case "signAndPost": {
-          const result = await this.core.signAndPost(call.reason, call.transaction, meta);
+          const result = await this.core.signAndPost(
+            call.transaction.creator,
+            call.reason,
+            call.transaction,
+            meta,
+          );
           response = {
             jsonrpc: "2.0",
             id: request.id,
