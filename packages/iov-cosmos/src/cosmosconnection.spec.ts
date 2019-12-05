@@ -131,7 +131,7 @@ describe("CosmosConnection", () => {
         },
       });
       const nonce = await connection.getNonce({ address: faucetAddress });
-      const signed = await profile.signTransaction(unsigned, cosmosCodec, nonce);
+      const signed = await profile.signTransaction(faucet, unsigned, cosmosCodec, nonce);
       const postableBytes = cosmosCodec.bytesToPost(signed);
       const { transactionId } = await connection.postTx(postableBytes);
 
@@ -191,7 +191,7 @@ describe("CosmosConnection", () => {
         },
       });
       const nonce = await connection.getNonce({ address: faucetAddress });
-      const signed = await profile.signTransaction(unsigned, cosmosCodec, nonce);
+      const signed = await profile.signTransaction(faucet, unsigned, cosmosCodec, nonce);
       const postableBytes = cosmosCodec.bytesToPost(signed);
       const { transactionId } = await connection.postTx(postableBytes);
 
