@@ -113,7 +113,7 @@ class Actor {
   public async signAndPost(transaction: UnsignedTransaction): Promise<PostTxResponse> {
     const nonce = await this.bnsConnection.getNonce({ pubkey: transaction.creator.pubkey });
 
-    const signed = await this.profile.signTransaction(transaction, bnsCodec, nonce);
+    const signed = await this.profile.signTransaction(transaction.creator, transaction, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await this.bnsConnection.postTx(txBytes);
     return post;

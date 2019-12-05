@@ -471,7 +471,7 @@ describe("BnsConnection (basic class methods)", () => {
       });
 
       const nonce = await connection.getNonce({ pubkey: author.pubkey });
-      const signed = await profile.signTransaction(createProposal, bnsCodec, nonce);
+      const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
       {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -512,7 +512,7 @@ describe("BnsConnection (basic class methods)", () => {
         targets: targets,
       });
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
-      const signed = await profile.signTransaction(registration, bnsCodec, nonce);
+      const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -559,7 +559,7 @@ describe("BnsConnection (basic class methods)", () => {
         targets: targets,
       });
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
-      const signed = await profile.signTransaction(registration, bnsCodec, nonce);
+      const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));

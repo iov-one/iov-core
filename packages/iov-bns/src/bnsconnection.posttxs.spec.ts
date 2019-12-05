@@ -97,7 +97,7 @@ describe("BnsConnection (txs)", () => {
         faucetAddr,
       );
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-      const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
+      const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);
       const response = await connection.postTx(txBytes);
       const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -162,7 +162,7 @@ describe("BnsConnection (txs)", () => {
         },
       };
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-      const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
+      const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
       try {
         await connection.postTx(bnsCodec.bytesToPost(signed));
         fail("above line should reject with low fees");
@@ -191,7 +191,7 @@ describe("BnsConnection (txs)", () => {
         },
       });
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-      const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
+      const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
 
       await connection.postTx(bnsCodec.bytesToPost(signed)).then(
         () => fail("promise must be rejected"),
@@ -225,7 +225,7 @@ describe("BnsConnection (txs)", () => {
           },
         });
         const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-        const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
+        const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
         const heightBeforeTransaction = await connection.height();
         const result = await connection.postTx(bnsCodec.bytesToPost(signed));
         expect(result.blockInfo.value).toEqual({ state: TransactionState.Pending });
@@ -285,7 +285,7 @@ describe("BnsConnection (txs)", () => {
         targets: [{ chainId: "foobar" as ChainId, address: address }],
       });
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
-      const signed = await profile.signTransaction(registration, bnsCodec, nonce);
+      const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
@@ -327,7 +327,7 @@ describe("BnsConnection (txs)", () => {
         targets: [],
       });
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
-      const signed = await profile.signTransaction(registration, bnsCodec, nonce);
+      const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
@@ -374,6 +374,7 @@ describe("BnsConnection (txs)", () => {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
             await profile.signTransaction(
+              identity,
               usernameRegistration,
               bnsCodec,
               await connection.getNonce({ pubkey: identity.pubkey }),
@@ -395,6 +396,7 @@ describe("BnsConnection (txs)", () => {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
             await profile.signTransaction(
+              identity,
               updateTargets,
               bnsCodec,
               await connection.getNonce({ pubkey: identity.pubkey }),
@@ -416,6 +418,7 @@ describe("BnsConnection (txs)", () => {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
             await profile.signTransaction(
+              identity,
               clearAddresses,
               bnsCodec,
               await connection.getNonce({ pubkey: identity.pubkey }),
@@ -455,6 +458,7 @@ describe("BnsConnection (txs)", () => {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
             await profile.signTransaction(
+              identity,
               usernameRegistration,
               bnsCodec,
               await connection.getNonce({ pubkey: identity.pubkey }),
@@ -475,6 +479,7 @@ describe("BnsConnection (txs)", () => {
         const response = await connection.postTx(
           bnsCodec.bytesToPost(
             await profile.signTransaction(
+              identity,
               transferUsername,
               bnsCodec,
               await connection.getNonce({ pubkey: identity.pubkey }),
@@ -524,7 +529,7 @@ describe("BnsConnection (txs)", () => {
         faucetAddress,
       );
       const nonceUser1 = await connection.getNonce({ pubkey: user.pubkey });
-      const signed1 = await profile.signTransaction(registerUsernameTx, bnsCodec, nonceUser1);
+      const signed1 = await profile.signTransaction(user, registerUsernameTx, bnsCodec, nonceUser1);
       const nonceFaucet1 = await connection.getNonce({ pubkey: faucet.pubkey });
       const doubleSigned1 = await profile.appendSignature(faucet, signed1, bnsCodec, nonceFaucet1);
       const txBytes1 = bnsCodec.bytesToPost(doubleSigned1);
@@ -550,7 +555,7 @@ describe("BnsConnection (txs)", () => {
         targets: updatedTargets,
       });
       const nonce3 = await connection.getNonce({ pubkey: faucet.pubkey });
-      const signed3 = await profile.signTransaction(updateTargetsTx, bnsCodec, nonce3);
+      const signed3 = await profile.signTransaction(faucet, updateTargetsTx, bnsCodec, nonce3);
       const nonce4 = await connection.getNonce({ pubkey: user.pubkey });
       const doubleSigned2 = await profile.appendSignature(user, signed3, bnsCodec, nonce4);
       const txBytes3 = bnsCodec.bytesToPost(doubleSigned2);
@@ -595,7 +600,7 @@ describe("BnsConnection (txs)", () => {
         adminThreshold: 5,
       });
       const nonce1 = await connection.getNonce({ pubkey: identity.pubkey });
-      const signed1 = await profile.signTransaction(tx1, bnsCodec, nonce1);
+      const signed1 = await profile.signTransaction(identity, tx1, bnsCodec, nonce1);
       const txBytes1 = bnsCodec.bytesToPost(signed1);
       const response1 = await connection.postTx(txBytes1);
       const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -637,7 +642,7 @@ describe("BnsConnection (txs)", () => {
         adminThreshold: 6,
       });
       const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
-      const signed2 = await profile.signTransaction(tx2, bnsCodec, nonce2);
+      const signed2 = await profile.signTransaction(identity, tx2, bnsCodec, nonce2);
       const txBytes2 = bnsCodec.bytesToPost(signed2);
       const response2 = await connection.postTx(txBytes2);
       const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -698,7 +703,7 @@ describe("BnsConnection (txs)", () => {
         memo: memo,
       });
       const nonce1 = await connection.getNonce({ pubkey: sender.pubkey });
-      const signed1 = await profile.signTransaction(tx1, bnsCodec, nonce1);
+      const signed1 = await profile.signTransaction(sender, tx1, bnsCodec, nonce1);
       const txBytes1 = bnsCodec.bytesToPost(signed1);
       const response1 = await connection.postTx(txBytes1);
       const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -733,7 +738,7 @@ describe("BnsConnection (txs)", () => {
         amounts: [defaultAmount],
       });
       const nonce2 = await connection.getNonce({ pubkey: arbiter.pubkey });
-      const signed2 = await profile.signTransaction(tx2, bnsCodec, nonce2);
+      const signed2 = await profile.signTransaction(arbiter, tx2, bnsCodec, nonce2);
       const txBytes2 = bnsCodec.bytesToPost(signed2);
       const response2 = await connection.postTx(txBytes2);
       const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -783,7 +788,7 @@ describe("BnsConnection (txs)", () => {
         });
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(createEscrowTx, bnsCodec, nonce);
+        const signed = await profile.signTransaction(sender, createEscrowTx, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo)) throw new Error("Transaction did not succeed");
@@ -806,7 +811,7 @@ describe("BnsConnection (txs)", () => {
         });
 
         const nonce = await connection.getNonce({ pubkey: helperIdentity.pubkey });
-        const signed = await profile.signTransaction(returnEscrowTx, bnsCodec, nonce);
+        const signed = await profile.signTransaction(helperIdentity, returnEscrowTx, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
@@ -847,7 +852,7 @@ describe("BnsConnection (txs)", () => {
         memo: memo,
       });
       const nonce1 = await connection.getNonce({ pubkey: sender.pubkey });
-      const signed1 = await profile.signTransaction(tx1, bnsCodec, nonce1);
+      const signed1 = await profile.signTransaction(sender, tx1, bnsCodec, nonce1);
       const txBytes1 = bnsCodec.bytesToPost(signed1);
       const response1 = await connection.postTx(txBytes1);
       const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -884,7 +889,7 @@ describe("BnsConnection (txs)", () => {
         escrowId: escrowId,
       });
       const nonce2 = await connection.getNonce({ pubkey: arbiter.pubkey });
-      const signed2 = await profile.signTransaction(tx2, bnsCodec, nonce2);
+      const signed2 = await profile.signTransaction(arbiter, tx2, bnsCodec, nonce2);
       const txBytes2 = bnsCodec.bytesToPost(signed2);
       const response2 = await connection.postTx(txBytes2);
       const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -943,7 +948,7 @@ describe("BnsConnection (txs)", () => {
         memo: memo,
       });
       const nonce1 = await connection.getNonce({ pubkey: sender.pubkey });
-      const signed1 = await profile.signTransaction(tx1, bnsCodec, nonce1);
+      const signed1 = await profile.signTransaction(sender, tx1, bnsCodec, nonce1);
       const txBytes1 = bnsCodec.bytesToPost(signed1);
       const response1 = await connection.postTx(txBytes1);
       const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -978,7 +983,7 @@ describe("BnsConnection (txs)", () => {
         arbiter: newArbiterAddress,
       });
       const nonce2 = await connection.getNonce({ pubkey: arbiter.pubkey });
-      const signed2 = await profile.signTransaction(tx2, bnsCodec, nonce2);
+      const signed2 = await profile.signTransaction(arbiter, tx2, bnsCodec, nonce2);
       const txBytes2 = bnsCodec.bytesToPost(signed2);
       const response2 = await connection.postTx(txBytes2);
       const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -1038,7 +1043,7 @@ describe("BnsConnection (txs)", () => {
           startTime: startTime,
         });
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
-        const signed = await profile.signTransaction(createProposal, bnsCodec, nonce);
+        const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo)) {
@@ -1085,7 +1090,7 @@ describe("BnsConnection (txs)", () => {
           selection: VoteOption.Yes,
         });
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
-        const signed = await profile.signTransaction(voteForProposal, bnsCodec, nonce);
+        const signed = await profile.signTransaction(author, voteForProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       }
@@ -1149,7 +1154,7 @@ describe("BnsConnection (txs)", () => {
           startTime: startTime,
         });
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
-        const signed = await profile.signTransaction(createProposal, bnsCodec, nonce);
+        const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo)) {
@@ -1171,7 +1176,7 @@ describe("BnsConnection (txs)", () => {
           selection: VoteOption.Yes,
         });
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
-        const signed = await profile.signTransaction(voteForProposal, bnsCodec, nonce);
+        const signed = await profile.signTransaction(author, voteForProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo)) {
@@ -1217,7 +1222,7 @@ describe("BnsConnection (txs)", () => {
           startTime: startTime,
         });
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
-        const signed = await profile.signTransaction(createProposal, bnsCodec, nonce);
+        const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo)) {
@@ -1239,7 +1244,7 @@ describe("BnsConnection (txs)", () => {
           selection: VoteOption.Yes,
         });
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
-        const signed = await profile.signTransaction(voteForProposal, bnsCodec, nonce);
+        const signed = await profile.signTransaction(author, voteForProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo)) {

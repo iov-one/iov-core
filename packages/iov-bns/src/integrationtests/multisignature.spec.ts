@@ -90,7 +90,7 @@ class Actor {
 
   public async signTransaction(transaction: UnsignedTransaction): Promise<SignedTransaction> {
     const nonce = await this.connection.getNonce({ pubkey: this.identity.pubkey });
-    return this.profile.signTransaction(transaction, bnsCodec, nonce);
+    return this.profile.signTransaction(transaction.creator, transaction, bnsCodec, nonce);
   }
 
   public async appendSignature(signedTransaction: SignedTransaction): Promise<SignedTransaction> {

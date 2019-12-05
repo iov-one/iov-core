@@ -126,7 +126,7 @@ export async function sendTokensFromFaucet(
     amount: amount,
   });
   const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-  const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
+  const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
   const response = await connection.postTx(bnsCodec.bytesToPost(signed));
   await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
 }
@@ -150,7 +150,7 @@ export async function sendCash(
     },
   });
   const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-  const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
+  const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
   const txBytes = bnsCodec.bytesToPost(signed);
   return connection.postTx(txBytes);
 }
@@ -168,7 +168,7 @@ export async function ensureNonceNonZero(
     amount: defaultAmount,
   });
   const nonce = await connection.getNonce({ pubkey: identity.pubkey });
-  const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
+  const signed = await profile.signTransaction(identity, sendTx, bnsCodec, nonce);
   const response = await connection.postTx(bnsCodec.bytesToPost(signed));
   await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
 }
@@ -205,7 +205,7 @@ export async function openSwap(
     hash: hash,
   });
   const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-  const signed = await profile.signTransaction(swapOfferTx, bnsCodec, nonce);
+  const signed = await profile.signTransaction(creator, swapOfferTx, bnsCodec, nonce);
   const txBytes = bnsCodec.bytesToPost(signed);
   return connection.postTx(txBytes);
 }
@@ -225,7 +225,7 @@ export async function claimSwap(
     preimage: preimage,
   });
   const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-  const signed = await profile.signTransaction(swapClaimTx, bnsCodec, nonce);
+  const signed = await profile.signTransaction(creator, swapClaimTx, bnsCodec, nonce);
   const txBytes = bnsCodec.bytesToPost(signed);
   return connection.postTx(txBytes);
 }
