@@ -315,21 +315,26 @@ export class UserProfile {
    * creator field specifies the keypair to be used for signing.
    */
   public async signTransaction(
+    identity: Identity,
     transaction: UnsignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    const wallet = this.findWalletInPrimaryKeyringByIdentity(transaction.creator);
+    const wallet = this.findWalletInPrimaryKeyringByIdentity(identity);
+    const transactionWithExplicitSigner = {
+      ...transaction,
+      creator: identity,
+    };
 
-    const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
+    const { bytes, prehashType } = codec.bytesToSign(transactionWithExplicitSigner, nonce);
     const signature: FullSignature = {
-      pubkey: transaction.creator.pubkey,
+      pubkey: identity.pubkey,
       nonce: nonce,
-      signature: await wallet.createTransactionSignature(transaction.creator, bytes, prehashType),
+      signature: await wallet.createTransactionSignature(identity, bytes, prehashType),
     };
 
     return {
-      transaction: transaction,
+      transaction: transactionWithExplicitSigner,
       primarySignature: signature,
       otherSignatures: [],
     };
