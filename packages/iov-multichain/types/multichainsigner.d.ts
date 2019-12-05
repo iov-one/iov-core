@@ -17,6 +17,7 @@ import {
  */
 export interface Profile {
   readonly signTransaction: (
+    identity: Identity,
     transaction: UnsignedTransaction,
     codec: TxCodec,
     nonce: Nonce,
