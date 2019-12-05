@@ -75,7 +75,12 @@ export class CosmosConnection implements BlockchainConnection {
 
   private static async initialize(restClient: RestClient): Promise<ChainData> {
     const { node_info } = await restClient.nodeInfo();
-    return { chainId: node_info.network as ChainId };
+
+    // See CAIP-5 from https://github.com/ChainAgnostic/CAIPs/pull/9
+    if (!node_info.network.match(/^[-a-zA-Z0-9]{3,47}$/)) {
+      throw new Error("Chain ID not compatible to CAIP-5. CAIP-6 is not yet implemented by @iov/cosmos.");
+    }
+    return { chainId: `cosmos:${node_info.network}` as ChainId };
   }
 
   private readonly restClient: RestClient;

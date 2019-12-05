@@ -27,7 +27,7 @@ function pendingWithoutCosmos(): void {
 describe("CosmosConnection", () => {
   const atom = "ATOM" as TokenTicker;
   const httpUrl = "http://localhost:1317";
-  const defaultChainId = "testing" as ChainId;
+  const defaultChainId = "cosmos:testing" as ChainId;
   const defaultEmptyAddress = "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r" as Address;
   const defaultAddress = "cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs6" as Address;
   const defaultPubkey = {
