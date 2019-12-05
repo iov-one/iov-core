@@ -18,9 +18,9 @@ const bnsdUrl = "ws://localhost:23456";
 const connectionPromise = BnsConnection.establish(bnsdUrl);
 
 function createSignAndPoster(connection, profile) {
-  return async function signAndPost(tx) {
+  return async function signAndPost(identity, tx) {
     const nonce = await connection.getNonce({ pubkey: tx.creator.pubkey });
-    const signed = await profile.signTransaction(tx, bnsCodec, nonce);
+    const signed = await profile.signTransaction(identity, tx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -56,7 +56,7 @@ async function main() {
     },
   });
 
-  await signAndPost(initialTxForReward);
+  await signAndPost(identity, initialTxForReward);
 
   const governorOptions = {
     connection,
@@ -164,7 +164,7 @@ async function main() {
       ...proposalOptions[i],
       startTime: new Date(Date.now() + 1000),
     });
-    await signAndPost(createProposalTx);
+    await signAndPost(identity, createProposalTx);
 
     await sleep(7000);
 
@@ -176,7 +176,7 @@ async function main() {
         // Vote Yes 1/2 of the time, No for the other 1/2
         i % 2 ? VoteOption.Yes : VoteOption.No,
       );
-      await signAndPost(voteTx);
+      await signAndPost(identity, voteTx);
     }
   }
 }
