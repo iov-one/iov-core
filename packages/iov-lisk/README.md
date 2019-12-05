@@ -52,7 +52,7 @@ const sendTx: SendTransaction = {
 };
 
 console.log("Writing to blockchain. This may take a while …");
-await signer.signAndPost(sendTx);
+await signer.signAndPost(mainIdentity, sendTx);
 console.log((await connection.getAccount({ address: recipientAddress })).data[0].balance);
 ```
 

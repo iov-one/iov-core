@@ -237,7 +237,7 @@ const sendTx: SendTransaction = {
 };
 
 // we must have the private key for the transaction creator (id1a)
-await signer.signAndPost(sendTx);
+await signer.signAndPost(id1a, sendTx);
 
 // and we have a balance on the recipient now
 yours = await connection.getAccount({ address: addr2 });
