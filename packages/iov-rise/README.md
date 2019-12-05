@@ -50,7 +50,7 @@ const sendTx: SendTransaction = {
 };
 
 console.log("Sending transaction into the network blockchain …");
-const response = await signer.signAndPost(sendTx);
+const response = await signer.signAndPost(mainIdentity, sendTx);
 console.log(
   `Wait a few seconds and visit https://texplorer.rise.vision/tx/${Encoding.fromAscii(response.data.txid)}`,
 );

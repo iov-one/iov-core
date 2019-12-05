@@ -110,6 +110,7 @@ export class SigningServerCore {
    * and `null` in case the user rejected.
    */
   public async signAndPost(
+    identity: Identity,
     reason: string,
     transaction: UnsignedTransaction,
     meta?: any,
@@ -124,7 +125,7 @@ export class SigningServerCore {
     }
 
     if (authorized) {
-      const response = await this.signer.signAndPost(transaction);
+      const response = await this.signer.signAndPost(identity, transaction);
       const signedAndPosted: SignedAndPosted = {
         transaction: transaction,
         postResponse: response,

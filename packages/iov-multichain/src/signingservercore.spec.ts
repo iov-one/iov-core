@@ -329,7 +329,7 @@ describe("SigningServerCore", () => {
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
-      const transactionId = await core.signAndPost("Please sign now", send);
+      const transactionId = await core.signAndPost(signingIdentity, "Please sign now", send);
       expect(transactionId).toBeDefined();
       expect(transactionId).toMatch(/^[0-9A-F]{64}$/);
 
@@ -369,7 +369,7 @@ describe("SigningServerCore", () => {
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
-      const transactionId = await core.signAndPost("Please sign now", send);
+      const transactionId = await core.signAndPost(signingIdentity, "Please sign now", send);
       expect(transactionId).toBeNull();
 
       core.shutdown();
@@ -402,7 +402,7 @@ describe("SigningServerCore", () => {
         recipient: await randomBnsAddress(),
       });
       await core
-        .signAndPost("Please sign now", send)
+        .signAndPost(signingIdentity, "Please sign now", send)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/internal server error/i));
 
@@ -445,7 +445,7 @@ describe("SigningServerCore", () => {
         recipient: await randomBnsAddress(),
       });
       await core
-        .signAndPost("Please sign now", send)
+        .signAndPost(signingIdentity, "Please sign now", send)
         .then(() => fail("must not resolve"))
         .catch(error => expect(error).toMatch(/internal server error/i));
 
@@ -492,7 +492,7 @@ describe("SigningServerCore", () => {
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
-      await core.signAndPost("Please sign now", send, originalRequestMeta);
+      await core.signAndPost(signingIdentity, "Please sign now", send, originalRequestMeta);
 
       core.shutdown();
     });
@@ -530,7 +530,7 @@ describe("SigningServerCore", () => {
         amount: defaultAmount,
         recipient: await randomBnsAddress(),
       });
-      const transactionId = await core.signAndPost("Please sign now", send);
+      const transactionId = await core.signAndPost(signingIdentity, "Please sign now", send);
       if (!transactionId) {
         throw new Error("Expected transaction ID to be set");
       }

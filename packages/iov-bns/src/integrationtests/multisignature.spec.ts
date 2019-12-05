@@ -71,9 +71,9 @@ class Actor {
     return bnsCodec.identityToAddress(this.identity);
   }
 
+  public readonly identity: Identity;
   private readonly connection: BnsConnection;
   private readonly profile: UserProfile;
-  private readonly identity: Identity;
 
   public constructor(data: ActorData) {
     this.profile = data.profile;
@@ -109,7 +109,10 @@ class Actor {
     return blockInfo.result;
   }
 
-  public async signAndPost(transaction: UnsignedTransaction): Promise<Uint8Array | undefined> {
+  public async signAndPost(
+    identity: Identity,
+    transaction: UnsignedTransaction,
+  ): Promise<Uint8Array | undefined> {
     const signed = await this.signTransaction(transaction);
     return this.postTransaction(signed);
   }
@@ -127,7 +130,7 @@ class Actor {
       },
     });
 
-    return this.signAndPost(tx);
+    return this.signAndPost(this.identity, tx);
   }
 
   public async createMultisignatureContract(
@@ -142,7 +145,7 @@ class Actor {
       activationThreshold: activationThreshold,
       adminThreshold: adminThreshold,
     });
-    const result = await this.signAndPost(tx);
+    const result = await this.signAndPost(this.identity, tx);
     if (result === undefined) {
       throw new Error("Created a multisignature contract but received no ID back");
     }
@@ -211,7 +214,7 @@ describe("Multisignature wallets", () => {
       amount,
     );
     try {
-      await alice.signAndPost(sendTx);
+      await alice.signAndPost(alice.identity, sendTx);
       fail("Expected transaction to fail with insufficient signatures");
     } catch (err) {
       expect(err).toMatch(/weight is not enough to activate/i);

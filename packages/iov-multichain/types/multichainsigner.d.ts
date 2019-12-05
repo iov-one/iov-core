@@ -55,10 +55,8 @@ export declare class MultiChainSigner {
   isValidAddress(chainId: ChainId, address: string): boolean;
   /**
    * Queries the nonce, signs the transaction and posts it to the blockchain.
-   *
-   * The signing keypair is determined by the `creator` field of the transaction.
    */
-  signAndPost(transaction: UnsignedTransaction): Promise<PostTxResponse>;
+  signAndPost(identity: Identity, transaction: UnsignedTransaction): Promise<PostTxResponse>;
   /**
    * Call this to free ressources when signer is not needed anymore.
    * This disconnects all chains and other housekeeping if necessary.

@@ -110,17 +110,20 @@ class Actor {
     this.preimage = await AtomicSwapHelpers.createPreimage();
   }
 
-  public async signAndPost(transaction: UnsignedTransaction): Promise<PostTxResponse> {
-    const nonce = await this.bnsConnection.getNonce({ pubkey: transaction.creator.pubkey });
+  public async signAndPost(identity: Identity, transaction: UnsignedTransaction): Promise<PostTxResponse> {
+    const nonce = await this.bnsConnection.getNonce({ pubkey: identity.pubkey });
 
-    const signed = await this.profile.signTransaction(transaction.creator, transaction, bnsCodec, nonce);
+    const signed = await this.profile.signTransaction(identity, transaction, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await this.bnsConnection.postTx(txBytes);
     return post;
   }
 
-  public async sendTransaction(transaction: UnsignedTransaction): Promise<Uint8Array | undefined> {
-    const post = await this.signAndPost(transaction);
+  public async sendTransaction(
+    identity: Identity,
+    transaction: UnsignedTransaction,
+  ): Promise<Uint8Array | undefined> {
+    const post = await this.signAndPost(identity, transaction);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");
@@ -137,7 +140,7 @@ class Actor {
       recipient: recipient,
       amount: amount,
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.bnsIdentity, transaction);
   }
 
   public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
@@ -151,7 +154,7 @@ class Actor {
       hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
       amounts: [amount],
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.bnsIdentity, transaction);
   }
 
   public async sendSwapCounterOnBns(
@@ -168,7 +171,7 @@ class Actor {
       timeout: createTimestampTimeout(36 * 3600),
       hash: offer.data.hash,
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.bnsIdentity, transaction);
   }
 
   public async claimFromKnownPreimageOnBns(offer: AtomicSwap): Promise<Uint8Array | undefined> {
@@ -178,7 +181,7 @@ class Actor {
       swapId: offer.data.id,
       preimage: this.preimage!,
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.bnsIdentity, transaction);
   }
 
   public async claimFromRevealedPreimageOnBns(
@@ -194,7 +197,7 @@ class Actor {
       swapId: unclaimedId,
       preimage: claim.preimage, // public data now!
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.bnsIdentity, transaction);
   }
 }
 

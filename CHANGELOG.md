@@ -19,6 +19,8 @@ Breaking changes
   identity as an argument, just like `UserProfile.appendSignature`.
 - @iov/multichain: The `Profile` type required to create a `MultiChainSigner`
   has been updated to match the `UserProfile` change in @iov/keycontrol.
+- @iov/multichain: `MultiChainSigner.signAndPost` and `SigningServerCore` now
+  both require a signing `identity` argument.
 
 ## 1.2.0
 

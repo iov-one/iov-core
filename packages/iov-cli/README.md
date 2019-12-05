@@ -93,7 +93,7 @@ const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
   },
 });
 ^D
-> await signer.signAndPost(sendTx);
+> await signer.signAndPost(faucet, sendTx);
 > (await connection.getAccount({ address: recipientAddress })).balance;
 
 > await connection.searchTx({ sentFromOrTo: faucetAddress });
@@ -161,7 +161,7 @@ const registrationTx = await connection.withDefaultFee<RegisterUsernameTx & With
   username: "hans*iov",
 });
 ^D
-> await signer.signAndPost(registrationTx);
+> await signer.signAndPost(recipient, registrationTx);
 > const bnsConnection = connection as BnsConnection;
 > await bnsConnection.getUsernames({ owner: recipientAddress });
 [ { username: 'hans*iov',
