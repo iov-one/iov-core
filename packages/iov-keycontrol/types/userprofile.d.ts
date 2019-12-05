@@ -119,7 +119,12 @@ export declare class UserProfile {
    * Signs a transaction using the profile's primary keyring. The transaction's
    * creator field specifies the keypair to be used for signing.
    */
-  signTransaction(transaction: UnsignedTransaction, codec: TxCodec, nonce: Nonce): Promise<SignedTransaction>;
+  signTransaction(
+    identity: Identity,
+    transaction: UnsignedTransaction,
+    codec: TxCodec,
+    nonce: Nonce,
+  ): Promise<SignedTransaction>;
   appendSignature(
     identity: Identity,
     originalTransaction: SignedTransaction,

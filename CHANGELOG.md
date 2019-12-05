@@ -15,6 +15,10 @@ Breaking changes
 - ALL: Upgrade TypeScript from 3.5 to 3.7. This changes the signature of getters
   in declaration files (see
   https://devblogs.microsoft.com/typescript/announcing-typescript-3-6/#get-and-set-accessors-allowed-in-ambient-contexts)
+- @iov/keycontrol: `UserProfile.signTransaction` now requires the signing
+  identity as an argument, just like `UserProfile.appendSignature`.
+- @iov/multichain: The `Profile` type required to create a `MultiChainSigner`
+  has been updated to match the `UserProfile` change in @iov/keycontrol.
 
 ## 1.2.0
 

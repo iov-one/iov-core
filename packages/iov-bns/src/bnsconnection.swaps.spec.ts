@@ -69,7 +69,7 @@ describe("BnsConnection (swaps)", () => {
     });
 
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-    const signed = await profile.signTransaction(swapOfferTx, bnsCodec, nonce);
+    const signed = await profile.signTransaction(faucet, swapOfferTx, bnsCodec, nonce);
     const post = await connection.postTx(bnsCodec.bytesToPost(signed));
     const transactionId = post.transactionId;
     expect(transactionId).toMatch(/^[0-9A-F]{64}$/);
@@ -202,7 +202,7 @@ describe("BnsConnection (swaps)", () => {
       });
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-      const signed = await profile.signTransaction(swapOfferTx, bnsCodec, nonce);
+      const signed = await profile.signTransaction(faucet, swapOfferTx, bnsCodec, nonce);
       const post = await connection.postTx(bnsCodec.bytesToPost(signed));
 
       const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));

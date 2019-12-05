@@ -405,7 +405,12 @@ describe("RiseConnection", () => {
             amount: defaultSendAmount,
           };
 
-          const signedTransaction = await profile.signTransaction(sendTx, riseCodec, generateNonce());
+          const signedTransaction = await profile.signTransaction(
+            mainIdentity,
+            sendTx,
+            riseCodec,
+            generateNonce(),
+          );
 
           const result = await connection.postTx(riseCodec.bytesToPost(signedTransaction));
           await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -495,7 +500,12 @@ describe("RiseConnection", () => {
         amount: defaultSendAmount,
       };
 
-      const signedTransaction = await profile.signTransaction(sendTx, riseCodec, generateNonce());
+      const signedTransaction = await profile.signTransaction(
+        mainIdentity,
+        sendTx,
+        riseCodec,
+        generateNonce(),
+      );
       const bytesToPost = riseCodec.bytesToPost(signedTransaction);
 
       const connection = await RiseConnection.establish(base);
@@ -518,7 +528,12 @@ describe("RiseConnection", () => {
           amount: defaultSendAmount,
         };
 
-        const signedTransaction = await profile.signTransaction(sendTx, riseCodec, generateNonce());
+        const signedTransaction = await profile.signTransaction(
+          mainIdentity,
+          sendTx,
+          riseCodec,
+          generateNonce(),
+        );
         const bytesToPost = riseCodec.bytesToPost(signedTransaction);
 
         const connection = await RiseConnection.establish(base);
@@ -564,7 +579,12 @@ describe("RiseConnection", () => {
         amount: defaultSendAmount,
       };
 
-      const signedTransaction = await profile.signTransaction(sendTx, riseCodec, generateNonce());
+      const signedTransaction = await profile.signTransaction(
+        mainIdentity,
+        sendTx,
+        riseCodec,
+        generateNonce(),
+      );
 
       const corruptedSignature = signedTransaction.primarySignature.signature.map((x, i) =>
         // tslint:disable-next-line:no-bitwise
@@ -762,8 +782,8 @@ describe("RiseConnection", () => {
         };
 
         const [nonceA, nonceB] = await connection.getNonces({ pubkey: sender.pubkey }, 2);
-        const signedA = await profile.signTransaction(sendA, riseCodec, nonceA);
-        const signedB = await profile.signTransaction(sendB, riseCodec, nonceB);
+        const signedA = await profile.signTransaction(sender, sendA, riseCodec, nonceA);
+        const signedB = await profile.signTransaction(sender, sendB, riseCodec, nonceB);
         const bytesToPostA = riseCodec.bytesToPost(signedA);
         const bytesToPostB = riseCodec.bytesToPost(signedB);
 
@@ -824,7 +844,7 @@ describe("RiseConnection", () => {
         };
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(send, riseCodec, nonce);
+        const signed = await profile.signTransaction(sender, send, riseCodec, nonce);
         const bytesToPost = riseCodec.bytesToPost(signed);
 
         const postResult = await connection.postTx(bytesToPost);
@@ -879,7 +899,7 @@ describe("RiseConnection", () => {
         };
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(send, riseCodec, nonce);
+        const signed = await profile.signTransaction(sender, send, riseCodec, nonce);
         const bytesToPost = riseCodec.bytesToPost(signed);
 
         const postResult = await connection.postTx(bytesToPost);

@@ -88,7 +88,7 @@ describe("SigningServerCore", () => {
       amount: amount,
     });
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-    const signed = await profile.signTransaction(sendTx, bnsCodec, nonce);
+    const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
     const response = await connection.postTx(bnsCodec.bytesToPost(signed));
     await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
   }

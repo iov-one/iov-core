@@ -127,7 +127,7 @@ describe("EthereumConnection", () => {
       },
       memo: `Some text ${Math.random()}`,
     };
-    const signedTransaction = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+    const signedTransaction = await profile.signTransaction(sender, sendTx, ethereumCodec, nonce);
     const resultPost = await connection.postTx(ethereumCodec.bytesToPost(signedTransaction));
     return resultPost;
   }
@@ -418,7 +418,7 @@ describe("EthereumConnection", () => {
         testConfig.connectionOptions,
       );
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-      const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+      const signed = await profile.signTransaction(mainIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const result = await connection.postTx(bytesToPost);
@@ -457,7 +457,7 @@ describe("EthereumConnection", () => {
         testConfig.connectionOptions,
       );
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-      const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+      const signed = await profile.signTransaction(mainIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const heightBeforeTransaction = await connection.height();
@@ -507,7 +507,7 @@ describe("EthereumConnection", () => {
         memo: "We \u2665 developers – iov.one",
       };
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-      const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+      const signed = await profile.signTransaction(mainIdentity, sendTx, ethereumCodec, nonce);
       await connection
         .postTx(ethereumCodec.bytesToPost(signed))
         .then(() => fail("must not resolve"))
@@ -545,7 +545,7 @@ describe("EthereumConnection", () => {
         memo: "We \u2665 developers – iov.one",
       };
       const nonce = await connection.getNonce({ pubkey: brokeIdentity.pubkey });
-      const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+      const signed = await profile.signTransaction(brokeIdentity, sendTx, ethereumCodec, nonce);
       await connection
         .postTx(ethereumCodec.bytesToPost(signed))
         .then(() => fail("must not resolve"))
@@ -579,7 +579,7 @@ describe("EthereumConnection", () => {
         testConfig.connectionOptions,
       );
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-      const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+      const signed = await profile.signTransaction(mainIdentity, sendTx, ethereumCodec, nonce);
       // tslint:disable-next-line:no-bitwise no-object-mutation
       signed.primarySignature.signature[0] ^= 1;
       // Alternatively we could corrupt the message
@@ -621,7 +621,7 @@ describe("EthereumConnection", () => {
           ...transferTest,
         };
         const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-        const signed = await profile.signTransaction(sendTx, codec, nonce);
+        const signed = await profile.signTransaction(mainIdentity, sendTx, codec, nonce);
         const bytesToPost = codec.bytesToPost(signed);
 
         const result = await connection.postTx(bytesToPost);
@@ -727,7 +727,7 @@ describe("EthereumConnection", () => {
           memo: `Search tx test ${Math.random()}`,
         };
         const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-        const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(mainIdentity, sendTx, ethereumCodec, nonce);
         const bytesToPost = ethereumCodec.bytesToPost(signed);
 
         const resultPost = await connection.postTx(bytesToPost);
@@ -772,7 +772,7 @@ describe("EthereumConnection", () => {
         memo: `Search tx test ${Math.random()}`,
       };
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-      const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+      const signed = await profile.signTransaction(mainIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const resultPost = await connection.postTx(bytesToPost);
@@ -848,7 +848,7 @@ describe("EthereumConnection", () => {
         testConfig.connectionOptions,
       );
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-      const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+      const signed = await profile.signTransaction(mainIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const resultPost = await connection.postTx(bytesToPost);
@@ -909,7 +909,7 @@ describe("EthereumConnection", () => {
         memo: `Search tx test ${new Date()}`,
       };
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-      const signed = await profile.signTransaction(sendTx, ethereumCodec, nonce);
+      const signed = await profile.signTransaction(mainIdentity, sendTx, ethereumCodec, nonce);
       const bytesToPost = ethereumCodec.bytesToPost(signed);
 
       const resultPost = await connection.postTx(bytesToPost);
@@ -1045,7 +1045,7 @@ describe("EthereumConnection", () => {
             ...sendTest,
           };
           const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-          const signed = await profile.signTransaction(sendTx, codec, nonce);
+          const signed = await profile.signTransaction(mainIdentity, sendTx, codec, nonce);
           const resultPost = await connection.postTx(codec.bytesToPost(signed));
           transactionId = resultPost.transactionId;
           await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -1105,7 +1105,7 @@ describe("EthereumConnection", () => {
             ...sendTest,
           };
           const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
-          const signed = await profile.signTransaction(sendTx, codec, nonce);
+          const signed = await profile.signTransaction(mainIdentity, sendTx, codec, nonce);
           const resultPost = await connection.postTx(codec.bytesToPost(signed));
           transactionId = resultPost.transactionId;
           await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -1225,9 +1225,9 @@ describe("EthereumConnection", () => {
 
         const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
-        const signedA = await profile.signTransaction(sendA, codec, nonceA);
-        const signedB = await profile.signTransaction(sendB, codec, nonceB);
-        const signedC = await profile.signTransaction(sendC, codec, nonceC);
+        const signedA = await profile.signTransaction(sender, sendA, codec, nonceA);
+        const signedB = await profile.signTransaction(sender, sendB, codec, nonceB);
+        const signedC = await profile.signTransaction(sender, sendC, codec, nonceC);
         const bytesToPostA = codec.bytesToPost(signedA);
         const bytesToPostB = codec.bytesToPost(signedB);
         const bytesToPostC = codec.bytesToPost(signedC);
@@ -1315,9 +1315,9 @@ describe("EthereumConnection", () => {
 
         const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
-        const signedA = await profile.signTransaction(sendA, ethereumCodec, nonceA);
-        const signedB = await profile.signTransaction(sendB, ethereumCodec, nonceB);
-        const signedC = await profile.signTransaction(sendC, ethereumCodec, nonceC);
+        const signedA = await profile.signTransaction(sender, sendA, ethereumCodec, nonceA);
+        const signedB = await profile.signTransaction(sender, sendB, ethereumCodec, nonceB);
+        const signedC = await profile.signTransaction(sender, sendC, ethereumCodec, nonceC);
         const bytesToPostA = ethereumCodec.bytesToPost(signedA);
         const bytesToPostB = ethereumCodec.bytesToPost(signedB);
         const bytesToPostC = ethereumCodec.bytesToPost(signedC);
@@ -1433,9 +1433,9 @@ describe("EthereumConnection", () => {
 
         const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
-        const signedA = await profile.signTransaction(sendA, ethereumCodec, nonceA);
-        const signedB = await profile.signTransaction(sendB, ethereumCodec, nonceB);
-        const signedC = await profile.signTransaction(sendC, ethereumCodec, nonceC);
+        const signedA = await profile.signTransaction(sender, sendA, ethereumCodec, nonceA);
+        const signedB = await profile.signTransaction(sender, sendB, ethereumCodec, nonceB);
+        const signedC = await profile.signTransaction(sender, sendC, ethereumCodec, nonceC);
         const bytesToPostA = ethereumCodec.bytesToPost(signedA);
         const bytesToPostB = ethereumCodec.bytesToPost(signedB);
         const bytesToPostC = ethereumCodec.bytesToPost(signedC);
@@ -1549,9 +1549,9 @@ describe("EthereumConnection", () => {
 
         const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
-        const signedA = await profile.signTransaction(sendA, codec, nonceA);
-        const signedB = await profile.signTransaction(sendB, codec, nonceB);
-        const signedC = await profile.signTransaction(sendC, codec, nonceC);
+        const signedA = await profile.signTransaction(sender, sendA, codec, nonceA);
+        const signedB = await profile.signTransaction(sender, sendB, codec, nonceB);
+        const signedC = await profile.signTransaction(sender, sendC, codec, nonceC);
         const bytesToPostA = codec.bytesToPost(signedA);
         const bytesToPostB = codec.bytesToPost(signedB);
         const bytesToPostC = codec.bytesToPost(signedC);
@@ -1660,9 +1660,9 @@ describe("EthereumConnection", () => {
 
         const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
 
-        const signedA = await profile.signTransaction(sendA, codec, nonceA);
-        const signedB = await profile.signTransaction(sendB, codec, nonceB);
-        const signedC = await profile.signTransaction(sendC, codec, nonceC);
+        const signedA = await profile.signTransaction(sender, sendA, codec, nonceA);
+        const signedB = await profile.signTransaction(sender, sendB, codec, nonceB);
+        const signedC = await profile.signTransaction(sender, sendC, codec, nonceC);
         const bytesToPostA = codec.bytesToPost(signedA);
         const bytesToPostB = codec.bytesToPost(signedB);
         const bytesToPostC = codec.bytesToPost(signedC);
@@ -1785,10 +1785,10 @@ describe("EthereumConnection", () => {
 
         const [nonceA, nonceB, nonceC, nonceD] = await connection.getNonces({ pubkey: sender.pubkey }, 4);
 
-        const signedA = await profile.signTransaction(sendA, codec, nonceA);
-        const signedB = await profile.signTransaction(sendB, codec, nonceB);
-        const signedC = await profile.signTransaction(sendC, codec, nonceC);
-        const signedD = await profile.signTransaction(sendD, codec, nonceD);
+        const signedA = await profile.signTransaction(sender, sendA, codec, nonceA);
+        const signedB = await profile.signTransaction(sender, sendB, codec, nonceB);
+        const signedC = await profile.signTransaction(sender, sendC, codec, nonceC);
+        const signedD = await profile.signTransaction(sender, sendD, codec, nonceD);
         const bytesToPostA = codec.bytesToPost(signedA);
         const bytesToPostB = codec.bytesToPost(signedB);
         const bytesToPostC = codec.bytesToPost(signedC);
@@ -1876,7 +1876,7 @@ describe("EthereumConnection", () => {
         };
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(send, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(sender, send, ethereumCodec, nonce);
         const bytesToPost = ethereumCodec.bytesToPost(signed);
 
         const postResult = await connection.postTx(bytesToPost);
@@ -1941,7 +1941,7 @@ describe("EthereumConnection", () => {
         };
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(send, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(sender, send, ethereumCodec, nonce);
         const bytesToPost = ethereumCodec.bytesToPost(signed);
 
         const postResult = await connection.postTx(bytesToPost);
@@ -2152,7 +2152,7 @@ describe("EthereumConnection", () => {
         });
 
         const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-        const signed = await profile.signTransaction(swapOfferTx, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(faucet, swapOfferTx, ethereumCodec, nonce);
         const result = await connection.postTx(ethereumCodec.bytesToPost(signed));
         expect(result).toBeTruthy();
         expect(result.log).toBeUndefined();
@@ -2258,7 +2258,7 @@ describe("EthereumConnection", () => {
           hash: hash,
         });
         const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(swapOfferTx, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(creator, swapOfferTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
@@ -2278,7 +2278,7 @@ describe("EthereumConnection", () => {
           preimage: preimage,
         });
         const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(swapClaimTx, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(creator, swapClaimTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
@@ -2295,7 +2295,7 @@ describe("EthereumConnection", () => {
           swapId: swapId,
         });
         const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(swapAbortTx, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(creator, swapAbortTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
@@ -2504,7 +2504,12 @@ describe("EthereumConnection", () => {
           amount: amount,
         });
         const approvalNonce = await connection.getNonce({ pubkey: faucet.pubkey });
-        const signedApproval = await profile.signTransaction(approvalTx, ethereumCodec, approvalNonce);
+        const signedApproval = await profile.signTransaction(
+          faucet,
+          approvalTx,
+          ethereumCodec,
+          approvalNonce,
+        );
         const approvalResult = await connection.postTx(ethereumCodec.bytesToPost(signedApproval));
         const approvalBlockInfo = await approvalResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(approvalBlockInfo)) {
@@ -2521,7 +2526,7 @@ describe("EthereumConnection", () => {
           hash: swapOfferHash,
         });
         const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
-        const signed = await profile.signTransaction(swapOfferTx, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(faucet, swapOfferTx, ethereumCodec, nonce);
         const result = await connection.postTx(ethereumCodec.bytesToPost(signed));
         expect(result).toBeTruthy();
         expect(result.log).toBeUndefined();
@@ -2619,7 +2624,12 @@ describe("EthereumConnection", () => {
           amount: amount,
         });
         const approvalNonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signedApproval = await profile.signTransaction(approvalTx, ethereumCodec, approvalNonce);
+        const signedApproval = await profile.signTransaction(
+          creator,
+          approvalTx,
+          ethereumCodec,
+          approvalNonce,
+        );
         const approvalResult = await connection.postTx(ethereumCodec.bytesToPost(signedApproval));
         const approvalBlockInfo = await approvalResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(approvalBlockInfo)) {
@@ -2639,7 +2649,7 @@ describe("EthereumConnection", () => {
           hash: hash,
         });
         const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(swapOfferTx, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(creator, swapOfferTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
@@ -2659,7 +2669,7 @@ describe("EthereumConnection", () => {
           preimage: preimage,
         });
         const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(swapClaimTx, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(creator, swapClaimTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
@@ -2676,7 +2686,7 @@ describe("EthereumConnection", () => {
           swapId: swapId,
         });
         const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(swapAbortTx, ethereumCodec, nonce);
+        const signed = await profile.signTransaction(creator, swapAbortTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };

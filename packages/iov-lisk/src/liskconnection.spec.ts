@@ -417,7 +417,12 @@ describe("LiskConnection", () => {
             amount: devnetDefaultAmount,
           };
 
-          const signedTransaction = await profile.signTransaction(sendTx, liskCodec, generateNonce());
+          const signedTransaction = await profile.signTransaction(
+            mainIdentity,
+            sendTx,
+            liskCodec,
+            generateNonce(),
+          );
 
           const result = await connection.postTx(liskCodec.bytesToPost(signedTransaction));
           await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -532,7 +537,12 @@ describe("LiskConnection", () => {
         amount: devnetDefaultAmount,
       };
 
-      const signedTransaction = await profile.signTransaction(sendTx, liskCodec, generateNonce());
+      const signedTransaction = await profile.signTransaction(
+        mainIdentity,
+        sendTx,
+        liskCodec,
+        generateNonce(),
+      );
       const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
       const connection = await LiskConnection.establish(devnetBase);
@@ -561,7 +571,12 @@ describe("LiskConnection", () => {
           amount: devnetDefaultAmount,
         };
 
-        const signedTransaction = await profile.signTransaction(sendTx, liskCodec, generateNonce());
+        const signedTransaction = await profile.signTransaction(
+          mainIdentity,
+          sendTx,
+          liskCodec,
+          generateNonce(),
+        );
         const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
         const connection = await LiskConnection.establish(devnetBase);
@@ -608,7 +623,12 @@ describe("LiskConnection", () => {
         amount: devnetDefaultAmount,
       };
 
-      const signedTransaction = await profile.signTransaction(sendTx, liskCodec, generateNonce());
+      const signedTransaction = await profile.signTransaction(
+        mainIdentity,
+        sendTx,
+        liskCodec,
+        generateNonce(),
+      );
       const bytesToPost = liskCodec.bytesToPost(signedTransaction);
 
       const connection = await LiskConnection.establish(devnetBase);
@@ -642,7 +662,12 @@ describe("LiskConnection", () => {
       };
 
       // Encode creation timestamp into nonce
-      const signedTransaction = await profile.signTransaction(sendTx, liskCodec, generateNonce());
+      const signedTransaction = await profile.signTransaction(
+        mainIdentity,
+        sendTx,
+        liskCodec,
+        generateNonce(),
+      );
 
       const corruptedSignature = signedTransaction.primarySignature.signature.map((x, i) =>
         // tslint:disable-next-line:no-bitwise
@@ -973,9 +998,9 @@ describe("LiskConnection", () => {
         };
 
         const [nonceA, nonceB, nonceC] = await connection.getNonces({ pubkey: sender.pubkey }, 3);
-        const signedA = await profile.signTransaction(sendA, liskCodec, nonceA);
-        const signedB = await profile.signTransaction(sendB, liskCodec, nonceB);
-        const signedC = await profile.signTransaction(sendC, liskCodec, nonceC);
+        const signedA = await profile.signTransaction(sender, sendA, liskCodec, nonceA);
+        const signedB = await profile.signTransaction(sender, sendB, liskCodec, nonceB);
+        const signedC = await profile.signTransaction(sender, sendC, liskCodec, nonceC);
         const bytesToPostA = liskCodec.bytesToPost(signedA);
         const bytesToPostB = liskCodec.bytesToPost(signedB);
         const bytesToPostC = liskCodec.bytesToPost(signedC);
@@ -1044,7 +1069,7 @@ describe("LiskConnection", () => {
         };
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(send, liskCodec, nonce);
+        const signed = await profile.signTransaction(sender, send, liskCodec, nonce);
         const bytesToPost = liskCodec.bytesToPost(signed);
 
         const postResult = await connection.postTx(bytesToPost);
@@ -1101,7 +1126,7 @@ describe("LiskConnection", () => {
         };
 
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
-        const signed = await profile.signTransaction(send, liskCodec, nonce);
+        const signed = await profile.signTransaction(sender, send, liskCodec, nonce);
         const bytesToPost = liskCodec.bytesToPost(signed);
 
         const postResult = await connection.postTx(bytesToPost);
