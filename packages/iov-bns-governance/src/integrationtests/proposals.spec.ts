@@ -2,11 +2,11 @@ import {
   Account,
   Address,
   ChainId,
+  Identity,
   isBlockInfoPending,
   isBlockInfoSucceeded,
   TokenTicker,
   UnsignedTransaction,
-  WithCreator,
 } from "@iov/bcp";
 import {
   ActionKind,
@@ -69,12 +69,13 @@ async function getGovernorOptions(
 }
 
 async function signAndPost(
-  tx: UnsignedTransaction & WithCreator,
+  identity: Identity,
+  tx: UnsignedTransaction,
   connection: BnsConnection,
   profile: UserProfile,
 ): Promise<void> {
-  const nonce = await connection.getNonce({ pubkey: tx.creator.pubkey });
-  const signed = await profile.signTransaction(tx.creator, tx, bnsCodec, nonce);
+  const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+  const signed = await profile.signTransaction(identity, tx, bnsCodec, nonce);
   const createProposalTxBytes = bnsCodec.bytesToPost(signed);
   const post = await connection.postTx(createProposalTxBytes);
   const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -114,7 +115,7 @@ describe("Proposals", () => {
       weight: 3,
     };
     const createProposal1Tx = await governor.buildCreateProposalTx(proposal1Options);
-    await signAndPost(createProposal1Tx, connection, profile);
+    await signAndPost(governorOptions.identity, createProposal1Tx, connection, profile);
 
     const proposalsAfterCreate1 = await governor.getProposals();
     expect(proposalsAfterCreate1.length).toEqual(numProposalsBefore + 1);
@@ -138,7 +139,7 @@ describe("Proposals", () => {
     await sleep(7000);
 
     const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
-    await signAndPost(vote1Tx, connection, profile);
+    await signAndPost(governorOptions.identity, vote1Tx, connection, profile);
 
     await sleep(15000);
 
@@ -170,7 +171,7 @@ describe("Proposals", () => {
       address: newCommitteeMember,
     };
     const createProposal2Tx = await governor.buildCreateProposalTx(proposal2Options);
-    await signAndPost(createProposal2Tx, connection, profile);
+    await signAndPost(governorOptions.identity, createProposal2Tx, connection, profile);
 
     const proposalsAfterCreate2 = await governor.getProposals();
     expect(proposalsAfterCreate2.length).toEqual(numProposalsBefore + 2);
@@ -194,7 +195,7 @@ describe("Proposals", () => {
     await sleep(7000);
 
     const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
-    await signAndPost(vote2Tx, connection, profile);
+    await signAndPost(governorOptions.identity, vote2Tx, connection, profile);
 
     await sleep(15000);
 
@@ -241,7 +242,7 @@ describe("Proposals", () => {
       },
     };
     const createProposal1Tx = await governor.buildCreateProposalTx(proposalOptions1);
-    await signAndPost(createProposal1Tx, connection, profile);
+    await signAndPost(governorOptions.identity, createProposal1Tx, connection, profile);
 
     const proposalsAfterCreate1 = await governor.getProposals();
     expect(proposalsAfterCreate1.length).toEqual(numProposalsBefore + 1);
@@ -268,7 +269,7 @@ describe("Proposals", () => {
     await sleep(7000);
 
     const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
-    await signAndPost(vote1Tx, connection, profile);
+    await signAndPost(governorOptions.identity, vote1Tx, connection, profile);
 
     await sleep(15000);
 
@@ -302,7 +303,7 @@ describe("Proposals", () => {
       },
     };
     const createProposal2Tx = await governor.buildCreateProposalTx(proposalOptions2);
-    await signAndPost(createProposal2Tx, connection, profile);
+    await signAndPost(governorOptions.identity, createProposal2Tx, connection, profile);
 
     const proposalsAfterCreate2 = await governor.getProposals();
     expect(proposalsAfterCreate2.length).toEqual(numProposalsBefore + 2);
@@ -332,7 +333,7 @@ describe("Proposals", () => {
     await sleep(7000);
 
     const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
-    await signAndPost(vote2Tx, connection, profile);
+    await signAndPost(governorOptions.identity, vote2Tx, connection, profile);
 
     await sleep(15000);
 
@@ -375,7 +376,7 @@ describe("Proposals", () => {
       power: 2,
     };
     const createProposal1Tx = await governor.buildCreateProposalTx(proposal1Options);
-    await signAndPost(createProposal1Tx, connection, profile);
+    await signAndPost(governorOptions.identity, createProposal1Tx, connection, profile);
 
     const proposalsAfterCreate1 = await governor.getProposals();
     expect(proposalsAfterCreate1.length).toEqual(numProposalsBefore + 1);
@@ -398,7 +399,7 @@ describe("Proposals", () => {
     await sleep(7000);
 
     const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
-    await signAndPost(vote1Tx, connection, profile);
+    await signAndPost(governorOptions.identity, vote1Tx, connection, profile);
 
     await sleep(15000);
 
@@ -430,7 +431,7 @@ describe("Proposals", () => {
       pubkey: identity.pubkey,
     };
     const createProposal2Tx = await governor.buildCreateProposalTx(proposal2Options);
-    await signAndPost(createProposal2Tx, connection, profile);
+    await signAndPost(governorOptions.identity, createProposal2Tx, connection, profile);
 
     const proposalsAfterCreate2 = await governor.getProposals();
     expect(proposalsAfterCreate2.length).toEqual(numProposalsBefore + 2);
@@ -453,7 +454,7 @@ describe("Proposals", () => {
     await sleep(7000);
 
     const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
-    await signAndPost(vote2Tx, connection, profile);
+    await signAndPost(governorOptions.identity, vote2Tx, connection, profile);
 
     await sleep(15000);
 
@@ -514,7 +515,7 @@ describe("Proposals", () => {
       amount: amount,
     };
     const createProposal1Tx = await governor.buildCreateProposalTx(proposal1Options);
-    await signAndPost(createProposal1Tx, connection, profile);
+    await signAndPost(governorOptions.identity, createProposal1Tx, connection, profile);
 
     const proposalsAfterCreate1 = await governor.getProposals();
     expect(proposalsAfterCreate1.length).toEqual(numProposalsBefore + 1);
@@ -536,7 +537,7 @@ describe("Proposals", () => {
     await sleep(7000);
 
     const vote1Tx = await governor.buildVoteTx(proposal1Pre.id, VoteOption.Yes);
-    await signAndPost(vote1Tx, connection, profile);
+    await signAndPost(governorOptions.identity, vote1Tx, connection, profile);
 
     await sleep(15000);
 
@@ -575,7 +576,7 @@ describe("Proposals", () => {
       ],
     };
     const createProposal2Tx = await governor.buildCreateProposalTx(proposal2Options);
-    await signAndPost(createProposal2Tx, connection, profile);
+    await signAndPost(governorOptions.identity, createProposal2Tx, connection, profile);
 
     const proposalsAfterCreate2 = await governor.getProposals();
     expect(proposalsAfterCreate2.length).toEqual(numProposalsBefore + 2);
@@ -602,7 +603,7 @@ describe("Proposals", () => {
     await sleep(7000);
 
     const vote2Tx = await governor.buildVoteTx(proposal2Pre.id, VoteOption.Yes);
-    await signAndPost(vote2Tx, connection, profile);
+    await signAndPost(governorOptions.identity, vote2Tx, connection, profile);
 
     await sleep(15000);
 
@@ -648,7 +649,7 @@ describe("Proposals", () => {
       text: "Give IOV devs master keys to all accounts",
     };
     const createProposalTx = await governor.buildCreateProposalTx(proposalOptions);
-    await signAndPost(createProposalTx, connection, profile);
+    await signAndPost(governorOptions.identity, createProposalTx, connection, profile);
 
     const proposalsAfterCreate = await governor.getProposals();
     expect(proposalsAfterCreate.length).toEqual(numProposalsBefore + 1);
@@ -669,7 +670,7 @@ describe("Proposals", () => {
     await sleep(7000);
 
     const voteTx = await governor.buildVoteTx(proposal1.id, VoteOption.Yes);
-    await signAndPost(voteTx, connection, profile);
+    await signAndPost(governorOptions.identity, voteTx, connection, profile);
 
     await sleep(15000);
 

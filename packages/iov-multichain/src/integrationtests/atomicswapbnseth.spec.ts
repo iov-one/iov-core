@@ -179,8 +179,11 @@ class Actor {
     this.preimage = await AtomicSwapHelpers.createPreimage();
   }
 
-  public async sendTransaction(transaction: UnsignedTransaction): Promise<Uint8Array | undefined> {
-    const post = await this.signer.signAndPost(transaction.creator, transaction);
+  public async sendTransaction(
+    identity: Identity,
+    transaction: UnsignedTransaction,
+  ): Promise<Uint8Array | undefined> {
+    const post = await this.signer.signAndPost(identity, transaction);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");
@@ -197,7 +200,7 @@ class Actor {
       recipient: recipient,
       amount: amount,
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.bnsIdentity, transaction);
   }
 
   public async sendEthereumTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
@@ -208,7 +211,7 @@ class Actor {
       recipient: recipient,
       amount: amount,
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.ethereumIdentity, transaction);
   }
 
   public async approveErc20Spend(amount: Amount): Promise<Uint8Array | undefined> {
@@ -218,7 +221,7 @@ class Actor {
       spender: atomicSwapErc20ContractAddress,
       amount: amount,
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.ethereumIdentity, transaction);
   }
 
   public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
@@ -232,7 +235,7 @@ class Actor {
       hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
       amounts: [amount],
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.bnsIdentity, transaction);
   }
 
   public async sendSwapCounterOnEthereum(
@@ -252,7 +255,7 @@ class Actor {
       },
       hash: offer.data.hash,
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.ethereumIdentity, transaction);
   }
 
   public async claimFromKnownPreimageOnEthereum(offer: AtomicSwap): Promise<Uint8Array | undefined> {
@@ -262,7 +265,7 @@ class Actor {
       swapId: offer.data.id,
       preimage: this.preimage!,
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.ethereumIdentity, transaction);
   }
 
   public async claimFromRevealedPreimageOnBns(
@@ -278,7 +281,7 @@ class Actor {
       swapId: unclaimedId,
       preimage: claim.preimage, // public data now!
     });
-    return this.sendTransaction(transaction);
+    return this.sendTransaction(this.bnsIdentity, transaction);
   }
 }
 
