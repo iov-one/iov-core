@@ -74,7 +74,7 @@ async function signAndPost(
   profile: UserProfile,
 ): Promise<void> {
   const nonce = await connection.getNonce({ pubkey: tx.creator.pubkey });
-  const signed = await profile.signTransaction(tx, bnsCodec, nonce);
+  const signed = await profile.signTransaction(tx.creator, tx, bnsCodec, nonce);
   const createProposalTxBytes = bnsCodec.bytesToPost(signed);
   const post = await connection.postTx(createProposalTxBytes);
   const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
