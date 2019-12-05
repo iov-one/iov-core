@@ -839,7 +839,7 @@ describe("UserProfile", () => {
       .then(() => fail("Promise must not resolve"))
       .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
-      .signTransaction(fakeTransaction, fakeCodec, 12 as Nonce)
+      .signTransaction(fakeIdentity, fakeTransaction, fakeCodec, 12 as Nonce)
       .then(() => fail("Promise must not resolve"))
       .catch(error =>
         expect(error).toMatch(
@@ -900,7 +900,7 @@ describe("UserProfile", () => {
     };
     const nonce = 0x112233445566 as Nonce;
 
-    const signedTransaction = await profile.signTransaction(fakeTransaction, fakeCodec, nonce);
+    const signedTransaction = await profile.signTransaction(mainIdentity, fakeTransaction, fakeCodec, nonce);
     expect(signedTransaction.transaction).toEqual(fakeTransaction);
     expect(signedTransaction.primarySignature).toBeTruthy();
     expect(signedTransaction.primarySignature.nonce).toEqual(nonce);
