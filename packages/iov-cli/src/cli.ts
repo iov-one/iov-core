@@ -152,7 +152,6 @@ export function main(originalArgs: readonly string[]): void {
     ],
     ["@iov/lisk", ["liskCodec", "LiskConnection", "createLiskConnector"]],
     ["@iov/multichain", ["MultiChainSigner"]],
-    ["@iov/rise", ["riseCodec", "RiseConnection", "createRiseConnector"]],
   ]);
 
   console.info(colors.green("Initializing session for you. Have fun!"));

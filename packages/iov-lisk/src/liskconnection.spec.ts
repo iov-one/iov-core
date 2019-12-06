@@ -26,14 +26,13 @@ import {
   WithCreator,
 } from "@iov/bcp";
 import { Ed25519, Random, Sha256 } from "@iov/crypto";
-import { Derivation } from "@iov/dpos";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
-import { pubkeyToAddress } from "./derivation";
+import { Derivation } from "./derivation";
 import { liskCodec } from "./liskcodec";
 import { generateNonce, LiskConnection } from "./liskconnection";
 
@@ -48,7 +47,7 @@ function pendingWithoutLiskDevnet(): void {
 
 async function randomAddress(): Promise<Address> {
   const pubkey = Random.getBytes(32);
-  return pubkeyToAddress(pubkey);
+  return Derivation.pubkeyToAddress(pubkey);
 }
 
 describe("LiskConnection", () => {

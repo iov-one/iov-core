@@ -18,12 +18,13 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Parse, Serialization } from "@iov/dpos";
 import { Encoding, Int53 } from "@iov/encoding";
 import { ReadonlyDate } from "readonly-date";
 
 import { constants } from "./constants";
-import { isValidAddress, pubkeyToAddress } from "./derivation";
+import { Derivation } from "./derivation";
+import { Parse } from "./parse";
+import { Serialization } from "./serialization";
 
 export const liskCodec: TxCodec = {
   /**
@@ -124,7 +125,7 @@ export const liskCodec: TxCodec = {
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenTicker: constants.primaryTokenTicker,
           },
-          sender: pubkeyToAddress(senderPublicKey),
+          sender: Derivation.pubkeyToAddress(senderPublicKey),
           recipient: json.recipientId as Address,
           memo: json.asset.data,
         };
@@ -159,8 +160,8 @@ export const liskCodec: TxCodec = {
    * These are bugs we have to deal with.
    */
   identityToAddress: (identity: Identity): Address => {
-    return pubkeyToAddress(identity.pubkey.data);
+    return Derivation.pubkeyToAddress(identity.pubkey.data);
   },
 
-  isValidAddress: isValidAddress,
+  isValidAddress: Derivation.isValidAddress,
 };

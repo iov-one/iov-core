@@ -23,21 +23,14 @@ const defaultCreationDate = new ReadonlyDate((865708731 + epochAsUnixTimestamp) 
 const zeroNonce = 0 as Nonce;
 // use nethash as chain ID
 const liskTestnet = "lisk-da3ed6a454" as ChainId;
-const riseTestnet = "rise-296dc9a4d1" as ChainId;
 const liskTransactionSerializationOptions: TransactionSerializationOptions = {
   maxMemoLength: 64,
-};
-const riseTransactionSerializationOptions: TransactionSerializationOptions = {
-  maxMemoLength: 0,
 };
 const defaultPublicKey = {
   algo: Algorithm.Ed25519,
   data: fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff") as PubkeyBytes,
 };
-const defaultSender = "10645226540143571783";
-const defaultLiskSender = (defaultSender + "L") as Address;
-const defaultRiseSender = (defaultSender + "R") as Address;
-const defaultXnetSender = (defaultSender + "X") as Address;
+const defaultLiskSender = "10645226540143571783L" as Address;
 
 describe("Serialization", () => {
   describe("toTimestamp", () => {
@@ -95,30 +88,6 @@ describe("Serialization", () => {
   });
 
   describe("serializeTransaction", () => {
-    it("can serialize RISE transaction of type 0 without memo", () => {
-      const tx: SendTransaction & WithCreator = {
-        kind: "bcp/send",
-        creator: {
-          chainId: riseTestnet,
-          pubkey: defaultPublicKey,
-        },
-        amount: {
-          quantity: "123456789",
-          fractionalDigits: 8,
-          tokenTicker: "RISE" as TokenTicker,
-        },
-        sender: defaultRiseSender,
-        recipient: "10010344879730196491R" as Address,
-      };
-
-      const serialized = serializeTransaction(tx, defaultCreationDate, riseTransactionSerializationOptions);
-      expect(serialized).toEqual(
-        fromHex(
-          "00bbaa993300112233445566778899aabbccddeeff00112233445566778899aabbccddeeff8aebe3a18b78000b15cd5b0700000000",
-        ),
-      );
-    });
-
     it("can serialize Lisk transaction of type 0 without memo", () => {
       const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
@@ -147,19 +116,19 @@ describe("Serialization", () => {
       const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
-          chainId: riseTestnet,
+          chainId: liskTestnet,
           pubkey: defaultPublicKey,
         },
         amount: {
           quantity: "123456789",
           fractionalDigits: 9,
-          tokenTicker: "RISE" as TokenTicker,
+          tokenTicker: "LSK" as TokenTicker,
         },
-        sender: defaultRiseSender,
-        recipient: "10010344879730196491R" as Address,
+        sender: defaultLiskSender,
+        recipient: "10010344879730196491L" as Address,
       };
       expect(() =>
-        serializeTransaction(tx, defaultCreationDate, riseTransactionSerializationOptions),
+        serializeTransaction(tx, defaultCreationDate, liskTransactionSerializationOptions),
       ).toThrowError(/Requires 8/);
     });
 
@@ -167,19 +136,19 @@ describe("Serialization", () => {
       const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
-          chainId: riseTestnet,
+          chainId: liskTestnet,
           pubkey: defaultPublicKey,
         },
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
-          tokenTicker: "RISE" as TokenTicker,
+          tokenTicker: "LSK" as TokenTicker,
         },
         sender: "not sender" as Address,
-        recipient: "10010344879730196491R" as Address,
+        recipient: "10010344879730196491L" as Address,
       };
       expect(() =>
-        serializeTransaction(tx, defaultCreationDate, riseTransactionSerializationOptions),
+        serializeTransaction(tx, defaultCreationDate, liskTransactionSerializationOptions),
       ).toThrowError(/creator does not match sender/i);
     });
 
@@ -257,24 +226,24 @@ describe("Serialization", () => {
       const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
-          chainId: "xnet" as ChainId,
+          chainId: liskTestnet,
           pubkey: defaultPublicKey,
         },
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
-          tokenTicker: "XNET" as TokenTicker,
+          tokenTicker: "LSK" as TokenTicker,
         },
         fee: {
           tokens: {
-            // 0.1 XNET
+            // 0.1 LSK
             quantity: "10000000",
             fractionalDigits: 8,
-            tokenTicker: "XNET" as TokenTicker,
+            tokenTicker: "LSK" as TokenTicker,
           },
         },
-        sender: defaultXnetSender,
-        recipient: "10010344879730196491X" as Address,
+        sender: defaultLiskSender,
+        recipient: "10010344879730196491L" as Address,
       };
 
       expect(serializeTransaction(tx, defaultCreationDate, { maxMemoLength: 12 })).toBeTruthy();
@@ -284,19 +253,19 @@ describe("Serialization", () => {
       const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
-          chainId: "xnet" as ChainId,
+          chainId: liskTestnet,
           pubkey: defaultPublicKey,
         },
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
-          tokenTicker: "XNET" as TokenTicker,
+          tokenTicker: "LSK" as TokenTicker,
         },
         fee: {
           // all fields unset
         },
-        sender: defaultXnetSender,
-        recipient: "10010344879730196491X" as Address,
+        sender: defaultLiskSender,
+        recipient: "10010344879730196491L" as Address,
       };
 
       expect(() => serializeTransaction(tx, defaultCreationDate, { maxMemoLength: 12 })).toThrowError(
@@ -308,16 +277,16 @@ describe("Serialization", () => {
       const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
-          chainId: "xnet" as ChainId,
+          chainId: liskTestnet,
           pubkey: defaultPublicKey,
         },
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
-          tokenTicker: "XNET" as TokenTicker,
+          tokenTicker: "LSK" as TokenTicker,
         },
-        sender: defaultXnetSender,
-        recipient: "10010344879730196491X" as Address,
+        sender: defaultLiskSender,
+        recipient: "10010344879730196491L" as Address,
         fee: {
           gasLimit: "1",
         },
@@ -332,16 +301,16 @@ describe("Serialization", () => {
       const tx: SendTransaction & WithCreator = {
         kind: "bcp/send",
         creator: {
-          chainId: "xnet" as ChainId,
+          chainId: liskTestnet,
           pubkey: defaultPublicKey,
         },
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
-          tokenTicker: "XNET" as TokenTicker,
+          tokenTicker: "LSK" as TokenTicker,
         },
-        sender: defaultXnetSender,
-        recipient: "10010344879730196491X" as Address,
+        sender: defaultLiskSender,
+        recipient: "10010344879730196491L" as Address,
         fee: {
           gasPrice: {
             quantity: "1",

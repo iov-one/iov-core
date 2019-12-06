@@ -51,8 +51,7 @@ export class Serialization {
     }
 
     if (isSendTransaction(unsigned)) {
-      const suffix = unsigned.sender[unsigned.sender.length - 1];
-      const creatorAddress = Derivation.pubkeyToAddress(unsigned.creator.pubkey.data, suffix);
+      const creatorAddress = Derivation.pubkeyToAddress(unsigned.creator.pubkey.data);
       if (creatorAddress !== unsigned.sender) {
         throw new Error("Creator does not match sender");
       }

@@ -186,7 +186,7 @@ export interface LightTransaction {
    * Kind describes the kind of transaction as a "<domain>/<concrete_type>" tuple.
    *
    * The domain acts as a namespace for the concreate type. Right now we use "bns",
-   * "ethereum", "lisk" and "rise" for chain-specific transactions. We also use the
+   * "ethereum" and "lisk" for chain-specific transactions. We also use the
    * special domain "bcp" for any kind that can be supported in multiple chains.
    *
    * This should be used for type detection only and not be encoded somewhere. It

@@ -27,7 +27,6 @@ import {
   TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Parse } from "@iov/dpos";
 import { Encoding, Uint53, Uint64 } from "@iov/encoding";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import axios from "axios";
@@ -36,8 +35,9 @@ import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream } from "xstream";
 
 import { constants } from "./constants";
-import { pubkeyToAddress } from "./derivation";
+import { Derivation } from "./derivation";
 import { liskCodec } from "./liskcodec";
+import { Parse } from "./parse";
 
 const { toUtf8 } = Encoding;
 
@@ -170,7 +170,7 @@ export class LiskConnection implements BlockchainConnection {
   }
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
-    const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey.data) : query.address;
+    const address = isPubkeyQuery(query) ? Derivation.pubkeyToAddress(query.pubkey.data) : query.address;
 
     const url = this.baseUrl + `/api/accounts?address=${address}`;
     const result = await axios.get(url);
