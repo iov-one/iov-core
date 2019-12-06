@@ -56,17 +56,5 @@ describe("Derivation", () => {
       expect(keypair.privkey).toEqual(jasmine.any(Uint8Array));
       expect(keypair.privkey.length).toEqual(32);
     });
-
-    it("works with passphrase from RISE web wallet", async () => {
-      const passphrase = "force vast web quiz trim tape hub tumble ship lemon member fault";
-
-      const keypair = await passphraseToKeypair(passphrase);
-      expect(keypair.pubkey).toEqual(
-        // https://texplorer.rise.vision/address/8662508892470377605R
-        Encoding.fromHex("98afed9bff5bc076d3088c7ba69362e537aeb2847cc0e6452a242002c59cc3d1"),
-      );
-      expect(keypair.privkey).toEqual(jasmine.any(Uint8Array));
-      expect(keypair.privkey.length).toEqual(32);
-    });
   });
 });
