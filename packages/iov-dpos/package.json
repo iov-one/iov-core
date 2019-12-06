@@ -1,7 +1,7 @@
 {
   "name": "@iov/dpos",
   "version": "1.2.0",
-  "description": "Common functionality used for @iov/lisk and @iov/rise",
+  "description": "Common functionality used for @iov/lisk",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
