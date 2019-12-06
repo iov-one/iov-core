@@ -350,7 +350,11 @@ describe("SigningServerCore", () => {
         await sendTokensFromFaucet(connection, identity, minimalFee);
       }
 
-      async function rejectAllTransactions(_1: string, _2: UnsignedTransaction): Promise<boolean> {
+      async function rejectAllTransactions(
+        _1: string,
+        _2: Identity,
+        _3: UnsignedTransaction,
+      ): Promise<boolean> {
         return false;
       }
 
@@ -389,7 +393,7 @@ describe("SigningServerCore", () => {
         await sendTokensFromFaucet(connection, identity, minimalFee);
       }
 
-      async function throwingCallback(_1: string, _2: UnsignedTransaction): Promise<boolean> {
+      async function throwingCallback(_1: string, _2: Identity, _3: UnsignedTransaction): Promise<boolean> {
         throw new Error("Something broken in here!");
       }
       const core = new SigningServerCore(profile, signer, defaultGetIdentitiesCallback, throwingCallback);
@@ -426,7 +430,7 @@ describe("SigningServerCore", () => {
         await sendTokensFromFaucet(connection, identity, minimalFee);
       }
 
-      async function throwingCallback(_1: string, _2: UnsignedTransaction): Promise<boolean> {
+      async function throwingCallback(_1: string, _2: Identity, _3: UnsignedTransaction): Promise<boolean> {
         throw new Error("Something broken in here!");
       }
       const core = new SigningServerCore(
@@ -477,7 +481,7 @@ describe("SigningServerCore", () => {
         profile,
         signer,
         defaultGetIdentitiesCallback,
-        async (_1, _2, meta) => {
+        async (_1, _2, _3, meta) => {
           // we want object identity here
           expect(meta).toBe(originalRequestMeta);
           return false;

@@ -35,10 +35,11 @@ export interface SignAndPostAuthorization {
    * ensure this does not happen.
    *
    * @param reason An explanation why the autorization is requested. This is created by the website and shown to the user.
+   * @param identity The identity to be used when signing the transaction.
    * @param transaction The transaction to be signed.
    * @param meta An object that is passed by reference from request handlers into the callback.
    */
-  (reason: string, transaction: UnsignedTransaction, meta?: any): Promise<boolean>;
+  (reason: string, identity: Identity, transaction: UnsignedTransaction, meta?: any): Promise<boolean>;
 }
 export interface SignedAndPosted {
   readonly transaction: UnsignedTransaction;

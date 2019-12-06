@@ -247,6 +247,7 @@ describe("JsonRpcSigningServer", () => {
       method: "signAndPost",
       params: {
         reason: "string:Please sign",
+        signer: TransactionEncoder.toJson(signer),
         transaction: TransactionEncoder.toJson(send),
       },
     });
@@ -307,6 +308,7 @@ describe("JsonRpcSigningServer", () => {
       method: "signAndPost",
       params: {
         reason: "string:Please sign",
+        signer: TransactionEncoder.toJson(signer),
         transaction: TransactionEncoder.toJson(send),
       },
     });

@@ -253,6 +253,7 @@ describe("signingservice.worker", () => {
       method: "signAndPost",
       params: {
         reason: "string:Please sign",
+        signer: TransactionEncoder.toJson(signer),
         transaction: TransactionEncoder.toJson(send),
       },
     });

@@ -49,7 +49,7 @@ async function main(): Promise<void> {
       await sleep(500);
       return matchingIdentities;
     },
-    async (_1, _2) => {
+    async () => {
       await sleep(500);
       return true;
     },

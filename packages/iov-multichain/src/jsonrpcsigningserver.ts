@@ -1,4 +1,4 @@
-import { ChainId, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp";
+import { ChainId, Identity, isIdentity, isUnsignedTransaction, UnsignedTransaction } from "@iov/bcp";
 import { isJsonCompatibleDictionary, TransactionEncoder } from "@iov/encoding";
 import {
   jsonRpcCode,
@@ -21,6 +21,7 @@ interface RpcCallGetIdentities {
 interface RpcCallSignAndPost {
   readonly name: "signAndPost";
   readonly reason: string;
+  readonly signer: Identity;
   readonly transaction: UnsignedTransaction;
 }
 
@@ -58,7 +59,10 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
       };
     }
     case "signAndPost": {
-      const { reason, transaction } = TransactionEncoder.fromJson(data.params);
+      const { signer, reason, transaction } = TransactionEncoder.fromJson(data.params);
+      if (!isIdentity(signer)) {
+        throw new ParamsError("Parameter 'signer' does not look like an identity");
+      }
       if (typeof reason !== "string") {
         throw new ParamsError("Parameter 'reason' must be a string");
       }
@@ -68,6 +72,7 @@ function parseRpcCall(data: JsonRpcRequest): RpcCall {
       return {
         name: "signAndPost",
         reason: reason,
+        signer: signer,
         transaction: transaction,
       };
     }
@@ -167,12 +172,7 @@ export class JsonRpcSigningServer {
           break;
         }
         case "signAndPost": {
-          const result = await this.core.signAndPost(
-            call.transaction.creator,
-            call.reason,
-            call.transaction,
-            meta,
-          );
+          const result = await this.core.signAndPost(call.signer, call.reason, call.transaction, meta);
           response = {
             jsonrpc: "2.0",
             id: request.id,
