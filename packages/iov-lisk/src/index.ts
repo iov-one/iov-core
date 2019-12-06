@@ -2,7 +2,7 @@ export { liskCodec } from "./liskcodec";
 export { generateNonce, LiskConnection } from "./liskconnection";
 export { createLiskConnector } from "./liskconnector";
 
-import { Derivation } from "@iov/dpos";
+import { Derivation } from "./derivation";
 /**
  * Lisk-specific passphrase to Ed25519 keypair derivation
  *

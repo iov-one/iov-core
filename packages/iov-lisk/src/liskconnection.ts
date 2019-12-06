@@ -36,7 +36,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream } from "xstream";
 
 import { constants } from "./constants";
-import { pubkeyToAddress } from "./derivation";
+import { Derivation } from "./derivation";
 import { liskCodec } from "./liskcodec";
 
 const { toUtf8 } = Encoding;
@@ -170,7 +170,7 @@ export class LiskConnection implements BlockchainConnection {
   }
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
-    const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey.data) : query.address;
+    const address = isPubkeyQuery(query) ? Derivation.pubkeyToAddress(query.pubkey.data) : query.address;
 
     const url = this.baseUrl + `/api/accounts?address=${address}`;
     const result = await axios.get(url);
