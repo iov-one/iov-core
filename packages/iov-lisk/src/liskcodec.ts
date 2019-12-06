@@ -18,12 +18,13 @@ import {
   UnsignedTransaction,
   WithCreator,
 } from "@iov/bcp";
-import { Parse, Serialization } from "@iov/dpos";
 import { Encoding, Int53 } from "@iov/encoding";
 import { ReadonlyDate } from "readonly-date";
 
 import { constants } from "./constants";
 import { Derivation } from "./derivation";
+import { Parse } from "./parse";
+import { Serialization } from "./serialization";
 
 export const liskCodec: TxCodec = {
   /**

@@ -27,7 +27,6 @@ import {
   TransactionState,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Parse } from "@iov/dpos";
 import { Encoding, Uint53, Uint64 } from "@iov/encoding";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import axios from "axios";
@@ -38,6 +37,7 @@ import { Producer, Stream } from "xstream";
 import { constants } from "./constants";
 import { Derivation } from "./derivation";
 import { liskCodec } from "./liskcodec";
+import { Parse } from "./parse";
 
 const { toUtf8 } = Encoding;
 

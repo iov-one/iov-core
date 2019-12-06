@@ -39,7 +39,6 @@
   "dependencies": {
     "@iov/bcp": "^1.2.0",
     "@iov/crypto": "^1.2.0",
-    "@iov/dpos": "^1.2.0",
     "@iov/encoding": "^1.2.0",
     "@iov/keycontrol": "^1.2.0",
     "@iov/stream": "^1.2.0",
