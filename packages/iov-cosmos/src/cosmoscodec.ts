@@ -18,6 +18,7 @@ import { Encoding } from "@iov/encoding";
 import { marshalTx, unmarshalTx } from "@tendermint/amino-js";
 
 import { isValidAddress, pubkeyToAddress } from "./address";
+import { Caip5 } from "./caip5";
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
 
@@ -49,7 +50,7 @@ export class CosmosCodec implements TxCodec {
 
     const signMsg = sortJson({
       account_number: accountNumber.toString(),
-      chain_id: unsigned.creator.chainId,
+      chain_id: Caip5.decode(unsigned.creator.chainId),
       fee: (built.value as any).fee,
       memo: memo,
       msgs: (built.value as any).msg,
