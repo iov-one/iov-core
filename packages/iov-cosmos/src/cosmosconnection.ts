@@ -34,6 +34,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import { CosmosBech32Prefix, pubkeyToAddress } from "./address";
+import { Caip5 } from "./caip5";
 import { decodeAmount, parseTxsResponse } from "./decode";
 import { RestClient, TxsResponse } from "./restclient";
 
@@ -75,12 +76,7 @@ export class CosmosConnection implements BlockchainConnection {
 
   private static async initialize(restClient: RestClient): Promise<ChainData> {
     const { node_info } = await restClient.nodeInfo();
-
-    // See CAIP-5 and CAIP-6 from https://github.com/ChainAgnostic/CAIPs/pull/9
-    if (!node_info.network.match(/^[-a-zA-Z0-9]{3,47}$/)) {
-      throw new Error("Chain ID not compatible with CAIP-5. CAIP-6 is not yet implemented by @iov/cosmos.");
-    }
-    return { chainId: `cosmos:${node_info.network}` as ChainId };
+    return { chainId: Caip5.encode(node_info.network) };
   }
 
   private readonly restClient: RestClient;
