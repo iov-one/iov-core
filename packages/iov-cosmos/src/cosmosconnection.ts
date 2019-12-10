@@ -34,6 +34,7 @@ import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
 import { CosmosBech32Prefix, pubkeyToAddress } from "./address";
+import { Caip5 } from "./caip5";
 import { decodeAmount, parseTxsResponse } from "./decode";
 import { RestClient, TxsResponse } from "./restclient";
 
@@ -75,7 +76,7 @@ export class CosmosConnection implements BlockchainConnection {
 
   private static async initialize(restClient: RestClient): Promise<ChainData> {
     const { node_info } = await restClient.nodeInfo();
-    return { chainId: node_info.network as ChainId };
+    return { chainId: Caip5.encode(node_info.network) };
   }
 
   private readonly restClient: RestClient;
