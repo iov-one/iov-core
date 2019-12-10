@@ -19,19 +19,19 @@ export declare class Client {
   /**
    * Broadcast transaction to mempool and wait for response
    *
-   * @see https://tendermint.com/rpc/#broadcasttxsync
+   * @see https://docs.tendermint.com/master/rpc/#/Tx/broadcast_tx_sync
    */
   broadcastTxSync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxSyncResponse>;
   /**
    * Broadcast transaction to mempool and do not wait for result
    *
-   * @see https://tendermint.com/rpc/#broadcasttxasync
+   * @see https://docs.tendermint.com/master/rpc/#/Tx/broadcast_tx_async
    */
   broadcastTxAsync(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxAsyncResponse>;
   /**
    * Broadcast transaction to mempool and wait for block
    *
-   * @see https://tendermint.com/rpc/#broadcasttxcommit
+   * @see https://docs.tendermint.com/master/rpc/#/Tx/broadcast_tx_commit
    */
   broadcastTxCommit(params: requests.BroadcastTxParams): Promise<responses.BroadcastTxCommitResponse>;
   commit(height?: number): Promise<responses.CommitResponse>;
@@ -41,11 +41,16 @@ export declare class Client {
   subscribeNewBlock(): Stream<responses.NewBlockEvent>;
   subscribeNewBlockHeader(): Stream<responses.NewBlockHeaderEvent>;
   subscribeTx(query?: requests.QueryString): Stream<responses.TxEvent>;
+  /**
+   * Get a single transaction by hash
+   *
+   * @see https://docs.tendermint.com/master/rpc/#/Info/tx
+   */
   tx(params: requests.TxParams): Promise<responses.TxResponse>;
   /**
    * Search for transactions that are in a block
    *
-   * @see https://tendermint.com/rpc/#txsearch
+   * @see https://docs.tendermint.com/master/rpc/#/Info/tx_search
    */
   txSearch(params: requests.TxSearchParams): Promise<responses.TxSearchResponse>;
   txSearchAll(params: requests.TxSearchParams): Promise<responses.TxSearchResponse>;
