@@ -24,7 +24,7 @@ import {
   TransactionId,
   TxCodec,
   UnsignedTransaction,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -154,13 +154,9 @@ export class EthereumCodec implements TxCodec {
       encodeQuantity(chain.chainId),
     );
     const messageHash = new Keccak256(message).digest();
-    const signerPubkey = Secp256k1.recoverPubkey(signature, messageHash) as PubkeyBytes;
-    const creator = {
-      chainId: chainId,
-      pubkey: {
-        algo: Algorithm.Secp256k1,
-        data: signerPubkey,
-      },
+    const signerPubkey = {
+      algo: Algorithm.Secp256k1,
+      data: Secp256k1.recoverPubkey(signature, messageHash) as PubkeyBytes,
     };
     const fee: Fee = {
       gasLimit: decodeHexQuantityString(json.gas),
@@ -190,7 +186,7 @@ export class EthereumCodec implements TxCodec {
       | SwapClaimTransaction
       | SwapAbortTransaction
     ) &
-      WithCreator;
+      WithChainId;
 
     if (atomicSwapContractAddress) {
       const positionMethodIdBegin = 0;
@@ -241,7 +237,7 @@ export class EthereumCodec implements TxCodec {
 
           transaction = {
             kind: "bcp/swap_offer",
-            creator: creator,
+            chainId: chainId,
             swapId: {
               ...swapIdWithoutPrefix,
               prefix: token ? SwapIdPrefix.Erc20 : SwapIdPrefix.Ether,
@@ -254,6 +250,7 @@ export class EthereumCodec implements TxCodec {
                 tokenTicker: tokenTicker,
               },
             ],
+            sender: pubkeyToAddress(signerPubkey),
             recipient: recipientAddress,
             timeout: {
               height: timeoutHeight,
@@ -274,7 +271,7 @@ export class EthereumCodec implements TxCodec {
 
           transaction = {
             kind: "bcp/swap_claim",
-            creator: creator,
+            chainId: chainId,
             fee: fee,
             swapId: {
               ...swapIdWithoutPrefix,
@@ -291,7 +288,7 @@ export class EthereumCodec implements TxCodec {
               : SwapIdPrefix.Ether;
           transaction = {
             kind: "bcp/swap_abort",
-            creator: creator,
+            chainId: chainId,
             fee: fee,
             swapId: {
               ...swapIdWithoutPrefix,
@@ -314,8 +311,8 @@ export class EthereumCodec implements TxCodec {
 
       transaction = {
         kind: "bcp/send",
-        creator: creator,
-        sender: pubkeyToAddress(creator.pubkey),
+        chainId: chainId,
+        sender: pubkeyToAddress(signerPubkey),
         fee: fee,
         amount: {
           quantity: quantity,
@@ -339,7 +336,7 @@ export class EthereumCodec implements TxCodec {
 
       transaction = {
         kind: "erc20/approve",
-        creator: creator,
+        chainId: chainId,
         fee: fee,
         amount: {
           quantity: quantity,
@@ -360,8 +357,8 @@ export class EthereumCodec implements TxCodec {
 
       transaction = {
         kind: "bcp/send",
-        creator: creator,
-        sender: pubkeyToAddress(creator.pubkey),
+        chainId: chainId,
+        sender: pubkeyToAddress(signerPubkey),
         fee: fee,
         amount: {
           quantity: decodeHexQuantityString(json.value),
@@ -377,10 +374,7 @@ export class EthereumCodec implements TxCodec {
       transaction: transaction,
       primarySignature: {
         nonce: nonce,
-        pubkey: {
-          algo: Algorithm.Secp256k1,
-          data: signerPubkey,
-        },
+        pubkey: signerPubkey,
         signature: signatureBytes,
       },
       otherSignatures: [],

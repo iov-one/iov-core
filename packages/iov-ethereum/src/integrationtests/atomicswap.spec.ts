@@ -19,7 +19,7 @@ import {
   SwapProcessState,
   TokenTicker,
   UnsignedTransaction,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import BN from "bn.js";
@@ -96,7 +96,7 @@ class Actor {
 
   public async sendTransaction(transaction: UnsignedTransaction, pubkey: PubkeyBundle): Promise<void> {
     const nonce = await this.connection.getNonce({ pubkey: pubkey });
-    const signed = await this.profile.signTransaction(transaction.creator, transaction, ethereumCodec, nonce);
+    const signed = await this.profile.signTransaction(this.senderIdentity, transaction, ethereumCodec, nonce);
     const postable = await ethereumCodec.bytesToPost(signed);
     const post = await this.connection.postTx(postable);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -106,9 +106,9 @@ class Actor {
   }
 
   public async sendEther(recipient: Address, amount: Amount): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<SendTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<SendTransaction & WithChainId>({
       kind: "bcp/send",
-      creator: this.senderIdentity,
+      chainId: this.senderIdentity.chainId,
       sender: ethereumCodec.identityToAddress(this.senderIdentity),
       recipient: recipient,
       amount: amount,
@@ -117,9 +117,9 @@ class Actor {
   }
 
   public async approveErc20Spend(amount: Amount): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<Erc20ApproveTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<Erc20ApproveTransaction & WithChainId>({
       kind: "erc20/approve",
-      creator: this.senderIdentity,
+      chainId: this.senderIdentity.chainId,
       spender: testConfig.connectionOptions.atomicSwapErc20ContractAddress!,
       amount: amount,
     });
@@ -171,9 +171,10 @@ class Actor {
     const swapId = await (amount.tokenTicker === ETH
       ? EthereumConnection.createEtherSwapId()
       : EthereumConnection.createErc20SwapId());
-    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction & WithChainId>({
       kind: "bcp/swap_offer",
-      creator: this.senderIdentity,
+      chainId: this.senderIdentity.chainId,
+      sender: this.sendAddress,
       recipient: recipient,
       amounts: [amount],
       swapId: swapId,
@@ -189,9 +190,10 @@ class Actor {
     const swapId = await (amount.tokenTicker === ETH
       ? EthereumConnection.createEtherSwapId()
       : EthereumConnection.createErc20SwapId());
-    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction & WithChainId>({
       kind: "bcp/swap_offer",
-      creator: this.senderIdentity,
+      chainId: this.senderIdentity.chainId,
+      sender: this.sendAddress,
       recipient: recipient,
       amounts: [amount],
       swapId: swapId,
@@ -204,9 +206,9 @@ class Actor {
   }
 
   public async claimFromKnownPreimage(counter: AtomicSwap): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction & WithChainId>({
       kind: "bcp/swap_claim",
-      creator: this.receiverIdentity,
+      chainId: this.receiverIdentity.chainId,
       swapId: counter.data.id,
       preimage: this.preimage!,
     });
@@ -214,9 +216,9 @@ class Actor {
   }
 
   public async claimFromRevealedPreimage(offer: OpenSwap, claimed: ClaimedSwap): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction & WithChainId>({
       kind: "bcp/swap_claim",
-      creator: this.receiverIdentity,
+      chainId: this.receiverIdentity.chainId,
       swapId: offer.data.id,
       preimage: claimed.preimage,
     });

@@ -15,7 +15,7 @@ import {
   SwapOfferTransaction,
   SwapTransaction,
   UnsignedTransaction,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
@@ -126,7 +126,7 @@ export class Serialization {
     const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
     const r = sig.r();
     const s = sig.s();
-    const chainId = fromBcpChainId(unsigned.creator.chainId);
+    const chainId = fromBcpChainId(unsigned.chainId);
     const chain: Eip155ChainId =
       chainId > 0
         ? { forkState: BlknumForkState.Forked, chainId: chainId }
@@ -159,13 +159,12 @@ export class Serialization {
     }
   }
 
-  private static checkCreatorMatchesSender(unsigned: SendTransaction & WithCreator): void {
-    if (unsigned.creator.pubkey.data.length === 0) {
-      return;
-    }
-    const creatorAddress = pubkeyToAddress(unsigned.creator.pubkey);
-    if (creatorAddress !== unsigned.sender) {
-      throw new Error("Creator does not match sender");
+  private static checkSenderPubkeyMatchesSenderAddress(unsigned: SendTransaction & WithChainId): void {
+    if (unsigned.senderPubkey?.data.length) {
+      const pubkeyAddress = pubkeyToAddress(unsigned.senderPubkey);
+      if (pubkeyAddress !== unsigned.sender) {
+        throw new Error("Sender pubkey does not match sender address");
+      }
     }
   }
 
@@ -229,7 +228,7 @@ export class Serialization {
   }
 
   private static getChainIdHex(unsigned: UnsignedTransaction): string {
-    return encodeQuantity(fromBcpChainId(unsigned.creator.chainId));
+    return encodeQuantity(fromBcpChainId(unsigned.chainId));
   }
 
   private static getGasPriceHex(unsigned: UnsignedTransaction): string {
@@ -355,10 +354,10 @@ export class Serialization {
   }
 
   private static serializeUnsignedSendTransaction(
-    unsigned: SendTransaction & WithCreator,
+    unsigned: SendTransaction & WithChainId,
     { chainIdHex, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: UnsignedSerializationOptions,
   ): Uint8Array {
-    Serialization.checkCreatorMatchesSender(unsigned);
+    Serialization.checkSenderPubkeyMatchesSenderAddress(unsigned);
     Serialization.checkRecipientAddress(unsigned);
 
     if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
@@ -514,10 +513,10 @@ export class Serialization {
   }
 
   private static serializeSignedSendTransaction(
-    unsigned: SendTransaction & WithCreator,
+    unsigned: SendTransaction & WithChainId,
     { v, r, s, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: SignedSerializationOptions,
   ): Uint8Array {
-    Serialization.checkCreatorMatchesSender(unsigned);
+    Serialization.checkSenderPubkeyMatchesSenderAddress(unsigned);
     Serialization.checkRecipientAddress(unsigned);
 
     if (unsigned.amount.tokenTicker !== constants.primaryTokenTicker) {
