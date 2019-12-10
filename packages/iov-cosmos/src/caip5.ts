@@ -8,7 +8,7 @@ import { ChainId } from "@iov/bcp";
 export class Caip5 {
   public static encode(native: string): ChainId {
     if (!native.match(/^[-a-zA-Z0-9]{3,47}$/)) {
-      throw new Error("Given chain ID cannot be CAPI-5 encoded");
+      throw new Error("Given chain ID cannot be CAIP-5 encoded");
     }
     return `cosmos:${native}` as ChainId;
   }

@@ -14,18 +14,18 @@ describe("Caip5", () => {
 
     it("throws for invalid format", () => {
       // too short
-      expect(() => Caip5.encode("")).toThrowError(/^Given chain ID cannot be CAPI-5 encoded/i);
-      expect(() => Caip5.encode("1")).toThrowError(/^Given chain ID cannot be CAPI-5 encoded/i);
-      expect(() => Caip5.encode("12")).toThrowError(/^Given chain ID cannot be CAPI-5 encoded/i);
+      expect(() => Caip5.encode("")).toThrowError(/^Given chain ID cannot be CAIP-5 encoded/i);
+      expect(() => Caip5.encode("1")).toThrowError(/^Given chain ID cannot be CAIP-5 encoded/i);
+      expect(() => Caip5.encode("12")).toThrowError(/^Given chain ID cannot be CAIP-5 encoded/i);
 
       // too long
       expect(() => Caip5.encode("123456789012345678901234567890123456789012345678")).toThrowError(
-        /^Given chain ID cannot be CAPI-5 encoded/i,
+        /^Given chain ID cannot be CAIP-5 encoded/i,
       );
 
       // invalid chars
-      expect(() => Caip5.encode("foo bar")).toThrowError(/^Given chain ID cannot be CAPI-5 encoded/i);
-      expect(() => Caip5.encode("wonderland🧝‍♂️")).toThrowError(/^Given chain ID cannot be CAPI-5 encoded/i);
+      expect(() => Caip5.encode("foo bar")).toThrowError(/^Given chain ID cannot be CAIP-5 encoded/i);
+      expect(() => Caip5.encode("wonderland🧝‍♂️")).toThrowError(/^Given chain ID cannot be CAIP-5 encoded/i);
     });
   });
 
