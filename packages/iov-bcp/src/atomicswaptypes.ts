@@ -23,6 +23,7 @@ export interface SwapOfferTransaction extends LightTransaction {
    */
   readonly swapId?: SwapId;
   readonly amounts: readonly Amount[];
+  readonly sender: Address;
   readonly recipient: Address;
   /**
    * The first point in time at which the offer is expired.
@@ -33,7 +34,7 @@ export interface SwapOfferTransaction extends LightTransaction {
   /**
    * Locally calculated hash of the preimage.
    *
-   * This is a SHA256 hash until we have a way to specifiy the hashing algorithm.
+   * This is a SHA256 hash until we have a way to specify the hashing algorithm.
    */
   readonly hash: Hash;
   readonly memo?: string;

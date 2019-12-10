@@ -203,20 +203,15 @@ export function isLightTransaction(data: unknown): data is LightTransaction {
   return typeof transaction.kind === "string" && (transaction.fee === undefined || isFee(transaction.fee));
 }
 
-export interface WithCreator {
-  /**
-   * The creator of the transaction.
-   *
-   * This implicitly fixes the chain ID this transaction can be used on.
-   */
-  readonly creator: Identity;
+export interface WithChainId {
+  readonly chainId: ChainId;
 }
 
-export type UnsignedTransaction = LightTransaction & WithCreator;
+export type UnsignedTransaction = LightTransaction & WithChainId;
 
 export function isUnsignedTransaction(data: unknown): data is UnsignedTransaction {
   const transaction = data as UnsignedTransaction;
-  return isLightTransaction(transaction) && isIdentity(transaction.creator);
+  return isLightTransaction(transaction) && typeof transaction.chainId === "string";
 }
 
 /** An interface to ensure the transaction property of other types is in sync */
@@ -283,6 +278,7 @@ export interface SendTransaction extends LightTransaction {
   readonly kind: "bcp/send";
   readonly amount: Amount;
   readonly sender: Address;
+  readonly senderPubkey?: PubkeyBundle;
   readonly recipient: Address;
   readonly memo?: string;
 }

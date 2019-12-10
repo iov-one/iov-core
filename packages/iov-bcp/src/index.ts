@@ -100,7 +100,7 @@ export {
   isFee,
   LightTransaction,
   isLightTransaction,
-  WithCreator,
+  WithChainId,
   UnsignedTransaction,
   isUnsignedTransaction,
   TransactionContainer,

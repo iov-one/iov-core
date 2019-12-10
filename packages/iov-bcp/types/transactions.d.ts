@@ -121,15 +121,10 @@ export interface LightTransaction {
   readonly fee?: Fee;
 }
 export declare function isLightTransaction(data: unknown): data is LightTransaction;
-export interface WithCreator {
-  /**
-   * The creator of the transaction.
-   *
-   * This implicitly fixes the chain ID this transaction can be used on.
-   */
-  readonly creator: Identity;
+export interface WithChainId {
+  readonly chainId: ChainId;
 }
-export declare type UnsignedTransaction = LightTransaction & WithCreator;
+export declare type UnsignedTransaction = LightTransaction & WithChainId;
 export declare function isUnsignedTransaction(data: unknown): data is UnsignedTransaction;
 /** An interface to ensure the transaction property of other types is in sync */
 export interface TransactionContainer<T extends LightTransaction> {
@@ -184,6 +179,7 @@ export interface SendTransaction extends LightTransaction {
   readonly kind: "bcp/send";
   readonly amount: Amount;
   readonly sender: Address;
+  readonly senderPubkey?: PubkeyBundle;
   readonly recipient: Address;
   readonly memo?: string;
 }
