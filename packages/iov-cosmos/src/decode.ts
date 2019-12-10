@@ -6,7 +6,6 @@ import {
   ConfirmedAndSignedTransaction,
   Fee,
   FullSignature,
-  Identity,
   Nonce,
   PubkeyBundle,
   PubkeyBytes,
@@ -86,16 +85,6 @@ export function parseFee(fee: amino.StdFee): Fee {
   };
 }
 
-export function parseCreator(signature: amino.StdSignature, chainId: ChainId): Identity {
-  return {
-    chainId: chainId,
-    pubkey: {
-      algo: Algorithm.Secp256k1,
-      data: fromBase64(signature.pub_key.value) as PubkeyBytes,
-    },
-  };
-}
-
 export function parseTx(tx: amino.Tx, chainId: ChainId, nonce: Nonce): SignedTransaction {
   const txValue = tx.value;
   if (!isAminoStdTx(txValue)) {
@@ -108,13 +97,12 @@ export function parseTx(tx: amino.Tx, chainId: ChainId, nonce: Nonce): SignedTra
   const [primarySignature] = txValue.signatures.map(signature => decodeFullSignature(signature, nonce));
   const msg = parseMsg(txValue.msg[0]);
   const fee = parseFee(txValue.fee);
-  const creator = parseCreator(txValue.signatures[0], chainId);
 
   const transaction = {
     ...msg,
+    chainId: chainId,
     memo: txValue.memo,
     fee: fee,
-    creator: creator,
   };
 
   return {

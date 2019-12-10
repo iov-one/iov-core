@@ -8,7 +8,6 @@ import {
   decodeFullSignature,
   decodePubkey,
   decodeSignature,
-  parseCreator,
   parseFee,
   parseMsg,
   parseTx,
@@ -50,10 +49,6 @@ describe("decode", () => {
       tokenTicker: "ATOM" as TokenTicker,
     },
     gasLimit: "200000",
-  };
-  const defaultCreator = {
-    pubkey: defaultPubkey,
-    chainId: chainId,
   };
 
   describe("decodePubkey", () => {
@@ -128,19 +123,6 @@ describe("decode", () => {
         gas: "200000",
       };
       expect(parseFee(fee)).toEqual(defaultFee);
-    });
-  });
-
-  describe("parseCreator", () => {
-    it("works", () => {
-      const signature = {
-        pub_key: {
-          type: "tendermint/PubKeySecp256k1",
-          value: "AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP",
-        },
-        signature: "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
-      };
-      expect(parseCreator(signature, chainId)).toEqual(defaultCreator);
     });
   });
 
