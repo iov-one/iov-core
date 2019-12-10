@@ -9,7 +9,7 @@ import {
   SignedTransaction,
   TokenTicker,
   UnsignedTransaction,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Uint64 } from "@iov/encoding";
@@ -90,7 +90,7 @@ class Actor {
 
   public async signTransaction(transaction: UnsignedTransaction): Promise<SignedTransaction> {
     const nonce = await this.connection.getNonce({ pubkey: this.identity.pubkey });
-    return this.profile.signTransaction(transaction.creator, transaction, bnsCodec, nonce);
+    return this.profile.signTransaction(this.identity, transaction, bnsCodec, nonce);
   }
 
   public async appendSignature(signedTransaction: SignedTransaction): Promise<SignedTransaction> {
@@ -118,9 +118,9 @@ class Actor {
   }
 
   public async sendCash(recipient: Address, quantity: string): Promise<Uint8Array | undefined> {
-    const tx = await this.connection.withDefaultFee<SendTransaction & WithCreator>({
+    const tx = await this.connection.withDefaultFee<SendTransaction & WithChainId>({
       kind: "bcp/send",
-      creator: this.identity,
+      chainId: this.identity.chainId,
       sender: this.address,
       recipient: recipient,
       amount: {
@@ -138,9 +138,9 @@ class Actor {
     activationThreshold: number,
     adminThreshold: number,
   ): Promise<number> {
-    const tx = await this.connection.withDefaultFee<CreateMultisignatureTx & WithCreator>({
+    const tx = await this.connection.withDefaultFee<CreateMultisignatureTx & WithChainId>({
       kind: "bns/create_multisignature_contract",
-      creator: this.identity,
+      chainId: this.identity.chainId,
       participants: participants,
       activationThreshold: activationThreshold,
       adminThreshold: adminThreshold,
@@ -157,11 +157,11 @@ class Actor {
     sender: Address,
     recipient: Address,
     amount: Amount,
-  ): Promise<SendTransaction & WithCreator> {
-    return this.connection.withDefaultFee<SendTransaction & WithCreator & MultisignatureTx>({
+  ): Promise<SendTransaction & WithChainId> {
+    return this.connection.withDefaultFee<SendTransaction & WithChainId & MultisignatureTx>({
       kind: "bcp/send",
       multisig: [multisignatureId],
-      creator: this.identity,
+      chainId: this.identity.chainId,
       sender: sender,
       recipient: recipient,
       amount: amount,

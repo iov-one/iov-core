@@ -4,13 +4,11 @@ import {
   ChainId,
   isBlockInfoPending,
   Nonce,
-  PubkeyBytes,
   TokenTicker,
   UnsignedTransaction,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
@@ -34,8 +32,6 @@ import {
 } from "./testutils.spec";
 import { ActionKind, CreateProposalTx, CreateTextResolutionAction, RegisterUsernameTx } from "./types";
 import { identityToAddress } from "./util";
-
-const { fromHex } = Encoding;
 
 describe("BnsConnection (basic class methods)", () => {
   it("can connect to tendermint via WS", async () => {
@@ -459,9 +455,9 @@ describe("BnsConnection (basic class methods)", () => {
         resolution: `The winner is Alice ${Math.random()}`,
       };
 
-      const createProposal = await connection.withDefaultFee<CreateProposalTx & WithCreator>({
+      const createProposal = await connection.withDefaultFee<CreateProposalTx & WithChainId>({
         kind: "bns/create_proposal",
-        creator: author,
+        chainId: chainId,
         title: title,
         description: description,
         author: authorAddress,
@@ -505,9 +501,9 @@ describe("BnsConnection (basic class methods)", () => {
       // Register username
       const username = `testuser_${Math.random()}*iov`;
       const targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
-      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
+      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithChainId>({
         kind: "bns/register_username",
-        creator: identity,
+        chainId: registryChainId,
         username: username,
         targets: targets,
       });
@@ -552,9 +548,9 @@ describe("BnsConnection (basic class methods)", () => {
       // Register username
       const username = `testuser_${Math.random()}*iov`;
       const targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
-      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
+      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithChainId>({
         kind: "bns/register_username",
-        creator: identity,
+        chainId: registryChainId,
         username: username,
         targets: targets,
       });
@@ -588,13 +584,7 @@ describe("BnsConnection (basic class methods)", () => {
 
       const sendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: connection.chainId(),
-          pubkey: {
-            algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PubkeyBytes,
-          },
-        },
+        chainId: connection.chainId(),
         recipient: await randomBnsAddress(),
         memo: `We ❤️ developers – iov.one`,
         amount: defaultAmount,
@@ -618,13 +608,7 @@ describe("BnsConnection (basic class methods)", () => {
       const username = `testuser_${Math.random()}`;
       const usernameRegistration = {
         kind: "bns/register_username",
-        creator: {
-          chainId: connection.chainId(),
-          pubkey: {
-            algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PubkeyBytes,
-          },
-        },
+        chainId: connection.chainId(),
         addresses: [
           {
             address: "12345678912345W" as Address,
@@ -652,13 +636,7 @@ describe("BnsConnection (basic class methods)", () => {
 
       const otherTransaction: UnsignedTransaction = {
         kind: "other/kind",
-        creator: {
-          chainId: connection.chainId(),
-          pubkey: {
-            algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PubkeyBytes,
-          },
-        },
+        chainId: connection.chainId(),
       };
       await connection
         .getFeeQuote(otherTransaction)

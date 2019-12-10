@@ -1,6 +1,5 @@
 import {
   Address,
-  Algorithm,
   Amount,
   ChainId,
   Hash,
@@ -10,7 +9,6 @@ import {
   isSwapOfferTransaction,
   Nonce,
   Preimage,
-  PubkeyBytes,
   SwapIdBytes,
   TokenTicker,
   UnsignedTransaction,
@@ -432,13 +430,7 @@ describe("Decode", () => {
       }
       expect(tx.transaction).toEqual({
         kind: "bcp/send",
-        creator: {
-          chainId: chainId,
-          pubkey: {
-            algo: Algorithm.Ed25519,
-            data: fromHex("c9df7bcba2238bedcc681e8b17bb21c1625d21d285b70c20cf53fdd473db9dfb") as PubkeyBytes,
-          },
-        },
+        chainId: chainId,
         amount: {
           quantity: "1000000001",
           fractionalDigits: 9,
@@ -455,13 +447,7 @@ describe("Decode", () => {
   describe("parseMsg", () => {
     const defaultBaseTx: UnsignedTransaction = {
       kind: "", // this should be overriden by parseMsg
-      creator: {
-        chainId: "iov-chain" as ChainId,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: fromHex("aabbccdd") as PubkeyBytes,
-        },
-      },
+      chainId: "iov-chain" as ChainId,
     };
 
     const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;

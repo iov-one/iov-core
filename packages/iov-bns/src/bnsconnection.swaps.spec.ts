@@ -13,7 +13,7 @@ import {
   SwapOfferTransaction,
   SwapProcessState,
   SwapTimeout,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { Uint64 } from "@iov/encoding";
 import { asArray } from "@iov/stream";
@@ -59,9 +59,10 @@ describe("BnsConnection (swaps)", () => {
       fractionalDigits: 9,
       tokenTicker: cash,
     };
-    const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+    const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithChainId>({
       kind: "bcp/swap_offer",
-      creator: faucet,
+      chainId: chainId,
+      sender: faucetAddr,
       recipient: recipientAddr,
       amounts: [amount],
       timeout: swapOfferTimeout,
@@ -191,9 +192,10 @@ describe("BnsConnection (swaps)", () => {
 
       // it will live 48 hours
       const swapOfferTimeout = createTimestampTimeout(48 * 3600);
-      const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+      const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithChainId>({
         kind: "bcp/swap_offer",
-        creator: faucet,
+        chainId: faucet.chainId,
+        sender: faucetAddr,
         recipient: recipientAddr,
         amounts: [defaultAmount],
         timeout: swapOfferTimeout,

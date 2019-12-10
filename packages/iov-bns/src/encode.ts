@@ -12,7 +12,7 @@ import {
   SwapClaimTransaction,
   SwapOfferTransaction,
   UnsignedTransaction,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
 import BN from "bn.js";
@@ -47,7 +47,7 @@ import {
   VoteOption,
   VoteTx,
 } from "./types";
-import { decodeBnsAddress, identityToAddress } from "./util";
+import { decodeBnsAddress } from "./util";
 
 function encodeInt(intNumber: number): number | null {
   if (!Number.isInteger(intNumber)) {
@@ -142,7 +142,7 @@ export function encodeNumericId(id: number): Uint8Array {
 
 // Token sends
 
-function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.bnsd.ITx {
+function buildSendTransaction(tx: SendTransaction & WithChainId): codecImpl.bnsd.ITx {
   return {
     cashSendMsg: codecImpl.cash.SendMsg.create({
       metadata: { schema: 1 },
@@ -156,7 +156,7 @@ function buildSendTransaction(tx: SendTransaction & WithCreator): codecImpl.bnsd
 
 // Atomic swaps
 
-function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.bnsd.ITx {
+function buildSwapOfferTx(tx: SwapOfferTransaction & WithChainId): codecImpl.bnsd.ITx {
   if (!isTimestampTimeout(tx.timeout)) {
     throw new Error("Got unsupported timeout type");
   }
@@ -164,7 +164,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction & WithCreator): codecImpl.bns
   return {
     aswapCreateMsg: codecImpl.aswap.CreateMsg.create({
       metadata: { schema: 1 },
-      source: decodeBnsAddress(identityToAddress(tx.creator)).data,
+      source: decodeBnsAddress(tx.sender).data,
       preimageHash: tx.hash,
       destination: decodeBnsAddress(tx.recipient).data,
       amount: tx.amounts.map(encodeAmount),
@@ -498,15 +498,15 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
 export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   const msg = buildMsg(tx);
 
-  let feePayerAddressBytes: Uint8Array;
-  if (tx.fee && tx.fee.payer) {
-    feePayerAddressBytes = decodeBnsAddress(tx.fee.payer).data;
-  } else if (isMultisignatureTx(tx)) {
-    const firstContract = tx.multisig.find(() => true);
-    if (firstContract === undefined) throw new Error("Empty multisig arrays are currently unsupported");
-    feePayerAddressBytes = conditionToWeaveAddress(buildMultisignatureCondition(firstContract));
-  } else {
-    feePayerAddressBytes = decodeBnsAddress(identityToAddress(tx.creator)).data;
+  let feePayerAddressBytes: Uint8Array = new Uint8Array();
+  if (tx.fee && tx.fee.tokens) {
+    if (tx.fee.payer) {
+      feePayerAddressBytes = decodeBnsAddress(tx.fee.payer).data;
+    } else if (isMultisignatureTx(tx)) {
+      const firstContract = tx.multisig.find(() => true);
+      if (firstContract === undefined) throw new Error("Empty multisig arrays are currently unsupported");
+      feePayerAddressBytes = conditionToWeaveAddress(buildMultisignatureCondition(firstContract));
+    }
   }
 
   return codecImpl.bnsd.Tx.create({

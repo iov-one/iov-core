@@ -19,7 +19,7 @@ import {
   SwapProcessState,
   TokenTicker,
   UnsignedTransaction,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
@@ -133,9 +133,9 @@ class Actor {
   }
 
   public async sendBnsTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction & WithCreator>({
+    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction & WithChainId>({
       kind: "bcp/send",
-      creator: this.bnsIdentity,
+      chainId: this.bnsIdentity.chainId,
       sender: this.bnsAddress,
       recipient: recipient,
       amount: amount,
@@ -144,10 +144,11 @@ class Actor {
   }
 
   public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction & WithChainId>({
       kind: "bcp/swap_offer",
-      creator: this.bnsIdentity,
+      chainId: this.bnsIdentity.chainId,
       memo: "Take this cash",
+      sender: this.bnsAddress,
       recipient: recipient,
       // Reset to something small after https://github.com/iov-one/weave/issues/718
       timeout: createTimestampTimeout(72 * 3600),
@@ -162,10 +163,11 @@ class Actor {
     recipient: Address,
     amount: Amount,
   ): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction & WithChainId>({
       kind: "bcp/swap_offer",
-      creator: this.bnsIdentity,
+      chainId: this.bnsIdentity.chainId,
       amounts: [amount],
+      sender: offer.data.sender,
       recipient: recipient,
       // Reset to something small after https://github.com/iov-one/weave/issues/718
       timeout: createTimestampTimeout(36 * 3600),
@@ -175,9 +177,9 @@ class Actor {
   }
 
   public async claimFromKnownPreimageOnBns(offer: AtomicSwap): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction & WithCreator>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction & WithChainId>({
       kind: "bcp/swap_claim",
-      creator: this.bnsIdentity,
+      chainId: this.bnsIdentity.chainId,
       swapId: offer.data.id,
       preimage: this.preimage!,
     });
@@ -191,9 +193,9 @@ class Actor {
     if (!isClaimedSwap(claim)) {
       throw new Error("Expected swap to be claimed");
     }
-    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction & WithCreator>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction & WithChainId>({
       kind: "bcp/swap_claim",
-      creator: this.bnsIdentity,
+      chainId: this.bnsIdentity.chainId,
       swapId: unclaimedId,
       preimage: claim.preimage, // public data now!
     });
