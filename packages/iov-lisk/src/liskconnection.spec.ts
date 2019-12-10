@@ -23,7 +23,7 @@ import {
   TransactionId,
   TransactionState,
   UnsignedTransaction,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { Ed25519, Random, Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -408,9 +408,10 @@ describe("LiskConnection", () => {
         );
 
         for (const _ of [0, 1]) {
-          const sendTx: SendTransaction & WithCreator = {
+          const sendTx: SendTransaction & WithChainId = {
             kind: "bcp/send",
-            creator: mainIdentity,
+            chainId: dummynetChainId,
+            senderPubkey: mainIdentity.pubkey,
             sender: liskCodec.identityToAddress(mainIdentity),
             recipient: recipient,
             amount: devnetDefaultAmount,
@@ -527,9 +528,10 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction & WithChainId = {
         kind: "bcp/send",
-        creator: mainIdentity,
+        chainId: devnetChainId,
+        senderPubkey: mainIdentity.pubkey,
         sender: liskCodec.identityToAddress(mainIdentity),
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
@@ -561,9 +563,10 @@ describe("LiskConnection", () => {
           await devnetDefaultKeypair,
         );
 
-        const sendTx: SendTransaction & WithCreator = {
+        const sendTx: SendTransaction & WithChainId = {
           kind: "bcp/send",
-          creator: mainIdentity,
+          chainId: devnetChainId,
+          senderPubkey: mainIdentity.pubkey,
           sender: liskCodec.identityToAddress(mainIdentity),
           recipient: devnetDefaultRecipient,
           memo: `We ❤️ developers – iov.one ${Math.random()}`,
@@ -613,9 +616,10 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction & WithChainId = {
         kind: "bcp/send",
-        creator: mainIdentity,
+        chainId: devnetChainId,
+        senderPubkey: mainIdentity.pubkey,
         sender: liskCodec.identityToAddress(mainIdentity),
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
@@ -651,9 +655,10 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction & WithChainId = {
         kind: "bcp/send",
-        creator: mainIdentity,
+        chainId: devnetChainId,
+        senderPubkey: mainIdentity.pubkey,
         sender: liskCodec.identityToAddress(mainIdentity),
         recipient: devnetDefaultRecipient,
         memo: "We ❤️ developers – iov.one",
@@ -731,7 +736,13 @@ describe("LiskConnection", () => {
       // from lisk/init.sh
       const existingId = "12493173350733478622" as TransactionId;
       const { transaction, primarySignature: signature } = await connection.getTx(existingId);
-      const publicKey = transaction.creator.pubkey.data;
+      if (!isSendTransaction(transaction)) {
+        throw new Error(`Unexpected transaction type: ${transaction.kind}`);
+      }
+      if (!transaction.senderPubkey) {
+        throw new Error("Expected transaction to have senderPubkey");
+      }
+      const publicKey = transaction.senderPubkey.data;
       const signingJob = liskCodec.bytesToSign(transaction, signature.nonce);
       const txBytes = new Sha256(signingJob.bytes).digest();
 
@@ -795,9 +806,12 @@ describe("LiskConnection", () => {
           if (!isSendTransaction(transaction)) {
             throw new Error(`Unexpected transaction type: ${transaction.kind}`);
           }
+          if (!transaction.senderPubkey) {
+            throw new Error("Expected transaction to have senderPubkey");
+          }
           expect(
             transaction.recipient === searchAddress ||
-              liskCodec.identityToAddress(transaction.creator) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -812,9 +826,12 @@ describe("LiskConnection", () => {
           if (!isSendTransaction(transaction)) {
             throw new Error(`Unexpected transaction type: ${transaction.kind}`);
           }
+          if (!transaction.senderPubkey) {
+            throw new Error("Expected transaction to have senderPubkey");
+          }
           expect(
             transaction.recipient === searchAddress ||
-              liskCodec.identityToAddress(transaction.creator) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -839,9 +856,12 @@ describe("LiskConnection", () => {
           if (!isSendTransaction(transaction)) {
             throw new Error(`Unexpected transaction type: ${transaction.kind}`);
           }
+          if (!transaction.senderPubkey) {
+            throw new Error("Expected transaction to have senderPubkey");
+          }
           expect(
             transaction.recipient === searchAddress ||
-              liskCodec.identityToAddress(transaction.creator) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -856,9 +876,12 @@ describe("LiskConnection", () => {
           if (!isSendTransaction(transaction)) {
             throw new Error(`Unexpected transaction type: ${transaction.kind}`);
           }
+          if (!transaction.senderPubkey) {
+            throw new Error("Expected transaction to have senderPubkey");
+          }
           expect(
             transaction.recipient === searchAddress ||
-              liskCodec.identityToAddress(transaction.creator) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -878,9 +901,12 @@ describe("LiskConnection", () => {
           if (!isSendTransaction(transaction)) {
             throw new Error(`Unexpected transaction type: ${transaction.kind}`);
           }
+          if (!transaction.senderPubkey) {
+            throw new Error("Expected transaction to have senderPubkey");
+          }
           expect(
             transaction.recipient === searchAddress ||
-              liskCodec.identityToAddress(transaction.creator) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -969,27 +995,30 @@ describe("LiskConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-        const sendA: SendTransaction & WithCreator = {
+        const sendA: SendTransaction & WithChainId = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: devnetChainId,
+          senderPubkey: sender.pubkey,
           sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test A ${Math.random()}`,
         };
 
-        const sendB: SendTransaction & WithCreator = {
+        const sendB: SendTransaction & WithChainId = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: devnetChainId,
+          senderPubkey: sender.pubkey,
           sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
           memo: `liveTx() test B ${Math.random()}`,
         };
 
-        const sendC: SendTransaction & WithCreator = {
+        const sendC: SendTransaction & WithChainId = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: devnetChainId,
+          senderPubkey: sender.pubkey,
           sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
@@ -1058,9 +1087,10 @@ describe("LiskConnection", () => {
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
         const recipientAddress = await randomAddress();
-        const send: SendTransaction & WithCreator = {
+        const send: SendTransaction & WithChainId = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: devnetChainId,
+          senderPubkey: sender.pubkey,
           sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
@@ -1115,9 +1145,10 @@ describe("LiskConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-        const send: SendTransaction & WithCreator = {
+        const send: SendTransaction & WithChainId = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: devnetChainId,
+          senderPubkey: sender.pubkey,
           sender: liskCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: devnetDefaultAmount,
@@ -1167,9 +1198,10 @@ describe("LiskConnection", () => {
         },
       };
 
-      const sendTransaction: SendTransaction & WithCreator = {
+      const sendTransaction: SendTransaction & WithChainId = {
         kind: "bcp/send",
-        creator: sender,
+        chainId: dummynetChainId,
+        senderPubkey: sender.pubkey,
         sender: liskCodec.identityToAddress(sender),
         recipient: devnetDefaultRecipient,
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
@@ -1190,13 +1222,7 @@ describe("LiskConnection", () => {
 
       const otherTransaction: UnsignedTransaction = {
         kind: "other/kind",
-        creator: {
-          chainId: dummynetChainId,
-          pubkey: {
-            algo: Algorithm.Ed25519,
-            data: fromHex("aabbccdd") as PubkeyBytes,
-          },
-        },
+        chainId: dummynetChainId,
       };
       await connection
         .getFeeQuote(otherTransaction)

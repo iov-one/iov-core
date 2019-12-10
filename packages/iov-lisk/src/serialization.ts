@@ -51,9 +51,11 @@ export class Serialization {
     }
 
     if (isSendTransaction(unsigned)) {
-      const creatorAddress = Derivation.pubkeyToAddress(unsigned.creator.pubkey.data);
-      if (creatorAddress !== unsigned.sender) {
-        throw new Error("Creator does not match sender");
+      if (!unsigned.senderPubkey) {
+        throw new Error("Sender pubkey is required");
+      }
+      if (Derivation.pubkeyToAddress(unsigned.senderPubkey.data) !== unsigned.sender) {
+        throw new Error("Sender pubkey does not match sender address");
       }
 
       const timestamp = Serialization.toTimestamp(creationTime);
@@ -91,7 +93,7 @@ export class Serialization {
       return new Uint8Array([
         0, // transaction type
         ...timestampBytes,
-        ...unsigned.creator.pubkey.data,
+        ...unsigned.senderPubkey.data,
         ...recipient.toBytesBE(),
         ...amount.toBytesLittleEndian(),
         ...memoBytes,
