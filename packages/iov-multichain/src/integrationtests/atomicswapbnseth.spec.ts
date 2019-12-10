@@ -18,7 +18,7 @@ import {
   SwapProcessState,
   TokenTicker,
   UnsignedTransaction,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { createBnsConnector } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
@@ -193,9 +193,9 @@ class Actor {
   }
 
   public async sendBnsTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction & WithCreator>({
+    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction & WithChainId>({
       kind: "bcp/send",
-      creator: this.bnsIdentity,
+      chainId: this.bnsIdentity.chainId,
       sender: this.bnsAddress,
       recipient: recipient,
       amount: amount,
@@ -204,9 +204,9 @@ class Actor {
   }
 
   public async sendEthereumTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.ethereumConnection.withDefaultFee<SendTransaction & WithCreator>({
+    const transaction = await this.ethereumConnection.withDefaultFee<SendTransaction & WithChainId>({
       kind: "bcp/send",
-      creator: this.ethereumIdentity,
+      chainId: this.ethereumIdentity.chainId,
       sender: this.ethereumAddress,
       recipient: recipient,
       amount: amount,
@@ -215,9 +215,9 @@ class Actor {
   }
 
   public async approveErc20Spend(amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.ethereumConnection.withDefaultFee<Erc20ApproveTransaction & WithCreator>({
+    const transaction = await this.ethereumConnection.withDefaultFee<Erc20ApproveTransaction & WithChainId>({
       kind: "erc20/approve",
-      creator: this.ethereumIdentity,
+      chainId: this.ethereumIdentity.chainId,
       spender: atomicSwapErc20ContractAddress,
       amount: amount,
     });
@@ -225,10 +225,11 @@ class Actor {
   }
 
   public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction & WithChainId>({
       kind: "bcp/swap_offer",
-      creator: this.bnsIdentity,
+      chainId: this.bnsIdentity.chainId,
       memo: "Take this cash",
+      sender: this.bnsAddress,
       recipient: recipient,
       // Reset to something small after https://github.com/iov-one/weave/issues/718
       timeout: createTimestampTimeout(36 * 3600),
@@ -244,11 +245,12 @@ class Actor {
     recipient: Address,
     amount: Amount,
   ): Promise<Uint8Array | undefined> {
-    const transaction = await this.ethereumConnection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+    const transaction = await this.ethereumConnection.withDefaultFee<SwapOfferTransaction & WithChainId>({
       kind: "bcp/swap_offer",
-      creator: this.ethereumIdentity,
+      chainId: this.ethereumIdentity.chainId,
       swapId: id,
       amounts: [amount],
+      sender: this.ethereumAddress,
       recipient: recipient,
       timeout: {
         height: (await this.ethereumConnection.height()) + 10,
@@ -259,9 +261,9 @@ class Actor {
   }
 
   public async claimFromKnownPreimageOnEthereum(offer: AtomicSwap): Promise<Uint8Array | undefined> {
-    const transaction = await this.ethereumConnection.withDefaultFee<SwapClaimTransaction & WithCreator>({
+    const transaction = await this.ethereumConnection.withDefaultFee<SwapClaimTransaction & WithChainId>({
       kind: "bcp/swap_claim",
-      creator: this.ethereumIdentity,
+      chainId: this.ethereumIdentity.chainId,
       swapId: offer.data.id,
       preimage: this.preimage!,
     });
@@ -275,9 +277,9 @@ class Actor {
     if (!isClaimedSwap(claim)) {
       throw new Error("Expected swap to be claimed");
     }
-    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction & WithCreator>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction & WithChainId>({
       kind: "bcp/swap_claim",
-      creator: this.bnsIdentity,
+      chainId: this.bnsIdentity.chainId,
       swapId: unclaimedId,
       preimage: claim.preimage, // public data now!
     });

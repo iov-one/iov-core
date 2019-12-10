@@ -10,7 +10,7 @@ import {
   SendTransaction,
   TokenTicker,
   TransactionState,
-  WithCreator,
+  WithChainId,
 } from "@iov/bcp";
 import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
@@ -100,9 +100,9 @@ describe("MultiChainSigner", () => {
 
       // construct a sendtx, this mirrors the MultiChainSigner api
       const memo = `MultiChainSigner style (${Math.random()})`;
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
+      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
         kind: "bcp/send",
-        creator: faucet,
+        chainId: chainId,
         sender: bnsCodec.identityToAddress(faucet),
         recipient: recipient,
         memo: memo,
@@ -210,9 +210,9 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on BNS
-        const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction & WithCreator>({
+        const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction & WithChainId>({
           kind: "bcp/send",
-          creator: bnsFaucet,
+          chainId: bnsFaucet.chainId,
           sender: bnsCodec.identityToAddress(bnsFaucet),
           recipient: await randomBnsAddress(),
           memo: `MultiChainSigner style (${Math.random()})`,
@@ -229,9 +229,9 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on Ethereum
-        const sendOnEthereum: SendTransaction & WithCreator = {
+        const sendOnEthereum: SendTransaction & WithChainId = {
           kind: "bcp/send",
-          creator: ganacheMainIdentity,
+          chainId: ethereumChainId,
           amount: {
             quantity: "1",
             tokenTicker: "ETH" as TokenTicker,
