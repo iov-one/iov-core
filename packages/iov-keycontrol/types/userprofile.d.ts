@@ -116,8 +116,7 @@ export declare class UserProfile {
    */
   getAllIdentities(): readonly Identity[];
   /**
-   * Signs a transaction using the profile's primary keyring. The transaction's
-   * creator field specifies the keypair to be used for signing.
+   * Signs a transaction using the profile's primary keyring using the provided identity.
    */
   signTransaction(
     identity: Identity,
