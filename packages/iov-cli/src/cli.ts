@@ -44,7 +44,7 @@ export function main(originalArgs: readonly string[]): void {
         "SendTransaction",
         "TokenTicker",
         "TransactionId",
-        "WithCreator",
+        "WithChainId",
         // block info
         "BlockInfoPending",
         "BlockInfoSucceeded",
