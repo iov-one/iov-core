@@ -1,4 +1,4 @@
-import { Address, Identity, WithCreator } from "@iov/bcp";
+import { Address, Identity, WithChainId } from "@iov/bcp";
 import {
   BnsConnection,
   CreateProposalTx,
@@ -33,6 +33,6 @@ export declare class Governor {
   getElectionRuleById(electionRuleId: number): Promise<ElectionRule>;
   getProposals(): Promise<readonly Proposal[]>;
   getVotes(): Promise<readonly Vote[]>;
-  buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithCreator>;
-  buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx & WithCreator>;
+  buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithChainId>;
+  buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx & WithChainId>;
 }

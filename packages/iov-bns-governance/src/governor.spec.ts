@@ -195,7 +195,7 @@ describe("Governor", () => {
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
-        creator: options.identity,
+        chainId: options.identity.chainId,
         title: "Switch to Proof-of-Work",
         action: {
           kind: ActionKind.CreateTextResolution,
@@ -235,7 +235,7 @@ describe("Governor", () => {
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
-        creator: options.identity,
+        chainId: options.identity.chainId,
         title: "Add abcd to committee 5",
         action: {
           kind: ActionKind.UpdateElectorate,
@@ -277,7 +277,7 @@ describe("Governor", () => {
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
-        creator: options.identity,
+        chainId: options.identity.chainId,
         title: "Remove abcd from committee 5",
         action: {
           kind: ActionKind.UpdateElectorate,
@@ -322,7 +322,7 @@ describe("Governor", () => {
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
-        creator: options.identity,
+        chainId: options.identity.chainId,
         title: "Amend threshold for committee 5",
         action: {
           kind: ActionKind.UpdateElectionRule,
@@ -373,7 +373,7 @@ describe("Governor", () => {
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
-        creator: options.identity,
+        chainId: options.identity.chainId,
         title: "Amend quorum for committee 5",
         action: {
           kind: ActionKind.UpdateElectionRule,
@@ -424,7 +424,7 @@ describe("Governor", () => {
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
-        creator: options.identity,
+        chainId: options.identity.chainId,
         title: "Add abcd as validator",
         action: {
           kind: ActionKind.SetValidators,
@@ -467,7 +467,7 @@ describe("Governor", () => {
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
-        creator: options.identity,
+        chainId: options.identity.chainId,
         title: "Remove validator abcd",
         action: {
           kind: ActionKind.SetValidators,
@@ -511,7 +511,7 @@ describe("Governor", () => {
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
-        creator: options.identity,
+        chainId: options.identity.chainId,
         title: "Release guarantee funds",
         action: {
           kind: ActionKind.ReleaseEscrow,
@@ -550,7 +550,7 @@ describe("Governor", () => {
 
       const sendTx = await connection.withDefaultFee({
         kind: "bcp/send",
-        creator: identity,
+        chainId: identity.chainId,
         sender: bnsCodec.identityToAddress(identity),
         recipient: cleanRewardFundAddress,
         amount: {
@@ -583,7 +583,7 @@ describe("Governor", () => {
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
-        creator: identity,
+        chainId: identity.chainId,
         title: "Distribute funds",
         action: {
           kind: ActionKind.ExecuteProposalBatch,
@@ -637,7 +637,7 @@ describe("Governor", () => {
       const tx = await governor.buildVoteTx(5, VoteOption.Yes);
       expect(tx).toEqual({
         kind: "bns/vote",
-        creator: options.identity,
+        chainId: options.identity.chainId,
         proposalId: 5,
         selection: VoteOption.Yes,
         fee: {
