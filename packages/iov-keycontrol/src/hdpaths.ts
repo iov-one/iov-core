@@ -97,6 +97,21 @@ export class HdPaths {
     return HdPaths.bip44(HdPaths.coinTypes.eth, 0, 0, account);
   }
 
+  /**
+   * The Cosmos derivation path in the form m/44'/118'/0'/0/a
+   *
+   * Since 118 is the SLIP-0044 coin index for the ATOM token, the scope of this
+   * function is probably limited to Cosmos Hub. However, let's see how the Cosmos
+   * community uses this path.
+   *
+   * Cosmos SDK supports iterating over the 3rd and the 5th BIP44 path component.
+   * In IOV's products we fix the 3rd component to 0' as discussed here:
+   * https://github.com/cosmos/cosmos-sdk/issues/4278#issuecomment-561238038
+   * This approach is consistent with the multi account approach in major Ethereum
+   * wallets.
+   *
+   * @param account The account index `a` starting at 0
+   */
   public static cosmos(account: number): readonly Slip10RawIndex[] {
     return HdPaths.bip44(HdPaths.coinTypes.atom, 0, 0, account);
   }
