@@ -111,7 +111,6 @@ class Actor {
 
   public async signAndPost(identity: Identity, transaction: UnsignedTransaction): Promise<PostTxResponse> {
     const nonce = await this.bnsConnection.getNonce({ pubkey: identity.pubkey });
-
     const signed = await this.profile.signTransaction(identity, transaction, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await this.bnsConnection.postTx(txBytes);
@@ -132,28 +131,34 @@ class Actor {
   }
 
   public async sendBnsTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction>({
-      kind: "bcp/send",
-      chainId: this.bnsIdentity.chainId,
-      sender: this.bnsAddress,
-      recipient: recipient,
-      amount: amount,
-    });
+    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction>(
+      {
+        kind: "bcp/send",
+        chainId: this.bnsIdentity.chainId,
+        sender: this.bnsAddress,
+        recipient: recipient,
+        amount: amount,
+      },
+      this.bnsAddress,
+    );
     return this.sendTransaction(this.bnsIdentity, transaction);
   }
 
   public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction>({
-      kind: "bcp/swap_offer",
-      chainId: this.bnsIdentity.chainId,
-      memo: "Take this cash",
-      sender: this.bnsAddress,
-      recipient: recipient,
-      // Reset to something small after https://github.com/iov-one/weave/issues/718
-      timeout: createTimestampTimeout(72 * 3600),
-      hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
-      amounts: [amount],
-    });
+    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction>(
+      {
+        kind: "bcp/swap_offer",
+        chainId: this.bnsIdentity.chainId,
+        memo: "Take this cash",
+        sender: this.bnsAddress,
+        recipient: recipient,
+        // Reset to something small after https://github.com/iov-one/weave/issues/718
+        timeout: createTimestampTimeout(72 * 3600),
+        hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
+        amounts: [amount],
+      },
+      this.bnsAddress,
+    );
     return this.sendTransaction(this.bnsIdentity, transaction);
   }
 
@@ -162,26 +167,32 @@ class Actor {
     recipient: Address,
     amount: Amount,
   ): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction>({
-      kind: "bcp/swap_offer",
-      chainId: this.bnsIdentity.chainId,
-      amounts: [amount],
-      sender: offer.data.sender,
-      recipient: recipient,
-      // Reset to something small after https://github.com/iov-one/weave/issues/718
-      timeout: createTimestampTimeout(36 * 3600),
-      hash: offer.data.hash,
-    });
+    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction>(
+      {
+        kind: "bcp/swap_offer",
+        chainId: this.bnsIdentity.chainId,
+        amounts: [amount],
+        sender: this.bnsAddress,
+        recipient: recipient,
+        // Reset to something small after https://github.com/iov-one/weave/issues/718
+        timeout: createTimestampTimeout(36 * 3600),
+        hash: offer.data.hash,
+      },
+      this.bnsAddress,
+    );
     return this.sendTransaction(this.bnsIdentity, transaction);
   }
 
   public async claimFromKnownPreimageOnBns(offer: AtomicSwap): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
-      kind: "bcp/swap_claim",
-      chainId: this.bnsIdentity.chainId,
-      swapId: offer.data.id,
-      preimage: this.preimage!,
-    });
+    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>(
+      {
+        kind: "bcp/swap_claim",
+        chainId: this.bnsIdentity.chainId,
+        swapId: offer.data.id,
+        preimage: this.preimage!,
+      },
+      this.bnsAddress,
+    );
     return this.sendTransaction(this.bnsIdentity, transaction);
   }
 
@@ -192,12 +203,15 @@ class Actor {
     if (!isClaimedSwap(claim)) {
       throw new Error("Expected swap to be claimed");
     }
-    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
-      kind: "bcp/swap_claim",
-      chainId: this.bnsIdentity.chainId,
-      swapId: unclaimedId,
-      preimage: claim.preimage, // public data now!
-    });
+    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>(
+      {
+        kind: "bcp/swap_claim",
+        chainId: this.bnsIdentity.chainId,
+        swapId: unclaimedId,
+        preimage: claim.preimage, // public data now!
+      },
+      this.bnsAddress,
+    );
     return this.sendTransaction(this.bnsIdentity, transaction);
   }
 }

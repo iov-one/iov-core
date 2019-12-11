@@ -59,15 +59,18 @@ describe("BnsConnection (swaps)", () => {
       fractionalDigits: 9,
       tokenTicker: cash,
     };
-    const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
-      kind: "bcp/swap_offer",
-      chainId: chainId,
-      sender: faucetAddr,
-      recipient: recipientAddr,
-      amounts: [amount],
-      timeout: swapOfferTimeout,
-      hash: swapOfferHash,
-    });
+    const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>(
+      {
+        kind: "bcp/swap_offer",
+        chainId: chainId,
+        sender: faucetAddr,
+        recipient: recipientAddr,
+        amounts: [amount],
+        timeout: swapOfferTimeout,
+        hash: swapOfferHash,
+      },
+      faucetAddr,
+    );
 
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(faucet, swapOfferTx, bnsCodec, nonce);
@@ -192,16 +195,19 @@ describe("BnsConnection (swaps)", () => {
 
       // it will live 48 hours
       const swapOfferTimeout = createTimestampTimeout(48 * 3600);
-      const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
-        kind: "bcp/swap_offer",
-        chainId: faucet.chainId,
-        sender: faucetAddr,
-        recipient: recipientAddr,
-        amounts: [defaultAmount],
-        timeout: swapOfferTimeout,
-        hash: swapOfferHash,
-        memo: "fooooobar",
-      });
+      const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>(
+        {
+          kind: "bcp/swap_offer",
+          chainId: faucet.chainId,
+          sender: faucetAddr,
+          recipient: recipientAddr,
+          amounts: [defaultAmount],
+          timeout: swapOfferTimeout,
+          hash: swapOfferHash,
+          memo: "fooooobar",
+        },
+        faucetAddr,
+      );
 
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(faucet, swapOfferTx, bnsCodec, nonce);

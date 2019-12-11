@@ -117,17 +117,20 @@ class Actor {
   }
 
   public async sendCash(recipient: Address, quantity: string): Promise<Uint8Array | undefined> {
-    const tx = await this.connection.withDefaultFee<SendTransaction>({
-      kind: "bcp/send",
-      chainId: this.identity.chainId,
-      sender: this.address,
-      recipient: recipient,
-      amount: {
-        quantity: quantity,
-        fractionalDigits: 9,
-        tokenTicker: CASH,
+    const tx = await this.connection.withDefaultFee<SendTransaction>(
+      {
+        kind: "bcp/send",
+        chainId: this.identity.chainId,
+        sender: this.address,
+        recipient: recipient,
+        amount: {
+          quantity: quantity,
+          fractionalDigits: 9,
+          tokenTicker: CASH,
+        },
       },
-    });
+      this.address,
+    );
 
     return this.signAndPost(this.identity, tx);
   }
@@ -137,13 +140,16 @@ class Actor {
     activationThreshold: number,
     adminThreshold: number,
   ): Promise<number> {
-    const tx = await this.connection.withDefaultFee<CreateMultisignatureTx>({
-      kind: "bns/create_multisignature_contract",
-      chainId: this.identity.chainId,
-      participants: participants,
-      activationThreshold: activationThreshold,
-      adminThreshold: adminThreshold,
-    });
+    const tx = await this.connection.withDefaultFee<CreateMultisignatureTx>(
+      {
+        kind: "bns/create_multisignature_contract",
+        chainId: this.identity.chainId,
+        participants: participants,
+        activationThreshold: activationThreshold,
+        adminThreshold: adminThreshold,
+      },
+      this.address,
+    );
     const result = await this.signAndPost(this.identity, tx);
     if (result === undefined) {
       throw new Error("Created a multisignature contract but received no ID back");
@@ -157,14 +163,17 @@ class Actor {
     recipient: Address,
     amount: Amount,
   ): Promise<SendTransaction> {
-    return this.connection.withDefaultFee<SendTransaction & MultisignatureTx>({
-      kind: "bcp/send",
-      multisig: [multisignatureId],
-      chainId: this.identity.chainId,
-      sender: sender,
-      recipient: recipient,
-      amount: amount,
-    });
+    return this.connection.withDefaultFee<SendTransaction & MultisignatureTx>(
+      {
+        kind: "bcp/send",
+        multisig: [multisignatureId],
+        chainId: this.identity.chainId,
+        sender: sender,
+        recipient: recipient,
+        amount: amount,
+      },
+      sender,
+    );
   }
 }
 

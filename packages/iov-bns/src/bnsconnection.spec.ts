@@ -454,16 +454,19 @@ describe("BnsConnection (basic class methods)", () => {
         resolution: `The winner is Alice ${Math.random()}`,
       };
 
-      const createProposal = await connection.withDefaultFee<CreateProposalTx>({
-        kind: "bns/create_proposal",
-        chainId: chainId,
-        title: title,
-        description: description,
-        author: authorAddress,
-        electionRuleId: someElectionRule.id,
-        action: action,
-        startTime: startTime,
-      });
+      const createProposal = await connection.withDefaultFee<CreateProposalTx>(
+        {
+          kind: "bns/create_proposal",
+          chainId: chainId,
+          title: title,
+          description: description,
+          author: authorAddress,
+          electionRuleId: someElectionRule.id,
+          action: action,
+          startTime: startTime,
+        },
+        authorAddress,
+      );
 
       const nonce = await connection.getNonce({ pubkey: author.pubkey });
       const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
@@ -500,12 +503,15 @@ describe("BnsConnection (basic class methods)", () => {
       // Register username
       const username = `testuser_${Math.random()}*iov`;
       const targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
-      const registration = await connection.withDefaultFee<RegisterUsernameTx>({
-        kind: "bns/register_username",
-        chainId: registryChainId,
-        username: username,
-        targets: targets,
-      });
+      const registration = await connection.withDefaultFee<RegisterUsernameTx>(
+        {
+          kind: "bns/register_username",
+          chainId: registryChainId,
+          username: username,
+          targets: targets,
+        },
+        identityAddress,
+      );
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       {
@@ -547,12 +553,15 @@ describe("BnsConnection (basic class methods)", () => {
       // Register username
       const username = `testuser_${Math.random()}*iov`;
       const targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
-      const registration = await connection.withDefaultFee<RegisterUsernameTx>({
-        kind: "bns/register_username",
-        chainId: registryChainId,
-        username: username,
-        targets: targets,
-      });
+      const registration = await connection.withDefaultFee<RegisterUsernameTx>(
+        {
+          kind: "bns/register_username",
+          chainId: registryChainId,
+          username: username,
+          targets: targets,
+        },
+        identityAddress,
+      );
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       {
