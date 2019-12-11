@@ -39,8 +39,6 @@ import { RestClient, TxsResponse } from "./restclient";
 
 const { fromBase64 } = Encoding;
 
-const atom = "ATOM" as TokenTicker;
-
 interface ChainData {
   readonly chainId: ChainId;
 }
@@ -80,7 +78,8 @@ export class CosmosConnection implements BlockchainConnection {
 
   private readonly restClient: RestClient;
   private readonly chainData: ChainData;
-  private readonly supportedTokens: readonly string[];
+  private readonly primaryToken: Token;
+  private readonly supportedTokens: readonly Token[];
 
   private get prefix(): CosmosBech32Prefix {
     return "cosmos";
@@ -89,7 +88,12 @@ export class CosmosConnection implements BlockchainConnection {
   private constructor(restClient: RestClient, chainData: ChainData) {
     this.restClient = restClient;
     this.chainData = chainData;
-    this.supportedTokens = ["uatom"];
+    this.primaryToken = {
+      fractionalDigits: 6,
+      tokenName: "Atom",
+      tokenTicker: "ATOM" as TokenTicker,
+    };
+    this.supportedTokens = [this.primaryToken];
   }
 
   public disconnect(): void {
@@ -105,19 +109,23 @@ export class CosmosConnection implements BlockchainConnection {
     return block_meta.header.height;
   }
 
-  public async getToken(_ticker: TokenTicker): Promise<Token | undefined> {
-    throw new Error("not implemented");
+  public async getToken(searchTicker: TokenTicker): Promise<Token | undefined> {
+    return (await this.getAllTokens()).find(({ tokenTicker }) => tokenTicker === searchTicker);
   }
 
   public async getAllTokens(): Promise<readonly Token[]> {
-    throw new Error("not implemented");
+    return this.supportedTokens;
   }
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
     const address = isPubkeyQuery(query) ? pubkeyToAddress(query.pubkey, this.prefix) : query.address;
     const { result } = await this.restClient.authAccounts(address);
     const account = result.value;
-    const supportedCoins = account.coins.filter(coin => this.supportedTokens.includes(coin.denom));
+    const supportedCoins = account.coins.filter(({ denom }) =>
+      this.supportedTokens.find(
+        ({ tokenTicker }) => (tokenTicker === "ATOM" && denom === "uatom") || tokenTicker === denom,
+      ),
+    );
     return account.public_key === null
       ? undefined
       : {
@@ -218,9 +226,9 @@ export class CosmosConnection implements BlockchainConnection {
     }
     return {
       tokens: {
-        fractionalDigits: 6,
+        fractionalDigits: this.primaryToken.fractionalDigits,
         quantity: "5000",
-        tokenTicker: atom,
+        tokenTicker: this.primaryToken.tokenTicker,
       },
       gasLimit: "200000",
     };
