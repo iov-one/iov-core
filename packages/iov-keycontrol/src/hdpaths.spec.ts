@@ -41,6 +41,7 @@ describe("HdPaths", () => {
   describe("iovFaucet", () => {
     it("returns token holder account for instance 0 when called with no arguments", () => {
       // m/1229936198'/1'/0'/0'
+      // tslint:disable-next-line: deprecation
       expect(HdPaths.iovFaucet()).toEqual([
         Slip10RawIndex.hardened(1229936198),
         Slip10RawIndex.hardened(1),
@@ -51,6 +52,7 @@ describe("HdPaths", () => {
 
     it("allows setting custom coin type, instance index and account index", () => {
       // m/1229936198'/33'/44'/55'
+      // tslint:disable-next-line: deprecation
       expect(HdPaths.iovFaucet(33, 44, 55)).toEqual([
         Slip10RawIndex.hardened(1229936198),
         Slip10RawIndex.hardened(33),

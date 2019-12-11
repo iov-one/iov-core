@@ -35,8 +35,11 @@ export declare class HdPaths {
   static iov(account: number): readonly Slip10RawIndex[];
   /**
    * An IOV faucet HD path in the form m/1229936198'/coinType'/instanceIndex'/accountIndex'
+   * which was used in the IOV faucet < 0.10.0.
    *
-   * @see https://github.com/iov-one/iov-faucet/tree/v0.8.1#faucet-hd-wallet
+   * @deprecated This is obsolete and will be removed. Don't use it in new code. It is still required for a bunch of IOV Core internal tests.
+   *
+   * @see https://github.com/iov-one/iov-faucet/tree/v0.9.0#faucet-hd-wallet
    *
    * @param coinType A SLIP-0044 coin. Defaults to 1 (i.e. "Testnet (all coins)") when unset.
    * @param instanceIndex 0-based index of the faucet instance. Defaults to 0 when unset.
@@ -58,6 +61,21 @@ export declare class HdPaths {
    * @param account The account index `a` starting at 0
    */
   static ethereum(account: number): readonly Slip10RawIndex[];
+  /**
+   * The Cosmos derivation path in the form m/44'/118'/0'/0/a
+   *
+   * Since 118 is the SLIP-0044 coin index for the ATOM token, the scope of this
+   * function is probably limited to Cosmos Hub. However, let's see how the Cosmos
+   * community uses this path.
+   *
+   * Cosmos SDK supports iterating over the 3rd and the 5th BIP44 path component.
+   * In IOV's products we fix the 3rd component to 0' as discussed here:
+   * https://github.com/cosmos/cosmos-sdk/issues/4278#issuecomment-561238038
+   * This approach is consistent with the multi account approach in major Ethereum
+   * wallets.
+   *
+   * @param account The account index `a` starting at 0
+   */
   static cosmos(account: number): readonly Slip10RawIndex[];
   private static readonly purposes;
   /**
