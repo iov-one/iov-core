@@ -5,6 +5,7 @@ import {
   createTimestampTimeout,
   isBlockInfoPending,
   isBlockInfoSucceeded,
+  isConfirmedAndSignedTransaction,
   isConfirmedTransaction,
   isSwapOfferTransaction,
   SwapData,
@@ -87,7 +88,7 @@ describe("BnsConnection (swaps)", () => {
     await tendermintSearchIndexUpdated();
 
     // now query by the txid
-    const search = (await connection.searchTx({ id: transactionId })).filter(isConfirmedTransaction);
+    const search = (await connection.searchTx({ id: transactionId })).filter(isConfirmedAndSignedTransaction);
     expect(search.length).toEqual(1);
     // make sure we get the same tx loaded
     const loaded = search[0];

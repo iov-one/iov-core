@@ -3,6 +3,7 @@ import {
   BlockInfoFailed,
   BlockInfoSucceeded,
   isBlockInfoPending,
+  isConfirmedAndSignedTransaction,
   isConfirmedTransaction,
   isFailedTransaction,
   isSendTransaction,
@@ -159,7 +160,7 @@ describe("BnsConnection (txs)", () => {
 
       // finds transaction using tag
       const results = (await connection.searchTx({ sentFromOrTo: rcptAddress })).filter(
-        isConfirmedTransaction,
+        isConfirmedAndSignedTransaction,
       );
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResultTransaction = results[results.length - 1].transaction;
@@ -200,7 +201,9 @@ describe("BnsConnection (txs)", () => {
       await tendermintSearchIndexUpdated();
 
       // finds transaction using height
-      const results = (await connection.searchTx({ height: txHeight })).filter(isConfirmedTransaction);
+      const results = (await connection.searchTx({ height: txHeight })).filter(
+        isConfirmedAndSignedTransaction,
+      );
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResultTransaction = results[results.length - 1].transaction;
       if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -238,7 +241,7 @@ describe("BnsConnection (txs)", () => {
 
       // finds transaction using id
       const searchResults = (await connection.searchTx({ id: transactionIdToSearch })).filter(
-        isConfirmedTransaction,
+        isConfirmedAndSignedTransaction,
       );
       expect(searchResults.length).toEqual(1);
       expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
@@ -283,7 +286,7 @@ describe("BnsConnection (txs)", () => {
       {
         // finds transaction using sentFromOrTo and minHeight = 1
         const results = (await connection.searchTx({ sentFromOrTo: recipientAddress, minHeight: 1 })).filter(
-          isConfirmedTransaction,
+          isConfirmedAndSignedTransaction,
         );
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
@@ -300,7 +303,7 @@ describe("BnsConnection (txs)", () => {
             sentFromOrTo: recipientAddress,
             minHeight: initialHeight,
           })
-        ).filter(isConfirmedTransaction);
+        ).filter(isConfirmedAndSignedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -316,7 +319,7 @@ describe("BnsConnection (txs)", () => {
             sentFromOrTo: recipientAddress,
             maxHeight: 500_000_000,
           })
-        ).filter(isConfirmedTransaction);
+        ).filter(isConfirmedAndSignedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {
@@ -332,7 +335,7 @@ describe("BnsConnection (txs)", () => {
             sentFromOrTo: recipientAddress,
             maxHeight: initialHeight + 10,
           })
-        ).filter(isConfirmedTransaction);
+        ).filter(isConfirmedAndSignedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
         if (!isSendTransaction(mostRecentResultTransaction)) {

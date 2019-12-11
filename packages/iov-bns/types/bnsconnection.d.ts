@@ -93,7 +93,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
   getTx(id: TransactionId): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction>;
   searchTx(
     query: TransactionQuery,
-  ): Promise<readonly (ConfirmedTransaction<UnsignedTransaction> | FailedTransaction)[]>;
+  ): Promise<readonly (ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction)[]>;
   /**
    * A stream of all transactions that match the tags from the present moment on
    */
@@ -130,19 +130,4 @@ export declare class BnsConnection implements AtomicSwapConnection {
    * Returns undefined if no product fee is defined
    */
   protected getProductFee(transaction: BnsTx): Promise<Amount | undefined>;
-  /**
-   * The same as searchTx but with ConfirmedTransaction<UnsignedTransaction> instead of
-   * ConfirmedTransaction<UnsignedTransaction>
-   */
-  private searchTxUnsigned;
-  /**
-   * The same as listenTx but with ConfirmedTransaction<UnsignedTransaction> instead of
-   * ConfirmedTransaction<UnsignedTransaction>
-   */
-  private listenTxUnsigned;
-  /**
-   * The same as liveTx but with ConfirmedTransaction<UnsignedTransaction> instead of
-   * ConfirmedTransaction<UnsignedTransaction>
-   */
-  private liveTxUnsigned;
 }

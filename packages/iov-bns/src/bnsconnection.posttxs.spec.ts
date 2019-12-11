@@ -4,7 +4,7 @@ import {
   ChainId,
   isBlockInfoPending,
   isBlockInfoSucceeded,
-  isConfirmedTransaction,
+  isConfirmedAndSignedTransaction,
   isSendTransaction,
   SendTransaction,
   TokenTicker,
@@ -117,7 +117,9 @@ describe("BnsConnection (txs)", () => {
       await tendermintSearchIndexUpdated();
 
       // now verify we can query the same tx back
-      const search = (await connection.searchTx({ sentFromOrTo: faucetAddr })).filter(isConfirmedTransaction);
+      const search = (await connection.searchTx({ sentFromOrTo: faucetAddr })).filter(
+        isConfirmedAndSignedTransaction,
+      );
       expect(search.length).toBeGreaterThanOrEqual(1);
       // make sure we get a valid signature
       const mine = search[search.length - 1];
@@ -292,7 +294,9 @@ describe("BnsConnection (txs)", () => {
       await tendermintSearchIndexUpdated();
 
       // Find registration transaction
-      const searchResult = (await connection.searchTx({ signedBy: address })).filter(isConfirmedTransaction);
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
       expect(searchResult.length).toEqual(1);
       const firstSearchResultTransaction = searchResult[0].transaction;
       if (!isRegisterUsernameTx(firstSearchResultTransaction)) {
@@ -334,7 +338,9 @@ describe("BnsConnection (txs)", () => {
       await tendermintSearchIndexUpdated();
 
       // Find registration transaction
-      const searchResult = (await connection.searchTx({ signedBy: address })).filter(isConfirmedTransaction);
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
       expect(searchResult.length).toEqual(1);
       const firstSearchResultTransaction = searchResult[0].transaction;
       if (!isRegisterUsernameTx(firstSearchResultTransaction)) {
@@ -608,7 +614,9 @@ describe("BnsConnection (txs)", () => {
       await tendermintSearchIndexUpdated();
 
       // Find transaction1
-      const searchResult1 = (await connection.searchTx({ signedBy: address })).filter(isConfirmedTransaction);
+      const searchResult1 = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
       expect(searchResult1.length).toEqual(1);
       const { result: contractId, transaction: firstSearchResultTransaction } = searchResult1[0];
       if (!isCreateMultisignatureTx(firstSearchResultTransaction)) {
@@ -650,7 +658,9 @@ describe("BnsConnection (txs)", () => {
       await tendermintSearchIndexUpdated();
 
       // Find transaction2
-      const searchResult2 = (await connection.searchTx({ signedBy: address })).filter(isConfirmedTransaction);
+      const searchResult2 = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
       expect(searchResult2.length).toEqual(2);
       const { transaction: secondSearchResultTransaction } = searchResult2[1];
       if (!isUpdateMultisignatureTx(secondSearchResultTransaction)) {
@@ -712,7 +722,7 @@ describe("BnsConnection (txs)", () => {
 
       // Find transaction1
       const searchResult1 = (await connection.searchTx({ signedBy: senderAddress })).filter(
-        isConfirmedTransaction,
+        isConfirmedAndSignedTransaction,
       );
       expect(searchResult1.length).toEqual(1);
       const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
@@ -747,7 +757,7 @@ describe("BnsConnection (txs)", () => {
 
       // Find transaction1
       const searchResult2 = (await connection.searchTx({ signedBy: arbiterAddress })).filter(
-        isConfirmedTransaction,
+        isConfirmedAndSignedTransaction,
       );
       expect(searchResult2.length).toEqual(1);
       const { transaction: secondSearchResultTransaction } = searchResult2[0];
@@ -861,7 +871,7 @@ describe("BnsConnection (txs)", () => {
 
       // Find transaction1
       const searchResult1 = (await connection.searchTx({ signedBy: senderAddress })).filter(
-        isConfirmedTransaction,
+        isConfirmedAndSignedTransaction,
       );
       expect(searchResult1.length).toEqual(1);
       const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
@@ -898,7 +908,7 @@ describe("BnsConnection (txs)", () => {
 
       // Find transaction1
       const searchResult2 = (await connection.searchTx({ signedBy: arbiterAddress })).filter(
-        isConfirmedTransaction,
+        isConfirmedAndSignedTransaction,
       );
       expect(searchResult2.length).toEqual(1);
       const { transaction: secondSearchResultTransaction } = searchResult2[0];
@@ -957,7 +967,7 @@ describe("BnsConnection (txs)", () => {
 
       // Find transaction1
       const searchResult1 = (await connection.searchTx({ signedBy: senderAddress })).filter(
-        isConfirmedTransaction,
+        isConfirmedAndSignedTransaction,
       );
       expect(searchResult1.length).toEqual(1);
       const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
@@ -992,7 +1002,7 @@ describe("BnsConnection (txs)", () => {
 
       // Find transaction1
       const searchResult2 = (await connection.searchTx({ signedBy: arbiterAddress })).filter(
-        isConfirmedTransaction,
+        isConfirmedAndSignedTransaction,
       );
       expect(searchResult2.length).toEqual(1);
       const { transaction: secondSearchResultTransaction } = searchResult2[0];
