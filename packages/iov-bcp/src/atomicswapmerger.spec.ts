@@ -3,7 +3,7 @@ import { Encoding } from "@iov/encoding";
 import { AtomicSwapHelpers } from "./atomicswaphelpers";
 import { AtomicSwapMerger } from "./atomicswapmerger";
 import { ClaimedSwap, OpenSwap, Preimage, SwapClaimTransaction, SwapProcessState } from "./atomicswaptypes";
-import { Address, Amount, ChainId, SwapId, SwapIdBytes, TokenTicker, WithChainId } from "./transactions";
+import { Address, Amount, ChainId, SwapId, SwapIdBytes, TokenTicker } from "./transactions";
 
 const { fromHex } = Encoding;
 
@@ -34,7 +34,7 @@ describe("AtomicSwapMerger", () => {
       },
     };
 
-    const claim: SwapClaimTransaction & WithChainId = {
+    const claim: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
       chainId: "lalala" as ChainId,
       swapId: swapId,
@@ -93,14 +93,14 @@ describe("AtomicSwapMerger", () => {
       },
     };
 
-    const claimA: SwapClaimTransaction & WithChainId = {
+    const claimA: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
       chainId: "lalala" as ChainId,
       swapId: swapIdA,
       preimage: preimageA,
     };
 
-    const claimB: SwapClaimTransaction & WithChainId = {
+    const claimB: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
       chainId: "lalala" as ChainId,
       swapId: swapIdB,
@@ -181,7 +181,7 @@ describe("AtomicSwapMerger", () => {
       },
     };
 
-    const claim: SwapClaimTransaction & WithChainId = {
+    const claim: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
       chainId: "lalala" as ChainId,
       swapId: swapId,

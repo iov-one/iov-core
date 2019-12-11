@@ -11,7 +11,6 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
-  LightTransaction,
   Nonce,
   PubkeyBundle,
   TokenTicker,
@@ -185,20 +184,20 @@ export interface BlockchainConnection {
   readonly postTx: (tx: PostableBytes) => Promise<PostTxResponse>;
   readonly searchTx: (
     query: TransactionQuery,
-  ) => Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]>;
+  ) => Promise<readonly (ConfirmedTransaction<UnsignedTransaction> | FailedTransaction)[]>;
   /**
    * Subscribes to all newly added transactions that match the query
    */
   readonly listenTx: (
     query: TransactionQuery,
-  ) => Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
+  ) => Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
   /**
    * Returns a stream for all historical transactions that match
    * the query, along with all new transactions arriving from listenTx
    */
   readonly liveTx: (
     query: TransactionQuery,
-  ) => Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
+  ) => Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
   readonly getFeeQuote: (tx: UnsignedTransaction) => Promise<Fee>;
   readonly withDefaultFee: <T extends UnsignedTransaction>(tx: T) => Promise<T>;
 }

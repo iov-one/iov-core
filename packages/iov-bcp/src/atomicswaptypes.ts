@@ -2,7 +2,7 @@ import { As } from "type-tagger";
 import { Stream } from "xstream";
 
 import { BlockchainConnection } from "./connection";
-import { Address, Amount, LightTransaction, SwapId, SwapTimeout } from "./transactions";
+import { Address, Amount, SwapId, SwapTimeout, UnsignedTransaction } from "./transactions";
 
 export type Preimage = Uint8Array & As<"preimage">;
 export type Hash = Uint8Array & As<"hash">;
@@ -10,7 +10,7 @@ export type Hash = Uint8Array & As<"hash">;
 // Transactions
 
 /** A swap offer or a counter offer */
-export interface SwapOfferTransaction extends LightTransaction {
+export interface SwapOfferTransaction extends UnsignedTransaction {
   readonly kind: "bcp/swap_offer";
   /**
    * The ID of the swap to aid coordination between the two parties.
@@ -40,32 +40,38 @@ export interface SwapOfferTransaction extends LightTransaction {
   readonly memo?: string;
 }
 
-export interface SwapClaimTransaction extends LightTransaction {
+export interface SwapClaimTransaction extends UnsignedTransaction {
   readonly kind: "bcp/swap_claim";
   readonly preimage: Preimage;
   readonly swapId: SwapId; // pulled from the offer transaction
 }
 
-export interface SwapAbortTransaction extends LightTransaction {
+export interface SwapAbortTransaction extends UnsignedTransaction {
   readonly kind: "bcp/swap_abort";
   readonly swapId: SwapId; // pulled from the offer transaction
 }
 
 export type SwapTransaction = SwapOfferTransaction | SwapClaimTransaction | SwapAbortTransaction;
 
-export function isSwapOfferTransaction(transaction: LightTransaction): transaction is SwapOfferTransaction {
+export function isSwapOfferTransaction(
+  transaction: UnsignedTransaction,
+): transaction is SwapOfferTransaction {
   return (transaction as SwapOfferTransaction).kind === "bcp/swap_offer";
 }
 
-export function isSwapClaimTransaction(transaction: LightTransaction): transaction is SwapClaimTransaction {
+export function isSwapClaimTransaction(
+  transaction: UnsignedTransaction,
+): transaction is SwapClaimTransaction {
   return (transaction as SwapClaimTransaction).kind === "bcp/swap_claim";
 }
 
-export function isSwapAbortTransaction(transaction: LightTransaction): transaction is SwapAbortTransaction {
+export function isSwapAbortTransaction(
+  transaction: UnsignedTransaction,
+): transaction is SwapAbortTransaction {
   return (transaction as SwapAbortTransaction).kind === "bcp/swap_abort";
 }
 
-export function isSwapTransaction(transaction: LightTransaction): transaction is SwapTransaction {
+export function isSwapTransaction(transaction: UnsignedTransaction): transaction is SwapTransaction {
   return (
     isSwapOfferTransaction(transaction) ||
     isSwapClaimTransaction(transaction) ||

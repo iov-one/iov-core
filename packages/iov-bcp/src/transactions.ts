@@ -181,7 +181,7 @@ export function isFee(data: unknown): data is Fee {
 }
 
 /** The basic transaction type all transactions should extend */
-export interface LightTransaction {
+export interface UnsignedTransaction {
   /**
    * Kind describes the kind of transaction as a "<domain>/<concrete_type>" tuple.
    *
@@ -194,41 +194,35 @@ export interface LightTransaction {
    * other way of namespacing later on, so don't use the `kind` property as a value.
    */
   readonly kind: string;
+  readonly chainId: ChainId;
   readonly fee?: Fee;
 }
 
-export function isLightTransaction(data: unknown): data is LightTransaction {
-  if (!isNonNullObject(data)) return false;
-  const transaction = data as LightTransaction;
-  return typeof transaction.kind === "string" && (transaction.fee === undefined || isFee(transaction.fee));
-}
-
-export interface WithChainId {
-  readonly chainId: ChainId;
-}
-
-export type UnsignedTransaction = LightTransaction & WithChainId;
-
 export function isUnsignedTransaction(data: unknown): data is UnsignedTransaction {
+  if (!isNonNullObject(data)) return false;
   const transaction = data as UnsignedTransaction;
-  return isLightTransaction(transaction) && typeof transaction.chainId === "string";
+  return (
+    typeof transaction.kind === "string" &&
+    (transaction.fee === undefined || isFee(transaction.fee)) &&
+    typeof transaction.chainId === "string"
+  );
 }
 
 /** An interface to ensure the transaction property of other types is in sync */
-export interface TransactionContainer<T extends LightTransaction> {
+export interface TransactionContainer<T extends UnsignedTransaction> {
   /** The transaction content */
   readonly transaction: T;
 }
 
 /** A signable transaction knows how to serialize itself and how to store signatures */
-export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction>
+export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTransaction>
   extends TransactionContainer<T> {
   readonly primarySignature: FullSignature;
   /** signatures can be appended as this is signed */
   readonly otherSignatures: readonly FullSignature[];
 }
 
-export interface ConfirmedTransaction<T extends LightTransaction> extends TransactionContainer<T> {
+export interface ConfirmedTransaction<T extends UnsignedTransaction> extends TransactionContainer<T> {
   readonly height: number; // the block it was written to
   /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
   readonly confirmations: number;
@@ -259,22 +253,22 @@ export interface FailedTransaction {
   readonly message?: string;
 }
 
-export function isConfirmedTransaction<T extends LightTransaction>(
+export function isConfirmedTransaction<T extends UnsignedTransaction>(
   transaction: ConfirmedTransaction<T> | FailedTransaction,
 ): transaction is ConfirmedTransaction<T> {
   return typeof (transaction as any).transaction !== "undefined";
 }
 
-export function isFailedTransaction<T extends LightTransaction>(
+export function isFailedTransaction<T extends UnsignedTransaction>(
   transaction: ConfirmedTransaction<T> | FailedTransaction,
 ): transaction is FailedTransaction {
   return !isConfirmedTransaction(transaction);
 }
 
-export type ConfirmedAndSignedTransaction<T extends LightTransaction> = ConfirmedTransaction<T> &
+export type ConfirmedAndSignedTransaction<T extends UnsignedTransaction> = ConfirmedTransaction<T> &
   SignedTransaction<T>;
 
-export interface SendTransaction extends LightTransaction {
+export interface SendTransaction extends UnsignedTransaction {
   readonly kind: "bcp/send";
   readonly amount: Amount;
   readonly sender: Address;
@@ -307,6 +301,6 @@ export function createTimestampTimeout(secondsFromNow: number): TimestampTimeout
   return { timestamp: Math.floor(ReadonlyDate.now() / 1000) + secondsFromNow };
 }
 
-export function isSendTransaction(transaction: LightTransaction): transaction is SendTransaction {
+export function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction {
   return (transaction as SendTransaction).kind === "bcp/send";
 }
