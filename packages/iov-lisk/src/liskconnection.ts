@@ -13,7 +13,6 @@ import {
   FailedTransaction,
   Fee,
   isPubkeyQuery,
-  LightTransaction,
   Nonce,
   PostableBytes,
   PostTxResponse,
@@ -360,11 +359,15 @@ export class LiskConnection implements BlockchainConnection {
     }
   }
 
-  public listenTx(_: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+  public listenTx(
+    _: TransactionQuery,
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     throw new Error("Not implemented");
   }
 
-  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+  public liveTx(
+    query: TransactionQuery,
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -378,7 +381,7 @@ export class LiskConnection implements BlockchainConnection {
       return concat(this.waitForTransaction(query.id), Stream.never());
     } else if (query.sentFromOrTo) {
       let pollInternal: NodeJS.Timeout | undefined;
-      const producer: Producer<ConfirmedTransaction<LightTransaction> | FailedTransaction> = {
+      const producer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
         start: async listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;

@@ -4,7 +4,6 @@ import {
   Algorithm,
   Amount,
   ChainId,
-  Identity,
   Nonce,
   PubkeyBytes,
   SignatureBytes,
@@ -30,10 +29,7 @@ describe("encode", () => {
     algo: Algorithm.Secp256k1,
     data: fromBase64("AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP") as PubkeyBytes,
   };
-  const defaultCreator: Identity = {
-    chainId: "not-used" as ChainId,
-    pubkey: defaultPubkey,
-  };
+  const defaultChainId = "not-used" as ChainId;
   const defaultSender = "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r" as Address;
   const defaultRecipient = "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e" as Address;
   const defaultAmount: Amount = {
@@ -167,7 +163,7 @@ describe("encode", () => {
     it("throws for unsupported transaction", () => {
       const tx = {
         kind: "bns/return_escrow",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         escrowId: "defg",
       };
       expect(() => buildUnsignedTx(tx)).toThrowError(/received transaction of unsupported kind/i);
@@ -176,7 +172,7 @@ describe("encode", () => {
     it("builds a send transaction without fee", () => {
       const tx = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         sender: defaultSender,
         recipient: defaultRecipient,
@@ -213,7 +209,7 @@ describe("encode", () => {
     it("builds a send transaction with fee", () => {
       const tx = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         sender: defaultSender,
         recipient: defaultRecipient,
@@ -261,7 +257,7 @@ describe("encode", () => {
       const tx = {
         transaction: {
           kind: "bcp/send",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           amount: defaultAmount,
           sender: defaultSender,
           recipient: defaultRecipient,

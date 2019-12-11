@@ -12,7 +12,6 @@ import {
   SwapOfferTransaction,
   TransactionQuery,
   UnsignedTransaction,
-  WithCreator,
 } from "@iov/bcp";
 import { QueryString } from "@iov/tendermint-rpc";
 import { As } from "type-tagger";
@@ -45,8 +44,8 @@ export declare function bucketKey(bucket: string): Uint8Array;
 export declare function indexKey(bucket: string, index: string): Uint8Array;
 export declare function isConfirmedWithSwapOfferTransaction(
   tx: ConfirmedTransaction<UnsignedTransaction>,
-): tx is ConfirmedTransaction<SwapOfferTransaction & WithCreator>;
+): tx is ConfirmedTransaction<SwapOfferTransaction>;
 export declare function isConfirmedWithSwapClaimOrAbortTransaction(
   tx: ConfirmedTransaction<UnsignedTransaction>,
-): tx is ConfirmedTransaction<(SwapClaimTransaction | SwapAbortTransaction) & WithCreator>;
+): tx is ConfirmedTransaction<SwapClaimTransaction | SwapAbortTransaction>;
 export declare function buildQueryString(query: TransactionQuery): QueryString;

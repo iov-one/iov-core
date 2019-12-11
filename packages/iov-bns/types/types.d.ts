@@ -3,13 +3,13 @@ import {
   Algorithm,
   Amount,
   ChainId,
-  LightTransaction,
   PubkeyBundle,
   SendTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
   TimestampTimeout,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { As } from "type-tagger";
 export interface CashConfiguration {
@@ -245,46 +245,46 @@ export interface Keyed {
 export interface Decoder<T extends {}> {
   readonly decode: (data: Uint8Array) => T;
 }
-export interface RegisterUsernameTx extends LightTransaction {
+export interface RegisterUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/register_username";
   readonly username: string;
   readonly targets: readonly ChainAddressPair[];
 }
-export declare function isRegisterUsernameTx(tx: LightTransaction): tx is RegisterUsernameTx;
-export interface UpdateTargetsOfUsernameTx extends LightTransaction {
+export declare function isRegisterUsernameTx(tx: UnsignedTransaction): tx is RegisterUsernameTx;
+export interface UpdateTargetsOfUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/update_targets_of_username";
   /** the username to be updated, must exist on chain */
   readonly username: string;
   readonly targets: readonly ChainAddressPair[];
 }
-export declare function isUpdateTargetsOfUsernameTx(tx: LightTransaction): tx is UpdateTargetsOfUsernameTx;
-export interface TransferUsernameTx extends LightTransaction {
+export declare function isUpdateTargetsOfUsernameTx(tx: UnsignedTransaction): tx is UpdateTargetsOfUsernameTx;
+export interface TransferUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/transfer_username";
   /** the username to be transferred, must exist on chain */
   readonly username: string;
   readonly newOwner: Address;
 }
-export declare function isTransferUsernameTx(tx: LightTransaction): tx is TransferUsernameTx;
+export declare function isTransferUsernameTx(tx: UnsignedTransaction): tx is TransferUsernameTx;
 export interface Participant {
   readonly address: Address;
   readonly weight: number;
 }
-export interface CreateMultisignatureTx extends LightTransaction {
+export interface CreateMultisignatureTx extends UnsignedTransaction {
   readonly kind: "bns/create_multisignature_contract";
   readonly participants: readonly Participant[];
   readonly activationThreshold: number;
   readonly adminThreshold: number;
 }
-export declare function isCreateMultisignatureTx(tx: LightTransaction): tx is CreateMultisignatureTx;
-export interface UpdateMultisignatureTx extends LightTransaction {
+export declare function isCreateMultisignatureTx(tx: UnsignedTransaction): tx is CreateMultisignatureTx;
+export interface UpdateMultisignatureTx extends UnsignedTransaction {
   readonly kind: "bns/update_multisignature_contract";
   readonly contractId: Uint8Array;
   readonly participants: readonly Participant[];
   readonly activationThreshold: number;
   readonly adminThreshold: number;
 }
-export declare function isUpdateMultisignatureTx(tx: LightTransaction): tx is UpdateMultisignatureTx;
-export interface CreateEscrowTx extends LightTransaction {
+export declare function isUpdateMultisignatureTx(tx: UnsignedTransaction): tx is UpdateMultisignatureTx;
+export interface CreateEscrowTx extends UnsignedTransaction {
   readonly kind: "bns/create_escrow";
   readonly sender: Address;
   readonly arbiter: Address;
@@ -293,27 +293,27 @@ export interface CreateEscrowTx extends LightTransaction {
   readonly timeout: TimestampTimeout;
   readonly memo?: string;
 }
-export declare function isCreateEscrowTx(tx: LightTransaction): tx is CreateEscrowTx;
-export interface ReleaseEscrowTx extends LightTransaction {
+export declare function isCreateEscrowTx(tx: UnsignedTransaction): tx is CreateEscrowTx;
+export interface ReleaseEscrowTx extends UnsignedTransaction {
   readonly kind: "bns/release_escrow";
   readonly escrowId: number;
   readonly amounts: readonly Amount[];
 }
-export declare function isReleaseEscrowTx(tx: LightTransaction): tx is ReleaseEscrowTx;
-export interface ReturnEscrowTx extends LightTransaction {
+export declare function isReleaseEscrowTx(tx: UnsignedTransaction): tx is ReleaseEscrowTx;
+export interface ReturnEscrowTx extends UnsignedTransaction {
   readonly kind: "bns/return_escrow";
   readonly escrowId: number;
 }
-export declare function isReturnEscrowTx(tx: LightTransaction): tx is ReturnEscrowTx;
-export interface UpdateEscrowPartiesTx extends LightTransaction {
+export declare function isReturnEscrowTx(tx: UnsignedTransaction): tx is ReturnEscrowTx;
+export interface UpdateEscrowPartiesTx extends UnsignedTransaction {
   readonly kind: "bns/update_escrow_parties";
   readonly escrowId: number;
   readonly sender?: Address;
   readonly arbiter?: Address;
   readonly recipient?: Address;
 }
-export declare function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is UpdateEscrowPartiesTx;
-export interface CreateProposalTx extends LightTransaction {
+export declare function isUpdateEscrowPartiesTx(tx: UnsignedTransaction): tx is UpdateEscrowPartiesTx;
+export interface CreateProposalTx extends UnsignedTransaction {
   readonly kind: "bns/create_proposal";
   readonly title: string;
   /**
@@ -330,13 +330,13 @@ export interface CreateProposalTx extends LightTransaction {
   /** The author of the proposal must be included in the list of transaction signers. */
   readonly author: Address;
 }
-export declare function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx;
-export interface VoteTx extends LightTransaction {
+export declare function isCreateProposalTx(transaction: UnsignedTransaction): transaction is CreateProposalTx;
+export interface VoteTx extends UnsignedTransaction {
   readonly kind: "bns/vote";
   readonly proposalId: number;
   readonly selection: VoteOption;
 }
-export declare function isVoteTx(transaction: LightTransaction): transaction is VoteTx;
+export declare function isVoteTx(transaction: UnsignedTransaction): transaction is VoteTx;
 export declare type BnsTx =
   | SendTransaction
   | SwapOfferTransaction
@@ -353,8 +353,8 @@ export declare type BnsTx =
   | UpdateEscrowPartiesTx
   | CreateProposalTx
   | VoteTx;
-export declare function isBnsTx(transaction: LightTransaction): transaction is BnsTx;
-export interface MultisignatureTx extends LightTransaction {
+export declare function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx;
+export interface MultisignatureTx extends UnsignedTransaction {
   readonly multisig: readonly number[];
 }
-export declare function isMultisignatureTx(transaction: LightTransaction): transaction is MultisignatureTx;
+export declare function isMultisignatureTx(transaction: UnsignedTransaction): transaction is MultisignatureTx;

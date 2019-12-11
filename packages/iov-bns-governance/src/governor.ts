@@ -1,4 +1,4 @@
-import { Address, Identity, WithCreator } from "@iov/bcp";
+import { Address, Identity } from "@iov/bcp";
 import {
   ActionKind,
   bnsCodec,
@@ -94,10 +94,10 @@ export class Governor {
     return this.connection.getVotes(this.address);
   }
 
-  public async buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithCreator> {
+  public async buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx> {
     const commonProperties = {
       kind: "bns/create_proposal" as const,
-      creator: this.identity,
+      chainId: this.identity.chainId,
       author: this.address,
       title: options.title,
       description: options.description,
@@ -106,85 +106,106 @@ export class Governor {
     };
     switch (options.type) {
       case ProposalType.AddCommitteeMember:
-        return this.connection.withDefaultFee({
-          ...commonProperties,
-          action: {
-            kind: ActionKind.UpdateElectorate,
-            electorateId: options.committee,
-            diffElectors: {
-              [options.address]: { weight: options.weight },
+        return this.connection.withDefaultFee(
+          {
+            ...commonProperties,
+            action: {
+              kind: ActionKind.UpdateElectorate,
+              electorateId: options.committee,
+              diffElectors: {
+                [options.address]: { weight: options.weight },
+              },
             },
           },
-        });
+          this.address,
+        );
       case ProposalType.RemoveCommitteeMember:
-        return this.connection.withDefaultFee({
-          ...commonProperties,
-          action: {
-            kind: ActionKind.UpdateElectorate,
-            electorateId: options.committee,
-            diffElectors: {
-              [options.address]: { weight: 0 },
+        return this.connection.withDefaultFee(
+          {
+            ...commonProperties,
+            action: {
+              kind: ActionKind.UpdateElectorate,
+              electorateId: options.committee,
+              diffElectors: {
+                [options.address]: { weight: 0 },
+              },
             },
           },
-        });
+          this.address,
+        );
       case ProposalType.AmendElectionRuleThreshold: {
         const { quorum, votingPeriod } = await this.getElectionRuleById(options.targetElectionRuleId);
-        return this.connection.withDefaultFee({
-          ...commonProperties,
-          action: {
-            kind: ActionKind.UpdateElectionRule,
-            electionRuleId: options.targetElectionRuleId,
-            threshold: options.threshold,
-            quorum: quorum,
-            votingPeriod: votingPeriod,
+        return this.connection.withDefaultFee(
+          {
+            ...commonProperties,
+            action: {
+              kind: ActionKind.UpdateElectionRule,
+              electionRuleId: options.targetElectionRuleId,
+              threshold: options.threshold,
+              quorum: quorum,
+              votingPeriod: votingPeriod,
+            },
           },
-        });
+          this.address,
+        );
       }
       case ProposalType.AmendElectionRuleQuorum: {
         const { threshold, votingPeriod } = await this.getElectionRuleById(options.targetElectionRuleId);
-        return this.connection.withDefaultFee({
-          ...commonProperties,
-          action: {
-            kind: ActionKind.UpdateElectionRule,
-            electionRuleId: options.targetElectionRuleId,
-            threshold: threshold,
-            quorum: options.quorum,
-            votingPeriod: votingPeriod,
+        return this.connection.withDefaultFee(
+          {
+            ...commonProperties,
+            action: {
+              kind: ActionKind.UpdateElectionRule,
+              electionRuleId: options.targetElectionRuleId,
+              threshold: threshold,
+              quorum: options.quorum,
+              votingPeriod: votingPeriod,
+            },
           },
-        });
+          this.address,
+        );
       }
       case ProposalType.AddValidator:
-        return this.connection.withDefaultFee({
-          ...commonProperties,
-          action: {
-            kind: ActionKind.SetValidators,
-            validatorUpdates: {
-              [`ed25519_${toHex(options.pubkey.data)}`]: { power: options.power },
+        return this.connection.withDefaultFee(
+          {
+            ...commonProperties,
+            action: {
+              kind: ActionKind.SetValidators,
+              validatorUpdates: {
+                [`ed25519_${toHex(options.pubkey.data)}`]: { power: options.power },
+              },
             },
           },
-        });
+          this.address,
+        );
       case ProposalType.RemoveValidator:
-        return this.connection.withDefaultFee({
-          ...commonProperties,
-          action: {
-            kind: ActionKind.SetValidators,
-            validatorUpdates: {
-              [`ed25519_${toHex(options.pubkey.data)}`]: { power: 0 },
+        return this.connection.withDefaultFee(
+          {
+            ...commonProperties,
+            action: {
+              kind: ActionKind.SetValidators,
+              validatorUpdates: {
+                [`ed25519_${toHex(options.pubkey.data)}`]: { power: 0 },
+              },
             },
           },
-        });
+          this.address,
+        );
       case ProposalType.ReleaseGuaranteeFunds:
         if (!this.guaranteeFundEscrowId) {
           throw new Error("This Governor instance was not initialised with a guaranteeFundEscrowId");
         }
-        return this.connection.withDefaultFee({
-          ...commonProperties,
-          action: {
-            kind: ActionKind.ReleaseEscrow,
-            escrowId: this.guaranteeFundEscrowId,
-            amount: options.amount,
+        return this.connection.withDefaultFee(
+          {
+            ...commonProperties,
+            action: {
+              kind: ActionKind.ReleaseEscrow,
+              escrowId: this.guaranteeFundEscrowId,
+              amount: options.amount,
+            },
           },
-        });
+          this.address,
+        );
       case ProposalType.DistributeFunds: {
         if (!this.rewardFundAddress) {
           throw new Error("This Governor instance was not initialised with a rewardFundAddress");
@@ -217,33 +238,42 @@ export class Governor {
           })
           .reduce((accumulator, next) => [...accumulator, ...next], []);
 
-        return this.connection.withDefaultFee({
-          ...commonProperties,
-          action: {
-            kind: ActionKind.ExecuteProposalBatch,
-            messages: messages,
+        return this.connection.withDefaultFee(
+          {
+            ...commonProperties,
+            action: {
+              kind: ActionKind.ExecuteProposalBatch,
+              messages: messages,
+            },
           },
-        });
+          this.address,
+        );
       }
       case ProposalType.AmendProtocol:
-        return this.connection.withDefaultFee({
-          ...commonProperties,
-          action: {
-            kind: ActionKind.CreateTextResolution,
-            resolution: options.text,
+        return this.connection.withDefaultFee(
+          {
+            ...commonProperties,
+            action: {
+              kind: ActionKind.CreateTextResolution,
+              resolution: options.text,
+            },
           },
-        });
+          this.address,
+        );
       default:
         throw new Error("Proposal type not yet supported");
     }
   }
 
-  public async buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx & WithCreator> {
-    return this.connection.withDefaultFee({
-      kind: "bns/vote",
-      creator: this.identity,
-      proposalId: proposalId,
-      selection: selection,
-    });
+  public async buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx> {
+    return this.connection.withDefaultFee(
+      {
+        kind: "bns/vote",
+        chainId: this.identity.chainId,
+        proposalId: proposalId,
+        selection: selection,
+      },
+      this.address,
+    );
   }
 }

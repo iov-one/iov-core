@@ -24,7 +24,6 @@ import {
   isSwapProcessStateAborted,
   isSwapProcessStateClaimed,
   isSwapProcessStateOpen,
-  LightTransaction,
   Nonce,
   OpenSwap,
   PostableBytes,
@@ -693,7 +692,9 @@ export class EthereumConnection implements AtomicSwapConnection {
     return searchResults[0];
   }
 
-  public async searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction<LightTransaction>[]> {
+  public async searchTx(
+    query: TransactionQuery,
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -723,7 +724,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
   public listenTx(
     query: TransactionQuery,
-  ): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
@@ -736,7 +737,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const sentFromOrTo = query.sentFromOrTo;
 
       let pollIntervalScraper: NodeJS.Timeout | undefined;
-      const fromScraperProducer: Producer<ConfirmedTransaction<LightTransaction> | FailedTransaction> = {
+      const fromScraperProducer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
         start: async listener => {
           const searchStartHeight = (await this.height()) - 1; // TODO: get current height from scraper
           let minHeight = Math.max(query.minHeight || 0, searchStartHeight);
@@ -772,7 +773,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       };
 
       let pollIntervalLogs: NodeJS.Timeout | undefined;
-      const fromLogsProducer: Producer<ConfirmedTransaction<LightTransaction> | FailedTransaction> = {
+      const fromLogsProducer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
         start: async listener => {
           const currentHeight = await this.height();
           let minHeight = Math.max(query.minHeight || 0, currentHeight + 1);
@@ -812,13 +813,17 @@ export class EthereumConnection implements AtomicSwapConnection {
     }
   }
 
-  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+  public liveTx(
+    query: TransactionQuery,
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     if (query.height || query.tags || query.signedBy) {
       throw new Error("Query by height, tags or signedBy not supported");
     }
 
     if (query.id !== undefined) {
-      const searchUntilFound = async (id: TransactionId): Promise<ConfirmedTransaction<LightTransaction>> => {
+      const searchUntilFound = async (
+        id: TransactionId,
+      ): Promise<ConfirmedTransaction<UnsignedTransaction>> => {
         // eslint-disable-next-line no-constant-condition
         while (true) {
           const searchResult = await this.searchTransactionsById(id);
@@ -836,7 +841,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       const sentFromOrTo = query.sentFromOrTo;
 
       let pollIntervalScraper: NodeJS.Timeout | undefined;
-      const fromScraperProducer: Producer<ConfirmedTransaction<LightTransaction> | FailedTransaction> = {
+      const fromScraperProducer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
         start: async listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
@@ -871,7 +876,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       };
 
       let pollIntervalLogs: NodeJS.Timeout | undefined;
-      const fromLogsProducer: Producer<ConfirmedTransaction<LightTransaction> | FailedTransaction> = {
+      const fromLogsProducer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
         start: async listener => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
@@ -1008,9 +1013,9 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<readonly ConfirmedTransaction<LightTransaction>[]> {
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     // tslint:disable-next-line:readonly-array
-    const out: ConfirmedTransaction<LightTransaction>[] = [];
+    const out: ConfirmedTransaction<UnsignedTransaction>[] = [];
 
     if (this.scraperApiUrl) {
       const fromScraper = await this.searchSendTransactionsByAddressOnScraper(address, minHeight, maxHeight);
@@ -1033,7 +1038,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     address: Address,
     minHeight: number,
     maxHeight: number,
-  ): Promise<readonly ConfirmedTransaction<LightTransaction>[]> {
+  ): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]> {
     if (!this.scraperApiUrl) {
       throw new Error("No scraper API URL specified.");
     }
@@ -1043,7 +1048,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     }
 
     // tslint:disable-next-line:readonly-array
-    const out: ConfirmedTransaction<LightTransaction>[] = [];
+    const out: ConfirmedTransaction<UnsignedTransaction>[] = [];
 
     // API: https://etherscan.io/apis#accounts
     const responseBody = (
@@ -1064,6 +1069,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           const confirmed: ConfirmedTransaction<SendTransaction> = {
             transaction: {
               kind: "bcp/send",
+              chainId: this.chainId(),
               sender: toChecksummedAddress(transaction.from),
               recipient: toChecksummedAddress(transaction.to),
               amount: {

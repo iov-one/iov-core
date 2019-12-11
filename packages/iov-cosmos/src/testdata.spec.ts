@@ -11,7 +11,6 @@ import {
   SignedTransaction,
   TokenTicker,
   TransactionId,
-  WithCreator,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
@@ -28,12 +27,9 @@ export const chainId = "cosmos:cosmoshub-2" as ChainId;
 
 export const nonce = 99 as Nonce;
 
-export const sendTxJson: SendTransaction & WithCreator = {
+export const sendTxJson: SendTransaction = {
   kind: "bcp/send",
-  creator: {
-    chainId: chainId,
-    pubkey: pubJson,
-  },
+  chainId: chainId,
   sender: data.tx.value.msg[0].value.from_address as Address,
   recipient: data.tx.value.msg[0].value.to_address as Address,
   memo: data.tx.value.memo,

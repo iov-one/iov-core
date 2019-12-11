@@ -12,14 +12,12 @@ import {
   isOpenSwap,
   OpenSwap,
   Preimage,
-  PubkeyBundle,
   SendTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
   SwapProcessState,
   TokenTicker,
   UnsignedTransaction,
-  WithCreator,
 } from "@iov/bcp";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import BN from "bn.js";
@@ -94,9 +92,9 @@ class Actor {
     this.receiverIdentity = data.receiverIdentity;
   }
 
-  public async sendTransaction(transaction: UnsignedTransaction, pubkey: PubkeyBundle): Promise<void> {
-    const nonce = await this.connection.getNonce({ pubkey: pubkey });
-    const signed = await this.profile.signTransaction(transaction.creator, transaction, ethereumCodec, nonce);
+  public async sendTransaction(transaction: UnsignedTransaction, identity: Identity): Promise<void> {
+    const nonce = await this.connection.getNonce({ pubkey: identity.pubkey });
+    const signed = await this.profile.signTransaction(identity, transaction, ethereumCodec, nonce);
     const postable = await ethereumCodec.bytesToPost(signed);
     const post = await this.connection.postTx(postable);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -106,24 +104,24 @@ class Actor {
   }
 
   public async sendEther(recipient: Address, amount: Amount): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<SendTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
-      creator: this.senderIdentity,
+      chainId: this.senderIdentity.chainId,
       sender: ethereumCodec.identityToAddress(this.senderIdentity),
       recipient: recipient,
       amount: amount,
     });
-    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
+    return this.sendTransaction(transaction, this.senderIdentity);
   }
 
   public async approveErc20Spend(amount: Amount): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<Erc20ApproveTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<Erc20ApproveTransaction>({
       kind: "erc20/approve",
-      creator: this.senderIdentity,
+      chainId: this.senderIdentity.chainId,
       spender: testConfig.connectionOptions.atomicSwapErc20ContractAddress!,
       amount: amount,
     });
-    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
+    return this.sendTransaction(transaction, this.senderIdentity);
   }
 
   public async getSenderEtherBalance(): Promise<BN> {
@@ -171,9 +169,10 @@ class Actor {
     const swapId = await (amount.tokenTicker === ETH
       ? EthereumConnection.createEtherSwapId()
       : EthereumConnection.createErc20SwapId());
-    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
-      creator: this.senderIdentity,
+      chainId: this.senderIdentity.chainId,
+      sender: this.sendAddress,
       recipient: recipient,
       amounts: [amount],
       swapId: swapId,
@@ -182,16 +181,17 @@ class Actor {
         height: (await this.connection.height()) + 50,
       },
     });
-    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
+    return this.sendTransaction(transaction, this.senderIdentity);
   }
 
   public async sendSwapCounter(recipient: Address, amount: Amount, offer: AtomicSwap): Promise<void> {
     const swapId = await (amount.tokenTicker === ETH
       ? EthereumConnection.createEtherSwapId()
       : EthereumConnection.createErc20SwapId());
-    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
-      creator: this.senderIdentity,
+      chainId: this.senderIdentity.chainId,
+      sender: this.sendAddress,
       recipient: recipient,
       amounts: [amount],
       swapId: swapId,
@@ -200,27 +200,27 @@ class Actor {
         height: (await this.connection.height()) + 50,
       },
     });
-    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
+    return this.sendTransaction(transaction, this.senderIdentity);
   }
 
   public async claimFromKnownPreimage(counter: AtomicSwap): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
-      creator: this.receiverIdentity,
+      chainId: this.receiverIdentity.chainId,
       swapId: counter.data.id,
       preimage: this.preimage!,
     });
-    return this.sendTransaction(transaction, this.receiverIdentity.pubkey);
+    return this.sendTransaction(transaction, this.receiverIdentity);
   }
 
   public async claimFromRevealedPreimage(offer: OpenSwap, claimed: ClaimedSwap): Promise<void> {
-    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction & WithCreator>({
+    const transaction = await this.connection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
-      creator: this.receiverIdentity,
+      chainId: this.receiverIdentity.chainId,
       swapId: offer.data.id,
       preimage: claimed.preimage,
     });
-    return this.sendTransaction(transaction, this.receiverIdentity.pubkey);
+    return this.sendTransaction(transaction, this.receiverIdentity);
   }
 }
 

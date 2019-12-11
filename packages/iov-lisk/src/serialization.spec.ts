@@ -8,7 +8,6 @@ import {
   SignatureBytes,
   SignedTransaction,
   TokenTicker,
-  WithCreator,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 import { ReadonlyDate } from "readonly-date";
@@ -89,12 +88,10 @@ describe("Serialization", () => {
 
   describe("serializeTransaction", () => {
     it("can serialize Lisk transaction of type 0 without memo", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -113,12 +110,10 @@ describe("Serialization", () => {
     });
 
     it("throws error if fractionalDigits are not correct", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 9,
@@ -132,13 +127,11 @@ describe("Serialization", () => {
       ).toThrowError(/Requires 8/);
     });
 
-    it("throws error if creator does not match sender", () => {
-      const tx: SendTransaction & WithCreator = {
+    it("throws error if sender public key does not match sender address", () => {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -149,16 +142,14 @@ describe("Serialization", () => {
       };
       expect(() =>
         serializeTransaction(tx, defaultCreationDate, liskTransactionSerializationOptions),
-      ).toThrowError(/creator does not match sender/i);
+      ).toThrowError(/sender pubkey does not match sender address/i);
     });
 
     it("can serialize Lisk transaction of type 0 with memo", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -178,12 +169,10 @@ describe("Serialization", () => {
     });
 
     it("fails to serialize Lisk transaction of type 0 with memo > 64 chars", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -200,12 +189,10 @@ describe("Serialization", () => {
     });
 
     it("fails to serialize Lisk transaction of type 0 with memo > 64 bytes", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -223,12 +210,10 @@ describe("Serialization", () => {
     });
 
     it("works for transaction with fee", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -250,12 +235,10 @@ describe("Serialization", () => {
     });
 
     it("fails to serialize transaction with empty fee", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -274,12 +257,10 @@ describe("Serialization", () => {
     });
 
     it("fails to serialize transaction with gasLimit", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -298,12 +279,10 @@ describe("Serialization", () => {
     });
 
     it("fails to serialize transaction with gasPrice", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,
@@ -328,12 +307,10 @@ describe("Serialization", () => {
 
   describe("transactionId", () => {
     it("can calculate ID of Lisk transaction of type 0 without memo", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: liskTestnet,
-          pubkey: defaultPublicKey,
-        },
+        chainId: liskTestnet,
+        senderPubkey: defaultPublicKey,
         amount: {
           quantity: "123456789",
           fractionalDigits: 8,

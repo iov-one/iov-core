@@ -5,14 +5,12 @@ import {
   ChainId,
   FullSignature,
   Hash,
-  Identity,
   Nonce,
   PubkeyBytes,
   SendTransaction,
   SignatureBytes,
   SwapOfferTransaction,
   TokenTicker,
-  WithCreator,
 } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -182,15 +180,7 @@ describe("Encode", () => {
   });
 
   describe("buildUnsignedTx", () => {
-    const defaultCreator: Identity = {
-      chainId: "some-chain" as ChainId,
-      pubkey: {
-        algo: Algorithm.Ed25519,
-        // Random 32 bytes pubkey. Derived IOV address:
-        // tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3 / 6e1114f57410d8e7bcd910a568c9196efc1479e4
-        data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PubkeyBytes,
-      },
-    };
+    const defaultChainId = "some-chain" as ChainId;
     const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
     const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
 
@@ -201,9 +191,9 @@ describe("Encode", () => {
     };
 
     it("can encode transaction without fees", () => {
-      const transaction: SendTransaction & WithCreator = {
+      const transaction: SendTransaction = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         sender: defaultSender,
         recipient: defaultRecipient,
@@ -218,15 +208,16 @@ describe("Encode", () => {
     });
 
     it("can encode transaction with fees", () => {
-      const transaction: SendTransaction & WithCreator = {
+      const transaction: SendTransaction = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         sender: defaultSender,
         recipient: defaultRecipient,
         memo: "paid transaction",
         fee: {
           tokens: defaultAmount,
+          payer: defaultSender,
         },
       };
 
@@ -243,9 +234,9 @@ describe("Encode", () => {
 
     it("can encode transaction with fees when fee payer is not the main signer", () => {
       const defaultRecipientWeaveAddress = fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282");
-      const transaction: SendTransaction & WithCreator = {
+      const transaction: SendTransaction = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         sender: defaultSender,
         recipient: defaultRecipient,
@@ -268,9 +259,9 @@ describe("Encode", () => {
     });
 
     it("can encode transaction with multisig", () => {
-      const transaction: SendTransaction & MultisignatureTx & WithCreator = {
+      const transaction: SendTransaction & MultisignatureTx = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         sender: defaultSender,
         recipient: defaultRecipient,
@@ -290,9 +281,9 @@ describe("Encode", () => {
     });
 
     it("throws for multisig transaction with zero entries", () => {
-      const transaction: SendTransaction & MultisignatureTx & WithCreator = {
+      const transaction: SendTransaction & MultisignatureTx = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         sender: defaultSender,
         recipient: defaultRecipient,
@@ -306,15 +297,7 @@ describe("Encode", () => {
   });
 
   describe("buildMsg", () => {
-    const defaultCreator: Identity = {
-      chainId: "registry-chain" as ChainId,
-      pubkey: {
-        algo: Algorithm.Ed25519,
-        // Random 32 bytes pubkey. Derived IOV address:
-        // tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3 / 6e1114f57410d8e7bcd910a568c9196efc1479e4
-        data: fromHex("7196c465e4c95b3dce425784f51936b95da6bc58b3212648cdca64ee7198df47") as PubkeyBytes,
-      },
-    };
+    const defaultChainId = "registry-chain" as ChainId;
     const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
     // weave address hex: b1ca7e78f74423ae01da3b51e676934d9105f282
     const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
@@ -329,9 +312,9 @@ describe("Encode", () => {
     // Token sends
 
     it("works for SendTransaction", () => {
-      const transaction: SendTransaction & WithCreator = {
+      const transaction: SendTransaction = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         sender: defaultSender,
         recipient: defaultRecipient,
@@ -348,15 +331,16 @@ describe("Encode", () => {
       expect(msg.ref!.length).toEqual(0);
     });
 
-    it("works for SendTransaction with mismatched sender and creator", () => {
-      const transaction: SendTransaction & WithCreator = {
+    it("works for SendTransaction with mismatched sender pubkey and address", () => {
+      const transaction: SendTransaction = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: {
           quantity: "1000000001",
           fractionalDigits: 9,
           tokenTicker: "CASH" as TokenTicker,
         },
+        senderPubkey: pubJson,
         sender: defaultRecipient,
         recipient: defaultRecipient,
         memo: "abc",
@@ -374,9 +358,9 @@ describe("Encode", () => {
     // Usernames
 
     it("works for UpdateTargetsOfUsernameTx", () => {
-      const addAddress: UpdateTargetsOfUsernameTx & WithCreator = {
+      const addAddress: UpdateTargetsOfUsernameTx = {
         kind: "bns/update_targets_of_username",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         username: "alice*iov",
         targets: [
           {
@@ -392,9 +376,9 @@ describe("Encode", () => {
     });
 
     it("works for RegisterUsernameTx", () => {
-      const registerUsername: RegisterUsernameTx & WithCreator = {
+      const registerUsername: RegisterUsernameTx = {
         kind: "bns/register_username",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         username: "alice*iov",
         targets: [
           {
@@ -424,9 +408,9 @@ describe("Encode", () => {
     });
 
     it("works for TransferUsernameTx", () => {
-      const transfer: TransferUsernameTx & WithCreator = {
+      const transfer: TransferUsernameTx = {
         kind: "bns/transfer_username",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         username: "alice*iov",
         newOwner: defaultRecipient,
       };
@@ -467,9 +451,9 @@ describe("Encode", () => {
           weight: 1,
         },
       ];
-      const createMultisignature: CreateMultisignatureTx & WithCreator = {
+      const createMultisignature: CreateMultisignatureTx = {
         kind: "bns/create_multisignature_contract",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         participants: participants,
         activationThreshold: 2,
         adminThreshold: 3,
@@ -510,9 +494,9 @@ describe("Encode", () => {
           weight: 1,
         },
       ];
-      const updateMultisignature: UpdateMultisignatureTx & WithCreator = {
+      const updateMultisignature: UpdateMultisignatureTx = {
         kind: "bns/update_multisignature_contract",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         contractId: fromHex("abcdef0123"),
         participants: participants,
         activationThreshold: 3,
@@ -532,9 +516,9 @@ describe("Encode", () => {
         timestamp: new Date().valueOf(),
       };
       const memo = "testing 123";
-      const createEscrow: CreateEscrowTx & WithCreator = {
+      const createEscrow: CreateEscrowTx = {
         kind: "bns/create_escrow",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         sender: defaultSender,
         arbiter: defaultArbiter,
         recipient: defaultRecipient,
@@ -557,9 +541,9 @@ describe("Encode", () => {
     });
 
     it("works for ReleaseEscrowTx", () => {
-      const releaseEscrow: ReleaseEscrowTx & WithCreator = {
+      const releaseEscrow: ReleaseEscrowTx = {
         kind: "bns/release_escrow",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         escrowId: defaultEscrowId,
         amounts: [defaultAmount],
       };
@@ -574,9 +558,9 @@ describe("Encode", () => {
     });
 
     it("works for ReturnEscrowTx", () => {
-      const returnEscrow: ReturnEscrowTx & WithCreator = {
+      const returnEscrow: ReturnEscrowTx = {
         kind: "bns/return_escrow",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         escrowId: defaultEscrowId,
       };
       const msg = buildMsg(returnEscrow).escrowReturnMsg!;
@@ -586,9 +570,9 @@ describe("Encode", () => {
     });
 
     it("works for UpdateEscrowPartiesTx", () => {
-      const updateEscrowSender: UpdateEscrowPartiesTx & WithCreator = {
+      const updateEscrowSender: UpdateEscrowPartiesTx = {
         kind: "bns/update_escrow_parties",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         escrowId: defaultEscrowId,
         sender: defaultSender,
       };
@@ -598,9 +582,9 @@ describe("Encode", () => {
       expect(msg1.escrowId).toEqual(fromHex("0000000000000004"));
       expect(msg1.source).toEqual(fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"));
 
-      const updateEscrowRecipient: UpdateEscrowPartiesTx & WithCreator = {
+      const updateEscrowRecipient: UpdateEscrowPartiesTx = {
         kind: "bns/update_escrow_parties",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         escrowId: defaultEscrowId,
         recipient: defaultRecipient,
       };
@@ -610,9 +594,9 @@ describe("Encode", () => {
       expect(msg2.escrowId).toEqual(fromHex("0000000000000004"));
       expect(msg2.destination).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
 
-      const updateEscrowArbiter: UpdateEscrowPartiesTx & WithCreator = {
+      const updateEscrowArbiter: UpdateEscrowPartiesTx = {
         kind: "bns/update_escrow_parties",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         escrowId: defaultEscrowId,
         arbiter: defaultArbiter,
       };
@@ -624,9 +608,9 @@ describe("Encode", () => {
     });
 
     it("only updates one party at a time", () => {
-      const updateEscrowParties: UpdateEscrowPartiesTx & WithCreator = {
+      const updateEscrowParties: UpdateEscrowPartiesTx = {
         kind: "bns/update_escrow_parties",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         escrowId: defaultEscrowId,
         sender: defaultSender,
         arbiter: defaultArbiter,
@@ -638,9 +622,9 @@ describe("Encode", () => {
 
     describe("CreateProposalTx", () => {
       it("works with CreateTextResolution action", () => {
-        const createProposal: CreateProposalTx & WithCreator = {
+        const createProposal: CreateProposalTx = {
           kind: "bns/create_proposal",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           title: "Why not try this?",
           action: {
             kind: ActionKind.CreateTextResolution,
@@ -669,9 +653,9 @@ describe("Encode", () => {
       });
 
       it("works with ExecuteProposalBatch action with array of Send actions", () => {
-        const createProposal: CreateProposalTx & WithCreator = {
+        const createProposal: CreateProposalTx = {
           kind: "bns/create_proposal",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           title: "Why not try this?",
           action: {
             kind: ActionKind.ExecuteProposalBatch,
@@ -743,9 +727,9 @@ describe("Encode", () => {
       });
 
       it("works with ReleaseEscrow action", () => {
-        const createProposal: CreateProposalTx & WithCreator = {
+        const createProposal: CreateProposalTx = {
           kind: "bns/create_proposal",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           title: "Why not try this?",
           action: {
             kind: ActionKind.ReleaseEscrow,
@@ -782,9 +766,9 @@ describe("Encode", () => {
       });
 
       it("works with SetValidators action", () => {
-        const createProposal: CreateProposalTx & WithCreator = {
+        const createProposal: CreateProposalTx = {
           kind: "bns/create_proposal",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           title: "Why not try this?",
           action: {
             kind: ActionKind.SetValidators,
@@ -824,9 +808,9 @@ describe("Encode", () => {
       });
 
       it("works with UpdateElectionRule action", () => {
-        const createProposal: CreateProposalTx & WithCreator = {
+        const createProposal: CreateProposalTx = {
           kind: "bns/create_proposal",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           title: "Why not try this?",
           action: {
             kind: ActionKind.UpdateElectionRule,
@@ -873,9 +857,9 @@ describe("Encode", () => {
       });
 
       it("works with UpdateElectorate action", () => {
-        const createProposal: CreateProposalTx & WithCreator = {
+        const createProposal: CreateProposalTx = {
           kind: "bns/create_proposal",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           title: "Why not try this?",
           action: {
             kind: ActionKind.UpdateElectorate,
@@ -908,9 +892,9 @@ describe("Encode", () => {
       });
 
       it("works with SetMsgFee action", () => {
-        const createProposal: CreateProposalTx & WithCreator = {
+        const createProposal: CreateProposalTx = {
           kind: "bns/create_proposal",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           title: "Why not try this?",
           action: {
             kind: ActionKind.SetMsgFee,
@@ -950,9 +934,9 @@ describe("Encode", () => {
     });
 
     it("works for VoteTx", () => {
-      const vote: VoteTx & WithCreator = {
+      const vote: VoteTx = {
         kind: "bns/vote",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         proposalId: 733292968738,
         selection: VoteOption.Abstain,
       };
@@ -968,16 +952,16 @@ describe("Encode", () => {
 
     it("encodes unset and empty memo the same way", () => {
       {
-        const memoUnset: SendTransaction & WithCreator = {
+        const memoUnset: SendTransaction = {
           kind: "bcp/send",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           sender: defaultSender,
           amount: defaultAmount,
           recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
         };
-        const memoEmpty: SendTransaction & WithCreator = {
+        const memoEmpty: SendTransaction = {
           kind: "bcp/send",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           sender: defaultSender,
           amount: defaultAmount,
           recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
@@ -987,18 +971,20 @@ describe("Encode", () => {
       }
 
       {
-        const memoUnset: SwapOfferTransaction & WithCreator = {
+        const memoUnset: SwapOfferTransaction = {
           kind: "bcp/swap_offer",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           amounts: [],
+          sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
           recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
           timeout: { timestamp: 22 },
           hash: fromHex("aabbccdd") as Hash,
         };
-        const memoEmpty: SwapOfferTransaction & WithCreator = {
+        const memoEmpty: SwapOfferTransaction = {
           kind: "bcp/swap_offer",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           amounts: [],
+          sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
           recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
           timeout: { timestamp: 22 },
           hash: fromHex("aabbccdd") as Hash,
@@ -1010,9 +996,9 @@ describe("Encode", () => {
 
     it("throws for transactions with invalid memo length", () => {
       {
-        const transaction: SendTransaction & WithCreator = {
+        const transaction: SendTransaction = {
           kind: "bcp/send",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           amount: {
             quantity: "1000000001",
             fractionalDigits: 9,
@@ -1026,10 +1012,11 @@ describe("Encode", () => {
         expect(() => buildMsg(transaction)).toThrowError(/invalid memo length/i);
       }
       {
-        const transaction: SwapOfferTransaction & WithCreator = {
+        const transaction: SwapOfferTransaction = {
           kind: "bcp/swap_offer",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           amounts: [],
+          sender: "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address,
           recipient: "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address,
           timeout: { timestamp: 22 },
           hash: fromHex("aabbccdd") as Hash,
@@ -1080,7 +1067,7 @@ describe("Ensure crypto", () => {
 
     const tx = buildUnsignedTx(sendTxJson);
     const encoded = codecImpl.bnsd.Tx.encode(tx).finish();
-    const toSign = appendSignBytes(encoded, sendTxJson.creator.chainId, signedTxSig.nonce);
+    const toSign = appendSignBytes(encoded, sendTxJson.chainId, signedTxSig.nonce);
     // testvector output already has the sha-512 digest applied
     const prehash = new Sha512(toSign).digest();
     expect(prehash).toEqual(sendTxSignBytes);

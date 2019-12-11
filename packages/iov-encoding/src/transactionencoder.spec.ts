@@ -6,12 +6,10 @@ const { fromJson, toJson } = TransactionEncoder;
 
 /** An example of how this could potentially be used */
 interface TestTransaction {
-  readonly creator: {
-    readonly chainId: string;
-    readonly pubkey: {
-      readonly algo: string;
-      readonly data: Uint8Array;
-    };
+  readonly chainId: string;
+  readonly senderPubkey: {
+    readonly algo: string;
+    readonly data: Uint8Array;
   };
   readonly kind: "send_transaction";
   readonly fee?: {
@@ -38,12 +36,10 @@ interface TestTransaction {
 }
 
 describe("TransactionEncoder", () => {
-  const defaultCreator = {
-    chainId: "testchain",
-    pubkey: {
-      algo: "ed25519",
-      data: Encoding.fromHex("aabbccdd"),
-    },
+  const defaultChainId = "testchain";
+  const defaultPubkey = {
+    algo: "ed25519",
+    data: Encoding.fromHex("aabbccdd"),
   };
   const defaultAmount = {
     quantity: "123",
@@ -183,7 +179,8 @@ describe("TransactionEncoder", () => {
     it("encodes and decodes a full send transaction", () => {
       const original: TestTransaction = {
         kind: "send_transaction",
-        creator: defaultCreator,
+        chainId: defaultChainId,
+        senderPubkey: defaultPubkey,
         memo: "Hello hello",
         amount: defaultAmount,
         sender: "not used",
@@ -193,13 +190,14 @@ describe("TransactionEncoder", () => {
 
       const restored = fromJson(toJson(original));
       expect(restored).toEqual(original);
-      expect(isUint8Array(restored.creator.pubkey.data)).toEqual(true);
+      expect(isUint8Array(restored.senderPubkey.data)).toEqual(true);
     });
 
     it("encodes and decodes a send transaction without memo", () => {
       const original: TestTransaction = {
         kind: "send_transaction",
-        creator: defaultCreator,
+        chainId: defaultChainId,
+        senderPubkey: defaultPubkey,
         amount: defaultAmount,
         sender: "not used",
         recipient: "aabbcc",
@@ -208,13 +206,14 @@ describe("TransactionEncoder", () => {
 
       const restored = fromJson(toJson(original));
       expect(restored).toEqual(original);
-      expect(isUint8Array(restored.creator.pubkey.data)).toEqual(true);
+      expect(isUint8Array(restored.senderPubkey.data)).toEqual(true);
     });
 
     it("encodes and decodes a send transaction with memo set to undefined", () => {
       const original: TestTransaction = {
         kind: "send_transaction",
-        creator: defaultCreator,
+        chainId: defaultChainId,
+        senderPubkey: defaultPubkey,
         amount: defaultAmount,
         memo: undefined,
         sender: "not used",
@@ -225,7 +224,8 @@ describe("TransactionEncoder", () => {
       const restored = fromJson(toJson(original));
       expect(restored).toEqual({
         kind: "send_transaction",
-        creator: defaultCreator,
+        chainId: defaultChainId,
+        senderPubkey: defaultPubkey,
         amount: defaultAmount,
         // memo key does not exist anymore
         sender: "not used",

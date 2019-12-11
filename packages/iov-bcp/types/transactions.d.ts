@@ -105,7 +105,7 @@ export interface Fee {
 }
 export declare function isFee(data: unknown): data is Fee;
 /** The basic transaction type all transactions should extend */
-export interface LightTransaction {
+export interface UnsignedTransaction {
   /**
    * Kind describes the kind of transaction as a "<domain>/<concrete_type>" tuple.
    *
@@ -118,32 +118,23 @@ export interface LightTransaction {
    * other way of namespacing later on, so don't use the `kind` property as a value.
    */
   readonly kind: string;
+  readonly chainId: ChainId;
   readonly fee?: Fee;
 }
-export declare function isLightTransaction(data: unknown): data is LightTransaction;
-export interface WithCreator {
-  /**
-   * The creator of the transaction.
-   *
-   * This implicitly fixes the chain ID this transaction can be used on.
-   */
-  readonly creator: Identity;
-}
-export declare type UnsignedTransaction = LightTransaction & WithCreator;
 export declare function isUnsignedTransaction(data: unknown): data is UnsignedTransaction;
 /** An interface to ensure the transaction property of other types is in sync */
-export interface TransactionContainer<T extends LightTransaction> {
+export interface TransactionContainer<T extends UnsignedTransaction> {
   /** The transaction content */
   readonly transaction: T;
 }
 /** A signable transaction knows how to serialize itself and how to store signatures */
-export interface SignedTransaction<T extends LightTransaction = UnsignedTransaction>
+export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTransaction>
   extends TransactionContainer<T> {
   readonly primarySignature: FullSignature;
   /** signatures can be appended as this is signed */
   readonly otherSignatures: readonly FullSignature[];
 }
-export interface ConfirmedTransaction<T extends LightTransaction> extends TransactionContainer<T> {
+export interface ConfirmedTransaction<T extends UnsignedTransaction> extends TransactionContainer<T> {
   readonly height: number;
   /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
   readonly confirmations: number;
@@ -172,18 +163,22 @@ export interface FailedTransaction {
    */
   readonly message?: string;
 }
-export declare function isConfirmedTransaction<T extends LightTransaction>(
+export declare function isConfirmedTransaction<T extends UnsignedTransaction>(
   transaction: ConfirmedTransaction<T> | FailedTransaction,
 ): transaction is ConfirmedTransaction<T>;
-export declare function isFailedTransaction<T extends LightTransaction>(
+export declare function isFailedTransaction<T extends UnsignedTransaction>(
   transaction: ConfirmedTransaction<T> | FailedTransaction,
 ): transaction is FailedTransaction;
-export declare type ConfirmedAndSignedTransaction<T extends LightTransaction> = ConfirmedTransaction<T> &
+export declare type ConfirmedAndSignedTransaction<T extends UnsignedTransaction> = ConfirmedTransaction<T> &
   SignedTransaction<T>;
-export interface SendTransaction extends LightTransaction {
+export declare function isConfirmedAndSignedTransaction<T extends UnsignedTransaction>(
+  transaction: ConfirmedAndSignedTransaction<T> | FailedTransaction,
+): transaction is ConfirmedAndSignedTransaction<T>;
+export interface SendTransaction extends UnsignedTransaction {
   readonly kind: "bcp/send";
   readonly amount: Amount;
   readonly sender: Address;
+  readonly senderPubkey?: PubkeyBundle;
   readonly recipient: Address;
   readonly memo?: string;
 }
@@ -199,4 +194,4 @@ export interface TimestampTimeout {
 }
 export declare function isTimestampTimeout(timeout: SwapTimeout): timeout is TimestampTimeout;
 export declare function createTimestampTimeout(secondsFromNow: number): TimestampTimeout;
-export declare function isSendTransaction(transaction: LightTransaction): transaction is SendTransaction;
+export declare function isSendTransaction(transaction: UnsignedTransaction): transaction is SendTransaction;

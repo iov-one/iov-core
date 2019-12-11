@@ -10,7 +10,6 @@ import {
   SendTransaction,
   TokenTicker,
   TransactionState,
-  WithCreator,
 } from "@iov/bcp";
 import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
@@ -95,23 +94,27 @@ describe("MultiChainSigner", () => {
       const chainId = connection.chainId();
 
       const { faucet } = await addWalletWithFaucet(profile, chainId);
+      const faucetAddress = bnsCodec.identityToAddress(faucet);
 
       const recipient = await randomBnsAddress();
 
       // construct a sendtx, this mirrors the MultiChainSigner api
       const memo = `MultiChainSigner style (${Math.random()})`;
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
-        kind: "bcp/send",
-        creator: faucet,
-        sender: bnsCodec.identityToAddress(faucet),
-        recipient: recipient,
-        memo: memo,
-        amount: {
-          quantity: "11000000000777",
-          fractionalDigits: 9,
-          tokenTicker: cash,
+      const sendTx = await connection.withDefaultFee<SendTransaction>(
+        {
+          kind: "bcp/send",
+          chainId: chainId,
+          sender: faucetAddress,
+          recipient: recipient,
+          memo: memo,
+          amount: {
+            quantity: "11000000000777",
+            fractionalDigits: 9,
+            tokenTicker: cash,
+          },
         },
-      });
+        faucetAddress,
+      );
       const postResponse = await signer.signAndPost(faucet, sendTx);
       await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
@@ -197,6 +200,7 @@ describe("MultiChainSigner", () => {
 
       // Create sender identities
       const { faucet: bnsFaucet } = await addWalletWithFaucet(profile, bnsId);
+      const bnsFaucetAddress = bnsCodec.identityToAddress(bnsFaucet);
       const secpWallet = profile.addWallet(
         Secp256k1HdWallet.fromMnemonic(
           "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
@@ -210,18 +214,21 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on BNS
-        const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction & WithCreator>({
-          kind: "bcp/send",
-          creator: bnsFaucet,
-          sender: bnsCodec.identityToAddress(bnsFaucet),
-          recipient: await randomBnsAddress(),
-          memo: `MultiChainSigner style (${Math.random()})`,
-          amount: {
-            quantity: "11000000000777",
-            fractionalDigits: 9,
-            tokenTicker: cash,
+        const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction>(
+          {
+            kind: "bcp/send",
+            chainId: bnsFaucet.chainId,
+            sender: bnsFaucetAddress,
+            recipient: await randomBnsAddress(),
+            memo: `MultiChainSigner style (${Math.random()})`,
+            amount: {
+              quantity: "11000000000777",
+              fractionalDigits: 9,
+              tokenTicker: cash,
+            },
           },
-        });
+          bnsFaucetAddress,
+        );
         const postResponse = await signer.signAndPost(bnsFaucet, sendOnBns);
         const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
@@ -229,9 +236,9 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on Ethereum
-        const sendOnEthereum: SendTransaction & WithCreator = {
+        const sendOnEthereum: SendTransaction = {
           kind: "bcp/send",
-          creator: ganacheMainIdentity,
+          chainId: ethereumChainId,
           amount: {
             quantity: "1",
             tokenTicker: "ETH" as TokenTicker,

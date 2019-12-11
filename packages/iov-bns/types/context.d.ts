@@ -1,12 +1,4 @@
-import {
-  Address,
-  Amount,
-  ChainId,
-  ConfirmedTransaction,
-  OpenSwap,
-  SwapOfferTransaction,
-  WithCreator,
-} from "@iov/bcp";
+import { Address, Amount, ChainId, ConfirmedTransaction, OpenSwap, SwapOfferTransaction } from "@iov/bcp";
 import * as codecImpl from "./generated/codecimpl";
 import { Keyed } from "./types";
 /**
@@ -28,5 +20,5 @@ export declare class Context {
   wallet(acct: codecImpl.cash.ISet & Keyed): WalletData;
   /** Decode within a Context to have the chain ID available */
   decodeOpenSwap(swap: codecImpl.aswap.Swap & Keyed): OpenSwap;
-  swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction & WithCreator>): OpenSwap;
+  swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction>): OpenSwap;
 }

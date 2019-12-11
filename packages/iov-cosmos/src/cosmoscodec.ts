@@ -50,7 +50,7 @@ export class CosmosCodec implements TxCodec {
 
     const signMsg = sortJson({
       account_number: accountNumber.toString(),
-      chain_id: Caip5.decode(unsigned.creator.chainId),
+      chain_id: Caip5.decode(unsigned.chainId),
       fee: (built.value as any).fee,
       memo: memo,
       msgs: (built.value as any).msg,

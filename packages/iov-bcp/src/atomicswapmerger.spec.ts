@@ -3,18 +3,7 @@ import { Encoding } from "@iov/encoding";
 import { AtomicSwapHelpers } from "./atomicswaphelpers";
 import { AtomicSwapMerger } from "./atomicswapmerger";
 import { ClaimedSwap, OpenSwap, Preimage, SwapClaimTransaction, SwapProcessState } from "./atomicswaptypes";
-import {
-  Address,
-  Algorithm,
-  Amount,
-  ChainId,
-  PubkeyBundle,
-  PubkeyBytes,
-  SwapId,
-  SwapIdBytes,
-  TokenTicker,
-  WithCreator,
-} from "./transactions";
+import { Address, Amount, ChainId, SwapId, SwapIdBytes, TokenTicker } from "./transactions";
 
 const { fromHex } = Encoding;
 
@@ -27,10 +16,6 @@ describe("AtomicSwapMerger", () => {
 
   it("can process open and close", () => {
     const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
-    const bobPubkey: PubkeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PubkeyBytes,
-    };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
     const preimage = fromHex("00110011") as Preimage;
     const hash = AtomicSwapHelpers.hashPreimage(preimage);
@@ -49,12 +34,9 @@ describe("AtomicSwapMerger", () => {
       },
     };
 
-    const claim: SwapClaimTransaction & WithCreator = {
+    const claim: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
-      creator: {
-        chainId: "lalala" as ChainId,
-        pubkey: bobPubkey,
-      },
+      chainId: "lalala" as ChainId,
       swapId: swapId,
       preimage: preimage,
     };
@@ -76,10 +58,6 @@ describe("AtomicSwapMerger", () => {
 
   it("can process open A/B and close B/A", () => {
     const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
-    const bobPubkey: PubkeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PubkeyBytes,
-    };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
 
     const preimageA = fromHex("00110011") as Preimage;
@@ -115,22 +93,16 @@ describe("AtomicSwapMerger", () => {
       },
     };
 
-    const claimA: SwapClaimTransaction & WithCreator = {
+    const claimA: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
-      creator: {
-        chainId: "lalala" as ChainId,
-        pubkey: bobPubkey,
-      },
+      chainId: "lalala" as ChainId,
       swapId: swapIdA,
       preimage: preimageA,
     };
 
-    const claimB: SwapClaimTransaction & WithCreator = {
+    const claimB: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
-      creator: {
-        chainId: "lalala" as ChainId,
-        pubkey: bobPubkey,
-      },
+      chainId: "lalala" as ChainId,
       swapId: swapIdB,
       preimage: preimageB,
     };
@@ -191,10 +163,6 @@ describe("AtomicSwapMerger", () => {
 
   it("can process open and close in reverse order", () => {
     const alice = "tiov1u8syu9juwx668k4vqfwl5vtm8j6yz89wamkcda" as Address;
-    const bobPubkey: PubkeyBundle = {
-      algo: Algorithm.Ed25519,
-      data: fromHex("97adfd82b8e6a93368361c5b9256a85bbfb8ed7421372bf7d3fc54498c8ea730") as PubkeyBytes,
-    };
     const bobAddress = "tiov1lpzdluzsq3u7tqkfkp3rmrfavkhv0ly56gjexe" as Address;
     const preimage = fromHex("00110011") as Preimage;
     const hash = AtomicSwapHelpers.hashPreimage(preimage);
@@ -213,12 +181,9 @@ describe("AtomicSwapMerger", () => {
       },
     };
 
-    const claim: SwapClaimTransaction & WithCreator = {
+    const claim: SwapClaimTransaction = {
       kind: "bcp/swap_claim",
-      creator: {
-        chainId: "lalala" as ChainId,
-        pubkey: bobPubkey,
-      },
+      chainId: "lalala" as ChainId,
       swapId: swapId,
       preimage: preimage,
     };

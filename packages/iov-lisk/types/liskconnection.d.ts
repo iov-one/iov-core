@@ -9,7 +9,6 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
-  LightTransaction,
   Nonce,
   PostableBytes,
   PostTxResponse,
@@ -44,8 +43,8 @@ export declare class LiskConnection implements BlockchainConnection {
   watchBlockHeaders(): Stream<BlockHeader>;
   getTx(id: TransactionId): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction>>;
   searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]>;
-  listenTx(_: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
-  liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
+  listenTx(_: TransactionQuery): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
+  liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
   getFeeQuote(tx: UnsignedTransaction): Promise<Fee>;
   withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
   private waitForTransaction;

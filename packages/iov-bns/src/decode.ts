@@ -19,7 +19,6 @@ import {
   Token,
   TokenTicker,
   UnsignedTransaction,
-  WithCreator,
 } from "@iov/bcp";
 import { Encoding, Uint32, Uint64 } from "@iov/encoding";
 import BN from "bn.js";
@@ -469,11 +468,8 @@ export function decodeProposal(prefix: IovBech32Prefix, proposal: codecImpl.gov.
 
 // Token sends
 
-function parseSendTransaction(
-  base: UnsignedTransaction,
-  msg: codecImpl.cash.ISendMsg,
-): SendTransaction & WithCreator {
-  const prefix = addressPrefix(base.creator.chainId);
+function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): SendTransaction {
+  const prefix = addressPrefix(base.chainId);
   return {
     ...base,
     kind: "bcp/send",
@@ -486,19 +482,17 @@ function parseSendTransaction(
 
 // Atomic swaps
 
-function parseSwapOfferTx(
-  base: UnsignedTransaction,
-  msg: codecImpl.aswap.ICreateMsg,
-): SwapOfferTransaction & WithCreator {
+function parseSwapOfferTx(base: UnsignedTransaction, msg: codecImpl.aswap.ICreateMsg): SwapOfferTransaction {
   const hash = ensure(msg.preimageHash, "preimageHash");
   if (hash.length !== 32) {
     throw new Error("Hash must be 32 bytes (sha256)");
   }
-  const prefix = addressPrefix(base.creator.chainId);
+  const prefix = addressPrefix(base.chainId);
   const parsed = {
     ...base,
     kind: "bcp/swap_offer" as const,
     hash: hash as Hash,
+    sender: encodeBnsAddress(prefix, ensure(msg.source, "source")),
     recipient: encodeBnsAddress(prefix, ensure(msg.destination, "destination")),
     timeout: { timestamp: asIntegerNumber(ensure(msg.timeout, "timeout")) },
     amounts: (msg.amount || []).map(decodeAmount),
@@ -506,10 +500,7 @@ function parseSwapOfferTx(
   return msg.memo ? { ...parsed, memo: msg.memo } : parsed;
 }
 
-function parseSwapClaimTx(
-  base: UnsignedTransaction,
-  msg: codecImpl.aswap.IReleaseMsg,
-): SwapClaimTransaction & WithCreator {
+function parseSwapClaimTx(base: UnsignedTransaction, msg: codecImpl.aswap.IReleaseMsg): SwapClaimTransaction {
   return {
     ...base,
     kind: "bcp/swap_claim",
@@ -523,7 +514,7 @@ function parseSwapClaimTx(
 function parseSwapAbortTransaction(
   base: UnsignedTransaction,
   msg: codecImpl.aswap.IReturnMsg,
-): SwapAbortTransaction & WithCreator {
+): SwapAbortTransaction {
   return {
     ...base,
     kind: "bcp/swap_abort",
@@ -538,7 +529,7 @@ function parseSwapAbortTransaction(
 function parseRegisterUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.IRegisterTokenMsg,
-): RegisterUsernameTx & WithCreator {
+): RegisterUsernameTx {
   const targets = ensure(msg.targets, "targets").map(decodeChainAddressPair);
   return {
     ...base,
@@ -551,7 +542,7 @@ function parseRegisterUsernameTx(
 function parseUpdateTargetsOfUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.IChangeTokenTargetsMsg,
-): UpdateTargetsOfUsernameTx & WithCreator {
+): UpdateTargetsOfUsernameTx {
   const targets = ensure(msg.newTargets, "newTargets").map(decodeChainAddressPair);
   return {
     ...base,
@@ -564,8 +555,8 @@ function parseUpdateTargetsOfUsernameTx(
 function parseTransferUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.ITransferTokenMsg,
-): TransferUsernameTx & WithCreator {
-  const prefix = addressPrefix(base.creator.chainId);
+): TransferUsernameTx {
+  const prefix = addressPrefix(base.chainId);
   return {
     ...base,
     kind: "bns/transfer_username",
@@ -579,8 +570,8 @@ function parseTransferUsernameTx(
 function parseCreateMultisignatureTx(
   base: UnsignedTransaction,
   msg: codecImpl.multisig.ICreateMsg,
-): CreateMultisignatureTx & WithCreator {
-  const prefix = addressPrefix(base.creator.chainId);
+): CreateMultisignatureTx {
+  const prefix = addressPrefix(base.chainId);
   return {
     ...base,
     kind: "bns/create_multisignature_contract",
@@ -593,8 +584,8 @@ function parseCreateMultisignatureTx(
 function parseUpdateMultisignatureTx(
   base: UnsignedTransaction,
   msg: codecImpl.multisig.IUpdateMsg,
-): UpdateMultisignatureTx & WithCreator {
-  const prefix = addressPrefix(base.creator.chainId);
+): UpdateMultisignatureTx {
+  const prefix = addressPrefix(base.chainId);
   return {
     ...base,
     kind: "bns/update_multisignature_contract",
@@ -607,11 +598,8 @@ function parseUpdateMultisignatureTx(
 
 // Escrows
 
-function parseCreateEscrowTx(
-  base: UnsignedTransaction,
-  msg: codecImpl.escrow.ICreateMsg,
-): CreateEscrowTx & WithCreator {
-  const prefix = addressPrefix(base.creator.chainId);
+function parseCreateEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.ICreateMsg): CreateEscrowTx {
+  const prefix = addressPrefix(base.chainId);
   return {
     ...base,
     kind: "bns/create_escrow",
@@ -624,10 +612,7 @@ function parseCreateEscrowTx(
   };
 }
 
-function parseReleaseEscrowTx(
-  base: UnsignedTransaction,
-  msg: codecImpl.escrow.IReleaseMsg,
-): ReleaseEscrowTx & WithCreator {
+function parseReleaseEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.IReleaseMsg): ReleaseEscrowTx {
   return {
     ...base,
     kind: "bns/release_escrow",
@@ -636,10 +621,7 @@ function parseReleaseEscrowTx(
   };
 }
 
-function parseReturnEscrowTx(
-  base: UnsignedTransaction,
-  msg: codecImpl.escrow.IReturnMsg,
-): ReturnEscrowTx & WithCreator {
+function parseReturnEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.IReturnMsg): ReturnEscrowTx {
   return {
     ...base,
     kind: "bns/return_escrow",
@@ -650,8 +632,8 @@ function parseReturnEscrowTx(
 function parseUpdateEscrowPartiesTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.IUpdatePartiesMsg,
-): UpdateEscrowPartiesTx & WithCreator {
-  const prefix = addressPrefix(base.creator.chainId);
+): UpdateEscrowPartiesTx {
+  const prefix = addressPrefix(base.chainId);
   return {
     ...base,
     kind: "bns/update_escrow_parties",
@@ -667,8 +649,8 @@ function parseUpdateEscrowPartiesTx(
 function parseCreateProposalTx(
   base: UnsignedTransaction,
   msg: codecImpl.gov.ICreateProposalMsg,
-): CreateProposalTx & WithCreator {
-  const prefix = addressPrefix(base.creator.chainId);
+): CreateProposalTx {
+  const prefix = addressPrefix(base.chainId);
   return {
     ...base,
     kind: "bns/create_proposal",
@@ -715,7 +697,7 @@ export function decodeVote(prefix: IovBech32Prefix, vote: codecImpl.gov.IVote & 
   };
 }
 
-function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): VoteTx & WithCreator {
+function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): VoteTx {
   return {
     ...base,
     kind: "bns/vote",
@@ -760,13 +742,10 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.bnsd.ITx): Uns
 function parseBaseTx(tx: codecImpl.bnsd.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
   let base: UnsignedTransaction | (UnsignedTransaction & MultisignatureTx) = {
     kind: "",
-    creator: {
-      chainId: chainId,
-      pubkey: sig.pubkey,
-    },
+    chainId: chainId,
   };
   if (tx.fees?.fees) {
-    const prefix = addressPrefix(base.creator.chainId);
+    const prefix = addressPrefix(base.chainId);
     const payer = tx.fees.payer ? encodeBnsAddress(prefix, tx.fees.payer) : undefined;
     base = { ...base, fee: { tokens: decodeAmount(tx.fees.fees), payer: payer } };
   }

@@ -5,7 +5,6 @@ import {
   ChainId,
   Fee,
   Hash,
-  Identity,
   Nonce,
   Preimage,
   PubkeyBytes,
@@ -17,7 +16,6 @@ import {
   SwapIdBytes,
   SwapOfferTransaction,
   TokenTicker,
-  WithCreator,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -58,10 +56,7 @@ const defaultPublicKey = {
     "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a",
   ) as PubkeyBytes,
 };
-const defaultCreator: Identity = {
-  chainId: "ethereum-eip155-5777" as ChainId,
-  pubkey: defaultPublicKey,
-};
+const defaultChainId = "ethereum-eip155-5777" as ChainId;
 const defaultSender = "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F" as Address;
 const defaultAmount: Amount = {
   quantity: "20000000000000000000",
@@ -81,9 +76,9 @@ const defaultRecipient = "0x43aa18FAAE961c23715735682dC75662d90F4DDe" as Address
 describe("Serialization", () => {
   describe("serializeUnsignedTransaction", () => {
     it("can serialize transaction without memo", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         fee: defaultFee,
         sender: defaultSender,
@@ -98,9 +93,9 @@ describe("Serialization", () => {
     });
 
     it("can serialize transaction with memo", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         fee: defaultFee,
         sender: defaultSender,
@@ -116,26 +111,27 @@ describe("Serialization", () => {
       );
     });
 
-    it("throws if creator and sender do not match", () => {
-      const tx: SendTransaction & WithCreator = {
+    it("throws if sender public key and sender address do not match", () => {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         fee: defaultFee,
         sender: defaultRecipient,
+        senderPubkey: defaultPublicKey,
         recipient: defaultRecipient,
       };
       expect(() => serializeUnsignedTransaction(tx, defaultNonce)).toThrowError(
-        /Creator does not match sender/i,
+        /sender pubkey does not match sender address/i,
       );
     });
 
     it("throws for unset gas price/limit", () => {
       // gasPrice unset
       {
-        const tx: SendTransaction & WithCreator = {
+        const tx: SendTransaction = {
           kind: "bcp/send",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           amount: defaultAmount,
           fee: {
             ...defaultFee,
@@ -149,9 +145,9 @@ describe("Serialization", () => {
 
       // gasLimit unset
       {
-        const tx: SendTransaction & WithCreator = {
+        const tx: SendTransaction = {
           kind: "bcp/send",
-          creator: defaultCreator,
+          chainId: defaultChainId,
           amount: defaultAmount,
           fee: {
             ...defaultFee,
@@ -165,9 +161,9 @@ describe("Serialization", () => {
     });
 
     it("throws for negative nonce", () => {
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: defaultCreator,
+        chainId: defaultChainId,
         amount: defaultAmount,
         fee: defaultFee,
         sender: defaultSender,
@@ -181,15 +177,9 @@ describe("Serialization", () => {
     it("can serialize ERC20 token transfer", () => {
       // https://etherscan.io/getRawTx?tx=0x5d08a3cda172df9520f965549b4d7fc4b32baa026e8beff5293ba90c845c93b2
       // 266151.44240739 HOT from 0xc023d0f30ef630db4f4be6219608d6bcf99684f0 to 0x8fec1c262599f4169401ff48a9d63503ceaaf742
-      const tx: SendTransaction & WithCreator = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
-        creator: {
-          chainId: "ethereum-eip155-1" as ChainId,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromHex("") as PubkeyBytes, // unused for serialization
-          },
-        },
+        chainId: "ethereum-eip155-1" as ChainId,
         amount: {
           quantity: "266151442407390000000000",
           fractionalDigits: 18,
@@ -226,15 +216,9 @@ describe("Serialization", () => {
     it("can serialize ERC20 approval", () => {
       // https://etherscan.io/getRawTx?tx=0x4734349dd36860c9f7c981e2c673f986ade036e2b7b64dcc55f0bf0ce461daae
       // Approve maximum allowance from 0xbdfd9e1fa05c6ad0714e6f27bdb4b821ec99f7a2 to 0x4b525ae3a20021639d6e00bf752e6d2b7f65196e
-      const tx: Erc20ApproveTransaction & WithCreator = {
+      const tx: Erc20ApproveTransaction = {
         kind: "erc20/approve",
-        creator: {
-          chainId: "ethereum-eip155-1" as ChainId,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromHex("") as PubkeyBytes, // unused for serialization
-          },
-        },
+        chainId: "ethereum-eip155-1" as ChainId,
         amount: {
           quantity: "115792089237316195423570985008687907853269984665640564039457584007913129639935",
           fractionalDigits: 18,
@@ -268,15 +252,9 @@ describe("Serialization", () => {
     });
 
     it("can serialize Ether atomic swap offer", () => {
-      const transaction: SwapOfferTransaction & WithCreator = {
+      const transaction: SwapOfferTransaction = {
         kind: "bcp/swap_offer",
-        creator: {
-          chainId: "ethereum-eip155-1" as ChainId,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromHex("") as PubkeyBytes, // unused for serialization
-          },
-        },
+        chainId: "ethereum-eip155-1" as ChainId,
         amounts: [
           {
             quantity: "266151442407390000000000",
@@ -296,6 +274,7 @@ describe("Serialization", () => {
           prefix: SwapIdPrefix.Ether,
           data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
         },
+        sender: "0x" as Address,
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
         hash: Uint8Array.from(Array(32).fill(8)) as Hash,
         timeout: {
@@ -316,15 +295,9 @@ describe("Serialization", () => {
     });
 
     it("can serialize Ether atomic swap claim", () => {
-      const transaction: SwapClaimTransaction & WithCreator = {
+      const transaction: SwapClaimTransaction = {
         kind: "bcp/swap_claim",
-        creator: {
-          chainId: "ethereum-eip155-1" as ChainId,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromHex("") as PubkeyBytes, // unused for serialization
-          },
-        },
+        chainId: "ethereum-eip155-1" as ChainId,
         fee: {
           gasPrice: {
             quantity: "6000000000", // 6 Gwei
@@ -353,15 +326,9 @@ describe("Serialization", () => {
     });
 
     it("can serialize Ether atomic swap abort", () => {
-      const transaction: SwapAbortTransaction & WithCreator = {
+      const transaction: SwapAbortTransaction = {
         kind: "bcp/swap_abort",
-        creator: {
-          chainId: "ethereum-eip155-1" as ChainId,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromHex("") as PubkeyBytes, // unused for serialization
-          },
-        },
+        chainId: "ethereum-eip155-1" as ChainId,
         fee: {
           gasPrice: {
             quantity: "6000000000", // 6 Gwei
@@ -389,15 +356,9 @@ describe("Serialization", () => {
     });
 
     it("can serialize ERC20 atomic swap offer", () => {
-      const transaction: SwapOfferTransaction & WithCreator = {
+      const transaction: SwapOfferTransaction = {
         kind: "bcp/swap_offer",
-        creator: {
-          chainId: "ethereum-eip155-1" as ChainId,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromHex("") as PubkeyBytes, // unused for serialization
-          },
-        },
+        chainId: "ethereum-eip155-1" as ChainId,
         amounts: [
           {
             quantity: "266151442407390000000000",
@@ -417,6 +378,7 @@ describe("Serialization", () => {
           prefix: SwapIdPrefix.Erc20,
           data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
         },
+        sender: "0x" as Address,
         recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
         hash: Uint8Array.from(Array(32).fill(8)) as Hash,
         timeout: {
@@ -437,15 +399,9 @@ describe("Serialization", () => {
     });
 
     it("can serialize ERC20 atomic swap claim", () => {
-      const transaction: SwapClaimTransaction & WithCreator = {
+      const transaction: SwapClaimTransaction = {
         kind: "bcp/swap_claim",
-        creator: {
-          chainId: "ethereum-eip155-1" as ChainId,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromHex("") as PubkeyBytes, // unused for serialization
-          },
-        },
+        chainId: "ethereum-eip155-1" as ChainId,
         fee: {
           gasPrice: {
             quantity: "6000000000", // 6 Gwei
@@ -474,15 +430,9 @@ describe("Serialization", () => {
     });
 
     it("can serialize ERC20 atomic swap abort", () => {
-      const transaction: SwapAbortTransaction & WithCreator = {
+      const transaction: SwapAbortTransaction = {
         kind: "bcp/swap_abort",
-        creator: {
-          chainId: "ethereum-eip155-1" as ChainId,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromHex("") as PubkeyBytes, // unused for serialization
-          },
-        },
+        chainId: "ethereum-eip155-1" as ChainId,
         fee: {
           gasPrice: {
             quantity: "6000000000", // 6 Gwei
@@ -516,16 +466,10 @@ describe("Serialization", () => {
       // https://github.com/ethereum/tests/blob/v6.0.0-beta.3/TransactionTests/ttSignature/SenderTest.json
       // https://github.com/ethereum/tests/blob/v6.0.0-beta.3/src/TransactionTestsFiller/ttSignature/SenderTestFiller.json
 
-      const signed: SignedTransaction<SendTransaction & WithCreator> = {
+      const signed: SignedTransaction<SendTransaction> = {
         transaction: {
           kind: "bcp/send",
-          creator: {
-            chainId: "ethereum-eip155-0" as ChainId,
-            pubkey: {
-              algo: Algorithm.Secp256k1,
-              data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
-            },
-          },
+          chainId: "ethereum-eip155-0" as ChainId,
           amount: {
             quantity: "10",
             fractionalDigits: 18,
@@ -568,16 +512,10 @@ describe("Serialization", () => {
     it("can serialize ERC20 token transfer", () => {
       // https://etherscan.io/getRawTx?tx=0x5d08a3cda172df9520f965549b4d7fc4b32baa026e8beff5293ba90c845c93b2
       // 266151.44240739 HOT from 0xc023d0f30ef630db4f4be6219608d6bcf99684f0 to 0x8fec1c262599f4169401ff48a9d63503ceaaf742
-      const signed: SignedTransaction<SendTransaction & WithCreator> = {
+      const signed: SignedTransaction<SendTransaction> = {
         transaction: {
           kind: "bcp/send",
-          creator: {
-            chainId: "ethereum-eip155-1" as ChainId,
-            pubkey: {
-              algo: Algorithm.Secp256k1,
-              data: fromHex("") as PubkeyBytes, // unused for serialization
-            },
-          },
+          chainId: "ethereum-eip155-1" as ChainId,
           amount: {
             quantity: "266151442407390000000000",
             fractionalDigits: 18,
@@ -627,16 +565,10 @@ describe("Serialization", () => {
     });
 
     it("can serialize Ether atomic swap offer", () => {
-      const signed: SignedTransaction<SwapOfferTransaction & WithCreator> = {
+      const signed: SignedTransaction<SwapOfferTransaction> = {
         transaction: {
           kind: "bcp/swap_offer",
-          creator: {
-            chainId: "ethereum-eip155-1" as ChainId,
-            pubkey: {
-              algo: Algorithm.Secp256k1,
-              data: fromHex("") as PubkeyBytes, // unused for serialization
-            },
-          },
+          chainId: "ethereum-eip155-1" as ChainId,
           amounts: [
             {
               quantity: "266151442407390000000000",
@@ -656,6 +588,7 @@ describe("Serialization", () => {
             prefix: SwapIdPrefix.Ether,
             data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
           },
+          sender: "0x" as Address,
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
           hash: Uint8Array.from(Array(32).fill(8)) as Hash,
           timeout: {
@@ -689,16 +622,10 @@ describe("Serialization", () => {
     });
 
     it("can serialize Ether atomic swap claim", () => {
-      const signed: SignedTransaction<SwapClaimTransaction & WithCreator> = {
+      const signed: SignedTransaction<SwapClaimTransaction> = {
         transaction: {
           kind: "bcp/swap_claim",
-          creator: {
-            chainId: "ethereum-eip155-1" as ChainId,
-            pubkey: {
-              algo: Algorithm.Secp256k1,
-              data: fromHex("") as PubkeyBytes, // unused for serialization
-            },
-          },
+          chainId: "ethereum-eip155-1" as ChainId,
           fee: {
             gasPrice: {
               quantity: "6000000000", // 6 Gwei
@@ -740,16 +667,10 @@ describe("Serialization", () => {
     });
 
     it("can serialize Ether atomic swap abort", () => {
-      const signed: SignedTransaction<SwapAbortTransaction & WithCreator> = {
+      const signed: SignedTransaction<SwapAbortTransaction> = {
         transaction: {
           kind: "bcp/swap_abort",
-          creator: {
-            chainId: "ethereum-eip155-1" as ChainId,
-            pubkey: {
-              algo: Algorithm.Secp256k1,
-              data: fromHex("") as PubkeyBytes, // unused for serialization
-            },
-          },
+          chainId: "ethereum-eip155-1" as ChainId,
           fee: {
             gasPrice: {
               quantity: "6000000000", // 6 Gwei
@@ -790,16 +711,10 @@ describe("Serialization", () => {
     });
 
     it("can serialize ERC20 atomic swap offer", () => {
-      const signed: SignedTransaction<SwapOfferTransaction & WithCreator> = {
+      const signed: SignedTransaction<SwapOfferTransaction> = {
         transaction: {
           kind: "bcp/swap_offer",
-          creator: {
-            chainId: "ethereum-eip155-1" as ChainId,
-            pubkey: {
-              algo: Algorithm.Secp256k1,
-              data: fromHex("") as PubkeyBytes, // unused for serialization
-            },
-          },
+          chainId: "ethereum-eip155-1" as ChainId,
           amounts: [
             {
               quantity: "266151442407390000000000",
@@ -819,6 +734,7 @@ describe("Serialization", () => {
             prefix: SwapIdPrefix.Erc20,
             data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
           },
+          sender: "0x" as Address,
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
           hash: Uint8Array.from(Array(32).fill(8)) as Hash,
           timeout: {
@@ -852,16 +768,10 @@ describe("Serialization", () => {
     });
 
     it("can serialize ERC20 atomic swap claim", () => {
-      const signed: SignedTransaction<SwapClaimTransaction & WithCreator> = {
+      const signed: SignedTransaction<SwapClaimTransaction> = {
         transaction: {
           kind: "bcp/swap_claim",
-          creator: {
-            chainId: "ethereum-eip155-1" as ChainId,
-            pubkey: {
-              algo: Algorithm.Secp256k1,
-              data: fromHex("") as PubkeyBytes, // unused for serialization
-            },
-          },
+          chainId: "ethereum-eip155-1" as ChainId,
           fee: {
             gasPrice: {
               quantity: "6000000000", // 6 Gwei
@@ -903,16 +813,10 @@ describe("Serialization", () => {
     });
 
     it("can serialize ERC20 atomic swap abort", () => {
-      const signed: SignedTransaction<SwapAbortTransaction & WithCreator> = {
+      const signed: SignedTransaction<SwapAbortTransaction> = {
         transaction: {
           kind: "bcp/swap_abort",
-          creator: {
-            chainId: "ethereum-eip155-1" as ChainId,
-            pubkey: {
-              algo: Algorithm.Secp256k1,
-              data: fromHex("") as PubkeyBytes, // unused for serialization
-            },
-          },
+          chainId: "ethereum-eip155-1" as ChainId,
           fee: {
             gasPrice: {
               quantity: "6000000000", // 6 Gwei

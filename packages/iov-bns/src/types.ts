@@ -7,13 +7,13 @@ import {
   isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
-  LightTransaction,
   PubkeyBundle,
   SendTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
   TimestampTimeout,
+  UnsignedTransaction,
 } from "@iov/bcp";
 import { As } from "type-tagger";
 
@@ -319,35 +319,35 @@ export interface Decoder<T extends {}> {
 
 // Transactions: Usernames
 
-export interface RegisterUsernameTx extends LightTransaction {
+export interface RegisterUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/register_username";
   readonly username: string;
   readonly targets: readonly ChainAddressPair[];
 }
 
-export function isRegisterUsernameTx(tx: LightTransaction): tx is RegisterUsernameTx {
+export function isRegisterUsernameTx(tx: UnsignedTransaction): tx is RegisterUsernameTx {
   return tx.kind === "bns/register_username";
 }
 
-export interface UpdateTargetsOfUsernameTx extends LightTransaction {
+export interface UpdateTargetsOfUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/update_targets_of_username";
   /** the username to be updated, must exist on chain */
   readonly username: string;
   readonly targets: readonly ChainAddressPair[];
 }
 
-export function isUpdateTargetsOfUsernameTx(tx: LightTransaction): tx is UpdateTargetsOfUsernameTx {
+export function isUpdateTargetsOfUsernameTx(tx: UnsignedTransaction): tx is UpdateTargetsOfUsernameTx {
   return tx.kind === "bns/update_targets_of_username";
 }
 
-export interface TransferUsernameTx extends LightTransaction {
+export interface TransferUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/transfer_username";
   /** the username to be transferred, must exist on chain */
   readonly username: string;
   readonly newOwner: Address;
 }
 
-export function isTransferUsernameTx(tx: LightTransaction): tx is TransferUsernameTx {
+export function isTransferUsernameTx(tx: UnsignedTransaction): tx is TransferUsernameTx {
   return tx.kind === "bns/transfer_username";
 }
 
@@ -358,18 +358,18 @@ export interface Participant {
   readonly weight: number;
 }
 
-export interface CreateMultisignatureTx extends LightTransaction {
+export interface CreateMultisignatureTx extends UnsignedTransaction {
   readonly kind: "bns/create_multisignature_contract";
   readonly participants: readonly Participant[];
   readonly activationThreshold: number;
   readonly adminThreshold: number;
 }
 
-export function isCreateMultisignatureTx(tx: LightTransaction): tx is CreateMultisignatureTx {
+export function isCreateMultisignatureTx(tx: UnsignedTransaction): tx is CreateMultisignatureTx {
   return tx.kind === "bns/create_multisignature_contract";
 }
 
-export interface UpdateMultisignatureTx extends LightTransaction {
+export interface UpdateMultisignatureTx extends UnsignedTransaction {
   readonly kind: "bns/update_multisignature_contract";
   readonly contractId: Uint8Array;
   readonly participants: readonly Participant[];
@@ -377,13 +377,13 @@ export interface UpdateMultisignatureTx extends LightTransaction {
   readonly adminThreshold: number;
 }
 
-export function isUpdateMultisignatureTx(tx: LightTransaction): tx is UpdateMultisignatureTx {
+export function isUpdateMultisignatureTx(tx: UnsignedTransaction): tx is UpdateMultisignatureTx {
   return tx.kind === "bns/update_multisignature_contract";
 }
 
 // Transactions: Escrows
 
-export interface CreateEscrowTx extends LightTransaction {
+export interface CreateEscrowTx extends UnsignedTransaction {
   readonly kind: "bns/create_escrow";
   readonly sender: Address;
   readonly arbiter: Address;
@@ -393,30 +393,30 @@ export interface CreateEscrowTx extends LightTransaction {
   readonly memo?: string;
 }
 
-export function isCreateEscrowTx(tx: LightTransaction): tx is CreateEscrowTx {
+export function isCreateEscrowTx(tx: UnsignedTransaction): tx is CreateEscrowTx {
   return tx.kind === "bns/create_escrow";
 }
 
-export interface ReleaseEscrowTx extends LightTransaction {
+export interface ReleaseEscrowTx extends UnsignedTransaction {
   readonly kind: "bns/release_escrow";
   readonly escrowId: number;
   readonly amounts: readonly Amount[];
 }
 
-export function isReleaseEscrowTx(tx: LightTransaction): tx is ReleaseEscrowTx {
+export function isReleaseEscrowTx(tx: UnsignedTransaction): tx is ReleaseEscrowTx {
   return tx.kind === "bns/release_escrow";
 }
 
-export interface ReturnEscrowTx extends LightTransaction {
+export interface ReturnEscrowTx extends UnsignedTransaction {
   readonly kind: "bns/return_escrow";
   readonly escrowId: number;
 }
 
-export function isReturnEscrowTx(tx: LightTransaction): tx is ReturnEscrowTx {
+export function isReturnEscrowTx(tx: UnsignedTransaction): tx is ReturnEscrowTx {
   return tx.kind === "bns/return_escrow";
 }
 
-export interface UpdateEscrowPartiesTx extends LightTransaction {
+export interface UpdateEscrowPartiesTx extends UnsignedTransaction {
   readonly kind: "bns/update_escrow_parties";
   readonly escrowId: number;
   readonly sender?: Address;
@@ -424,13 +424,13 @@ export interface UpdateEscrowPartiesTx extends LightTransaction {
   readonly recipient?: Address;
 }
 
-export function isUpdateEscrowPartiesTx(tx: LightTransaction): tx is UpdateEscrowPartiesTx {
+export function isUpdateEscrowPartiesTx(tx: UnsignedTransaction): tx is UpdateEscrowPartiesTx {
   return tx.kind === "bns/update_escrow_parties";
 }
 
 // Transactions: Governance
 
-export interface CreateProposalTx extends LightTransaction {
+export interface CreateProposalTx extends UnsignedTransaction {
   readonly kind: "bns/create_proposal";
   readonly title: string;
   /**
@@ -448,17 +448,17 @@ export interface CreateProposalTx extends LightTransaction {
   readonly author: Address;
 }
 
-export function isCreateProposalTx(transaction: LightTransaction): transaction is CreateProposalTx {
+export function isCreateProposalTx(transaction: UnsignedTransaction): transaction is CreateProposalTx {
   return transaction.kind === "bns/create_proposal";
 }
 
-export interface VoteTx extends LightTransaction {
+export interface VoteTx extends UnsignedTransaction {
   readonly kind: "bns/vote";
   readonly proposalId: number;
   readonly selection: VoteOption;
 }
 
-export function isVoteTx(transaction: LightTransaction): transaction is VoteTx {
+export function isVoteTx(transaction: UnsignedTransaction): transaction is VoteTx {
   return transaction.kind === "bns/vote";
 }
 
@@ -487,7 +487,7 @@ export type BnsTx =
   | CreateProposalTx
   | VoteTx;
 
-export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
+export function isBnsTx(transaction: UnsignedTransaction): transaction is BnsTx {
   if (
     isSendTransaction(transaction) ||
     isSwapOfferTransaction(transaction) ||
@@ -500,11 +500,11 @@ export function isBnsTx(transaction: LightTransaction): transaction is BnsTx {
   return transaction.kind.startsWith("bns/");
 }
 
-export interface MultisignatureTx extends LightTransaction {
+export interface MultisignatureTx extends UnsignedTransaction {
   readonly multisig: readonly number[];
 }
 
-export function isMultisignatureTx(transaction: LightTransaction): transaction is MultisignatureTx {
+export function isMultisignatureTx(transaction: UnsignedTransaction): transaction is MultisignatureTx {
   return (
     Array.isArray((transaction as any).multisig) &&
     (transaction as any).multisig.every((id: any) => typeof id === "number")

@@ -18,7 +18,6 @@ import {
   swapIdEquals,
   SwapOfferTransaction,
   TokenTicker,
-  WithCreator,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -26,7 +25,7 @@ import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
-import { encodeBnsAddress } from "./util";
+import { encodeBnsAddress, identityToAddress } from "./util";
 
 const { fromHex, toHex } = Encoding;
 
@@ -117,15 +116,20 @@ export async function sendTokensFromFaucet(
   recipient: Address,
   amount: Amount = defaultAmount,
 ): Promise<void> {
-  const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
+  const chainId = connection.chainId();
+  const { profile, faucet } = await userProfileWithFaucet(chainId);
+  const faucetAddress = bnsCodec.identityToAddress(faucet);
 
-  const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
-    kind: "bcp/send",
-    creator: faucet,
-    sender: bnsCodec.identityToAddress(faucet),
-    recipient: recipient,
-    amount: amount,
-  });
+  const sendTx = await connection.withDefaultFee<SendTransaction>(
+    {
+      kind: "bcp/send",
+      chainId: chainId,
+      sender: faucetAddress,
+      recipient: recipient,
+      amount: amount,
+    },
+    faucetAddress,
+  );
   const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
   const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
   const response = await connection.postTx(bnsCodec.bytesToPost(signed));
@@ -138,18 +142,22 @@ export async function sendCash(
   faucet: Identity,
   rcptAddr: Address,
 ): Promise<PostTxResponse> {
+  const faucetAddress = bnsCodec.identityToAddress(faucet);
   // construct a sendtx, this is normally used in the MultiChainSigner api
-  const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
-    kind: "bcp/send",
-    creator: faucet,
-    sender: bnsCodec.identityToAddress(faucet),
-    recipient: rcptAddr,
-    amount: {
-      quantity: "68000000000",
-      fractionalDigits: 9,
-      tokenTicker: cash,
+  const sendTx = await connection.withDefaultFee<SendTransaction>(
+    {
+      kind: "bcp/send",
+      chainId: faucet.chainId,
+      sender: faucetAddress,
+      recipient: rcptAddr,
+      amount: {
+        quantity: "68000000000",
+        fractionalDigits: 9,
+        tokenTicker: cash,
+      },
     },
-  });
+    faucetAddress,
+  );
   const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
   const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
   const txBytes = bnsCodec.bytesToPost(signed);
@@ -161,13 +169,17 @@ export async function ensureNonceNonZero(
   profile: UserProfile,
   identity: Identity,
 ): Promise<void> {
-  const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
-    kind: "bcp/send",
-    creator: identity,
-    sender: bnsCodec.identityToAddress(identity),
-    recipient: await randomBnsAddress(),
-    amount: defaultAmount,
-  });
+  const address = bnsCodec.identityToAddress(identity);
+  const sendTx = await connection.withDefaultFee<SendTransaction>(
+    {
+      kind: "bcp/send",
+      chainId: identity.chainId,
+      sender: address,
+      recipient: await randomBnsAddress(),
+      amount: defaultAmount,
+    },
+    address,
+  );
   const nonce = await connection.getNonce({ pubkey: identity.pubkey });
   const signed = await profile.signTransaction(identity, sendTx, bnsCodec, nonce);
   const response = await connection.postTx(bnsCodec.bytesToPost(signed));
@@ -185,28 +197,33 @@ export function serializeBnsSwapId(id: SwapId): string {
 export async function openSwap(
   connection: BnsConnection,
   profile: UserProfile,
-  creator: Identity,
+  identity: Identity,
   rcptAddr: Address,
   hash: Hash,
 ): Promise<PostTxResponse> {
+  const senderAddress = identityToAddress(identity);
   // construct a swapOfferTx, sign and post to the chain
   const swapOfferTimeout = createTimestampTimeout(48 * 3600);
-  const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
-    kind: "bcp/swap_offer",
-    creator: creator,
-    recipient: rcptAddr,
-    amounts: [
-      {
-        quantity: "21000000000",
-        fractionalDigits: 9,
-        tokenTicker: cash,
-      },
-    ],
-    timeout: swapOfferTimeout,
-    hash: hash,
-  });
-  const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-  const signed = await profile.signTransaction(creator, swapOfferTx, bnsCodec, nonce);
+  const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>(
+    {
+      kind: "bcp/swap_offer",
+      chainId: identity.chainId,
+      sender: senderAddress,
+      recipient: rcptAddr,
+      amounts: [
+        {
+          quantity: "21000000000",
+          fractionalDigits: 9,
+          tokenTicker: cash,
+        },
+      ],
+      timeout: swapOfferTimeout,
+      hash: hash,
+    },
+    senderAddress,
+  );
+  const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+  const signed = await profile.signTransaction(identity, swapOfferTx, bnsCodec, nonce);
   const txBytes = bnsCodec.bytesToPost(signed);
   return connection.postTx(txBytes);
 }
@@ -214,19 +231,23 @@ export async function openSwap(
 export async function claimSwap(
   connection: BnsConnection,
   profile: UserProfile,
-  creator: Identity,
+  identity: Identity,
   swapId: SwapId,
   preimage: Preimage,
 ): Promise<PostTxResponse> {
+  const address = bnsCodec.identityToAddress(identity);
   // construct a swapOfferTx, sign and post to the chain
-  const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction & WithCreator>({
-    kind: "bcp/swap_claim",
-    creator: creator,
-    swapId: swapId,
-    preimage: preimage,
-  });
-  const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-  const signed = await profile.signTransaction(creator, swapClaimTx, bnsCodec, nonce);
+  const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction>(
+    {
+      kind: "bcp/swap_claim",
+      chainId: identity.chainId,
+      swapId: swapId,
+      preimage: preimage,
+    },
+    address,
+  );
+  const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+  const signed = await profile.signTransaction(identity, swapClaimTx, bnsCodec, nonce);
   const txBytes = bnsCodec.bytesToPost(signed);
   return connection.postTx(txBytes);
 }

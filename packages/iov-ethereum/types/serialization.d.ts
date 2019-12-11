@@ -27,7 +27,7 @@ export declare class Serialization {
     erc20Tokens?: Erc20TokensMap,
     atomicSwapContractAddress?: Address,
   ): Uint8Array;
-  private static checkCreatorMatchesSender;
+  private static checkSenderPubkeyMatchesSenderAddress;
   private static checkRecipientAddress;
   private static checkSwapId;
   private static checkHash;

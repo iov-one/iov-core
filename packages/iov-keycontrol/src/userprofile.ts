@@ -311,8 +311,7 @@ export class UserProfile {
   }
 
   /**
-   * Signs a transaction using the profile's primary keyring. The transaction's
-   * creator field specifies the keypair to be used for signing.
+   * Signs a transaction using the profile's primary keyring using the provided identity.
    */
   public async signTransaction(
     identity: Identity,
@@ -321,12 +320,8 @@ export class UserProfile {
     nonce: Nonce,
   ): Promise<SignedTransaction> {
     const wallet = this.findWalletInPrimaryKeyringByIdentity(identity);
-    const transactionWithExplicitSigner = {
-      ...transaction,
-      creator: identity,
-    };
 
-    const { bytes, prehashType } = codec.bytesToSign(transactionWithExplicitSigner, nonce);
+    const { bytes, prehashType } = codec.bytesToSign(transaction, nonce);
     const signature: FullSignature = {
       pubkey: identity.pubkey,
       nonce: nonce,
@@ -334,7 +329,7 @@ export class UserProfile {
     };
 
     return {
-      transaction: transactionWithExplicitSigner,
+      transaction: transaction,
       primarySignature: signature,
       otherSignatures: [],
     };
@@ -346,10 +341,6 @@ export class UserProfile {
     codec: TxCodec,
     nonce: Nonce,
   ): Promise<SignedTransaction> {
-    if (identity.chainId !== originalTransaction.transaction.creator.chainId) {
-      throw new Error("Signing identity's chainId does not match the transaction's chainId");
-    }
-
     const wallet = this.findWalletInPrimaryKeyringByIdentity(identity);
 
     const { bytes, prehashType } = codec.bytesToSign(originalTransaction.transaction, nonce);

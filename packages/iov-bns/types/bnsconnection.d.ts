@@ -13,7 +13,6 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
-  LightTransaction,
   Nonce,
   PostableBytes,
   PostTxResponse,
@@ -94,18 +93,18 @@ export declare class BnsConnection implements AtomicSwapConnection {
   getTx(id: TransactionId): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction>;
   searchTx(
     query: TransactionQuery,
-  ): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]>;
+  ): Promise<readonly (ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction)[]>;
   /**
    * A stream of all transactions that match the tags from the present moment on
    */
-  listenTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
+  listenTx(query: TransactionQuery): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
   /**
    * Does a search and then subscribes to all future changes.
    *
    * It returns a stream starting the array of all existing transactions
    * and then continuing with live feeds
    */
-  liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
+  liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
   getBlockHeader(height: number): Promise<BlockHeader>;
   watchBlockHeaders(): Stream<BlockHeader>;
   /**
@@ -131,19 +130,4 @@ export declare class BnsConnection implements AtomicSwapConnection {
    * Returns undefined if no product fee is defined
    */
   protected getProductFee(transaction: BnsTx): Promise<Amount | undefined>;
-  /**
-   * The same as searchTx but with ConfirmedTransaction<UnsignedTransaction> instead of
-   * ConfirmedTransaction<LightTransaction>
-   */
-  private searchTxUnsigned;
-  /**
-   * The same as listenTx but with ConfirmedTransaction<UnsignedTransaction> instead of
-   * ConfirmedTransaction<LightTransaction>
-   */
-  private listenTxUnsigned;
-  /**
-   * The same as liveTx but with ConfirmedTransaction<UnsignedTransaction> instead of
-   * ConfirmedTransaction<LightTransaction>
-   */
-  private liveTxUnsigned;
 }

@@ -13,7 +13,6 @@ import {
   SendTransaction,
   TokenTicker,
   TransactionId,
-  WithCreator,
 } from "@iov/bcp";
 import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
@@ -235,10 +234,10 @@ describe("signingservice.worker", () => {
       throw new Error("Identity element is not valid");
     }
 
-    const send = await bnsConnection.withDefaultFee<SendTransaction & WithCreator>(
+    const send = await bnsConnection.withDefaultFee<SendTransaction>(
       {
         kind: "bcp/send",
-        creator: signer,
+        chainId: signer.chainId,
         sender: bnsCodec.identityToAddress(signer),
         memo: `Hello ${Math.random()}`,
         amount: defaultAmount,

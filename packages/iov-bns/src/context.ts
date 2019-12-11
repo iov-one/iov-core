@@ -8,13 +8,12 @@ import {
   SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
-  WithCreator,
 } from "@iov/bcp";
 
 import { asIntegerNumber, decodeAmount, ensure } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import { Keyed } from "./types";
-import { addressPrefix, encodeBnsAddress, identityToAddress } from "./util";
+import { addressPrefix, encodeBnsAddress } from "./util";
 
 /**
  * All the queries of immutable data we do on initialization to be reused by later calls
@@ -71,7 +70,7 @@ export class Context {
     };
   }
 
-  public swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction & WithCreator>): OpenSwap {
+  public swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction>): OpenSwap {
     const transaction = confirmed.transaction;
     return {
       kind: SwapProcessState.Open,
@@ -79,7 +78,7 @@ export class Context {
         id: {
           data: confirmed.result as SwapIdBytes,
         },
-        sender: identityToAddress(transaction.creator),
+        sender: transaction.sender,
         recipient: transaction.recipient,
         hash: transaction.hash,
         amounts: transaction.amounts,

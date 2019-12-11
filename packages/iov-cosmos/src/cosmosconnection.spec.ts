@@ -7,7 +7,6 @@ import {
   PubkeyBytes,
   SendTransaction,
   TokenTicker,
-  WithCreator,
 } from "@iov/bcp";
 import { Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -118,9 +117,9 @@ describe("CosmosConnection", () => {
       const faucet = await profile.createIdentity(wallet.id, defaultChainId, faucetPath);
       const faucetAddress = cosmosCodec.identityToAddress(faucet);
 
-      const unsigned = await connection.withDefaultFee<SendTransaction & WithCreator>({
+      const unsigned = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
-        creator: faucet,
+        chainId: defaultChainId,
         sender: faucetAddress,
         recipient: defaultRecipient,
         memo: "My first payment",
@@ -151,11 +150,7 @@ describe("CosmosConnection", () => {
       expect(transaction.recipient).toEqual(unsigned.recipient);
       expect(transaction.memo).toEqual(unsigned.memo);
       expect(transaction.amount).toEqual(unsigned.amount);
-      expect(transaction.creator.chainId).toEqual(unsigned.creator.chainId);
-      expect(transaction.creator.pubkey.algo).toEqual(unsigned.creator.pubkey.algo);
-      expect(toHex(transaction.creator.pubkey.data)).toEqual(
-        toHex(Secp256k1.compressPubkey(unsigned.creator.pubkey.data)),
-      );
+      expect(transaction.chainId).toEqual(unsigned.chainId);
 
       expect(primarySignature.nonce).toEqual(signed.primarySignature.nonce);
       expect(primarySignature.pubkey.algo).toEqual(signed.primarySignature.pubkey.algo);
@@ -178,9 +173,9 @@ describe("CosmosConnection", () => {
       const faucet = await profile.createIdentity(wallet.id, defaultChainId, faucetPath);
       const faucetAddress = cosmosCodec.identityToAddress(faucet);
 
-      const unsigned = await connection.withDefaultFee<SendTransaction & WithCreator>({
+      const unsigned = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
-        creator: faucet,
+        chainId: defaultChainId,
         sender: faucetAddress,
         recipient: defaultRecipient,
         memo: "My first payment",

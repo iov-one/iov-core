@@ -81,9 +81,9 @@ $ iov-cli
 > const recipientAddress = signer.identityToAddress(recipient);
 
 > .editor
-const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
+const sendTx = await connection.withDefaultFee<SendTransaction>({
   kind: "bcp/send",
-  creator: faucet,
+  chainId: faucet.chainId,
   sender: faucetAddress,
   recipient: recipientAddress,
   memo: "My first transaction",
@@ -92,7 +92,7 @@ const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
     fractionalDigits: 9,
     tokenTicker: "CASH" as TokenTicker,
   },
-});
+}, faucetAddress);
 ^D
 > await signer.signAndPost(faucet, sendTx);
 > (await connection.getAccount({ address: recipientAddress })).balance;
@@ -155,12 +155,12 @@ transactions associated from above
 
 ```
 > .editor
-const registrationTx = await connection.withDefaultFee<RegisterUsernameTx & WithCreator>({
+const registrationTx = await connection.withDefaultFee<RegisterUsernameTx>({
   kind: "bns/register_username",
-  creator: recipient,
+  chainId: recipient.chainId,
   targets: [],
   username: "hans*iov",
-});
+}, recipientAddress);
 ^D
 > await signer.signAndPost(recipient, registrationTx);
 > const bnsConnection = connection as BnsConnection;

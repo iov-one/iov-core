@@ -18,7 +18,6 @@ import {
   isConfirmedTransaction,
   isSendTransaction,
   isSwapOfferTransaction,
-  LightTransaction,
   Nonce,
   PostTxResponse,
   Preimage,
@@ -36,10 +35,8 @@ import {
   TransactionQuery,
   TransactionState,
   UnsignedTransaction,
-  WithCreator,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature, Keccak256, Random, Secp256k1 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 
@@ -50,7 +47,6 @@ import { EthereumConnection } from "./ethereumconnection";
 import { SwapIdPrefix } from "./serialization";
 import { testConfig } from "./testconfig.spec";
 
-const { fromHex } = Encoding;
 const ETH = "ETH" as TokenTicker;
 const ASH = "ASH" as TokenTicker;
 
@@ -115,9 +111,9 @@ describe("EthereumConnection", () => {
     recipient: Address,
     connection: EthereumConnection,
   ): Promise<PostTxResponse> {
-    const sendTx: SendTransaction & WithCreator = {
+    const sendTx: SendTransaction = {
       kind: "bcp/send",
-      creator: sender,
+      chainId: sender.chainId,
       sender: ethereumCodec.identityToAddress(sender),
       recipient: recipient,
       amount: defaultAmount,
@@ -401,9 +397,9 @@ describe("EthereumConnection", () => {
 
       const recipient = await randomAddress();
 
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: mainIdentity,
+        chainId: testConfig.chainId,
         sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: recipient,
         amount: defaultAmount,
@@ -440,9 +436,9 @@ describe("EthereumConnection", () => {
 
       const recipient = await randomAddress();
 
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: mainIdentity,
+        chainId: testConfig.chainId,
         sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: recipient,
         amount: defaultAmount,
@@ -494,9 +490,9 @@ describe("EthereumConnection", () => {
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: mainIdentity,
+        chainId: testConfig.chainId,
         sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: await randomAddress(),
         amount: defaultAmount,
@@ -532,9 +528,9 @@ describe("EthereumConnection", () => {
         HdPaths.ethereum(999),
       );
 
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: brokeIdentity,
+        chainId: testConfig.chainId,
         sender: ethereumCodec.identityToAddress(brokeIdentity),
         recipient: await randomAddress(),
         amount: defaultAmount,
@@ -562,9 +558,9 @@ describe("EthereumConnection", () => {
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: mainIdentity,
+        chainId: testConfig.chainId,
         sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: await randomAddress(),
         amount: defaultAmount,
@@ -609,9 +605,9 @@ describe("EthereumConnection", () => {
       for (const transferTest of testConfig.erc20TransferTests) {
         const recipientAddress = await randomAddress();
 
-        const sendTx: SendTransaction & WithCreator = {
+        const sendTx: SendTransaction = {
           kind: "bcp/send",
-          creator: mainIdentity,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(mainIdentity),
           recipient: recipientAddress,
           fee: {
@@ -714,9 +710,9 @@ describe("EthereumConnection", () => {
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
         const recipient = await randomAddress();
-        const sendTx: SendTransaction & WithCreator = {
+        const sendTx: SendTransaction = {
           kind: "bcp/send",
-          creator: mainIdentity,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(mainIdentity),
           recipient: recipient,
           amount: defaultAmount,
@@ -759,9 +755,9 @@ describe("EthereumConnection", () => {
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
       const mainIdentity = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
       const recipient = await randomAddress();
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: mainIdentity,
+        chainId: testConfig.chainId,
         sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: recipient,
         amount: defaultAmount,
@@ -780,14 +776,16 @@ describe("EthereumConnection", () => {
       await blockInfo.waitFor(info => !isBlockInfoPending(info));
 
       const { transaction, primarySignature: signature } = await connection.getTx(transactionId);
-      const publicKey = transaction.creator.pubkey.data;
+      if (!isSendTransaction(transaction)) {
+        throw new Error("Expected send transaction");
+      }
       const signingJob = ethereumCodec.bytesToSign(transaction, signature.nonce);
       const txBytes = new Keccak256(signingJob.bytes).digest();
 
       const valid = await Secp256k1.verifySignature(
         ExtendedSecp256k1Signature.fromFixedLength(signature.signature),
         txBytes,
-        publicKey,
+        mainIdentity.pubkey.data,
       );
       expect(valid).toBe(true);
 
@@ -831,9 +829,9 @@ describe("EthereumConnection", () => {
 
       const recipient = await randomAddress();
 
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: mainIdentity,
+        chainId: testConfig.chainId,
         sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: recipient,
         amount: defaultAmount,
@@ -896,9 +894,9 @@ describe("EthereumConnection", () => {
 
       const recipientAddress = await randomAddress();
 
-      const sendTx: SendTransaction & WithCreator = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
-        creator: mainIdentity,
+        chainId: testConfig.chainId,
         sender: ethereumCodec.identityToAddress(mainIdentity),
         recipient: recipientAddress,
         amount: defaultAmount,
@@ -1033,9 +1031,9 @@ describe("EthereumConnection", () => {
 
         // send
         {
-          const sendTx: SendTransaction & WithCreator = {
+          const sendTx: SendTransaction = {
             kind: "bcp/send",
-            creator: mainIdentity,
+            chainId: testConfig.chainId,
             sender: ethereumCodec.identityToAddress(mainIdentity),
             recipient: recipient,
             fee: {
@@ -1093,9 +1091,9 @@ describe("EthereumConnection", () => {
 
         // send
         {
-          const sendTx: SendTransaction & WithCreator = {
+          const sendTx: SendTransaction = {
             kind: "bcp/send",
-            creator: mainIdentity,
+            chainId: testConfig.chainId,
             sender: ethereumCodec.identityToAddress(mainIdentity),
             recipient: recipient,
             fee: {
@@ -1155,7 +1153,7 @@ describe("EthereumConnection", () => {
 
         // setup listener
         const transactionIds = new Set<TransactionId>();
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.listenTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1184,9 +1182,9 @@ describe("EthereumConnection", () => {
 
         // send transactions
 
-        const sendA: SendTransaction & WithCreator = {
+        const sendA: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
@@ -1197,9 +1195,9 @@ describe("EthereumConnection", () => {
           memo: `listenTx() test A ${Math.random()}`,
         };
 
-        const sendB: SendTransaction & WithCreator = {
+        const sendB: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
@@ -1211,9 +1209,9 @@ describe("EthereumConnection", () => {
         };
 
         // an ERC 20 token transfer
-        const sendC: SendTransaction & WithCreator = {
+        const sendC: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1274,9 +1272,9 @@ describe("EthereumConnection", () => {
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
-        const sendA: SendTransaction & WithCreator = {
+        const sendA: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
@@ -1287,9 +1285,9 @@ describe("EthereumConnection", () => {
           memo: `liveTx() test A ${Math.random()}`,
         };
 
-        const sendB: SendTransaction & WithCreator = {
+        const sendB: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
@@ -1300,9 +1298,9 @@ describe("EthereumConnection", () => {
           memo: `liveTx() test B ${Math.random()}`,
         };
 
-        const sendC: SendTransaction & WithCreator = {
+        const sendC: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
@@ -1337,7 +1335,7 @@ describe("EthereumConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1392,9 +1390,9 @@ describe("EthereumConnection", () => {
         const senderAddress = pubkeyToAddress(sender.pubkey);
         const recipientAddress = await randomAddress();
 
-        const sendA: SendTransaction & WithCreator = {
+        const sendA: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
@@ -1405,9 +1403,9 @@ describe("EthereumConnection", () => {
           memo: `liveTx() test A ${Math.random()}`,
         };
 
-        const sendB: SendTransaction & WithCreator = {
+        const sendB: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
@@ -1418,9 +1416,9 @@ describe("EthereumConnection", () => {
           memo: `liveTx() test B ${Math.random()}`,
         };
 
-        const sendC: SendTransaction & WithCreator = {
+        const sendC: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
@@ -1455,7 +1453,7 @@ describe("EthereumConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection
           .liveTx({ sentFromOrTo: senderAddress, minHeight: minHeight })
           .subscribe({
@@ -1511,9 +1509,9 @@ describe("EthereumConnection", () => {
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
-        const sendA: SendTransaction & WithCreator = {
+        const sendA: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1523,9 +1521,9 @@ describe("EthereumConnection", () => {
           ...testConfig.erc20TransferTests[0],
         };
 
-        const sendB: SendTransaction & WithCreator = {
+        const sendB: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1535,9 +1533,9 @@ describe("EthereumConnection", () => {
           ...testConfig.erc20TransferTests[0],
         };
 
-        const sendC: SendTransaction & WithCreator = {
+        const sendC: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1567,7 +1565,7 @@ describe("EthereumConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1622,9 +1620,9 @@ describe("EthereumConnection", () => {
         const senderAddress = pubkeyToAddress(sender.pubkey);
         const recipientAddress = await randomAddress();
 
-        const sendA: SendTransaction & WithCreator = {
+        const sendA: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1634,9 +1632,9 @@ describe("EthereumConnection", () => {
           ...testConfig.erc20TransferTests[0],
         };
 
-        const sendB: SendTransaction & WithCreator = {
+        const sendB: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1646,9 +1644,9 @@ describe("EthereumConnection", () => {
           ...testConfig.erc20TransferTests[0],
         };
 
-        const sendC: SendTransaction & WithCreator = {
+        const sendC: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1678,7 +1676,7 @@ describe("EthereumConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection
           .liveTx({ sentFromOrTo: senderAddress, minHeight: minHeight })
           .subscribe({
@@ -1735,9 +1733,9 @@ describe("EthereumConnection", () => {
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
-        const sendA: SendTransaction & WithCreator = {
+        const sendA: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1747,9 +1745,9 @@ describe("EthereumConnection", () => {
           amount: defaultAmount,
         };
 
-        const sendB: SendTransaction & WithCreator = {
+        const sendB: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1759,9 +1757,9 @@ describe("EthereumConnection", () => {
           ...testConfig.erc20TransferTests[0],
         };
 
-        const sendC: SendTransaction & WithCreator = {
+        const sendC: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1771,9 +1769,9 @@ describe("EthereumConnection", () => {
           amount: defaultAmount,
         };
 
-        const sendD: SendTransaction & WithCreator = {
+        const sendD: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           fee: {
@@ -1807,7 +1805,7 @@ describe("EthereumConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1862,9 +1860,9 @@ describe("EthereumConnection", () => {
         const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
         const recipientAddress = await randomAddress();
-        const send: SendTransaction & WithCreator = {
+        const send: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
@@ -1886,7 +1884,7 @@ describe("EthereumConnection", () => {
         await postResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after transaction is in block
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1927,9 +1925,9 @@ describe("EthereumConnection", () => {
         const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(testConfig.mnemonic));
         const sender = await profile.createIdentity(wallet.id, testConfig.chainId, HdPaths.ethereum(0));
 
-        const send: SendTransaction & WithCreator = {
+        const send: SendTransaction = {
           kind: "bcp/send",
-          creator: sender,
+          chainId: testConfig.chainId,
           sender: ethereumCodec.identityToAddress(sender),
           recipient: recipientAddress,
           amount: defaultAmount,
@@ -1948,7 +1946,7 @@ describe("EthereumConnection", () => {
         const transactionId = postResult.transactionId;
 
         // setup listener before transaction is in block
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -2056,17 +2054,10 @@ describe("EthereumConnection", () => {
         testConfig.baseHttp,
         testConfig.connectionOptions,
       );
-      const sender = {
-        chainId: connection.chainId(),
-        pubkey: {
-          algo: Algorithm.Secp256k1,
-          data: fromHex("aabbccdd") as PubkeyBytes,
-        },
-      };
 
-      const sendTransaction: SendTransaction & WithCreator = {
+      const sendTransaction: SendTransaction = {
         kind: "bcp/send",
-        creator: sender,
+        chainId: testConfig.chainId,
         sender: "not used" as Address,
         recipient: await randomAddress(),
         memo: `We ❤️ developers – iov.one ${Math.random()}`,
@@ -2094,13 +2085,7 @@ describe("EthereumConnection", () => {
 
       const otherTransaction: UnsignedTransaction = {
         kind: "other/kind",
-        creator: {
-          chainId: connection.chainId(),
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromHex("aabbccdd") as PubkeyBytes,
-          },
-        },
+        chainId: testConfig.chainId,
       };
       await connection
         .getFeeQuote(otherTransaction)
@@ -2141,10 +2126,11 @@ describe("EthereumConnection", () => {
           fractionalDigits: 18,
           tokenTicker: ETH,
         };
-        const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+        const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
           kind: "bcp/swap_offer",
-          creator: faucet,
+          chainId: chainId,
           swapId: swapId,
+          sender: faucetAddress,
           recipient: recipientAddress,
           amounts: [amount],
           timeout: swapOfferTimeout,
@@ -2232,7 +2218,7 @@ describe("EthereumConnection", () => {
       const openSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: Identity,
+        sender: Identity,
         rcptAddr: Address,
         hash: Hash,
         swapId: SwapId,
@@ -2242,10 +2228,11 @@ describe("EthereumConnection", () => {
         const swapOfferTimeout: SwapTimeout = {
           height: (await connection.height()) + timeoutOffset,
         };
-        const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+        const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
           kind: "bcp/swap_offer",
           swapId: swapId,
-          creator: creator,
+          chainId: sender.chainId,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: rcptAddr,
           amounts: [
             {
@@ -2257,8 +2244,8 @@ describe("EthereumConnection", () => {
           timeout: swapOfferTimeout,
           hash: hash,
         });
-        const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(creator, swapOfferTx, ethereumCodec, nonce);
+        const nonce = await connection.getNonce({ pubkey: sender.pubkey });
+        const signed = await profile.signTransaction(sender, swapOfferTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
@@ -2266,19 +2253,19 @@ describe("EthereumConnection", () => {
       const claimSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: Identity,
+        claimer: Identity,
         swapId: SwapId,
         preimage: Preimage,
       ): Promise<PostTxResponse> => {
         // construct a swapOfferTx, sign and post to the chain
-        const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction & WithCreator>({
+        const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction>({
           kind: "bcp/swap_claim",
-          creator: creator,
+          chainId: claimer.chainId,
           swapId: swapId,
           preimage: preimage,
         });
-        const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(creator, swapClaimTx, ethereumCodec, nonce);
+        const nonce = await connection.getNonce({ pubkey: claimer.pubkey });
+        const signed = await profile.signTransaction(claimer, swapClaimTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
@@ -2286,16 +2273,16 @@ describe("EthereumConnection", () => {
       const abortSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: Identity,
+        aborter: Identity,
         swapId: SwapId,
       ): Promise<PostTxResponse> => {
-        const swapAbortTx = await connection.withDefaultFee<SwapAbortTransaction & WithCreator>({
+        const swapAbortTx = await connection.withDefaultFee<SwapAbortTransaction>({
           kind: "bcp/swap_abort",
-          creator: creator,
+          chainId: aborter.chainId,
           swapId: swapId,
         });
-        const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(creator, swapAbortTx, ethereumCodec, nonce);
+        const nonce = await connection.getNonce({ pubkey: aborter.pubkey });
+        const signed = await profile.signTransaction(aborter, swapAbortTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
@@ -2497,9 +2484,9 @@ describe("EthereumConnection", () => {
           tokenTicker: ASH,
         };
 
-        const approvalTx = await connection.withDefaultFee<Erc20ApproveTransaction & WithCreator>({
+        const approvalTx = await connection.withDefaultFee<Erc20ApproveTransaction>({
           kind: "erc20/approve",
-          creator: faucet,
+          chainId: chainId,
           spender: testConfig.connectionOptions.atomicSwapErc20ContractAddress!,
           amount: amount,
         });
@@ -2516,10 +2503,11 @@ describe("EthereumConnection", () => {
           throw new Error(`Expected transaction state success but got state: ${approvalBlockInfo.state}`);
         }
 
-        const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+        const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
           kind: "bcp/swap_offer",
-          creator: faucet,
+          chainId: chainId,
           swapId: swapId,
+          sender: faucetAddress,
           recipient: recipientAddress,
           amounts: [amount],
           timeout: swapOfferTimeout,
@@ -2606,7 +2594,7 @@ describe("EthereumConnection", () => {
       const openSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: Identity,
+        sender: Identity,
         rcptAddr: Address,
         hash: Hash,
         swapId: SwapId,
@@ -2617,15 +2605,15 @@ describe("EthereumConnection", () => {
           fractionalDigits: 12,
           tokenTicker: ASH,
         };
-        const approvalTx = await connection.withDefaultFee<Erc20ApproveTransaction & WithCreator>({
+        const approvalTx = await connection.withDefaultFee<Erc20ApproveTransaction>({
           kind: "erc20/approve",
-          creator: creator,
+          chainId: sender.chainId,
           spender: testConfig.connectionOptions.atomicSwapErc20ContractAddress!,
           amount: amount,
         });
-        const approvalNonce = await connection.getNonce({ pubkey: creator.pubkey });
+        const approvalNonce = await connection.getNonce({ pubkey: sender.pubkey });
         const signedApproval = await profile.signTransaction(
-          creator,
+          sender,
           approvalTx,
           ethereumCodec,
           approvalNonce,
@@ -2639,17 +2627,18 @@ describe("EthereumConnection", () => {
         const swapOfferTimeout: SwapTimeout = {
           height: (await connection.height()) + timeoutOffset,
         };
-        const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithCreator>({
+        const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
           kind: "bcp/swap_offer",
           swapId: swapId,
-          creator: creator,
+          chainId: sender.chainId,
+          sender: ethereumCodec.identityToAddress(sender),
           recipient: rcptAddr,
           amounts: [amount],
           timeout: swapOfferTimeout,
           hash: hash,
         });
-        const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(creator, swapOfferTx, ethereumCodec, nonce);
+        const nonce = await connection.getNonce({ pubkey: sender.pubkey });
+        const signed = await profile.signTransaction(sender, swapOfferTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
@@ -2657,19 +2646,19 @@ describe("EthereumConnection", () => {
       const claimSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: Identity,
+        claimer: Identity,
         swapId: SwapId,
         preimage: Preimage,
       ): Promise<PostTxResponse> => {
         // construct a swapOfferTx, sign and post to the chain
-        const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction & WithCreator>({
+        const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction>({
           kind: "bcp/swap_claim",
-          creator: creator,
+          chainId: claimer.chainId,
           swapId: swapId,
           preimage: preimage,
         });
-        const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(creator, swapClaimTx, ethereumCodec, nonce);
+        const nonce = await connection.getNonce({ pubkey: claimer.pubkey });
+        const signed = await profile.signTransaction(claimer, swapClaimTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
@@ -2677,16 +2666,16 @@ describe("EthereumConnection", () => {
       const abortSwap = async (
         connection: EthereumConnection,
         profile: UserProfile,
-        creator: Identity,
+        aborter: Identity,
         swapId: SwapId,
       ): Promise<PostTxResponse> => {
-        const swapAbortTx = await connection.withDefaultFee<SwapAbortTransaction & WithCreator>({
+        const swapAbortTx = await connection.withDefaultFee<SwapAbortTransaction>({
           kind: "bcp/swap_abort",
-          creator: creator,
+          chainId: aborter.chainId,
           swapId: swapId,
         });
-        const nonce = await connection.getNonce({ pubkey: creator.pubkey });
-        const signed = await profile.signTransaction(creator, swapAbortTx, ethereumCodec, nonce);
+        const nonce = await connection.getNonce({ pubkey: aborter.pubkey });
+        const signed = await profile.signTransaction(aborter, swapAbortTx, ethereumCodec, nonce);
         const txBytes = ethereumCodec.bytesToPost(signed);
         return connection.postTx(txBytes);
       };
