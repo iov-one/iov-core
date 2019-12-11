@@ -268,6 +268,12 @@ export function isFailedTransaction<T extends UnsignedTransaction>(
 export type ConfirmedAndSignedTransaction<T extends UnsignedTransaction> = ConfirmedTransaction<T> &
   SignedTransaction<T>;
 
+export function isConfirmedAndSignedTransaction<T extends UnsignedTransaction>(
+  transaction: ConfirmedAndSignedTransaction<T> | FailedTransaction,
+): transaction is ConfirmedAndSignedTransaction<T> {
+  return isConfirmedTransaction(transaction);
+}
+
 export interface SendTransaction extends UnsignedTransaction {
   readonly kind: "bcp/send";
   readonly amount: Amount;

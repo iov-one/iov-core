@@ -95,6 +95,7 @@ export {
   FailedTransaction,
   isConfirmedTransaction,
   isFailedTransaction,
+  isConfirmedAndSignedTransaction,
   ConfirmedAndSignedTransaction,
   SendTransaction,
   SwapTimeout,
