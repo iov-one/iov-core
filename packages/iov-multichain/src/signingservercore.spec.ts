@@ -79,14 +79,18 @@ describe("SigningServerCore", () => {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
     const faucet = await profile.createIdentity(wallet.id, connection.chainId(), faucetPath);
+    const faucetAddress = bnsCodec.identityToAddress(faucet);
 
-    const sendTx = await connection.withDefaultFee<SendTransaction>({
-      kind: "bcp/send",
-      chainId: faucet.chainId,
-      sender: bnsCodec.identityToAddress(faucet),
-      recipient: isIdentity(recipient) ? bnsCodec.identityToAddress(recipient) : recipient,
-      amount: amount,
-    });
+    const sendTx = await connection.withDefaultFee<SendTransaction>(
+      {
+        kind: "bcp/send",
+        chainId: faucet.chainId,
+        sender: faucetAddress,
+        recipient: isIdentity(recipient) ? bnsCodec.identityToAddress(recipient) : recipient,
+        amount: amount,
+      },
+      faucetAddress,
+    );
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
     const response = await connection.postTx(bnsCodec.bytesToPost(signed));
@@ -321,14 +325,18 @@ describe("SigningServerCore", () => {
       );
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
+      const signingAddress = bnsCodec.identityToAddress(signingIdentity);
 
-      const send = await connection.withDefaultFee<SendTransaction>({
-        kind: "bcp/send",
-        chainId: bnsChain,
-        sender: bnsCodec.identityToAddress(signingIdentity),
-        amount: defaultAmount,
-        recipient: await randomBnsAddress(),
-      });
+      const send = await connection.withDefaultFee<SendTransaction>(
+        {
+          kind: "bcp/send",
+          chainId: bnsChain,
+          sender: signingAddress,
+          amount: defaultAmount,
+          recipient: await randomBnsAddress(),
+        },
+        signingAddress,
+      );
       const transactionId = await core.signAndPost(signingIdentity, "Please sign now", send);
       expect(transactionId).toBeDefined();
       expect(transactionId).toMatch(/^[0-9A-F]{64}$/);
@@ -366,13 +374,17 @@ describe("SigningServerCore", () => {
       );
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send = await connection.withDefaultFee<SendTransaction>({
-        kind: "bcp/send",
-        chainId: bnsChain,
-        sender: bnsCodec.identityToAddress(signingIdentity),
-        amount: defaultAmount,
-        recipient: await randomBnsAddress(),
-      });
+      const signingAddress = bnsCodec.identityToAddress(signingIdentity);
+      const send = await connection.withDefaultFee<SendTransaction>(
+        {
+          kind: "bcp/send",
+          chainId: bnsChain,
+          sender: signingAddress,
+          amount: defaultAmount,
+          recipient: await randomBnsAddress(),
+        },
+        signingAddress,
+      );
       const transactionId = await core.signAndPost(signingIdentity, "Please sign now", send);
       expect(transactionId).toBeNull();
 
@@ -398,13 +410,17 @@ describe("SigningServerCore", () => {
       }
       const core = new SigningServerCore(profile, signer, defaultGetIdentitiesCallback, throwingCallback);
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send = await connection.withDefaultFee<SendTransaction>({
-        kind: "bcp/send",
-        chainId: bnsChain,
-        sender: bnsCodec.identityToAddress(signingIdentity),
-        amount: defaultAmount,
-        recipient: await randomBnsAddress(),
-      });
+      const signingAddress = bnsCodec.identityToAddress(signingIdentity);
+      const send = await connection.withDefaultFee<SendTransaction>(
+        {
+          kind: "bcp/send",
+          chainId: bnsChain,
+          sender: signingAddress,
+          amount: defaultAmount,
+          recipient: await randomBnsAddress(),
+        },
+        signingAddress,
+      );
       await core
         .signAndPost(signingIdentity, "Please sign now", send)
         .then(() => fail("must not resolve"))
@@ -441,13 +457,17 @@ describe("SigningServerCore", () => {
         logger.log,
       );
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send = await connection.withDefaultFee<SendTransaction>({
-        kind: "bcp/send",
-        chainId: bnsChain,
-        sender: bnsCodec.identityToAddress(signingIdentity),
-        amount: defaultAmount,
-        recipient: await randomBnsAddress(),
-      });
+      const signingAddress = bnsCodec.identityToAddress(signingIdentity);
+      const send = await connection.withDefaultFee<SendTransaction>(
+        {
+          kind: "bcp/send",
+          chainId: bnsChain,
+          sender: signingAddress,
+          amount: defaultAmount,
+          recipient: await randomBnsAddress(),
+        },
+        signingAddress,
+      );
       await core
         .signAndPost(signingIdentity, "Please sign now", send)
         .then(() => fail("must not resolve"))
@@ -489,13 +509,17 @@ describe("SigningServerCore", () => {
       );
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send = await connection.withDefaultFee<SendTransaction>({
-        kind: "bcp/send",
-        chainId: bnsChain,
-        sender: bnsCodec.identityToAddress(signingIdentity),
-        amount: defaultAmount,
-        recipient: await randomBnsAddress(),
-      });
+      const signingAddress = bnsCodec.identityToAddress(signingIdentity);
+      const send = await connection.withDefaultFee<SendTransaction>(
+        {
+          kind: "bcp/send",
+          chainId: bnsChain,
+          sender: signingAddress,
+          amount: defaultAmount,
+          recipient: await randomBnsAddress(),
+        },
+        signingAddress,
+      );
       await core.signAndPost(signingIdentity, "Please sign now", send, originalRequestMeta);
 
       core.shutdown();
@@ -527,13 +551,17 @@ describe("SigningServerCore", () => {
       expect(core.signedAndPosted.value).toEqual([]);
 
       const [signingIdentity] = await core.getIdentities("Please select signer", [bnsChain]);
-      const send = await connection.withDefaultFee<SendTransaction>({
-        kind: "bcp/send",
-        chainId: bnsChain,
-        sender: bnsCodec.identityToAddress(signingIdentity),
-        amount: defaultAmount,
-        recipient: await randomBnsAddress(),
-      });
+      const signingAddress = bnsCodec.identityToAddress(signingIdentity);
+      const send = await connection.withDefaultFee<SendTransaction>(
+        {
+          kind: "bcp/send",
+          chainId: bnsChain,
+          sender: signingAddress,
+          amount: defaultAmount,
+          recipient: await randomBnsAddress(),
+        },
+        signingAddress,
+      );
       const transactionId = await core.signAndPost(signingIdentity, "Please sign now", send);
       if (!transactionId) {
         throw new Error("Expected transaction ID to be set");
