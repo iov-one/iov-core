@@ -25,13 +25,14 @@ export declare class CosmosConnection implements BlockchainConnection {
   private static initialize;
   private readonly restClient;
   private readonly chainData;
+  private readonly primaryToken;
   private readonly supportedTokens;
   private get prefix();
   private constructor();
   disconnect(): void;
   chainId(): ChainId;
   height(): Promise<number>;
-  getToken(_ticker: TokenTicker): Promise<Token | undefined>;
+  getToken(searchTicker: TokenTicker): Promise<Token | undefined>;
   getAllTokens(): Promise<readonly Token[]>;
   getAccount(query: AccountQuery): Promise<Account | undefined>;
   watchAccount(_account: AccountQuery): Stream<Account | undefined>;
