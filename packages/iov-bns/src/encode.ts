@@ -494,29 +494,35 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   }
 }
 
+function buildFeeForTx(txWithFee: UnsignedTransaction): codecImpl.cash.IFeeInfo {
+  const { fee } = txWithFee;
+  if (!fee?.tokens) {
+    throw new Error("Cannot build fee for transaction without fee tokens");
+  }
+
+  let feePayerAddressBytes: Uint8Array;
+  if (fee.payer) {
+    feePayerAddressBytes = decodeBnsAddress(fee.payer).data;
+  } else if (isMultisignatureTx(txWithFee)) {
+    const firstContract = txWithFee.multisig.find(() => true);
+    if (firstContract === undefined) throw new Error("Empty multisig arrays are currently unsupported");
+    feePayerAddressBytes = conditionToWeaveAddress(buildMultisignatureCondition(firstContract));
+  } else {
+    throw new Error("Cannot build fee for transaction with unknown fee payer");
+  }
+
+  return {
+    fees: encodeAmount(fee.tokens),
+    payer: feePayerAddressBytes,
+  };
+}
+
 export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   const msg = buildMsg(tx);
 
-  let feePayerAddressBytes: Uint8Array = new Uint8Array();
-  if (tx.fee && tx.fee.tokens) {
-    if (tx.fee.payer) {
-      feePayerAddressBytes = decodeBnsAddress(tx.fee.payer).data;
-    } else if (isMultisignatureTx(tx)) {
-      const firstContract = tx.multisig.find(() => true);
-      if (firstContract === undefined) throw new Error("Empty multisig arrays are currently unsupported");
-      feePayerAddressBytes = conditionToWeaveAddress(buildMultisignatureCondition(firstContract));
-    }
-  }
-
   return codecImpl.bnsd.Tx.create({
     ...msg,
-    fees:
-      tx.fee && tx.fee.tokens
-        ? {
-            fees: encodeAmount(tx.fee.tokens),
-            payer: feePayerAddressBytes,
-          }
-        : null,
+    fees: tx.fee ? buildFeeForTx(tx) : null,
     multisig: isMultisignatureTx(tx) ? tx.multisig.map(encodeNumericId) : null,
   });
 }
