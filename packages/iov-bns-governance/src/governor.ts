@@ -1,4 +1,4 @@
-import { Address, Identity, WithChainId } from "@iov/bcp";
+import { Address, Identity } from "@iov/bcp";
 import {
   ActionKind,
   bnsCodec,
@@ -94,7 +94,7 @@ export class Governor {
     return this.connection.getVotes(this.address);
   }
 
-  public async buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx & WithChainId> {
+  public async buildCreateProposalTx(options: ProposalOptions): Promise<CreateProposalTx> {
     const commonProperties = {
       kind: "bns/create_proposal" as const,
       chainId: this.identity.chainId,
@@ -238,7 +238,7 @@ export class Governor {
     }
   }
 
-  public async buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx & WithChainId> {
+  public async buildVoteTx(proposalId: number, selection: VoteOption): Promise<VoteTx> {
     return this.connection.withDefaultFee({
       kind: "bns/vote",
       chainId: this.identity.chainId,
