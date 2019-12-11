@@ -14,7 +14,6 @@ import {
   TokenTicker,
   TransactionId,
   TxCodec,
-  WithChainId,
 } from "@iov/bcp";
 import { Ed25519, Slip10RawIndex } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -780,7 +779,7 @@ describe("UserProfile", () => {
       chainId: chainId,
       pubkey: { algo: Algorithm.Ed25519, data: new Uint8Array([0xaa]) as PubkeyBytes },
     };
-    const fakeTransaction: SendTransaction & WithChainId = {
+    const fakeTransaction: SendTransaction = {
       kind: "bcp/send",
       chainId: chainId,
       amount: {
@@ -863,7 +862,7 @@ describe("UserProfile", () => {
     const mainIdentity = await keyring.createIdentity(wallet.id, defaultChain, HdPaths.iov(0));
     const profile = new UserProfile({ createdAt: createdAt, keyring: keyring });
 
-    const fakeTransaction: SendTransaction & WithChainId = {
+    const fakeTransaction: SendTransaction = {
       kind: "bcp/send",
       chainId: "ethereum" as ChainId,
       amount: {
