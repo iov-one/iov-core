@@ -776,17 +776,16 @@ describe("EthereumConnection", () => {
       await blockInfo.waitFor(info => !isBlockInfoPending(info));
 
       const { transaction, primarySignature: signature } = await connection.getTx(transactionId);
-      if (!isSendTransaction(transaction) || !transaction.senderPubkey) {
-        throw new Error("Expected send transaction with senderPubkey");
+      if (!isSendTransaction(transaction)) {
+        throw new Error("Expected send transaction");
       }
-      const publicKey = transaction.senderPubkey.data;
       const signingJob = ethereumCodec.bytesToSign(transaction, signature.nonce);
       const txBytes = new Keccak256(signingJob.bytes).digest();
 
       const valid = await Secp256k1.verifySignature(
         ExtendedSecp256k1Signature.fromFixedLength(signature.signature),
         txBytes,
-        publicKey,
+        mainIdentity.pubkey.data,
       );
       expect(valid).toBe(true);
 

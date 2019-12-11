@@ -12,7 +12,6 @@ import {
   isOpenSwap,
   OpenSwap,
   Preimage,
-  PubkeyBundle,
   SendTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
@@ -93,9 +92,9 @@ class Actor {
     this.receiverIdentity = data.receiverIdentity;
   }
 
-  public async sendTransaction(transaction: UnsignedTransaction, pubkey: PubkeyBundle): Promise<void> {
-    const nonce = await this.connection.getNonce({ pubkey: pubkey });
-    const signed = await this.profile.signTransaction(this.senderIdentity, transaction, ethereumCodec, nonce);
+  public async sendTransaction(transaction: UnsignedTransaction, identity: Identity): Promise<void> {
+    const nonce = await this.connection.getNonce({ pubkey: identity.pubkey });
+    const signed = await this.profile.signTransaction(identity, transaction, ethereumCodec, nonce);
     const postable = await ethereumCodec.bytesToPost(signed);
     const post = await this.connection.postTx(postable);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
@@ -112,7 +111,7 @@ class Actor {
       recipient: recipient,
       amount: amount,
     });
-    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
+    return this.sendTransaction(transaction, this.senderIdentity);
   }
 
   public async approveErc20Spend(amount: Amount): Promise<void> {
@@ -122,7 +121,7 @@ class Actor {
       spender: testConfig.connectionOptions.atomicSwapErc20ContractAddress!,
       amount: amount,
     });
-    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
+    return this.sendTransaction(transaction, this.senderIdentity);
   }
 
   public async getSenderEtherBalance(): Promise<BN> {
@@ -182,7 +181,7 @@ class Actor {
         height: (await this.connection.height()) + 50,
       },
     });
-    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
+    return this.sendTransaction(transaction, this.senderIdentity);
   }
 
   public async sendSwapCounter(recipient: Address, amount: Amount, offer: AtomicSwap): Promise<void> {
@@ -201,7 +200,7 @@ class Actor {
         height: (await this.connection.height()) + 50,
       },
     });
-    return this.sendTransaction(transaction, this.senderIdentity.pubkey);
+    return this.sendTransaction(transaction, this.senderIdentity);
   }
 
   public async claimFromKnownPreimage(counter: AtomicSwap): Promise<void> {
@@ -211,7 +210,7 @@ class Actor {
       swapId: counter.data.id,
       preimage: this.preimage!,
     });
-    return this.sendTransaction(transaction, this.receiverIdentity.pubkey);
+    return this.sendTransaction(transaction, this.receiverIdentity);
   }
 
   public async claimFromRevealedPreimage(offer: OpenSwap, claimed: ClaimedSwap): Promise<void> {
@@ -221,7 +220,7 @@ class Actor {
       swapId: offer.data.id,
       preimage: claimed.preimage,
     });
-    return this.sendTransaction(transaction, this.receiverIdentity.pubkey);
+    return this.sendTransaction(transaction, this.receiverIdentity);
   }
 }
 
