@@ -3,8 +3,14 @@
 ## 2.0.0
 
 - @iov/bns: Add support for weave to v0.23.0.
-- @iov/bcp: Add optional payer field to Fee type.
-- @iov/bns: Add optional payer parameter to BnsConnection.withDefaultFee.
+- @iov/bcp: Add optional payer field to `Fee` type.
+- @iov/bcp: Add optional feePayer parameter to
+  `BlockchainConnection.withDefaultFee`.
+- @iov/bcp: Add optional senderPubkey parameter to `SendTransaction`.
+- @iov/bcp: Add `isConfirmedAndSignedTransaction` helper.
+- @iov/bns: Add optional payer parameter to `BnsConnection.withDefaultFee`.
+- @iov/bns: `BnsConnection.searchTx` now resolves to an array of
+  `ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction`.
 
 Breaking changes
 
@@ -15,10 +21,16 @@ Breaking changes
 - ALL: Upgrade TypeScript from 3.5 to 3.7. This changes the signature of getters
   in declaration files (see
   https://devblogs.microsoft.com/typescript/announcing-typescript-3-6/#get-and-set-accessors-allowed-in-ambient-contexts)
+- @iov/bcp: Remove `LightTransaction` and `WithCreator` types and helpers.
+- @iov/bcp: `UnsignedTransaction` now has a `chainId` field instead of
+  `creator`.
+- @iov/bns: Require fee payer to be specified when encoding a transaction with a
+  fee.
 - @iov/dpos: Package removed due to the removal of @iov/rise
 - @iov/keycontrol: `UserProfile.signTransaction` now requires the signing
   identity as an argument, just like `UserProfile.appendSignature`.
 - @iov/keycontrol: Deprecate `HdPaths.iovFaucet`.
+- @iov/lisk: Require `senderPubkey` in `SendTransaction`s.
 - @iov/multichain: The `Profile` type required to create a `MultiChainSigner`
   has been updated to match the `UserProfile` change in @iov/keycontrol.
 - @iov/multichain: `MultiChainSigner.signAndPost` and `SigningServerCore` now
