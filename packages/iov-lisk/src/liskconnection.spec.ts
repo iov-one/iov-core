@@ -11,7 +11,6 @@ import {
   isBlockInfoPending,
   isConfirmedTransaction,
   isSendTransaction,
-  LightTransaction,
   Nonce,
   PubkeyBundle,
   PubkeyBytes,
@@ -23,7 +22,6 @@ import {
   TransactionId,
   TransactionState,
   UnsignedTransaction,
-  WithChainId,
 } from "@iov/bcp";
 import { Ed25519, Random, Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -408,7 +406,7 @@ describe("LiskConnection", () => {
         );
 
         for (const _ of [0, 1]) {
-          const sendTx: SendTransaction & WithChainId = {
+          const sendTx: SendTransaction = {
             kind: "bcp/send",
             chainId: dummynetChainId,
             senderPubkey: mainIdentity.pubkey,
@@ -528,7 +526,7 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction & WithChainId = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
         chainId: devnetChainId,
         senderPubkey: mainIdentity.pubkey,
@@ -563,7 +561,7 @@ describe("LiskConnection", () => {
           await devnetDefaultKeypair,
         );
 
-        const sendTx: SendTransaction & WithChainId = {
+        const sendTx: SendTransaction = {
           kind: "bcp/send",
           chainId: devnetChainId,
           senderPubkey: mainIdentity.pubkey,
@@ -616,7 +614,7 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction & WithChainId = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
         chainId: devnetChainId,
         senderPubkey: mainIdentity.pubkey,
@@ -655,7 +653,7 @@ describe("LiskConnection", () => {
       const wallet = profile.addWallet(new Ed25519Wallet());
       const mainIdentity = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-      const sendTx: SendTransaction & WithChainId = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
         chainId: devnetChainId,
         senderPubkey: mainIdentity.pubkey,
@@ -995,7 +993,7 @@ describe("LiskConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-        const sendA: SendTransaction & WithChainId = {
+        const sendA: SendTransaction = {
           kind: "bcp/send",
           chainId: devnetChainId,
           senderPubkey: sender.pubkey,
@@ -1005,7 +1003,7 @@ describe("LiskConnection", () => {
           memo: `liveTx() test A ${Math.random()}`,
         };
 
-        const sendB: SendTransaction & WithChainId = {
+        const sendB: SendTransaction = {
           kind: "bcp/send",
           chainId: devnetChainId,
           senderPubkey: sender.pubkey,
@@ -1015,7 +1013,7 @@ describe("LiskConnection", () => {
           memo: `liveTx() test B ${Math.random()}`,
         };
 
-        const sendC: SendTransaction & WithChainId = {
+        const sendC: SendTransaction = {
           kind: "bcp/send",
           chainId: devnetChainId,
           senderPubkey: sender.pubkey,
@@ -1044,7 +1042,7 @@ describe("LiskConnection", () => {
         await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1087,7 +1085,7 @@ describe("LiskConnection", () => {
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
         const recipientAddress = await randomAddress();
-        const send: SendTransaction & WithChainId = {
+        const send: SendTransaction = {
           kind: "bcp/send",
           chainId: devnetChainId,
           senderPubkey: sender.pubkey,
@@ -1108,7 +1106,7 @@ describe("LiskConnection", () => {
         await postResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
         // setup listener after transaction is in block
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1145,7 +1143,7 @@ describe("LiskConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-        const send: SendTransaction & WithChainId = {
+        const send: SendTransaction = {
           kind: "bcp/send",
           chainId: devnetChainId,
           senderPubkey: sender.pubkey,
@@ -1163,7 +1161,7 @@ describe("LiskConnection", () => {
         const transactionId = postResult.transactionId;
 
         // setup listener before transaction is in block
-        const events = new Array<ConfirmedTransaction<LightTransaction>>();
+        const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
             if (!isConfirmedTransaction(event)) {
@@ -1198,7 +1196,7 @@ describe("LiskConnection", () => {
         },
       };
 
-      const sendTransaction: SendTransaction & WithChainId = {
+      const sendTransaction: SendTransaction = {
         kind: "bcp/send",
         chainId: dummynetChainId,
         senderPubkey: sender.pubkey,

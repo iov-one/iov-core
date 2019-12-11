@@ -11,7 +11,6 @@ import {
   SignatureBytes,
   SignedTransaction,
   TokenTicker,
-  WithChainId,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
@@ -49,7 +48,7 @@ describe("liskCodec", () => {
   });
 
   it("can create bytes to sign", () => {
-    const tx: SendTransaction & WithChainId = {
+    const tx: SendTransaction = {
       kind: "bcp/send",
       chainId: liskTestnet,
       senderPubkey: defaultPublicKey,
@@ -62,7 +61,7 @@ describe("liskCodec", () => {
   });
 
   it("requires 8 fractional digits in bytes to sign", () => {
-    const tx: SendTransaction & WithChainId = {
+    const tx: SendTransaction = {
       kind: "bcp/send",
       chainId: liskTestnet,
       senderPubkey: defaultPublicKey,
@@ -77,7 +76,7 @@ describe("liskCodec", () => {
   });
 
   it("can create bytes to post", () => {
-    const tx: SendTransaction & WithChainId = {
+    const tx: SendTransaction = {
       kind: "bcp/send",
       chainId: liskTestnet,
       senderPubkey: defaultPublicKey,

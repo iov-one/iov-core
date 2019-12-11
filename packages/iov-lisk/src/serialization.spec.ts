@@ -8,7 +8,6 @@ import {
   SignatureBytes,
   SignedTransaction,
   TokenTicker,
-  WithChainId,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 import { ReadonlyDate } from "readonly-date";
@@ -89,7 +88,7 @@ describe("Serialization", () => {
 
   describe("serializeTransaction", () => {
     it("can serialize Lisk transaction of type 0 without memo", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,
@@ -111,7 +110,7 @@ describe("Serialization", () => {
     });
 
     it("throws error if fractionalDigits are not correct", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,
@@ -129,7 +128,7 @@ describe("Serialization", () => {
     });
 
     it("throws error if sender public key does not match sender address", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,
@@ -147,7 +146,7 @@ describe("Serialization", () => {
     });
 
     it("can serialize Lisk transaction of type 0 with memo", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,
@@ -170,7 +169,7 @@ describe("Serialization", () => {
     });
 
     it("fails to serialize Lisk transaction of type 0 with memo > 64 chars", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,
@@ -190,7 +189,7 @@ describe("Serialization", () => {
     });
 
     it("fails to serialize Lisk transaction of type 0 with memo > 64 bytes", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,
@@ -211,7 +210,7 @@ describe("Serialization", () => {
     });
 
     it("works for transaction with fee", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,
@@ -236,7 +235,7 @@ describe("Serialization", () => {
     });
 
     it("fails to serialize transaction with empty fee", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,
@@ -258,7 +257,7 @@ describe("Serialization", () => {
     });
 
     it("fails to serialize transaction with gasLimit", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,
@@ -280,7 +279,7 @@ describe("Serialization", () => {
     });
 
     it("fails to serialize transaction with gasPrice", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,
@@ -308,7 +307,7 @@ describe("Serialization", () => {
 
   describe("transactionId", () => {
     it("can calculate ID of Lisk transaction of type 0 without memo", () => {
-      const tx: SendTransaction & WithChainId = {
+      const tx: SendTransaction = {
         kind: "bcp/send",
         chainId: liskTestnet,
         senderPubkey: defaultPublicKey,

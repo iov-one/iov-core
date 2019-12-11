@@ -16,7 +16,6 @@ import {
   TransactionId,
   TxCodec,
   UnsignedTransaction,
-  WithChainId,
 } from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
 import { ReadonlyDate } from "readonly-date";
@@ -104,7 +103,7 @@ export const liskCodec: TxCodec = {
     let unsignedTransaction: UnsignedTransaction;
     switch (json.type) {
       case 0: {
-        const send: SendTransaction & WithChainId = {
+        const send: SendTransaction = {
           kind: "bcp/send",
           chainId: chainId,
           senderPubkey: {
