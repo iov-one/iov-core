@@ -67,6 +67,44 @@ describe("CosmosConnection", () => {
     });
   });
 
+  describe("getToken", () => {
+    it("displays a given token", async () => {
+      pendingWithoutCosmos();
+      const connection = await CosmosConnection.establish(httpUrl);
+      const token = await connection.getToken("ATOM" as TokenTicker);
+      expect(token).toEqual({
+        fractionalDigits: 6,
+        tokenName: "Atom",
+        tokenTicker: "ATOM" as TokenTicker,
+      });
+      connection.disconnect();
+    });
+
+    it("resolves to undefined if the token is not supported", async () => {
+      pendingWithoutCosmos();
+      const connection = await CosmosConnection.establish(httpUrl);
+      const token = await connection.getToken("whatever" as TokenTicker);
+      expect(token).toBeUndefined();
+      connection.disconnect();
+    });
+  });
+
+  describe("getAllTokens", () => {
+    it("resolves to a list of all supported tokens", async () => {
+      pendingWithoutCosmos();
+      const connection = await CosmosConnection.establish(httpUrl);
+      const tokens = await connection.getAllTokens();
+      expect(tokens).toEqual([
+        {
+          fractionalDigits: 6,
+          tokenName: "Atom",
+          tokenTicker: "ATOM" as TokenTicker,
+        },
+      ]);
+      connection.disconnect();
+    });
+  });
+
   describe("getAccount", () => {
     it("gets an empty account by address", async () => {
       pendingWithoutCosmos();
