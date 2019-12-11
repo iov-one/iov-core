@@ -7,7 +7,6 @@ import {
   PubkeyBytes,
   SendTransaction,
   TokenTicker,
-  WithChainId,
 } from "@iov/bcp";
 import { Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -118,7 +117,7 @@ describe("CosmosConnection", () => {
       const faucet = await profile.createIdentity(wallet.id, defaultChainId, faucetPath);
       const faucetAddress = cosmosCodec.identityToAddress(faucet);
 
-      const unsigned = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const unsigned = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: defaultChainId,
         sender: faucetAddress,
@@ -174,7 +173,7 @@ describe("CosmosConnection", () => {
       const faucet = await profile.createIdentity(wallet.id, defaultChainId, faucetPath);
       const faucetAddress = cosmosCodec.identityToAddress(faucet);
 
-      const unsigned = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const unsigned = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: defaultChainId,
         sender: faucetAddress,

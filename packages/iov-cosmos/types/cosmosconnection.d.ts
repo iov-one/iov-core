@@ -9,7 +9,6 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
-  LightTransaction,
   Nonce,
   PostableBytes,
   PostTxResponse,
@@ -44,9 +43,9 @@ export declare class CosmosConnection implements BlockchainConnection {
   postTx(tx: PostableBytes): Promise<PostTxResponse>;
   searchTx(
     query: TransactionQuery,
-  ): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]>;
-  listenTx(_query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
-  liveTx(_query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
+  ): Promise<readonly (ConfirmedTransaction<UnsignedTransaction> | FailedTransaction)[]>;
+  listenTx(_query: TransactionQuery): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
+  liveTx(_query: TransactionQuery): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
   getFeeQuote(tx: UnsignedTransaction): Promise<Fee>;
   withDefaultFee<T extends UnsignedTransaction>(tx: T): Promise<T>;
   private parseAndPopulateTxResponse;

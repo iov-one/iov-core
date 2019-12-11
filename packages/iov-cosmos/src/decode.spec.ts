@@ -38,6 +38,7 @@ describe("decode", () => {
   };
   const defaultSendTransaction = {
     kind: "bcp/send" as const,
+    chainId: chainId,
     sender: "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r" as Address,
     recipient: "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e" as Address,
     amount: defaultAmount,
@@ -107,7 +108,7 @@ describe("decode", () => {
           ],
         },
       };
-      expect(parseMsg(msg)).toEqual(defaultSendTransaction);
+      expect(parseMsg(msg, chainId)).toEqual(defaultSendTransaction);
     });
   });
 

@@ -15,7 +15,6 @@ import {
   Fee,
   isPubkeyQuery,
   isSendTransaction,
-  LightTransaction,
   Nonce,
   PostableBytes,
   PostTxResponse,
@@ -194,7 +193,7 @@ export class CosmosConnection implements BlockchainConnection {
 
   public async searchTx(
     query: TransactionQuery,
-  ): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]> {
+  ): Promise<readonly (ConfirmedTransaction<UnsignedTransaction> | FailedTransaction)[]> {
     const queryString = buildQueryString(query);
     const chainId = await this.chainId();
     const { txs: responses } = await this.restClient.txs(queryString);
@@ -203,13 +202,13 @@ export class CosmosConnection implements BlockchainConnection {
 
   public listenTx(
     _query: TransactionQuery,
-  ): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     throw new Error("not implemented");
   }
 
   public liveTx(
     _query: TransactionQuery,
-  ): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     throw new Error("not implemented");
   }
 
