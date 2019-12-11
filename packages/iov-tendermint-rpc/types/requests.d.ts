@@ -1,6 +1,6 @@
 import { As } from "type-tagger";
 /**
- * RPC methods as documented in https://tendermint.com/rpc/
+ * RPC methods as documented in https://docs.tendermint.com/master/rpc/
  *
  * Enum raw value must match the spelling in the "shell" example call (snake_case)
  */

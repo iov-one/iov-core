@@ -84,6 +84,7 @@ $ iov-cli
 const sendTx = await connection.withDefaultFee<SendTransaction & WithCreator>({
   kind: "bcp/send",
   creator: faucet,
+  sender: faucetAddress,
   recipient: recipientAddress,
   memo: "My first transaction",
   amount: {
