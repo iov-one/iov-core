@@ -100,9 +100,9 @@ export class HdPaths {
 
   private static readonly purposes = {
     bip44: 44,
-    iov: 4804438,
     iovFaucet: 1229936198,
   };
+
   /**
    * Coin types as registered at
    * https://github.com/satoshilabs/slips/blob/master/slip-0044.md
