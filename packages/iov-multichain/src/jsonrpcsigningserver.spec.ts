@@ -11,7 +11,6 @@ import {
   SendTransaction,
   TokenTicker,
   TransactionId,
-  WithChainId,
 } from "@iov/bcp";
 import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
@@ -230,7 +229,7 @@ describe("JsonRpcSigningServer", () => {
       throw new Error("Identity element is not valid");
     }
 
-    const send = await bnsConnection.withDefaultFee<SendTransaction & WithChainId>(
+    const send = await bnsConnection.withDefaultFee<SendTransaction>(
       {
         kind: "bcp/send",
         chainId: signer.chainId,
@@ -294,7 +293,7 @@ describe("JsonRpcSigningServer", () => {
       throw new Error("Identity element is not valid");
     }
 
-    const send: SendTransaction & WithChainId = {
+    const send: SendTransaction = {
       kind: "bcp/send",
       chainId: signer.chainId,
       sender: bnsCodec.identityToAddress(signer),

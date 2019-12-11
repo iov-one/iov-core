@@ -10,7 +10,6 @@ import {
   SendTransaction,
   TokenTicker,
   TransactionState,
-  WithChainId,
 } from "@iov/bcp";
 import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
@@ -100,7 +99,7 @@ describe("MultiChainSigner", () => {
 
       // construct a sendtx, this mirrors the MultiChainSigner api
       const memo = `MultiChainSigner style (${Math.random()})`;
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: chainId,
         sender: bnsCodec.identityToAddress(faucet),
@@ -210,7 +209,7 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on BNS
-        const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction & WithChainId>({
+        const sendOnBns = await bnsConnection.withDefaultFee<SendTransaction>({
           kind: "bcp/send",
           chainId: bnsFaucet.chainId,
           sender: bnsCodec.identityToAddress(bnsFaucet),
@@ -229,7 +228,7 @@ describe("MultiChainSigner", () => {
 
       {
         // Send on Ethereum
-        const sendOnEthereum: SendTransaction & WithChainId = {
+        const sendOnEthereum: SendTransaction = {
           kind: "bcp/send",
           chainId: ethereumChainId,
           amount: {
