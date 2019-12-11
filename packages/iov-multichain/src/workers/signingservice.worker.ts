@@ -18,6 +18,7 @@ const bnsdUrl = "ws://localhost:23456";
 // IOV address: tiov1q5lyl7asgr2dcweqrhlfyexqpkgcuzrm4e0cku
 // This account has money in the genesis file (see scripts/bnsd/README.md).
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+// tslint:disable-next-line: deprecation
 const bnsdFaucetPath = HdPaths.iovFaucet();
 const ethereumUrl = "http://localhost:8545";
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";

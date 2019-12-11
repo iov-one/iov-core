@@ -18,6 +18,7 @@ Breaking changes
 - @iov/dpos: Package removed due to the removal of @iov/rise
 - @iov/keycontrol: `UserProfile.signTransaction` now requires the signing
   identity as an argument, just like `UserProfile.appendSignature`.
+- @iov/keycontrol: Deprecate `HdPaths.iovFaucet`.
 - @iov/multichain: The `Profile` type required to create a `MultiChainSigner`
   has been updated to match the `UserProfile` change in @iov/keycontrol.
 - @iov/multichain: `MultiChainSigner.signAndPost` and `SigningServerCore` now

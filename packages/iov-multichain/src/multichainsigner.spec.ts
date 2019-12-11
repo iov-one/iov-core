@@ -68,6 +68,7 @@ describe("MultiChainSigner", () => {
     // IOV address: tiov1q5lyl7asgr2dcweqrhlfyexqpkgcuzrm4e0cku
     // This account has money in the genesis file (see scripts/bnsd/README.md).
     const faucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+    // tslint:disable-next-line: deprecation
     const faucetPath = HdPaths.iovFaucet();
 
     const cash = "CASH" as TokenTicker;

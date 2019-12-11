@@ -59,6 +59,7 @@ const bnsChainId = "local-iov-devnet";
 // IOV address: tiov1q5lyl7asgr2dcweqrhlfyexqpkgcuzrm4e0cku
 // This account has money in the genesis file (see scripts/bnsd/README.md).
 const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+// tslint:disable-next-line: deprecation
 const bnsdFaucetPath = HdPaths.iovFaucet();
 const ethereumUrl = "http://localhost:8545";
 const ethereumChainId = "ethereum-eip155-5777" as ChainId;

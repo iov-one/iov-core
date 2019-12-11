@@ -60,8 +60,11 @@ export class HdPaths {
 
   /**
    * An IOV faucet HD path in the form m/1229936198'/coinType'/instanceIndex'/accountIndex'
+   * which was used in the IOV faucet < 0.10.0.
    *
-   * @see https://github.com/iov-one/iov-faucet/tree/v0.8.1#faucet-hd-wallet
+   * @deprecated This is obsolete and will be removed. Don't use it in new code. It is still required for a bunch of IOV Core internal tests.
+   *
+   * @see https://github.com/iov-one/iov-faucet/tree/v0.9.0#faucet-hd-wallet
    *
    * @param coinType A SLIP-0044 coin. Defaults to 1 (i.e. "Testnet (all coins)") when unset.
    * @param instanceIndex 0-based index of the faucet instance. Defaults to 0 when unset.
