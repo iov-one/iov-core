@@ -19,7 +19,6 @@ import {
   SwapProcessState,
   TokenTicker,
   UnsignedTransaction,
-  WithChainId,
 } from "@iov/bcp";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
@@ -133,7 +132,7 @@ class Actor {
   }
 
   public async sendBnsTokens(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction & WithChainId>({
+    const transaction = await this.bnsConnection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
       chainId: this.bnsIdentity.chainId,
       sender: this.bnsAddress,
@@ -144,7 +143,7 @@ class Actor {
   }
 
   public async sendSwapOfferOnBns(recipient: Address, amount: Amount): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction & WithChainId>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
       chainId: this.bnsIdentity.chainId,
       memo: "Take this cash",
@@ -163,7 +162,7 @@ class Actor {
     recipient: Address,
     amount: Amount,
   ): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction & WithChainId>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
       chainId: this.bnsIdentity.chainId,
       amounts: [amount],
@@ -177,7 +176,7 @@ class Actor {
   }
 
   public async claimFromKnownPreimageOnBns(offer: AtomicSwap): Promise<Uint8Array | undefined> {
-    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction & WithChainId>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       chainId: this.bnsIdentity.chainId,
       swapId: offer.data.id,
@@ -193,7 +192,7 @@ class Actor {
     if (!isClaimedSwap(claim)) {
       throw new Error("Expected swap to be claimed");
     }
-    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction & WithChainId>({
+    const transaction = await this.bnsConnection.withDefaultFee<SwapClaimTransaction>({
       kind: "bcp/swap_claim",
       chainId: this.bnsIdentity.chainId,
       swapId: unclaimedId,

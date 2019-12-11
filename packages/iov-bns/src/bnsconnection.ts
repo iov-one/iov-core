@@ -26,7 +26,6 @@ import {
   isConfirmedTransaction,
   isFailedTransaction,
   isPubkeyQuery,
-  LightTransaction,
   Nonce,
   OpenSwap,
   PostableBytes,
@@ -43,7 +42,6 @@ import {
   TransactionState,
   TxReadCodec,
   UnsignedTransaction,
-  WithChainId,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
@@ -516,10 +514,7 @@ export class BnsConnection implements AtomicSwapConnection {
       .map(tx => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/abort, delTxs must be a claim/abort
-    const releases: Stream<(SwapClaimTransaction | SwapAbortTransaction) & WithChainId> = Stream.merge(
-      setTxs,
-      delTxs,
-    )
+    const releases: Stream<SwapClaimTransaction | SwapAbortTransaction> = Stream.merge(setTxs, delTxs)
       .filter(isConfirmedWithSwapClaimOrAbortTransaction)
       .map(confirmed => confirmed.transaction);
 
@@ -544,7 +539,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public async searchTx(
     query: TransactionQuery,
-  ): Promise<readonly (ConfirmedTransaction<LightTransaction> | FailedTransaction)[]> {
+  ): Promise<readonly (ConfirmedTransaction<UnsignedTransaction> | FailedTransaction)[]> {
     return this.searchTxUnsigned(query);
   }
 
@@ -553,9 +548,9 @@ export class BnsConnection implements AtomicSwapConnection {
    */
   public listenTx(
     query: TransactionQuery,
-  ): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     return this.listenTxUnsigned(query).map(
-      (transaction): ConfirmedTransaction<LightTransaction> | FailedTransaction => transaction,
+      (transaction): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => transaction,
     );
   }
 
@@ -565,9 +560,11 @@ export class BnsConnection implements AtomicSwapConnection {
    * It returns a stream starting the array of all existing transactions
    * and then continuing with live feeds
    */
-  public liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction> {
+  public liveTx(
+    query: TransactionQuery,
+  ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     return this.liveTxUnsigned(query).map(
-      (transaction): ConfirmedTransaction<LightTransaction> | FailedTransaction => transaction,
+      (transaction): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => transaction,
     );
   }
 
@@ -782,7 +779,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   /**
    * The same as searchTx but with ConfirmedTransaction<UnsignedTransaction> instead of
-   * ConfirmedTransaction<LightTransaction>
+   * ConfirmedTransaction<UnsignedTransaction>
    */
   private async searchTxUnsigned(
     query: TransactionQuery,
@@ -822,7 +819,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   /**
    * The same as listenTx but with ConfirmedTransaction<UnsignedTransaction> instead of
-   * ConfirmedTransaction<LightTransaction>
+   * ConfirmedTransaction<UnsignedTransaction>
    */
   private listenTxUnsigned(
     query: TransactionQuery,
@@ -857,7 +854,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   /**
    * The same as liveTx but with ConfirmedTransaction<UnsignedTransaction> instead of
-   * ConfirmedTransaction<LightTransaction>
+   * ConfirmedTransaction<UnsignedTransaction>
    */
   private liveTxUnsigned(
     query: TransactionQuery,

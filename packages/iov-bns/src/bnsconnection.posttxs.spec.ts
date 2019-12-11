@@ -10,7 +10,6 @@ import {
   TokenTicker,
   TransactionState,
   UnsignedTransaction,
-  WithChainId,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -81,7 +80,7 @@ describe("BnsConnection (txs)", () => {
       const recipient = await randomBnsAddress();
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>(
+      const sendTx = await connection.withDefaultFee<SendTransaction>(
         {
           kind: "bcp/send",
           chainId: chainId,
@@ -142,7 +141,7 @@ describe("BnsConnection (txs)", () => {
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
 
-      const sendTx: SendTransaction & WithChainId = {
+      const sendTx: SendTransaction = {
         kind: "bcp/send",
         chainId: chainId,
         sender: bnsCodec.identityToAddress(faucet),
@@ -180,7 +179,7 @@ describe("BnsConnection (txs)", () => {
       const { profile, faucet } = await userProfileWithFaucet(chainId);
 
       // memo too long will trigger failure in CheckTx (validation of message)
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: chainId,
         sender: bnsCodec.identityToAddress(faucet),
@@ -212,7 +211,7 @@ describe("BnsConnection (txs)", () => {
         const recipient = await randomBnsAddress();
 
         // construct a sendtx, this is normally used in the MultiChainSigner api
-        const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+        const sendTx = await connection.withDefaultFee<SendTransaction>({
           kind: "bcp/send",
           chainId: chainId,
           sender: bnsCodec.identityToAddress(faucet),
@@ -278,7 +277,7 @@ describe("BnsConnection (txs)", () => {
 
       // Create and send registration
       const username = `testuser_${Math.random()}*iov`;
-      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithChainId>({
+      const registration = await connection.withDefaultFee<RegisterUsernameTx>({
         kind: "bns/register_username",
         chainId: registryChainId,
         username: username,
@@ -320,7 +319,7 @@ describe("BnsConnection (txs)", () => {
 
       // Create and send registration
       const username = `testuser_${Math.random()}*iov`;
-      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithChainId>({
+      const registration = await connection.withDefaultFee<RegisterUsernameTx>({
         kind: "bns/register_username",
         chainId: registryChainId,
         username: username,
@@ -364,7 +363,7 @@ describe("BnsConnection (txs)", () => {
 
       // Create and send registration
       const username = `testuser_${Math.random()}*iov`;
-      const usernameRegistration = await connection.withDefaultFee<RegisterUsernameTx & WithChainId>({
+      const usernameRegistration = await connection.withDefaultFee<RegisterUsernameTx>({
         kind: "bns/register_username",
         chainId: registryChainId,
         username: username,
@@ -386,7 +385,7 @@ describe("BnsConnection (txs)", () => {
       }
 
       // Update targets
-      const updateTargets = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithChainId>({
+      const updateTargets = await connection.withDefaultFee<UpdateTargetsOfUsernameTx>({
         kind: "bns/update_targets_of_username",
         chainId: registryChainId,
         username: username,
@@ -408,7 +407,7 @@ describe("BnsConnection (txs)", () => {
       }
 
       // Clear addresses
-      const clearAddresses = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithChainId>({
+      const clearAddresses = await connection.withDefaultFee<UpdateTargetsOfUsernameTx>({
         kind: "bns/update_targets_of_username",
         chainId: registryChainId,
         username: username,
@@ -448,7 +447,7 @@ describe("BnsConnection (txs)", () => {
 
       // Create and send registration
       const username = `testuser_${Math.random()}*iov`;
-      const usernameRegistration = await connection.withDefaultFee<RegisterUsernameTx & WithChainId>({
+      const usernameRegistration = await connection.withDefaultFee<RegisterUsernameTx>({
         kind: "bns/register_username",
         chainId: registryChainId,
         username: username,
@@ -469,7 +468,7 @@ describe("BnsConnection (txs)", () => {
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
-      const transferUsername = await connection.withDefaultFee<TransferUsernameTx & WithChainId>({
+      const transferUsername = await connection.withDefaultFee<TransferUsernameTx>({
         kind: "bns/transfer_username",
         chainId: registryChainId,
         username: username,
@@ -519,7 +518,7 @@ describe("BnsConnection (txs)", () => {
           address: "some-initial-address" as Address,
         },
       ];
-      const registerUsernameTx = await connection.withDefaultFee<RegisterUsernameTx & WithChainId>(
+      const registerUsernameTx = await connection.withDefaultFee<RegisterUsernameTx>(
         {
           kind: "bns/register_username",
           chainId: chainId,
@@ -548,7 +547,7 @@ describe("BnsConnection (txs)", () => {
           address: "some-updated-address" as Address,
         },
       ];
-      const updateTargetsTx = await connection.withDefaultFee<UpdateTargetsOfUsernameTx & WithChainId>({
+      const updateTargetsTx = await connection.withDefaultFee<UpdateTargetsOfUsernameTx>({
         kind: "bns/update_targets_of_username",
         chainId: chainId,
         username: username,
@@ -592,7 +591,7 @@ describe("BnsConnection (txs)", () => {
         address: identityToAddress(id),
         weight: i === 0 ? 5 : 1,
       }));
-      const tx1 = await connection.withDefaultFee<CreateMultisignatureTx & WithChainId>({
+      const tx1 = await connection.withDefaultFee<CreateMultisignatureTx>({
         kind: "bns/create_multisignature_contract",
         chainId: registryChainId,
         participants: participants,
@@ -633,7 +632,7 @@ describe("BnsConnection (txs)", () => {
         address: identityToAddress(id),
         weight: 6,
       }));
-      const tx2 = await connection.withDefaultFee<UpdateMultisignatureTx & WithChainId>({
+      const tx2 = await connection.withDefaultFee<UpdateMultisignatureTx>({
         kind: "bns/update_multisignature_contract",
         chainId: registryChainId,
         contractId: contractId!,
@@ -692,7 +691,7 @@ describe("BnsConnection (txs)", () => {
       await sendTokensFromFaucet(connection, arbiterAddress, registerAmount);
 
       // Create escrow
-      const tx1 = await connection.withDefaultFee<CreateEscrowTx & WithChainId>({
+      const tx1 = await connection.withDefaultFee<CreateEscrowTx>({
         kind: "bns/create_escrow",
         chainId: registryChainId,
         sender: senderAddress,
@@ -731,7 +730,7 @@ describe("BnsConnection (txs)", () => {
       const escrowId = decodeNumericId(result!);
 
       // Release escrow
-      const tx2 = await connection.withDefaultFee<ReleaseEscrowTx & WithChainId>({
+      const tx2 = await connection.withDefaultFee<ReleaseEscrowTx>({
         kind: "bns/release_escrow",
         chainId: registryChainId,
         escrowId: escrowId,
@@ -777,7 +776,7 @@ describe("BnsConnection (txs)", () => {
 
         const timeout = Math.floor(Date.now() / 1000) + 3;
 
-        const createEscrowTx = await connection.withDefaultFee<CreateEscrowTx & WithChainId>({
+        const createEscrowTx = await connection.withDefaultFee<CreateEscrowTx>({
           kind: "bns/create_escrow",
           chainId: chainId,
           sender: senderAddress,
@@ -804,7 +803,7 @@ describe("BnsConnection (txs)", () => {
         const helperAddress = identityToAddress(helperIdentity);
         await sendTokensFromFaucet(connection, helperAddress);
 
-        const returnEscrowTx = await connection.withDefaultFee<ReturnEscrowTx & WithChainId>({
+        const returnEscrowTx = await connection.withDefaultFee<ReturnEscrowTx>({
           kind: "bns/return_escrow",
           chainId: chainId,
           escrowId: decodeNumericId(escrowId),
@@ -841,7 +840,7 @@ describe("BnsConnection (txs)", () => {
       await sendTokensFromFaucet(connection, arbiterAddress, registerAmount);
 
       // Create escrow
-      const tx1 = await connection.withDefaultFee<CreateEscrowTx & WithChainId>({
+      const tx1 = await connection.withDefaultFee<CreateEscrowTx>({
         kind: "bns/create_escrow",
         chainId: registryChainId,
         sender: senderAddress,
@@ -883,7 +882,7 @@ describe("BnsConnection (txs)", () => {
       await sleep(7000);
 
       // Return escrow
-      const tx2 = await connection.withDefaultFee<ReturnEscrowTx & WithChainId>({
+      const tx2 = await connection.withDefaultFee<ReturnEscrowTx>({
         kind: "bns/return_escrow",
         chainId: registryChainId,
         escrowId: escrowId,
@@ -937,7 +936,7 @@ describe("BnsConnection (txs)", () => {
       await sendTokensFromFaucet(connection, arbiterAddress, registerAmount);
 
       // Create escrow
-      const tx1 = await connection.withDefaultFee<CreateEscrowTx & WithChainId>({
+      const tx1 = await connection.withDefaultFee<CreateEscrowTx>({
         kind: "bns/create_escrow",
         chainId: registryChainId,
         sender: senderAddress,
@@ -976,7 +975,7 @@ describe("BnsConnection (txs)", () => {
       const escrowId = decodeNumericId(result!);
 
       // Update escrow
-      const tx2 = await connection.withDefaultFee<UpdateEscrowPartiesTx & WithChainId>({
+      const tx2 = await connection.withDefaultFee<UpdateEscrowPartiesTx>({
         kind: "bns/update_escrow_parties",
         chainId: registryChainId,
         escrowId: escrowId,
@@ -1032,7 +1031,7 @@ describe("BnsConnection (txs)", () => {
       let proposalId: number;
 
       {
-        const createProposal = await connection.withDefaultFee<CreateProposalTx & WithChainId>({
+        const createProposal = await connection.withDefaultFee<CreateProposalTx>({
           kind: "bns/create_proposal",
           chainId: chainId,
           title: title,
@@ -1083,7 +1082,7 @@ describe("BnsConnection (txs)", () => {
       }
 
       {
-        const voteForProposal = await connection.withDefaultFee<VoteTx & WithChainId>({
+        const voteForProposal = await connection.withDefaultFee<VoteTx>({
           kind: "bns/vote",
           chainId: chainId,
           proposalId: proposalId,
@@ -1143,7 +1142,7 @@ describe("BnsConnection (txs)", () => {
           msgPath: "username/register_token",
           fee: fee1,
         };
-        const createProposal = await connection.withDefaultFee<CreateProposalTx & WithChainId>({
+        const createProposal = await connection.withDefaultFee<CreateProposalTx>({
           kind: "bns/create_proposal",
           chainId: chainId,
           title: title,
@@ -1169,7 +1168,7 @@ describe("BnsConnection (txs)", () => {
       await sleep(6_000);
 
       {
-        const voteForProposal = await connection.withDefaultFee<VoteTx & WithChainId>({
+        const voteForProposal = await connection.withDefaultFee<VoteTx>({
           kind: "bns/vote",
           chainId: chainId,
           proposalId: proposalId1,
@@ -1211,7 +1210,7 @@ describe("BnsConnection (txs)", () => {
           msgPath: "username/register_token",
           fee: fee2,
         };
-        const createProposal = await connection.withDefaultFee<CreateProposalTx & WithChainId>({
+        const createProposal = await connection.withDefaultFee<CreateProposalTx>({
           kind: "bns/create_proposal",
           chainId: chainId,
           title: title,
@@ -1237,7 +1236,7 @@ describe("BnsConnection (txs)", () => {
       await sleep(6_000);
 
       {
-        const voteForProposal = await connection.withDefaultFee<VoteTx & WithChainId>({
+        const voteForProposal = await connection.withDefaultFee<VoteTx>({
           kind: "bns/vote",
           chainId: chainId,
           proposalId: proposalId2,

@@ -17,7 +17,6 @@ import {
   SwapIdBytes,
   SwapOfferTransaction,
   TokenTicker,
-  WithChainId,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
@@ -56,7 +55,7 @@ export const coinBin = fromHex(data.coin.bin);
 
 export const chainId = "test-123" as ChainId;
 
-export const sendTxJson: SendTransaction & WithChainId = {
+export const sendTxJson: SendTransaction = {
   kind: "bcp/send",
   chainId: chainId,
   sender: data.unsigned_tx.sender as Address,
@@ -106,7 +105,7 @@ const sig2: FullSignature = {
 
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 009985cb38847474fe9febfd56ab67e14bcd56f3
-const randomMsg: SendTransaction & WithChainId = {
+const randomMsg: SendTransaction = {
   chainId: "foo-bar-baz" as ChainId,
   kind: "bcp/send",
   sender: data.address as Address,
@@ -135,7 +134,7 @@ export const randomTxJson: SignedTransaction = {
 
 // recipient address generated using https://github.com/nym-zone/bech32
 // bech32 -e -h tiov 123485cb38847474fe9febfd56ab67e14bcd56f3
-const swapOfferTransaction: SwapOfferTransaction & WithChainId = {
+const swapOfferTransaction: SwapOfferTransaction = {
   chainId: "swap-a-doo" as ChainId,
   kind: "bcp/swap_offer",
   sender: address,
@@ -157,7 +156,7 @@ export const swapOfferTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 
-const swapClaimMsg: SwapClaimTransaction & WithChainId = {
+const swapClaimMsg: SwapClaimTransaction = {
   chainId: "swap-a-doo" as ChainId,
   kind: "bcp/swap_claim",
   preimage: fromHex("00000000fffffffffff000000000") as Preimage,
@@ -172,7 +171,7 @@ export const swapClaimTxJson: SignedTransaction = {
   otherSignatures: [],
 };
 
-const swapAbort: SwapAbortTransaction & WithChainId = {
+const swapAbort: SwapAbortTransaction = {
   chainId: "swap-a-doo" as ChainId,
   kind: "bcp/swap_abort",
   swapId: {

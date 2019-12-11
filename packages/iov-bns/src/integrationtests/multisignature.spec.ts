@@ -9,7 +9,6 @@ import {
   SignedTransaction,
   TokenTicker,
   UnsignedTransaction,
-  WithChainId,
 } from "@iov/bcp";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Uint64 } from "@iov/encoding";
@@ -118,7 +117,7 @@ class Actor {
   }
 
   public async sendCash(recipient: Address, quantity: string): Promise<Uint8Array | undefined> {
-    const tx = await this.connection.withDefaultFee<SendTransaction & WithChainId>({
+    const tx = await this.connection.withDefaultFee<SendTransaction>({
       kind: "bcp/send",
       chainId: this.identity.chainId,
       sender: this.address,
@@ -138,7 +137,7 @@ class Actor {
     activationThreshold: number,
     adminThreshold: number,
   ): Promise<number> {
-    const tx = await this.connection.withDefaultFee<CreateMultisignatureTx & WithChainId>({
+    const tx = await this.connection.withDefaultFee<CreateMultisignatureTx>({
       kind: "bns/create_multisignature_contract",
       chainId: this.identity.chainId,
       participants: participants,
@@ -157,8 +156,8 @@ class Actor {
     sender: Address,
     recipient: Address,
     amount: Amount,
-  ): Promise<SendTransaction & WithChainId> {
-    return this.connection.withDefaultFee<SendTransaction & WithChainId & MultisignatureTx>({
+  ): Promise<SendTransaction> {
+    return this.connection.withDefaultFee<SendTransaction & MultisignatureTx>({
       kind: "bcp/send",
       multisig: [multisignatureId],
       chainId: this.identity.chainId,

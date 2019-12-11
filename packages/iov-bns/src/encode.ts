@@ -12,7 +12,6 @@ import {
   SwapClaimTransaction,
   SwapOfferTransaction,
   UnsignedTransaction,
-  WithChainId,
 } from "@iov/bcp";
 import { Encoding, Int53 } from "@iov/encoding";
 import BN from "bn.js";
@@ -142,7 +141,7 @@ export function encodeNumericId(id: number): Uint8Array {
 
 // Token sends
 
-function buildSendTransaction(tx: SendTransaction & WithChainId): codecImpl.bnsd.ITx {
+function buildSendTransaction(tx: SendTransaction): codecImpl.bnsd.ITx {
   return {
     cashSendMsg: codecImpl.cash.SendMsg.create({
       metadata: { schema: 1 },
@@ -156,7 +155,7 @@ function buildSendTransaction(tx: SendTransaction & WithChainId): codecImpl.bnsd
 
 // Atomic swaps
 
-function buildSwapOfferTx(tx: SwapOfferTransaction & WithChainId): codecImpl.bnsd.ITx {
+function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.bnsd.ITx {
   if (!isTimestampTimeout(tx.timeout)) {
     throw new Error("Got unsupported timeout type");
   }

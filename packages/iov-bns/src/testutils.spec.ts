@@ -18,7 +18,6 @@ import {
   swapIdEquals,
   SwapOfferTransaction,
   TokenTicker,
-  WithChainId,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -120,7 +119,7 @@ export async function sendTokensFromFaucet(
   const chainId = connection.chainId();
   const { profile, faucet } = await userProfileWithFaucet(chainId);
 
-  const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+  const sendTx = await connection.withDefaultFee<SendTransaction>({
     kind: "bcp/send",
     chainId: chainId,
     sender: bnsCodec.identityToAddress(faucet),
@@ -140,7 +139,7 @@ export async function sendCash(
   rcptAddr: Address,
 ): Promise<PostTxResponse> {
   // construct a sendtx, this is normally used in the MultiChainSigner api
-  const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+  const sendTx = await connection.withDefaultFee<SendTransaction>({
     kind: "bcp/send",
     chainId: faucet.chainId,
     sender: bnsCodec.identityToAddress(faucet),
@@ -162,7 +161,7 @@ export async function ensureNonceNonZero(
   profile: UserProfile,
   identity: Identity,
 ): Promise<void> {
-  const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+  const sendTx = await connection.withDefaultFee<SendTransaction>({
     kind: "bcp/send",
     chainId: identity.chainId,
     sender: bnsCodec.identityToAddress(identity),
@@ -192,7 +191,7 @@ export async function openSwap(
 ): Promise<PostTxResponse> {
   // construct a swapOfferTx, sign and post to the chain
   const swapOfferTimeout = createTimestampTimeout(48 * 3600);
-  const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithChainId>({
+  const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
     kind: "bcp/swap_offer",
     chainId: identity.chainId,
     sender: identityToAddress(identity),
@@ -221,7 +220,7 @@ export async function claimSwap(
   preimage: Preimage,
 ): Promise<PostTxResponse> {
   // construct a swapOfferTx, sign and post to the chain
-  const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction & WithChainId>({
+  const swapClaimTx = await connection.withDefaultFee<SwapClaimTransaction>({
     kind: "bcp/swap_claim",
     chainId: identity.chainId,
     swapId: swapId,

@@ -8,7 +8,6 @@ import {
   SwapIdBytes,
   SwapOfferTransaction,
   SwapProcessState,
-  WithChainId,
 } from "@iov/bcp";
 
 import { asIntegerNumber, decodeAmount, ensure } from "./decode";
@@ -71,7 +70,7 @@ export class Context {
     };
   }
 
-  public swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction & WithChainId>): OpenSwap {
+  public swapOfferFromTx(confirmed: ConfirmedTransaction<SwapOfferTransaction>): OpenSwap {
     const transaction = confirmed.transaction;
     return {
       kind: SwapProcessState.Open,

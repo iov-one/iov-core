@@ -9,7 +9,6 @@ import {
   SendTransaction,
   TransactionId,
   TransactionState,
-  WithChainId,
 } from "@iov/bcp";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { HdPaths } from "@iov/keycontrol";
@@ -53,7 +52,7 @@ describe("BnsConnection (txs)", () => {
         const { profile, faucet } = await userProfileWithFaucet(chainId);
 
         const memo = `Payment ${Math.random()}`;
-        const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+        const sendTx = await connection.withDefaultFee<SendTransaction>({
           kind: "bcp/send",
           chainId: faucet.chainId,
           sender: bnsCodec.identityToAddress(faucet),
@@ -94,7 +93,7 @@ describe("BnsConnection (txs)", () => {
       const { profile, faucet } = await userProfileWithFaucet(chainId);
 
       const memo = `Payment ${Math.random()}`;
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: faucet.chainId,
         sender: bnsCodec.identityToAddress(faucet),
@@ -141,7 +140,7 @@ describe("BnsConnection (txs)", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: faucet.chainId,
         sender: bnsCodec.identityToAddress(faucet),
@@ -182,7 +181,7 @@ describe("BnsConnection (txs)", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: faucet.chainId,
         sender: bnsCodec.identityToAddress(faucet),
@@ -220,7 +219,7 @@ describe("BnsConnection (txs)", () => {
       const { profile, faucet } = await userProfileWithFaucet(chainId);
 
       const memo = `Payment ${Math.random()}`;
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: faucet.chainId,
         sender: bnsCodec.identityToAddress(faucet),
@@ -265,7 +264,7 @@ describe("BnsConnection (txs)", () => {
 
       // construct a sendtx, this is normally used in the MultiChainSigner api
       const memo = `Payment ${Math.random()}`;
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: faucet.chainId,
         sender: bnsCodec.identityToAddress(faucet),
@@ -355,7 +354,7 @@ describe("BnsConnection (txs)", () => {
       // this will never have tokens, but can try to sign
       const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.iov(1234));
 
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: chainId,
         sender: bnsCodec.identityToAddress(brokeIdentity),
@@ -402,7 +401,7 @@ describe("BnsConnection (txs)", () => {
         const { profile, faucet } = await userProfileWithFaucet(chainId);
 
         const memo = `Payment ${Math.random()}`;
-        const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+        const sendTx = await connection.withDefaultFee<SendTransaction>({
           kind: "bcp/send",
           chainId: faucet.chainId,
           sender: bnsCodec.identityToAddress(faucet),
@@ -450,7 +449,7 @@ describe("BnsConnection (txs)", () => {
       const { profile, faucet } = await userProfileWithFaucet(chainId);
 
       const memo = `Payment ${Math.random()}`;
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: faucet.chainId,
         sender: bnsCodec.identityToAddress(faucet),
@@ -491,7 +490,7 @@ describe("BnsConnection (txs)", () => {
       const { profile, faucet } = await userProfileWithFaucet(chainId);
 
       const memo = `Payment ${Math.random()}`;
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: faucet.chainId,
         sender: bnsCodec.identityToAddress(faucet),
@@ -530,7 +529,7 @@ describe("BnsConnection (txs)", () => {
       // this will never have tokens, but can try to sign
       const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.iov(1234));
 
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: chainId,
         sender: bnsCodec.identityToAddress(brokeIdentity),
@@ -573,7 +572,7 @@ describe("BnsConnection (txs)", () => {
       const brokeIdentity = await profile.createIdentity(walletId, chainId, HdPaths.iov(1234));
 
       // Sending tokens from an empty account will trigger a failure in DeliverTx
-      const sendTx = await connection.withDefaultFee<SendTransaction & WithChainId>({
+      const sendTx = await connection.withDefaultFee<SendTransaction>({
         kind: "bcp/send",
         chainId: chainId,
         sender: bnsCodec.identityToAddress(brokeIdentity),

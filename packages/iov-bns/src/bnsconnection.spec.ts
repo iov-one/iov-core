@@ -6,7 +6,6 @@ import {
   Nonce,
   TokenTicker,
   UnsignedTransaction,
-  WithChainId,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
@@ -455,7 +454,7 @@ describe("BnsConnection (basic class methods)", () => {
         resolution: `The winner is Alice ${Math.random()}`,
       };
 
-      const createProposal = await connection.withDefaultFee<CreateProposalTx & WithChainId>({
+      const createProposal = await connection.withDefaultFee<CreateProposalTx>({
         kind: "bns/create_proposal",
         chainId: chainId,
         title: title,
@@ -501,7 +500,7 @@ describe("BnsConnection (basic class methods)", () => {
       // Register username
       const username = `testuser_${Math.random()}*iov`;
       const targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
-      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithChainId>({
+      const registration = await connection.withDefaultFee<RegisterUsernameTx>({
         kind: "bns/register_username",
         chainId: registryChainId,
         username: username,
@@ -548,7 +547,7 @@ describe("BnsConnection (basic class methods)", () => {
       // Register username
       const username = `testuser_${Math.random()}*iov`;
       const targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
-      const registration = await connection.withDefaultFee<RegisterUsernameTx & WithChainId>({
+      const registration = await connection.withDefaultFee<RegisterUsernameTx>({
         kind: "bns/register_username",
         chainId: registryChainId,
         username: username,

@@ -13,7 +13,6 @@ import {
   SwapOfferTransaction,
   SwapProcessState,
   SwapTimeout,
-  WithChainId,
 } from "@iov/bcp";
 import { Uint64 } from "@iov/encoding";
 import { asArray } from "@iov/stream";
@@ -59,7 +58,7 @@ describe("BnsConnection (swaps)", () => {
       fractionalDigits: 9,
       tokenTicker: cash,
     };
-    const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithChainId>({
+    const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
       kind: "bcp/swap_offer",
       chainId: chainId,
       sender: faucetAddr,
@@ -192,7 +191,7 @@ describe("BnsConnection (swaps)", () => {
 
       // it will live 48 hours
       const swapOfferTimeout = createTimestampTimeout(48 * 3600);
-      const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction & WithChainId>({
+      const swapOfferTx = await connection.withDefaultFee<SwapOfferTransaction>({
         kind: "bcp/swap_offer",
         chainId: faucet.chainId,
         sender: faucetAddr,
