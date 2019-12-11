@@ -16,7 +16,6 @@ import {
   SwapIdBytes,
   SwapOfferTransaction,
   TokenTicker,
-  WithChainId,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -59,7 +58,7 @@ describe("ethereumCodec", () => {
 
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
       const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId);
-      expect((parsed as unknown) as SignedTransaction<SendTransaction & WithChainId>).toEqual({
+      expect((parsed as unknown) as SignedTransaction<SendTransaction>).toEqual({
         transaction: {
           kind: "bcp/send",
           chainId: "ethereum-eip155-4" as ChainId,
@@ -133,7 +132,7 @@ describe("ethereumCodec", () => {
       ]);
       const codec = new EthereumCodec({ erc20Tokens: erc20Tokens });
       const parsed = codec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId);
-      expect((parsed as unknown) as SignedTransaction<SendTransaction & WithChainId>).toEqual({
+      expect((parsed as unknown) as SignedTransaction<SendTransaction>).toEqual({
         transaction: {
           kind: "bcp/send",
           chainId: "ethereum-eip155-4" as ChainId,
@@ -201,7 +200,7 @@ describe("ethereumCodec", () => {
 
       const codec = new EthereumCodec({ erc20Tokens: new Map<TokenTicker, Erc20Options>() });
       const parsed = codec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId);
-      expect((parsed as unknown) as SignedTransaction<SendTransaction & WithChainId>).toEqual({
+      expect((parsed as unknown) as SignedTransaction<SendTransaction>).toEqual({
         transaction: {
           kind: "bcp/send",
           chainId: "ethereum-eip155-4" as ChainId,
@@ -277,7 +276,7 @@ describe("ethereumCodec", () => {
       ]);
       const codec = new EthereumCodec({ erc20Tokens: erc20Tokens });
       const parsed = codec.parseBytes(postableBytes, "ethereum-eip155-1" as ChainId);
-      expect((parsed as unknown) as SignedTransaction<Erc20ApproveTransaction & WithChainId>).toEqual({
+      expect((parsed as unknown) as SignedTransaction<Erc20ApproveTransaction>).toEqual({
         transaction: {
           kind: "erc20/approve",
           chainId: "ethereum-eip155-1" as ChainId,
@@ -348,7 +347,7 @@ describe("ethereumCodec", () => {
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
-      expect((parsed as unknown) as SignedTransaction<SwapOfferTransaction & WithChainId>).toEqual({
+      expect((parsed as unknown) as SignedTransaction<SwapOfferTransaction>).toEqual({
         transaction: {
           kind: "bcp/swap_offer",
           chainId: "ethereum-eip155-5777" as ChainId,
@@ -425,7 +424,7 @@ describe("ethereumCodec", () => {
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
-      expect((parsed as unknown) as SignedTransaction<SwapClaimTransaction & WithChainId>).toEqual({
+      expect((parsed as unknown) as SignedTransaction<SwapClaimTransaction>).toEqual({
         transaction: {
           kind: "bcp/swap_claim",
           chainId: "ethereum-eip155-5777" as ChainId,
@@ -486,7 +485,7 @@ describe("ethereumCodec", () => {
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
-      expect((parsed as unknown) as SignedTransaction<SwapAbortTransaction & WithChainId>).toEqual({
+      expect((parsed as unknown) as SignedTransaction<SwapAbortTransaction>).toEqual({
         transaction: {
           kind: "bcp/swap_abort",
           chainId: "ethereum-eip155-5777" as ChainId,
@@ -565,7 +564,7 @@ describe("ethereumCodec", () => {
       });
 
       const parsed = codec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
-      expect((parsed as unknown) as SignedTransaction<SwapOfferTransaction & WithChainId>).toEqual({
+      expect((parsed as unknown) as SignedTransaction<SwapOfferTransaction>).toEqual({
         transaction: {
           kind: "bcp/swap_offer",
           chainId: "ethereum-eip155-5777" as ChainId,
@@ -656,7 +655,7 @@ describe("ethereumCodec", () => {
       });
 
       const parsed = codec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
-      expect((parsed as unknown) as SignedTransaction<SwapClaimTransaction & WithChainId>).toEqual({
+      expect((parsed as unknown) as SignedTransaction<SwapClaimTransaction>).toEqual({
         transaction: {
           kind: "bcp/swap_claim",
           chainId: "ethereum-eip155-5777" as ChainId,
@@ -717,7 +716,7 @@ describe("ethereumCodec", () => {
       const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
-      expect((parsed as unknown) as SignedTransaction<SwapAbortTransaction & WithChainId>).toEqual({
+      expect((parsed as unknown) as SignedTransaction<SwapAbortTransaction>).toEqual({
         transaction: {
           kind: "bcp/swap_abort",
           chainId: "ethereum-eip155-5777" as ChainId,

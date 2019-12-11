@@ -12,7 +12,6 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
-  LightTransaction,
   Nonce,
   PostableBytes,
   PostTxResponse,
@@ -74,9 +73,9 @@ export declare class EthereumConnection implements AtomicSwapConnection {
   watchBlockHeaders(): Stream<BlockHeader>;
   watchAccount(query: AccountQuery): Stream<Account | undefined>;
   getTx(id: TransactionId): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction>>;
-  searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction<LightTransaction>[]>;
-  listenTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
-  liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<LightTransaction> | FailedTransaction>;
+  searchTx(query: TransactionQuery): Promise<readonly ConfirmedTransaction<UnsignedTransaction>[]>;
+  listenTx(query: TransactionQuery): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
+  liveTx(query: TransactionQuery): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
   getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
   withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
   getSwaps(query: AtomicSwapQuery, minHeight?: number, maxHeight?: number): Promise<readonly AtomicSwap[]>;

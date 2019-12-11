@@ -24,7 +24,6 @@ import {
   TransactionId,
   TxCodec,
   UnsignedTransaction,
-  WithChainId,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -179,14 +178,12 @@ export class EthereumCodec implements TxCodec {
       options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
     );
 
-    let transaction: (
+    let transaction:
       | SendTransaction
       | Erc20ApproveTransaction
       | SwapOfferTransaction
       | SwapClaimTransaction
-      | SwapAbortTransaction
-    ) &
-      WithChainId;
+      | SwapAbortTransaction;
 
     if (atomicSwapContractAddress) {
       const positionMethodIdBegin = 0;

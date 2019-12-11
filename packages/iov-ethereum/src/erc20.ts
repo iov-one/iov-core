@@ -1,13 +1,13 @@
-import { Address, Amount, LightTransaction, TokenTicker } from "@iov/bcp";
+import { Address, Amount, TokenTicker, UnsignedTransaction } from "@iov/bcp";
 
-export interface Erc20ApproveTransaction extends LightTransaction {
+export interface Erc20ApproveTransaction extends UnsignedTransaction {
   readonly kind: "erc20/approve";
   readonly spender: Address;
   readonly amount: Amount;
 }
 
 export function isErc20ApproveTransaction(
-  transaction: LightTransaction,
+  transaction: UnsignedTransaction,
 ): transaction is Erc20ApproveTransaction {
   return (transaction as Erc20ApproveTransaction).kind === "erc20/approve";
 }

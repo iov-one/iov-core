@@ -6,7 +6,6 @@ import {
   isSwapAbortTransaction,
   isSwapClaimTransaction,
   isSwapOfferTransaction,
-  LightTransaction,
   Nonce,
   SendTransaction,
   SignedTransaction,
@@ -15,7 +14,6 @@ import {
   SwapOfferTransaction,
   SwapTransaction,
   UnsignedTransaction,
-  WithChainId,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
@@ -159,7 +157,7 @@ export class Serialization {
     }
   }
 
-  private static checkSenderPubkeyMatchesSenderAddress(unsigned: SendTransaction & WithChainId): void {
+  private static checkSenderPubkeyMatchesSenderAddress(unsigned: SendTransaction): void {
     if (unsigned.senderPubkey?.data.length) {
       const pubkeyAddress = pubkeyToAddress(unsigned.senderPubkey);
       if (pubkeyAddress !== unsigned.sender) {
@@ -245,7 +243,7 @@ export class Serialization {
     return encodeQuantityString(unsigned.fee.gasLimit);
   }
 
-  private static getErc20Token(transaction: LightTransaction, erc20Tokens: Erc20TokensMap): Erc20Options {
+  private static getErc20Token(transaction: UnsignedTransaction, erc20Tokens: Erc20TokensMap): Erc20Options {
     let erc20Token: Erc20Options | undefined;
     let ticker: string;
     if (isSendTransaction(transaction) || isErc20ApproveTransaction(transaction)) {
@@ -354,7 +352,7 @@ export class Serialization {
   }
 
   private static serializeUnsignedSendTransaction(
-    unsigned: SendTransaction & WithChainId,
+    unsigned: SendTransaction,
     { chainIdHex, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: UnsignedSerializationOptions,
   ): Uint8Array {
     Serialization.checkSenderPubkeyMatchesSenderAddress(unsigned);
@@ -513,7 +511,7 @@ export class Serialization {
   }
 
   private static serializeSignedSendTransaction(
-    unsigned: SendTransaction & WithChainId,
+    unsigned: SendTransaction,
     { v, r, s, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: SignedSerializationOptions,
   ): Uint8Array {
     Serialization.checkSenderPubkeyMatchesSenderAddress(unsigned);
