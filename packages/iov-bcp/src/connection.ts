@@ -241,5 +241,5 @@ export interface BlockchainConnection {
   ) => Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
   readonly getFeeQuote: (tx: UnsignedTransaction) => Promise<Fee>;
   // withDefaultFee will set the fee of the transaction to the result of getFeeQuote
-  readonly withDefaultFee: <T extends UnsignedTransaction>(tx: T) => Promise<T>;
+  readonly withDefaultFee: <T extends UnsignedTransaction>(tx: T, payer?: Address) => Promise<T>;
 }

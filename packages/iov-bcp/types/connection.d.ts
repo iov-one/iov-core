@@ -199,5 +199,5 @@ export interface BlockchainConnection {
     query: TransactionQuery,
   ) => Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction>;
   readonly getFeeQuote: (tx: UnsignedTransaction) => Promise<Fee>;
-  readonly withDefaultFee: <T extends UnsignedTransaction>(tx: T) => Promise<T>;
+  readonly withDefaultFee: <T extends UnsignedTransaction>(tx: T, payer?: Address) => Promise<T>;
 }
