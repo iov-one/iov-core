@@ -369,12 +369,13 @@ export class EthereumCodec implements TxCodec {
 
     return {
       transaction: transaction,
-      primarySignature: {
-        nonce: nonce,
-        pubkey: signerPubkey,
-        signature: signatureBytes,
-      },
-      otherSignatures: [],
+      signatures: [
+        {
+          nonce: nonce,
+          pubkey: signerPubkey,
+          signature: signatureBytes,
+        },
+      ],
     };
   }
 

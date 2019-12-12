@@ -121,7 +121,7 @@ export class Serialization {
   ): Uint8Array {
     const unsigned = signed.transaction;
 
-    const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.primarySignature.signature);
+    const sig = ExtendedSecp256k1Signature.fromFixedLength(signed.signatures[0].signature);
     const r = sig.r();
     const s = sig.s();
     const chainId = fromBcpChainId(unsigned.chainId);
@@ -137,7 +137,7 @@ export class Serialization {
       s: s,
       gasPriceHex: Serialization.getGasPriceHex(unsigned),
       gasLimitHex: Serialization.getGasLimitHex(unsigned),
-      nonce: signed.primarySignature.nonce,
+      nonce: signed.signatures[0].nonce,
       erc20Tokens: erc20Tokens,
       atomicSwapContractAddress: atomicSwapContractAddress,
     };
