@@ -792,12 +792,13 @@ describe("UserProfile", () => {
     };
     const fakeSignedTransaction: SignedTransaction = {
       transaction: fakeTransaction,
-      primarySignature: {
-        nonce: 11 as Nonce,
-        pubkey: fakeIdentity.pubkey,
-        signature: new Uint8Array([]) as SignatureBytes,
-      },
-      otherSignatures: [],
+      signatures: [
+        {
+          nonce: 11 as Nonce,
+          pubkey: fakeIdentity.pubkey,
+          signature: new Uint8Array([]) as SignatureBytes,
+        },
+      ],
     };
 
     const fakeCodec: TxCodec = {
@@ -901,11 +902,11 @@ describe("UserProfile", () => {
 
     const signedTransaction = await profile.signTransaction(mainIdentity, fakeTransaction, fakeCodec, nonce);
     expect(signedTransaction.transaction).toEqual(fakeTransaction);
-    expect(signedTransaction.primarySignature).toBeTruthy();
-    expect(signedTransaction.primarySignature.nonce).toEqual(nonce);
-    expect(signedTransaction.primarySignature.pubkey).toEqual(mainIdentity.pubkey);
-    expect(signedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
-    expect(signedTransaction.otherSignatures).toEqual([]);
+    expect(signedTransaction.signatures.length).toEqual(1);
+    expect(signedTransaction.signatures[0]).toBeTruthy();
+    expect(signedTransaction.signatures[0].nonce).toEqual(nonce);
+    expect(signedTransaction.signatures[0].pubkey).toEqual(mainIdentity.pubkey);
+    expect(signedTransaction.signatures[0].signature.length).toBeGreaterThan(0);
 
     const doubleSignedTransaction = await profile.appendSignature(
       mainIdentity,
@@ -914,13 +915,13 @@ describe("UserProfile", () => {
       nonce,
     );
     expect(doubleSignedTransaction.transaction).toEqual(fakeTransaction);
-    expect(doubleSignedTransaction.primarySignature).toBeTruthy();
-    expect(doubleSignedTransaction.primarySignature.nonce).toEqual(nonce);
-    expect(doubleSignedTransaction.primarySignature.pubkey).toEqual(mainIdentity.pubkey);
-    expect(doubleSignedTransaction.primarySignature.signature.length).toBeGreaterThan(0);
-    expect(doubleSignedTransaction.otherSignatures.length).toEqual(1);
-    expect(doubleSignedTransaction.otherSignatures[0].nonce).toEqual(nonce);
-    expect(doubleSignedTransaction.otherSignatures[0].pubkey).toEqual(mainIdentity.pubkey);
-    expect(doubleSignedTransaction.otherSignatures[0].signature.length).toBeGreaterThan(0);
+    expect(doubleSignedTransaction.signatures.length).toEqual(2);
+    expect(doubleSignedTransaction.signatures[0]).toBeTruthy();
+    expect(doubleSignedTransaction.signatures[0].nonce).toEqual(nonce);
+    expect(doubleSignedTransaction.signatures[0].pubkey).toEqual(mainIdentity.pubkey);
+    expect(doubleSignedTransaction.signatures[0].signature.length).toBeGreaterThan(0);
+    expect(doubleSignedTransaction.signatures[1].nonce).toEqual(nonce);
+    expect(doubleSignedTransaction.signatures[1].pubkey).toEqual(mainIdentity.pubkey);
+    expect(doubleSignedTransaction.signatures[1].signature.length).toBeGreaterThan(0);
   });
 });
