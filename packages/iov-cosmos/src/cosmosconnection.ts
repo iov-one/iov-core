@@ -13,6 +13,7 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
+  isConfirmedTransaction,
   isPubkeyQuery,
   isSendTransaction,
   Nonce,
@@ -29,6 +30,7 @@ import {
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
+import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
@@ -42,6 +44,9 @@ const { fromBase64 } = Encoding;
 interface ChainData {
   readonly chainId: ChainId;
 }
+
+// poll every 0.5 seconds (block time 1s)
+const defaultPollInterval = 500;
 
 function buildQueryString({
   height,
@@ -191,7 +196,34 @@ export class CosmosConnection implements BlockchainConnection {
     const { txhash, raw_log } = await this.restClient.postTx(tx);
     const transactionId = txhash as TransactionId;
     const firstEvent: BlockInfo = { state: TransactionState.Pending };
-    const producer = new DefaultValueProducer<BlockInfo>(firstEvent);
+    let blockInfoInterval: NodeJS.Timeout;
+    let lastEventSent: BlockInfo;
+    const producer = new DefaultValueProducer<BlockInfo>(firstEvent, {
+      onStarted: () => {
+        blockInfoInterval = setInterval(async () => {
+          const searchResult = (await this.searchTx({ id: transactionId })).find(() => true);
+          if (searchResult) {
+            const event: BlockInfo = isConfirmedTransaction(searchResult)
+              ? {
+                  state: TransactionState.Succeeded,
+                  height: searchResult.height,
+                  confirmations: searchResult.confirmations,
+                }
+              : {
+                  state: TransactionState.Failed,
+                  height: searchResult.height,
+                  code: searchResult.code,
+                  message: searchResult.message,
+                };
+            if (!equal(event, lastEventSent)) {
+              producer.update(event);
+              lastEventSent = event;
+            }
+          }
+        }, defaultPollInterval);
+      },
+      onStop: () => clearInterval(blockInfoInterval),
+    });
     return {
       blockInfo: new ValueAndUpdates<BlockInfo>(producer),
       transactionId: transactionId,
