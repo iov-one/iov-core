@@ -203,7 +203,7 @@ export class CosmosConnection implements BlockchainConnection {
     query: TransactionQuery,
   ): Promise<readonly (ConfirmedTransaction<UnsignedTransaction> | FailedTransaction)[]> {
     const queryString = buildQueryString(query);
-    const chainId = await this.chainId();
+    const chainId = this.chainId();
     const { txs: responses } = await this.restClient.txs(queryString);
     return Promise.all(responses.map(response => this.parseAndPopulateTxResponse(response, chainId)));
   }
