@@ -116,4 +116,7 @@ export {
   isTimestampTimeout,
   createTimestampTimeout,
   isSendTransaction,
+  NonEmptyArray,
+  isNonEmptyArray,
+  newNonEmptyArray,
 } from "./transactions";

@@ -130,6 +130,8 @@ export interface TransactionContainer<T extends UnsignedTransaction> {
 export declare type NonEmptyArray<T> = readonly T[] & {
   readonly 0: T;
 };
+export declare function isNonEmptyArray<T>(data: readonly T[]): data is NonEmptyArray<T>;
+export declare function newNonEmptyArray<T>(data: Iterable<T>): NonEmptyArray<T>;
 /** A signable transaction knows how to serialize itself and how to store signatures */
 export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTransaction>
   extends TransactionContainer<T> {
