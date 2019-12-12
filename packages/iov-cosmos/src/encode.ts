@@ -98,13 +98,12 @@ export function buildUnsignedTx(tx: UnsignedTransaction): AminoTx {
 }
 
 export function buildSignedTx(tx: SignedTransaction): AminoTx {
-  const signatures: readonly FullSignature[] = [tx.primarySignature, ...tx.otherSignatures];
   const built = buildUnsignedTx(tx.transaction);
   return {
     ...built,
     value: {
       ...built.value,
-      signatures: signatures.map(encodeFullSignature),
+      signatures: tx.signatures.map(encodeFullSignature),
     },
   };
 }

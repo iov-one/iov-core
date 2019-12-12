@@ -108,8 +108,7 @@ export function parseTx(tx: amino.Tx, chainId: ChainId, nonce: Nonce): SignedTra
 
   return {
     transaction: transaction,
-    primarySignature: primarySignature,
-    otherSignatures: [],
+    signatures: [primarySignature],
   };
 }
 

@@ -179,7 +179,7 @@ describe("CosmosConnection", () => {
         throw new Error("Expected transaction to succeed");
       }
       expect(getResponse.log).toMatch(/success/i);
-      const { transaction, primarySignature, otherSignatures } = getResponse;
+      const { transaction, signatures } = getResponse;
       if (!isSendTransaction(transaction)) {
         throw new Error("Expected send transaction");
       }
@@ -190,15 +190,15 @@ describe("CosmosConnection", () => {
       expect(transaction.amount).toEqual(unsigned.amount);
       expect(transaction.chainId).toEqual(unsigned.chainId);
 
-      expect(primarySignature.nonce).toEqual(signed.primarySignature.nonce);
-      expect(primarySignature.pubkey.algo).toEqual(signed.primarySignature.pubkey.algo);
-      expect(toHex(primarySignature.pubkey.data)).toEqual(
-        toHex(Secp256k1.compressPubkey(signed.primarySignature.pubkey.data)),
+      expect(signatures.length).toEqual(1);
+      expect(signatures[0].nonce).toEqual(signed.signatures[0].nonce);
+      expect(signatures[0].pubkey.algo).toEqual(signed.signatures[0].pubkey.algo);
+      expect(toHex(signatures[0].pubkey.data)).toEqual(
+        toHex(Secp256k1.compressPubkey(signed.signatures[0].pubkey.data)),
       );
-      expect(toHex(primarySignature.signature)).toEqual(
-        toHex(Secp256k1.trimRecoveryByte(signed.primarySignature.signature)),
+      expect(toHex(signatures[0].signature)).toEqual(
+        toHex(Secp256k1.trimRecoveryByte(signed.signatures[0].signature)),
       );
-      expect(otherSignatures).toEqual(signed.otherSignatures);
 
       connection.disconnect();
     });
