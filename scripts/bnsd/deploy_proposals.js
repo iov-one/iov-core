@@ -19,7 +19,7 @@ const connectionPromise = BnsConnection.establish(bnsdUrl);
 
 function createSignAndPoster(connection, profile) {
   return async function signAndPost(identity, tx) {
-    const nonce = await connection.getNonce({ pubkey: tx.creator.pubkey });
+    const nonce = await connection.getNonce({ pubkey: identity.pubkey });
     const signed = await profile.signTransaction(identity, tx, bnsCodec, nonce);
     const txBytes = bnsCodec.bytesToPost(signed);
     const post = await connection.postTx(txBytes);
@@ -40,21 +40,25 @@ async function main() {
   const profile = new UserProfile();
   const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
   const identity = await profile.createIdentity(wallet.id, chainId, adminPath);
+  const senderAddress = bnsCodec.identityToAddress(identity);
   const guaranteeFundEscrowId = Encoding.fromHex("0000000000000001");
   const rewardFundAddress = "tiov1k0dp2fmdunscuwjjusqtk6mttx5ufk3z0mmp0z";
   const signAndPost = createSignAndPoster(connection, profile);
 
-  const initialTxForReward = await connection.withDefaultFee({
-    kind: "bcp/send",
-    recipient: rewardFundAddress,
-    creator: identity,
-    sender: bnsCodec.identityToAddress(identity),
-    amount: {
-      quantity: "10000000000",
-      fractionalDigits: 9,
-      tokenTicker: "CASH",
+  const initialTxForReward = await connection.withDefaultFee(
+    {
+      kind: "bcp/send",
+      recipient: rewardFundAddress,
+      chainId: chainId,
+      sender: senderAddress,
+      amount: {
+        quantity: "10000000000",
+        fractionalDigits: 9,
+        tokenTicker: "CASH",
+      },
     },
-  });
+    senderAddress,
+  );
 
   await signAndPost(identity, initialTxForReward);
 
