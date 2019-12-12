@@ -671,18 +671,19 @@ describe("LiskConnection", () => {
         generateNonce(),
       );
 
-      const corruptedSignature = signedTransaction.primarySignature.signature.map((x, i) =>
+      const corruptedSignature = signedTransaction.signatures[0].signature.map((x, i) =>
         // tslint:disable-next-line:no-bitwise
         i === 0 ? x ^ 0x01 : x,
       ) as SignatureBytes;
 
       const corruptedSignedTransaction: SignedTransaction = {
         transaction: signedTransaction.transaction,
-        primarySignature: {
-          ...signedTransaction.primarySignature,
-          signature: corruptedSignature,
-        },
-        otherSignatures: [],
+        signatures: [
+          {
+            ...signedTransaction.signatures[0],
+            signature: corruptedSignature,
+          },
+        ],
       };
       const bytesToPost = liskCodec.bytesToPost(corruptedSignedTransaction);
 
@@ -733,7 +734,10 @@ describe("LiskConnection", () => {
 
       // from lisk/init.sh
       const existingId = "12493173350733478622" as TransactionId;
-      const { transaction, primarySignature: signature } = await connection.getTx(existingId);
+      const {
+        transaction,
+        signatures: [primarySignature],
+      } = await connection.getTx(existingId);
       if (!isSendTransaction(transaction)) {
         throw new Error(`Unexpected transaction type: ${transaction.kind}`);
       }
@@ -741,10 +745,10 @@ describe("LiskConnection", () => {
         throw new Error("Expected transaction to have senderPubkey");
       }
       const publicKey = transaction.senderPubkey.data;
-      const signingJob = liskCodec.bytesToSign(transaction, signature.nonce);
+      const signingJob = liskCodec.bytesToSign(transaction, primarySignature.nonce);
       const txBytes = new Sha256(signingJob.bytes).digest();
 
-      const valid = await Ed25519.verifySignature(signature.signature, txBytes, publicKey);
+      const valid = await Ed25519.verifySignature(primarySignature.signature, txBytes, publicKey);
       expect(valid).toBe(true);
 
       connection.disconnect();
