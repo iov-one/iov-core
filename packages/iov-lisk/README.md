@@ -41,12 +41,14 @@ const recipientAddress = "6076671634347365051L" as Address;
 
 const sendTx: SendTransaction = {
   kind: "bcp/send",
-  creator: mainIdentity,
+  chainId: chainId,
+  sender: mainAddress,
+  senderPubkey: mainIdentity.pubkey,
   recipient: recipientAddress,
   memo: "We ❤️ developers – iov.one",
   amount: {
-    whole: 1,
-    fractional: 44550000,
+    quantity: "144550000",
+    fractionalDigits: 8,
     tokenTicker: "LSK" as TokenTicker,
   },
 };
@@ -73,17 +75,20 @@ const mainIdentity = await wallet.createIdentity(
     "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
   ),
 );
+const mainAddress = signer.identityToAddress(mainIdentity);
 
 const recipientAddress = "6076671634347365051L" as Address;
 
 const sendTx: SendTransaction = {
   kind: "bcp/send",
-  creator: mainIdentity,
+  chainId: liskTestnet,
+  sender: mainAddress,
+  senderPubkey: mainIdentity.pubkey,
   recipient: recipientAddress,
   memo: "We ❤️ developers – iov.one",
   amount: {
-    whole: 1,
-    fractional: 44550000,
+    quantity: "144550000",
+    fractionalDigits: 8,
     tokenTicker: "LSK" as TokenTicker,
   },
 };
