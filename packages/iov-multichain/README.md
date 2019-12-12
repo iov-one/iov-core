@@ -225,7 +225,8 @@ import { SendTransaction, TokenTicker } from "@iov/bcp";
 
 const sendTx: SendTransaction = {
   kind: "bcp/send",
-  creator: id1a, // this account must have money
+  chainId: chainId,
+  sender: addr, // this account must have money
   recipient: addr2,
   memo: "My first transaction",
   amount: {
