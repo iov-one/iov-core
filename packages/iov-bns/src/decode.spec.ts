@@ -392,7 +392,7 @@ describe("Decode", () => {
     // unsigned tx will fail as parsing requires a sig to extract signer
     it("decode unsigned transaction fails", () => {
       const decoded = codecImpl.bnsd.Tx.decode(sendTxBin);
-      expect(() => parseTx(decoded, chainId)).toThrowError(/missing first signature/);
+      expect(() => parseTx(decoded, chainId)).toThrowError(/transaction has no signatures/i);
     });
 
     it("decode signed transaction", () => {

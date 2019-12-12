@@ -81,8 +81,7 @@ export const signedTxSig: FullSignature = {
 
 export const signedTxJson: SignedTransaction = {
   transaction: sendTxJson,
-  primarySignature: signedTxSig,
-  otherSignatures: [],
+  signatures: [signedTxSig],
 };
 
 export const signedTxBin = fromHex(data.signed_tx.bin);
@@ -128,8 +127,7 @@ const randomMsg: SendTransaction = {
 
 export const randomTxJson: SignedTransaction = {
   transaction: randomMsg,
-  primarySignature: signedTxSig,
-  otherSignatures: [sig2],
+  signatures: [signedTxSig],
 };
 
 // recipient address generated using https://github.com/nym-zone/bech32
@@ -152,8 +150,7 @@ const swapOfferTransaction: SwapOfferTransaction = {
 
 export const swapOfferTxJson: SignedTransaction = {
   transaction: swapOfferTransaction,
-  primarySignature: sig2,
-  otherSignatures: [],
+  signatures: [sig2],
 };
 
 const swapClaimMsg: SwapClaimTransaction = {
@@ -167,8 +164,7 @@ const swapClaimMsg: SwapClaimTransaction = {
 
 export const swapClaimTxJson: SignedTransaction = {
   transaction: swapClaimMsg,
-  primarySignature: sig2,
-  otherSignatures: [],
+  signatures: [sig2],
 };
 
 const swapAbort: SwapAbortTransaction = {
@@ -180,6 +176,5 @@ const swapAbort: SwapAbortTransaction = {
 };
 export const swapAbortTxJson: SignedTransaction = {
   transaction: swapAbort,
-  primarySignature: signedTxSig,
-  otherSignatures: [],
+  signatures: [signedTxSig],
 };
