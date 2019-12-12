@@ -2,11 +2,13 @@ import {
   Address,
   Algorithm,
   ChainId,
+  isBlockInfoPending,
   isFailedTransaction,
   isSendTransaction,
   PubkeyBytes,
   SendTransaction,
   TokenTicker,
+  TransactionState,
 } from "@iov/bcp";
 import { Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
@@ -170,7 +172,10 @@ describe("CosmosConnection", () => {
       const nonce = await connection.getNonce({ address: faucetAddress });
       const signed = await profile.signTransaction(faucet, unsigned, cosmosCodec, nonce);
       const postableBytes = cosmosCodec.bytesToPost(signed);
-      const { transactionId } = await connection.postTx(postableBytes);
+      const response = await connection.postTx(postableBytes);
+      const { transactionId } = response;
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       const getResponse = await connection.getTx(transactionId);
       expect(getResponse).toBeTruthy();
@@ -226,7 +231,10 @@ describe("CosmosConnection", () => {
       const nonce = await connection.getNonce({ address: faucetAddress });
       const signed = await profile.signTransaction(faucet, unsigned, cosmosCodec, nonce);
       const postableBytes = cosmosCodec.bytesToPost(signed);
-      const { transactionId } = await connection.postTx(postableBytes);
+      const response = await connection.postTx(postableBytes);
+      const { transactionId } = response;
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       // search by id
 
