@@ -123,7 +123,10 @@ describe("BnsConnection (txs)", () => {
       if (isFailedTransaction(result)) {
         throw new Error("Expected ConfirmedTransaction, received FailedTransaction");
       }
-      const { transaction, primarySignature: signature } = result;
+      const {
+        transaction,
+        signatures: [signature],
+      } = result;
       if (!isSendTransaction(transaction)) {
         throw new Error("Expected send transaction");
       }

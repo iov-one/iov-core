@@ -87,12 +87,13 @@ describe("liskCodec", () => {
 
     const signed: SignedTransaction = {
       transaction: tx,
-      primarySignature: {
-        nonce: defaultCreationTimestamp as Nonce,
-        pubkey: defaultPublicKey,
-        signature: fromHex("26272829") as SignatureBytes,
-      },
-      otherSignatures: [],
+      signatures: [
+        {
+          nonce: defaultCreationTimestamp as Nonce,
+          pubkey: defaultPublicKey,
+          signature: fromHex("26272829") as SignatureBytes,
+        },
+      ],
     };
 
     const bytes = liskCodec.bytesToPost(signed);
@@ -160,16 +161,16 @@ describe("liskCodec", () => {
     );
     expect(unsigned.recipient).toEqual("6076671634347365051L");
 
-    expect(parsed.primarySignature.nonce).toEqual((73863961 + liskEpochAsUnixTimestamp) as Nonce);
-    expect(parsed.primarySignature.pubkey.algo).toEqual(Algorithm.Ed25519);
-    expect(parsed.primarySignature.pubkey.data).toEqual(
+    expect(parsed.signatures.length).toEqual(1);
+    expect(parsed.signatures[0].nonce).toEqual((73863961 + liskEpochAsUnixTimestamp) as Nonce);
+    expect(parsed.signatures[0].pubkey.algo).toEqual(Algorithm.Ed25519);
+    expect(parsed.signatures[0].pubkey.data).toEqual(
       fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa"),
     );
-    expect(parsed.primarySignature.signature).toEqual(
+    expect(parsed.signatures[0].signature).toEqual(
       fromHex(
         "9a6c75056151d76791b69d268102241aa0f5930d098a1af48bab9b6e7706afcf24156ae2a7178cf1c3b7865094653dcaf99cdd7cb7aa9a8a3e5c4121f2a44a00",
       ),
     );
-    expect(parsed.otherSignatures).toEqual([]);
   });
 });

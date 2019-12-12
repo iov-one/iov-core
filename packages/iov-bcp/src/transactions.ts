@@ -214,12 +214,24 @@ export interface TransactionContainer<T extends UnsignedTransaction> {
   readonly transaction: T;
 }
 
+export type NonEmptyArray<T> = readonly T[] & { readonly 0: T };
+
+export function isNonEmptyArray<T>(data: readonly T[]): data is NonEmptyArray<T> {
+  return data.length >= 1;
+}
+
+export function newNonEmptyArray<T>(data: Iterable<T>): NonEmptyArray<T> {
+  const a: readonly T[] = [...data];
+  if (!isNonEmptyArray(a)) {
+    throw new Error("Array is empty");
+  }
+  return a;
+}
+
 /** A signable transaction knows how to serialize itself and how to store signatures */
 export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTransaction>
   extends TransactionContainer<T> {
-  readonly primarySignature: FullSignature;
-  /** signatures can be appended as this is signed */
-  readonly otherSignatures: readonly FullSignature[];
+  readonly signatures: NonEmptyArray<FullSignature>;
 }
 
 export interface ConfirmedTransaction<T extends UnsignedTransaction> extends TransactionContainer<T> {

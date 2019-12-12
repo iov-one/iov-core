@@ -322,18 +322,19 @@ describe("Serialization", () => {
 
       const signed: SignedTransaction = {
         transaction: tx,
-        primarySignature: {
-          nonce: zeroNonce,
-          pubkey: defaultPublicKey,
-          signature: fromHex("26272829") as SignatureBytes,
-        },
-        otherSignatures: [],
+        signatures: [
+          {
+            nonce: zeroNonce,
+            pubkey: defaultPublicKey,
+            signature: fromHex("26272829") as SignatureBytes,
+          },
+        ],
       };
 
       const id = transactionId(
         signed.transaction,
         defaultCreationDate,
-        signed.primarySignature,
+        signed.signatures[0],
         liskTransactionSerializationOptions,
       );
       expect(id).toEqual("15806479375328957764");

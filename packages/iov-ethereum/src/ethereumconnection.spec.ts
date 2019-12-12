@@ -577,7 +577,7 @@ describe("EthereumConnection", () => {
       const nonce = await connection.getNonce({ pubkey: mainIdentity.pubkey });
       const signed = await profile.signTransaction(mainIdentity, sendTx, ethereumCodec, nonce);
       // tslint:disable-next-line:no-bitwise no-object-mutation
-      signed.primarySignature.signature[0] ^= 1;
+      signed.signatures[0].signature[0] ^= 1;
       // Alternatively we could corrupt the message
       // ((signed.transaction as SendTransaction).memo as any) += "!";
 
@@ -775,15 +775,18 @@ describe("EthereumConnection", () => {
       const { transactionId, blockInfo } = resultPost;
       await blockInfo.waitFor(info => !isBlockInfoPending(info));
 
-      const { transaction, primarySignature: signature } = await connection.getTx(transactionId);
+      const {
+        transaction,
+        signatures: [firstSignature],
+      } = await connection.getTx(transactionId);
       if (!isSendTransaction(transaction)) {
         throw new Error("Expected send transaction");
       }
-      const signingJob = ethereumCodec.bytesToSign(transaction, signature.nonce);
+      const signingJob = ethereumCodec.bytesToSign(transaction, firstSignature.nonce);
       const txBytes = new Keccak256(signingJob.bytes).digest();
 
       const valid = await Secp256k1.verifySignature(
-        ExtendedSecp256k1Signature.fromFixedLength(signature.signature),
+        ExtendedSecp256k1Signature.fromFixedLength(firstSignature.signature),
         txBytes,
         mainIdentity.pubkey.data,
       );

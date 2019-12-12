@@ -50,12 +50,13 @@ export const liskCodec: TxCodec = {
   bytesToPost: (signed: SignedTransaction): PostableBytes => {
     const unsigned = signed.transaction;
     if (isSendTransaction(unsigned)) {
-      const timestamp = new Int53(signed.primarySignature.nonce);
+      const primarySignature = signed.signatures[0];
+      const timestamp = new Int53(primarySignature.nonce);
       const liskTimestamp = timestamp.toNumber() - 1464109200;
       const id = Serialization.transactionId(
         unsigned,
         new ReadonlyDate(timestamp.toNumber() * 1000),
-        signed.primarySignature,
+        primarySignature,
         constants.transactionSerializationOptions,
       );
 
@@ -63,13 +64,13 @@ export const liskCodec: TxCodec = {
         type: 0,
         amount: unsigned.amount.quantity,
         recipientId: unsigned.recipient,
-        senderPublicKey: Encoding.toHex(signed.primarySignature.pubkey.data),
+        senderPublicKey: Encoding.toHex(primarySignature.pubkey.data),
         timestamp: liskTimestamp,
         fee: "10000000", // 0.1 LSK fixed
         asset: {
           data: unsigned.memo,
         },
-        signature: Encoding.toHex(signed.primarySignature.signature),
+        signature: Encoding.toHex(primarySignature.signature),
         id: id,
       };
       return Encoding.toUtf8(JSON.stringify(postableObject)) as PostableBytes;
@@ -83,12 +84,13 @@ export const liskCodec: TxCodec = {
    * https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/transaction.cpp#L87
    */
   identifier: (signed: SignedTransaction): TransactionId => {
-    const creationTimestamp = new Int53(signed.primarySignature.nonce);
+    const primarySignature = signed.signatures[0];
+    const creationTimestamp = new Int53(primarySignature.nonce);
     const creationDate = new ReadonlyDate(creationTimestamp.toNumber() * 1000);
     return Serialization.transactionId(
       signed.transaction,
       creationDate,
-      signed.primarySignature,
+      primarySignature,
       constants.transactionSerializationOptions,
     );
   },
@@ -135,15 +137,16 @@ export const liskCodec: TxCodec = {
 
     return {
       transaction: unsignedTransaction,
-      primarySignature: {
-        nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: senderPublicKey,
+      signatures: [
+        {
+          nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: senderPublicKey,
+          },
+          signature: Encoding.fromHex(json.signature) as SignatureBytes,
         },
-        signature: Encoding.fromHex(json.signature) as SignatureBytes,
-      },
-      otherSignatures: [],
+      ],
     };
   },
 

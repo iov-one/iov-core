@@ -3,6 +3,7 @@ import {
   FullSignature,
   Identity,
   identityEquals,
+  newNonEmptyArray,
   Nonce,
   SignedTransaction,
   TxCodec,
@@ -330,8 +331,7 @@ export class UserProfile {
 
     return {
       transaction: transaction,
-      primarySignature: signature,
-      otherSignatures: [],
+      signatures: [signature],
     };
   }
 
@@ -352,7 +352,7 @@ export class UserProfile {
 
     return {
       ...originalTransaction,
-      otherSignatures: [...originalTransaction.otherSignatures, newSignature],
+      signatures: newNonEmptyArray([...originalTransaction.signatures, newSignature]),
     };
   }
 

@@ -6,7 +6,9 @@ import {
   ChainId,
   Nonce,
   PubkeyBytes,
+  SendTransaction,
   SignatureBytes,
+  SignedTransaction,
   TokenTicker,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
@@ -254,7 +256,7 @@ describe("encode", () => {
 
   describe("buildSignedTx", () => {
     it("builds a send transaction", () => {
-      const tx = {
+      const tx: SignedTransaction<SendTransaction> = {
         transaction: {
           kind: "bcp/send",
           chainId: defaultChainId,
@@ -271,17 +273,18 @@ describe("encode", () => {
             gasLimit: "200000",
           },
         },
-        primarySignature: {
-          nonce: 0 as Nonce,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: fromBase64("AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP") as PubkeyBytes,
+        signatures: [
+          {
+            nonce: 0 as Nonce,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: fromBase64("AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP") as PubkeyBytes,
+            },
+            signature: fromBase64(
+              "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
+            ) as SignatureBytes,
           },
-          signature: fromBase64(
-            "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ==",
-          ) as SignatureBytes,
-        },
-        otherSignatures: [],
+        ],
       };
       expect(buildSignedTx(tx)).toEqual({
         type: "auth/StdTx",

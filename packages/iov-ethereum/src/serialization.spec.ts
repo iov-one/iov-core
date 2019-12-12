@@ -486,19 +486,20 @@ describe("Serialization", () => {
           sender: "not used" as Address,
           recipient: "0x095e7baea6a6c7c4c2dfeb977efac326af552d87" as Address,
         },
-        primarySignature: {
-          nonce: 0 as Nonce,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+        signatures: [
+          {
+            nonce: 0 as Nonce,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+            },
+            signature: new ExtendedSecp256k1Signature(
+              fromHex("48b55bfa915ac795c431978d8a6a992b628d557da5ff759b307d495a36649353"),
+              fromHex("1fffd310ac743f371de3b9f7f9cb56c0b28ad43601b4ab949f53faa07bd2c804"),
+              0,
+            ).toFixedLength() as SignatureBytes,
           },
-          signature: new ExtendedSecp256k1Signature(
-            fromHex("48b55bfa915ac795c431978d8a6a992b628d557da5ff759b307d495a36649353"),
-            fromHex("1fffd310ac743f371de3b9f7f9cb56c0b28ad43601b4ab949f53faa07bd2c804"),
-            0,
-          ).toFixedLength() as SignatureBytes,
-        },
-        otherSignatures: [],
+        ],
       };
 
       const serializedTx = serializeSignedTransaction(signed);
@@ -532,19 +533,20 @@ describe("Serialization", () => {
           sender: "not used" as Address,
           recipient: "0x8fec1c262599f4169401ff48a9d63503ceaaf742" as Address,
         },
-        primarySignature: {
-          nonce: defaultNonce,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+        signatures: [
+          {
+            nonce: defaultNonce,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+            },
+            signature: new ExtendedSecp256k1Signature(
+              fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
+              fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
+              0,
+            ).toFixedLength() as SignatureBytes,
           },
-          signature: new ExtendedSecp256k1Signature(
-            fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
-            fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
-            0,
-          ).toFixedLength() as SignatureBytes,
-        },
-        otherSignatures: [],
+        ],
       };
       const expected = fromHex(
         "f8a91a850165a0bc0082cdbd946c6ee5e31d828de241282b9606c8e98ea48526e280b844a9059cbb0000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf74200000000000000000000000000000000000000000000385c193e12be6d312c0025a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
@@ -595,19 +597,20 @@ describe("Serialization", () => {
             height: 1,
           },
         },
-        primarySignature: {
-          nonce: defaultNonce,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+        signatures: [
+          {
+            nonce: defaultNonce,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+            },
+            signature: new ExtendedSecp256k1Signature(
+              fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
+              fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
+              0,
+            ).toFixedLength() as SignatureBytes,
           },
-          signature: new ExtendedSecp256k1Signature(
-            fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
-            fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
-            0,
-          ).toFixedLength() as SignatureBytes,
-        },
-        otherSignatures: [],
+        ],
       };
       const expected = fromHex(
         "f8f31a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d188a385c193e12be6d312c00b8840eed854809090909090909090909090909090909090909090909090909090909090909090000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf7420808080808080808080808080808080808080808080808080808080808080808000000000000000000000000000000000000000000000000000000000000000125a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
@@ -640,19 +643,20 @@ describe("Serialization", () => {
           },
           preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
         },
-        primarySignature: {
-          nonce: defaultNonce,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+        signatures: [
+          {
+            nonce: defaultNonce,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+            },
+            signature: new ExtendedSecp256k1Signature(
+              fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
+              fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
+              0,
+            ).toFixedLength() as SignatureBytes,
           },
-          signature: new ExtendedSecp256k1Signature(
-            fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
-            fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
-            0,
-          ).toFixedLength() as SignatureBytes,
-        },
-        otherSignatures: [],
+        ],
       };
       const expected = fromHex(
         "f8a91a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d1880b84484cc9dfb0909090909090909090909090909090909090909090909090909090909090909101010101010101010101010101010101010101010101010101010101010101025a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
@@ -684,19 +688,20 @@ describe("Serialization", () => {
             data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
           },
         },
-        primarySignature: {
-          nonce: defaultNonce,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+        signatures: [
+          {
+            nonce: defaultNonce,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+            },
+            signature: new ExtendedSecp256k1Signature(
+              fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
+              fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
+              0,
+            ).toFixedLength() as SignatureBytes,
           },
-          signature: new ExtendedSecp256k1Signature(
-            fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
-            fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
-            0,
-          ).toFixedLength() as SignatureBytes,
-        },
-        otherSignatures: [],
+        ],
       };
       const expected = fromHex(
         "f8881a850165a0bc0082cdbd94e1c9ea25a621cf5c934a7e112ecab640ec7d8d1880a409d6ce0e090909090909090909090909090909090909090909090909090909090909090925a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
@@ -741,19 +746,20 @@ describe("Serialization", () => {
             height: 1,
           },
         },
-        primarySignature: {
-          nonce: defaultNonce,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+        signatures: [
+          {
+            nonce: defaultNonce,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+            },
+            signature: new ExtendedSecp256k1Signature(
+              fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
+              fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
+              0,
+            ).toFixedLength() as SignatureBytes,
           },
-          signature: new ExtendedSecp256k1Signature(
-            fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
-            fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
-            0,
-          ).toFixedLength() as SignatureBytes,
-        },
-        otherSignatures: [],
+        ],
       };
       const expected = fromHex(
         "f901291a850165a0bc0082cdbd949768ae2339b48643d710b11ddbdb8a7edbea15bc80b8c4e8d8a29309090909090909090909090909090909090909090909090909090909090909090000000000000000000000008fec1c262599f4169401ff48a9d63503ceaaf74208080808080808080808080808080808080808080808080808080808080808080000000000000000000000000000000000000000000000000000000000000001000000000000000000000000202020202020202020202020202020202020202000000000000000000000000000000000000000000000385c193e12be6d312c0025a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
@@ -786,19 +792,20 @@ describe("Serialization", () => {
           },
           preimage: Uint8Array.from(Array(32).fill(16)) as Preimage,
         },
-        primarySignature: {
-          nonce: defaultNonce,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+        signatures: [
+          {
+            nonce: defaultNonce,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+            },
+            signature: new ExtendedSecp256k1Signature(
+              fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
+              fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
+              0,
+            ).toFixedLength() as SignatureBytes,
           },
-          signature: new ExtendedSecp256k1Signature(
-            fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
-            fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
-            0,
-          ).toFixedLength() as SignatureBytes,
-        },
-        otherSignatures: [],
+        ],
       };
       const expected = fromHex(
         "f8a91a850165a0bc0082cdbd949768ae2339b48643d710b11ddbdb8a7edbea15bc80b84484cc9dfb0909090909090909090909090909090909090909090909090909090909090909101010101010101010101010101010101010101010101010101010101010101025a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",
@@ -830,19 +837,20 @@ describe("Serialization", () => {
             data: Uint8Array.from(Array(32).fill(9)) as SwapIdBytes,
           },
         },
-        primarySignature: {
-          nonce: defaultNonce,
-          pubkey: {
-            algo: Algorithm.Secp256k1,
-            data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+        signatures: [
+          {
+            nonce: defaultNonce,
+            pubkey: {
+              algo: Algorithm.Secp256k1,
+              data: new Uint8Array([]) as PubkeyBytes, // unused for serialization
+            },
+            signature: new ExtendedSecp256k1Signature(
+              fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
+              fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
+              0,
+            ).toFixedLength() as SignatureBytes,
           },
-          signature: new ExtendedSecp256k1Signature(
-            fromHex("6a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37"),
-            fromHex("443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d"),
-            0,
-          ).toFixedLength() as SignatureBytes,
-        },
-        otherSignatures: [],
+        ],
       };
       const expected = fromHex(
         "f8881a850165a0bc0082cdbd949768ae2339b48643d710b11ddbdb8a7edbea15bc80a409d6ce0e090909090909090909090909090909090909090909090909090909090909090925a06a6bbd9d45779c81a24172a1c90e9790033cce1fd6893a49ac31d972e436ee37a0443fbc313ff9e4399da1b285bd3f9b9c776349b61d0334c83f4eb51ba67a0a7d",

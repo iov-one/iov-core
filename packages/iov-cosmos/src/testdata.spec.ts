@@ -56,8 +56,7 @@ export const signedTxSig: FullSignature = {
 
 export const signedTxJson: SignedTransaction = {
   transaction: sendTxJson,
-  primarySignature: signedTxSig,
-  otherSignatures: [],
+  signatures: [signedTxSig],
 };
 
 export const signedTxBin = fromBase64(data.tx_data);

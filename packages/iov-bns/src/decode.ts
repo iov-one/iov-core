@@ -5,6 +5,7 @@ import {
   ChainId,
   FullSignature,
   Hash,
+  newNonEmptyArray,
   Nonce,
   Preimage,
   PubkeyBundle,
@@ -739,7 +740,7 @@ export function parseMsg(base: UnsignedTransaction, tx: codecImpl.bnsd.ITx): Uns
   throw new Error("unknown message type in transaction");
 }
 
-function parseBaseTx(tx: codecImpl.bnsd.ITx, sig: FullSignature, chainId: ChainId): UnsignedTransaction {
+function parseBaseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): UnsignedTransaction {
   let base: UnsignedTransaction | (UnsignedTransaction & MultisignatureTx) = {
     kind: "",
     chainId: chainId,
@@ -756,11 +757,15 @@ function parseBaseTx(tx: codecImpl.bnsd.ITx, sig: FullSignature, chainId: ChainI
 }
 
 export function parseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): SignedTransaction {
-  const sigs = ensure(tx.signatures, "signatures").map(decodeFullSig);
-  const sig = ensure(sigs[0], "first signature");
+  const signatures = ensure(tx.signatures, "signatures").map(decodeFullSig);
+  let signaturesNonEmpty;
+  try {
+    signaturesNonEmpty = newNonEmptyArray(signatures);
+  } catch (error) {
+    throw new Error("Transaction has no signatures");
+  }
   return {
-    transaction: parseMsg(parseBaseTx(tx, sig, chainId), tx),
-    primarySignature: sig,
-    otherSignatures: sigs.slice(1),
+    transaction: parseMsg(parseBaseTx(tx, chainId), tx),
+    signatures: signaturesNonEmpty,
   };
 }

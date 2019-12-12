@@ -8,6 +8,8 @@
   `BlockchainConnection.withDefaultFee`.
 - @iov/bcp: Add optional senderPubkey parameter to `SendTransaction`.
 - @iov/bcp: Add `isConfirmedAndSignedTransaction` helper.
+- @iov/bcp: Add `NonEmptyArray` and `isNonEmptyArray`/`newNonEmptyArray` helper
+  functions.
 - @iov/bns: Add optional payer parameter to `BnsConnection.withDefaultFee`.
 - @iov/bns: `BnsConnection.searchTx` now resolves to an array of
   `ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction`.
@@ -24,18 +26,25 @@ Breaking changes
 - @iov/bcp: Remove `LightTransaction` and `WithCreator` types and helpers.
 - @iov/bcp: `UnsignedTransaction` now has a `chainId` field instead of
   `creator`.
+- @iov/bcp: Replace `primarySignature` and `otherSignatures` in
+  `SignedTransaction` with a single `signatures` field of type `NonEmptyArray`.
 - @iov/bns: Require fee payer to be specified when encoding a transaction with a
   fee.
-- @iov/dpos: Package removed due to the removal of @iov/rise
+- @iov/bns: Use single `signatures` field in `SignedTransaction`s.
+- @iov/cosmos: Use single `signatures` field in `SignedTransaction`s.
+- @iov/dpos: Package removed due to the removal of @iov/rise.
+- @iov/ethereum: Use single `signatures` field in `SignedTransaction`s.
 - @iov/keycontrol: `UserProfile.signTransaction` now requires the signing
   identity as an argument, just like `UserProfile.appendSignature`.
 - @iov/keycontrol: Deprecate `HdPaths.iovFaucet`.
+- @iov/keycontrol: Use single `signatures` field in `SignedTransaction`s.
 - @iov/lisk: Require `senderPubkey` in `SendTransaction`s.
+- @iov/lisk: Use single `signatures` field in `SignedTransaction`s.
 - @iov/multichain: The `Profile` type required to create a `MultiChainSigner`
   has been updated to match the `UserProfile` change in @iov/keycontrol.
 - @iov/multichain: `MultiChainSigner.signAndPost` and `SigningServerCore` now
   both require a signing `identity` argument.
-- @iov/rise: Package removed
+- @iov/rise: Package removed.
 
 ## 1.2.0
 

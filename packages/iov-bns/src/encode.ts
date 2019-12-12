@@ -528,7 +528,6 @@ export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
 }
 
 export function buildSignedTx(tx: SignedTransaction): codecImpl.bnsd.ITx {
-  const sigs: readonly FullSignature[] = [tx.primarySignature, ...tx.otherSignatures];
   const built = buildUnsignedTx(tx.transaction);
-  return { ...built, signatures: sigs.map(encodeFullSignature) };
+  return { ...built, signatures: tx.signatures.map(encodeFullSignature) };
 }
