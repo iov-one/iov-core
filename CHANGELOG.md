@@ -2,7 +2,7 @@
 
 ## 2.0.0
 
-- @iov/bns: Add support for weave to v0.23.0.
+- @iov/bns: Add support for weave v0.24.0.
 - @iov/bcp: Add optional payer field to `Fee` type.
 - @iov/bcp: Add optional feePayer parameter to
   `BlockchainConnection.withDefaultFee`.

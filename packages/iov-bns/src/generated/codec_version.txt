@@ -1,1 +1,1 @@
-2cd1732833a758885c56737c7ea49dd8d8e838cd (HEAD, tag: v0.23.0, origin/master, origin/HEAD) release 0.23.0 (#1068)
+b2c7cda20d596bbf198e8ce687e2af3cb79fa659 (HEAD, tag: v0.24.0, origin/master, origin/HEAD) 0.24.0 release (#1080)

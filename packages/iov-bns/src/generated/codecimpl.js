@@ -272,6 +272,22 @@ $root.bnsd = (function() {
          * @property {gov.IUpdateElectorateMsg|null} [govUpdateElectorateMsg] gov.TallyMsg gov_tally_msg = 76;
          * @property {gov.IUpdateElectionRuleMsg|null} [govUpdateElectionRuleMsg] Tx govUpdateElectionRuleMsg
          * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] 79 is reserved (see ProposalOptions: TextResolutionMsg)
+         * @property {datamigration.IExecuteMigrationMsg|null} [datamigrationExecuteMigrationMsg] Tx datamigrationExecuteMigrationMsg
+         * @property {account.IUpdateConfigurationMsg|null} [accountUpdateConfigurationMsg] Tx accountUpdateConfigurationMsg
+         * @property {account.IRegisterDomainMsg|null} [accountRegisterDomainMsg] Tx accountRegisterDomainMsg
+         * @property {account.IReplaceAccountMsgFeesMsg|null} [accountReplaceAccountMsgFeesMsg] Tx accountReplaceAccountMsgFeesMsg
+         * @property {account.ITransferDomainMsg|null} [accountTransferDomainMsg] Tx accountTransferDomainMsg
+         * @property {account.IRenewDomainMsg|null} [accountRenewDomainMsg] Tx accountRenewDomainMsg
+         * @property {account.IDeleteDomainMsg|null} [accountDeleteDomainMsg] Tx accountDeleteDomainMsg
+         * @property {account.IRegisterAccountMsg|null} [accountRegisterAccountMsg] Tx accountRegisterAccountMsg
+         * @property {account.ITransferAccountMsg|null} [accountTransferAccountMsg] Tx accountTransferAccountMsg
+         * @property {account.IReplaceAccountTargetsMsg|null} [accountReplaceAccountTargetsMsg] Tx accountReplaceAccountTargetsMsg
+         * @property {account.IDeleteAccountMsg|null} [accountDeleteAccountMsg] Tx accountDeleteAccountMsg
+         * @property {account.IFlushDomainMsg|null} [accountFlushDomainMsg] Tx accountFlushDomainMsg
+         * @property {account.IRenewAccountMsg|null} [accountRenewAccountMsg] Tx accountRenewAccountMsg
+         * @property {account.IAddAccountCertificateMsg|null} [accountAddAccountCertificateMsg] Tx accountAddAccountCertificateMsg
+         * @property {account.IDeleteAccountCertificateMsg|null} [accountDeleteAccountCertificateMsg] Tx accountDeleteAccountCertificateMsg
+         * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] Tx cashUpdateConfigurationMsg
          */
 
         /**
@@ -531,17 +547,145 @@ $root.bnsd = (function() {
          */
         Tx.prototype.msgfeeSetMsgFeeMsg = null;
 
+        /**
+         * Tx datamigrationExecuteMigrationMsg.
+         * @member {datamigration.IExecuteMigrationMsg|null|undefined} datamigrationExecuteMigrationMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.datamigrationExecuteMigrationMsg = null;
+
+        /**
+         * Tx accountUpdateConfigurationMsg.
+         * @member {account.IUpdateConfigurationMsg|null|undefined} accountUpdateConfigurationMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountUpdateConfigurationMsg = null;
+
+        /**
+         * Tx accountRegisterDomainMsg.
+         * @member {account.IRegisterDomainMsg|null|undefined} accountRegisterDomainMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountRegisterDomainMsg = null;
+
+        /**
+         * Tx accountReplaceAccountMsgFeesMsg.
+         * @member {account.IReplaceAccountMsgFeesMsg|null|undefined} accountReplaceAccountMsgFeesMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountReplaceAccountMsgFeesMsg = null;
+
+        /**
+         * Tx accountTransferDomainMsg.
+         * @member {account.ITransferDomainMsg|null|undefined} accountTransferDomainMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountTransferDomainMsg = null;
+
+        /**
+         * Tx accountRenewDomainMsg.
+         * @member {account.IRenewDomainMsg|null|undefined} accountRenewDomainMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountRenewDomainMsg = null;
+
+        /**
+         * Tx accountDeleteDomainMsg.
+         * @member {account.IDeleteDomainMsg|null|undefined} accountDeleteDomainMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountDeleteDomainMsg = null;
+
+        /**
+         * Tx accountRegisterAccountMsg.
+         * @member {account.IRegisterAccountMsg|null|undefined} accountRegisterAccountMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountRegisterAccountMsg = null;
+
+        /**
+         * Tx accountTransferAccountMsg.
+         * @member {account.ITransferAccountMsg|null|undefined} accountTransferAccountMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountTransferAccountMsg = null;
+
+        /**
+         * Tx accountReplaceAccountTargetsMsg.
+         * @member {account.IReplaceAccountTargetsMsg|null|undefined} accountReplaceAccountTargetsMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountReplaceAccountTargetsMsg = null;
+
+        /**
+         * Tx accountDeleteAccountMsg.
+         * @member {account.IDeleteAccountMsg|null|undefined} accountDeleteAccountMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountDeleteAccountMsg = null;
+
+        /**
+         * Tx accountFlushDomainMsg.
+         * @member {account.IFlushDomainMsg|null|undefined} accountFlushDomainMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountFlushDomainMsg = null;
+
+        /**
+         * Tx accountRenewAccountMsg.
+         * @member {account.IRenewAccountMsg|null|undefined} accountRenewAccountMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountRenewAccountMsg = null;
+
+        /**
+         * Tx accountAddAccountCertificateMsg.
+         * @member {account.IAddAccountCertificateMsg|null|undefined} accountAddAccountCertificateMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountAddAccountCertificateMsg = null;
+
+        /**
+         * Tx accountDeleteAccountCertificateMsg.
+         * @member {account.IDeleteAccountCertificateMsg|null|undefined} accountDeleteAccountCertificateMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.accountDeleteAccountCertificateMsg = null;
+
+        /**
+         * Tx cashUpdateConfigurationMsg.
+         * @member {cash.IUpdateConfigurationMsg|null|undefined} cashUpdateConfigurationMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.cashUpdateConfigurationMsg = null;
+
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * msg is a sum type over all allowed messages on this chain.
-         * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"aswapCreateMsg"|"aswapReleaseMsg"|"aswapReturnMsg"|"govCreateProposalMsg"|"govDeleteProposalMsg"|"govVoteMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"msgfeeSetMsgFeeMsg"|undefined} sum
+         * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"aswapCreateMsg"|"aswapReleaseMsg"|"aswapReturnMsg"|"govCreateProposalMsg"|"govDeleteProposalMsg"|"govVoteMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"cashUpdateConfigurationMsg"|undefined} sum
          * @memberof bnsd.Tx
          * @instance
          */
         Object.defineProperty(Tx.prototype, "sum", {
-            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "aswapCreateMsg", "aswapReleaseMsg", "aswapReturnMsg", "govCreateProposalMsg", "govDeleteProposalMsg", "govVoteMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "msgfeeSetMsgFeeMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "aswapCreateMsg", "aswapReleaseMsg", "aswapReturnMsg", "govCreateProposalMsg", "govDeleteProposalMsg", "govVoteMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "cashUpdateConfigurationMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -631,6 +775,38 @@ $root.bnsd = (function() {
                 $root.gov.UpdateElectionRuleMsg.encode(message.govUpdateElectionRuleMsg, writer.uint32(/* id 78, wireType 2 =*/626).fork()).ldelim();
             if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg"))
                 $root.msgfee.SetMsgFeeMsg.encode(message.msgfeeSetMsgFeeMsg, writer.uint32(/* id 80, wireType 2 =*/642).fork()).ldelim();
+            if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg"))
+                $root.datamigration.ExecuteMigrationMsg.encode(message.datamigrationExecuteMigrationMsg, writer.uint32(/* id 81, wireType 2 =*/650).fork()).ldelim();
+            if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg"))
+                $root.account.UpdateConfigurationMsg.encode(message.accountUpdateConfigurationMsg, writer.uint32(/* id 82, wireType 2 =*/658).fork()).ldelim();
+            if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg"))
+                $root.account.RegisterDomainMsg.encode(message.accountRegisterDomainMsg, writer.uint32(/* id 83, wireType 2 =*/666).fork()).ldelim();
+            if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg"))
+                $root.account.ReplaceAccountMsgFeesMsg.encode(message.accountReplaceAccountMsgFeesMsg, writer.uint32(/* id 84, wireType 2 =*/674).fork()).ldelim();
+            if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg"))
+                $root.account.TransferDomainMsg.encode(message.accountTransferDomainMsg, writer.uint32(/* id 85, wireType 2 =*/682).fork()).ldelim();
+            if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg"))
+                $root.account.RenewDomainMsg.encode(message.accountRenewDomainMsg, writer.uint32(/* id 86, wireType 2 =*/690).fork()).ldelim();
+            if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg"))
+                $root.account.DeleteDomainMsg.encode(message.accountDeleteDomainMsg, writer.uint32(/* id 87, wireType 2 =*/698).fork()).ldelim();
+            if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg"))
+                $root.account.RegisterAccountMsg.encode(message.accountRegisterAccountMsg, writer.uint32(/* id 88, wireType 2 =*/706).fork()).ldelim();
+            if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg"))
+                $root.account.TransferAccountMsg.encode(message.accountTransferAccountMsg, writer.uint32(/* id 89, wireType 2 =*/714).fork()).ldelim();
+            if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg"))
+                $root.account.ReplaceAccountTargetsMsg.encode(message.accountReplaceAccountTargetsMsg, writer.uint32(/* id 90, wireType 2 =*/722).fork()).ldelim();
+            if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg"))
+                $root.account.DeleteAccountMsg.encode(message.accountDeleteAccountMsg, writer.uint32(/* id 91, wireType 2 =*/730).fork()).ldelim();
+            if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg"))
+                $root.account.FlushDomainMsg.encode(message.accountFlushDomainMsg, writer.uint32(/* id 92, wireType 2 =*/738).fork()).ldelim();
+            if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg"))
+                $root.account.RenewAccountMsg.encode(message.accountRenewAccountMsg, writer.uint32(/* id 93, wireType 2 =*/746).fork()).ldelim();
+            if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg"))
+                $root.account.AddAccountCertificateMsg.encode(message.accountAddAccountCertificateMsg, writer.uint32(/* id 94, wireType 2 =*/754).fork()).ldelim();
+            if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg"))
+                $root.account.DeleteAccountCertificateMsg.encode(message.accountDeleteAccountCertificateMsg, writer.uint32(/* id 95, wireType 2 =*/762).fork()).ldelim();
+            if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg"))
+                $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
             return writer;
         };
 
@@ -758,6 +934,54 @@ $root.bnsd = (function() {
                     break;
                 case 80:
                     message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.decode(reader, reader.uint32());
+                    break;
+                case 81:
+                    message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.decode(reader, reader.uint32());
+                    break;
+                case 82:
+                    message.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 83:
+                    message.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.decode(reader, reader.uint32());
+                    break;
+                case 84:
+                    message.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.decode(reader, reader.uint32());
+                    break;
+                case 85:
+                    message.accountTransferDomainMsg = $root.account.TransferDomainMsg.decode(reader, reader.uint32());
+                    break;
+                case 86:
+                    message.accountRenewDomainMsg = $root.account.RenewDomainMsg.decode(reader, reader.uint32());
+                    break;
+                case 87:
+                    message.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.decode(reader, reader.uint32());
+                    break;
+                case 88:
+                    message.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.decode(reader, reader.uint32());
+                    break;
+                case 89:
+                    message.accountTransferAccountMsg = $root.account.TransferAccountMsg.decode(reader, reader.uint32());
+                    break;
+                case 90:
+                    message.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.decode(reader, reader.uint32());
+                    break;
+                case 91:
+                    message.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.decode(reader, reader.uint32());
+                    break;
+                case 92:
+                    message.accountFlushDomainMsg = $root.account.FlushDomainMsg.decode(reader, reader.uint32());
+                    break;
+                case 93:
+                    message.accountRenewAccountMsg = $root.account.RenewAccountMsg.decode(reader, reader.uint32());
+                    break;
+                case 94:
+                    message.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.decode(reader, reader.uint32());
+                    break;
+                case 95:
+                    message.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.decode(reader, reader.uint32());
+                    break;
+                case 97:
+                    message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1084,6 +1308,166 @@ $root.bnsd = (function() {
                         return "msgfeeSetMsgFeeMsg." + error;
                 }
             }
+            if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.datamigration.ExecuteMigrationMsg.verify(message.datamigrationExecuteMigrationMsg);
+                    if (error)
+                        return "datamigrationExecuteMigrationMsg." + error;
+                }
+            }
+            if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.UpdateConfigurationMsg.verify(message.accountUpdateConfigurationMsg);
+                    if (error)
+                        return "accountUpdateConfigurationMsg." + error;
+                }
+            }
+            if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.RegisterDomainMsg.verify(message.accountRegisterDomainMsg);
+                    if (error)
+                        return "accountRegisterDomainMsg." + error;
+                }
+            }
+            if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.ReplaceAccountMsgFeesMsg.verify(message.accountReplaceAccountMsgFeesMsg);
+                    if (error)
+                        return "accountReplaceAccountMsgFeesMsg." + error;
+                }
+            }
+            if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.TransferDomainMsg.verify(message.accountTransferDomainMsg);
+                    if (error)
+                        return "accountTransferDomainMsg." + error;
+                }
+            }
+            if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.RenewDomainMsg.verify(message.accountRenewDomainMsg);
+                    if (error)
+                        return "accountRenewDomainMsg." + error;
+                }
+            }
+            if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.DeleteDomainMsg.verify(message.accountDeleteDomainMsg);
+                    if (error)
+                        return "accountDeleteDomainMsg." + error;
+                }
+            }
+            if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.RegisterAccountMsg.verify(message.accountRegisterAccountMsg);
+                    if (error)
+                        return "accountRegisterAccountMsg." + error;
+                }
+            }
+            if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.TransferAccountMsg.verify(message.accountTransferAccountMsg);
+                    if (error)
+                        return "accountTransferAccountMsg." + error;
+                }
+            }
+            if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.ReplaceAccountTargetsMsg.verify(message.accountReplaceAccountTargetsMsg);
+                    if (error)
+                        return "accountReplaceAccountTargetsMsg." + error;
+                }
+            }
+            if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.DeleteAccountMsg.verify(message.accountDeleteAccountMsg);
+                    if (error)
+                        return "accountDeleteAccountMsg." + error;
+                }
+            }
+            if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.FlushDomainMsg.verify(message.accountFlushDomainMsg);
+                    if (error)
+                        return "accountFlushDomainMsg." + error;
+                }
+            }
+            if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.RenewAccountMsg.verify(message.accountRenewAccountMsg);
+                    if (error)
+                        return "accountRenewAccountMsg." + error;
+                }
+            }
+            if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.AddAccountCertificateMsg.verify(message.accountAddAccountCertificateMsg);
+                    if (error)
+                        return "accountAddAccountCertificateMsg." + error;
+                }
+            }
+            if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.account.DeleteAccountCertificateMsg.verify(message.accountDeleteAccountCertificateMsg);
+                    if (error)
+                        return "accountDeleteAccountCertificateMsg." + error;
+                }
+            }
+            if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.cash.UpdateConfigurationMsg.verify(message.cashUpdateConfigurationMsg);
+                    if (error)
+                        return "cashUpdateConfigurationMsg." + error;
+                }
+            }
             return null;
         };
 
@@ -1259,6 +1643,86 @@ $root.bnsd = (function() {
                     throw TypeError(".bnsd.Tx.msgfeeSetMsgFeeMsg: object expected");
                 message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.fromObject(object.msgfeeSetMsgFeeMsg);
             }
+            if (object.datamigrationExecuteMigrationMsg != null) {
+                if (typeof object.datamigrationExecuteMigrationMsg !== "object")
+                    throw TypeError(".bnsd.Tx.datamigrationExecuteMigrationMsg: object expected");
+                message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.fromObject(object.datamigrationExecuteMigrationMsg);
+            }
+            if (object.accountUpdateConfigurationMsg != null) {
+                if (typeof object.accountUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountUpdateConfigurationMsg: object expected");
+                message.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.fromObject(object.accountUpdateConfigurationMsg);
+            }
+            if (object.accountRegisterDomainMsg != null) {
+                if (typeof object.accountRegisterDomainMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountRegisterDomainMsg: object expected");
+                message.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.fromObject(object.accountRegisterDomainMsg);
+            }
+            if (object.accountReplaceAccountMsgFeesMsg != null) {
+                if (typeof object.accountReplaceAccountMsgFeesMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountReplaceAccountMsgFeesMsg: object expected");
+                message.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.fromObject(object.accountReplaceAccountMsgFeesMsg);
+            }
+            if (object.accountTransferDomainMsg != null) {
+                if (typeof object.accountTransferDomainMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountTransferDomainMsg: object expected");
+                message.accountTransferDomainMsg = $root.account.TransferDomainMsg.fromObject(object.accountTransferDomainMsg);
+            }
+            if (object.accountRenewDomainMsg != null) {
+                if (typeof object.accountRenewDomainMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountRenewDomainMsg: object expected");
+                message.accountRenewDomainMsg = $root.account.RenewDomainMsg.fromObject(object.accountRenewDomainMsg);
+            }
+            if (object.accountDeleteDomainMsg != null) {
+                if (typeof object.accountDeleteDomainMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountDeleteDomainMsg: object expected");
+                message.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.fromObject(object.accountDeleteDomainMsg);
+            }
+            if (object.accountRegisterAccountMsg != null) {
+                if (typeof object.accountRegisterAccountMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountRegisterAccountMsg: object expected");
+                message.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.fromObject(object.accountRegisterAccountMsg);
+            }
+            if (object.accountTransferAccountMsg != null) {
+                if (typeof object.accountTransferAccountMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountTransferAccountMsg: object expected");
+                message.accountTransferAccountMsg = $root.account.TransferAccountMsg.fromObject(object.accountTransferAccountMsg);
+            }
+            if (object.accountReplaceAccountTargetsMsg != null) {
+                if (typeof object.accountReplaceAccountTargetsMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountReplaceAccountTargetsMsg: object expected");
+                message.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.fromObject(object.accountReplaceAccountTargetsMsg);
+            }
+            if (object.accountDeleteAccountMsg != null) {
+                if (typeof object.accountDeleteAccountMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountDeleteAccountMsg: object expected");
+                message.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.fromObject(object.accountDeleteAccountMsg);
+            }
+            if (object.accountFlushDomainMsg != null) {
+                if (typeof object.accountFlushDomainMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountFlushDomainMsg: object expected");
+                message.accountFlushDomainMsg = $root.account.FlushDomainMsg.fromObject(object.accountFlushDomainMsg);
+            }
+            if (object.accountRenewAccountMsg != null) {
+                if (typeof object.accountRenewAccountMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountRenewAccountMsg: object expected");
+                message.accountRenewAccountMsg = $root.account.RenewAccountMsg.fromObject(object.accountRenewAccountMsg);
+            }
+            if (object.accountAddAccountCertificateMsg != null) {
+                if (typeof object.accountAddAccountCertificateMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountAddAccountCertificateMsg: object expected");
+                message.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.fromObject(object.accountAddAccountCertificateMsg);
+            }
+            if (object.accountDeleteAccountCertificateMsg != null) {
+                if (typeof object.accountDeleteAccountCertificateMsg !== "object")
+                    throw TypeError(".bnsd.Tx.accountDeleteAccountCertificateMsg: object expected");
+                message.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.fromObject(object.accountDeleteAccountCertificateMsg);
+            }
+            if (object.cashUpdateConfigurationMsg != null) {
+                if (typeof object.cashUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.Tx.cashUpdateConfigurationMsg: object expected");
+                message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.fromObject(object.cashUpdateConfigurationMsg);
+            }
             return message;
         };
 
@@ -1427,6 +1891,86 @@ $root.bnsd = (function() {
                 object.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.toObject(message.msgfeeSetMsgFeeMsg, options);
                 if (options.oneofs)
                     object.sum = "msgfeeSetMsgFeeMsg";
+            }
+            if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg")) {
+                object.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.toObject(message.datamigrationExecuteMigrationMsg, options);
+                if (options.oneofs)
+                    object.sum = "datamigrationExecuteMigrationMsg";
+            }
+            if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg")) {
+                object.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.toObject(message.accountUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountUpdateConfigurationMsg";
+            }
+            if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg")) {
+                object.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.toObject(message.accountRegisterDomainMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountRegisterDomainMsg";
+            }
+            if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg")) {
+                object.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.toObject(message.accountReplaceAccountMsgFeesMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountReplaceAccountMsgFeesMsg";
+            }
+            if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg")) {
+                object.accountTransferDomainMsg = $root.account.TransferDomainMsg.toObject(message.accountTransferDomainMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountTransferDomainMsg";
+            }
+            if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg")) {
+                object.accountRenewDomainMsg = $root.account.RenewDomainMsg.toObject(message.accountRenewDomainMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountRenewDomainMsg";
+            }
+            if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg")) {
+                object.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.toObject(message.accountDeleteDomainMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountDeleteDomainMsg";
+            }
+            if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg")) {
+                object.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.toObject(message.accountRegisterAccountMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountRegisterAccountMsg";
+            }
+            if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg")) {
+                object.accountTransferAccountMsg = $root.account.TransferAccountMsg.toObject(message.accountTransferAccountMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountTransferAccountMsg";
+            }
+            if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg")) {
+                object.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.toObject(message.accountReplaceAccountTargetsMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountReplaceAccountTargetsMsg";
+            }
+            if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg")) {
+                object.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.toObject(message.accountDeleteAccountMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountDeleteAccountMsg";
+            }
+            if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg")) {
+                object.accountFlushDomainMsg = $root.account.FlushDomainMsg.toObject(message.accountFlushDomainMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountFlushDomainMsg";
+            }
+            if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg")) {
+                object.accountRenewAccountMsg = $root.account.RenewAccountMsg.toObject(message.accountRenewAccountMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountRenewAccountMsg";
+            }
+            if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg")) {
+                object.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.toObject(message.accountAddAccountCertificateMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountAddAccountCertificateMsg";
+            }
+            if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg")) {
+                object.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.toObject(message.accountDeleteAccountCertificateMsg, options);
+                if (options.oneofs)
+                    object.sum = "accountDeleteAccountCertificateMsg";
+            }
+            if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
+                object.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.toObject(message.cashUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.sum = "cashUpdateConfigurationMsg";
             }
             return object;
         };
@@ -1673,6 +2217,22 @@ $root.bnsd = (function() {
              * @property {distribution.IDistributeMsg|null} [distributionMsg] Union distributionMsg
              * @property {distribution.IResetMsg|null} [distributionResetMsg] Union distributionResetMsg
              * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] aswap and gov don't make much sense as part of a batch (no vote buying)
+             * @property {datamigration.IExecuteMigrationMsg|null} [datamigrationExecuteMigrationMsg] Union datamigrationExecuteMigrationMsg
+             * @property {account.IUpdateConfigurationMsg|null} [accountUpdateConfigurationMsg] Union accountUpdateConfigurationMsg
+             * @property {account.IRegisterDomainMsg|null} [accountRegisterDomainMsg] Union accountRegisterDomainMsg
+             * @property {account.IReplaceAccountMsgFeesMsg|null} [accountReplaceAccountMsgFeesMsg] Union accountReplaceAccountMsgFeesMsg
+             * @property {account.ITransferDomainMsg|null} [accountTransferDomainMsg] Union accountTransferDomainMsg
+             * @property {account.IRenewDomainMsg|null} [accountRenewDomainMsg] Union accountRenewDomainMsg
+             * @property {account.IDeleteDomainMsg|null} [accountDeleteDomainMsg] Union accountDeleteDomainMsg
+             * @property {account.IRegisterAccountMsg|null} [accountRegisterAccountMsg] Union accountRegisterAccountMsg
+             * @property {account.ITransferAccountMsg|null} [accountTransferAccountMsg] Union accountTransferAccountMsg
+             * @property {account.IReplaceAccountTargetsMsg|null} [accountReplaceAccountTargetsMsg] Union accountReplaceAccountTargetsMsg
+             * @property {account.IDeleteAccountMsg|null} [accountDeleteAccountMsg] Union accountDeleteAccountMsg
+             * @property {account.IFlushDomainMsg|null} [accountFlushDomainMsg] Union accountFlushDomainMsg
+             * @property {account.IRenewAccountMsg|null} [accountRenewAccountMsg] Union accountRenewAccountMsg
+             * @property {account.IAddAccountCertificateMsg|null} [accountAddAccountCertificateMsg] Union accountAddAccountCertificateMsg
+             * @property {account.IDeleteAccountCertificateMsg|null} [accountDeleteAccountCertificateMsg] Union accountDeleteAccountCertificateMsg
+             * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] Union cashUpdateConfigurationMsg
              */
 
             /**
@@ -1826,17 +2386,145 @@ $root.bnsd = (function() {
              */
             Union.prototype.msgfeeSetMsgFeeMsg = null;
 
+            /**
+             * Union datamigrationExecuteMigrationMsg.
+             * @member {datamigration.IExecuteMigrationMsg|null|undefined} datamigrationExecuteMigrationMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.datamigrationExecuteMigrationMsg = null;
+
+            /**
+             * Union accountUpdateConfigurationMsg.
+             * @member {account.IUpdateConfigurationMsg|null|undefined} accountUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountUpdateConfigurationMsg = null;
+
+            /**
+             * Union accountRegisterDomainMsg.
+             * @member {account.IRegisterDomainMsg|null|undefined} accountRegisterDomainMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountRegisterDomainMsg = null;
+
+            /**
+             * Union accountReplaceAccountMsgFeesMsg.
+             * @member {account.IReplaceAccountMsgFeesMsg|null|undefined} accountReplaceAccountMsgFeesMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountReplaceAccountMsgFeesMsg = null;
+
+            /**
+             * Union accountTransferDomainMsg.
+             * @member {account.ITransferDomainMsg|null|undefined} accountTransferDomainMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountTransferDomainMsg = null;
+
+            /**
+             * Union accountRenewDomainMsg.
+             * @member {account.IRenewDomainMsg|null|undefined} accountRenewDomainMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountRenewDomainMsg = null;
+
+            /**
+             * Union accountDeleteDomainMsg.
+             * @member {account.IDeleteDomainMsg|null|undefined} accountDeleteDomainMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountDeleteDomainMsg = null;
+
+            /**
+             * Union accountRegisterAccountMsg.
+             * @member {account.IRegisterAccountMsg|null|undefined} accountRegisterAccountMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountRegisterAccountMsg = null;
+
+            /**
+             * Union accountTransferAccountMsg.
+             * @member {account.ITransferAccountMsg|null|undefined} accountTransferAccountMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountTransferAccountMsg = null;
+
+            /**
+             * Union accountReplaceAccountTargetsMsg.
+             * @member {account.IReplaceAccountTargetsMsg|null|undefined} accountReplaceAccountTargetsMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountReplaceAccountTargetsMsg = null;
+
+            /**
+             * Union accountDeleteAccountMsg.
+             * @member {account.IDeleteAccountMsg|null|undefined} accountDeleteAccountMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountDeleteAccountMsg = null;
+
+            /**
+             * Union accountFlushDomainMsg.
+             * @member {account.IFlushDomainMsg|null|undefined} accountFlushDomainMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountFlushDomainMsg = null;
+
+            /**
+             * Union accountRenewAccountMsg.
+             * @member {account.IRenewAccountMsg|null|undefined} accountRenewAccountMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountRenewAccountMsg = null;
+
+            /**
+             * Union accountAddAccountCertificateMsg.
+             * @member {account.IAddAccountCertificateMsg|null|undefined} accountAddAccountCertificateMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountAddAccountCertificateMsg = null;
+
+            /**
+             * Union accountDeleteAccountCertificateMsg.
+             * @member {account.IDeleteAccountCertificateMsg|null|undefined} accountDeleteAccountCertificateMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountDeleteAccountCertificateMsg = null;
+
+            /**
+             * Union cashUpdateConfigurationMsg.
+             * @member {cash.IUpdateConfigurationMsg|null|undefined} cashUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.cashUpdateConfigurationMsg = null;
+
             // OneOf field names bound to virtual getters and setters
             var $oneOfFields;
 
             /**
              * Union sum.
-             * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"msgfeeSetMsgFeeMsg"|undefined} sum
+             * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"cashUpdateConfigurationMsg"|undefined} sum
              * @memberof bnsd.ExecuteBatchMsg.Union
              * @instance
              */
             Object.defineProperty(Union.prototype, "sum", {
-                get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "msgfeeSetMsgFeeMsg"]),
+                get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "cashUpdateConfigurationMsg"]),
                 set: $util.oneOfSetter($oneOfFields)
             });
 
@@ -1898,6 +2586,38 @@ $root.bnsd = (function() {
                     $root.distribution.ResetMsg.encode(message.distributionResetMsg, writer.uint32(/* id 68, wireType 2 =*/546).fork()).ldelim();
                 if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg"))
                     $root.msgfee.SetMsgFeeMsg.encode(message.msgfeeSetMsgFeeMsg, writer.uint32(/* id 80, wireType 2 =*/642).fork()).ldelim();
+                if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg"))
+                    $root.datamigration.ExecuteMigrationMsg.encode(message.datamigrationExecuteMigrationMsg, writer.uint32(/* id 81, wireType 2 =*/650).fork()).ldelim();
+                if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg"))
+                    $root.account.UpdateConfigurationMsg.encode(message.accountUpdateConfigurationMsg, writer.uint32(/* id 82, wireType 2 =*/658).fork()).ldelim();
+                if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg"))
+                    $root.account.RegisterDomainMsg.encode(message.accountRegisterDomainMsg, writer.uint32(/* id 83, wireType 2 =*/666).fork()).ldelim();
+                if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg"))
+                    $root.account.ReplaceAccountMsgFeesMsg.encode(message.accountReplaceAccountMsgFeesMsg, writer.uint32(/* id 84, wireType 2 =*/674).fork()).ldelim();
+                if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg"))
+                    $root.account.TransferDomainMsg.encode(message.accountTransferDomainMsg, writer.uint32(/* id 85, wireType 2 =*/682).fork()).ldelim();
+                if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg"))
+                    $root.account.RenewDomainMsg.encode(message.accountRenewDomainMsg, writer.uint32(/* id 86, wireType 2 =*/690).fork()).ldelim();
+                if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg"))
+                    $root.account.DeleteDomainMsg.encode(message.accountDeleteDomainMsg, writer.uint32(/* id 87, wireType 2 =*/698).fork()).ldelim();
+                if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg"))
+                    $root.account.RegisterAccountMsg.encode(message.accountRegisterAccountMsg, writer.uint32(/* id 88, wireType 2 =*/706).fork()).ldelim();
+                if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg"))
+                    $root.account.TransferAccountMsg.encode(message.accountTransferAccountMsg, writer.uint32(/* id 89, wireType 2 =*/714).fork()).ldelim();
+                if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg"))
+                    $root.account.ReplaceAccountTargetsMsg.encode(message.accountReplaceAccountTargetsMsg, writer.uint32(/* id 90, wireType 2 =*/722).fork()).ldelim();
+                if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg"))
+                    $root.account.DeleteAccountMsg.encode(message.accountDeleteAccountMsg, writer.uint32(/* id 91, wireType 2 =*/730).fork()).ldelim();
+                if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg"))
+                    $root.account.FlushDomainMsg.encode(message.accountFlushDomainMsg, writer.uint32(/* id 92, wireType 2 =*/738).fork()).ldelim();
+                if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg"))
+                    $root.account.RenewAccountMsg.encode(message.accountRenewAccountMsg, writer.uint32(/* id 93, wireType 2 =*/746).fork()).ldelim();
+                if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg"))
+                    $root.account.AddAccountCertificateMsg.encode(message.accountAddAccountCertificateMsg, writer.uint32(/* id 94, wireType 2 =*/754).fork()).ldelim();
+                if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg"))
+                    $root.account.DeleteAccountCertificateMsg.encode(message.accountDeleteAccountCertificateMsg, writer.uint32(/* id 95, wireType 2 =*/762).fork()).ldelim();
+                if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg"))
+                    $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
                 return writer;
             };
 
@@ -1982,6 +2702,54 @@ $root.bnsd = (function() {
                         break;
                     case 80:
                         message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.decode(reader, reader.uint32());
+                        break;
+                    case 81:
+                        message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 82:
+                        message.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 83:
+                        message.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.decode(reader, reader.uint32());
+                        break;
+                    case 84:
+                        message.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.decode(reader, reader.uint32());
+                        break;
+                    case 85:
+                        message.accountTransferDomainMsg = $root.account.TransferDomainMsg.decode(reader, reader.uint32());
+                        break;
+                    case 86:
+                        message.accountRenewDomainMsg = $root.account.RenewDomainMsg.decode(reader, reader.uint32());
+                        break;
+                    case 87:
+                        message.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.decode(reader, reader.uint32());
+                        break;
+                    case 88:
+                        message.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.decode(reader, reader.uint32());
+                        break;
+                    case 89:
+                        message.accountTransferAccountMsg = $root.account.TransferAccountMsg.decode(reader, reader.uint32());
+                        break;
+                    case 90:
+                        message.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.decode(reader, reader.uint32());
+                        break;
+                    case 91:
+                        message.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.decode(reader, reader.uint32());
+                        break;
+                    case 92:
+                        message.accountFlushDomainMsg = $root.account.FlushDomainMsg.decode(reader, reader.uint32());
+                        break;
+                    case 93:
+                        message.accountRenewAccountMsg = $root.account.RenewAccountMsg.decode(reader, reader.uint32());
+                        break;
+                    case 94:
+                        message.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.decode(reader, reader.uint32());
+                        break;
+                    case 95:
+                        message.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.decode(reader, reader.uint32());
+                        break;
+                    case 97:
+                        message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.decode(reader, reader.uint32());
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -2187,6 +2955,166 @@ $root.bnsd = (function() {
                             return "msgfeeSetMsgFeeMsg." + error;
                     }
                 }
+                if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.datamigration.ExecuteMigrationMsg.verify(message.datamigrationExecuteMigrationMsg);
+                        if (error)
+                            return "datamigrationExecuteMigrationMsg." + error;
+                    }
+                }
+                if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.UpdateConfigurationMsg.verify(message.accountUpdateConfigurationMsg);
+                        if (error)
+                            return "accountUpdateConfigurationMsg." + error;
+                    }
+                }
+                if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.RegisterDomainMsg.verify(message.accountRegisterDomainMsg);
+                        if (error)
+                            return "accountRegisterDomainMsg." + error;
+                    }
+                }
+                if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.ReplaceAccountMsgFeesMsg.verify(message.accountReplaceAccountMsgFeesMsg);
+                        if (error)
+                            return "accountReplaceAccountMsgFeesMsg." + error;
+                    }
+                }
+                if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.TransferDomainMsg.verify(message.accountTransferDomainMsg);
+                        if (error)
+                            return "accountTransferDomainMsg." + error;
+                    }
+                }
+                if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.RenewDomainMsg.verify(message.accountRenewDomainMsg);
+                        if (error)
+                            return "accountRenewDomainMsg." + error;
+                    }
+                }
+                if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.DeleteDomainMsg.verify(message.accountDeleteDomainMsg);
+                        if (error)
+                            return "accountDeleteDomainMsg." + error;
+                    }
+                }
+                if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.RegisterAccountMsg.verify(message.accountRegisterAccountMsg);
+                        if (error)
+                            return "accountRegisterAccountMsg." + error;
+                    }
+                }
+                if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.TransferAccountMsg.verify(message.accountTransferAccountMsg);
+                        if (error)
+                            return "accountTransferAccountMsg." + error;
+                    }
+                }
+                if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.ReplaceAccountTargetsMsg.verify(message.accountReplaceAccountTargetsMsg);
+                        if (error)
+                            return "accountReplaceAccountTargetsMsg." + error;
+                    }
+                }
+                if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.DeleteAccountMsg.verify(message.accountDeleteAccountMsg);
+                        if (error)
+                            return "accountDeleteAccountMsg." + error;
+                    }
+                }
+                if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.FlushDomainMsg.verify(message.accountFlushDomainMsg);
+                        if (error)
+                            return "accountFlushDomainMsg." + error;
+                    }
+                }
+                if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.RenewAccountMsg.verify(message.accountRenewAccountMsg);
+                        if (error)
+                            return "accountRenewAccountMsg." + error;
+                    }
+                }
+                if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.AddAccountCertificateMsg.verify(message.accountAddAccountCertificateMsg);
+                        if (error)
+                            return "accountAddAccountCertificateMsg." + error;
+                    }
+                }
+                if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.DeleteAccountCertificateMsg.verify(message.accountDeleteAccountCertificateMsg);
+                        if (error)
+                            return "accountDeleteAccountCertificateMsg." + error;
+                    }
+                }
+                if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.cash.UpdateConfigurationMsg.verify(message.cashUpdateConfigurationMsg);
+                        if (error)
+                            return "cashUpdateConfigurationMsg." + error;
+                    }
+                }
                 return null;
             };
 
@@ -2286,6 +3214,86 @@ $root.bnsd = (function() {
                     if (typeof object.msgfeeSetMsgFeeMsg !== "object")
                         throw TypeError(".bnsd.ExecuteBatchMsg.Union.msgfeeSetMsgFeeMsg: object expected");
                     message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.fromObject(object.msgfeeSetMsgFeeMsg);
+                }
+                if (object.datamigrationExecuteMigrationMsg != null) {
+                    if (typeof object.datamigrationExecuteMigrationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.datamigrationExecuteMigrationMsg: object expected");
+                    message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.fromObject(object.datamigrationExecuteMigrationMsg);
+                }
+                if (object.accountUpdateConfigurationMsg != null) {
+                    if (typeof object.accountUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountUpdateConfigurationMsg: object expected");
+                    message.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.fromObject(object.accountUpdateConfigurationMsg);
+                }
+                if (object.accountRegisterDomainMsg != null) {
+                    if (typeof object.accountRegisterDomainMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountRegisterDomainMsg: object expected");
+                    message.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.fromObject(object.accountRegisterDomainMsg);
+                }
+                if (object.accountReplaceAccountMsgFeesMsg != null) {
+                    if (typeof object.accountReplaceAccountMsgFeesMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountReplaceAccountMsgFeesMsg: object expected");
+                    message.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.fromObject(object.accountReplaceAccountMsgFeesMsg);
+                }
+                if (object.accountTransferDomainMsg != null) {
+                    if (typeof object.accountTransferDomainMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountTransferDomainMsg: object expected");
+                    message.accountTransferDomainMsg = $root.account.TransferDomainMsg.fromObject(object.accountTransferDomainMsg);
+                }
+                if (object.accountRenewDomainMsg != null) {
+                    if (typeof object.accountRenewDomainMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountRenewDomainMsg: object expected");
+                    message.accountRenewDomainMsg = $root.account.RenewDomainMsg.fromObject(object.accountRenewDomainMsg);
+                }
+                if (object.accountDeleteDomainMsg != null) {
+                    if (typeof object.accountDeleteDomainMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountDeleteDomainMsg: object expected");
+                    message.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.fromObject(object.accountDeleteDomainMsg);
+                }
+                if (object.accountRegisterAccountMsg != null) {
+                    if (typeof object.accountRegisterAccountMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountRegisterAccountMsg: object expected");
+                    message.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.fromObject(object.accountRegisterAccountMsg);
+                }
+                if (object.accountTransferAccountMsg != null) {
+                    if (typeof object.accountTransferAccountMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountTransferAccountMsg: object expected");
+                    message.accountTransferAccountMsg = $root.account.TransferAccountMsg.fromObject(object.accountTransferAccountMsg);
+                }
+                if (object.accountReplaceAccountTargetsMsg != null) {
+                    if (typeof object.accountReplaceAccountTargetsMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountReplaceAccountTargetsMsg: object expected");
+                    message.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.fromObject(object.accountReplaceAccountTargetsMsg);
+                }
+                if (object.accountDeleteAccountMsg != null) {
+                    if (typeof object.accountDeleteAccountMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountDeleteAccountMsg: object expected");
+                    message.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.fromObject(object.accountDeleteAccountMsg);
+                }
+                if (object.accountFlushDomainMsg != null) {
+                    if (typeof object.accountFlushDomainMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountFlushDomainMsg: object expected");
+                    message.accountFlushDomainMsg = $root.account.FlushDomainMsg.fromObject(object.accountFlushDomainMsg);
+                }
+                if (object.accountRenewAccountMsg != null) {
+                    if (typeof object.accountRenewAccountMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountRenewAccountMsg: object expected");
+                    message.accountRenewAccountMsg = $root.account.RenewAccountMsg.fromObject(object.accountRenewAccountMsg);
+                }
+                if (object.accountAddAccountCertificateMsg != null) {
+                    if (typeof object.accountAddAccountCertificateMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountAddAccountCertificateMsg: object expected");
+                    message.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.fromObject(object.accountAddAccountCertificateMsg);
+                }
+                if (object.accountDeleteAccountCertificateMsg != null) {
+                    if (typeof object.accountDeleteAccountCertificateMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.accountDeleteAccountCertificateMsg: object expected");
+                    message.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.fromObject(object.accountDeleteAccountCertificateMsg);
+                }
+                if (object.cashUpdateConfigurationMsg != null) {
+                    if (typeof object.cashUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.cashUpdateConfigurationMsg: object expected");
+                    message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.fromObject(object.cashUpdateConfigurationMsg);
                 }
                 return message;
             };
@@ -2388,6 +3396,86 @@ $root.bnsd = (function() {
                     if (options.oneofs)
                         object.sum = "msgfeeSetMsgFeeMsg";
                 }
+                if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg")) {
+                    object.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.toObject(message.datamigrationExecuteMigrationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "datamigrationExecuteMigrationMsg";
+                }
+                if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg")) {
+                    object.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.toObject(message.accountUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountUpdateConfigurationMsg";
+                }
+                if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg")) {
+                    object.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.toObject(message.accountRegisterDomainMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountRegisterDomainMsg";
+                }
+                if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg")) {
+                    object.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.toObject(message.accountReplaceAccountMsgFeesMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountReplaceAccountMsgFeesMsg";
+                }
+                if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg")) {
+                    object.accountTransferDomainMsg = $root.account.TransferDomainMsg.toObject(message.accountTransferDomainMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountTransferDomainMsg";
+                }
+                if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg")) {
+                    object.accountRenewDomainMsg = $root.account.RenewDomainMsg.toObject(message.accountRenewDomainMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountRenewDomainMsg";
+                }
+                if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg")) {
+                    object.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.toObject(message.accountDeleteDomainMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountDeleteDomainMsg";
+                }
+                if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg")) {
+                    object.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.toObject(message.accountRegisterAccountMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountRegisterAccountMsg";
+                }
+                if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg")) {
+                    object.accountTransferAccountMsg = $root.account.TransferAccountMsg.toObject(message.accountTransferAccountMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountTransferAccountMsg";
+                }
+                if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg")) {
+                    object.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.toObject(message.accountReplaceAccountTargetsMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountReplaceAccountTargetsMsg";
+                }
+                if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg")) {
+                    object.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.toObject(message.accountDeleteAccountMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountDeleteAccountMsg";
+                }
+                if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg")) {
+                    object.accountFlushDomainMsg = $root.account.FlushDomainMsg.toObject(message.accountFlushDomainMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountFlushDomainMsg";
+                }
+                if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg")) {
+                    object.accountRenewAccountMsg = $root.account.RenewAccountMsg.toObject(message.accountRenewAccountMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountRenewAccountMsg";
+                }
+                if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg")) {
+                    object.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.toObject(message.accountAddAccountCertificateMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountAddAccountCertificateMsg";
+                }
+                if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg")) {
+                    object.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.toObject(message.accountDeleteAccountCertificateMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountDeleteAccountCertificateMsg";
+                }
+                if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
+                    object.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.toObject(message.cashUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "cashUpdateConfigurationMsg";
+                }
                 return object;
             };
 
@@ -2433,6 +3521,8 @@ $root.bnsd = (function() {
          * @property {gov.IUpdateElectionRuleMsg|null} [govUpdateElectionRuleMsg] ProposalOptions govUpdateElectionRuleMsg
          * @property {gov.ICreateTextResolutionMsg|null} [govCreateTextResolutionMsg] ProposalOptions govCreateTextResolutionMsg
          * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] ProposalOptions msgfeeSetMsgFeeMsg
+         * @property {datamigration.IExecuteMigrationMsg|null} [datamigrationExecuteMigrationMsg] ProposalOptions datamigrationExecuteMigrationMsg
+         * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] ProposalOptions cashUpdateConfigurationMsg
          */
 
         /**
@@ -2602,17 +3692,33 @@ $root.bnsd = (function() {
          */
         ProposalOptions.prototype.msgfeeSetMsgFeeMsg = null;
 
+        /**
+         * ProposalOptions datamigrationExecuteMigrationMsg.
+         * @member {datamigration.IExecuteMigrationMsg|null|undefined} datamigrationExecuteMigrationMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.datamigrationExecuteMigrationMsg = null;
+
+        /**
+         * ProposalOptions cashUpdateConfigurationMsg.
+         * @member {cash.IUpdateConfigurationMsg|null|undefined} cashUpdateConfigurationMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.cashUpdateConfigurationMsg = null;
+
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * ProposalOptions option.
-         * @member {"cashSendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeProposalBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|undefined} option
+         * @member {"cashSendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeProposalBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"cashUpdateConfigurationMsg"|undefined} option
          * @memberof bnsd.ProposalOptions
          * @instance
          */
         Object.defineProperty(ProposalOptions.prototype, "option", {
-            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeProposalBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeProposalBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "cashUpdateConfigurationMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -2678,6 +3784,10 @@ $root.bnsd = (function() {
                 $root.gov.CreateTextResolutionMsg.encode(message.govCreateTextResolutionMsg, writer.uint32(/* id 79, wireType 2 =*/634).fork()).ldelim();
             if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg"))
                 $root.msgfee.SetMsgFeeMsg.encode(message.msgfeeSetMsgFeeMsg, writer.uint32(/* id 80, wireType 2 =*/642).fork()).ldelim();
+            if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg"))
+                $root.datamigration.ExecuteMigrationMsg.encode(message.datamigrationExecuteMigrationMsg, writer.uint32(/* id 81, wireType 2 =*/650).fork()).ldelim();
+            if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg"))
+                $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
             return writer;
         };
 
@@ -2768,6 +3878,12 @@ $root.bnsd = (function() {
                     break;
                 case 80:
                     message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.decode(reader, reader.uint32());
+                    break;
+                case 81:
+                    message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.decode(reader, reader.uint32());
+                    break;
+                case 97:
+                    message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -2993,6 +4109,26 @@ $root.bnsd = (function() {
                         return "msgfeeSetMsgFeeMsg." + error;
                 }
             }
+            if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.datamigration.ExecuteMigrationMsg.verify(message.datamigrationExecuteMigrationMsg);
+                    if (error)
+                        return "datamigrationExecuteMigrationMsg." + error;
+                }
+            }
+            if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.cash.UpdateConfigurationMsg.verify(message.cashUpdateConfigurationMsg);
+                    if (error)
+                        return "cashUpdateConfigurationMsg." + error;
+                }
+            }
             return null;
         };
 
@@ -3102,6 +4238,16 @@ $root.bnsd = (function() {
                 if (typeof object.msgfeeSetMsgFeeMsg !== "object")
                     throw TypeError(".bnsd.ProposalOptions.msgfeeSetMsgFeeMsg: object expected");
                 message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.fromObject(object.msgfeeSetMsgFeeMsg);
+            }
+            if (object.datamigrationExecuteMigrationMsg != null) {
+                if (typeof object.datamigrationExecuteMigrationMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.datamigrationExecuteMigrationMsg: object expected");
+                message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.fromObject(object.datamigrationExecuteMigrationMsg);
+            }
+            if (object.cashUpdateConfigurationMsg != null) {
+                if (typeof object.cashUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.cashUpdateConfigurationMsg: object expected");
+                message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.fromObject(object.cashUpdateConfigurationMsg);
             }
             return message;
         };
@@ -3213,6 +4359,16 @@ $root.bnsd = (function() {
                 object.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.toObject(message.msgfeeSetMsgFeeMsg, options);
                 if (options.oneofs)
                     object.option = "msgfeeSetMsgFeeMsg";
+            }
+            if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg")) {
+                object.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.toObject(message.datamigrationExecuteMigrationMsg, options);
+                if (options.oneofs)
+                    object.option = "datamigrationExecuteMigrationMsg";
+            }
+            if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
+                object.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.toObject(message.cashUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.option = "cashUpdateConfigurationMsg";
             }
             return object;
         };
@@ -3458,6 +4614,8 @@ $root.bnsd = (function() {
              * @property {gov.IUpdateElectionRuleMsg|null} [govUpdateElectionRuleMsg] Union govUpdateElectionRuleMsg
              * @property {gov.ICreateTextResolutionMsg|null} [govCreateTextResolutionMsg] Union govCreateTextResolutionMsg
              * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] Union msgfeeSetMsgFeeMsg
+             * @property {datamigration.IExecuteMigrationMsg|null} [datamigrationExecuteMigrationMsg] Union datamigrationExecuteMigrationMsg
+             * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] Union cashUpdateConfigurationMsg
              */
 
             /**
@@ -3603,17 +4761,33 @@ $root.bnsd = (function() {
              */
             Union.prototype.msgfeeSetMsgFeeMsg = null;
 
+            /**
+             * Union datamigrationExecuteMigrationMsg.
+             * @member {datamigration.IExecuteMigrationMsg|null|undefined} datamigrationExecuteMigrationMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.datamigrationExecuteMigrationMsg = null;
+
+            /**
+             * Union cashUpdateConfigurationMsg.
+             * @member {cash.IUpdateConfigurationMsg|null|undefined} cashUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.cashUpdateConfigurationMsg = null;
+
             // OneOf field names bound to virtual getters and setters
             var $oneOfFields;
 
             /**
              * Union sum.
-             * @member {"sendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|undefined} sum
+             * @member {"sendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"cashUpdateConfigurationMsg"|undefined} sum
              * @memberof bnsd.ExecuteProposalBatchMsg.Union
              * @instance
              */
             Object.defineProperty(Union.prototype, "sum", {
-                get: $util.oneOfGetter($oneOfFields = ["sendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg"]),
+                get: $util.oneOfGetter($oneOfFields = ["sendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "cashUpdateConfigurationMsg"]),
                 set: $util.oneOfSetter($oneOfFields)
             });
 
@@ -3673,6 +4847,10 @@ $root.bnsd = (function() {
                     $root.gov.CreateTextResolutionMsg.encode(message.govCreateTextResolutionMsg, writer.uint32(/* id 79, wireType 2 =*/634).fork()).ldelim();
                 if (message.msgfeeSetMsgFeeMsg != null && message.hasOwnProperty("msgfeeSetMsgFeeMsg"))
                     $root.msgfee.SetMsgFeeMsg.encode(message.msgfeeSetMsgFeeMsg, writer.uint32(/* id 80, wireType 2 =*/642).fork()).ldelim();
+                if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg"))
+                    $root.datamigration.ExecuteMigrationMsg.encode(message.datamigrationExecuteMigrationMsg, writer.uint32(/* id 81, wireType 2 =*/650).fork()).ldelim();
+                if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg"))
+                    $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
                 return writer;
             };
 
@@ -3754,6 +4932,12 @@ $root.bnsd = (function() {
                         break;
                     case 80:
                         message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.decode(reader, reader.uint32());
+                        break;
+                    case 81:
+                        message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 97:
+                        message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.decode(reader, reader.uint32());
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -3949,6 +5133,26 @@ $root.bnsd = (function() {
                             return "msgfeeSetMsgFeeMsg." + error;
                     }
                 }
+                if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.datamigration.ExecuteMigrationMsg.verify(message.datamigrationExecuteMigrationMsg);
+                        if (error)
+                            return "datamigrationExecuteMigrationMsg." + error;
+                    }
+                }
+                if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.cash.UpdateConfigurationMsg.verify(message.cashUpdateConfigurationMsg);
+                        if (error)
+                            return "cashUpdateConfigurationMsg." + error;
+                    }
+                }
                 return null;
             };
 
@@ -4043,6 +5247,16 @@ $root.bnsd = (function() {
                     if (typeof object.msgfeeSetMsgFeeMsg !== "object")
                         throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.msgfeeSetMsgFeeMsg: object expected");
                     message.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.fromObject(object.msgfeeSetMsgFeeMsg);
+                }
+                if (object.datamigrationExecuteMigrationMsg != null) {
+                    if (typeof object.datamigrationExecuteMigrationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.datamigrationExecuteMigrationMsg: object expected");
+                    message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.fromObject(object.datamigrationExecuteMigrationMsg);
+                }
+                if (object.cashUpdateConfigurationMsg != null) {
+                    if (typeof object.cashUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.cashUpdateConfigurationMsg: object expected");
+                    message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.fromObject(object.cashUpdateConfigurationMsg);
                 }
                 return message;
             };
@@ -4139,6 +5353,16 @@ $root.bnsd = (function() {
                     object.msgfeeSetMsgFeeMsg = $root.msgfee.SetMsgFeeMsg.toObject(message.msgfeeSetMsgFeeMsg, options);
                     if (options.oneofs)
                         object.sum = "msgfeeSetMsgFeeMsg";
+                }
+                if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg")) {
+                    object.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.toObject(message.datamigrationExecuteMigrationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "datamigrationExecuteMigrationMsg";
+                }
+                if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
+                    object.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.toObject(message.cashUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "cashUpdateConfigurationMsg";
                 }
                 return object;
             };
@@ -4552,36 +5776,40 @@ $root.bnsd = (function() {
     return bnsd;
 })();
 
-$root.blueaccount = (function() {
+$root.account = (function() {
 
     /**
-     * Namespace blueaccount.
-     * @exports blueaccount
+     * Namespace account.
+     * @exports account
      * @namespace
      */
-    var blueaccount = {};
+    var account = {};
 
-    blueaccount.Domain = (function() {
+    account.Domain = (function() {
 
         /**
          * Properties of a Domain.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IDomain
          * @property {weave.IMetadata|null} [metadata] Domain metadata
          * @property {string|null} [domain] Domain domain
-         * @property {Uint8Array|null} [owner] belong to this domain.
+         * @property {Uint8Array|null} [admin] belong to this domain.
          * @property {number|Long|null} [validUntil] domain can be used of modified as well.
+         * @property {boolean|null} [hasSuperuser] Has Superuser is a feature switch flag.
+         * @property {Array.<account.IAccountMsgFee>|null} [msgFees] required when processing a message within this domain.
+         * @property {number|Long|null} [accountRenew] account that belongs to this domain.
          */
 
         /**
          * Constructs a new Domain.
-         * @memberof blueaccount
-         * @classdesc functionality.
+         * @memberof account
+         * @classdesc Each domain controls expiration of all accounts that belong to that domain.
          * @implements IDomain
          * @constructor
-         * @param {blueaccount.IDomain=} [properties] Properties to set
+         * @param {account.IDomain=} [properties] Properties to set
          */
         function Domain(properties) {
+            this.msgFees = [];
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -4591,7 +5819,7 @@ $root.blueaccount = (function() {
         /**
          * Domain metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @instance
          */
         Domain.prototype.metadata = null;
@@ -4599,45 +5827,69 @@ $root.blueaccount = (function() {
         /**
          * Domain domain.
          * @member {string} domain
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @instance
          */
         Domain.prototype.domain = "";
 
         /**
          * belong to this domain.
-         * @member {Uint8Array} owner
-         * @memberof blueaccount.Domain
+         * @member {Uint8Array} admin
+         * @memberof account.Domain
          * @instance
          */
-        Domain.prototype.owner = $util.newBuffer([]);
+        Domain.prototype.admin = $util.newBuffer([]);
 
         /**
          * domain can be used of modified as well.
          * @member {number|Long} validUntil
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @instance
          */
         Domain.prototype.validUntil = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
+         * Has Superuser is a feature switch flag.
+         * @member {boolean} hasSuperuser
+         * @memberof account.Domain
+         * @instance
+         */
+        Domain.prototype.hasSuperuser = false;
+
+        /**
+         * required when processing a message within this domain.
+         * @member {Array.<account.IAccountMsgFee>} msgFees
+         * @memberof account.Domain
+         * @instance
+         */
+        Domain.prototype.msgFees = $util.emptyArray;
+
+        /**
+         * account that belongs to this domain.
+         * @member {number|Long} accountRenew
+         * @memberof account.Domain
+         * @instance
+         */
+        Domain.prototype.accountRenew = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
          * Creates a new Domain instance using the specified properties.
          * @function create
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @static
-         * @param {blueaccount.IDomain=} [properties] Properties to set
-         * @returns {blueaccount.Domain} Domain instance
+         * @param {account.IDomain=} [properties] Properties to set
+         * @returns {account.Domain} Domain instance
          */
         Domain.create = function create(properties) {
             return new Domain(properties);
         };
 
         /**
-         * Encodes the specified Domain message. Does not implicitly {@link blueaccount.Domain.verify|verify} messages.
+         * Encodes the specified Domain message. Does not implicitly {@link account.Domain.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @static
-         * @param {blueaccount.IDomain} message Domain message or plain object to encode
+         * @param {account.IDomain} message Domain message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -4648,19 +5900,26 @@ $root.blueaccount = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.domain != null && message.hasOwnProperty("domain"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.domain);
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.owner);
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.admin);
             if (message.validUntil != null && message.hasOwnProperty("validUntil"))
                 writer.uint32(/* id 4, wireType 0 =*/32).int64(message.validUntil);
+            if (message.hasSuperuser != null && message.hasOwnProperty("hasSuperuser"))
+                writer.uint32(/* id 5, wireType 0 =*/40).bool(message.hasSuperuser);
+            if (message.msgFees != null && message.msgFees.length)
+                for (var i = 0; i < message.msgFees.length; ++i)
+                    $root.account.AccountMsgFee.encode(message.msgFees[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+            if (message.accountRenew != null && message.hasOwnProperty("accountRenew"))
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.accountRenew);
             return writer;
         };
 
         /**
-         * Encodes the specified Domain message, length delimited. Does not implicitly {@link blueaccount.Domain.verify|verify} messages.
+         * Encodes the specified Domain message, length delimited. Does not implicitly {@link account.Domain.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @static
-         * @param {blueaccount.IDomain} message Domain message or plain object to encode
+         * @param {account.IDomain} message Domain message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -4671,18 +5930,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a Domain message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.Domain} Domain
+         * @returns {account.Domain} Domain
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Domain.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.Domain();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.Domain();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -4693,10 +5952,21 @@ $root.blueaccount = (function() {
                     message.domain = reader.string();
                     break;
                 case 3:
-                    message.owner = reader.bytes();
+                    message.admin = reader.bytes();
                     break;
                 case 4:
                     message.validUntil = reader.int64();
+                    break;
+                case 5:
+                    message.hasSuperuser = reader.bool();
+                    break;
+                case 6:
+                    if (!(message.msgFees && message.msgFees.length))
+                        message.msgFees = [];
+                    message.msgFees.push($root.account.AccountMsgFee.decode(reader, reader.uint32()));
+                    break;
+                case 7:
+                    message.accountRenew = reader.int64();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4709,10 +5979,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a Domain message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.Domain} Domain
+         * @returns {account.Domain} Domain
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -4725,7 +5995,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a Domain message.
          * @function verify
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -4741,39 +6011,54 @@ $root.blueaccount = (function() {
             if (message.domain != null && message.hasOwnProperty("domain"))
                 if (!$util.isString(message.domain))
                     return "domain: string expected";
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
-                    return "owner: buffer expected";
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
+                    return "admin: buffer expected";
             if (message.validUntil != null && message.hasOwnProperty("validUntil"))
                 if (!$util.isInteger(message.validUntil) && !(message.validUntil && $util.isInteger(message.validUntil.low) && $util.isInteger(message.validUntil.high)))
                     return "validUntil: integer|Long expected";
+            if (message.hasSuperuser != null && message.hasOwnProperty("hasSuperuser"))
+                if (typeof message.hasSuperuser !== "boolean")
+                    return "hasSuperuser: boolean expected";
+            if (message.msgFees != null && message.hasOwnProperty("msgFees")) {
+                if (!Array.isArray(message.msgFees))
+                    return "msgFees: array expected";
+                for (var i = 0; i < message.msgFees.length; ++i) {
+                    var error = $root.account.AccountMsgFee.verify(message.msgFees[i]);
+                    if (error)
+                        return "msgFees." + error;
+                }
+            }
+            if (message.accountRenew != null && message.hasOwnProperty("accountRenew"))
+                if (!$util.isInteger(message.accountRenew) && !(message.accountRenew && $util.isInteger(message.accountRenew.low) && $util.isInteger(message.accountRenew.high)))
+                    return "accountRenew: integer|Long expected";
             return null;
         };
 
         /**
          * Creates a Domain message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.Domain} Domain
+         * @returns {account.Domain} Domain
          */
         Domain.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.Domain)
+            if (object instanceof $root.account.Domain)
                 return object;
-            var message = new $root.blueaccount.Domain();
+            var message = new $root.account.Domain();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.Domain.metadata: object expected");
+                    throw TypeError(".account.Domain.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.domain != null)
                 message.domain = String(object.domain);
-            if (object.owner != null)
-                if (typeof object.owner === "string")
-                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
-                else if (object.owner.length)
-                    message.owner = object.owner;
+            if (object.admin != null)
+                if (typeof object.admin === "string")
+                    $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
+                else if (object.admin.length)
+                    message.admin = object.admin;
             if (object.validUntil != null)
                 if ($util.Long)
                     (message.validUntil = $util.Long.fromValue(object.validUntil)).unsigned = false;
@@ -4783,15 +6068,36 @@ $root.blueaccount = (function() {
                     message.validUntil = object.validUntil;
                 else if (typeof object.validUntil === "object")
                     message.validUntil = new $util.LongBits(object.validUntil.low >>> 0, object.validUntil.high >>> 0).toNumber();
+            if (object.hasSuperuser != null)
+                message.hasSuperuser = Boolean(object.hasSuperuser);
+            if (object.msgFees) {
+                if (!Array.isArray(object.msgFees))
+                    throw TypeError(".account.Domain.msgFees: array expected");
+                message.msgFees = [];
+                for (var i = 0; i < object.msgFees.length; ++i) {
+                    if (typeof object.msgFees[i] !== "object")
+                        throw TypeError(".account.Domain.msgFees: object expected");
+                    message.msgFees[i] = $root.account.AccountMsgFee.fromObject(object.msgFees[i]);
+                }
+            }
+            if (object.accountRenew != null)
+                if ($util.Long)
+                    (message.accountRenew = $util.Long.fromValue(object.accountRenew)).unsigned = false;
+                else if (typeof object.accountRenew === "string")
+                    message.accountRenew = parseInt(object.accountRenew, 10);
+                else if (typeof object.accountRenew === "number")
+                    message.accountRenew = object.accountRenew;
+                else if (typeof object.accountRenew === "object")
+                    message.accountRenew = new $util.LongBits(object.accountRenew.low >>> 0, object.accountRenew.high >>> 0).toNumber();
             return message;
         };
 
         /**
          * Creates a plain object from a Domain message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @static
-         * @param {blueaccount.Domain} message Domain
+         * @param {account.Domain} message Domain
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -4799,40 +6105,60 @@ $root.blueaccount = (function() {
             if (!options)
                 options = {};
             var object = {};
+            if (options.arrays || options.defaults)
+                object.msgFees = [];
             if (options.defaults) {
                 object.metadata = null;
                 object.domain = "";
                 if (options.bytes === String)
-                    object.owner = "";
+                    object.admin = "";
                 else {
-                    object.owner = [];
+                    object.admin = [];
                     if (options.bytes !== Array)
-                        object.owner = $util.newBuffer(object.owner);
+                        object.admin = $util.newBuffer(object.admin);
                 }
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
                     object.validUntil = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.validUntil = options.longs === String ? "0" : 0;
+                object.hasSuperuser = false;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.accountRenew = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.accountRenew = options.longs === String ? "0" : 0;
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.domain != null && message.hasOwnProperty("domain"))
                 object.domain = message.domain;
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
             if (message.validUntil != null && message.hasOwnProperty("validUntil"))
                 if (typeof message.validUntil === "number")
                     object.validUntil = options.longs === String ? String(message.validUntil) : message.validUntil;
                 else
                     object.validUntil = options.longs === String ? $util.Long.prototype.toString.call(message.validUntil) : options.longs === Number ? new $util.LongBits(message.validUntil.low >>> 0, message.validUntil.high >>> 0).toNumber() : message.validUntil;
+            if (message.hasSuperuser != null && message.hasOwnProperty("hasSuperuser"))
+                object.hasSuperuser = message.hasSuperuser;
+            if (message.msgFees && message.msgFees.length) {
+                object.msgFees = [];
+                for (var j = 0; j < message.msgFees.length; ++j)
+                    object.msgFees[j] = $root.account.AccountMsgFee.toObject(message.msgFees[j], options);
+            }
+            if (message.accountRenew != null && message.hasOwnProperty("accountRenew"))
+                if (typeof message.accountRenew === "number")
+                    object.accountRenew = options.longs === String ? String(message.accountRenew) : message.accountRenew;
+                else
+                    object.accountRenew = options.longs === String ? $util.Long.prototype.toString.call(message.accountRenew) : options.longs === Number ? new $util.LongBits(message.accountRenew.low >>> 0, message.accountRenew.high >>> 0).toNumber() : message.accountRenew;
             return object;
         };
 
         /**
          * Converts this Domain to JSON.
          * @function toJSON
-         * @memberof blueaccount.Domain
+         * @memberof account.Domain
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -4843,29 +6169,247 @@ $root.blueaccount = (function() {
         return Domain;
     })();
 
-    blueaccount.Account = (function() {
+    account.AccountMsgFee = (function() {
+
+        /**
+         * Properties of an AccountMsgFee.
+         * @memberof account
+         * @interface IAccountMsgFee
+         * @property {string|null} [msgPath] AccountMsgFee msgPath
+         * @property {coin.ICoin|null} [fee] AccountMsgFee fee
+         */
+
+        /**
+         * Constructs a new AccountMsgFee.
+         * @memberof account
+         * @classdesc price for processing a message in a scope of a domain.
+         * @implements IAccountMsgFee
+         * @constructor
+         * @param {account.IAccountMsgFee=} [properties] Properties to set
+         */
+        function AccountMsgFee(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * AccountMsgFee msgPath.
+         * @member {string} msgPath
+         * @memberof account.AccountMsgFee
+         * @instance
+         */
+        AccountMsgFee.prototype.msgPath = "";
+
+        /**
+         * AccountMsgFee fee.
+         * @member {coin.ICoin|null|undefined} fee
+         * @memberof account.AccountMsgFee
+         * @instance
+         */
+        AccountMsgFee.prototype.fee = null;
+
+        /**
+         * Creates a new AccountMsgFee instance using the specified properties.
+         * @function create
+         * @memberof account.AccountMsgFee
+         * @static
+         * @param {account.IAccountMsgFee=} [properties] Properties to set
+         * @returns {account.AccountMsgFee} AccountMsgFee instance
+         */
+        AccountMsgFee.create = function create(properties) {
+            return new AccountMsgFee(properties);
+        };
+
+        /**
+         * Encodes the specified AccountMsgFee message. Does not implicitly {@link account.AccountMsgFee.verify|verify} messages.
+         * @function encode
+         * @memberof account.AccountMsgFee
+         * @static
+         * @param {account.IAccountMsgFee} message AccountMsgFee message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        AccountMsgFee.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.msgPath != null && message.hasOwnProperty("msgPath"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.msgPath);
+            if (message.fee != null && message.hasOwnProperty("fee"))
+                $root.coin.Coin.encode(message.fee, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified AccountMsgFee message, length delimited. Does not implicitly {@link account.AccountMsgFee.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof account.AccountMsgFee
+         * @static
+         * @param {account.IAccountMsgFee} message AccountMsgFee message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        AccountMsgFee.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an AccountMsgFee message from the specified reader or buffer.
+         * @function decode
+         * @memberof account.AccountMsgFee
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {account.AccountMsgFee} AccountMsgFee
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        AccountMsgFee.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.AccountMsgFee();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.msgPath = reader.string();
+                    break;
+                case 2:
+                    message.fee = $root.coin.Coin.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an AccountMsgFee message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof account.AccountMsgFee
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {account.AccountMsgFee} AccountMsgFee
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        AccountMsgFee.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an AccountMsgFee message.
+         * @function verify
+         * @memberof account.AccountMsgFee
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        AccountMsgFee.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.msgPath != null && message.hasOwnProperty("msgPath"))
+                if (!$util.isString(message.msgPath))
+                    return "msgPath: string expected";
+            if (message.fee != null && message.hasOwnProperty("fee")) {
+                var error = $root.coin.Coin.verify(message.fee);
+                if (error)
+                    return "fee." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates an AccountMsgFee message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof account.AccountMsgFee
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {account.AccountMsgFee} AccountMsgFee
+         */
+        AccountMsgFee.fromObject = function fromObject(object) {
+            if (object instanceof $root.account.AccountMsgFee)
+                return object;
+            var message = new $root.account.AccountMsgFee();
+            if (object.msgPath != null)
+                message.msgPath = String(object.msgPath);
+            if (object.fee != null) {
+                if (typeof object.fee !== "object")
+                    throw TypeError(".account.AccountMsgFee.fee: object expected");
+                message.fee = $root.coin.Coin.fromObject(object.fee);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an AccountMsgFee message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof account.AccountMsgFee
+         * @static
+         * @param {account.AccountMsgFee} message AccountMsgFee
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        AccountMsgFee.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.msgPath = "";
+                object.fee = null;
+            }
+            if (message.msgPath != null && message.hasOwnProperty("msgPath"))
+                object.msgPath = message.msgPath;
+            if (message.fee != null && message.hasOwnProperty("fee"))
+                object.fee = $root.coin.Coin.toObject(message.fee, options);
+            return object;
+        };
+
+        /**
+         * Converts this AccountMsgFee to JSON.
+         * @function toJSON
+         * @memberof account.AccountMsgFee
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        AccountMsgFee.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return AccountMsgFee;
+    })();
+
+    account.Account = (function() {
 
         /**
          * Properties of an Account.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IAccount
          * @property {weave.IMetadata|null} [metadata] Account metadata
          * @property {string|null} [domain] Domain references a domain that this account belongs to.
          * @property {string|null} [name] Account name
-         * @property {Uint8Array|null} [owner] to manage selected account.
-         * @property {Array.<blueaccount.IBlockchainAddress>|null} [targets] Account targets
+         * @property {Uint8Array|null} [owner] selected account.
+         * @property {number|Long|null} [validUntil] accounts as well, event if that account valid until date is not yet due.
+         * @property {Array.<account.IBlockchainAddress>|null} [targets] Account targets
+         * @property {Array.<Uint8Array>|null} [certificates] Account certificates
          */
 
         /**
          * Constructs a new Account.
-         * @memberof blueaccount
+         * @memberof account
          * @classdesc An account must always belong to an existing domain.
          * @implements IAccount
          * @constructor
-         * @param {blueaccount.IAccount=} [properties] Properties to set
+         * @param {account.IAccount=} [properties] Properties to set
          */
         function Account(properties) {
             this.targets = [];
+            this.certificates = [];
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -4875,7 +6419,7 @@ $root.blueaccount = (function() {
         /**
          * Account metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @instance
          */
         Account.prototype.metadata = null;
@@ -4883,7 +6427,7 @@ $root.blueaccount = (function() {
         /**
          * Domain references a domain that this account belongs to.
          * @member {string} domain
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @instance
          */
         Account.prototype.domain = "";
@@ -4891,45 +6435,61 @@ $root.blueaccount = (function() {
         /**
          * Account name.
          * @member {string} name
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @instance
          */
         Account.prototype.name = "";
 
         /**
-         * to manage selected account.
+         * selected account.
          * @member {Uint8Array} owner
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @instance
          */
         Account.prototype.owner = $util.newBuffer([]);
 
         /**
+         * accounts as well, event if that account valid until date is not yet due.
+         * @member {number|Long} validUntil
+         * @memberof account.Account
+         * @instance
+         */
+        Account.prototype.validUntil = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
          * Account targets.
-         * @member {Array.<blueaccount.IBlockchainAddress>} targets
-         * @memberof blueaccount.Account
+         * @member {Array.<account.IBlockchainAddress>} targets
+         * @memberof account.Account
          * @instance
          */
         Account.prototype.targets = $util.emptyArray;
 
         /**
+         * Account certificates.
+         * @member {Array.<Uint8Array>} certificates
+         * @memberof account.Account
+         * @instance
+         */
+        Account.prototype.certificates = $util.emptyArray;
+
+        /**
          * Creates a new Account instance using the specified properties.
          * @function create
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @static
-         * @param {blueaccount.IAccount=} [properties] Properties to set
-         * @returns {blueaccount.Account} Account instance
+         * @param {account.IAccount=} [properties] Properties to set
+         * @returns {account.Account} Account instance
          */
         Account.create = function create(properties) {
             return new Account(properties);
         };
 
         /**
-         * Encodes the specified Account message. Does not implicitly {@link blueaccount.Account.verify|verify} messages.
+         * Encodes the specified Account message. Does not implicitly {@link account.Account.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @static
-         * @param {blueaccount.IAccount} message Account message or plain object to encode
+         * @param {account.IAccount} message Account message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -4944,18 +6504,23 @@ $root.blueaccount = (function() {
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.name);
             if (message.owner != null && message.hasOwnProperty("owner"))
                 writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.owner);
+            if (message.validUntil != null && message.hasOwnProperty("validUntil"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.validUntil);
             if (message.targets != null && message.targets.length)
                 for (var i = 0; i < message.targets.length; ++i)
-                    $root.blueaccount.BlockchainAddress.encode(message.targets[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                    $root.account.BlockchainAddress.encode(message.targets[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+            if (message.certificates != null && message.certificates.length)
+                for (var i = 0; i < message.certificates.length; ++i)
+                    writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.certificates[i]);
             return writer;
         };
 
         /**
-         * Encodes the specified Account message, length delimited. Does not implicitly {@link blueaccount.Account.verify|verify} messages.
+         * Encodes the specified Account message, length delimited. Does not implicitly {@link account.Account.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @static
-         * @param {blueaccount.IAccount} message Account message or plain object to encode
+         * @param {account.IAccount} message Account message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -4966,18 +6531,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes an Account message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.Account} Account
+         * @returns {account.Account} Account
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Account.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.Account();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.Account();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -4994,9 +6559,17 @@ $root.blueaccount = (function() {
                     message.owner = reader.bytes();
                     break;
                 case 5:
+                    message.validUntil = reader.int64();
+                    break;
+                case 6:
                     if (!(message.targets && message.targets.length))
                         message.targets = [];
-                    message.targets.push($root.blueaccount.BlockchainAddress.decode(reader, reader.uint32()));
+                    message.targets.push($root.account.BlockchainAddress.decode(reader, reader.uint32()));
+                    break;
+                case 7:
+                    if (!(message.certificates && message.certificates.length))
+                        message.certificates = [];
+                    message.certificates.push(reader.bytes());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -5009,10 +6582,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes an Account message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.Account} Account
+         * @returns {account.Account} Account
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -5025,7 +6598,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies an Account message.
          * @function verify
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -5047,14 +6620,24 @@ $root.blueaccount = (function() {
             if (message.owner != null && message.hasOwnProperty("owner"))
                 if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
                     return "owner: buffer expected";
+            if (message.validUntil != null && message.hasOwnProperty("validUntil"))
+                if (!$util.isInteger(message.validUntil) && !(message.validUntil && $util.isInteger(message.validUntil.low) && $util.isInteger(message.validUntil.high)))
+                    return "validUntil: integer|Long expected";
             if (message.targets != null && message.hasOwnProperty("targets")) {
                 if (!Array.isArray(message.targets))
                     return "targets: array expected";
                 for (var i = 0; i < message.targets.length; ++i) {
-                    var error = $root.blueaccount.BlockchainAddress.verify(message.targets[i]);
+                    var error = $root.account.BlockchainAddress.verify(message.targets[i]);
                     if (error)
                         return "targets." + error;
                 }
+            }
+            if (message.certificates != null && message.hasOwnProperty("certificates")) {
+                if (!Array.isArray(message.certificates))
+                    return "certificates: array expected";
+                for (var i = 0; i < message.certificates.length; ++i)
+                    if (!(message.certificates[i] && typeof message.certificates[i].length === "number" || $util.isString(message.certificates[i])))
+                        return "certificates: buffer[] expected";
             }
             return null;
         };
@@ -5062,18 +6645,18 @@ $root.blueaccount = (function() {
         /**
          * Creates an Account message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.Account} Account
+         * @returns {account.Account} Account
          */
         Account.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.Account)
+            if (object instanceof $root.account.Account)
                 return object;
-            var message = new $root.blueaccount.Account();
+            var message = new $root.account.Account();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.Account.metadata: object expected");
+                    throw TypeError(".account.Account.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.domain != null)
@@ -5085,15 +6668,34 @@ $root.blueaccount = (function() {
                     $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
                 else if (object.owner.length)
                     message.owner = object.owner;
+            if (object.validUntil != null)
+                if ($util.Long)
+                    (message.validUntil = $util.Long.fromValue(object.validUntil)).unsigned = false;
+                else if (typeof object.validUntil === "string")
+                    message.validUntil = parseInt(object.validUntil, 10);
+                else if (typeof object.validUntil === "number")
+                    message.validUntil = object.validUntil;
+                else if (typeof object.validUntil === "object")
+                    message.validUntil = new $util.LongBits(object.validUntil.low >>> 0, object.validUntil.high >>> 0).toNumber();
             if (object.targets) {
                 if (!Array.isArray(object.targets))
-                    throw TypeError(".blueaccount.Account.targets: array expected");
+                    throw TypeError(".account.Account.targets: array expected");
                 message.targets = [];
                 for (var i = 0; i < object.targets.length; ++i) {
                     if (typeof object.targets[i] !== "object")
-                        throw TypeError(".blueaccount.Account.targets: object expected");
-                    message.targets[i] = $root.blueaccount.BlockchainAddress.fromObject(object.targets[i]);
+                        throw TypeError(".account.Account.targets: object expected");
+                    message.targets[i] = $root.account.BlockchainAddress.fromObject(object.targets[i]);
                 }
+            }
+            if (object.certificates) {
+                if (!Array.isArray(object.certificates))
+                    throw TypeError(".account.Account.certificates: array expected");
+                message.certificates = [];
+                for (var i = 0; i < object.certificates.length; ++i)
+                    if (typeof object.certificates[i] === "string")
+                        $util.base64.decode(object.certificates[i], message.certificates[i] = $util.newBuffer($util.base64.length(object.certificates[i])), 0);
+                    else if (object.certificates[i].length)
+                        message.certificates[i] = object.certificates[i];
             }
             return message;
         };
@@ -5101,9 +6703,9 @@ $root.blueaccount = (function() {
         /**
          * Creates a plain object from an Account message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @static
-         * @param {blueaccount.Account} message Account
+         * @param {account.Account} message Account
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -5111,8 +6713,10 @@ $root.blueaccount = (function() {
             if (!options)
                 options = {};
             var object = {};
-            if (options.arrays || options.defaults)
+            if (options.arrays || options.defaults) {
                 object.targets = [];
+                object.certificates = [];
+            }
             if (options.defaults) {
                 object.metadata = null;
                 object.domain = "";
@@ -5124,6 +6728,11 @@ $root.blueaccount = (function() {
                     if (options.bytes !== Array)
                         object.owner = $util.newBuffer(object.owner);
                 }
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.validUntil = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.validUntil = options.longs === String ? "0" : 0;
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -5133,10 +6742,20 @@ $root.blueaccount = (function() {
                 object.name = message.name;
             if (message.owner != null && message.hasOwnProperty("owner"))
                 object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            if (message.validUntil != null && message.hasOwnProperty("validUntil"))
+                if (typeof message.validUntil === "number")
+                    object.validUntil = options.longs === String ? String(message.validUntil) : message.validUntil;
+                else
+                    object.validUntil = options.longs === String ? $util.Long.prototype.toString.call(message.validUntil) : options.longs === Number ? new $util.LongBits(message.validUntil.low >>> 0, message.validUntil.high >>> 0).toNumber() : message.validUntil;
             if (message.targets && message.targets.length) {
                 object.targets = [];
                 for (var j = 0; j < message.targets.length; ++j)
-                    object.targets[j] = $root.blueaccount.BlockchainAddress.toObject(message.targets[j], options);
+                    object.targets[j] = $root.account.BlockchainAddress.toObject(message.targets[j], options);
+            }
+            if (message.certificates && message.certificates.length) {
+                object.certificates = [];
+                for (var j = 0; j < message.certificates.length; ++j)
+                    object.certificates[j] = options.bytes === String ? $util.base64.encode(message.certificates[j], 0, message.certificates[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.certificates[j]) : message.certificates[j];
             }
             return object;
         };
@@ -5144,7 +6763,7 @@ $root.blueaccount = (function() {
         /**
          * Converts this Account to JSON.
          * @function toJSON
-         * @memberof blueaccount.Account
+         * @memberof account.Account
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -5155,11 +6774,11 @@ $root.blueaccount = (function() {
         return Account;
     })();
 
-    blueaccount.BlockchainAddress = (function() {
+    account.BlockchainAddress = (function() {
 
         /**
          * Properties of a BlockchainAddress.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IBlockchainAddress
          * @property {string|null} [blockchainId] An arbitrary blockchain ID.
          * @property {string|null} [address] to use.
@@ -5167,11 +6786,11 @@ $root.blueaccount = (function() {
 
         /**
          * Constructs a new BlockchainAddress.
-         * @memberof blueaccount
+         * @memberof account
          * @classdesc to an address on any blockchain network.
          * @implements IBlockchainAddress
          * @constructor
-         * @param {blueaccount.IBlockchainAddress=} [properties] Properties to set
+         * @param {account.IBlockchainAddress=} [properties] Properties to set
          */
         function BlockchainAddress(properties) {
             if (properties)
@@ -5183,7 +6802,7 @@ $root.blueaccount = (function() {
         /**
          * An arbitrary blockchain ID.
          * @member {string} blockchainId
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @instance
          */
         BlockchainAddress.prototype.blockchainId = "";
@@ -5191,7 +6810,7 @@ $root.blueaccount = (function() {
         /**
          * to use.
          * @member {string} address
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @instance
          */
         BlockchainAddress.prototype.address = "";
@@ -5199,21 +6818,21 @@ $root.blueaccount = (function() {
         /**
          * Creates a new BlockchainAddress instance using the specified properties.
          * @function create
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @static
-         * @param {blueaccount.IBlockchainAddress=} [properties] Properties to set
-         * @returns {blueaccount.BlockchainAddress} BlockchainAddress instance
+         * @param {account.IBlockchainAddress=} [properties] Properties to set
+         * @returns {account.BlockchainAddress} BlockchainAddress instance
          */
         BlockchainAddress.create = function create(properties) {
             return new BlockchainAddress(properties);
         };
 
         /**
-         * Encodes the specified BlockchainAddress message. Does not implicitly {@link blueaccount.BlockchainAddress.verify|verify} messages.
+         * Encodes the specified BlockchainAddress message. Does not implicitly {@link account.BlockchainAddress.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @static
-         * @param {blueaccount.IBlockchainAddress} message BlockchainAddress message or plain object to encode
+         * @param {account.IBlockchainAddress} message BlockchainAddress message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -5228,11 +6847,11 @@ $root.blueaccount = (function() {
         };
 
         /**
-         * Encodes the specified BlockchainAddress message, length delimited. Does not implicitly {@link blueaccount.BlockchainAddress.verify|verify} messages.
+         * Encodes the specified BlockchainAddress message, length delimited. Does not implicitly {@link account.BlockchainAddress.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @static
-         * @param {blueaccount.IBlockchainAddress} message BlockchainAddress message or plain object to encode
+         * @param {account.IBlockchainAddress} message BlockchainAddress message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -5243,18 +6862,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a BlockchainAddress message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.BlockchainAddress} BlockchainAddress
+         * @returns {account.BlockchainAddress} BlockchainAddress
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         BlockchainAddress.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.BlockchainAddress();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.BlockchainAddress();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -5275,10 +6894,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a BlockchainAddress message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.BlockchainAddress} BlockchainAddress
+         * @returns {account.BlockchainAddress} BlockchainAddress
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -5291,7 +6910,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a BlockchainAddress message.
          * @function verify
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -5311,15 +6930,15 @@ $root.blueaccount = (function() {
         /**
          * Creates a BlockchainAddress message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.BlockchainAddress} BlockchainAddress
+         * @returns {account.BlockchainAddress} BlockchainAddress
          */
         BlockchainAddress.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.BlockchainAddress)
+            if (object instanceof $root.account.BlockchainAddress)
                 return object;
-            var message = new $root.blueaccount.BlockchainAddress();
+            var message = new $root.account.BlockchainAddress();
             if (object.blockchainId != null)
                 message.blockchainId = String(object.blockchainId);
             if (object.address != null)
@@ -5330,9 +6949,9 @@ $root.blueaccount = (function() {
         /**
          * Creates a plain object from a BlockchainAddress message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @static
-         * @param {blueaccount.BlockchainAddress} message BlockchainAddress
+         * @param {account.BlockchainAddress} message BlockchainAddress
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -5354,7 +6973,7 @@ $root.blueaccount = (function() {
         /**
          * Converts this BlockchainAddress to JSON.
          * @function toJSON
-         * @memberof blueaccount.BlockchainAddress
+         * @memberof account.BlockchainAddress
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -5365,26 +6984,28 @@ $root.blueaccount = (function() {
         return BlockchainAddress;
     })();
 
-    blueaccount.Configuration = (function() {
+    account.Configuration = (function() {
 
         /**
          * Properties of a Configuration.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IConfiguration
          * @property {weave.IMetadata|null} [metadata] Configuration metadata
          * @property {Uint8Array|null} [owner] needed to make use of gconf.NewUpdateConfigurationHandler
          * @property {string|null} [validDomain] account must match. Rule must not include the asterisk (*) character.
          * @property {string|null} [validName] account must match. Rule must not include the asterisk (*) character.
+         * @property {string|null} [validBlockchainId] blockchain ID must match.
+         * @property {string|null} [validBlockchainAddress] blockchain address must match.
          * @property {number|Long|null} [domainRenew] Domain review defines the duration of the domain renewal period.
          */
 
         /**
          * Constructs a new Configuration.
-         * @memberof blueaccount
+         * @memberof account
          * @classdesc the functionality provided by gconf package.
          * @implements IConfiguration
          * @constructor
-         * @param {blueaccount.IConfiguration=} [properties] Properties to set
+         * @param {account.IConfiguration=} [properties] Properties to set
          */
         function Configuration(properties) {
             if (properties)
@@ -5396,7 +7017,7 @@ $root.blueaccount = (function() {
         /**
          * Configuration metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @instance
          */
         Configuration.prototype.metadata = null;
@@ -5404,7 +7025,7 @@ $root.blueaccount = (function() {
         /**
          * needed to make use of gconf.NewUpdateConfigurationHandler
          * @member {Uint8Array} owner
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @instance
          */
         Configuration.prototype.owner = $util.newBuffer([]);
@@ -5412,7 +7033,7 @@ $root.blueaccount = (function() {
         /**
          * account must match. Rule must not include the asterisk (*) character.
          * @member {string} validDomain
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @instance
          */
         Configuration.prototype.validDomain = "";
@@ -5420,15 +7041,31 @@ $root.blueaccount = (function() {
         /**
          * account must match. Rule must not include the asterisk (*) character.
          * @member {string} validName
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @instance
          */
         Configuration.prototype.validName = "";
 
         /**
+         * blockchain ID must match.
+         * @member {string} validBlockchainId
+         * @memberof account.Configuration
+         * @instance
+         */
+        Configuration.prototype.validBlockchainId = "";
+
+        /**
+         * blockchain address must match.
+         * @member {string} validBlockchainAddress
+         * @memberof account.Configuration
+         * @instance
+         */
+        Configuration.prototype.validBlockchainAddress = "";
+
+        /**
          * Domain review defines the duration of the domain renewal period.
          * @member {number|Long} domainRenew
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @instance
          */
         Configuration.prototype.domainRenew = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
@@ -5436,21 +7073,21 @@ $root.blueaccount = (function() {
         /**
          * Creates a new Configuration instance using the specified properties.
          * @function create
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @static
-         * @param {blueaccount.IConfiguration=} [properties] Properties to set
-         * @returns {blueaccount.Configuration} Configuration instance
+         * @param {account.IConfiguration=} [properties] Properties to set
+         * @returns {account.Configuration} Configuration instance
          */
         Configuration.create = function create(properties) {
             return new Configuration(properties);
         };
 
         /**
-         * Encodes the specified Configuration message. Does not implicitly {@link blueaccount.Configuration.verify|verify} messages.
+         * Encodes the specified Configuration message. Does not implicitly {@link account.Configuration.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @static
-         * @param {blueaccount.IConfiguration} message Configuration message or plain object to encode
+         * @param {account.IConfiguration} message Configuration message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -5465,17 +7102,21 @@ $root.blueaccount = (function() {
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.validDomain);
             if (message.validName != null && message.hasOwnProperty("validName"))
                 writer.uint32(/* id 4, wireType 2 =*/34).string(message.validName);
+            if (message.validBlockchainId != null && message.hasOwnProperty("validBlockchainId"))
+                writer.uint32(/* id 5, wireType 2 =*/42).string(message.validBlockchainId);
+            if (message.validBlockchainAddress != null && message.hasOwnProperty("validBlockchainAddress"))
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.validBlockchainAddress);
             if (message.domainRenew != null && message.hasOwnProperty("domainRenew"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.domainRenew);
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.domainRenew);
             return writer;
         };
 
         /**
-         * Encodes the specified Configuration message, length delimited. Does not implicitly {@link blueaccount.Configuration.verify|verify} messages.
+         * Encodes the specified Configuration message, length delimited. Does not implicitly {@link account.Configuration.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @static
-         * @param {blueaccount.IConfiguration} message Configuration message or plain object to encode
+         * @param {account.IConfiguration} message Configuration message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -5486,18 +7127,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a Configuration message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.Configuration} Configuration
+         * @returns {account.Configuration} Configuration
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Configuration.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.Configuration();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.Configuration();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -5513,7 +7154,13 @@ $root.blueaccount = (function() {
                 case 4:
                     message.validName = reader.string();
                     break;
+                case 5:
+                    message.validBlockchainId = reader.string();
+                    break;
                 case 6:
+                    message.validBlockchainAddress = reader.string();
+                    break;
+                case 7:
                     message.domainRenew = reader.int64();
                     break;
                 default:
@@ -5527,10 +7174,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a Configuration message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.Configuration} Configuration
+         * @returns {account.Configuration} Configuration
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -5543,7 +7190,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a Configuration message.
          * @function verify
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -5565,6 +7212,12 @@ $root.blueaccount = (function() {
             if (message.validName != null && message.hasOwnProperty("validName"))
                 if (!$util.isString(message.validName))
                     return "validName: string expected";
+            if (message.validBlockchainId != null && message.hasOwnProperty("validBlockchainId"))
+                if (!$util.isString(message.validBlockchainId))
+                    return "validBlockchainId: string expected";
+            if (message.validBlockchainAddress != null && message.hasOwnProperty("validBlockchainAddress"))
+                if (!$util.isString(message.validBlockchainAddress))
+                    return "validBlockchainAddress: string expected";
             if (message.domainRenew != null && message.hasOwnProperty("domainRenew"))
                 if (!$util.isInteger(message.domainRenew) && !(message.domainRenew && $util.isInteger(message.domainRenew.low) && $util.isInteger(message.domainRenew.high)))
                     return "domainRenew: integer|Long expected";
@@ -5574,18 +7227,18 @@ $root.blueaccount = (function() {
         /**
          * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.Configuration} Configuration
+         * @returns {account.Configuration} Configuration
          */
         Configuration.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.Configuration)
+            if (object instanceof $root.account.Configuration)
                 return object;
-            var message = new $root.blueaccount.Configuration();
+            var message = new $root.account.Configuration();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.Configuration.metadata: object expected");
+                    throw TypeError(".account.Configuration.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.owner != null)
@@ -5597,6 +7250,10 @@ $root.blueaccount = (function() {
                 message.validDomain = String(object.validDomain);
             if (object.validName != null)
                 message.validName = String(object.validName);
+            if (object.validBlockchainId != null)
+                message.validBlockchainId = String(object.validBlockchainId);
+            if (object.validBlockchainAddress != null)
+                message.validBlockchainAddress = String(object.validBlockchainAddress);
             if (object.domainRenew != null)
                 if ($util.Long)
                     (message.domainRenew = $util.Long.fromValue(object.domainRenew)).unsigned = false;
@@ -5612,9 +7269,9 @@ $root.blueaccount = (function() {
         /**
          * Creates a plain object from a Configuration message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @static
-         * @param {blueaccount.Configuration} message Configuration
+         * @param {account.Configuration} message Configuration
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -5633,6 +7290,8 @@ $root.blueaccount = (function() {
                 }
                 object.validDomain = "";
                 object.validName = "";
+                object.validBlockchainId = "";
+                object.validBlockchainAddress = "";
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
                     object.domainRenew = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -5647,6 +7306,10 @@ $root.blueaccount = (function() {
                 object.validDomain = message.validDomain;
             if (message.validName != null && message.hasOwnProperty("validName"))
                 object.validName = message.validName;
+            if (message.validBlockchainId != null && message.hasOwnProperty("validBlockchainId"))
+                object.validBlockchainId = message.validBlockchainId;
+            if (message.validBlockchainAddress != null && message.hasOwnProperty("validBlockchainAddress"))
+                object.validBlockchainAddress = message.validBlockchainAddress;
             if (message.domainRenew != null && message.hasOwnProperty("domainRenew"))
                 if (typeof message.domainRenew === "number")
                     object.domainRenew = options.longs === String ? String(message.domainRenew) : message.domainRenew;
@@ -5658,7 +7321,7 @@ $root.blueaccount = (function() {
         /**
          * Converts this Configuration to JSON.
          * @function toJSON
-         * @memberof blueaccount.Configuration
+         * @memberof account.Configuration
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -5669,23 +7332,23 @@ $root.blueaccount = (function() {
         return Configuration;
     })();
 
-    blueaccount.UpdateConfigurationMsg = (function() {
+    account.UpdateConfigurationMsg = (function() {
 
         /**
          * Properties of an UpdateConfigurationMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IUpdateConfigurationMsg
          * @property {weave.IMetadata|null} [metadata] UpdateConfigurationMsg metadata
-         * @property {blueaccount.IConfiguration|null} [patch] UpdateConfigurationMsg patch
+         * @property {account.IConfiguration|null} [patch] UpdateConfigurationMsg patch
          */
 
         /**
          * Constructs a new UpdateConfigurationMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @classdesc configuration.
          * @implements IUpdateConfigurationMsg
          * @constructor
-         * @param {blueaccount.IUpdateConfigurationMsg=} [properties] Properties to set
+         * @param {account.IUpdateConfigurationMsg=} [properties] Properties to set
          */
         function UpdateConfigurationMsg(properties) {
             if (properties)
@@ -5697,15 +7360,15 @@ $root.blueaccount = (function() {
         /**
          * UpdateConfigurationMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @memberof account.UpdateConfigurationMsg
          * @instance
          */
         UpdateConfigurationMsg.prototype.metadata = null;
 
         /**
          * UpdateConfigurationMsg patch.
-         * @member {blueaccount.IConfiguration|null|undefined} patch
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @member {account.IConfiguration|null|undefined} patch
+         * @memberof account.UpdateConfigurationMsg
          * @instance
          */
         UpdateConfigurationMsg.prototype.patch = null;
@@ -5713,21 +7376,21 @@ $root.blueaccount = (function() {
         /**
          * Creates a new UpdateConfigurationMsg instance using the specified properties.
          * @function create
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @memberof account.UpdateConfigurationMsg
          * @static
-         * @param {blueaccount.IUpdateConfigurationMsg=} [properties] Properties to set
-         * @returns {blueaccount.UpdateConfigurationMsg} UpdateConfigurationMsg instance
+         * @param {account.IUpdateConfigurationMsg=} [properties] Properties to set
+         * @returns {account.UpdateConfigurationMsg} UpdateConfigurationMsg instance
          */
         UpdateConfigurationMsg.create = function create(properties) {
             return new UpdateConfigurationMsg(properties);
         };
 
         /**
-         * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link blueaccount.UpdateConfigurationMsg.verify|verify} messages.
+         * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link account.UpdateConfigurationMsg.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @memberof account.UpdateConfigurationMsg
          * @static
-         * @param {blueaccount.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {account.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -5737,16 +7400,16 @@ $root.blueaccount = (function() {
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.patch != null && message.hasOwnProperty("patch"))
-                $root.blueaccount.Configuration.encode(message.patch, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.account.Configuration.encode(message.patch, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             return writer;
         };
 
         /**
-         * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link blueaccount.UpdateConfigurationMsg.verify|verify} messages.
+         * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link account.UpdateConfigurationMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @memberof account.UpdateConfigurationMsg
          * @static
-         * @param {blueaccount.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {account.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -5757,18 +7420,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @memberof account.UpdateConfigurationMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @returns {account.UpdateConfigurationMsg} UpdateConfigurationMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         UpdateConfigurationMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.UpdateConfigurationMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.UpdateConfigurationMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -5776,7 +7439,7 @@ $root.blueaccount = (function() {
                     message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.patch = $root.blueaccount.Configuration.decode(reader, reader.uint32());
+                    message.patch = $root.account.Configuration.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -5789,10 +7452,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @memberof account.UpdateConfigurationMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @returns {account.UpdateConfigurationMsg} UpdateConfigurationMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -5805,7 +7468,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies an UpdateConfigurationMsg message.
          * @function verify
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @memberof account.UpdateConfigurationMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -5819,7 +7482,7 @@ $root.blueaccount = (function() {
                     return "metadata." + error;
             }
             if (message.patch != null && message.hasOwnProperty("patch")) {
-                var error = $root.blueaccount.Configuration.verify(message.patch);
+                var error = $root.account.Configuration.verify(message.patch);
                 if (error)
                     return "patch." + error;
             }
@@ -5829,24 +7492,24 @@ $root.blueaccount = (function() {
         /**
          * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @memberof account.UpdateConfigurationMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @returns {account.UpdateConfigurationMsg} UpdateConfigurationMsg
          */
         UpdateConfigurationMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.UpdateConfigurationMsg)
+            if (object instanceof $root.account.UpdateConfigurationMsg)
                 return object;
-            var message = new $root.blueaccount.UpdateConfigurationMsg();
+            var message = new $root.account.UpdateConfigurationMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.UpdateConfigurationMsg.metadata: object expected");
+                    throw TypeError(".account.UpdateConfigurationMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.patch != null) {
                 if (typeof object.patch !== "object")
-                    throw TypeError(".blueaccount.UpdateConfigurationMsg.patch: object expected");
-                message.patch = $root.blueaccount.Configuration.fromObject(object.patch);
+                    throw TypeError(".account.UpdateConfigurationMsg.patch: object expected");
+                message.patch = $root.account.Configuration.fromObject(object.patch);
             }
             return message;
         };
@@ -5854,9 +7517,9 @@ $root.blueaccount = (function() {
         /**
          * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @memberof account.UpdateConfigurationMsg
          * @static
-         * @param {blueaccount.UpdateConfigurationMsg} message UpdateConfigurationMsg
+         * @param {account.UpdateConfigurationMsg} message UpdateConfigurationMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -5871,14 +7534,14 @@ $root.blueaccount = (function() {
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.patch != null && message.hasOwnProperty("patch"))
-                object.patch = $root.blueaccount.Configuration.toObject(message.patch, options);
+                object.patch = $root.account.Configuration.toObject(message.patch, options);
             return object;
         };
 
         /**
          * Converts this UpdateConfigurationMsg to JSON.
          * @function toJSON
-         * @memberof blueaccount.UpdateConfigurationMsg
+         * @memberof account.UpdateConfigurationMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -5889,27 +7552,31 @@ $root.blueaccount = (function() {
         return UpdateConfigurationMsg;
     })();
 
-    blueaccount.RegisterDomainMsg = (function() {
+    account.RegisterDomainMsg = (function() {
 
         /**
          * Properties of a RegisterDomainMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IRegisterDomainMsg
          * @property {weave.IMetadata|null} [metadata] RegisterDomainMsg metadata
-         * @property {Uint8Array|null} [owner] main signer is used.
-         * @property {string|null} [domain] Domain part of the account that should be registered.
-         * @property {Uint8Array|null} [thirdPartyToken] helps identify contribution of such party later.
+         * @property {string|null} [domain] RegisterDomainMsg domain
+         * @property {Uint8Array|null} [admin] Admin holds the address of the newly registered domain.
+         * @property {boolean|null} [hasSuperuser] Has Superuser is a feature switch flag.
+         * @property {Uint8Array|null} [thirdPartyToken] token helps identify contribution of such party later.
+         * @property {Array.<account.IAccountMsgFee>|null} [msgFees] RegisterDomainMsg msgFees
+         * @property {number|Long|null} [accountRenew] RegisterDomainMsg accountRenew
          */
 
         /**
          * Constructs a new RegisterDomainMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @classdesc domain.
          * @implements IRegisterDomainMsg
          * @constructor
-         * @param {blueaccount.IRegisterDomainMsg=} [properties] Properties to set
+         * @param {account.IRegisterDomainMsg=} [properties] Properties to set
          */
         function RegisterDomainMsg(properties) {
+            this.msgFees = [];
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -5919,53 +7586,77 @@ $root.blueaccount = (function() {
         /**
          * RegisterDomainMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @instance
          */
         RegisterDomainMsg.prototype.metadata = null;
 
         /**
-         * main signer is used.
-         * @member {Uint8Array} owner
-         * @memberof blueaccount.RegisterDomainMsg
-         * @instance
-         */
-        RegisterDomainMsg.prototype.owner = $util.newBuffer([]);
-
-        /**
-         * Domain part of the account that should be registered.
+         * RegisterDomainMsg domain.
          * @member {string} domain
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @instance
          */
         RegisterDomainMsg.prototype.domain = "";
 
         /**
-         * helps identify contribution of such party later.
+         * Admin holds the address of the newly registered domain.
+         * @member {Uint8Array} admin
+         * @memberof account.RegisterDomainMsg
+         * @instance
+         */
+        RegisterDomainMsg.prototype.admin = $util.newBuffer([]);
+
+        /**
+         * Has Superuser is a feature switch flag.
+         * @member {boolean} hasSuperuser
+         * @memberof account.RegisterDomainMsg
+         * @instance
+         */
+        RegisterDomainMsg.prototype.hasSuperuser = false;
+
+        /**
+         * token helps identify contribution of such party later.
          * @member {Uint8Array} thirdPartyToken
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @instance
          */
         RegisterDomainMsg.prototype.thirdPartyToken = $util.newBuffer([]);
 
         /**
+         * RegisterDomainMsg msgFees.
+         * @member {Array.<account.IAccountMsgFee>} msgFees
+         * @memberof account.RegisterDomainMsg
+         * @instance
+         */
+        RegisterDomainMsg.prototype.msgFees = $util.emptyArray;
+
+        /**
+         * RegisterDomainMsg accountRenew.
+         * @member {number|Long} accountRenew
+         * @memberof account.RegisterDomainMsg
+         * @instance
+         */
+        RegisterDomainMsg.prototype.accountRenew = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
          * Creates a new RegisterDomainMsg instance using the specified properties.
          * @function create
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @static
-         * @param {blueaccount.IRegisterDomainMsg=} [properties] Properties to set
-         * @returns {blueaccount.RegisterDomainMsg} RegisterDomainMsg instance
+         * @param {account.IRegisterDomainMsg=} [properties] Properties to set
+         * @returns {account.RegisterDomainMsg} RegisterDomainMsg instance
          */
         RegisterDomainMsg.create = function create(properties) {
             return new RegisterDomainMsg(properties);
         };
 
         /**
-         * Encodes the specified RegisterDomainMsg message. Does not implicitly {@link blueaccount.RegisterDomainMsg.verify|verify} messages.
+         * Encodes the specified RegisterDomainMsg message. Does not implicitly {@link account.RegisterDomainMsg.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @static
-         * @param {blueaccount.IRegisterDomainMsg} message RegisterDomainMsg message or plain object to encode
+         * @param {account.IRegisterDomainMsg} message RegisterDomainMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -5974,21 +7665,28 @@ $root.blueaccount = (function() {
                 writer = $Writer.create();
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
             if (message.domain != null && message.hasOwnProperty("domain"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.domain);
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.domain);
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.admin);
+            if (message.hasSuperuser != null && message.hasOwnProperty("hasSuperuser"))
+                writer.uint32(/* id 4, wireType 0 =*/32).bool(message.hasSuperuser);
             if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.thirdPartyToken);
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.thirdPartyToken);
+            if (message.msgFees != null && message.msgFees.length)
+                for (var i = 0; i < message.msgFees.length; ++i)
+                    $root.account.AccountMsgFee.encode(message.msgFees[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+            if (message.accountRenew != null && message.hasOwnProperty("accountRenew"))
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.accountRenew);
             return writer;
         };
 
         /**
-         * Encodes the specified RegisterDomainMsg message, length delimited. Does not implicitly {@link blueaccount.RegisterDomainMsg.verify|verify} messages.
+         * Encodes the specified RegisterDomainMsg message, length delimited. Does not implicitly {@link account.RegisterDomainMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @static
-         * @param {blueaccount.IRegisterDomainMsg} message RegisterDomainMsg message or plain object to encode
+         * @param {account.IRegisterDomainMsg} message RegisterDomainMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -5999,18 +7697,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a RegisterDomainMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.RegisterDomainMsg} RegisterDomainMsg
+         * @returns {account.RegisterDomainMsg} RegisterDomainMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         RegisterDomainMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.RegisterDomainMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.RegisterDomainMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -6018,13 +7716,24 @@ $root.blueaccount = (function() {
                     message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.owner = reader.bytes();
-                    break;
-                case 3:
                     message.domain = reader.string();
                     break;
+                case 3:
+                    message.admin = reader.bytes();
+                    break;
                 case 4:
+                    message.hasSuperuser = reader.bool();
+                    break;
+                case 5:
                     message.thirdPartyToken = reader.bytes();
+                    break;
+                case 6:
+                    if (!(message.msgFees && message.msgFees.length))
+                        message.msgFees = [];
+                    message.msgFees.push($root.account.AccountMsgFee.decode(reader, reader.uint32()));
+                    break;
+                case 7:
+                    message.accountRenew = reader.int64();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -6037,10 +7746,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a RegisterDomainMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.RegisterDomainMsg} RegisterDomainMsg
+         * @returns {account.RegisterDomainMsg} RegisterDomainMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -6053,7 +7762,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a RegisterDomainMsg message.
          * @function verify
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -6066,56 +7775,92 @@ $root.blueaccount = (function() {
                 if (error)
                     return "metadata." + error;
             }
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
-                    return "owner: buffer expected";
             if (message.domain != null && message.hasOwnProperty("domain"))
                 if (!$util.isString(message.domain))
                     return "domain: string expected";
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
+                    return "admin: buffer expected";
+            if (message.hasSuperuser != null && message.hasOwnProperty("hasSuperuser"))
+                if (typeof message.hasSuperuser !== "boolean")
+                    return "hasSuperuser: boolean expected";
             if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
                 if (!(message.thirdPartyToken && typeof message.thirdPartyToken.length === "number" || $util.isString(message.thirdPartyToken)))
                     return "thirdPartyToken: buffer expected";
+            if (message.msgFees != null && message.hasOwnProperty("msgFees")) {
+                if (!Array.isArray(message.msgFees))
+                    return "msgFees: array expected";
+                for (var i = 0; i < message.msgFees.length; ++i) {
+                    var error = $root.account.AccountMsgFee.verify(message.msgFees[i]);
+                    if (error)
+                        return "msgFees." + error;
+                }
+            }
+            if (message.accountRenew != null && message.hasOwnProperty("accountRenew"))
+                if (!$util.isInteger(message.accountRenew) && !(message.accountRenew && $util.isInteger(message.accountRenew.low) && $util.isInteger(message.accountRenew.high)))
+                    return "accountRenew: integer|Long expected";
             return null;
         };
 
         /**
          * Creates a RegisterDomainMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.RegisterDomainMsg} RegisterDomainMsg
+         * @returns {account.RegisterDomainMsg} RegisterDomainMsg
          */
         RegisterDomainMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.RegisterDomainMsg)
+            if (object instanceof $root.account.RegisterDomainMsg)
                 return object;
-            var message = new $root.blueaccount.RegisterDomainMsg();
+            var message = new $root.account.RegisterDomainMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.RegisterDomainMsg.metadata: object expected");
+                    throw TypeError(".account.RegisterDomainMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
-            if (object.owner != null)
-                if (typeof object.owner === "string")
-                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
-                else if (object.owner.length)
-                    message.owner = object.owner;
             if (object.domain != null)
                 message.domain = String(object.domain);
+            if (object.admin != null)
+                if (typeof object.admin === "string")
+                    $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
+                else if (object.admin.length)
+                    message.admin = object.admin;
+            if (object.hasSuperuser != null)
+                message.hasSuperuser = Boolean(object.hasSuperuser);
             if (object.thirdPartyToken != null)
                 if (typeof object.thirdPartyToken === "string")
                     $util.base64.decode(object.thirdPartyToken, message.thirdPartyToken = $util.newBuffer($util.base64.length(object.thirdPartyToken)), 0);
                 else if (object.thirdPartyToken.length)
                     message.thirdPartyToken = object.thirdPartyToken;
+            if (object.msgFees) {
+                if (!Array.isArray(object.msgFees))
+                    throw TypeError(".account.RegisterDomainMsg.msgFees: array expected");
+                message.msgFees = [];
+                for (var i = 0; i < object.msgFees.length; ++i) {
+                    if (typeof object.msgFees[i] !== "object")
+                        throw TypeError(".account.RegisterDomainMsg.msgFees: object expected");
+                    message.msgFees[i] = $root.account.AccountMsgFee.fromObject(object.msgFees[i]);
+                }
+            }
+            if (object.accountRenew != null)
+                if ($util.Long)
+                    (message.accountRenew = $util.Long.fromValue(object.accountRenew)).unsigned = false;
+                else if (typeof object.accountRenew === "string")
+                    message.accountRenew = parseInt(object.accountRenew, 10);
+                else if (typeof object.accountRenew === "number")
+                    message.accountRenew = object.accountRenew;
+                else if (typeof object.accountRenew === "object")
+                    message.accountRenew = new $util.LongBits(object.accountRenew.low >>> 0, object.accountRenew.high >>> 0).toNumber();
             return message;
         };
 
         /**
          * Creates a plain object from a RegisterDomainMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @static
-         * @param {blueaccount.RegisterDomainMsg} message RegisterDomainMsg
+         * @param {account.RegisterDomainMsg} message RegisterDomainMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -6123,16 +7868,19 @@ $root.blueaccount = (function() {
             if (!options)
                 options = {};
             var object = {};
+            if (options.arrays || options.defaults)
+                object.msgFees = [];
             if (options.defaults) {
                 object.metadata = null;
-                if (options.bytes === String)
-                    object.owner = "";
-                else {
-                    object.owner = [];
-                    if (options.bytes !== Array)
-                        object.owner = $util.newBuffer(object.owner);
-                }
                 object.domain = "";
+                if (options.bytes === String)
+                    object.admin = "";
+                else {
+                    object.admin = [];
+                    if (options.bytes !== Array)
+                        object.admin = $util.newBuffer(object.admin);
+                }
+                object.hasSuperuser = false;
                 if (options.bytes === String)
                     object.thirdPartyToken = "";
                 else {
@@ -6140,22 +7888,39 @@ $root.blueaccount = (function() {
                     if (options.bytes !== Array)
                         object.thirdPartyToken = $util.newBuffer(object.thirdPartyToken);
                 }
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.accountRenew = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.accountRenew = options.longs === String ? "0" : 0;
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
             if (message.domain != null && message.hasOwnProperty("domain"))
                 object.domain = message.domain;
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
+            if (message.hasSuperuser != null && message.hasOwnProperty("hasSuperuser"))
+                object.hasSuperuser = message.hasSuperuser;
             if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
                 object.thirdPartyToken = options.bytes === String ? $util.base64.encode(message.thirdPartyToken, 0, message.thirdPartyToken.length) : options.bytes === Array ? Array.prototype.slice.call(message.thirdPartyToken) : message.thirdPartyToken;
+            if (message.msgFees && message.msgFees.length) {
+                object.msgFees = [];
+                for (var j = 0; j < message.msgFees.length; ++j)
+                    object.msgFees[j] = $root.account.AccountMsgFee.toObject(message.msgFees[j], options);
+            }
+            if (message.accountRenew != null && message.hasOwnProperty("accountRenew"))
+                if (typeof message.accountRenew === "number")
+                    object.accountRenew = options.longs === String ? String(message.accountRenew) : message.accountRenew;
+                else
+                    object.accountRenew = options.longs === String ? $util.Long.prototype.toString.call(message.accountRenew) : options.longs === Number ? new $util.LongBits(message.accountRenew.low >>> 0, message.accountRenew.high >>> 0).toNumber() : message.accountRenew;
             return object;
         };
 
         /**
          * Converts this RegisterDomainMsg to JSON.
          * @function toJSON
-         * @memberof blueaccount.RegisterDomainMsg
+         * @memberof account.RegisterDomainMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -6166,24 +7931,283 @@ $root.blueaccount = (function() {
         return RegisterDomainMsg;
     })();
 
-    blueaccount.TransferDomainMsg = (function() {
+    account.ReplaceAccountMsgFeesMsg = (function() {
+
+        /**
+         * Properties of a ReplaceAccountMsgFeesMsg.
+         * @memberof account
+         * @interface IReplaceAccountMsgFeesMsg
+         * @property {weave.IMetadata|null} [metadata] ReplaceAccountMsgFeesMsg metadata
+         * @property {string|null} [domain] Name of the domain that is configured.
+         * @property {Array.<account.IAccountMsgFee>|null} [newMsgFees] A set of message fees that will replacce existing configuration.
+         */
+
+        /**
+         * Constructs a new ReplaceAccountMsgFeesMsg.
+         * @memberof account
+         * @classdesc paid in order to process messages for accounts that belong to this domain.
+         * @implements IReplaceAccountMsgFeesMsg
+         * @constructor
+         * @param {account.IReplaceAccountMsgFeesMsg=} [properties] Properties to set
+         */
+        function ReplaceAccountMsgFeesMsg(properties) {
+            this.newMsgFees = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ReplaceAccountMsgFeesMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @instance
+         */
+        ReplaceAccountMsgFeesMsg.prototype.metadata = null;
+
+        /**
+         * Name of the domain that is configured.
+         * @member {string} domain
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @instance
+         */
+        ReplaceAccountMsgFeesMsg.prototype.domain = "";
+
+        /**
+         * A set of message fees that will replacce existing configuration.
+         * @member {Array.<account.IAccountMsgFee>} newMsgFees
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @instance
+         */
+        ReplaceAccountMsgFeesMsg.prototype.newMsgFees = $util.emptyArray;
+
+        /**
+         * Creates a new ReplaceAccountMsgFeesMsg instance using the specified properties.
+         * @function create
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @static
+         * @param {account.IReplaceAccountMsgFeesMsg=} [properties] Properties to set
+         * @returns {account.ReplaceAccountMsgFeesMsg} ReplaceAccountMsgFeesMsg instance
+         */
+        ReplaceAccountMsgFeesMsg.create = function create(properties) {
+            return new ReplaceAccountMsgFeesMsg(properties);
+        };
+
+        /**
+         * Encodes the specified ReplaceAccountMsgFeesMsg message. Does not implicitly {@link account.ReplaceAccountMsgFeesMsg.verify|verify} messages.
+         * @function encode
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @static
+         * @param {account.IReplaceAccountMsgFeesMsg} message ReplaceAccountMsgFeesMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ReplaceAccountMsgFeesMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.domain);
+            if (message.newMsgFees != null && message.newMsgFees.length)
+                for (var i = 0; i < message.newMsgFees.length; ++i)
+                    $root.account.AccountMsgFee.encode(message.newMsgFees[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ReplaceAccountMsgFeesMsg message, length delimited. Does not implicitly {@link account.ReplaceAccountMsgFeesMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @static
+         * @param {account.IReplaceAccountMsgFeesMsg} message ReplaceAccountMsgFeesMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ReplaceAccountMsgFeesMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ReplaceAccountMsgFeesMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {account.ReplaceAccountMsgFeesMsg} ReplaceAccountMsgFeesMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ReplaceAccountMsgFeesMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.ReplaceAccountMsgFeesMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.domain = reader.string();
+                    break;
+                case 6:
+                    if (!(message.newMsgFees && message.newMsgFees.length))
+                        message.newMsgFees = [];
+                    message.newMsgFees.push($root.account.AccountMsgFee.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ReplaceAccountMsgFeesMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {account.ReplaceAccountMsgFeesMsg} ReplaceAccountMsgFeesMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ReplaceAccountMsgFeesMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ReplaceAccountMsgFeesMsg message.
+         * @function verify
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ReplaceAccountMsgFeesMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                if (!$util.isString(message.domain))
+                    return "domain: string expected";
+            if (message.newMsgFees != null && message.hasOwnProperty("newMsgFees")) {
+                if (!Array.isArray(message.newMsgFees))
+                    return "newMsgFees: array expected";
+                for (var i = 0; i < message.newMsgFees.length; ++i) {
+                    var error = $root.account.AccountMsgFee.verify(message.newMsgFees[i]);
+                    if (error)
+                        return "newMsgFees." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ReplaceAccountMsgFeesMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {account.ReplaceAccountMsgFeesMsg} ReplaceAccountMsgFeesMsg
+         */
+        ReplaceAccountMsgFeesMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.account.ReplaceAccountMsgFeesMsg)
+                return object;
+            var message = new $root.account.ReplaceAccountMsgFeesMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".account.ReplaceAccountMsgFeesMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.domain != null)
+                message.domain = String(object.domain);
+            if (object.newMsgFees) {
+                if (!Array.isArray(object.newMsgFees))
+                    throw TypeError(".account.ReplaceAccountMsgFeesMsg.newMsgFees: array expected");
+                message.newMsgFees = [];
+                for (var i = 0; i < object.newMsgFees.length; ++i) {
+                    if (typeof object.newMsgFees[i] !== "object")
+                        throw TypeError(".account.ReplaceAccountMsgFeesMsg.newMsgFees: object expected");
+                    message.newMsgFees[i] = $root.account.AccountMsgFee.fromObject(object.newMsgFees[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ReplaceAccountMsgFeesMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @static
+         * @param {account.ReplaceAccountMsgFeesMsg} message ReplaceAccountMsgFeesMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ReplaceAccountMsgFeesMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.newMsgFees = [];
+            if (options.defaults) {
+                object.metadata = null;
+                object.domain = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                object.domain = message.domain;
+            if (message.newMsgFees && message.newMsgFees.length) {
+                object.newMsgFees = [];
+                for (var j = 0; j < message.newMsgFees.length; ++j)
+                    object.newMsgFees[j] = $root.account.AccountMsgFee.toObject(message.newMsgFees[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this ReplaceAccountMsgFeesMsg to JSON.
+         * @function toJSON
+         * @memberof account.ReplaceAccountMsgFeesMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ReplaceAccountMsgFeesMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ReplaceAccountMsgFeesMsg;
+    })();
+
+    account.TransferDomainMsg = (function() {
 
         /**
          * Properties of a TransferDomainMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @interface ITransferDomainMsg
          * @property {weave.IMetadata|null} [metadata] TransferDomainMsg metadata
          * @property {string|null} [domain] Name of the domain that is transferred.
-         * @property {Uint8Array|null} [newOwner] transferred to.
+         * @property {Uint8Array|null} [newAdmin] transferred to.
          */
 
         /**
          * Constructs a new TransferDomainMsg.
-         * @memberof blueaccount
-         * @classdesc TransferDomainMsg is issuing an ownership transfer over specified domain.
+         * @memberof account
+         * @classdesc TransferDomainMsg is issuing a change of the admin for the specified domain.
          * @implements ITransferDomainMsg
          * @constructor
-         * @param {blueaccount.ITransferDomainMsg=} [properties] Properties to set
+         * @param {account.ITransferDomainMsg=} [properties] Properties to set
          */
         function TransferDomainMsg(properties) {
             if (properties)
@@ -6195,7 +8219,7 @@ $root.blueaccount = (function() {
         /**
          * TransferDomainMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @instance
          */
         TransferDomainMsg.prototype.metadata = null;
@@ -6203,37 +8227,37 @@ $root.blueaccount = (function() {
         /**
          * Name of the domain that is transferred.
          * @member {string} domain
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @instance
          */
         TransferDomainMsg.prototype.domain = "";
 
         /**
          * transferred to.
-         * @member {Uint8Array} newOwner
-         * @memberof blueaccount.TransferDomainMsg
+         * @member {Uint8Array} newAdmin
+         * @memberof account.TransferDomainMsg
          * @instance
          */
-        TransferDomainMsg.prototype.newOwner = $util.newBuffer([]);
+        TransferDomainMsg.prototype.newAdmin = $util.newBuffer([]);
 
         /**
          * Creates a new TransferDomainMsg instance using the specified properties.
          * @function create
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @static
-         * @param {blueaccount.ITransferDomainMsg=} [properties] Properties to set
-         * @returns {blueaccount.TransferDomainMsg} TransferDomainMsg instance
+         * @param {account.ITransferDomainMsg=} [properties] Properties to set
+         * @returns {account.TransferDomainMsg} TransferDomainMsg instance
          */
         TransferDomainMsg.create = function create(properties) {
             return new TransferDomainMsg(properties);
         };
 
         /**
-         * Encodes the specified TransferDomainMsg message. Does not implicitly {@link blueaccount.TransferDomainMsg.verify|verify} messages.
+         * Encodes the specified TransferDomainMsg message. Does not implicitly {@link account.TransferDomainMsg.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @static
-         * @param {blueaccount.ITransferDomainMsg} message TransferDomainMsg message or plain object to encode
+         * @param {account.ITransferDomainMsg} message TransferDomainMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -6244,17 +8268,17 @@ $root.blueaccount = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.domain != null && message.hasOwnProperty("domain"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.domain);
-            if (message.newOwner != null && message.hasOwnProperty("newOwner"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.newOwner);
+            if (message.newAdmin != null && message.hasOwnProperty("newAdmin"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.newAdmin);
             return writer;
         };
 
         /**
-         * Encodes the specified TransferDomainMsg message, length delimited. Does not implicitly {@link blueaccount.TransferDomainMsg.verify|verify} messages.
+         * Encodes the specified TransferDomainMsg message, length delimited. Does not implicitly {@link account.TransferDomainMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @static
-         * @param {blueaccount.ITransferDomainMsg} message TransferDomainMsg message or plain object to encode
+         * @param {account.ITransferDomainMsg} message TransferDomainMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -6265,18 +8289,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a TransferDomainMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.TransferDomainMsg} TransferDomainMsg
+         * @returns {account.TransferDomainMsg} TransferDomainMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         TransferDomainMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.TransferDomainMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.TransferDomainMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -6287,7 +8311,7 @@ $root.blueaccount = (function() {
                     message.domain = reader.string();
                     break;
                 case 3:
-                    message.newOwner = reader.bytes();
+                    message.newAdmin = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -6300,10 +8324,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a TransferDomainMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.TransferDomainMsg} TransferDomainMsg
+         * @returns {account.TransferDomainMsg} TransferDomainMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -6316,7 +8340,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a TransferDomainMsg message.
          * @function verify
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -6332,45 +8356,45 @@ $root.blueaccount = (function() {
             if (message.domain != null && message.hasOwnProperty("domain"))
                 if (!$util.isString(message.domain))
                     return "domain: string expected";
-            if (message.newOwner != null && message.hasOwnProperty("newOwner"))
-                if (!(message.newOwner && typeof message.newOwner.length === "number" || $util.isString(message.newOwner)))
-                    return "newOwner: buffer expected";
+            if (message.newAdmin != null && message.hasOwnProperty("newAdmin"))
+                if (!(message.newAdmin && typeof message.newAdmin.length === "number" || $util.isString(message.newAdmin)))
+                    return "newAdmin: buffer expected";
             return null;
         };
 
         /**
          * Creates a TransferDomainMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.TransferDomainMsg} TransferDomainMsg
+         * @returns {account.TransferDomainMsg} TransferDomainMsg
          */
         TransferDomainMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.TransferDomainMsg)
+            if (object instanceof $root.account.TransferDomainMsg)
                 return object;
-            var message = new $root.blueaccount.TransferDomainMsg();
+            var message = new $root.account.TransferDomainMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.TransferDomainMsg.metadata: object expected");
+                    throw TypeError(".account.TransferDomainMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.domain != null)
                 message.domain = String(object.domain);
-            if (object.newOwner != null)
-                if (typeof object.newOwner === "string")
-                    $util.base64.decode(object.newOwner, message.newOwner = $util.newBuffer($util.base64.length(object.newOwner)), 0);
-                else if (object.newOwner.length)
-                    message.newOwner = object.newOwner;
+            if (object.newAdmin != null)
+                if (typeof object.newAdmin === "string")
+                    $util.base64.decode(object.newAdmin, message.newAdmin = $util.newBuffer($util.base64.length(object.newAdmin)), 0);
+                else if (object.newAdmin.length)
+                    message.newAdmin = object.newAdmin;
             return message;
         };
 
         /**
          * Creates a plain object from a TransferDomainMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @static
-         * @param {blueaccount.TransferDomainMsg} message TransferDomainMsg
+         * @param {account.TransferDomainMsg} message TransferDomainMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -6382,26 +8406,26 @@ $root.blueaccount = (function() {
                 object.metadata = null;
                 object.domain = "";
                 if (options.bytes === String)
-                    object.newOwner = "";
+                    object.newAdmin = "";
                 else {
-                    object.newOwner = [];
+                    object.newAdmin = [];
                     if (options.bytes !== Array)
-                        object.newOwner = $util.newBuffer(object.newOwner);
+                        object.newAdmin = $util.newBuffer(object.newAdmin);
                 }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.domain != null && message.hasOwnProperty("domain"))
                 object.domain = message.domain;
-            if (message.newOwner != null && message.hasOwnProperty("newOwner"))
-                object.newOwner = options.bytes === String ? $util.base64.encode(message.newOwner, 0, message.newOwner.length) : options.bytes === Array ? Array.prototype.slice.call(message.newOwner) : message.newOwner;
+            if (message.newAdmin != null && message.hasOwnProperty("newAdmin"))
+                object.newAdmin = options.bytes === String ? $util.base64.encode(message.newAdmin, 0, message.newAdmin.length) : options.bytes === Array ? Array.prototype.slice.call(message.newAdmin) : message.newAdmin;
             return object;
         };
 
         /**
          * Converts this TransferDomainMsg to JSON.
          * @function toJSON
-         * @memberof blueaccount.TransferDomainMsg
+         * @memberof account.TransferDomainMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -6412,24 +8436,23 @@ $root.blueaccount = (function() {
         return TransferDomainMsg;
     })();
 
-    blueaccount.RenewDomainMsg = (function() {
+    account.RenewDomainMsg = (function() {
 
         /**
          * Properties of a RenewDomainMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IRenewDomainMsg
          * @property {weave.IMetadata|null} [metadata] RenewDomainMsg metadata
          * @property {string|null} [domain] Name of the domain that is transferred.
-         * @property {Uint8Array|null} [thirdPartyToken] identify contribution of such party later.
          */
 
         /**
          * Constructs a new RenewDomainMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @classdesc period is defined by the configuration entity.
          * @implements IRenewDomainMsg
          * @constructor
-         * @param {blueaccount.IRenewDomainMsg=} [properties] Properties to set
+         * @param {account.IRenewDomainMsg=} [properties] Properties to set
          */
         function RenewDomainMsg(properties) {
             if (properties)
@@ -6441,7 +8464,7 @@ $root.blueaccount = (function() {
         /**
          * RenewDomainMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @instance
          */
         RenewDomainMsg.prototype.metadata = null;
@@ -6449,37 +8472,29 @@ $root.blueaccount = (function() {
         /**
          * Name of the domain that is transferred.
          * @member {string} domain
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @instance
          */
         RenewDomainMsg.prototype.domain = "";
 
         /**
-         * identify contribution of such party later.
-         * @member {Uint8Array} thirdPartyToken
-         * @memberof blueaccount.RenewDomainMsg
-         * @instance
-         */
-        RenewDomainMsg.prototype.thirdPartyToken = $util.newBuffer([]);
-
-        /**
          * Creates a new RenewDomainMsg instance using the specified properties.
          * @function create
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @static
-         * @param {blueaccount.IRenewDomainMsg=} [properties] Properties to set
-         * @returns {blueaccount.RenewDomainMsg} RenewDomainMsg instance
+         * @param {account.IRenewDomainMsg=} [properties] Properties to set
+         * @returns {account.RenewDomainMsg} RenewDomainMsg instance
          */
         RenewDomainMsg.create = function create(properties) {
             return new RenewDomainMsg(properties);
         };
 
         /**
-         * Encodes the specified RenewDomainMsg message. Does not implicitly {@link blueaccount.RenewDomainMsg.verify|verify} messages.
+         * Encodes the specified RenewDomainMsg message. Does not implicitly {@link account.RenewDomainMsg.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @static
-         * @param {blueaccount.IRenewDomainMsg} message RenewDomainMsg message or plain object to encode
+         * @param {account.IRenewDomainMsg} message RenewDomainMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -6490,17 +8505,15 @@ $root.blueaccount = (function() {
                 $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.domain != null && message.hasOwnProperty("domain"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.domain);
-            if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.thirdPartyToken);
             return writer;
         };
 
         /**
-         * Encodes the specified RenewDomainMsg message, length delimited. Does not implicitly {@link blueaccount.RenewDomainMsg.verify|verify} messages.
+         * Encodes the specified RenewDomainMsg message, length delimited. Does not implicitly {@link account.RenewDomainMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @static
-         * @param {blueaccount.IRenewDomainMsg} message RenewDomainMsg message or plain object to encode
+         * @param {account.IRenewDomainMsg} message RenewDomainMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -6511,18 +8524,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a RenewDomainMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.RenewDomainMsg} RenewDomainMsg
+         * @returns {account.RenewDomainMsg} RenewDomainMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         RenewDomainMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.RenewDomainMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.RenewDomainMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -6531,9 +8544,6 @@ $root.blueaccount = (function() {
                     break;
                 case 2:
                     message.domain = reader.string();
-                    break;
-                case 3:
-                    message.thirdPartyToken = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -6546,10 +8556,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a RenewDomainMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.RenewDomainMsg} RenewDomainMsg
+         * @returns {account.RenewDomainMsg} RenewDomainMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -6562,7 +8572,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a RenewDomainMsg message.
          * @function verify
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -6578,45 +8588,37 @@ $root.blueaccount = (function() {
             if (message.domain != null && message.hasOwnProperty("domain"))
                 if (!$util.isString(message.domain))
                     return "domain: string expected";
-            if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
-                if (!(message.thirdPartyToken && typeof message.thirdPartyToken.length === "number" || $util.isString(message.thirdPartyToken)))
-                    return "thirdPartyToken: buffer expected";
             return null;
         };
 
         /**
          * Creates a RenewDomainMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.RenewDomainMsg} RenewDomainMsg
+         * @returns {account.RenewDomainMsg} RenewDomainMsg
          */
         RenewDomainMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.RenewDomainMsg)
+            if (object instanceof $root.account.RenewDomainMsg)
                 return object;
-            var message = new $root.blueaccount.RenewDomainMsg();
+            var message = new $root.account.RenewDomainMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.RenewDomainMsg.metadata: object expected");
+                    throw TypeError(".account.RenewDomainMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.domain != null)
                 message.domain = String(object.domain);
-            if (object.thirdPartyToken != null)
-                if (typeof object.thirdPartyToken === "string")
-                    $util.base64.decode(object.thirdPartyToken, message.thirdPartyToken = $util.newBuffer($util.base64.length(object.thirdPartyToken)), 0);
-                else if (object.thirdPartyToken.length)
-                    message.thirdPartyToken = object.thirdPartyToken;
             return message;
         };
 
         /**
          * Creates a plain object from a RenewDomainMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @static
-         * @param {blueaccount.RenewDomainMsg} message RenewDomainMsg
+         * @param {account.RenewDomainMsg} message RenewDomainMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -6627,27 +8629,18 @@ $root.blueaccount = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 object.domain = "";
-                if (options.bytes === String)
-                    object.thirdPartyToken = "";
-                else {
-                    object.thirdPartyToken = [];
-                    if (options.bytes !== Array)
-                        object.thirdPartyToken = $util.newBuffer(object.thirdPartyToken);
-                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
             if (message.domain != null && message.hasOwnProperty("domain"))
                 object.domain = message.domain;
-            if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
-                object.thirdPartyToken = options.bytes === String ? $util.base64.encode(message.thirdPartyToken, 0, message.thirdPartyToken.length) : options.bytes === Array ? Array.prototype.slice.call(message.thirdPartyToken) : message.thirdPartyToken;
             return object;
         };
 
         /**
          * Converts this RenewDomainMsg to JSON.
          * @function toJSON
-         * @memberof blueaccount.RenewDomainMsg
+         * @memberof account.RenewDomainMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -6658,11 +8651,11 @@ $root.blueaccount = (function() {
         return RenewDomainMsg;
     })();
 
-    blueaccount.DeleteDomainMsg = (function() {
+    account.DeleteDomainMsg = (function() {
 
         /**
          * Properties of a DeleteDomainMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IDeleteDomainMsg
          * @property {weave.IMetadata|null} [metadata] DeleteDomainMsg metadata
          * @property {string|null} [domain] Name of the domain that is deleted.
@@ -6670,11 +8663,11 @@ $root.blueaccount = (function() {
 
         /**
          * Constructs a new DeleteDomainMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @classdesc that domain.
          * @implements IDeleteDomainMsg
          * @constructor
-         * @param {blueaccount.IDeleteDomainMsg=} [properties] Properties to set
+         * @param {account.IDeleteDomainMsg=} [properties] Properties to set
          */
         function DeleteDomainMsg(properties) {
             if (properties)
@@ -6686,7 +8679,7 @@ $root.blueaccount = (function() {
         /**
          * DeleteDomainMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @instance
          */
         DeleteDomainMsg.prototype.metadata = null;
@@ -6694,7 +8687,7 @@ $root.blueaccount = (function() {
         /**
          * Name of the domain that is deleted.
          * @member {string} domain
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @instance
          */
         DeleteDomainMsg.prototype.domain = "";
@@ -6702,21 +8695,21 @@ $root.blueaccount = (function() {
         /**
          * Creates a new DeleteDomainMsg instance using the specified properties.
          * @function create
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @static
-         * @param {blueaccount.IDeleteDomainMsg=} [properties] Properties to set
-         * @returns {blueaccount.DeleteDomainMsg} DeleteDomainMsg instance
+         * @param {account.IDeleteDomainMsg=} [properties] Properties to set
+         * @returns {account.DeleteDomainMsg} DeleteDomainMsg instance
          */
         DeleteDomainMsg.create = function create(properties) {
             return new DeleteDomainMsg(properties);
         };
 
         /**
-         * Encodes the specified DeleteDomainMsg message. Does not implicitly {@link blueaccount.DeleteDomainMsg.verify|verify} messages.
+         * Encodes the specified DeleteDomainMsg message. Does not implicitly {@link account.DeleteDomainMsg.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @static
-         * @param {blueaccount.IDeleteDomainMsg} message DeleteDomainMsg message or plain object to encode
+         * @param {account.IDeleteDomainMsg} message DeleteDomainMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -6731,11 +8724,11 @@ $root.blueaccount = (function() {
         };
 
         /**
-         * Encodes the specified DeleteDomainMsg message, length delimited. Does not implicitly {@link blueaccount.DeleteDomainMsg.verify|verify} messages.
+         * Encodes the specified DeleteDomainMsg message, length delimited. Does not implicitly {@link account.DeleteDomainMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @static
-         * @param {blueaccount.IDeleteDomainMsg} message DeleteDomainMsg message or plain object to encode
+         * @param {account.IDeleteDomainMsg} message DeleteDomainMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -6746,18 +8739,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a DeleteDomainMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.DeleteDomainMsg} DeleteDomainMsg
+         * @returns {account.DeleteDomainMsg} DeleteDomainMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         DeleteDomainMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.DeleteDomainMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.DeleteDomainMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -6778,10 +8771,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a DeleteDomainMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.DeleteDomainMsg} DeleteDomainMsg
+         * @returns {account.DeleteDomainMsg} DeleteDomainMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -6794,7 +8787,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a DeleteDomainMsg message.
          * @function verify
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -6816,18 +8809,18 @@ $root.blueaccount = (function() {
         /**
          * Creates a DeleteDomainMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.DeleteDomainMsg} DeleteDomainMsg
+         * @returns {account.DeleteDomainMsg} DeleteDomainMsg
          */
         DeleteDomainMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.DeleteDomainMsg)
+            if (object instanceof $root.account.DeleteDomainMsg)
                 return object;
-            var message = new $root.blueaccount.DeleteDomainMsg();
+            var message = new $root.account.DeleteDomainMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.DeleteDomainMsg.metadata: object expected");
+                    throw TypeError(".account.DeleteDomainMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.domain != null)
@@ -6838,9 +8831,9 @@ $root.blueaccount = (function() {
         /**
          * Creates a plain object from a DeleteDomainMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @static
-         * @param {blueaccount.DeleteDomainMsg} message DeleteDomainMsg
+         * @param {account.DeleteDomainMsg} message DeleteDomainMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -6862,7 +8855,7 @@ $root.blueaccount = (function() {
         /**
          * Converts this DeleteDomainMsg to JSON.
          * @function toJSON
-         * @memberof blueaccount.DeleteDomainMsg
+         * @memberof account.DeleteDomainMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -6873,27 +8866,27 @@ $root.blueaccount = (function() {
         return DeleteDomainMsg;
     })();
 
-    blueaccount.RegisterAccountMsg = (function() {
+    account.RegisterAccountMsg = (function() {
 
         /**
          * Properties of a RegisterAccountMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IRegisterAccountMsg
          * @property {weave.IMetadata|null} [metadata] RegisterAccountMsg metadata
          * @property {string|null} [domain] Domain that a new account is the be registered under.
          * @property {string|null} [name] Name that a new account is the be registered with.
          * @property {Uint8Array|null} [owner] leave the administration to the domain owner only.
-         * @property {Array.<blueaccount.IBlockchainAddress>|null} [targets] RegisterAccountMsg targets
-         * @property {Uint8Array|null} [thirdPartyToken] identify contribution of such party later.
+         * @property {Array.<account.IBlockchainAddress>|null} [targets] RegisterAccountMsg targets
+         * @property {Uint8Array|null} [thirdPartyToken] helps identify contribution of such party later.
          */
 
         /**
          * Constructs a new RegisterAccountMsg.
-         * @memberof blueaccount
-         * @classdesc exist and belong to the same user that signs this message.
+         * @memberof account
+         * @classdesc signed by the domain admin.
          * @implements IRegisterAccountMsg
          * @constructor
-         * @param {blueaccount.IRegisterAccountMsg=} [properties] Properties to set
+         * @param {account.IRegisterAccountMsg=} [properties] Properties to set
          */
         function RegisterAccountMsg(properties) {
             this.targets = [];
@@ -6906,7 +8899,7 @@ $root.blueaccount = (function() {
         /**
          * RegisterAccountMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @instance
          */
         RegisterAccountMsg.prototype.metadata = null;
@@ -6914,7 +8907,7 @@ $root.blueaccount = (function() {
         /**
          * Domain that a new account is the be registered under.
          * @member {string} domain
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @instance
          */
         RegisterAccountMsg.prototype.domain = "";
@@ -6922,7 +8915,7 @@ $root.blueaccount = (function() {
         /**
          * Name that a new account is the be registered with.
          * @member {string} name
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @instance
          */
         RegisterAccountMsg.prototype.name = "";
@@ -6930,23 +8923,23 @@ $root.blueaccount = (function() {
         /**
          * leave the administration to the domain owner only.
          * @member {Uint8Array} owner
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @instance
          */
         RegisterAccountMsg.prototype.owner = $util.newBuffer([]);
 
         /**
          * RegisterAccountMsg targets.
-         * @member {Array.<blueaccount.IBlockchainAddress>} targets
-         * @memberof blueaccount.RegisterAccountMsg
+         * @member {Array.<account.IBlockchainAddress>} targets
+         * @memberof account.RegisterAccountMsg
          * @instance
          */
         RegisterAccountMsg.prototype.targets = $util.emptyArray;
 
         /**
-         * identify contribution of such party later.
+         * helps identify contribution of such party later.
          * @member {Uint8Array} thirdPartyToken
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @instance
          */
         RegisterAccountMsg.prototype.thirdPartyToken = $util.newBuffer([]);
@@ -6954,21 +8947,21 @@ $root.blueaccount = (function() {
         /**
          * Creates a new RegisterAccountMsg instance using the specified properties.
          * @function create
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @static
-         * @param {blueaccount.IRegisterAccountMsg=} [properties] Properties to set
-         * @returns {blueaccount.RegisterAccountMsg} RegisterAccountMsg instance
+         * @param {account.IRegisterAccountMsg=} [properties] Properties to set
+         * @returns {account.RegisterAccountMsg} RegisterAccountMsg instance
          */
         RegisterAccountMsg.create = function create(properties) {
             return new RegisterAccountMsg(properties);
         };
 
         /**
-         * Encodes the specified RegisterAccountMsg message. Does not implicitly {@link blueaccount.RegisterAccountMsg.verify|verify} messages.
+         * Encodes the specified RegisterAccountMsg message. Does not implicitly {@link account.RegisterAccountMsg.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @static
-         * @param {blueaccount.IRegisterAccountMsg} message RegisterAccountMsg message or plain object to encode
+         * @param {account.IRegisterAccountMsg} message RegisterAccountMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -6985,18 +8978,18 @@ $root.blueaccount = (function() {
                 writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.owner);
             if (message.targets != null && message.targets.length)
                 for (var i = 0; i < message.targets.length; ++i)
-                    $root.blueaccount.BlockchainAddress.encode(message.targets[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                    $root.account.BlockchainAddress.encode(message.targets[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
                 writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.thirdPartyToken);
             return writer;
         };
 
         /**
-         * Encodes the specified RegisterAccountMsg message, length delimited. Does not implicitly {@link blueaccount.RegisterAccountMsg.verify|verify} messages.
+         * Encodes the specified RegisterAccountMsg message, length delimited. Does not implicitly {@link account.RegisterAccountMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @static
-         * @param {blueaccount.IRegisterAccountMsg} message RegisterAccountMsg message or plain object to encode
+         * @param {account.IRegisterAccountMsg} message RegisterAccountMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -7007,18 +9000,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a RegisterAccountMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.RegisterAccountMsg} RegisterAccountMsg
+         * @returns {account.RegisterAccountMsg} RegisterAccountMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         RegisterAccountMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.RegisterAccountMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.RegisterAccountMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -7037,7 +9030,7 @@ $root.blueaccount = (function() {
                 case 5:
                     if (!(message.targets && message.targets.length))
                         message.targets = [];
-                    message.targets.push($root.blueaccount.BlockchainAddress.decode(reader, reader.uint32()));
+                    message.targets.push($root.account.BlockchainAddress.decode(reader, reader.uint32()));
                     break;
                 case 6:
                     message.thirdPartyToken = reader.bytes();
@@ -7053,10 +9046,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a RegisterAccountMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.RegisterAccountMsg} RegisterAccountMsg
+         * @returns {account.RegisterAccountMsg} RegisterAccountMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -7069,7 +9062,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a RegisterAccountMsg message.
          * @function verify
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -7095,7 +9088,7 @@ $root.blueaccount = (function() {
                 if (!Array.isArray(message.targets))
                     return "targets: array expected";
                 for (var i = 0; i < message.targets.length; ++i) {
-                    var error = $root.blueaccount.BlockchainAddress.verify(message.targets[i]);
+                    var error = $root.account.BlockchainAddress.verify(message.targets[i]);
                     if (error)
                         return "targets." + error;
                 }
@@ -7109,18 +9102,18 @@ $root.blueaccount = (function() {
         /**
          * Creates a RegisterAccountMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.RegisterAccountMsg} RegisterAccountMsg
+         * @returns {account.RegisterAccountMsg} RegisterAccountMsg
          */
         RegisterAccountMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.RegisterAccountMsg)
+            if (object instanceof $root.account.RegisterAccountMsg)
                 return object;
-            var message = new $root.blueaccount.RegisterAccountMsg();
+            var message = new $root.account.RegisterAccountMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.RegisterAccountMsg.metadata: object expected");
+                    throw TypeError(".account.RegisterAccountMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.domain != null)
@@ -7134,12 +9127,12 @@ $root.blueaccount = (function() {
                     message.owner = object.owner;
             if (object.targets) {
                 if (!Array.isArray(object.targets))
-                    throw TypeError(".blueaccount.RegisterAccountMsg.targets: array expected");
+                    throw TypeError(".account.RegisterAccountMsg.targets: array expected");
                 message.targets = [];
                 for (var i = 0; i < object.targets.length; ++i) {
                     if (typeof object.targets[i] !== "object")
-                        throw TypeError(".blueaccount.RegisterAccountMsg.targets: object expected");
-                    message.targets[i] = $root.blueaccount.BlockchainAddress.fromObject(object.targets[i]);
+                        throw TypeError(".account.RegisterAccountMsg.targets: object expected");
+                    message.targets[i] = $root.account.BlockchainAddress.fromObject(object.targets[i]);
                 }
             }
             if (object.thirdPartyToken != null)
@@ -7153,9 +9146,9 @@ $root.blueaccount = (function() {
         /**
          * Creates a plain object from a RegisterAccountMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @static
-         * @param {blueaccount.RegisterAccountMsg} message RegisterAccountMsg
+         * @param {account.RegisterAccountMsg} message RegisterAccountMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -7195,7 +9188,7 @@ $root.blueaccount = (function() {
             if (message.targets && message.targets.length) {
                 object.targets = [];
                 for (var j = 0; j < message.targets.length; ++j)
-                    object.targets[j] = $root.blueaccount.BlockchainAddress.toObject(message.targets[j], options);
+                    object.targets[j] = $root.account.BlockchainAddress.toObject(message.targets[j], options);
             }
             if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
                 object.thirdPartyToken = options.bytes === String ? $util.base64.encode(message.thirdPartyToken, 0, message.thirdPartyToken.length) : options.bytes === Array ? Array.prototype.slice.call(message.thirdPartyToken) : message.thirdPartyToken;
@@ -7205,7 +9198,7 @@ $root.blueaccount = (function() {
         /**
          * Converts this RegisterAccountMsg to JSON.
          * @function toJSON
-         * @memberof blueaccount.RegisterAccountMsg
+         * @memberof account.RegisterAccountMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -7216,11 +9209,11 @@ $root.blueaccount = (function() {
         return RegisterAccountMsg;
     })();
 
-    blueaccount.TransferAccountMsg = (function() {
+    account.TransferAccountMsg = (function() {
 
         /**
          * Properties of a TransferAccountMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @interface ITransferAccountMsg
          * @property {weave.IMetadata|null} [metadata] TransferAccountMsg metadata
          * @property {string|null} [domain] TransferAccountMsg domain
@@ -7230,11 +9223,11 @@ $root.blueaccount = (function() {
 
         /**
          * Constructs a new TransferAccountMsg.
-         * @memberof blueaccount
-         * @classdesc permissions to administrate that account.
+         * @memberof account
+         * @classdesc transfer ownership. Domain admin can always transfer ownership.
          * @implements ITransferAccountMsg
          * @constructor
-         * @param {blueaccount.ITransferAccountMsg=} [properties] Properties to set
+         * @param {account.ITransferAccountMsg=} [properties] Properties to set
          */
         function TransferAccountMsg(properties) {
             if (properties)
@@ -7246,7 +9239,7 @@ $root.blueaccount = (function() {
         /**
          * TransferAccountMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @instance
          */
         TransferAccountMsg.prototype.metadata = null;
@@ -7254,7 +9247,7 @@ $root.blueaccount = (function() {
         /**
          * TransferAccountMsg domain.
          * @member {string} domain
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @instance
          */
         TransferAccountMsg.prototype.domain = "";
@@ -7262,7 +9255,7 @@ $root.blueaccount = (function() {
         /**
          * TransferAccountMsg name.
          * @member {string} name
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @instance
          */
         TransferAccountMsg.prototype.name = "";
@@ -7270,7 +9263,7 @@ $root.blueaccount = (function() {
         /**
          * transferred to.
          * @member {Uint8Array} newOwner
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @instance
          */
         TransferAccountMsg.prototype.newOwner = $util.newBuffer([]);
@@ -7278,21 +9271,21 @@ $root.blueaccount = (function() {
         /**
          * Creates a new TransferAccountMsg instance using the specified properties.
          * @function create
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @static
-         * @param {blueaccount.ITransferAccountMsg=} [properties] Properties to set
-         * @returns {blueaccount.TransferAccountMsg} TransferAccountMsg instance
+         * @param {account.ITransferAccountMsg=} [properties] Properties to set
+         * @returns {account.TransferAccountMsg} TransferAccountMsg instance
          */
         TransferAccountMsg.create = function create(properties) {
             return new TransferAccountMsg(properties);
         };
 
         /**
-         * Encodes the specified TransferAccountMsg message. Does not implicitly {@link blueaccount.TransferAccountMsg.verify|verify} messages.
+         * Encodes the specified TransferAccountMsg message. Does not implicitly {@link account.TransferAccountMsg.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @static
-         * @param {blueaccount.ITransferAccountMsg} message TransferAccountMsg message or plain object to encode
+         * @param {account.ITransferAccountMsg} message TransferAccountMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -7311,11 +9304,11 @@ $root.blueaccount = (function() {
         };
 
         /**
-         * Encodes the specified TransferAccountMsg message, length delimited. Does not implicitly {@link blueaccount.TransferAccountMsg.verify|verify} messages.
+         * Encodes the specified TransferAccountMsg message, length delimited. Does not implicitly {@link account.TransferAccountMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @static
-         * @param {blueaccount.ITransferAccountMsg} message TransferAccountMsg message or plain object to encode
+         * @param {account.ITransferAccountMsg} message TransferAccountMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -7326,18 +9319,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a TransferAccountMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.TransferAccountMsg} TransferAccountMsg
+         * @returns {account.TransferAccountMsg} TransferAccountMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         TransferAccountMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.TransferAccountMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.TransferAccountMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -7364,10 +9357,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a TransferAccountMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.TransferAccountMsg} TransferAccountMsg
+         * @returns {account.TransferAccountMsg} TransferAccountMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -7380,7 +9373,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a TransferAccountMsg message.
          * @function verify
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -7408,18 +9401,18 @@ $root.blueaccount = (function() {
         /**
          * Creates a TransferAccountMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.TransferAccountMsg} TransferAccountMsg
+         * @returns {account.TransferAccountMsg} TransferAccountMsg
          */
         TransferAccountMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.TransferAccountMsg)
+            if (object instanceof $root.account.TransferAccountMsg)
                 return object;
-            var message = new $root.blueaccount.TransferAccountMsg();
+            var message = new $root.account.TransferAccountMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.TransferAccountMsg.metadata: object expected");
+                    throw TypeError(".account.TransferAccountMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.domain != null)
@@ -7437,9 +9430,9 @@ $root.blueaccount = (function() {
         /**
          * Creates a plain object from a TransferAccountMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @static
-         * @param {blueaccount.TransferAccountMsg} message TransferAccountMsg
+         * @param {account.TransferAccountMsg} message TransferAccountMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -7473,7 +9466,7 @@ $root.blueaccount = (function() {
         /**
          * Converts this TransferAccountMsg to JSON.
          * @function toJSON
-         * @memberof blueaccount.TransferAccountMsg
+         * @memberof account.TransferAccountMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -7484,25 +9477,25 @@ $root.blueaccount = (function() {
         return TransferAccountMsg;
     })();
 
-    blueaccount.ReplaceAccountTargetsMsg = (function() {
+    account.ReplaceAccountTargetsMsg = (function() {
 
         /**
          * Properties of a ReplaceAccountTargetsMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IReplaceAccountTargetsMsg
          * @property {weave.IMetadata|null} [metadata] ReplaceAccountTargetsMsg metadata
          * @property {string|null} [domain] ReplaceAccountTargetsMsg domain
          * @property {string|null} [name] ReplaceAccountTargetsMsg name
-         * @property {Array.<blueaccount.IBlockchainAddress>|null} [newTargets] ReplaceAccountTargetsMsg newTargets
+         * @property {Array.<account.IBlockchainAddress>|null} [newTargets] ReplaceAccountTargetsMsg newTargets
          */
 
         /**
          * Constructs a new ReplaceAccountTargetsMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @classdesc account points to.
          * @implements IReplaceAccountTargetsMsg
          * @constructor
-         * @param {blueaccount.IReplaceAccountTargetsMsg=} [properties] Properties to set
+         * @param {account.IReplaceAccountTargetsMsg=} [properties] Properties to set
          */
         function ReplaceAccountTargetsMsg(properties) {
             this.newTargets = [];
@@ -7515,7 +9508,7 @@ $root.blueaccount = (function() {
         /**
          * ReplaceAccountTargetsMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @instance
          */
         ReplaceAccountTargetsMsg.prototype.metadata = null;
@@ -7523,7 +9516,7 @@ $root.blueaccount = (function() {
         /**
          * ReplaceAccountTargetsMsg domain.
          * @member {string} domain
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @instance
          */
         ReplaceAccountTargetsMsg.prototype.domain = "";
@@ -7531,15 +9524,15 @@ $root.blueaccount = (function() {
         /**
          * ReplaceAccountTargetsMsg name.
          * @member {string} name
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @instance
          */
         ReplaceAccountTargetsMsg.prototype.name = "";
 
         /**
          * ReplaceAccountTargetsMsg newTargets.
-         * @member {Array.<blueaccount.IBlockchainAddress>} newTargets
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @member {Array.<account.IBlockchainAddress>} newTargets
+         * @memberof account.ReplaceAccountTargetsMsg
          * @instance
          */
         ReplaceAccountTargetsMsg.prototype.newTargets = $util.emptyArray;
@@ -7547,21 +9540,21 @@ $root.blueaccount = (function() {
         /**
          * Creates a new ReplaceAccountTargetsMsg instance using the specified properties.
          * @function create
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @static
-         * @param {blueaccount.IReplaceAccountTargetsMsg=} [properties] Properties to set
-         * @returns {blueaccount.ReplaceAccountTargetsMsg} ReplaceAccountTargetsMsg instance
+         * @param {account.IReplaceAccountTargetsMsg=} [properties] Properties to set
+         * @returns {account.ReplaceAccountTargetsMsg} ReplaceAccountTargetsMsg instance
          */
         ReplaceAccountTargetsMsg.create = function create(properties) {
             return new ReplaceAccountTargetsMsg(properties);
         };
 
         /**
-         * Encodes the specified ReplaceAccountTargetsMsg message. Does not implicitly {@link blueaccount.ReplaceAccountTargetsMsg.verify|verify} messages.
+         * Encodes the specified ReplaceAccountTargetsMsg message. Does not implicitly {@link account.ReplaceAccountTargetsMsg.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @static
-         * @param {blueaccount.IReplaceAccountTargetsMsg} message ReplaceAccountTargetsMsg message or plain object to encode
+         * @param {account.IReplaceAccountTargetsMsg} message ReplaceAccountTargetsMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -7576,16 +9569,16 @@ $root.blueaccount = (function() {
                 writer.uint32(/* id 4, wireType 2 =*/34).string(message.name);
             if (message.newTargets != null && message.newTargets.length)
                 for (var i = 0; i < message.newTargets.length; ++i)
-                    $root.blueaccount.BlockchainAddress.encode(message.newTargets[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                    $root.account.BlockchainAddress.encode(message.newTargets[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             return writer;
         };
 
         /**
-         * Encodes the specified ReplaceAccountTargetsMsg message, length delimited. Does not implicitly {@link blueaccount.ReplaceAccountTargetsMsg.verify|verify} messages.
+         * Encodes the specified ReplaceAccountTargetsMsg message, length delimited. Does not implicitly {@link account.ReplaceAccountTargetsMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @static
-         * @param {blueaccount.IReplaceAccountTargetsMsg} message ReplaceAccountTargetsMsg message or plain object to encode
+         * @param {account.IReplaceAccountTargetsMsg} message ReplaceAccountTargetsMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -7596,18 +9589,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a ReplaceAccountTargetsMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.ReplaceAccountTargetsMsg} ReplaceAccountTargetsMsg
+         * @returns {account.ReplaceAccountTargetsMsg} ReplaceAccountTargetsMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         ReplaceAccountTargetsMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.ReplaceAccountTargetsMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.ReplaceAccountTargetsMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -7623,7 +9616,7 @@ $root.blueaccount = (function() {
                 case 5:
                     if (!(message.newTargets && message.newTargets.length))
                         message.newTargets = [];
-                    message.newTargets.push($root.blueaccount.BlockchainAddress.decode(reader, reader.uint32()));
+                    message.newTargets.push($root.account.BlockchainAddress.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -7636,10 +9629,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a ReplaceAccountTargetsMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.ReplaceAccountTargetsMsg} ReplaceAccountTargetsMsg
+         * @returns {account.ReplaceAccountTargetsMsg} ReplaceAccountTargetsMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -7652,7 +9645,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a ReplaceAccountTargetsMsg message.
          * @function verify
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -7675,7 +9668,7 @@ $root.blueaccount = (function() {
                 if (!Array.isArray(message.newTargets))
                     return "newTargets: array expected";
                 for (var i = 0; i < message.newTargets.length; ++i) {
-                    var error = $root.blueaccount.BlockchainAddress.verify(message.newTargets[i]);
+                    var error = $root.account.BlockchainAddress.verify(message.newTargets[i]);
                     if (error)
                         return "newTargets." + error;
                 }
@@ -7686,18 +9679,18 @@ $root.blueaccount = (function() {
         /**
          * Creates a ReplaceAccountTargetsMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.ReplaceAccountTargetsMsg} ReplaceAccountTargetsMsg
+         * @returns {account.ReplaceAccountTargetsMsg} ReplaceAccountTargetsMsg
          */
         ReplaceAccountTargetsMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.ReplaceAccountTargetsMsg)
+            if (object instanceof $root.account.ReplaceAccountTargetsMsg)
                 return object;
-            var message = new $root.blueaccount.ReplaceAccountTargetsMsg();
+            var message = new $root.account.ReplaceAccountTargetsMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.ReplaceAccountTargetsMsg.metadata: object expected");
+                    throw TypeError(".account.ReplaceAccountTargetsMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.domain != null)
@@ -7706,12 +9699,12 @@ $root.blueaccount = (function() {
                 message.name = String(object.name);
             if (object.newTargets) {
                 if (!Array.isArray(object.newTargets))
-                    throw TypeError(".blueaccount.ReplaceAccountTargetsMsg.newTargets: array expected");
+                    throw TypeError(".account.ReplaceAccountTargetsMsg.newTargets: array expected");
                 message.newTargets = [];
                 for (var i = 0; i < object.newTargets.length; ++i) {
                     if (typeof object.newTargets[i] !== "object")
-                        throw TypeError(".blueaccount.ReplaceAccountTargetsMsg.newTargets: object expected");
-                    message.newTargets[i] = $root.blueaccount.BlockchainAddress.fromObject(object.newTargets[i]);
+                        throw TypeError(".account.ReplaceAccountTargetsMsg.newTargets: object expected");
+                    message.newTargets[i] = $root.account.BlockchainAddress.fromObject(object.newTargets[i]);
                 }
             }
             return message;
@@ -7720,9 +9713,9 @@ $root.blueaccount = (function() {
         /**
          * Creates a plain object from a ReplaceAccountTargetsMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @static
-         * @param {blueaccount.ReplaceAccountTargetsMsg} message ReplaceAccountTargetsMsg
+         * @param {account.ReplaceAccountTargetsMsg} message ReplaceAccountTargetsMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -7746,7 +9739,7 @@ $root.blueaccount = (function() {
             if (message.newTargets && message.newTargets.length) {
                 object.newTargets = [];
                 for (var j = 0; j < message.newTargets.length; ++j)
-                    object.newTargets[j] = $root.blueaccount.BlockchainAddress.toObject(message.newTargets[j], options);
+                    object.newTargets[j] = $root.account.BlockchainAddress.toObject(message.newTargets[j], options);
             }
             return object;
         };
@@ -7754,7 +9747,7 @@ $root.blueaccount = (function() {
         /**
          * Converts this ReplaceAccountTargetsMsg to JSON.
          * @function toJSON
-         * @memberof blueaccount.ReplaceAccountTargetsMsg
+         * @memberof account.ReplaceAccountTargetsMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -7765,11 +9758,11 @@ $root.blueaccount = (function() {
         return ReplaceAccountTargetsMsg;
     })();
 
-    blueaccount.DeleteAccountMsg = (function() {
+    account.DeleteAccountMsg = (function() {
 
         /**
          * Properties of a DeleteAccountMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IDeleteAccountMsg
          * @property {weave.IMetadata|null} [metadata] DeleteAccountMsg metadata
          * @property {string|null} [domain] DeleteAccountMsg domain
@@ -7778,11 +9771,11 @@ $root.blueaccount = (function() {
 
         /**
          * Constructs a new DeleteAccountMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @classdesc Message must be signed by the domain owner.
          * @implements IDeleteAccountMsg
          * @constructor
-         * @param {blueaccount.IDeleteAccountMsg=} [properties] Properties to set
+         * @param {account.IDeleteAccountMsg=} [properties] Properties to set
          */
         function DeleteAccountMsg(properties) {
             if (properties)
@@ -7794,7 +9787,7 @@ $root.blueaccount = (function() {
         /**
          * DeleteAccountMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @instance
          */
         DeleteAccountMsg.prototype.metadata = null;
@@ -7802,7 +9795,7 @@ $root.blueaccount = (function() {
         /**
          * DeleteAccountMsg domain.
          * @member {string} domain
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @instance
          */
         DeleteAccountMsg.prototype.domain = "";
@@ -7810,7 +9803,7 @@ $root.blueaccount = (function() {
         /**
          * DeleteAccountMsg name.
          * @member {string} name
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @instance
          */
         DeleteAccountMsg.prototype.name = "";
@@ -7818,21 +9811,21 @@ $root.blueaccount = (function() {
         /**
          * Creates a new DeleteAccountMsg instance using the specified properties.
          * @function create
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @static
-         * @param {blueaccount.IDeleteAccountMsg=} [properties] Properties to set
-         * @returns {blueaccount.DeleteAccountMsg} DeleteAccountMsg instance
+         * @param {account.IDeleteAccountMsg=} [properties] Properties to set
+         * @returns {account.DeleteAccountMsg} DeleteAccountMsg instance
          */
         DeleteAccountMsg.create = function create(properties) {
             return new DeleteAccountMsg(properties);
         };
 
         /**
-         * Encodes the specified DeleteAccountMsg message. Does not implicitly {@link blueaccount.DeleteAccountMsg.verify|verify} messages.
+         * Encodes the specified DeleteAccountMsg message. Does not implicitly {@link account.DeleteAccountMsg.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @static
-         * @param {blueaccount.IDeleteAccountMsg} message DeleteAccountMsg message or plain object to encode
+         * @param {account.IDeleteAccountMsg} message DeleteAccountMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -7849,11 +9842,11 @@ $root.blueaccount = (function() {
         };
 
         /**
-         * Encodes the specified DeleteAccountMsg message, length delimited. Does not implicitly {@link blueaccount.DeleteAccountMsg.verify|verify} messages.
+         * Encodes the specified DeleteAccountMsg message, length delimited. Does not implicitly {@link account.DeleteAccountMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @static
-         * @param {blueaccount.IDeleteAccountMsg} message DeleteAccountMsg message or plain object to encode
+         * @param {account.IDeleteAccountMsg} message DeleteAccountMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -7864,18 +9857,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a DeleteAccountMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.DeleteAccountMsg} DeleteAccountMsg
+         * @returns {account.DeleteAccountMsg} DeleteAccountMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         DeleteAccountMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.DeleteAccountMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.DeleteAccountMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -7899,10 +9892,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a DeleteAccountMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.DeleteAccountMsg} DeleteAccountMsg
+         * @returns {account.DeleteAccountMsg} DeleteAccountMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -7915,7 +9908,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a DeleteAccountMsg message.
          * @function verify
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -7940,18 +9933,18 @@ $root.blueaccount = (function() {
         /**
          * Creates a DeleteAccountMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.DeleteAccountMsg} DeleteAccountMsg
+         * @returns {account.DeleteAccountMsg} DeleteAccountMsg
          */
         DeleteAccountMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.DeleteAccountMsg)
+            if (object instanceof $root.account.DeleteAccountMsg)
                 return object;
-            var message = new $root.blueaccount.DeleteAccountMsg();
+            var message = new $root.account.DeleteAccountMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.DeleteAccountMsg.metadata: object expected");
+                    throw TypeError(".account.DeleteAccountMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.domain != null)
@@ -7964,9 +9957,9 @@ $root.blueaccount = (function() {
         /**
          * Creates a plain object from a DeleteAccountMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @static
-         * @param {blueaccount.DeleteAccountMsg} message DeleteAccountMsg
+         * @param {account.DeleteAccountMsg} message DeleteAccountMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -7991,7 +9984,7 @@ $root.blueaccount = (function() {
         /**
          * Converts this DeleteAccountMsg to JSON.
          * @function toJSON
-         * @memberof blueaccount.DeleteAccountMsg
+         * @memberof account.DeleteAccountMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -8002,11 +9995,11 @@ $root.blueaccount = (function() {
         return DeleteAccountMsg;
     })();
 
-    blueaccount.FlushDomainMsg = (function() {
+    account.FlushDomainMsg = (function() {
 
         /**
          * Properties of a FlushDomainMsg.
-         * @memberof blueaccount
+         * @memberof account
          * @interface IFlushDomainMsg
          * @property {weave.IMetadata|null} [metadata] FlushDomainMsg metadata
          * @property {string|null} [domain] FlushDomainMsg domain
@@ -8014,11 +10007,11 @@ $root.blueaccount = (function() {
 
         /**
          * Constructs a new FlushDomainMsg.
-         * @memberof blueaccount
-         * @classdesc Message must be signed by the domain owner.
+         * @memberof account
+         * @classdesc Message must be signed by the domain admin.
          * @implements IFlushDomainMsg
          * @constructor
-         * @param {blueaccount.IFlushDomainMsg=} [properties] Properties to set
+         * @param {account.IFlushDomainMsg=} [properties] Properties to set
          */
         function FlushDomainMsg(properties) {
             if (properties)
@@ -8030,7 +10023,7 @@ $root.blueaccount = (function() {
         /**
          * FlushDomainMsg metadata.
          * @member {weave.IMetadata|null|undefined} metadata
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @instance
          */
         FlushDomainMsg.prototype.metadata = null;
@@ -8038,7 +10031,7 @@ $root.blueaccount = (function() {
         /**
          * FlushDomainMsg domain.
          * @member {string} domain
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @instance
          */
         FlushDomainMsg.prototype.domain = "";
@@ -8046,21 +10039,21 @@ $root.blueaccount = (function() {
         /**
          * Creates a new FlushDomainMsg instance using the specified properties.
          * @function create
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @static
-         * @param {blueaccount.IFlushDomainMsg=} [properties] Properties to set
-         * @returns {blueaccount.FlushDomainMsg} FlushDomainMsg instance
+         * @param {account.IFlushDomainMsg=} [properties] Properties to set
+         * @returns {account.FlushDomainMsg} FlushDomainMsg instance
          */
         FlushDomainMsg.create = function create(properties) {
             return new FlushDomainMsg(properties);
         };
 
         /**
-         * Encodes the specified FlushDomainMsg message. Does not implicitly {@link blueaccount.FlushDomainMsg.verify|verify} messages.
+         * Encodes the specified FlushDomainMsg message. Does not implicitly {@link account.FlushDomainMsg.verify|verify} messages.
          * @function encode
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @static
-         * @param {blueaccount.IFlushDomainMsg} message FlushDomainMsg message or plain object to encode
+         * @param {account.IFlushDomainMsg} message FlushDomainMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -8075,11 +10068,11 @@ $root.blueaccount = (function() {
         };
 
         /**
-         * Encodes the specified FlushDomainMsg message, length delimited. Does not implicitly {@link blueaccount.FlushDomainMsg.verify|verify} messages.
+         * Encodes the specified FlushDomainMsg message, length delimited. Does not implicitly {@link account.FlushDomainMsg.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @static
-         * @param {blueaccount.IFlushDomainMsg} message FlushDomainMsg message or plain object to encode
+         * @param {account.IFlushDomainMsg} message FlushDomainMsg message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
@@ -8090,18 +10083,18 @@ $root.blueaccount = (function() {
         /**
          * Decodes a FlushDomainMsg message from the specified reader or buffer.
          * @function decode
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {blueaccount.FlushDomainMsg} FlushDomainMsg
+         * @returns {account.FlushDomainMsg} FlushDomainMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         FlushDomainMsg.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.blueaccount.FlushDomainMsg();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.FlushDomainMsg();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -8122,10 +10115,10 @@ $root.blueaccount = (function() {
         /**
          * Decodes a FlushDomainMsg message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {blueaccount.FlushDomainMsg} FlushDomainMsg
+         * @returns {account.FlushDomainMsg} FlushDomainMsg
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
@@ -8138,7 +10131,7 @@ $root.blueaccount = (function() {
         /**
          * Verifies a FlushDomainMsg message.
          * @function verify
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
@@ -8160,18 +10153,18 @@ $root.blueaccount = (function() {
         /**
          * Creates a FlushDomainMsg message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {blueaccount.FlushDomainMsg} FlushDomainMsg
+         * @returns {account.FlushDomainMsg} FlushDomainMsg
          */
         FlushDomainMsg.fromObject = function fromObject(object) {
-            if (object instanceof $root.blueaccount.FlushDomainMsg)
+            if (object instanceof $root.account.FlushDomainMsg)
                 return object;
-            var message = new $root.blueaccount.FlushDomainMsg();
+            var message = new $root.account.FlushDomainMsg();
             if (object.metadata != null) {
                 if (typeof object.metadata !== "object")
-                    throw TypeError(".blueaccount.FlushDomainMsg.metadata: object expected");
+                    throw TypeError(".account.FlushDomainMsg.metadata: object expected");
                 message.metadata = $root.weave.Metadata.fromObject(object.metadata);
             }
             if (object.domain != null)
@@ -8182,9 +10175,9 @@ $root.blueaccount = (function() {
         /**
          * Creates a plain object from a FlushDomainMsg message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @static
-         * @param {blueaccount.FlushDomainMsg} message FlushDomainMsg
+         * @param {account.FlushDomainMsg} message FlushDomainMsg
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
@@ -8206,7 +10199,7 @@ $root.blueaccount = (function() {
         /**
          * Converts this FlushDomainMsg to JSON.
          * @function toJSON
-         * @memberof blueaccount.FlushDomainMsg
+         * @memberof account.FlushDomainMsg
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
@@ -8217,7 +10210,780 @@ $root.blueaccount = (function() {
         return FlushDomainMsg;
     })();
 
-    return blueaccount;
+    account.RenewAccountMsg = (function() {
+
+        /**
+         * Properties of a RenewAccountMsg.
+         * @memberof account
+         * @interface IRenewAccountMsg
+         * @property {weave.IMetadata|null} [metadata] RenewAccountMsg metadata
+         * @property {string|null} [domain] Name of the domain that is transferred.
+         * @property {string|null} [name] RenewAccountMsg name
+         */
+
+        /**
+         * Constructs a new RenewAccountMsg.
+         * @memberof account
+         * @classdesc period is defined by the domain that this account belongs to.
+         * @implements IRenewAccountMsg
+         * @constructor
+         * @param {account.IRenewAccountMsg=} [properties] Properties to set
+         */
+        function RenewAccountMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * RenewAccountMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof account.RenewAccountMsg
+         * @instance
+         */
+        RenewAccountMsg.prototype.metadata = null;
+
+        /**
+         * Name of the domain that is transferred.
+         * @member {string} domain
+         * @memberof account.RenewAccountMsg
+         * @instance
+         */
+        RenewAccountMsg.prototype.domain = "";
+
+        /**
+         * RenewAccountMsg name.
+         * @member {string} name
+         * @memberof account.RenewAccountMsg
+         * @instance
+         */
+        RenewAccountMsg.prototype.name = "";
+
+        /**
+         * Creates a new RenewAccountMsg instance using the specified properties.
+         * @function create
+         * @memberof account.RenewAccountMsg
+         * @static
+         * @param {account.IRenewAccountMsg=} [properties] Properties to set
+         * @returns {account.RenewAccountMsg} RenewAccountMsg instance
+         */
+        RenewAccountMsg.create = function create(properties) {
+            return new RenewAccountMsg(properties);
+        };
+
+        /**
+         * Encodes the specified RenewAccountMsg message. Does not implicitly {@link account.RenewAccountMsg.verify|verify} messages.
+         * @function encode
+         * @memberof account.RenewAccountMsg
+         * @static
+         * @param {account.IRenewAccountMsg} message RenewAccountMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RenewAccountMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.domain);
+            if (message.name != null && message.hasOwnProperty("name"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.name);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified RenewAccountMsg message, length delimited. Does not implicitly {@link account.RenewAccountMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof account.RenewAccountMsg
+         * @static
+         * @param {account.IRenewAccountMsg} message RenewAccountMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RenewAccountMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a RenewAccountMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof account.RenewAccountMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {account.RenewAccountMsg} RenewAccountMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RenewAccountMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.RenewAccountMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.domain = reader.string();
+                    break;
+                case 3:
+                    message.name = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a RenewAccountMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof account.RenewAccountMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {account.RenewAccountMsg} RenewAccountMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RenewAccountMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a RenewAccountMsg message.
+         * @function verify
+         * @memberof account.RenewAccountMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        RenewAccountMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                if (!$util.isString(message.domain))
+                    return "domain: string expected";
+            if (message.name != null && message.hasOwnProperty("name"))
+                if (!$util.isString(message.name))
+                    return "name: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a RenewAccountMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof account.RenewAccountMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {account.RenewAccountMsg} RenewAccountMsg
+         */
+        RenewAccountMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.account.RenewAccountMsg)
+                return object;
+            var message = new $root.account.RenewAccountMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".account.RenewAccountMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.domain != null)
+                message.domain = String(object.domain);
+            if (object.name != null)
+                message.name = String(object.name);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a RenewAccountMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof account.RenewAccountMsg
+         * @static
+         * @param {account.RenewAccountMsg} message RenewAccountMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        RenewAccountMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.domain = "";
+                object.name = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                object.domain = message.domain;
+            if (message.name != null && message.hasOwnProperty("name"))
+                object.name = message.name;
+            return object;
+        };
+
+        /**
+         * Converts this RenewAccountMsg to JSON.
+         * @function toJSON
+         * @memberof account.RenewAccountMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        RenewAccountMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return RenewAccountMsg;
+    })();
+
+    account.AddAccountCertificateMsg = (function() {
+
+        /**
+         * Properties of an AddAccountCertificateMsg.
+         * @memberof account
+         * @interface IAddAccountCertificateMsg
+         * @property {weave.IMetadata|null} [metadata] AddAccountCertificateMsg metadata
+         * @property {string|null} [domain] Domain that account belongs to.
+         * @property {string|null} [name] Account name.
+         * @property {Uint8Array|null} [certificate] Certificate content.
+         */
+
+        /**
+         * Constructs a new AddAccountCertificateMsg.
+         * @memberof account
+         * @classdesc Represents an AddAccountCertificateMsg.
+         * @implements IAddAccountCertificateMsg
+         * @constructor
+         * @param {account.IAddAccountCertificateMsg=} [properties] Properties to set
+         */
+        function AddAccountCertificateMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * AddAccountCertificateMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof account.AddAccountCertificateMsg
+         * @instance
+         */
+        AddAccountCertificateMsg.prototype.metadata = null;
+
+        /**
+         * Domain that account belongs to.
+         * @member {string} domain
+         * @memberof account.AddAccountCertificateMsg
+         * @instance
+         */
+        AddAccountCertificateMsg.prototype.domain = "";
+
+        /**
+         * Account name.
+         * @member {string} name
+         * @memberof account.AddAccountCertificateMsg
+         * @instance
+         */
+        AddAccountCertificateMsg.prototype.name = "";
+
+        /**
+         * Certificate content.
+         * @member {Uint8Array} certificate
+         * @memberof account.AddAccountCertificateMsg
+         * @instance
+         */
+        AddAccountCertificateMsg.prototype.certificate = $util.newBuffer([]);
+
+        /**
+         * Creates a new AddAccountCertificateMsg instance using the specified properties.
+         * @function create
+         * @memberof account.AddAccountCertificateMsg
+         * @static
+         * @param {account.IAddAccountCertificateMsg=} [properties] Properties to set
+         * @returns {account.AddAccountCertificateMsg} AddAccountCertificateMsg instance
+         */
+        AddAccountCertificateMsg.create = function create(properties) {
+            return new AddAccountCertificateMsg(properties);
+        };
+
+        /**
+         * Encodes the specified AddAccountCertificateMsg message. Does not implicitly {@link account.AddAccountCertificateMsg.verify|verify} messages.
+         * @function encode
+         * @memberof account.AddAccountCertificateMsg
+         * @static
+         * @param {account.IAddAccountCertificateMsg} message AddAccountCertificateMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        AddAccountCertificateMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.domain);
+            if (message.name != null && message.hasOwnProperty("name"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.name);
+            if (message.certificate != null && message.hasOwnProperty("certificate"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.certificate);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified AddAccountCertificateMsg message, length delimited. Does not implicitly {@link account.AddAccountCertificateMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof account.AddAccountCertificateMsg
+         * @static
+         * @param {account.IAddAccountCertificateMsg} message AddAccountCertificateMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        AddAccountCertificateMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an AddAccountCertificateMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof account.AddAccountCertificateMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {account.AddAccountCertificateMsg} AddAccountCertificateMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        AddAccountCertificateMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.AddAccountCertificateMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.domain = reader.string();
+                    break;
+                case 3:
+                    message.name = reader.string();
+                    break;
+                case 4:
+                    message.certificate = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an AddAccountCertificateMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof account.AddAccountCertificateMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {account.AddAccountCertificateMsg} AddAccountCertificateMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        AddAccountCertificateMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an AddAccountCertificateMsg message.
+         * @function verify
+         * @memberof account.AddAccountCertificateMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        AddAccountCertificateMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                if (!$util.isString(message.domain))
+                    return "domain: string expected";
+            if (message.name != null && message.hasOwnProperty("name"))
+                if (!$util.isString(message.name))
+                    return "name: string expected";
+            if (message.certificate != null && message.hasOwnProperty("certificate"))
+                if (!(message.certificate && typeof message.certificate.length === "number" || $util.isString(message.certificate)))
+                    return "certificate: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates an AddAccountCertificateMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof account.AddAccountCertificateMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {account.AddAccountCertificateMsg} AddAccountCertificateMsg
+         */
+        AddAccountCertificateMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.account.AddAccountCertificateMsg)
+                return object;
+            var message = new $root.account.AddAccountCertificateMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".account.AddAccountCertificateMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.domain != null)
+                message.domain = String(object.domain);
+            if (object.name != null)
+                message.name = String(object.name);
+            if (object.certificate != null)
+                if (typeof object.certificate === "string")
+                    $util.base64.decode(object.certificate, message.certificate = $util.newBuffer($util.base64.length(object.certificate)), 0);
+                else if (object.certificate.length)
+                    message.certificate = object.certificate;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an AddAccountCertificateMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof account.AddAccountCertificateMsg
+         * @static
+         * @param {account.AddAccountCertificateMsg} message AddAccountCertificateMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        AddAccountCertificateMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.domain = "";
+                object.name = "";
+                if (options.bytes === String)
+                    object.certificate = "";
+                else {
+                    object.certificate = [];
+                    if (options.bytes !== Array)
+                        object.certificate = $util.newBuffer(object.certificate);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                object.domain = message.domain;
+            if (message.name != null && message.hasOwnProperty("name"))
+                object.name = message.name;
+            if (message.certificate != null && message.hasOwnProperty("certificate"))
+                object.certificate = options.bytes === String ? $util.base64.encode(message.certificate, 0, message.certificate.length) : options.bytes === Array ? Array.prototype.slice.call(message.certificate) : message.certificate;
+            return object;
+        };
+
+        /**
+         * Converts this AddAccountCertificateMsg to JSON.
+         * @function toJSON
+         * @memberof account.AddAccountCertificateMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        AddAccountCertificateMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return AddAccountCertificateMsg;
+    })();
+
+    account.DeleteAccountCertificateMsg = (function() {
+
+        /**
+         * Properties of a DeleteAccountCertificateMsg.
+         * @memberof account
+         * @interface IDeleteAccountCertificateMsg
+         * @property {weave.IMetadata|null} [metadata] DeleteAccountCertificateMsg metadata
+         * @property {string|null} [domain] Domain that account belongs to.
+         * @property {string|null} [name] Account name.
+         * @property {Uint8Array|null} [certificateHash] of a certificate in order to identify it.
+         */
+
+        /**
+         * Constructs a new DeleteAccountCertificateMsg.
+         * @memberof account
+         * @classdesc Represents a DeleteAccountCertificateMsg.
+         * @implements IDeleteAccountCertificateMsg
+         * @constructor
+         * @param {account.IDeleteAccountCertificateMsg=} [properties] Properties to set
+         */
+        function DeleteAccountCertificateMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * DeleteAccountCertificateMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof account.DeleteAccountCertificateMsg
+         * @instance
+         */
+        DeleteAccountCertificateMsg.prototype.metadata = null;
+
+        /**
+         * Domain that account belongs to.
+         * @member {string} domain
+         * @memberof account.DeleteAccountCertificateMsg
+         * @instance
+         */
+        DeleteAccountCertificateMsg.prototype.domain = "";
+
+        /**
+         * Account name.
+         * @member {string} name
+         * @memberof account.DeleteAccountCertificateMsg
+         * @instance
+         */
+        DeleteAccountCertificateMsg.prototype.name = "";
+
+        /**
+         * of a certificate in order to identify it.
+         * @member {Uint8Array} certificateHash
+         * @memberof account.DeleteAccountCertificateMsg
+         * @instance
+         */
+        DeleteAccountCertificateMsg.prototype.certificateHash = $util.newBuffer([]);
+
+        /**
+         * Creates a new DeleteAccountCertificateMsg instance using the specified properties.
+         * @function create
+         * @memberof account.DeleteAccountCertificateMsg
+         * @static
+         * @param {account.IDeleteAccountCertificateMsg=} [properties] Properties to set
+         * @returns {account.DeleteAccountCertificateMsg} DeleteAccountCertificateMsg instance
+         */
+        DeleteAccountCertificateMsg.create = function create(properties) {
+            return new DeleteAccountCertificateMsg(properties);
+        };
+
+        /**
+         * Encodes the specified DeleteAccountCertificateMsg message. Does not implicitly {@link account.DeleteAccountCertificateMsg.verify|verify} messages.
+         * @function encode
+         * @memberof account.DeleteAccountCertificateMsg
+         * @static
+         * @param {account.IDeleteAccountCertificateMsg} message DeleteAccountCertificateMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DeleteAccountCertificateMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.domain);
+            if (message.name != null && message.hasOwnProperty("name"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.name);
+            if (message.certificateHash != null && message.hasOwnProperty("certificateHash"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.certificateHash);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified DeleteAccountCertificateMsg message, length delimited. Does not implicitly {@link account.DeleteAccountCertificateMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof account.DeleteAccountCertificateMsg
+         * @static
+         * @param {account.IDeleteAccountCertificateMsg} message DeleteAccountCertificateMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DeleteAccountCertificateMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a DeleteAccountCertificateMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof account.DeleteAccountCertificateMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {account.DeleteAccountCertificateMsg} DeleteAccountCertificateMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DeleteAccountCertificateMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.account.DeleteAccountCertificateMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.domain = reader.string();
+                    break;
+                case 3:
+                    message.name = reader.string();
+                    break;
+                case 4:
+                    message.certificateHash = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a DeleteAccountCertificateMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof account.DeleteAccountCertificateMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {account.DeleteAccountCertificateMsg} DeleteAccountCertificateMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DeleteAccountCertificateMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a DeleteAccountCertificateMsg message.
+         * @function verify
+         * @memberof account.DeleteAccountCertificateMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        DeleteAccountCertificateMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                if (!$util.isString(message.domain))
+                    return "domain: string expected";
+            if (message.name != null && message.hasOwnProperty("name"))
+                if (!$util.isString(message.name))
+                    return "name: string expected";
+            if (message.certificateHash != null && message.hasOwnProperty("certificateHash"))
+                if (!(message.certificateHash && typeof message.certificateHash.length === "number" || $util.isString(message.certificateHash)))
+                    return "certificateHash: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a DeleteAccountCertificateMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof account.DeleteAccountCertificateMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {account.DeleteAccountCertificateMsg} DeleteAccountCertificateMsg
+         */
+        DeleteAccountCertificateMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.account.DeleteAccountCertificateMsg)
+                return object;
+            var message = new $root.account.DeleteAccountCertificateMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".account.DeleteAccountCertificateMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.domain != null)
+                message.domain = String(object.domain);
+            if (object.name != null)
+                message.name = String(object.name);
+            if (object.certificateHash != null)
+                if (typeof object.certificateHash === "string")
+                    $util.base64.decode(object.certificateHash, message.certificateHash = $util.newBuffer($util.base64.length(object.certificateHash)), 0);
+                else if (object.certificateHash.length)
+                    message.certificateHash = object.certificateHash;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a DeleteAccountCertificateMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof account.DeleteAccountCertificateMsg
+         * @static
+         * @param {account.DeleteAccountCertificateMsg} message DeleteAccountCertificateMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        DeleteAccountCertificateMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.domain = "";
+                object.name = "";
+                if (options.bytes === String)
+                    object.certificateHash = "";
+                else {
+                    object.certificateHash = [];
+                    if (options.bytes !== Array)
+                        object.certificateHash = $util.newBuffer(object.certificateHash);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                object.domain = message.domain;
+            if (message.name != null && message.hasOwnProperty("name"))
+                object.name = message.name;
+            if (message.certificateHash != null && message.hasOwnProperty("certificateHash"))
+                object.certificateHash = options.bytes === String ? $util.base64.encode(message.certificateHash, 0, message.certificateHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.certificateHash) : message.certificateHash;
+            return object;
+        };
+
+        /**
+         * Converts this DeleteAccountCertificateMsg to JSON.
+         * @function toJSON
+         * @memberof account.DeleteAccountCertificateMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        DeleteAccountCertificateMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return DeleteAccountCertificateMsg;
+    })();
+
+    return account;
 })();
 
 $root.username = (function() {
@@ -8716,7 +11482,6 @@ $root.username = (function() {
          * @property {weave.IMetadata|null} [metadata] RegisterTokenMsg metadata
          * @property {string|null} [username] Username is the unique name of the token, for example alice*iov
          * @property {Array.<username.IBlockchainAddress>|null} [targets] Targets is a blockchain address list that this token should point to.
-         * @property {Uint8Array|null} [owner] Owner is the address that the newly created token will belong to.
          */
 
         /**
@@ -8760,14 +11525,6 @@ $root.username = (function() {
         RegisterTokenMsg.prototype.targets = $util.emptyArray;
 
         /**
-         * Owner is the address that the newly created token will belong to.
-         * @member {Uint8Array} owner
-         * @memberof username.RegisterTokenMsg
-         * @instance
-         */
-        RegisterTokenMsg.prototype.owner = $util.newBuffer([]);
-
-        /**
          * Creates a new RegisterTokenMsg instance using the specified properties.
          * @function create
          * @memberof username.RegisterTokenMsg
@@ -8798,8 +11555,6 @@ $root.username = (function() {
             if (message.targets != null && message.targets.length)
                 for (var i = 0; i < message.targets.length; ++i)
                     $root.username.BlockchainAddress.encode(message.targets[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.owner);
             return writer;
         };
 
@@ -8844,9 +11599,6 @@ $root.username = (function() {
                     if (!(message.targets && message.targets.length))
                         message.targets = [];
                     message.targets.push($root.username.BlockchainAddress.decode(reader, reader.uint32()));
-                    break;
-                case 4:
-                    message.owner = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -8900,9 +11652,6 @@ $root.username = (function() {
                         return "targets." + error;
                 }
             }
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
-                    return "owner: buffer expected";
             return null;
         };
 
@@ -8935,11 +11684,6 @@ $root.username = (function() {
                     message.targets[i] = $root.username.BlockchainAddress.fromObject(object.targets[i]);
                 }
             }
-            if (object.owner != null)
-                if (typeof object.owner === "string")
-                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
-                else if (object.owner.length)
-                    message.owner = object.owner;
             return message;
         };
 
@@ -8961,13 +11705,6 @@ $root.username = (function() {
             if (options.defaults) {
                 object.metadata = null;
                 object.username = "";
-                if (options.bytes === String)
-                    object.owner = "";
-                else {
-                    object.owner = [];
-                    if (options.bytes !== Array)
-                        object.owner = $util.newBuffer(object.owner);
-                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -8978,8 +11715,6 @@ $root.username = (function() {
                 for (var j = 0; j < message.targets.length; ++j)
                     object.targets[j] = $root.username.BlockchainAddress.toObject(message.targets[j], options);
             }
-            if (message.owner != null && message.hasOwnProperty("owner"))
-                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
             return object;
         };
 
@@ -11754,6 +14489,425 @@ $root.crypto = (function() {
     })();
 
     return crypto;
+})();
+
+$root.datamigration = (function() {
+
+    /**
+     * Namespace datamigration.
+     * @exports datamigration
+     * @namespace
+     */
+    var datamigration = {};
+
+    datamigration.ExecutedMigration = (function() {
+
+        /**
+         * Properties of an ExecutedMigration.
+         * @memberof datamigration
+         * @interface IExecutedMigration
+         * @property {weave.IMetadata|null} [metadata] ExecutedMigration metadata
+         */
+
+        /**
+         * Constructs a new ExecutedMigration.
+         * @memberof datamigration
+         * @classdesc Represents an ExecutedMigration.
+         * @implements IExecutedMigration
+         * @constructor
+         * @param {datamigration.IExecutedMigration=} [properties] Properties to set
+         */
+        function ExecutedMigration(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ExecutedMigration metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof datamigration.ExecutedMigration
+         * @instance
+         */
+        ExecutedMigration.prototype.metadata = null;
+
+        /**
+         * Creates a new ExecutedMigration instance using the specified properties.
+         * @function create
+         * @memberof datamigration.ExecutedMigration
+         * @static
+         * @param {datamigration.IExecutedMigration=} [properties] Properties to set
+         * @returns {datamigration.ExecutedMigration} ExecutedMigration instance
+         */
+        ExecutedMigration.create = function create(properties) {
+            return new ExecutedMigration(properties);
+        };
+
+        /**
+         * Encodes the specified ExecutedMigration message. Does not implicitly {@link datamigration.ExecutedMigration.verify|verify} messages.
+         * @function encode
+         * @memberof datamigration.ExecutedMigration
+         * @static
+         * @param {datamigration.IExecutedMigration} message ExecutedMigration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ExecutedMigration.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ExecutedMigration message, length delimited. Does not implicitly {@link datamigration.ExecutedMigration.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof datamigration.ExecutedMigration
+         * @static
+         * @param {datamigration.IExecutedMigration} message ExecutedMigration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ExecutedMigration.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an ExecutedMigration message from the specified reader or buffer.
+         * @function decode
+         * @memberof datamigration.ExecutedMigration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {datamigration.ExecutedMigration} ExecutedMigration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ExecutedMigration.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.datamigration.ExecutedMigration();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an ExecutedMigration message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof datamigration.ExecutedMigration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {datamigration.ExecutedMigration} ExecutedMigration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ExecutedMigration.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an ExecutedMigration message.
+         * @function verify
+         * @memberof datamigration.ExecutedMigration
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ExecutedMigration.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates an ExecutedMigration message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof datamigration.ExecutedMigration
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {datamigration.ExecutedMigration} ExecutedMigration
+         */
+        ExecutedMigration.fromObject = function fromObject(object) {
+            if (object instanceof $root.datamigration.ExecutedMigration)
+                return object;
+            var message = new $root.datamigration.ExecutedMigration();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".datamigration.ExecutedMigration.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an ExecutedMigration message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof datamigration.ExecutedMigration
+         * @static
+         * @param {datamigration.ExecutedMigration} message ExecutedMigration
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ExecutedMigration.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults)
+                object.metadata = null;
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            return object;
+        };
+
+        /**
+         * Converts this ExecutedMigration to JSON.
+         * @function toJSON
+         * @memberof datamigration.ExecutedMigration
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ExecutedMigration.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ExecutedMigration;
+    })();
+
+    datamigration.ExecuteMigrationMsg = (function() {
+
+        /**
+         * Properties of an ExecuteMigrationMsg.
+         * @memberof datamigration
+         * @interface IExecuteMigrationMsg
+         * @property {weave.IMetadata|null} [metadata] ExecuteMigrationMsg metadata
+         * @property {string|null} [migrationId] ExecuteMigrationMsg migrationId
+         */
+
+        /**
+         * Constructs a new ExecuteMigrationMsg.
+         * @memberof datamigration
+         * @classdesc Represents an ExecuteMigrationMsg.
+         * @implements IExecuteMigrationMsg
+         * @constructor
+         * @param {datamigration.IExecuteMigrationMsg=} [properties] Properties to set
+         */
+        function ExecuteMigrationMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ExecuteMigrationMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @instance
+         */
+        ExecuteMigrationMsg.prototype.metadata = null;
+
+        /**
+         * ExecuteMigrationMsg migrationId.
+         * @member {string} migrationId
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @instance
+         */
+        ExecuteMigrationMsg.prototype.migrationId = "";
+
+        /**
+         * Creates a new ExecuteMigrationMsg instance using the specified properties.
+         * @function create
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @static
+         * @param {datamigration.IExecuteMigrationMsg=} [properties] Properties to set
+         * @returns {datamigration.ExecuteMigrationMsg} ExecuteMigrationMsg instance
+         */
+        ExecuteMigrationMsg.create = function create(properties) {
+            return new ExecuteMigrationMsg(properties);
+        };
+
+        /**
+         * Encodes the specified ExecuteMigrationMsg message. Does not implicitly {@link datamigration.ExecuteMigrationMsg.verify|verify} messages.
+         * @function encode
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @static
+         * @param {datamigration.IExecuteMigrationMsg} message ExecuteMigrationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ExecuteMigrationMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.migrationId != null && message.hasOwnProperty("migrationId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.migrationId);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ExecuteMigrationMsg message, length delimited. Does not implicitly {@link datamigration.ExecuteMigrationMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @static
+         * @param {datamigration.IExecuteMigrationMsg} message ExecuteMigrationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ExecuteMigrationMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an ExecuteMigrationMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {datamigration.ExecuteMigrationMsg} ExecuteMigrationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ExecuteMigrationMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.datamigration.ExecuteMigrationMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.migrationId = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an ExecuteMigrationMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {datamigration.ExecuteMigrationMsg} ExecuteMigrationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ExecuteMigrationMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an ExecuteMigrationMsg message.
+         * @function verify
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ExecuteMigrationMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.migrationId != null && message.hasOwnProperty("migrationId"))
+                if (!$util.isString(message.migrationId))
+                    return "migrationId: string expected";
+            return null;
+        };
+
+        /**
+         * Creates an ExecuteMigrationMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {datamigration.ExecuteMigrationMsg} ExecuteMigrationMsg
+         */
+        ExecuteMigrationMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.datamigration.ExecuteMigrationMsg)
+                return object;
+            var message = new $root.datamigration.ExecuteMigrationMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".datamigration.ExecuteMigrationMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.migrationId != null)
+                message.migrationId = String(object.migrationId);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an ExecuteMigrationMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @static
+         * @param {datamigration.ExecuteMigrationMsg} message ExecuteMigrationMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ExecuteMigrationMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.migrationId = "";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.migrationId != null && message.hasOwnProperty("migrationId"))
+                object.migrationId = message.migrationId;
+            return object;
+        };
+
+        /**
+         * Converts this ExecuteMigrationMsg to JSON.
+         * @function toJSON
+         * @memberof datamigration.ExecuteMigrationMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ExecuteMigrationMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ExecuteMigrationMsg;
+    })();
+
+    return datamigration;
 })();
 
 $root.migration = (function() {
