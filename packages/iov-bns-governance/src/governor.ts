@@ -272,6 +272,7 @@ export class Governor {
         chainId: this.identity.chainId,
         proposalId: proposalId,
         selection: selection,
+        voter: this.address,
       },
       this.address,
     );

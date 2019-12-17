@@ -9,6 +9,6 @@ export declare function encodeParticipants(
   participants: readonly Participant[],
 ): codecImpl.multisig.IParticipant[];
 export declare function encodeNumericId(id: number): Uint8Array;
-export declare function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx;
+export declare function buildMsg(tx: UnsignedTransaction, strictMode?: boolean): codecImpl.bnsd.ITx;
 export declare function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx;
 export declare function buildSignedTx(tx: SignedTransaction): codecImpl.bnsd.ITx;

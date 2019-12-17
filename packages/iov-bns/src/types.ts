@@ -456,6 +456,12 @@ export interface VoteTx extends UnsignedTransaction {
   readonly kind: "bns/vote";
   readonly proposalId: number;
   readonly selection: VoteOption;
+  /**
+   * Voter should be set explicitly to avoid falling back to the first signer,
+   * which is potentially insecure. When encoding a new transaction, this field
+   * is required. Not all transaction from blockchain history have a voter set.
+   */
+  readonly voter: Address | null;
 }
 
 export function isVoteTx(transaction: UnsignedTransaction): transaction is VoteTx {

@@ -1165,6 +1165,7 @@ describe("BnsConnection (post txs)", () => {
             chainId: chainId,
             proposalId: proposalId,
             selection: VoteOption.Yes,
+            voter: authorAddress,
           },
           authorAddress,
         );
@@ -1257,6 +1258,7 @@ describe("BnsConnection (post txs)", () => {
             chainId: chainId,
             proposalId: proposalId1,
             selection: VoteOption.Yes,
+            voter: authorAddress,
           },
           authorAddress,
         );
@@ -1331,6 +1333,7 @@ describe("BnsConnection (post txs)", () => {
             chainId: chainId,
             proposalId: proposalId2,
             selection: VoteOption.Yes,
+            voter: authorAddress,
           },
           authorAddress,
         );

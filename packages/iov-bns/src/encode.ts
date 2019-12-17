@@ -431,17 +431,21 @@ function encodeVoteOption(option: VoteOption): codecImpl.gov.VoteOption {
   }
 }
 
-function buildVoteTx(tx: VoteTx): codecImpl.bnsd.ITx {
+function buildVoteTx(tx: VoteTx, strictMode: boolean): codecImpl.bnsd.ITx {
+  if (strictMode) {
+    if (!tx.voter) throw new Error("In strict mode VoteTx.voter must be set");
+  }
   return {
     govVoteMsg: {
       metadata: { schema: 1 },
       proposalId: encodeNumericId(tx.proposalId),
       selected: encodeVoteOption(tx.selection),
+      voter: tx.voter ? decodeBnsAddress(tx.voter).data : undefined,
     },
   };
 }
 
-export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
+export function buildMsg(tx: UnsignedTransaction, strictMode = true): codecImpl.bnsd.ITx {
   if (!isBnsTx(tx)) {
     throw new Error("Transaction is not a BNS transaction");
   }
@@ -487,7 +491,7 @@ export function buildMsg(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
     case "bns/create_proposal":
       return buildCreateProposalTx(tx);
     case "bns/vote":
-      return buildVoteTx(tx);
+      return buildVoteTx(tx, strictMode);
 
     default:
       throw new Error("Received transaction of unsupported kind.");

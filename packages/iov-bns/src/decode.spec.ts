@@ -66,6 +66,12 @@ import {
 
 const { fromHex, toUtf8 } = Encoding;
 
+/** A random user on an IOV testnet */
+const alice = {
+  bin: fromHex("ae8cf0f2d436db9ecbbe118cf1d1637d568797c9"),
+  bech32: "tiov146x0puk5xmdeaja7zxx0r5tr04tg097fralsxd" as Address,
+};
+
 describe("Decode", () => {
   it("decodes username NFT", () => {
     const nft: codecImpl.username.IToken & Keyed = {
@@ -1131,20 +1137,49 @@ describe("Decode", () => {
       });
     });
 
-    it("works for VoteTx", () => {
-      const transactionMessage: codecImpl.bnsd.ITx = {
-        govVoteMsg: {
-          metadata: { schema: 1 },
-          proposalId: fromHex("0000aabbddeeffff"),
-          selected: codecImpl.gov.VoteOption.VOTE_OPTION_YES,
-        },
-      };
-      const parsed = parseMsg(defaultBaseTx, transactionMessage);
-      if (!isVoteTx(parsed)) {
-        throw new Error("unexpected transaction kind");
-      }
-      expect(parsed.selection).toEqual(VoteOption.Yes);
-      expect(parsed.proposalId).toEqual(187723859034111);
+    describe("VoteTx", () => {
+      it("works for VoteTx with no voter set", () => {
+        const transactionMessage: codecImpl.bnsd.ITx = {
+          govVoteMsg: {
+            metadata: { schema: 1 },
+            proposalId: fromHex("0000aabbddeeffff"),
+            selected: codecImpl.gov.VoteOption.VOTE_OPTION_YES,
+          },
+        };
+        const parsed = parseMsg(defaultBaseTx, transactionMessage);
+        if (!isVoteTx(parsed)) {
+          throw new Error("unexpected transaction kind");
+        }
+        expect(parsed).toEqual(
+          jasmine.objectContaining({
+            selection: VoteOption.Yes,
+            proposalId: 187723859034111,
+            voter: null,
+          }),
+        );
+      });
+
+      it("works for VoteTx with voter set", () => {
+        const transactionMessage: codecImpl.bnsd.ITx = {
+          govVoteMsg: {
+            metadata: { schema: 1 },
+            proposalId: fromHex("0000aabbddeeffff"),
+            selected: codecImpl.gov.VoteOption.VOTE_OPTION_YES,
+            voter: alice.bin,
+          },
+        };
+        const parsed = parseMsg(defaultBaseTx, transactionMessage);
+        if (!isVoteTx(parsed)) {
+          throw new Error("unexpected transaction kind");
+        }
+        expect(parsed).toEqual(
+          jasmine.objectContaining({
+            selection: VoteOption.Yes,
+            proposalId: 187723859034111,
+            voter: alice.bech32,
+          }),
+        );
+      });
     });
   });
 });
