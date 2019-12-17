@@ -18,6 +18,7 @@ import {
   SwapOfferTransaction,
   TokenTicker,
 } from "@iov/bcp";
+import { Ed25519, Ed25519Keypair } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import data from "./testdata/bnsd.json";
@@ -178,3 +179,16 @@ export const swapAbortTxJson: SignedTransaction = {
   transaction: swapAbort,
   signatures: [signedTxSig],
 };
+
+describe("testdata", () => {
+  it("has matching private key and public key", async () => {
+    const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
+    const { pubkey } = keypair;
+    // extracted pubkey should match serialized pubkey
+    expect(pubkey).toEqual(pubJson.data);
+    const msg = Uint8Array.from([12, 54, 98, 243, 11]);
+    const signature = await Ed25519.createSignature(msg, keypair);
+    const value = await Ed25519.verifySignature(signature, msg, pubkey);
+    expect(value).toEqual(true);
+  });
+});

@@ -91,6 +91,27 @@ describe("encode", () => {
       expect(encoded).toEqual(sendTxBin);
     });
 
+    it("matches sign bytes of testdata", async () => {
+      const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
+      const pubKey = pubJson.data;
+
+      const tx = buildUnsignedTx(sendTxJson);
+      const encoded = codecImpl.bnsd.Tx.encode(tx).finish();
+      const toSign = appendSignBytes(encoded, sendTxJson.chainId, signedTxSig.nonce);
+      // testvector output already has the sha-512 digest applied
+      const prehash = new Sha512(toSign).digest();
+      expect(prehash).toEqual(sendTxSignBytes);
+
+      // make sure we can validate this signature (our signBytes are correct)
+      const signature = signedTxSig.signature;
+      const valid = await Ed25519.verifySignature(signature, prehash, pubKey);
+      expect(valid).toEqual(true);
+
+      // make sure we can generate a compatible signature
+      const mySig = await Ed25519.createSignature(prehash, keypair);
+      expect(mySig).toEqual(signature);
+    });
+
     it("can encode transaction without fees", () => {
       const transaction: SendTransaction = {
         kind: "bcp/send",
@@ -203,40 +224,5 @@ describe("encode", () => {
       const encoded = Uint8Array.from(codecImpl.bnsd.Tx.encode(tx).finish());
       expect(encoded).toEqual(signedTxBin);
     });
-  });
-});
-
-// TODO: sort this section
-describe("Ensure crypto", () => {
-  it("private key and public key match", async () => {
-    const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
-    const { pubkey } = keypair;
-    // extracted pubkey should match serialized pubkey
-    expect(pubkey).toEqual(pubJson.data);
-    const msg = Uint8Array.from([12, 54, 98, 243, 11]);
-    const signature = await Ed25519.createSignature(msg, keypair);
-    const value = await Ed25519.verifySignature(signature, msg, pubkey);
-    expect(value).toBeTruthy();
-  });
-
-  it("sign bytes match", async () => {
-    const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
-    const pubKey = pubJson.data;
-
-    const tx = buildUnsignedTx(sendTxJson);
-    const encoded = codecImpl.bnsd.Tx.encode(tx).finish();
-    const toSign = appendSignBytes(encoded, sendTxJson.chainId, signedTxSig.nonce);
-    // testvector output already has the sha-512 digest applied
-    const prehash = new Sha512(toSign).digest();
-    expect(prehash).toEqual(sendTxSignBytes);
-
-    // make sure we can validate this signature (our signBytes are correct)
-    const signature = signedTxSig.signature;
-    const valid = await Ed25519.verifySignature(signature, prehash, pubKey);
-    expect(valid).toEqual(true);
-
-    // make sure we can generate a compatible signature
-    const mySig = await Ed25519.createSignature(prehash, keypair);
-    expect(mySig).toEqual(signature);
   });
 });
