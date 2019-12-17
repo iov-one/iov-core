@@ -1,5 +1,4 @@
 import {
-  Address,
   Hash,
   Preimage,
   SendTransaction,
@@ -11,22 +10,19 @@ import {
 } from "@iov/bcp";
 
 import {
-  asIntegerNumber,
   decodeAmount,
   decodeChainAddressPair,
-  decodeNumericId,
   decodeParticipants,
   decodeRawProposalOption,
-  ensure,
-} from "./decodinghelpers";
+  decodeVoteOption,
+} from "./decodeobjects";
+import { asIntegerNumber, decodeNumericId, ensure } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
   BnsdTxMsg,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
-  Elector,
-  Keyed,
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
@@ -34,11 +30,9 @@ import {
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
-  Vote,
-  VoteOption,
   VoteTx,
 } from "./types";
-import { addressPrefix, encodeBnsAddress, IovBech32Prefix } from "./util";
+import { addressPrefix, encodeBnsAddress } from "./util";
 
 // Token sends
 
@@ -234,47 +228,6 @@ function parseCreateProposalTx(
     electionRuleId: decodeNumericId(ensure(msg.electionRuleId, "electionRuleId")),
     startTime: asIntegerNumber(ensure(msg.startTime, "startTime")),
     author: encodeBnsAddress(prefix, ensure(msg.author, "author")),
-  };
-}
-
-function decodeVoteOption(option: codecImpl.gov.VoteOption): VoteOption {
-  switch (option) {
-    case codecImpl.gov.VoteOption.VOTE_OPTION_INVALID:
-      throw new Error("VOTE_OPTION_INVALID is not allowed");
-    case codecImpl.gov.VoteOption.VOTE_OPTION_YES:
-      return VoteOption.Yes;
-    case codecImpl.gov.VoteOption.VOTE_OPTION_NO:
-      return VoteOption.No;
-    case codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN:
-      return VoteOption.Abstain;
-    default:
-      throw new Error("Received unknown value for vote option");
-  }
-}
-
-function decodeVoteId(
-  prefix: IovBech32Prefix,
-  id: Uint8Array,
-): { readonly voterAddress: Address; readonly proposalId: number } {
-  return {
-    voterAddress: encodeBnsAddress(prefix, id.slice(0, 20)),
-    proposalId: decodeNumericId(id.slice(20)),
-  };
-}
-
-function decodeElector(prefix: IovBech32Prefix, elector: codecImpl.gov.IElector): Elector {
-  return {
-    address: encodeBnsAddress(prefix, ensure(elector.address, "address")),
-    weight: ensure(elector.weight, "weight"),
-  };
-}
-
-export function decodeVote(prefix: IovBech32Prefix, vote: codecImpl.gov.IVote & Keyed): Vote {
-  const { proposalId } = decodeVoteId(prefix, vote._id);
-  return {
-    proposalId: proposalId,
-    selection: decodeVoteOption(ensure(vote.voted, "voted")),
-    elector: decodeElector(prefix, ensure(vote.elector, "elector")),
   };
 }
 
