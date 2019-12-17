@@ -10,3 +10,7 @@ import { Derivation } from "./derivation";
  * in the user interface we work with plain strings here.
  */
 export declare const passphraseToKeypair: typeof Derivation.passphraseToKeypair;
+/**
+ * Creates a Lisk address from a given Ed25519 pubkey
+ */
+export declare const pubkeyToAddress: typeof Derivation.pubkeyToAddress;
