@@ -48,6 +48,13 @@ import {
 } from "./types";
 import { decodeBnsAddress } from "./util";
 
+/**
+ * The message part of a bnsd.Tx
+ *
+ * @see https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.24.0/docs/proto/index.html#bnsd.Tx
+ */
+export type BnsdTxMsg = Omit<codecImpl.bnsd.ITx, "fees" | "signatures" | "multisig">;
+
 function encodeInt(intNumber: number): number | null {
   if (!Number.isInteger(intNumber)) {
     throw new Error("Received some kind of number that can't be encoded.");
@@ -141,7 +148,7 @@ export function encodeNumericId(id: number): Uint8Array {
 
 // Token sends
 
-function buildSendTransaction(tx: SendTransaction): codecImpl.bnsd.ITx {
+function buildSendTransaction(tx: SendTransaction): BnsdTxMsg {
   return {
     cashSendMsg: codecImpl.cash.SendMsg.create({
       metadata: { schema: 1 },
@@ -155,7 +162,7 @@ function buildSendTransaction(tx: SendTransaction): codecImpl.bnsd.ITx {
 
 // Atomic swaps
 
-function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.bnsd.ITx {
+function buildSwapOfferTx(tx: SwapOfferTransaction): BnsdTxMsg {
   if (!isTimestampTimeout(tx.timeout)) {
     throw new Error("Got unsupported timeout type");
   }
@@ -173,7 +180,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction): codecImpl.bnsd.ITx {
   };
 }
 
-function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.bnsd.ITx {
+function buildSwapClaimTx(tx: SwapClaimTransaction): BnsdTxMsg {
   return {
     aswapReleaseMsg: codecImpl.aswap.ReleaseMsg.create({
       metadata: { schema: 1 },
@@ -183,7 +190,7 @@ function buildSwapClaimTx(tx: SwapClaimTransaction): codecImpl.bnsd.ITx {
   };
 }
 
-function buildSwapAbortTransaction(tx: SwapAbortTransaction): codecImpl.bnsd.ITx {
+function buildSwapAbortTransaction(tx: SwapAbortTransaction): BnsdTxMsg {
   return {
     aswapReturnMsg: codecImpl.aswap.ReturnMsg.create({
       metadata: { schema: 1 },
@@ -201,7 +208,7 @@ function encodeChainAddressPair(pair: ChainAddressPair): codecImpl.username.IBlo
   };
 }
 
-function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.bnsd.ITx {
+function buildRegisterUsernameTx(tx: RegisterUsernameTx): BnsdTxMsg {
   if (!tx.username.endsWith("*iov")) {
     throw new Error(
       "Starting with IOV-Core 0.16, the username property needs to be a full human readable address, including the namespace suffix (e.g. '*iov').",
@@ -217,7 +224,7 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx): codecImpl.bnsd.ITx {
   };
 }
 
-function buildUpdateTargetsOfUsernameTx(tx: UpdateTargetsOfUsernameTx): codecImpl.bnsd.ITx {
+function buildUpdateTargetsOfUsernameTx(tx: UpdateTargetsOfUsernameTx): BnsdTxMsg {
   return {
     usernameChangeTokenTargetsMsg: {
       metadata: { schema: 1 },
@@ -227,7 +234,7 @@ function buildUpdateTargetsOfUsernameTx(tx: UpdateTargetsOfUsernameTx): codecImp
   };
 }
 
-function buildTransferUsernameTx(tx: TransferUsernameTx): codecImpl.bnsd.ITx {
+function buildTransferUsernameTx(tx: TransferUsernameTx): BnsdTxMsg {
   return {
     usernameTransferTokenMsg: {
       metadata: { schema: 1 },
@@ -239,7 +246,7 @@ function buildTransferUsernameTx(tx: TransferUsernameTx): codecImpl.bnsd.ITx {
 
 // Multisignature contracts
 
-function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.bnsd.ITx {
+function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): BnsdTxMsg {
   return {
     multisigCreateMsg: {
       metadata: { schema: 1 },
@@ -250,7 +257,7 @@ function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): codecImpl.bnsd
   };
 }
 
-function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): codecImpl.bnsd.ITx {
+function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): BnsdTxMsg {
   return {
     multisigUpdateMsg: {
       metadata: { schema: 1 },
@@ -264,7 +271,7 @@ function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): codecImpl.bnsd
 
 // Escrows
 
-function buildCreateEscrowTx(tx: CreateEscrowTx): codecImpl.bnsd.ITx {
+function buildCreateEscrowTx(tx: CreateEscrowTx): BnsdTxMsg {
   return {
     escrowCreateMsg: {
       metadata: { schema: 1 },
@@ -278,7 +285,7 @@ function buildCreateEscrowTx(tx: CreateEscrowTx): codecImpl.bnsd.ITx {
   };
 }
 
-function buildReleaseEscrowTx(tx: ReleaseEscrowTx): codecImpl.bnsd.ITx {
+function buildReleaseEscrowTx(tx: ReleaseEscrowTx): BnsdTxMsg {
   return {
     escrowReleaseMsg: {
       metadata: { schema: 1 },
@@ -288,7 +295,7 @@ function buildReleaseEscrowTx(tx: ReleaseEscrowTx): codecImpl.bnsd.ITx {
   };
 }
 
-function buildReturnEscrowTx(tx: ReturnEscrowTx): codecImpl.bnsd.ITx {
+function buildReturnEscrowTx(tx: ReturnEscrowTx): BnsdTxMsg {
   return {
     escrowReturnMsg: {
       metadata: { schema: 1 },
@@ -297,7 +304,7 @@ function buildReturnEscrowTx(tx: ReturnEscrowTx): codecImpl.bnsd.ITx {
   };
 }
 
-function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): codecImpl.bnsd.ITx {
+function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): BnsdTxMsg {
   const numPartiesToUpdate = [tx.sender, tx.arbiter, tx.recipient].filter(Boolean).length;
   if (numPartiesToUpdate !== 1) {
     throw new Error(`Only one party can be updated at a time, got ${numPartiesToUpdate}`);
@@ -330,7 +337,7 @@ function encodeValidators(validators: Validators): codecImpl.weave.IValidatorUpd
   });
 }
 
-function buildCreateProposalTx(tx: CreateProposalTx): codecImpl.bnsd.ITx {
+function buildCreateProposalTx(tx: CreateProposalTx): BnsdTxMsg {
   const { action } = tx;
   let option: codecImpl.bnsd.IProposalOptions;
   if (isCreateTextResolutionAction(action)) {
@@ -431,7 +438,7 @@ function encodeVoteOption(option: VoteOption): codecImpl.gov.VoteOption {
   }
 }
 
-function buildVoteTx(tx: VoteTx, strictMode: boolean): codecImpl.bnsd.ITx {
+function buildVoteTx(tx: VoteTx, strictMode: boolean): BnsdTxMsg {
   if (strictMode) {
     if (!tx.voter) throw new Error("In strict mode VoteTx.voter must be set");
   }
@@ -445,7 +452,7 @@ function buildVoteTx(tx: VoteTx, strictMode: boolean): codecImpl.bnsd.ITx {
   };
 }
 
-export function buildMsg(tx: UnsignedTransaction, strictMode = true): codecImpl.bnsd.ITx {
+export function buildMsg(tx: UnsignedTransaction, strictMode = true): BnsdTxMsg {
   if (!isBnsTx(tx)) {
     throw new Error("Transaction is not a BNS transaction");
   }
