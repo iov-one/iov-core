@@ -183,7 +183,6 @@ describe("Governor", () => {
     it("works for AmendProtocol", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
-      const address = bnsCodec.identityToAddress(options.identity);
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -205,14 +204,14 @@ describe("Governor", () => {
         description: "Proposal to change consensus algorithm to POW",
         electionRuleId: 1,
         startTime: 1562164525,
-        author: address,
+        author: governor.address,
         fee: {
           tokens: {
             quantity: "10000000",
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
-          payer: address,
+          payer: governor.address,
         },
       });
 
@@ -222,7 +221,6 @@ describe("Governor", () => {
     it("works for AddCommitteeMember", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
-      const address = bnsCodec.identityToAddress(options.identity);
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -249,14 +247,14 @@ describe("Governor", () => {
         description: "Proposal to add abcd to committee 5",
         electionRuleId: 1,
         startTime: 1562164525,
-        author: address,
+        author: governor.address,
         fee: {
           tokens: {
             quantity: "10000000",
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
-          payer: address,
+          payer: governor.address,
         },
       });
 
@@ -266,7 +264,6 @@ describe("Governor", () => {
     it("works for RemoveCommitteeMember", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
-      const address = bnsCodec.identityToAddress(options.identity);
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -292,14 +289,14 @@ describe("Governor", () => {
         description: "Proposal to remove abcd from committee 5",
         electionRuleId: 1,
         startTime: 1562164525,
-        author: address,
+        author: governor.address,
         fee: {
           tokens: {
             quantity: "10000000",
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
-          payer: address,
+          payer: governor.address,
         },
       });
 
@@ -309,7 +306,6 @@ describe("Governor", () => {
     it("works for AmendElectionRuleThreshold", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
-      const address = bnsCodec.identityToAddress(options.identity);
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -344,14 +340,14 @@ describe("Governor", () => {
         description: "Proposal to amend threshold to 2/7",
         electionRuleId: 1,
         startTime: 1562164525,
-        author: address,
+        author: governor.address,
         fee: {
           tokens: {
             quantity: "10000000",
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
-          payer: address,
+          payer: governor.address,
         },
       });
 
@@ -361,7 +357,6 @@ describe("Governor", () => {
     it("works for AmendElectionRuleQuorum", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
-      const address = bnsCodec.identityToAddress(options.identity);
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -396,14 +391,14 @@ describe("Governor", () => {
         description: "Proposal to amend quorum to 2/7",
         electionRuleId: 1,
         startTime: 1562164525,
-        author: address,
+        author: governor.address,
         fee: {
           tokens: {
             quantity: "10000000",
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
-          payer: address,
+          payer: governor.address,
         },
       });
 
@@ -413,7 +408,6 @@ describe("Governor", () => {
     it("works for AddValidator", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
-      const address = bnsCodec.identityToAddress(options.identity);
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -441,14 +435,14 @@ describe("Governor", () => {
         description: "Proposal to add abcd as validator",
         electionRuleId: 1,
         startTime: 1562164525,
-        author: address,
+        author: governor.address,
         fee: {
           tokens: {
             quantity: "10000000",
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
-          payer: address,
+          payer: governor.address,
         },
       });
 
@@ -458,7 +452,6 @@ describe("Governor", () => {
     it("works for RemoveValidator", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
-      const address = bnsCodec.identityToAddress(options.identity);
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -485,14 +478,14 @@ describe("Governor", () => {
         description: "Proposal to remove validator abcd",
         electionRuleId: 1,
         startTime: 1562164525,
-        author: address,
+        author: governor.address,
         fee: {
           tokens: {
             quantity: "10000000",
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
-          payer: address,
+          payer: governor.address,
         },
       });
 
@@ -502,7 +495,6 @@ describe("Governor", () => {
     it("works for ReleaseGuaranteeFunds", async () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
-      const address = bnsCodec.identityToAddress(options.identity);
       const governor = new Governor(options);
 
       const tx = await governor.buildCreateProposalTx({
@@ -533,14 +525,14 @@ describe("Governor", () => {
         description: "Proposal to release guarantee funds",
         electionRuleId: 1,
         startTime: 1562164525,
-        author: address,
+        author: governor.address,
         fee: {
           tokens: {
             quantity: "10000000",
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
-          payer: address,
+          payer: governor.address,
         },
       });
       options.connection.disconnect();
@@ -638,6 +630,45 @@ describe("Governor", () => {
 
       connection.disconnect();
     });
+
+    it("works for ExecuteMigration", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const { connection, identity } = options;
+      const governor = new Governor({ ...options });
+
+      const tx = await governor.buildCreateProposalTx({
+        type: ProposalType.ExecuteMigration,
+        title: "Execute this migration",
+        description: "for some good reason",
+        startTime: new ReadonlyDate(1562164525898),
+        electionRuleId: 1,
+        id: "foobar",
+      });
+      expect(tx).toEqual({
+        kind: "bns/create_proposal",
+        chainId: identity.chainId,
+        title: "Execute this migration",
+        description: "for some good reason",
+        action: {
+          kind: ActionKind.ExecuteMigration,
+          id: "foobar",
+        },
+        electionRuleId: 1,
+        startTime: 1562164525,
+        author: governor.address,
+        fee: {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+          payer: governor.address,
+        },
+      });
+
+      connection.disconnect();
+    });
   });
 
   describe("createVoteTx", () => {
@@ -652,14 +683,14 @@ describe("Governor", () => {
         chainId: options.identity.chainId,
         proposalId: 5,
         selection: VoteOption.Yes,
-        voter: bnsCodec.identityToAddress(options.identity),
+        voter: governor.address,
         fee: {
           tokens: {
             quantity: "10000000",
             fractionalDigits: 9,
             tokenTicker: "CASH" as TokenTicker,
           },
-          payer: bnsCodec.identityToAddress(options.identity),
+          payer: governor.address,
         },
       });
 

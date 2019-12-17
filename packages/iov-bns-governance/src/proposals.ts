@@ -15,6 +15,7 @@ export enum ProposalType {
   ReleaseGuaranteeFunds,
   DistributeFunds,
   AmendProtocol,
+  ExecuteMigration,
 }
 
 interface CommonProposalOptions {
@@ -79,6 +80,11 @@ export interface AmendProtocolOptions extends CommonProposalOptions {
   readonly text: string;
 }
 
+export interface ExecuteMigrationOptions extends CommonProposalOptions {
+  readonly type: ProposalType.ExecuteMigration;
+  readonly id: string;
+}
+
 export type ProposalOptions =
   | AddCommitteeMemberOptions
   | RemoveCommitteeMemberOptions
@@ -88,4 +94,5 @@ export type ProposalOptions =
   | RemoveValidatorOptions
   | ReleaseGuaranteeFundsOptions
   | DistributeFundsOptions
-  | AmendProtocolOptions;
+  | AmendProtocolOptions
+  | ExecuteMigrationOptions;

@@ -671,6 +671,37 @@ describe("encodeMsg", () => {
         author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
       });
     });
+
+    it("works with ExecuteMigration action", () => {
+      const createProposal: CreateProposalTx = {
+        kind: "bns/create_proposal",
+        chainId: defaultChainId,
+        title: "Why not try this?",
+        action: {
+          kind: ActionKind.ExecuteMigration,
+          id: "4gh48 u34ug384g34 jj3f232f",
+        },
+        description: "foo bar",
+        electionRuleId: 4822531585417728,
+        startTime: 1122334455,
+        author: defaultSender,
+      };
+      const msg = encodeMsg(createProposal).govCreateProposalMsg!;
+      expect(msg).toEqual({
+        metadata: { schema: 1 },
+        title: "Why not try this?",
+        rawOption: codecImpl.bnsd.ProposalOptions.encode({
+          datamigrationExecuteMigrationMsg: {
+            metadata: { schema: 1 },
+            migrationId: "4gh48 u34ug384g34 jj3f232f",
+          },
+        }).finish(),
+        description: "foo bar",
+        electionRuleId: fromHex("0011221122112200"),
+        startTime: 1122334455,
+        author: fromHex("6e1114f57410d8e7bcd910a568c9196efc1479e4"),
+      });
+    });
   });
 
   describe("VoteTx", () => {

@@ -19,6 +19,7 @@ import {
   CreateProposalTx,
   isBnsTx,
   isCreateTextResolutionAction,
+  isExecuteMigrationAction,
   isExecuteProposalBatchAction,
   isReleaseEscrowAction,
   isSendAction,
@@ -323,6 +324,14 @@ function encodeCreateProposalTx(tx: CreateProposalTx): BnsdTxMsg {
         metadata: { schema: 1 },
         msgPath: action.msgPath,
         fee: encodeAmount(action.fee),
+      },
+    };
+  } else if (isExecuteMigrationAction(action)) {
+    if (!action.id) throw new Error("Migration ID must not be empty");
+    option = {
+      datamigrationExecuteMigrationMsg: {
+        metadata: { schema: 1 },
+        migrationId: action.id,
       },
     };
   } else {

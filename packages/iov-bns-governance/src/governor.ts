@@ -260,6 +260,17 @@ export class Governor {
           },
           this.address,
         );
+      case ProposalType.ExecuteMigration:
+        return this.connection.withDefaultFee(
+          {
+            ...commonProperties,
+            action: {
+              kind: ActionKind.ExecuteMigration,
+              id: options.id,
+            },
+          },
+          this.address,
+        );
       default:
         throw new Error("Proposal type not yet supported");
     }
