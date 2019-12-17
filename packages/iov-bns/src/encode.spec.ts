@@ -14,7 +14,7 @@ import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { buildMultisignatureCondition, conditionToWeaveAddress } from "./conditions";
-import { buildSignedTx, buildUnsignedTx, encodeFullSignature, encodePrivkey, encodePubkey } from "./encode";
+import { encodeFullSignature, encodePrivkey, encodePubkey, encodeSignedTx, encodeUnsignedTx } from "./encode";
 import * as codecImpl from "./generated/codecimpl";
 import {
   privBin,
@@ -74,7 +74,7 @@ describe("encode", () => {
     expect(encoded.signature!.ed25519).toEqual(fromHex("aabbcc22334455"));
   });
 
-  describe("buildUnsignedTx", () => {
+  describe("encodeUnsignedTx", () => {
     const defaultChainId = "some-chain" as ChainId;
     const defaultSender = "tiov1dcg3fat5zrvw00xezzjk3jgedm7pg70y222af3" as Address;
     const defaultRecipient = "tiov1k898u78hgs36uqw68dg7va5nfkgstu5z0fhz3f" as Address;
@@ -86,7 +86,7 @@ describe("encode", () => {
     };
 
     it("is compatible to testdata", () => {
-      const tx = buildUnsignedTx(sendTxJson);
+      const tx = encodeUnsignedTx(sendTxJson);
       const encoded = Uint8Array.from(codecImpl.bnsd.Tx.encode(tx).finish());
       expect(encoded).toEqual(sendTxBin);
     });
@@ -95,7 +95,7 @@ describe("encode", () => {
       const keypair = Ed25519Keypair.fromLibsodiumPrivkey(privJson.data);
       const pubKey = pubJson.data;
 
-      const tx = buildUnsignedTx(sendTxJson);
+      const tx = encodeUnsignedTx(sendTxJson);
       const encoded = codecImpl.bnsd.Tx.encode(tx).finish();
       const toSign = appendSignBytes(encoded, sendTxJson.chainId, signedTxSig.nonce);
       // testvector output already has the sha-512 digest applied
@@ -122,7 +122,7 @@ describe("encode", () => {
         memo: "free transaction",
       };
 
-      const encoded = buildUnsignedTx(transaction);
+      const encoded = encodeUnsignedTx(transaction);
       expect(encoded.fees).toBeFalsy();
 
       expect(encoded.cashSendMsg).toBeDefined();
@@ -143,7 +143,7 @@ describe("encode", () => {
         },
       };
 
-      const encoded = buildUnsignedTx(transaction);
+      const encoded = encodeUnsignedTx(transaction);
       expect(encoded.fees).toBeDefined();
       expect(encoded.fees!.fees!.whole).toEqual(1);
       expect(encoded.fees!.fees!.fractional).toEqual(1);
@@ -169,7 +169,7 @@ describe("encode", () => {
         },
       };
 
-      const encoded = buildUnsignedTx(transaction);
+      const encoded = encodeUnsignedTx(transaction);
       expect(encoded.fees).toBeDefined();
       expect(encoded.fees!.fees!.whole).toEqual(1);
       expect(encoded.fees!.fees!.fractional).toEqual(1);
@@ -191,7 +191,7 @@ describe("encode", () => {
         multisig: [42, 1, Number.MAX_SAFE_INTEGER, 7],
       };
 
-      const encoded = buildUnsignedTx(transaction);
+      const encoded = encodeUnsignedTx(transaction);
       expect(encoded.multisig).toEqual([
         fromHex("000000000000002a"),
         fromHex("0000000000000001"),
@@ -212,15 +212,15 @@ describe("encode", () => {
         fee: { tokens: defaultAmount },
         multisig: [],
       };
-      expect(() => buildUnsignedTx(transaction)).toThrowError(
+      expect(() => encodeUnsignedTx(transaction)).toThrowError(
         /empty multisig arrays are currently unsupported/i,
       );
     });
   });
 
-  describe("buildSignedTx", () => {
+  describe("encodeSignedTx", () => {
     it("is compatible to testdata", () => {
-      const tx = buildSignedTx(signedTxJson);
+      const tx = encodeSignedTx(signedTxJson);
       const encoded = Uint8Array.from(codecImpl.bnsd.Tx.encode(tx).finish());
       expect(encoded).toEqual(signedTxBin);
     });

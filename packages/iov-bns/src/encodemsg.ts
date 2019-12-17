@@ -69,7 +69,7 @@ function encodeParticipants(
 
 // Token sends
 
-function buildSendTransaction(tx: SendTransaction): BnsdTxMsg {
+function encodeSendTransaction(tx: SendTransaction): BnsdTxMsg {
   return {
     cashSendMsg: codecImpl.cash.SendMsg.create({
       metadata: { schema: 1 },
@@ -83,7 +83,7 @@ function buildSendTransaction(tx: SendTransaction): BnsdTxMsg {
 
 // Atomic swaps
 
-function buildSwapOfferTx(tx: SwapOfferTransaction): BnsdTxMsg {
+function encodeSwapOfferTx(tx: SwapOfferTransaction): BnsdTxMsg {
   if (!isTimestampTimeout(tx.timeout)) {
     throw new Error("Got unsupported timeout type");
   }
@@ -101,7 +101,7 @@ function buildSwapOfferTx(tx: SwapOfferTransaction): BnsdTxMsg {
   };
 }
 
-function buildSwapClaimTx(tx: SwapClaimTransaction): BnsdTxMsg {
+function encodeSwapClaimTx(tx: SwapClaimTransaction): BnsdTxMsg {
   return {
     aswapReleaseMsg: codecImpl.aswap.ReleaseMsg.create({
       metadata: { schema: 1 },
@@ -111,7 +111,7 @@ function buildSwapClaimTx(tx: SwapClaimTransaction): BnsdTxMsg {
   };
 }
 
-function buildSwapAbortTransaction(tx: SwapAbortTransaction): BnsdTxMsg {
+function encodeSwapAbortTransaction(tx: SwapAbortTransaction): BnsdTxMsg {
   return {
     aswapReturnMsg: codecImpl.aswap.ReturnMsg.create({
       metadata: { schema: 1 },
@@ -129,7 +129,7 @@ function encodeChainAddressPair(pair: ChainAddressPair): codecImpl.username.IBlo
   };
 }
 
-function buildRegisterUsernameTx(tx: RegisterUsernameTx): BnsdTxMsg {
+function encodeRegisterUsernameTx(tx: RegisterUsernameTx): BnsdTxMsg {
   if (!tx.username.endsWith("*iov")) {
     throw new Error(
       "Starting with IOV-Core 0.16, the username property needs to be a full human readable address, including the namespace suffix (e.g. '*iov').",
@@ -145,7 +145,7 @@ function buildRegisterUsernameTx(tx: RegisterUsernameTx): BnsdTxMsg {
   };
 }
 
-function buildUpdateTargetsOfUsernameTx(tx: UpdateTargetsOfUsernameTx): BnsdTxMsg {
+function encodeUpdateTargetsOfUsernameTx(tx: UpdateTargetsOfUsernameTx): BnsdTxMsg {
   return {
     usernameChangeTokenTargetsMsg: {
       metadata: { schema: 1 },
@@ -155,7 +155,7 @@ function buildUpdateTargetsOfUsernameTx(tx: UpdateTargetsOfUsernameTx): BnsdTxMs
   };
 }
 
-function buildTransferUsernameTx(tx: TransferUsernameTx): BnsdTxMsg {
+function encodeTransferUsernameTx(tx: TransferUsernameTx): BnsdTxMsg {
   return {
     usernameTransferTokenMsg: {
       metadata: { schema: 1 },
@@ -167,7 +167,7 @@ function buildTransferUsernameTx(tx: TransferUsernameTx): BnsdTxMsg {
 
 // Multisignature contracts
 
-function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): BnsdTxMsg {
+function encodeCreateMultisignatureTx(tx: CreateMultisignatureTx): BnsdTxMsg {
   return {
     multisigCreateMsg: {
       metadata: { schema: 1 },
@@ -178,7 +178,7 @@ function buildCreateMultisignatureTx(tx: CreateMultisignatureTx): BnsdTxMsg {
   };
 }
 
-function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): BnsdTxMsg {
+function encodeUpdateMultisignatureTx(tx: UpdateMultisignatureTx): BnsdTxMsg {
   return {
     multisigUpdateMsg: {
       metadata: { schema: 1 },
@@ -192,7 +192,7 @@ function buildUpdateMultisignatureTx(tx: UpdateMultisignatureTx): BnsdTxMsg {
 
 // Escrows
 
-function buildCreateEscrowTx(tx: CreateEscrowTx): BnsdTxMsg {
+function encodeCreateEscrowTx(tx: CreateEscrowTx): BnsdTxMsg {
   return {
     escrowCreateMsg: {
       metadata: { schema: 1 },
@@ -206,7 +206,7 @@ function buildCreateEscrowTx(tx: CreateEscrowTx): BnsdTxMsg {
   };
 }
 
-function buildReleaseEscrowTx(tx: ReleaseEscrowTx): BnsdTxMsg {
+function encodeReleaseEscrowTx(tx: ReleaseEscrowTx): BnsdTxMsg {
   return {
     escrowReleaseMsg: {
       metadata: { schema: 1 },
@@ -216,7 +216,7 @@ function buildReleaseEscrowTx(tx: ReleaseEscrowTx): BnsdTxMsg {
   };
 }
 
-function buildReturnEscrowTx(tx: ReturnEscrowTx): BnsdTxMsg {
+function encodeReturnEscrowTx(tx: ReturnEscrowTx): BnsdTxMsg {
   return {
     escrowReturnMsg: {
       metadata: { schema: 1 },
@@ -225,7 +225,7 @@ function buildReturnEscrowTx(tx: ReturnEscrowTx): BnsdTxMsg {
   };
 }
 
-function buildUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): BnsdTxMsg {
+function encodeUpdateEscrowPartiesTx(tx: UpdateEscrowPartiesTx): BnsdTxMsg {
   const numPartiesToUpdate = [tx.sender, tx.arbiter, tx.recipient].filter(Boolean).length;
   if (numPartiesToUpdate !== 1) {
     throw new Error(`Only one party can be updated at a time, got ${numPartiesToUpdate}`);
@@ -258,7 +258,7 @@ function encodeValidators(validators: Validators): codecImpl.weave.IValidatorUpd
   });
 }
 
-function buildCreateProposalTx(tx: CreateProposalTx): BnsdTxMsg {
+function encodeCreateProposalTx(tx: CreateProposalTx): BnsdTxMsg {
   const { action } = tx;
   let option: codecImpl.bnsd.IProposalOptions;
   if (isCreateTextResolutionAction(action)) {
@@ -359,7 +359,7 @@ function encodeVoteOption(option: VoteOption): codecImpl.gov.VoteOption {
   }
 }
 
-function buildVoteTx(tx: VoteTx, strictMode: boolean): BnsdTxMsg {
+function encodeVoteTx(tx: VoteTx, strictMode: boolean): BnsdTxMsg {
   if (strictMode) {
     if (!tx.voter) throw new Error("In strict mode VoteTx.voter must be set");
   }
@@ -381,45 +381,45 @@ export function encodeMsg(tx: UnsignedTransaction, strictMode = true): BnsdTxMsg
   switch (tx.kind) {
     // BCP: Token sends
     case "bcp/send":
-      return buildSendTransaction(tx);
+      return encodeSendTransaction(tx);
 
     // BCP: Atomic swaps
     case "bcp/swap_offer":
-      return buildSwapOfferTx(tx);
+      return encodeSwapOfferTx(tx);
     case "bcp/swap_claim":
-      return buildSwapClaimTx(tx);
+      return encodeSwapClaimTx(tx);
     case "bcp/swap_abort":
-      return buildSwapAbortTransaction(tx);
+      return encodeSwapAbortTransaction(tx);
 
     // BNS: Usernames
     case "bns/register_username":
-      return buildRegisterUsernameTx(tx);
+      return encodeRegisterUsernameTx(tx);
     case "bns/update_targets_of_username":
-      return buildUpdateTargetsOfUsernameTx(tx);
+      return encodeUpdateTargetsOfUsernameTx(tx);
     case "bns/transfer_username":
-      return buildTransferUsernameTx(tx);
+      return encodeTransferUsernameTx(tx);
 
     // BNS: Multisignature contracts
     case "bns/create_multisignature_contract":
-      return buildCreateMultisignatureTx(tx);
+      return encodeCreateMultisignatureTx(tx);
     case "bns/update_multisignature_contract":
-      return buildUpdateMultisignatureTx(tx);
+      return encodeUpdateMultisignatureTx(tx);
 
     // BNS: Escrows
     case "bns/create_escrow":
-      return buildCreateEscrowTx(tx);
+      return encodeCreateEscrowTx(tx);
     case "bns/release_escrow":
-      return buildReleaseEscrowTx(tx);
+      return encodeReleaseEscrowTx(tx);
     case "bns/return_escrow":
-      return buildReturnEscrowTx(tx);
+      return encodeReturnEscrowTx(tx);
     case "bns/update_escrow_parties":
-      return buildUpdateEscrowPartiesTx(tx);
+      return encodeUpdateEscrowPartiesTx(tx);
 
     // BNS: Governance
     case "bns/create_proposal":
-      return buildCreateProposalTx(tx);
+      return encodeCreateProposalTx(tx);
     case "bns/vote":
-      return buildVoteTx(tx, strictMode);
+      return encodeVoteTx(tx, strictMode);
 
     default:
       throw new Error("Received transaction of unsupported kind.");

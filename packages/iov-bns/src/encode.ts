@@ -52,7 +52,7 @@ export function encodeFullSignature(fullSignature: FullSignature): codecImpl.sig
   });
 }
 
-function buildFeeForTx(txWithFee: UnsignedTransaction): codecImpl.cash.IFeeInfo {
+function encodeFeeForTx(txWithFee: UnsignedTransaction): codecImpl.cash.IFeeInfo {
   const { fee } = txWithFee;
   if (!fee?.tokens) {
     throw new Error("Cannot build fee for transaction without fee tokens");
@@ -75,17 +75,17 @@ function buildFeeForTx(txWithFee: UnsignedTransaction): codecImpl.cash.IFeeInfo 
   };
 }
 
-export function buildUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
+export function encodeUnsignedTx(tx: UnsignedTransaction): codecImpl.bnsd.ITx {
   const msg = encodeMsg(tx);
 
   return codecImpl.bnsd.Tx.create({
     ...msg,
-    fees: tx.fee ? buildFeeForTx(tx) : null,
+    fees: tx.fee ? encodeFeeForTx(tx) : null,
     multisig: isMultisignatureTx(tx) ? tx.multisig.map(encodeNumericId) : null,
   });
 }
 
-export function buildSignedTx(tx: SignedTransaction): codecImpl.bnsd.ITx {
-  const built = buildUnsignedTx(tx.transaction);
+export function encodeSignedTx(tx: SignedTransaction): codecImpl.bnsd.ITx {
+  const built = encodeUnsignedTx(tx.transaction);
   return { ...built, signatures: tx.signatures.map(encodeFullSignature) };
 }
