@@ -684,4 +684,64 @@ describe("Proposals", () => {
 
     connection.disconnect();
   }, 60_000);
+
+  it("works for executing a migration", async () => {
+    pendingWithoutBnsd();
+
+    // TODO: Update once we have a working migration ID
+    // https://github.com/iov-one/weave/issues/1085
+    const migrationId = "migration number 1";
+
+    const governorOptions = await getGovernorOptions();
+    const { connection, profile } = governorOptions;
+    const governor = new Governor(governorOptions);
+    const numProposalsBefore = (await governor.getProposals()).length;
+
+    const electionRuleId = 2;
+    const startTime = new ReadonlyDate(Date.now() + 1_000);
+    const proposalOptions: ProposalOptions = {
+      type: ProposalType.ExecuteMigration,
+      title: "Execute migration 1",
+      description: "Execute migration 1 in more detail",
+      startTime: startTime,
+      electionRuleId: electionRuleId,
+      id: migrationId,
+    };
+    const createProposalTx = await governor.buildCreateProposalTx(proposalOptions);
+    await signAndPost(governorOptions.identity, createProposalTx, connection, profile);
+
+    const proposalsAfterCreate = await governor.getProposals();
+    expect(proposalsAfterCreate.length).toEqual(numProposalsBefore + 1);
+    const proposal1 = proposalsAfterCreate[proposalsAfterCreate.length - 1];
+    expect(proposal1.title).toEqual("Execute migration 1");
+    expect(proposal1.description).toEqual("Execute migration 1 in more detail");
+    expect(new ReadonlyDate(proposal1.votingStartTime * 1000).toDateString()).toEqual(
+      startTime.toDateString(),
+    );
+    expect(proposal1.electionRule.id).toEqual(electionRuleId);
+    expect(proposal1.author).toEqual(governor.address);
+    expect(proposal1.action).toEqual({
+      kind: ActionKind.ExecuteMigration,
+      id: migrationId,
+    });
+    expect(proposal1.status).toEqual(ProposalStatus.Submitted);
+
+    await sleep(7000);
+
+    const voteTx = await governor.buildVoteTx(proposal1.id, VoteOption.Yes);
+    await signAndPost(governorOptions.identity, voteTx, connection, profile);
+
+    await sleep(15000);
+
+    const proposalsAfterVote = await governor.getProposals();
+    expect(proposalsAfterVote.length).toEqual(numProposalsBefore + 1);
+    const proposal2 = proposalsAfterVote[proposalsAfterVote.length - 1];
+    expect(proposal2.id).toEqual(proposal1.id);
+    expect(proposal2.title).toEqual("Execute migration 1");
+    expect(proposal2.status).toEqual(ProposalStatus.Closed);
+    // Since no test migration exists, this execution is expected to fail
+    expect(proposal2.executorResult).toEqual(ProposalExecutorResult.Failed);
+
+    connection.disconnect();
+  }, 60_000);
 });
