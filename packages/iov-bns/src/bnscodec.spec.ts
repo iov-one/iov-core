@@ -12,7 +12,6 @@ import {
   SendTransaction,
   SignedTransaction,
   TokenTicker,
-  WithCreator,
 } from "@iov/bcp";
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { Encoding, TransactionEncoder } from "@iov/encoding";
@@ -41,7 +40,7 @@ describe("bnscodec", () => {
       { tokens: { quantity: "0", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker } },
       { tokens: { quantity: "100000000", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker } },
     ];
-    const amounts: readonly (Amount)[] = [
+    const amounts: readonly Amount[] = [
       { quantity: "0", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
       { quantity: "1", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
       { quantity: "1000000000", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
@@ -99,14 +98,19 @@ describe("bnscodec", () => {
         for (const { creator, recipient } of creatorRecipientPairs) {
           for (const amount of amounts) {
             for (const memo of memos) {
-              const send: SendTransaction & WithCreator = {
+              const send: SendTransaction = {
                 kind: "bcp/send",
-                creator: creator,
+                chainId: creator.chainId,
                 sender: bnsCodec.identityToAddress(creator),
                 recipient: recipient,
                 memo: memo,
                 amount: amount,
-                fee: fee,
+                fee: fee
+                  ? {
+                      ...fee,
+                      payer: bnsCodec.identityToAddress(creator),
+                    }
+                  : undefined,
               };
               const { bytes } = bnsCodec.bytesToSign(send, nonce);
               out.push({
@@ -180,9 +184,9 @@ describe("bnscodec", () => {
 
     for (const { creator, sender, recipient } of creatorRecipientPairs) {
       for (const multisig of multisigs) {
-        const send: SendTransaction & MultisignatureTx & WithCreator = {
+        const send: SendTransaction & MultisignatureTx = {
           kind: "bcp/send",
-          creator: creator,
+          chainId: creator.chainId,
           sender: sender,
           recipient: recipient,
           multisig: multisig,
