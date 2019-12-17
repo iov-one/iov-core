@@ -3,6 +3,7 @@ export { generateNonce, LiskConnection } from "./liskconnection";
 export { createLiskConnector } from "./liskconnector";
 
 import { Derivation } from "./derivation";
+
 /**
  * Lisk-specific passphrase to Ed25519 keypair derivation
  *
@@ -11,3 +12,8 @@ import { Derivation } from "./derivation";
  * in the user interface we work with plain strings here.
  */
 export const passphraseToKeypair = Derivation.passphraseToKeypair;
+
+/**
+ * Creates a Lisk address from a given Ed25519 pubkey
+ */
+export const pubkeyToAddress = Derivation.pubkeyToAddress;

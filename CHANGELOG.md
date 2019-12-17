@@ -13,6 +13,7 @@
 - @iov/bns: Add optional payer parameter to `BnsConnection.withDefaultFee`.
 - @iov/bns: `BnsConnection.searchTx` now resolves to an array of
   `ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction`.
+- @iov/lisk: Export `pubkeyToAddress`.
 
 Breaking changes
 
