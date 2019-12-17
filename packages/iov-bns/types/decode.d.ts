@@ -12,4 +12,4 @@ export declare function decodePubkey(publicKey: codecImpl.crypto.IPublicKey): Pu
 export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey): PrivkeyBundle;
 export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;
 export declare function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature;
-export declare function parseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): SignedTransaction;
+export declare function decodeSignedTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): SignedTransaction;

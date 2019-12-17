@@ -12,7 +12,7 @@ import {
 import { Encoding } from "@iov/encoding";
 import { TxBytes, v0_31 } from "@iov/tendermint-rpc";
 
-import { parseTx } from "./decode";
+import { decodeSignedTx } from "./decode";
 import { encodeSignedTx, encodeUnsignedTx } from "./encode";
 import * as codecImpl from "./generated/codecimpl";
 import { appendSignBytes, identityToAddress, isValidAddress } from "./util";
@@ -45,7 +45,7 @@ export const bnsCodec: TxCodec = {
   // parseBytes will recover bytes from the blockchain into a format we can use
   parseBytes: (bz: PostableBytes, chainId: ChainId): SignedTransaction => {
     const parsed = codecImpl.bnsd.Tx.decode(bz);
-    return parseTx(parsed, chainId);
+    return decodeSignedTx(parsed, chainId);
   },
 
   identityToAddress: identityToAddress,

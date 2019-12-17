@@ -1,7 +1,7 @@
 import { Address, isSendTransaction, Nonce, TokenTicker } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { decodePrivkey, decodePubkey, decodeUserData, parseTx } from "./decode";
+import { decodePrivkey, decodePubkey, decodeSignedTx, decodeUserData } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
 import {
   chainId,
@@ -55,12 +55,12 @@ describe("Decode", () => {
     // unsigned tx will fail as parsing requires a sig to extract signer
     it("decode unsigned transaction fails", () => {
       const decoded = codecImpl.bnsd.Tx.decode(sendTxBin);
-      expect(() => parseTx(decoded, chainId)).toThrowError(/transaction has no signatures/i);
+      expect(() => decodeSignedTx(decoded, chainId)).toThrowError(/transaction has no signatures/i);
     });
 
     it("decode signed transaction", () => {
       const decoded = codecImpl.bnsd.Tx.decode(signedTxBin);
-      const tx = parseTx(decoded, chainId);
+      const tx = decodeSignedTx(decoded, chainId);
       expect(tx.transaction).toEqual(sendTxJson);
     });
 
@@ -87,7 +87,7 @@ describe("Decode", () => {
           amount: { whole: 1, fractional: 1, ticker: "CASH" },
         },
       };
-      const tx = parseTx(decoded, chainId);
+      const tx = decodeSignedTx(decoded, chainId);
       if (!isSendTransaction(tx.transaction) || !isMultisignatureTx(tx.transaction)) {
         throw new Error("Expected multisignature send tx");
       }

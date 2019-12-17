@@ -36,7 +36,7 @@ import { addressPrefix, encodeBnsAddress } from "./util";
 
 // Token sends
 
-function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): SendTransaction {
+function decodeSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISendMsg): SendTransaction {
   const prefix = addressPrefix(base.chainId);
   return {
     ...base,
@@ -50,7 +50,7 @@ function parseSendTransaction(base: UnsignedTransaction, msg: codecImpl.cash.ISe
 
 // Atomic swaps
 
-function parseSwapOfferTx(base: UnsignedTransaction, msg: codecImpl.aswap.ICreateMsg): SwapOfferTransaction {
+function decodeSwapOfferTx(base: UnsignedTransaction, msg: codecImpl.aswap.ICreateMsg): SwapOfferTransaction {
   const hash = ensure(msg.preimageHash, "preimageHash");
   if (hash.length !== 32) {
     throw new Error("Hash must be 32 bytes (sha256)");
@@ -68,7 +68,10 @@ function parseSwapOfferTx(base: UnsignedTransaction, msg: codecImpl.aswap.ICreat
   return msg.memo ? { ...parsed, memo: msg.memo } : parsed;
 }
 
-function parseSwapClaimTx(base: UnsignedTransaction, msg: codecImpl.aswap.IReleaseMsg): SwapClaimTransaction {
+function decodeSwapClaimTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.aswap.IReleaseMsg,
+): SwapClaimTransaction {
   return {
     ...base,
     kind: "bcp/swap_claim",
@@ -79,7 +82,7 @@ function parseSwapClaimTx(base: UnsignedTransaction, msg: codecImpl.aswap.IRelea
   };
 }
 
-function parseSwapAbortTransaction(
+function decodeSwapAbortTransaction(
   base: UnsignedTransaction,
   msg: codecImpl.aswap.IReturnMsg,
 ): SwapAbortTransaction {
@@ -94,7 +97,7 @@ function parseSwapAbortTransaction(
 
 // Usernames
 
-function parseRegisterUsernameTx(
+function decodeRegisterUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.IRegisterTokenMsg,
 ): RegisterUsernameTx {
@@ -107,7 +110,7 @@ function parseRegisterUsernameTx(
   };
 }
 
-function parseUpdateTargetsOfUsernameTx(
+function decodeUpdateTargetsOfUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.IChangeTokenTargetsMsg,
 ): UpdateTargetsOfUsernameTx {
@@ -120,7 +123,7 @@ function parseUpdateTargetsOfUsernameTx(
   };
 }
 
-function parseTransferUsernameTx(
+function decodeTransferUsernameTx(
   base: UnsignedTransaction,
   msg: codecImpl.username.ITransferTokenMsg,
 ): TransferUsernameTx {
@@ -135,7 +138,7 @@ function parseTransferUsernameTx(
 
 // Multisignature contracts
 
-function parseCreateMultisignatureTx(
+function decodeCreateMultisignatureTx(
   base: UnsignedTransaction,
   msg: codecImpl.multisig.ICreateMsg,
 ): CreateMultisignatureTx {
@@ -149,7 +152,7 @@ function parseCreateMultisignatureTx(
   };
 }
 
-function parseUpdateMultisignatureTx(
+function decodeUpdateMultisignatureTx(
   base: UnsignedTransaction,
   msg: codecImpl.multisig.IUpdateMsg,
 ): UpdateMultisignatureTx {
@@ -166,7 +169,7 @@ function parseUpdateMultisignatureTx(
 
 // Escrows
 
-function parseCreateEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.ICreateMsg): CreateEscrowTx {
+function decodeCreateEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.ICreateMsg): CreateEscrowTx {
   const prefix = addressPrefix(base.chainId);
   return {
     ...base,
@@ -180,7 +183,10 @@ function parseCreateEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.IC
   };
 }
 
-function parseReleaseEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.IReleaseMsg): ReleaseEscrowTx {
+function decodeReleaseEscrowTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.escrow.IReleaseMsg,
+): ReleaseEscrowTx {
   return {
     ...base,
     kind: "bns/release_escrow",
@@ -189,7 +195,7 @@ function parseReleaseEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.I
   };
 }
 
-function parseReturnEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.IReturnMsg): ReturnEscrowTx {
+function decodeReturnEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.IReturnMsg): ReturnEscrowTx {
   return {
     ...base,
     kind: "bns/return_escrow",
@@ -197,7 +203,7 @@ function parseReturnEscrowTx(base: UnsignedTransaction, msg: codecImpl.escrow.IR
   };
 }
 
-function parseUpdateEscrowPartiesTx(
+function decodeUpdateEscrowPartiesTx(
   base: UnsignedTransaction,
   msg: codecImpl.escrow.IUpdatePartiesMsg,
 ): UpdateEscrowPartiesTx {
@@ -214,7 +220,7 @@ function parseUpdateEscrowPartiesTx(
 
 // Governance
 
-function parseCreateProposalTx(
+function decodeCreateProposalTx(
   base: UnsignedTransaction,
   msg: codecImpl.gov.ICreateProposalMsg,
 ): CreateProposalTx {
@@ -231,7 +237,7 @@ function parseCreateProposalTx(
   };
 }
 
-function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): VoteTx {
+function decodeVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): VoteTx {
   const prefix = addressPrefix(base.chainId);
   return {
     ...base,
@@ -244,33 +250,33 @@ function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): Vo
 
 export function decodeMsg(base: UnsignedTransaction, tx: BnsdTxMsg): UnsignedTransaction {
   // Token sends
-  if (tx.cashSendMsg) return parseSendTransaction(base, tx.cashSendMsg);
+  if (tx.cashSendMsg) return decodeSendTransaction(base, tx.cashSendMsg);
 
   // Atomic swaps
-  if (tx.aswapCreateMsg) return parseSwapOfferTx(base, tx.aswapCreateMsg);
-  if (tx.aswapReleaseMsg) return parseSwapClaimTx(base, tx.aswapReleaseMsg);
-  if (tx.aswapReturnMsg) return parseSwapAbortTransaction(base, tx.aswapReturnMsg);
+  if (tx.aswapCreateMsg) return decodeSwapOfferTx(base, tx.aswapCreateMsg);
+  if (tx.aswapReleaseMsg) return decodeSwapClaimTx(base, tx.aswapReleaseMsg);
+  if (tx.aswapReturnMsg) return decodeSwapAbortTransaction(base, tx.aswapReturnMsg);
 
   // Usernames
-  if (tx.usernameRegisterTokenMsg) return parseRegisterUsernameTx(base, tx.usernameRegisterTokenMsg);
+  if (tx.usernameRegisterTokenMsg) return decodeRegisterUsernameTx(base, tx.usernameRegisterTokenMsg);
   if (tx.usernameChangeTokenTargetsMsg) {
-    return parseUpdateTargetsOfUsernameTx(base, tx.usernameChangeTokenTargetsMsg);
+    return decodeUpdateTargetsOfUsernameTx(base, tx.usernameChangeTokenTargetsMsg);
   }
-  if (tx.usernameTransferTokenMsg) return parseTransferUsernameTx(base, tx.usernameTransferTokenMsg);
+  if (tx.usernameTransferTokenMsg) return decodeTransferUsernameTx(base, tx.usernameTransferTokenMsg);
 
   // Multisignature contracts
-  if (tx.multisigCreateMsg) return parseCreateMultisignatureTx(base, tx.multisigCreateMsg);
-  if (tx.multisigUpdateMsg) return parseUpdateMultisignatureTx(base, tx.multisigUpdateMsg);
+  if (tx.multisigCreateMsg) return decodeCreateMultisignatureTx(base, tx.multisigCreateMsg);
+  if (tx.multisigUpdateMsg) return decodeUpdateMultisignatureTx(base, tx.multisigUpdateMsg);
 
   // Escrows
-  if (tx.escrowCreateMsg) return parseCreateEscrowTx(base, tx.escrowCreateMsg);
-  if (tx.escrowReleaseMsg) return parseReleaseEscrowTx(base, tx.escrowReleaseMsg);
-  if (tx.escrowReturnMsg) return parseReturnEscrowTx(base, tx.escrowReturnMsg);
-  if (tx.escrowUpdatePartiesMsg) return parseUpdateEscrowPartiesTx(base, tx.escrowUpdatePartiesMsg);
+  if (tx.escrowCreateMsg) return decodeCreateEscrowTx(base, tx.escrowCreateMsg);
+  if (tx.escrowReleaseMsg) return decodeReleaseEscrowTx(base, tx.escrowReleaseMsg);
+  if (tx.escrowReturnMsg) return decodeReturnEscrowTx(base, tx.escrowReturnMsg);
+  if (tx.escrowUpdatePartiesMsg) return decodeUpdateEscrowPartiesTx(base, tx.escrowUpdatePartiesMsg);
 
   // Governance
-  if (tx.govCreateProposalMsg) return parseCreateProposalTx(base, tx.govCreateProposalMsg);
-  if (tx.govVoteMsg) return parseVoteTx(base, tx.govVoteMsg);
+  if (tx.govCreateProposalMsg) return decodeCreateProposalTx(base, tx.govCreateProposalMsg);
+  if (tx.govVoteMsg) return decodeVoteTx(base, tx.govVoteMsg);
 
   throw new Error("unknown message type in transaction");
 }

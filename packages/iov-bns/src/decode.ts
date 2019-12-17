@@ -65,7 +65,7 @@ export function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature 
   };
 }
 
-function parseBaseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): UnsignedTransaction {
+function decodeBaseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): UnsignedTransaction {
   let base: UnsignedTransaction | (UnsignedTransaction & MultisignatureTx) = {
     kind: "",
     chainId: chainId,
@@ -81,7 +81,7 @@ function parseBaseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): UnsignedTransact
   return base;
 }
 
-export function parseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): SignedTransaction {
+export function decodeSignedTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): SignedTransaction {
   const signatures = ensure(tx.signatures, "signatures").map(decodeFullSig);
   let signaturesNonEmpty;
   try {
@@ -90,7 +90,7 @@ export function parseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): SignedTransac
     throw new Error("Transaction has no signatures");
   }
   return {
-    transaction: decodeMsg(parseBaseTx(tx, chainId), tx),
+    transaction: decodeMsg(decodeBaseTx(tx, chainId), tx),
     signatures: signaturesNonEmpty,
   };
 }
