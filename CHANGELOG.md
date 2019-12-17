@@ -10,6 +10,7 @@
 - @iov/bcp: Add `isConfirmedAndSignedTransaction` helper.
 - @iov/bcp: Add `NonEmptyArray` and `isNonEmptyArray`/`newNonEmptyArray` helper
   functions.
+- @iov/bns: Support ExecuteMigration in CreateProposal transactions.
 - @iov/bns: Add optional payer parameter to `BnsConnection.withDefaultFee`.
 - @iov/bns: `BnsConnection.searchTx` now resolves to an array of
   `ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction`.

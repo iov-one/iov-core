@@ -302,6 +302,11 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       msgPath: ensure(option.msgfeeSetMsgFeeMsg.msgPath, "msgPath"),
       fee: decodeAmount(ensure(option.msgfeeSetMsgFeeMsg.fee, "fee")),
     };
+  } else if (option.datamigrationExecuteMigrationMsg) {
+    return {
+      kind: ActionKind.ExecuteMigration,
+      id: ensure(option.datamigrationExecuteMigrationMsg.migrationId, "migrationId"),
+    };
   } else {
     throw new Error("Unsupported ProposalOptions");
   }

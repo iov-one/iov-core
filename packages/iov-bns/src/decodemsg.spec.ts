@@ -726,6 +726,37 @@ describe("decodeMsg", () => {
       expect(parsed.startTime).toEqual(42424242);
       expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
     });
+
+    it("works with ExecuteMigration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            datamigrationExecuteMigrationMsg: {
+              metadata: { schema: 1 },
+              migrationId: "hg2048hgß2c3rß 2u3r9c23r2",
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(parsed)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(parsed.title).toEqual("This will happen next");
+      expect(parsed.action).toEqual({
+        kind: ActionKind.ExecuteMigration,
+        id: "hg2048hgß2c3rß 2u3r9c23r2",
+      });
+      expect(parsed.description).toEqual("foo bar");
+      expect(parsed.electionRuleId).toEqual(806595967999);
+      expect(parsed.startTime).toEqual(42424242);
+      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+    });
   });
 
   describe("VoteTx", () => {
