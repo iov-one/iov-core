@@ -435,16 +435,23 @@ describe("decodeMsg", () => {
           author: fromHex("0011223344556677889900112233445566778899"),
         },
       };
-      const parsed = decodeMsg(defaultBaseTx, transactionMessage);
-      if (!isCreateProposalTx(parsed)) {
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.action).toEqual({ kind: ActionKind.CreateTextResolution, resolution: "la la la" });
-      expect(parsed.description).toEqual("foo bar");
-      expect(parsed.electionRuleId).toEqual(806595967999);
-      expect(parsed.startTime).toEqual(42424242);
-      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.CreateTextResolution,
+            resolution: "la la la",
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
     });
 
     it("works with ExecuteProposalBatch action with array of Send actions", () => {
@@ -486,37 +493,41 @@ describe("decodeMsg", () => {
           author: fromHex("0011223344556677889900112233445566778899"),
         },
       };
-      const parsed = decodeMsg(defaultBaseTx, transactionMessage);
-      if (!isCreateProposalTx(parsed)) {
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.action).toEqual({
-        kind: ActionKind.ExecuteProposalBatch,
-        messages: [
-          {
-            kind: ActionKind.Send,
-            sender: defaultSender,
-            recipient: defaultRecipient,
-            amount: defaultAmount,
-            memo: "say hi",
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.ExecuteProposalBatch,
+            messages: [
+              {
+                kind: ActionKind.Send,
+                sender: defaultSender,
+                recipient: defaultRecipient,
+                amount: defaultAmount,
+                memo: "say hi",
+              },
+              {
+                kind: ActionKind.Send,
+                sender: defaultRecipient,
+                recipient: defaultSender,
+                amount: {
+                  quantity: "3000000003",
+                  fractionalDigits: 9,
+                  tokenTicker: "MASH" as TokenTicker,
+                },
+              },
+            ],
           },
-          {
-            kind: ActionKind.Send,
-            sender: defaultRecipient,
-            recipient: defaultSender,
-            amount: {
-              quantity: "3000000003",
-              fractionalDigits: 9,
-              tokenTicker: "MASH" as TokenTicker,
-            },
-          },
-        ],
-      });
-      expect(parsed.description).toEqual("foo bar");
-      expect(parsed.electionRuleId).toEqual(806595967999);
-      expect(parsed.startTime).toEqual(42424242);
-      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
     });
 
     it("works with ReleaseGuaranteeFunds action", () => {
@@ -542,20 +553,24 @@ describe("decodeMsg", () => {
           author: fromHex("0011223344556677889900112233445566778899"),
         },
       };
-      const parsed = decodeMsg(defaultBaseTx, transactionMessage);
-      if (!isCreateProposalTx(parsed)) {
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.action).toEqual({
-        kind: ActionKind.ReleaseEscrow,
-        escrowId: 4,
-        amount: defaultAmount,
-      });
-      expect(parsed.description).toEqual("foo bar");
-      expect(parsed.electionRuleId).toEqual(806595967999);
-      expect(parsed.startTime).toEqual(42424242);
-      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.ReleaseEscrow,
+            escrowId: 4,
+            amount: defaultAmount,
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
     });
 
     it("works with SetValidators action", () => {
@@ -577,24 +592,28 @@ describe("decodeMsg", () => {
           author: fromHex("0011223344556677889900112233445566778899"),
         },
       };
-      const parsed = decodeMsg(defaultBaseTx, transactionMessage);
-      if (!isCreateProposalTx(parsed)) {
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.action).toEqual({
-        kind: ActionKind.SetValidators,
-        validatorUpdates: {
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          ed25519_abcd: { power: 5 },
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          ed25519_ef12: { power: 7 },
-        },
-      });
-      expect(parsed.description).toEqual("foo bar");
-      expect(parsed.electionRuleId).toEqual(806595967999);
-      expect(parsed.startTime).toEqual(42424242);
-      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetValidators,
+            validatorUpdates: {
+              // eslint-disable-next-line @typescript-eslint/camelcase
+              ed25519_abcd: { power: 5 },
+              // eslint-disable-next-line @typescript-eslint/camelcase
+              ed25519_ef12: { power: 7 },
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
     });
 
     it("works for UpdateElectionRule action", () => {
@@ -622,28 +641,32 @@ describe("decodeMsg", () => {
           author: Encoding.fromHex("0011223344556677889900112233445566778899"),
         },
       };
-      const parsed = decodeMsg(defaultBaseTx, transactionMessage);
-      if (!isCreateProposalTx(parsed)) {
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.action).toEqual({
-        kind: ActionKind.UpdateElectionRule,
-        electionRuleId: 5,
-        threshold: {
-          numerator: 6,
-          denominator: 7,
-        },
-        quorum: {
-          numerator: 2,
-          denominator: 3,
-        },
-        votingPeriod: 3600,
-      });
-      expect(parsed.description).toEqual("foo bar");
-      expect(parsed.electionRuleId).toEqual(806595967999);
-      expect(parsed.startTime).toEqual(42424242);
-      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.UpdateElectionRule,
+            electionRuleId: 5,
+            threshold: {
+              numerator: 6,
+              denominator: 7,
+            },
+            quorum: {
+              numerator: 2,
+              denominator: 3,
+            },
+            votingPeriod: 3600,
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
     });
 
     it("works with UpdateElectorate action", () => {
@@ -668,22 +691,26 @@ describe("decodeMsg", () => {
           author: fromHex("0011223344556677889900112233445566778899"),
         },
       };
-      const parsed = decodeMsg(defaultBaseTx, transactionMessage);
-      if (!isCreateProposalTx(parsed)) {
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.action).toEqual({
-        kind: ActionKind.UpdateElectorate,
-        electorateId: 5,
-        diffElectors: {
-          tiov1lugjyv6y24n80zyeqqgjyv6y24n80zyedknaqd: { weight: 8 },
-        },
-      });
-      expect(parsed.description).toEqual("foo bar");
-      expect(parsed.electionRuleId).toEqual(806595967999);
-      expect(parsed.startTime).toEqual(42424242);
-      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.UpdateElectorate,
+            electorateId: 5,
+            diffElectors: {
+              tiov1lugjyv6y24n80zyeqqgjyv6y24n80zyedknaqd: { weight: 8 },
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
     });
 
     it("works with SetMsgFee action", () => {
@@ -707,24 +734,28 @@ describe("decodeMsg", () => {
           author: fromHex("0011223344556677889900112233445566778899"),
         },
       };
-      const parsed = decodeMsg(defaultBaseTx, transactionMessage);
-      if (!isCreateProposalTx(parsed)) {
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.action).toEqual({
-        kind: ActionKind.SetMsgFee,
-        msgPath: "username/register_token",
-        fee: {
-          fractionalDigits: 9,
-          quantity: "10000000001",
-          tokenTicker: "CASH" as TokenTicker,
-        },
-      });
-      expect(parsed.description).toEqual("foo bar");
-      expect(parsed.electionRuleId).toEqual(806595967999);
-      expect(parsed.startTime).toEqual(42424242);
-      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetMsgFee,
+            msgPath: "username/register_token",
+            fee: {
+              fractionalDigits: 9,
+              quantity: "10000000001",
+              tokenTicker: "CASH" as TokenTicker,
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
     });
 
     it("works with ExecuteMigration action", () => {
@@ -743,19 +774,23 @@ describe("decodeMsg", () => {
           author: fromHex("0011223344556677889900112233445566778899"),
         },
       };
-      const parsed = decodeMsg(defaultBaseTx, transactionMessage);
-      if (!isCreateProposalTx(parsed)) {
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
         throw new Error("unexpected transaction kind");
       }
-      expect(parsed.title).toEqual("This will happen next");
-      expect(parsed.action).toEqual({
-        kind: ActionKind.ExecuteMigration,
-        id: "hg2048hgß2c3rß 2u3r9c23r2",
-      });
-      expect(parsed.description).toEqual("foo bar");
-      expect(parsed.electionRuleId).toEqual(806595967999);
-      expect(parsed.startTime).toEqual(42424242);
-      expect(parsed.author).toEqual("tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt");
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.ExecuteMigration,
+            id: "hg2048hgß2c3rß 2u3r9c23r2",
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
     });
   });
 
