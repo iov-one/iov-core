@@ -17,11 +17,20 @@ import {
 } from "@iov/bcp";
 import { As } from "type-tagger";
 
-// config (those are not used outside of @iov/bns)
+import * as codecImpl from "./generated/codecimpl";
+
+// Internal (those are not used outside of @iov/bns)
 
 export interface CashConfiguration {
   readonly minimalFee: Amount | null;
 }
+
+/**
+ * The message part of a bnsd.Tx
+ *
+ * @see https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.24.0/docs/proto/index.html#bnsd.Tx
+ */
+export type BnsdTxMsg = Omit<codecImpl.bnsd.ITx, "fees" | "signatures" | "multisig">;
 
 // Governance
 

@@ -18,7 +18,7 @@ import BN from "bn.js";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
-import { decodeNumericId } from "./decode";
+import { decodeNumericId } from "./decodinghelpers";
 import {
   bash,
   bnsdTendermintUrl,

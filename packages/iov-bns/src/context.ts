@@ -10,7 +10,8 @@ import {
   SwapProcessState,
 } from "@iov/bcp";
 
-import { asIntegerNumber, decodeAmount, ensure } from "./decode";
+import { decodeAmount } from "./decodeobjects";
+import { asIntegerNumber, ensure } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import { Keyed } from "./types";
 import { addressPrefix, encodeBnsAddress } from "./util";

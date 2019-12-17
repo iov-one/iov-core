@@ -52,18 +52,17 @@ import { Stream, Subscription } from "xstream";
 import { bnsCodec } from "./bnscodec";
 import { swapToAddress } from "./conditions";
 import { ChainData, Context } from "./context";
+import { decodePubkey, decodeUserData } from "./decode";
 import {
   decodeAmount,
   decodeCashConfiguration,
   decodeElectionRule,
   decodeElectorate,
   decodeProposal,
-  decodePubkey,
   decodeToken,
-  decodeUserData,
   decodeUsernameNft,
   decodeVote,
-} from "./decode";
+} from "./decodeobjects";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
