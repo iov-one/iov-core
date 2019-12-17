@@ -28,6 +28,7 @@ import * as Long from "long";
 import * as codecImpl from "./generated/codecimpl";
 import {
   ActionKind,
+  BnsdTxMsg,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
@@ -709,7 +710,7 @@ function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): Vo
   };
 }
 
-export function parseMsg(base: UnsignedTransaction, tx: codecImpl.bnsd.ITx): UnsignedTransaction {
+export function parseMsg(base: UnsignedTransaction, tx: BnsdTxMsg): UnsignedTransaction {
   // Token sends
   if (tx.cashSendMsg) return parseSendTransaction(base, tx.cashSendMsg);
 

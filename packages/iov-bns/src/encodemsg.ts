@@ -12,6 +12,7 @@ import { Encoding } from "@iov/encoding";
 import { encodeAmount, encodeInt, encodeNumericId, encodeString } from "./encodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
+  BnsdTxMsg,
   ChainAddressPair,
   CreateEscrowTx,
   CreateMultisignatureTx,
@@ -38,13 +39,6 @@ import {
   VoteTx,
 } from "./types";
 import { decodeBnsAddress } from "./util";
-
-/**
- * The message part of a bnsd.Tx
- *
- * @see https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.24.0/docs/proto/index.html#bnsd.Tx
- */
-export type BnsdTxMsg = Omit<codecImpl.bnsd.ITx, "fees" | "signatures" | "multisig">;
 
 const maxMemoLength = 128;
 
