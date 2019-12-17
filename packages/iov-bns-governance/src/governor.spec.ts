@@ -638,6 +638,45 @@ describe("Governor", () => {
 
       connection.disconnect();
     });
+
+    it("works for ExecuteMigration", async () => {
+      pendingWithoutBnsd();
+      const options = await getGovernorOptions();
+      const { connection, identity } = options;
+      const governor = new Governor({ ...options });
+
+      const tx = await governor.buildCreateProposalTx({
+        type: ProposalType.ExecuteMigration,
+        title: "Execute this migration",
+        description: "for some good reason",
+        startTime: new ReadonlyDate(1562164525898),
+        electionRuleId: 1,
+        id: "foobar",
+      });
+      expect(tx).toEqual({
+        kind: "bns/create_proposal",
+        chainId: identity.chainId,
+        title: "Execute this migration",
+        description: "for some good reason",
+        action: {
+          kind: ActionKind.ExecuteMigration,
+          id: "foobar",
+        },
+        electionRuleId: 1,
+        startTime: 1562164525,
+        author: governor.address,
+        fee: {
+          tokens: {
+            quantity: "10000000",
+            fractionalDigits: 9,
+            tokenTicker: "CASH" as TokenTicker,
+          },
+          payer: governor.address,
+        },
+      });
+
+      connection.disconnect();
+    });
   });
 
   describe("createVoteTx", () => {
