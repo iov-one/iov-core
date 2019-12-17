@@ -32,6 +32,7 @@ Breaking changes
 - @iov/bns: Require fee payer to be specified when encoding a transaction with a
   fee.
 - @iov/bns: Use single `signatures` field in `SignedTransaction`s.
+- @iov/bns: The new field `VoteTx.voter` must be set for new transactions.
 - @iov/cosmos: Use single `signatures` field in `SignedTransaction`s.
 - @iov/dpos: Package removed due to the removal of @iov/rise.
 - @iov/ethereum: Use single `signatures` field in `SignedTransaction`s.

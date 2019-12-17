@@ -699,11 +699,13 @@ export function decodeVote(prefix: IovBech32Prefix, vote: codecImpl.gov.IVote & 
 }
 
 function parseVoteTx(base: UnsignedTransaction, msg: codecImpl.gov.IVoteMsg): VoteTx {
+  const prefix = addressPrefix(base.chainId);
   return {
     ...base,
     kind: "bns/vote",
     proposalId: decodeNumericId(ensure(msg.proposalId, "proposalId")),
     selection: decodeVoteOption(ensure(msg.selected, "selected")),
+    voter: msg.voter ? encodeBnsAddress(prefix, msg.voter) : null,
   };
 }
 

@@ -62,6 +62,12 @@ import { appendSignBytes } from "./util";
 
 const { fromHex } = Encoding;
 
+/** A random user on an IOV testnet */
+const alice = {
+  bin: fromHex("ae8cf0f2d436db9ecbbe118cf1d1637d568797c9"),
+  bech32: "tiov146x0puk5xmdeaja7zxx0r5tr04tg097fralsxd" as Address,
+};
+
 describe("Encode", () => {
   describe("encodePubkey", () => {
     it("can encode a pubkey", () => {
@@ -933,18 +939,50 @@ describe("Encode", () => {
       });
     });
 
-    it("works for VoteTx", () => {
-      const vote: VoteTx = {
-        kind: "bns/vote",
-        chainId: defaultChainId,
-        proposalId: 733292968738,
-        selection: VoteOption.Abstain,
-      };
-      const msg = buildMsg(vote).govVoteMsg!;
-      expect(msg).toEqual({
-        metadata: { schema: 1 },
-        proposalId: Uint8Array.from([0, 0, 0, ...fromHex("AABBAABB22")]),
-        selected: codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN,
+    describe("VoteTx", () => {
+      it("works for VoteTx with voter set", () => {
+        const vote: VoteTx = {
+          kind: "bns/vote",
+          chainId: defaultChainId,
+          proposalId: 733292968738,
+          selection: VoteOption.Abstain,
+          voter: alice.bech32,
+        };
+        const msg = buildMsg(vote).govVoteMsg!;
+        expect(msg).toEqual({
+          metadata: { schema: 1 },
+          proposalId: fromHex("000000AABBAABB22"),
+          selected: codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN,
+          voter: alice.bin,
+        });
+      });
+
+      it("throws if voter is not set (in strict mode)", () => {
+        const vote: VoteTx = {
+          kind: "bns/vote",
+          chainId: defaultChainId,
+          proposalId: 733292968738,
+          selection: VoteOption.Abstain,
+          voter: null,
+        };
+        expect(() => buildMsg(vote)).toThrowError(/VoteTx\.voter must be set/i);
+      });
+
+      it("works for VoteTx with no voter set (in non-strict mode)", () => {
+        const vote: VoteTx = {
+          kind: "bns/vote",
+          chainId: defaultChainId,
+          proposalId: 733292968738,
+          selection: VoteOption.Abstain,
+          voter: null,
+        };
+        const msg = buildMsg(vote, false).govVoteMsg!;
+        expect(msg).toEqual({
+          metadata: { schema: 1 },
+          proposalId: fromHex("000000AABBAABB22"),
+          selected: codecImpl.gov.VoteOption.VOTE_OPTION_ABSTAIN,
+          voter: undefined,
+        });
       });
     });
 

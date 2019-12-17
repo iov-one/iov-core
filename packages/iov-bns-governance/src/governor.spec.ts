@@ -652,6 +652,7 @@ describe("Governor", () => {
         chainId: options.identity.chainId,
         proposalId: 5,
         selection: VoteOption.Yes,
+        voter: bnsCodec.identityToAddress(options.identity),
         fee: {
           tokens: {
             quantity: "10000000",
