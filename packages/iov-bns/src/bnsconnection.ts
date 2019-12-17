@@ -53,7 +53,6 @@ import { bnsCodec } from "./bnscodec";
 import { swapToAddress } from "./conditions";
 import { ChainData, Context } from "./context";
 import {
-  decodeAmount,
   decodeCashConfiguration,
   decodeElectionRule,
   decodeElectorate,
@@ -62,8 +61,9 @@ import {
   decodeToken,
   decodeUserData,
   decodeUsernameNft,
-  decodeVote,
 } from "./decode";
+import { decodeVote } from "./decodemsg";
+import { decodeAmount } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {

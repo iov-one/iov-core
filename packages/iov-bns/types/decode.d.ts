@@ -1,5 +1,4 @@
 import {
-  Amount,
   ChainId,
   FullSignature,
   Nonce,
@@ -7,30 +6,19 @@ import {
   SignatureBytes,
   SignedTransaction,
   Token,
-  UnsignedTransaction,
 } from "@iov/bcp";
 import * as Long from "long";
 import * as codecImpl from "./generated/codecimpl";
 import {
-  BnsdTxMsg,
   BnsUsernameNft,
   CashConfiguration,
   ElectionRule,
   Electorate,
   Keyed,
-  Participant,
   PrivkeyBundle,
   Proposal,
-  Vote,
 } from "./types";
 import { IovBech32Prefix } from "./util";
-/**
- * Decodes a protobuf int field (int32/uint32/int64/uint64) into a JavaScript
- * number.
- */
-export declare function asIntegerNumber(maybeLong: Long | number | null | undefined): number;
-export declare function ensure<T>(maybe: T | null | undefined, msg?: string): T;
-export declare function decodeNumericId(id: Uint8Array): number;
 export declare function decodeUsernameNft(
   nft: codecImpl.username.IToken & Keyed,
   registryChainId: ChainId,
@@ -46,12 +34,7 @@ export declare function decodePrivkey(privateKey: codecImpl.crypto.IPrivateKey):
 export declare function decodeSignature(signature: codecImpl.crypto.ISignature): SignatureBytes;
 export declare function decodeFullSig(sig: codecImpl.sigs.IStdSignature): FullSignature;
 export declare function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token;
-export declare function decodeAmount(coin: codecImpl.coin.ICoin): Amount;
 export declare function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): CashConfiguration;
-export declare function decodeParticipants(
-  prefix: IovBech32Prefix,
-  maybeParticipants?: codecImpl.multisig.IParticipant[] | null,
-): readonly Participant[];
 export declare function decodeElectorate(
   prefix: IovBech32Prefix,
   electorate: codecImpl.gov.IElectorate & Keyed,
@@ -64,6 +47,4 @@ export declare function decodeProposal(
   prefix: IovBech32Prefix,
   proposal: codecImpl.gov.IProposal & Keyed,
 ): Proposal;
-export declare function decodeVote(prefix: IovBech32Prefix, vote: codecImpl.gov.IVote & Keyed): Vote;
-export declare function parseMsg(base: UnsignedTransaction, tx: BnsdTxMsg): UnsignedTransaction;
 export declare function parseTx(tx: codecImpl.bnsd.ITx, chainId: ChainId): SignedTransaction;
