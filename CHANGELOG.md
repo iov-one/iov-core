@@ -7,6 +7,7 @@
 - @iov/bcp: Add optional feePayer parameter to
   `BlockchainConnection.withDefaultFee`.
 - @iov/bcp: Add optional senderPubkey parameter to `SendTransaction`.
+- @iov/bcp: Add `isSignedTransaction` helper.
 - @iov/bcp: Add `isConfirmedAndSignedTransaction` helper.
 - @iov/bcp: Add `NonEmptyArray` and `isNonEmptyArray`/`newNonEmptyArray` helper
   functions.

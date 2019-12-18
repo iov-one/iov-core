@@ -214,6 +214,7 @@ export interface TransactionContainer<T extends UnsignedTransaction> {
   readonly transaction: T;
 }
 
+/** A readonly array with one or more elements */
 export type NonEmptyArray<T> = readonly T[] & { readonly 0: T };
 
 export function isNonEmptyArray<T>(data: readonly T[]): data is NonEmptyArray<T> {
@@ -232,6 +233,23 @@ export function newNonEmptyArray<T>(data: Iterable<T>): NonEmptyArray<T> {
 export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTransaction>
   extends TransactionContainer<T> {
   readonly signatures: NonEmptyArray<FullSignature>;
+}
+
+function isArrayOfFullSignature(signatures: unknown): signatures is readonly FullSignature[] {
+  return Array.isArray(signatures) && signatures.every(isFullSignature);
+}
+
+export function isSignedTransaction(data: unknown): data is SignedTransaction<UnsignedTransaction> {
+  if (!isNonNullObject(data)) return false;
+
+  const transaction: unknown = (data as SignedTransaction).transaction;
+  if (!isUnsignedTransaction(transaction)) return false;
+
+  const signatures: unknown = (data as SignedTransaction).signatures;
+  if (!isArrayOfFullSignature(signatures)) return false;
+  if (!isNonEmptyArray(signatures)) return false;
+
+  return true;
 }
 
 export interface ConfirmedTransaction<T extends UnsignedTransaction> extends TransactionContainer<T> {
