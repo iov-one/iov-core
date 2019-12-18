@@ -169,7 +169,7 @@ export class LiskConnection implements BlockchainConnection {
   }
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
-    const address = isPubkeyQuery(query) ? Derivation.pubkeyToAddress(query.pubkey.data) : query.address;
+    const address = isPubkeyQuery(query) ? Derivation.pubkeyToAddress(query.pubkey) : query.address;
 
     const url = this.baseUrl + `/api/accounts?address=${address}`;
     const result = await axios.get(url);

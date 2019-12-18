@@ -1,4 +1,4 @@
-import { Address } from "@iov/bcp";
+import { Address, Algorithm, PubkeyBundle } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import Long from "long";
@@ -19,10 +19,13 @@ export class Derivation {
     return addressNumber.toString(10) === addressString;
   }
 
-  public static pubkeyToAddress(pubkey: Uint8Array): Address {
+  public static pubkeyToAddress(pubkey: PubkeyBundle): Address {
+    if (pubkey.algo !== Algorithm.Ed25519 || pubkey.data.length !== 32) {
+      throw new Error("Not a valid ed25519 public key");
+    }
     const suffix = constants.addressSuffix;
     // https://github.com/prolina-foundation/snapshot-validator/blob/35621c7/src/lisk.cpp#L26
-    const hash = new Sha256(pubkey).digest();
+    const hash = new Sha256(pubkey.data).digest();
     const firstEightBytes = Array.from(hash.slice(0, 8));
     const addressString = Long.fromBytesLE(firstEightBytes, true).toString(10) + suffix;
     return addressString as Address;

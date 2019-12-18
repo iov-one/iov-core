@@ -44,7 +44,10 @@ function pendingWithoutLiskDevnet(): void {
 }
 
 async function randomAddress(): Promise<Address> {
-  const pubkey = Random.getBytes(32);
+  const pubkey = {
+    algo: Algorithm.Ed25519,
+    data: Random.getBytes(32) as PubkeyBytes,
+  };
   return Derivation.pubkeyToAddress(pubkey);
 }
 
@@ -813,7 +816,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -833,7 +836,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -863,7 +866,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -883,7 +886,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -908,7 +911,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -1196,7 +1199,7 @@ describe("LiskConnection", () => {
         chainId: dummynetChainId,
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: fromHex("aabbccdd") as PubkeyBytes,
+          data: fromHex("aabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccdd") as PubkeyBytes,
         },
       };
 

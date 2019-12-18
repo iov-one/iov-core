@@ -7,6 +7,7 @@ import {
   Nonce,
   PostableBytes,
   PrehashType,
+  PubkeyBundle,
   PubkeyBytes,
   SendTransaction,
   SignableBytes,
@@ -100,7 +101,10 @@ export const liskCodec: TxCodec = {
    */
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
-    const senderPublicKey = Encoding.fromHex(json.senderPublicKey) as PubkeyBytes;
+    const senderPublicKey: PubkeyBundle = {
+      algo: Algorithm.Ed25519,
+      data: Encoding.fromHex(json.senderPublicKey) as PubkeyBytes,
+    };
 
     let unsignedTransaction: UnsignedTransaction;
     switch (json.type) {
@@ -108,10 +112,7 @@ export const liskCodec: TxCodec = {
         const send: SendTransaction = {
           kind: "bcp/send",
           chainId: chainId,
-          senderPubkey: {
-            algo: Algorithm.Ed25519,
-            data: senderPublicKey,
-          },
+          senderPubkey: senderPublicKey,
           fee: {
             tokens: {
               quantity: Parse.parseQuantity(json.fee),
@@ -140,10 +141,7 @@ export const liskCodec: TxCodec = {
       signatures: [
         {
           nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
-          pubkey: {
-            algo: Algorithm.Ed25519,
-            data: senderPublicKey,
-          },
+          pubkey: senderPublicKey,
           signature: Encoding.fromHex(json.signature) as SignatureBytes,
         },
       ],
@@ -160,7 +158,7 @@ export const liskCodec: TxCodec = {
    * These are bugs we have to deal with.
    */
   identityToAddress: (identity: Identity): Address => {
-    return Derivation.pubkeyToAddress(identity.pubkey.data);
+    return Derivation.pubkeyToAddress(identity.pubkey);
   },
 
   isValidAddress: Derivation.isValidAddress,

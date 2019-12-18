@@ -54,7 +54,7 @@ export class Serialization {
       if (!unsigned.senderPubkey) {
         throw new Error("Sender pubkey is required");
       }
-      if (Derivation.pubkeyToAddress(unsigned.senderPubkey.data) !== unsigned.sender) {
+      if (Derivation.pubkeyToAddress(unsigned.senderPubkey) !== unsigned.sender) {
         throw new Error("Sender pubkey does not match sender address");
       }
 
