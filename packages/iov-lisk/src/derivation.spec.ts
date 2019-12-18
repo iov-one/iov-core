@@ -1,3 +1,4 @@
+import { Algorithm, PubkeyBytes } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import { Derivation } from "./derivation";
@@ -9,14 +10,34 @@ describe("Derivation", () => {
   describe("pubkeyToAddress", () => {
     it("works for address in signed int64 range", () => {
       // https://testnet-explorer.lisk.io/address/6076671634347365051L
-      const pubkey = fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184");
+      const pubkey = {
+        algo: Algorithm.Ed25519,
+        data: fromHex("f4852b270f76dc8b49bfa88de5906e81d3b001d23852f0e74ba60cac7180a184") as PubkeyBytes,
+      };
       expect(pubkeyToAddress(pubkey)).toEqual("6076671634347365051L");
     });
 
     it("works for address outside of signed int64 range", () => {
       // https://testnet-explorer.lisk.io/address/10176009299933723198L
-      const pubkey = fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa");
+      const pubkey = {
+        algo: Algorithm.Ed25519,
+        data: fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa") as PubkeyBytes,
+      };
       expect(pubkeyToAddress(pubkey)).toEqual("10176009299933723198L");
+    });
+
+    it("throws for invalid input", () => {
+      const tooShort = {
+        algo: Algorithm.Ed25519,
+        data: fromHex("ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa") as PubkeyBytes,
+      };
+      expect(() => pubkeyToAddress(tooShort)).toThrowError(/not a valid ed25519 public key/i);
+
+      const wrongAlgorithm = {
+        algo: Algorithm.Secp256k1,
+        data: fromHex("06ad4341a609af2de837e1156f81849b05bf3c280940a9f45db76d09a3a3f2fa") as PubkeyBytes,
+      };
+      expect(() => pubkeyToAddress(wrongAlgorithm)).toThrowError(/not a valid ed25519 public key/i);
     });
   });
 
