@@ -127,6 +127,7 @@ export interface TransactionContainer<T extends UnsignedTransaction> {
   /** The transaction content */
   readonly transaction: T;
 }
+/** A readonly array with one or more elements */
 export declare type NonEmptyArray<T> = readonly T[] & {
   readonly 0: T;
 };
@@ -137,6 +138,7 @@ export interface SignedTransaction<T extends UnsignedTransaction = UnsignedTrans
   extends TransactionContainer<T> {
   readonly signatures: NonEmptyArray<FullSignature>;
 }
+export declare function isSignedTransaction(data: unknown): data is SignedTransaction<UnsignedTransaction>;
 export interface ConfirmedTransaction<T extends UnsignedTransaction> extends TransactionContainer<T> {
   readonly height: number;
   /** depth of the transaction's block, starting at 1 as soon as transaction is in a block */
