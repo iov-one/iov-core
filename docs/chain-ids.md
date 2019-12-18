@@ -43,7 +43,7 @@ request.
 
 | Chain ID             | Description                                                                                                                             | Example                                                                 |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `iov-%s`             | An IOV chain with the network name in `%s`                                                                                              | `iov-mainnet` for IOV mainnet, `iov-dancenet` for the Dancenet testnet    |
+| `iov-%s`             | An IOV chain with the network name in `%s`                                                                                              | `iov-mainnet` for IOV mainnet, `iov-dancenet` for the Dancenet testnet  |
 | `ethereum-eip155-%d` | An Ethereum chain with the chain ID from [EIP155](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md) in the placeholder `%d` | `ethereum-eip155-1` for Ethereum mainnet, `ethereum-eip155-5` for Görli |
 | `lisk-%s`            | A Lisk chain with a 10 digit prefix of the nethash in `%s`                                                                              | `lisk-da3ed6a454` for the Lisk testnet                                  |
 | `rise-%s`            | A RISE chain with a 10 digit prefix of the nethash in `%s`                                                                              | `rise-296dc9a4d1` for the RISE testnet                                  |

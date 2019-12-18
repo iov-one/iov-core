@@ -141,13 +141,13 @@ can check out [bcp-demo](https://github.com/iov-one/bcp-demo), and build the
 against your one-node "dev net"...
 
 But, if you just want to see how the client works, let's run against IOV's
-testnet and use the faucet to get some tokens. As of December 17, 2019, the current
-testnet is located at https://rpc-private-a-x-dancenet.iov.one/.
+testnet and use the faucet to get some tokens. As of December 17, 2019, the
+current testnet is located at https://rpc-private-a-x-dancenet.iov.one/.
 
 To connect, you need to know the address of the rpc server (above). It is also
 helpful to know the `chainId` of the chain. You can find that quite easily by
-looking at the [genesis file](https://rpc-private-a-x-dancenet.iov.one/genesis) under
-`.result.genesis.chain_id`. In our case this is `iov-dancenet`.
+looking at the [genesis file](https://rpc-private-a-x-dancenet.iov.one/genesis)
+under `.result.genesis.chain_id`. In our case this is `iov-dancenet`.
 
 ### Executing the commands
 
@@ -170,7 +170,9 @@ Now, connect to the network:
 import { createBnsConnector, MultiChainSigner } from "@iov/multichain";
 
 const signer = new MultiChainSigner(profile);
-await signer.addChain(createBnsConnector("wss://rpc-private-a-x-dancenet.iov.one"));
+await signer.addChain(
+  createBnsConnector("wss://rpc-private-a-x-dancenet.iov.one"),
+);
 
 console.log(signer.chainIds()[0]); // is this what you got yourself?
 ```
