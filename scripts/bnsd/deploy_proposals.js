@@ -182,9 +182,14 @@ async function main() {
   }
 }
 
-main()
-  .catch(console.error)
-  .finally(async () => {
+main().then(
+  async () => {
     (await connectionPromise).disconnect();
     process.exit(0);
-  });
+  },
+  async error => {
+    console.error(error);
+    (await connectionPromise).disconnect();
+    process.exit(1);
+  },
+);
