@@ -20,6 +20,7 @@ import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { decodeNumericId } from "./decodinghelpers";
 import {
+  assert,
   bash,
   bnsdTendermintUrl,
   cash,
@@ -127,9 +128,7 @@ describe("BnsConnection (post txs)", () => {
       expect(mine.height).toBeGreaterThan(initialHeight);
       expect(mine.transactionId).toMatch(/^[0-9A-F]{64}$/);
       const tx = mine.transaction;
-      if (!isSendTransaction(tx)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(tx), "Expected SendTransaction");
       expect(tx).toEqual(sendTx);
 
       connection.disconnect();
@@ -312,9 +311,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult.length).toEqual(1);
       const firstSearchResultTransaction = searchResult[0].transaction;
-      if (!isRegisterUsernameTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isRegisterUsernameTx(firstSearchResultTransaction), "Expected RegisterUsernameTx");
       expect(firstSearchResultTransaction.username).toEqual(username);
       expect(firstSearchResultTransaction.targets.length).toEqual(1);
 
@@ -359,9 +356,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult.length).toEqual(1);
       const firstSearchResultTransaction = searchResult[0].transaction;
-      if (!isRegisterUsernameTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isRegisterUsernameTx(firstSearchResultTransaction), "Expected RegisterUsernameTx");
       expect(firstSearchResultTransaction.username).toEqual(username);
       expect(firstSearchResultTransaction.targets.length).toEqual(0);
 
@@ -656,9 +651,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult1.length).toEqual(1);
       const { result: contractId, transaction: firstSearchResultTransaction } = searchResult1[0];
-      if (!isCreateMultisignatureTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isCreateMultisignatureTx(firstSearchResultTransaction), "Expected CreateMultisignatureTx");
       expect(firstSearchResultTransaction.participants.length).toEqual(6);
       firstSearchResultTransaction.participants.forEach((participant, i) => {
         expect(participant.address).toEqual(participants[i].address);
@@ -703,9 +696,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult2.length).toEqual(2);
       const { transaction: secondSearchResultTransaction } = searchResult2[1];
-      if (!isUpdateMultisignatureTx(secondSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isUpdateMultisignatureTx(secondSearchResultTransaction), "Expected UpdateMultisignatureTx");
       expect(secondSearchResultTransaction.participants.length).toEqual(3);
       secondSearchResultTransaction.participants.forEach((participant, i) => {
         expect(participant.address).toEqual(participantsUpdated[i].address);
@@ -769,9 +760,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult1.length).toEqual(1);
       const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
-      if (!isCreateEscrowTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isCreateEscrowTx(firstSearchResultTransaction), "Expected CreateEscrowTx");
       expect(firstSearchResultTransaction.sender).toEqual(senderAddress);
       expect(firstSearchResultTransaction.recipient).toEqual(recipientAddress);
       expect(firstSearchResultTransaction.arbiter).toEqual(arbiterAddress);
@@ -807,9 +796,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult2.length).toEqual(1);
       const { transaction: secondSearchResultTransaction } = searchResult2[0];
-      if (!isReleaseEscrowTx(secondSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isReleaseEscrowTx(secondSearchResultTransaction), "Expected ReleaseEscrowTx");
       expect(secondSearchResultTransaction.escrowId).toEqual(escrowId);
       expect(secondSearchResultTransaction.amounts).toEqual([defaultAmount]);
 
@@ -849,7 +836,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(sender, createEscrowTx, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) throw new Error("Transaction did not succeed");
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         escrowId = blockInfo.result || fromHex("");
       }
 
@@ -930,9 +917,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult1.length).toEqual(1);
       const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
-      if (!isCreateEscrowTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isCreateEscrowTx(firstSearchResultTransaction), "Expected CreateEscrowTx");
       expect(firstSearchResultTransaction.sender).toEqual(senderAddress);
       expect(firstSearchResultTransaction.recipient).toEqual(recipientAddress);
       expect(firstSearchResultTransaction.arbiter).toEqual(arbiterAddress);
@@ -970,9 +955,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult2.length).toEqual(1);
       const { transaction: secondSearchResultTransaction } = searchResult2[0];
-      if (!isReturnEscrowTx(secondSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isReturnEscrowTx(secondSearchResultTransaction), "Expected ReturnEscrowTx");
       expect(secondSearchResultTransaction.escrowId).toEqual(escrowId);
 
       connection.disconnect();
@@ -1032,9 +1015,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult1.length).toEqual(1);
       const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
-      if (!isCreateEscrowTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isCreateEscrowTx(firstSearchResultTransaction), "Expected CreateEscrowTx");
       expect(firstSearchResultTransaction.sender).toEqual(senderAddress);
       expect(firstSearchResultTransaction.recipient).toEqual(recipientAddress);
       expect(firstSearchResultTransaction.arbiter).toEqual(arbiterAddress);
@@ -1070,9 +1051,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult2.length).toEqual(1);
       const { transaction: secondSearchResultTransaction } = searchResult2[0];
-      if (!isUpdateEscrowPartiesTx(secondSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isUpdateEscrowPartiesTx(secondSearchResultTransaction), "Expected UpdateEscrowPartiesTx");
       expect(secondSearchResultTransaction.escrowId).toEqual(escrowId);
       expect(secondSearchResultTransaction.arbiter).toEqual(newArbiterAddress);
 
@@ -1122,9 +1101,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) {
-          throw new Error("Transaction did not succeed");
-        }
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         if (!blockInfo.result) {
           throw new Error("Transaction result missing");
         }
@@ -1240,9 +1217,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) {
-          throw new Error("Transaction did not succeed");
-        }
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         if (!blockInfo.result) {
           throw new Error("Transaction result missing");
         }
@@ -1266,9 +1241,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(author, voteForProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) {
-          throw new Error("Transaction did not succeed");
-        }
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
       }
 
       await sleep(15_000);
@@ -1315,9 +1288,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) {
-          throw new Error("Transaction did not succeed");
-        }
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         if (!blockInfo.result) {
           throw new Error("Transaction result missing");
         }
@@ -1341,9 +1312,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(author, voteForProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) {
-          throw new Error("Transaction did not succeed");
-        }
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
       }
 
       await sleep(15_000);

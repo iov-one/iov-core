@@ -19,6 +19,7 @@ import Long from "long";
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import {
+  assert,
   bnsdTendermintUrl,
   cash,
   defaultAmount,
@@ -77,13 +78,9 @@ describe("BnsConnection (txs)", () => {
         const result = await connection.getTx(transactionId);
         expect(result.height).toBeGreaterThanOrEqual(2);
         expect(result.transactionId).toEqual(transactionId);
-        if (isFailedTransaction(result)) {
-          throw new Error("Expected ConfirmedTransaction, received FailedTransaction");
-        }
+        assert(isConfirmedTransaction(result), "Expected ConfirmedTransaction");
         const transaction = result.transaction;
-        if (!isSendTransaction(transaction)) {
-          throw new Error("Unexpected transaction type");
-        }
+        assert(isSendTransaction(transaction), "Expected SendTransaction");
         expect(transaction.recipient).toEqual(sendTx.recipient);
         expect(transaction.amount).toEqual(defaultAmount);
       }
@@ -120,16 +117,12 @@ describe("BnsConnection (txs)", () => {
       await tendermintSearchIndexUpdated();
 
       const result = await connection.getTx(transactionId);
-      if (isFailedTransaction(result)) {
-        throw new Error("Expected ConfirmedTransaction, received FailedTransaction");
-      }
+      assert(isConfirmedTransaction(result), "Expected ConfirmedTransaction");
       const {
         transaction,
         signatures: [signature],
       } = result;
-      if (!isSendTransaction(transaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(transaction), "Expected SendTransaction");
       const signingJob = bnsCodec.bytesToSign(transaction, signature.nonce);
       const txBytes = new Sha512(signingJob.bytes).digest();
 
@@ -178,9 +171,7 @@ describe("BnsConnection (txs)", () => {
       );
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResultTransaction = results[results.length - 1].transaction;
-      if (!isSendTransaction(mostRecentResultTransaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
       expect(mostRecentResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
@@ -224,9 +215,7 @@ describe("BnsConnection (txs)", () => {
       );
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResultTransaction = results[results.length - 1].transaction;
-      if (!isSendTransaction(mostRecentResultTransaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
       expect(mostRecentResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
@@ -268,9 +257,7 @@ describe("BnsConnection (txs)", () => {
       expect(searchResults.length).toEqual(1);
       expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
       const searchResultTransaction = searchResults[0].transaction;
-      if (!isSendTransaction(searchResultTransaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(searchResultTransaction), "Expected SendTransaction");
       expect(searchResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
@@ -316,9 +303,7 @@ describe("BnsConnection (txs)", () => {
         );
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
-        if (!isSendTransaction(mostRecentResultTransaction)) {
-          throw new Error("Expected send transaction");
-        }
+        assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
         expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
@@ -332,9 +317,7 @@ describe("BnsConnection (txs)", () => {
         ).filter(isConfirmedAndSignedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
-        if (!isSendTransaction(mostRecentResultTransaction)) {
-          throw new Error("Expected send transaction");
-        }
+        assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
         expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
@@ -348,9 +331,7 @@ describe("BnsConnection (txs)", () => {
         ).filter(isConfirmedAndSignedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
-        if (!isSendTransaction(mostRecentResultTransaction)) {
-          throw new Error("Expected send transaction");
-        }
+        assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
         expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
@@ -364,9 +345,7 @@ describe("BnsConnection (txs)", () => {
         ).filter(isConfirmedAndSignedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
-        if (!isSendTransaction(mostRecentResultTransaction)) {
-          throw new Error("Expected send transaction");
-        }
+        assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
         expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
@@ -411,9 +390,7 @@ describe("BnsConnection (txs)", () => {
 
       expect(results.length).toEqual(1);
       const result = results[0];
-      if (!isFailedTransaction(result)) {
-        throw new Error("Expected failed transaction");
-      }
+      assert(isFailedTransaction(result), "Expected FailedTransaction");
       expect(result.height).toBeGreaterThan(initialHeight);
       // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
       expect(result.code).toEqual(13);
@@ -510,14 +487,10 @@ describe("BnsConnection (txs)", () => {
       // finds transaction using id
       const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
-      if (!isConfirmedTransaction(result)) {
-        throw new Error("Expected confirmed transaction");
-      }
+      assert(isConfirmedTransaction(result), "Expected ConfirmedTransaction");
       const searchResultTransaction = result.transaction;
       expect(result.transactionId).toEqual(transactionIdToSearch);
-      if (!isSendTransaction(searchResultTransaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(searchResultTransaction), "Expected SendTransaction");
       expect(searchResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
@@ -551,14 +524,10 @@ describe("BnsConnection (txs)", () => {
 
       const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
-      if (!isConfirmedTransaction(result)) {
-        throw new Error("Expected confirmed transaction");
-      }
+      assert(isConfirmedTransaction(result), "Expected ConfirmedTransaction");
       const searchResultTransaction = result.transaction;
       expect(result.transactionId).toEqual(transactionIdToSearch);
-      if (!isSendTransaction(searchResultTransaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(searchResultTransaction), "Expected SendTransaction");
       expect(searchResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
@@ -600,9 +569,7 @@ describe("BnsConnection (txs)", () => {
 
       const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
-      if (!isFailedTransaction(result)) {
-        throw new Error("Expected failed transaction");
-      }
+      assert(isFailedTransaction(result), "Expected FailedTransaction");
       expect(result.height).toBeGreaterThan(initialHeight);
       // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
       expect(result.code).toEqual(13);
@@ -644,9 +611,7 @@ describe("BnsConnection (txs)", () => {
 
       const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
-      if (!isFailedTransaction(result)) {
-        throw new Error("Expected failed transaction");
-      }
+      assert(isFailedTransaction(result), "Expected FailedTransaction");
       // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
       expect(result.code).toEqual(13);
       expect(result.message).toMatch(/invalid amount/i);

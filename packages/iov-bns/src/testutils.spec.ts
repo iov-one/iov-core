@@ -41,6 +41,12 @@ export function pendingWithoutBnsd(): void {
   }
 }
 
+export function assert(condition: any, msg?: string): asserts condition {
+  if (!condition) {
+    throw new Error(msg || "condition is not truthy");
+  }
+}
+
 export async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
