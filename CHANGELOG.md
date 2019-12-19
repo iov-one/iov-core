@@ -16,6 +16,7 @@
 - @iov/bns: `BnsConnection.searchTx` now resolves to an array of
   `ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction`.
 - @iov/bns-governance: Add proposal type `ExecuteMigration`.
+- @iov/bns-governance: Make `Governor.identity` public.
 - @iov/lisk: Export `pubkeyToAddress`.
 - @iov/utils: New package added that includes utils.
 
