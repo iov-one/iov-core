@@ -31,7 +31,7 @@
     "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari",
     "test": "yarn build-or-skip && yarn test-node",
-    "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && rm -rf ./types/testdata && shx rm ./types/*.spec.d.ts && shx rm ./types/**/*.spec.d.ts",
+    "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && rm -rf ./types/testdata && shx rm -f ./types/*.spec.d.ts && shx rm ./types/**/*.spec.d.ts",
     "format-types": "prettier --write --loglevel warn \"./types/**/*.d.ts\"",
     "build": "shx rm -rf ./build && tsc && shx mkdir -p build/generated && shx cp ./src/generated/*.js ./build/generated && shx mkdir -p ./build/types/generated && shx cp ./src/generated/*.d.ts ./build/types/generated && yarn move-types && yarn format-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
@@ -57,6 +57,7 @@
     "xstream": "^11.10.0"
   },
   "devDependencies": {
-    "@iov/keycontrol": "^2.0.0-alpha.2"
+    "@iov/keycontrol": "^2.0.0-alpha.2",
+    "@iov/testing": "^2.0.0-alpha.2"
   }
 }

@@ -22,6 +22,7 @@ import {
 } from "@iov/bns";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { sleep } from "@iov/testing";
 import BN from "bn.js";
 import { ReadonlyDate } from "readonly-date";
 
@@ -44,10 +45,6 @@ function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {
     pending("Set BNSD_ENABLED to enable bnsd-based tests");
   }
-}
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function getGovernorOptions(

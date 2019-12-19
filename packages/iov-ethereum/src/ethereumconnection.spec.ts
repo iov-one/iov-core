@@ -39,6 +39,7 @@ import {
 import { ExtendedSecp256k1Signature, Keccak256, Random, Secp256k1 } from "@iov/crypto";
 import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
+import { sleep } from "@iov/testing";
 
 import { pubkeyToAddress } from "./address";
 import { Erc20ApproveTransaction } from "./erc20";
@@ -66,10 +67,6 @@ function pendingWithoutEthereumScraper(): void {
   if (!process.env.ETHEREUM_SCRAPER) {
     return pending("Set ETHEREUM_SCRAPER to enable out-of-blockchain functionality tests");
   }
-}
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function randomAddress(): Promise<Address> {

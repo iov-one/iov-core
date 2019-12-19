@@ -1,7 +1,7 @@
 {
-  "name": "@iov/bcp",
+  "name": "@iov/testing",
   "version": "2.0.0-alpha.2",
-  "description": "General types and helpers for IOV's blockchain communication protocol",
+  "description": "Developer tools for testing code",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
   "main": "build/index.js",
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-bcp"
+    "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-testing"
   },
   "publishConfig": {
     "access": "public"
@@ -36,11 +36,5 @@
     "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari"
   },
-  "dependencies": {
-    "@iov/crypto": "^2.0.0-alpha.2",
-    "@iov/encoding": "^2.0.0-alpha.2",
-    "@iov/stream": "^2.0.0-alpha.2",
-    "type-tagger": "^1.0.0",
-    "xstream": "^11.10.0"
-  }
+  "dependencies": {}
 }

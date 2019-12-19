@@ -6,6 +6,7 @@
 import { createBnsConnector } from "@iov/bns";
 import { createEthereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
+import { sleep } from "@iov/testing";
 
 import { JsonRpcSigningServer } from "../jsonrpcsigningserver";
 import { MultiChainSigner } from "../multichainsigner";
@@ -22,10 +23,6 @@ const bnsdFaucetMnemonic = "degree tackle suggest window test behind mesh extra 
 const bnsdFaucetPath = HdPaths.iovFaucet();
 const ethereumUrl = "http://localhost:8545";
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function main(): Promise<void> {
   const profile = new UserProfile();

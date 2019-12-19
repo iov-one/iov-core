@@ -17,6 +17,7 @@ import {
 } from "@iov/bcp";
 import { Uint64 } from "@iov/encoding";
 import { asArray } from "@iov/stream";
+import { assert } from "@iov/testing";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
@@ -79,9 +80,7 @@ describe("BnsConnection (swaps)", () => {
     expect(transactionId).toMatch(/^[0-9A-F]{64}$/);
 
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo)) {
-      throw new Error(`Expected transaction state success but got state: ${blockInfo.state}`);
-    }
+    assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
     const txHeight = blockInfo.height;
     const txResult = blockInfo.result! as SwapIdBytes;
     // the transaction result is 8 byte number assigned by the application
@@ -214,9 +213,7 @@ describe("BnsConnection (swaps)", () => {
       const post = await connection.postTx(bnsCodec.bytesToPost(signed));
 
       const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
-      if (!isBlockInfoSucceeded(blockInfo)) {
-        throw new Error(`Expected transaction state success but got state: ${blockInfo.state}`);
-      }
+      assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
       const txResult = blockInfo.result! as SwapIdBytes;
 
       await tendermintSearchIndexUpdated();
@@ -285,9 +282,7 @@ describe("BnsConnection (swaps)", () => {
     // make two offers
     const post1 = await openSwap(connection, profile, faucet, recipientAddr, hash1);
     const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo1)) {
-      throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
-    }
+    assert(isBlockInfoSucceeded(blockInfo1), `Expected success but got state: ${blockInfo1.state}`);
     const id1: SwapId = {
       data: blockInfo1.result! as SwapIdBytes,
     };
@@ -295,9 +290,7 @@ describe("BnsConnection (swaps)", () => {
 
     const post2 = await openSwap(connection, profile, faucet, recipientAddr, hash2);
     const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo2)) {
-      throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
-    }
+    assert(isBlockInfoSucceeded(blockInfo2), `Expected success but got state: ${blockInfo2.state}`);
     const id2: SwapId = {
       data: blockInfo2.result! as SwapIdBytes,
     };
@@ -324,9 +317,7 @@ describe("BnsConnection (swaps)", () => {
 
     const post3 = await openSwap(connection, profile, faucet, recipientAddr, hash3);
     const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
-    if (!isBlockInfoSucceeded(blockInfo3)) {
-      throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
-    }
+    assert(isBlockInfoSucceeded(blockInfo3), `Expected success but got state: ${blockInfo3.state}`);
     const id3: SwapId = {
       data: blockInfo3.result! as SwapIdBytes,
     };
