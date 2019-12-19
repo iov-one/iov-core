@@ -22,7 +22,7 @@ import {
 } from "@iov/bns";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
-import { sleep } from "@iov/testing";
+import { sleep } from "@iov/utils";
 import BN from "bn.js";
 import { ReadonlyDate } from "readonly-date";
 

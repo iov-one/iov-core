@@ -47,7 +47,7 @@ import { Random } from "@iov/crypto";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, makeJsonRpcId } from "@iov/jsonrpc";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
-import { sleep } from "@iov/testing";
+import { sleep } from "@iov/utils";
 import axios from "axios";
 import BN from "bn.js";
 import equal from "fast-deep-equal";

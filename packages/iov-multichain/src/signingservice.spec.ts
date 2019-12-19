@@ -25,7 +25,7 @@ import {
   SimpleMessagingConnection,
 } from "@iov/jsonrpc";
 import { firstEvent } from "@iov/stream";
-import { sleep } from "@iov/testing";
+import { sleep } from "@iov/utils";
 import { Producer, Stream } from "xstream";
 
 const { fromHex } = Encoding;

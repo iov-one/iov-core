@@ -22,7 +22,7 @@ import {
 import { Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
-import { sleep } from "@iov/testing";
+import { sleep } from "@iov/utils";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";

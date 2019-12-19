@@ -23,7 +23,7 @@ import { createBnsConnector } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
 import { createEthereumConnector, Erc20ApproveTransaction, EthereumConnection } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
-import { sleep } from "@iov/testing";
+import { sleep } from "@iov/utils";
 import BN from "bn.js";
 
 import { MultiChainSigner } from "../multichainsigner";

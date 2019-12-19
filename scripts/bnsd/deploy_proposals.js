@@ -4,7 +4,7 @@ const { bnsCodec, BnsConnection, VoteOption } = require("@iov/bns");
 const { Governor, ProposalType } = require("@iov/bns-governance");
 const { Encoding } = require("@iov/encoding");
 const { Ed25519HdWallet, HdPaths, UserProfile } = require("@iov/keycontrol");
-const { sleep } = require("@iov/testing");
+const { sleep } = require("@iov/utils");
 
 // Dev admin
 // path: m/44'/234'/0'
