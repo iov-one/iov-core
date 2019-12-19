@@ -1,6 +1,6 @@
 {
   "name": "@iov/testing",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0-alpha.3",
   "description": "Developer tools for testing code",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -35,6 +35,5 @@
     "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
     "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari"
-  },
-  "dependencies": {}
+  }
 }
