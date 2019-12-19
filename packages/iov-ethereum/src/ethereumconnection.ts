@@ -47,6 +47,7 @@ import { Random } from "@iov/crypto";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, makeJsonRpcId } from "@iov/jsonrpc";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
+import { sleep } from "@iov/testing";
 import axios from "axios";
 import BN from "bn.js";
 import equal from "fast-deep-equal";
@@ -73,10 +74,6 @@ import {
   toEthereumHex,
 } from "./utils";
 import { WsEthereumRpcClient } from "./wsethereumrpcclient";
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 function isHttpUrl(url: string): boolean {
   return ["http://", "https://"].some(prefix => url.startsWith(prefix));

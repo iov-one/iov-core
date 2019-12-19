@@ -22,6 +22,7 @@ import {
 import { Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
+import { sleep } from "@iov/testing";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
@@ -39,16 +40,6 @@ export function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {
     pending("Set BNSD_ENABLED to enable bnsd-based tests");
   }
-}
-
-export function assert(condition: any, msg?: string): asserts condition {
-  if (!condition) {
-    throw new Error(msg || "condition is not truthy");
-  }
-}
-
-export async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export async function tendermintSearchIndexUpdated(): Promise<void> {

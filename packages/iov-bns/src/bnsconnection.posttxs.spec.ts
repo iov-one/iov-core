@@ -14,13 +14,13 @@ import {
 import { Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { assert, sleep } from "@iov/testing";
 import BN from "bn.js";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { decodeNumericId } from "./decodinghelpers";
 import {
-  assert,
   bash,
   bnsdTendermintUrl,
   cash,
@@ -30,7 +30,6 @@ import {
   randomBnsAddress,
   registerAmount,
   sendTokensFromFaucet,
-  sleep,
   tendermintSearchIndexUpdated,
   unusedAddress,
   userProfileWithFaucet,

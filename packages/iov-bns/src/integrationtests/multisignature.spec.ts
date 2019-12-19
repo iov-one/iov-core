@@ -13,6 +13,7 @@ import {
 import { Slip10RawIndex } from "@iov/crypto";
 import { Uint64 } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { sleep } from "@iov/testing";
 import BN from "bn.js";
 
 import { bnsCodec } from "../bnscodec";
@@ -28,10 +29,6 @@ const aliceMnemonic = "host century wave huge seed boost success right brave gen
 // Address: tiov1qrw95py2x7fzjw25euuqlj6dq6t0jahe7rh8wp
 const bobMnemonic = "dad kiss slogan offer outer bomb usual dream awkward jeans enlist mansion";
 const defaultFeeAmount = 10000000;
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function tendermintSearchIndexUpdated(): Promise<void> {
   // Tendermint needs some time before a committed transaction is found in search

@@ -57,6 +57,7 @@
     "xstream": "^11.10.0"
   },
   "devDependencies": {
-    "@iov/keycontrol": "^2.0.0-alpha.2"
+    "@iov/keycontrol": "^2.0.0-alpha.2",
+    "@iov/testing": "^2.0.0-alpha.2"
   }
 }

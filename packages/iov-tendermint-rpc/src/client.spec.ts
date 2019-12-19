@@ -1,6 +1,7 @@
 // tslint:disable:readonly-array
 import { Encoding } from "@iov/encoding";
 import { firstEvent, toListPromise } from "@iov/stream";
+import { sleep } from "@iov/testing";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
@@ -17,10 +18,6 @@ function pendingWithoutTendermint(): void {
   if (!process.env.TENDERMINT_ENABLED) {
     pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
   }
-}
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function tendermintSearchIndexUpdated(): Promise<void> {

@@ -4,6 +4,7 @@ import { ActionKind, bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
 import { Random } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { sleep } from "@iov/testing";
 import { ReadonlyDate } from "readonly-date";
 
 import { Governor, GovernorOptions } from "./governor";
@@ -25,10 +26,6 @@ const adminPath = HdPaths.iov(0);
 const bnsdUrl = "ws://localhost:23456";
 const guaranteeFundEscrowId = 6;
 const rewardFundAddress = "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address;
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function getGovernorOptions(
   path = adminPath,

@@ -17,12 +17,12 @@ import {
 } from "@iov/bcp";
 import { Uint64 } from "@iov/encoding";
 import { asArray } from "@iov/stream";
+import { assert } from "@iov/testing";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { bnsSwapQueryTag } from "./tags";
 import {
-  assert,
   bnsdTendermintUrl,
   cash,
   claimSwap,

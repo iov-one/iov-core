@@ -14,12 +14,12 @@ import {
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { HdPaths } from "@iov/keycontrol";
 import { firstEvent, lastValue } from "@iov/stream";
+import { assert, sleep } from "@iov/testing";
 import Long from "long";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import {
-  assert,
   bnsdTendermintUrl,
   cash,
   defaultAmount,
@@ -27,7 +27,6 @@ import {
   randomBnsAddress,
   sendCash,
   sendTokensFromFaucet,
-  sleep,
   tendermintSearchIndexUpdated,
   userProfileWithFaucet,
 } from "./testutils.spec";
