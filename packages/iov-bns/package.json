@@ -58,6 +58,6 @@
   },
   "devDependencies": {
     "@iov/keycontrol": "^2.0.0-alpha.3",
-    "@iov/testing": "^2.0.0-alpha.3"
+    "@iov/utils": "^2.0.0-alpha.3"
   }
 }

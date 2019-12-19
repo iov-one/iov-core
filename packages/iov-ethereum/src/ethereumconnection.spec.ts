@@ -39,7 +39,7 @@ import {
 import { ExtendedSecp256k1Signature, Keccak256, Random, Secp256k1 } from "@iov/crypto";
 import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
-import { sleep } from "@iov/testing";
+import { sleep } from "@iov/utils";
 
 import { pubkeyToAddress } from "./address";
 import { Erc20ApproveTransaction } from "./erc20";

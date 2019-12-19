@@ -1,7 +1,7 @@
 // tslint:disable:readonly-array
 import { Encoding } from "@iov/encoding";
 import { firstEvent, toListPromise } from "@iov/stream";
-import { sleep } from "@iov/testing";
+import { sleep } from "@iov/utils";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 

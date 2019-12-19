@@ -17,7 +17,7 @@
   `ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction`.
 - @iov/bns-governance: Add proposal type `ExecuteMigration`.
 - @iov/lisk: Export `pubkeyToAddress`.
-- @iov/testing: New package added that includes testing utils.
+- @iov/utils: New package added that includes utils.
 
 Breaking changes
 

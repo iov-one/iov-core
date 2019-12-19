@@ -14,7 +14,7 @@ import {
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { HdPaths } from "@iov/keycontrol";
 import { firstEvent, lastValue } from "@iov/stream";
-import { assert, sleep } from "@iov/testing";
+import { assert, sleep } from "@iov/utils";
 import Long from "long";
 
 import { bnsCodec } from "./bnscodec";

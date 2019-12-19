@@ -4,7 +4,7 @@ import { ActionKind, bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
 import { Random } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
-import { sleep } from "@iov/testing";
+import { sleep } from "@iov/utils";
 import { ReadonlyDate } from "readonly-date";
 
 import { Governor, GovernorOptions } from "./governor";

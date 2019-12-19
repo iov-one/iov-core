@@ -6,7 +6,7 @@
 import { createBnsConnector } from "@iov/bns";
 import { createEthereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
-import { sleep } from "@iov/testing";
+import { sleep } from "@iov/utils";
 
 import { JsonRpcSigningServer } from "../jsonrpcsigningserver";
 import { MultiChainSigner } from "../multichainsigner";

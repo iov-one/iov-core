@@ -14,7 +14,7 @@ import {
 import { Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
-import { assert, sleep } from "@iov/testing";
+import { assert, sleep } from "@iov/utils";
 import BN from "bn.js";
 
 import { bnsCodec } from "./bnscodec";

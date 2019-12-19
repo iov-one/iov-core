@@ -46,6 +46,6 @@
     "type-tagger": "^1.0.0"
   },
   "devDependencies": {
-    "@iov/testing": "^2.0.0-alpha.3"
+    "@iov/utils": "^2.0.0-alpha.3"
   }
 }
