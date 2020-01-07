@@ -232,8 +232,14 @@ export namespace bnsd {
     /** Tx accountDeleteAccountCertificateMsg */
     accountDeleteAccountCertificateMsg?: account.IDeleteAccountCertificateMsg | null;
 
+    /** Tx preregistrationRegisterMsg */
+    preregistrationRegisterMsg?: preregistration.IRegisterMsg | null;
+
     /** Tx cashUpdateConfigurationMsg */
     cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
+
+    /** Tx txfeeUpdateConfigurationMsg */
+    txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
   }
 
   /** old fields got deprecated. This is done to maintain binary compatibility. */
@@ -379,8 +385,14 @@ export namespace bnsd {
     /** Tx accountDeleteAccountCertificateMsg. */
     public accountDeleteAccountCertificateMsg?: account.IDeleteAccountCertificateMsg | null;
 
+    /** Tx preregistrationRegisterMsg. */
+    public preregistrationRegisterMsg?: preregistration.IRegisterMsg | null;
+
     /** Tx cashUpdateConfigurationMsg. */
     public cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
+
+    /** Tx txfeeUpdateConfigurationMsg. */
+    public txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
 
     /** msg is a sum type over all allowed messages on this chain. */
     public sum?:
@@ -426,7 +438,9 @@ export namespace bnsd {
       | "accountRenewAccountMsg"
       | "accountAddAccountCertificateMsg"
       | "accountDeleteAccountCertificateMsg"
-      | "cashUpdateConfigurationMsg";
+      | "preregistrationRegisterMsg"
+      | "cashUpdateConfigurationMsg"
+      | "txfeeUpdateConfigurationMsg";
 
     /**
      * Creates a new Tx instance using the specified properties.
@@ -692,8 +706,11 @@ export namespace bnsd {
       /** Union accountDeleteAccountCertificateMsg */
       accountDeleteAccountCertificateMsg?: account.IDeleteAccountCertificateMsg | null;
 
-      /** Union cashUpdateConfigurationMsg */
+      /** 96 is used by preregistration */
       cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
+
+      /** Union txfeeUpdateConfigurationMsg */
+      txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
     }
 
     /** Represents an Union. */
@@ -800,8 +817,11 @@ export namespace bnsd {
       /** Union accountDeleteAccountCertificateMsg. */
       public accountDeleteAccountCertificateMsg?: account.IDeleteAccountCertificateMsg | null;
 
-      /** Union cashUpdateConfigurationMsg. */
+      /** 96 is used by preregistration */
       public cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
+
+      /** Union txfeeUpdateConfigurationMsg. */
+      public txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
 
       /** Union sum. */
       public sum?:
@@ -837,7 +857,8 @@ export namespace bnsd {
         | "accountRenewAccountMsg"
         | "accountAddAccountCertificateMsg"
         | "accountDeleteAccountCertificateMsg"
-        | "cashUpdateConfigurationMsg";
+        | "cashUpdateConfigurationMsg"
+        | "txfeeUpdateConfigurationMsg";
 
       /**
        * Creates a new Union instance using the specified properties.
@@ -982,8 +1003,11 @@ export namespace bnsd {
     /** ProposalOptions datamigrationExecuteMigrationMsg */
     datamigrationExecuteMigrationMsg?: datamigration.IExecuteMigrationMsg | null;
 
-    /** ProposalOptions cashUpdateConfigurationMsg */
+    /** 82-95 are reserved for the account extension messages */
     cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions txfeeUpdateConfigurationMsg */
+    txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
   }
 
   /** Trimmed down somewhat arbitrary to what is believed to be reasonable */
@@ -1054,8 +1078,11 @@ export namespace bnsd {
     /** ProposalOptions datamigrationExecuteMigrationMsg. */
     public datamigrationExecuteMigrationMsg?: datamigration.IExecuteMigrationMsg | null;
 
-    /** ProposalOptions cashUpdateConfigurationMsg. */
+    /** 82-95 are reserved for the account extension messages */
     public cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions txfeeUpdateConfigurationMsg. */
+    public txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
 
     /** ProposalOptions option. */
     public option?:
@@ -1079,7 +1106,8 @@ export namespace bnsd {
       | "govCreateTextResolutionMsg"
       | "msgfeeSetMsgFeeMsg"
       | "datamigrationExecuteMigrationMsg"
-      | "cashUpdateConfigurationMsg";
+      | "cashUpdateConfigurationMsg"
+      | "txfeeUpdateConfigurationMsg";
 
     /**
      * Creates a new ProposalOptions instance using the specified properties.
@@ -1309,8 +1337,11 @@ export namespace bnsd {
       /** Union datamigrationExecuteMigrationMsg */
       datamigrationExecuteMigrationMsg?: datamigration.IExecuteMigrationMsg | null;
 
-      /** Union cashUpdateConfigurationMsg */
+      /** 82-95 are reserved for the account extension messages */
       cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
+
+      /** Union txfeeUpdateConfigurationMsg */
+      txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
     }
 
     /** Represents an Union. */
@@ -1372,8 +1403,11 @@ export namespace bnsd {
       /** Union datamigrationExecuteMigrationMsg. */
       public datamigrationExecuteMigrationMsg?: datamigration.IExecuteMigrationMsg | null;
 
-      /** Union cashUpdateConfigurationMsg. */
+      /** 82-95 are reserved for the account extension messages */
       public cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
+
+      /** Union txfeeUpdateConfigurationMsg. */
+      public txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
 
       /** Union sum. */
       public sum?:
@@ -1394,7 +1428,8 @@ export namespace bnsd {
         | "govCreateTextResolutionMsg"
         | "msgfeeSetMsgFeeMsg"
         | "datamigrationExecuteMigrationMsg"
-        | "cashUpdateConfigurationMsg";
+        | "cashUpdateConfigurationMsg"
+        | "txfeeUpdateConfigurationMsg";
 
       /**
        * Creates a new Union instance using the specified properties.
@@ -3753,6 +3788,327 @@ export namespace account {
 
     /**
      * Converts this DeleteAccountCertificateMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
+/** Namespace preregistration. */
+export namespace preregistration {
+  /** Properties of a Record. */
+  interface IRecord {
+    /** Record metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Record domain */
+    domain?: string | null;
+
+    /** Record owner */
+    owner?: Uint8Array | null;
+  }
+
+  /** Represents a Record. */
+  class Record implements IRecord {
+    /**
+     * Constructs a new Record.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: preregistration.IRecord);
+
+    /** Record metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Record domain. */
+    public domain: string;
+
+    /** Record owner. */
+    public owner: Uint8Array;
+
+    /**
+     * Creates a new Record instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Record instance
+     */
+    public static create(properties?: preregistration.IRecord): preregistration.Record;
+
+    /**
+     * Encodes the specified Record message. Does not implicitly {@link preregistration.Record.verify|verify} messages.
+     * @param message Record message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: preregistration.IRecord, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Record message, length delimited. Does not implicitly {@link preregistration.Record.verify|verify} messages.
+     * @param message Record message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: preregistration.IRecord,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a Record message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Record
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): preregistration.Record;
+
+    /**
+     * Decodes a Record message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Record
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): preregistration.Record;
+
+    /**
+     * Verifies a Record message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Record message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Record
+     */
+    public static fromObject(object: { [k: string]: any }): preregistration.Record;
+
+    /**
+     * Creates a plain object from a Record message. Also converts values to other types if specified.
+     * @param message Record
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: preregistration.Record,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Record to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a RegisterMsg. */
+  interface IRegisterMsg {
+    /** RegisterMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** RegisterMsg domain */
+    domain?: string | null;
+
+    /** RegisterMsg owner */
+    owner?: Uint8Array | null;
+  }
+
+  /** Represents a RegisterMsg. */
+  class RegisterMsg implements IRegisterMsg {
+    /**
+     * Constructs a new RegisterMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: preregistration.IRegisterMsg);
+
+    /** RegisterMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** RegisterMsg domain. */
+    public domain: string;
+
+    /** RegisterMsg owner. */
+    public owner: Uint8Array;
+
+    /**
+     * Creates a new RegisterMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns RegisterMsg instance
+     */
+    public static create(properties?: preregistration.IRegisterMsg): preregistration.RegisterMsg;
+
+    /**
+     * Encodes the specified RegisterMsg message. Does not implicitly {@link preregistration.RegisterMsg.verify|verify} messages.
+     * @param message RegisterMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: preregistration.IRegisterMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified RegisterMsg message, length delimited. Does not implicitly {@link preregistration.RegisterMsg.verify|verify} messages.
+     * @param message RegisterMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: preregistration.IRegisterMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a RegisterMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns RegisterMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): preregistration.RegisterMsg;
+
+    /**
+     * Decodes a RegisterMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns RegisterMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): preregistration.RegisterMsg;
+
+    /**
+     * Verifies a RegisterMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a RegisterMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns RegisterMsg
+     */
+    public static fromObject(object: { [k: string]: any }): preregistration.RegisterMsg;
+
+    /**
+     * Creates a plain object from a RegisterMsg message. Also converts values to other types if specified.
+     * @param message RegisterMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: preregistration.RegisterMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this RegisterMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Configuration. */
+  interface IConfiguration {
+    /** Configuration metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** needed to make use of gconf.NewUpdateConfigurationHandler */
+    owner?: Uint8Array | null;
+  }
+
+  /** Represents a Configuration. */
+  class Configuration implements IConfiguration {
+    /**
+     * Constructs a new Configuration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: preregistration.IConfiguration);
+
+    /** Configuration metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** needed to make use of gconf.NewUpdateConfigurationHandler */
+    public owner: Uint8Array;
+
+    /**
+     * Creates a new Configuration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Configuration instance
+     */
+    public static create(properties?: preregistration.IConfiguration): preregistration.Configuration;
+
+    /**
+     * Encodes the specified Configuration message. Does not implicitly {@link preregistration.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: preregistration.IConfiguration,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Configuration message, length delimited. Does not implicitly {@link preregistration.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: preregistration.IConfiguration,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): preregistration.Configuration;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): preregistration.Configuration;
+
+    /**
+     * Verifies a Configuration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Configuration
+     */
+    public static fromObject(object: { [k: string]: any }): preregistration.Configuration;
+
+    /**
+     * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+     * @param message Configuration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: preregistration.Configuration,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Configuration to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -8247,7 +8603,7 @@ export namespace escrow {
     memo?: string | null;
   }
 
-  /** The rest must be defined */
+  /** Message must be authorized by the source. */
   class CreateMsg implements ICreateMsg {
     /**
      * Constructs a new CreateMsg.
@@ -8362,7 +8718,7 @@ export namespace escrow {
     amount?: coin.ICoin[] | null;
   }
 
-  /** May be a subset of the current balance. */
+  /** current balance. */
   class ReleaseMsg implements IReleaseMsg {
     /**
      * Constructs a new ReleaseMsg.
@@ -12290,6 +12646,221 @@ export namespace sigs {
 
     /**
      * Converts this BumpSequenceMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
+/** Namespace txfee. */
+export namespace txfee {
+  /** Properties of a Configuration. */
+  interface IConfiguration {
+    /** Configuration metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** needed to make use of gconf.NewUpdateConfigurationHandler */
+    owner?: Uint8Array | null;
+
+    /** All computations are done using uint64 precision and only integer values. */
+    freeBytes?: number | null;
+
+    /** fee amount. */
+    baseFee?: coin.ICoin | null;
+  }
+
+  /** Represents a Configuration. */
+  class Configuration implements IConfiguration {
+    /**
+     * Constructs a new Configuration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: txfee.IConfiguration);
+
+    /** Configuration metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** needed to make use of gconf.NewUpdateConfigurationHandler */
+    public owner: Uint8Array;
+
+    /** All computations are done using uint64 precision and only integer values. */
+    public freeBytes: number;
+
+    /** fee amount. */
+    public baseFee?: coin.ICoin | null;
+
+    /**
+     * Creates a new Configuration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Configuration instance
+     */
+    public static create(properties?: txfee.IConfiguration): txfee.Configuration;
+
+    /**
+     * Encodes the specified Configuration message. Does not implicitly {@link txfee.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: txfee.IConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Configuration message, length delimited. Does not implicitly {@link txfee.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: txfee.IConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): txfee.Configuration;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): txfee.Configuration;
+
+    /**
+     * Verifies a Configuration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Configuration
+     */
+    public static fromObject(object: { [k: string]: any }): txfee.Configuration;
+
+    /**
+     * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+     * @param message Configuration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: txfee.Configuration,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Configuration to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an UpdateConfigurationMsg. */
+  interface IUpdateConfigurationMsg {
+    /** UpdateConfigurationMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch */
+    patch?: txfee.IConfiguration | null;
+  }
+
+  /** Represents an UpdateConfigurationMsg. */
+  class UpdateConfigurationMsg implements IUpdateConfigurationMsg {
+    /**
+     * Constructs a new UpdateConfigurationMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: txfee.IUpdateConfigurationMsg);
+
+    /** UpdateConfigurationMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch. */
+    public patch?: txfee.IConfiguration | null;
+
+    /**
+     * Creates a new UpdateConfigurationMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns UpdateConfigurationMsg instance
+     */
+    public static create(properties?: txfee.IUpdateConfigurationMsg): txfee.UpdateConfigurationMsg;
+
+    /**
+     * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link txfee.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: txfee.IUpdateConfigurationMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link txfee.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: txfee.IUpdateConfigurationMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns UpdateConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): txfee.UpdateConfigurationMsg;
+
+    /**
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns UpdateConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): txfee.UpdateConfigurationMsg;
+
+    /**
+     * Verifies an UpdateConfigurationMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns UpdateConfigurationMsg
+     */
+    public static fromObject(object: { [k: string]: any }): txfee.UpdateConfigurationMsg;
+
+    /**
+     * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+     * @param message UpdateConfigurationMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: txfee.UpdateConfigurationMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this UpdateConfigurationMsg to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
