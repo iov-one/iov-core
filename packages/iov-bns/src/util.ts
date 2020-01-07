@@ -3,6 +3,7 @@ import {
   Algorithm,
   ChainId,
   ConfirmedTransaction,
+  FullSignature,
   Hash,
   Identity,
   isSwapAbortTransaction,
@@ -11,7 +12,9 @@ import {
   isUnsignedTransaction,
   Nonce,
   PubkeyBundle,
+  PubkeyBytes,
   SignableBytes,
+  SignatureBytes,
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
@@ -189,4 +192,19 @@ export function buildQueryString(query: TransactionQuery): QueryString {
     ...maxHeightComponents,
   ];
   return components.join(" AND ") as QueryString;
+}
+
+export function createDummySignature(nonce: Nonce = Number.MAX_SAFE_INTEGER as Nonce): FullSignature {
+  return {
+    // nonce is stored as a varint, so we use this default to be confident we pay a large enough fee
+    // at the risk of paying slightly too much
+    nonce: nonce,
+    pubkey: {
+      algo: Algorithm.Ed25519,
+      // ed25519 pubkey has 32 bytes https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/
+      data: new Uint8Array(32) as PubkeyBytes,
+    },
+    // ed25519 signature has 64 bytes https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/
+    signature: new Uint8Array(64) as SignatureBytes,
+  };
 }
