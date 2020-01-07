@@ -25,7 +25,7 @@ const connection = await BnsConnection.establish(
 
 | IOV-Core version | Supported weave versions |
 | ---------------- | ------------------------ |
-| 2.0              | 0.22.x, 0.24.x           |
+| 2.0              | 0.22.x, 0.24.x – 0.25.x  |
 | 1.2              | 0.22.x                   |
 | 1.1              | 0.21.x                   |
 | 1.0              | 0.21.x                   |

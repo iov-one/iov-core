@@ -11,6 +11,7 @@
 - @iov/bcp: Add `NonEmptyArray` and `isNonEmptyArray`/`newNonEmptyArray` helper
   functions.
 - @iov/bns: Add support for weave v0.24.0.
+- @iov/bns: Add support for weave v0.25.0.
 - @iov/bns: Support ExecuteMigration in CreateProposal transactions.
 - @iov/bns: Add optional payer parameter to `BnsConnection.withDefaultFee`.
 - @iov/bns: `BnsConnection.searchTx` now resolves to an array of
