@@ -5,7 +5,7 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 # Choose from https://hub.docker.com/r/iov1/tendermint/tags/
 export BNSD_TM_VERSION=v0.31.5
 # Choose from https://hub.docker.com/r/iov1/bnsd/tags/
-export BNSD_VERSION=v0.24.0
+export BNSD_VERSION=v0.25.0
 
 # get this files directory regardless of pwd when we run it
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
