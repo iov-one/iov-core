@@ -19419,7 +19419,7 @@ $root.cash = (function() {
          * Properties of a FeeInfo.
          * @memberof cash
          * @interface IFeeInfo
-         * @property {Uint8Array|null} [payer] FeeInfo payer
+         * @property {Uint8Array|null} [payer] field, as the signer order is not guaranteed.
          * @property {coin.ICoin|null} [fees] FeeInfo fees
          */
 
@@ -19439,7 +19439,7 @@ $root.cash = (function() {
         }
 
         /**
-         * FeeInfo payer.
+         * field, as the signer order is not guaranteed.
          * @member {Uint8Array} payer
          * @memberof cash.FeeInfo
          * @instance
@@ -26615,7 +26615,7 @@ $root.gov = (function() {
          * @property {string|null} [description] Human readable description with 3 to 5000 chars.
          * @property {Uint8Array|null} [electionRuleId] ElectionRuleID is a reference to the election rule
          * @property {number|Long|null} [startTime] Unix timestamp when the proposal starts. Must be in the future.
-         * @property {Uint8Array|null} [author] When not set it will default to the main signer.
+         * @property {Uint8Array|null} [author] field, as the signer order is not guaranteed.
          */
 
         /**
@@ -26682,7 +26682,7 @@ $root.gov = (function() {
         CreateProposalMsg.prototype.startTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * When not set it will default to the main signer.
+         * field, as the signer order is not guaranteed.
          * @member {Uint8Array} author
          * @memberof gov.CreateProposalMsg
          * @instance
@@ -27219,7 +27219,7 @@ $root.gov = (function() {
          * @interface IVoteMsg
          * @property {weave.IMetadata|null} [metadata] VoteMsg metadata
          * @property {Uint8Array|null} [proposalId] The unique id of the proposal.
-         * @property {Uint8Array|null} [voter] must be included in the electorate for a valid vote.
+         * @property {Uint8Array|null} [voter] field, as the signer order is not guaranteed.
          * @property {gov.VoteOption|null} [selected] Option for the vote. Must be Yes, No or Abstain for a valid vote.
          */
 
@@ -27255,7 +27255,7 @@ $root.gov = (function() {
         VoteMsg.prototype.proposalId = $util.newBuffer([]);
 
         /**
-         * must be included in the electorate for a valid vote.
+         * field, as the signer order is not guaranteed.
          * @member {Uint8Array} voter
          * @memberof gov.VoteMsg
          * @instance

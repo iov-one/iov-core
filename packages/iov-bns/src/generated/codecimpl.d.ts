@@ -7297,7 +7297,7 @@ export namespace cash {
 
   /** Properties of a FeeInfo. */
   interface IFeeInfo {
-    /** FeeInfo payer */
+    /** field, as the signer order is not guaranteed. */
     payer?: Uint8Array | null;
 
     /** FeeInfo fees */
@@ -7312,7 +7312,7 @@ export namespace cash {
      */
     constructor(properties?: cash.IFeeInfo);
 
-    /** FeeInfo payer. */
+    /** field, as the signer order is not guaranteed. */
     public payer: Uint8Array;
 
     /** FeeInfo fees. */
@@ -10032,7 +10032,7 @@ export namespace gov {
     /** Unix timestamp when the proposal starts. Must be in the future. */
     startTime?: number | Long | null;
 
-    /** When not set it will default to the main signer. */
+    /** field, as the signer order is not guaranteed. */
     author?: Uint8Array | null;
   }
 
@@ -10062,7 +10062,7 @@ export namespace gov {
     /** Unix timestamp when the proposal starts. Must be in the future. */
     public startTime: number | Long;
 
-    /** When not set it will default to the main signer. */
+    /** field, as the signer order is not guaranteed. */
     public author: Uint8Array;
 
     /**
@@ -10258,7 +10258,7 @@ export namespace gov {
     /** The unique id of the proposal. */
     proposalId?: Uint8Array | null;
 
-    /** must be included in the electorate for a valid vote. */
+    /** field, as the signer order is not guaranteed. */
     voter?: Uint8Array | null;
 
     /** Option for the vote. Must be Yes, No or Abstain for a valid vote. */
@@ -10279,7 +10279,7 @@ export namespace gov {
     /** The unique id of the proposal. */
     public proposalId: Uint8Array;
 
-    /** must be included in the electorate for a valid vote. */
+    /** field, as the signer order is not guaranteed. */
     public voter: Uint8Array;
 
     /** Option for the vote. Must be Yes, No or Abstain for a valid vote. */
