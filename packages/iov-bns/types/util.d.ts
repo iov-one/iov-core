@@ -2,6 +2,7 @@ import {
   Address,
   ChainId,
   ConfirmedTransaction,
+  Fee,
   FullSignature,
   Hash,
   Identity,
@@ -51,3 +52,4 @@ export declare function isConfirmedWithSwapClaimOrAbortTransaction(
 ): tx is ConfirmedTransaction<SwapClaimTransaction | SwapAbortTransaction>;
 export declare function buildQueryString(query: TransactionQuery): QueryString;
 export declare function createDummySignature(nonce?: Nonce): FullSignature;
+export declare function createDummyFee(): Fee;

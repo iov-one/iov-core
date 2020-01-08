@@ -3,6 +3,7 @@ import {
   Algorithm,
   ChainId,
   ConfirmedTransaction,
+  Fee,
   FullSignature,
   Hash,
   Identity,
@@ -18,6 +19,7 @@ import {
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
+  TokenTicker,
   TransactionQuery,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -206,5 +208,24 @@ export function createDummySignature(nonce: Nonce = Number.MAX_SAFE_INTEGER as N
     },
     // ed25519 signature has 64 bytes https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/
     signature: new Uint8Array(64) as SignatureBytes,
+  };
+}
+
+export function createDummyFee(): Fee {
+  // See limits specified here: https://github.com/iov-one/weave/blob/2c0f082/coin/codec.proto
+  // whole and fractional are stored as varints, so we use these values to be confident we pay a large enough fee
+  // at the risk of paying slightly too much
+  const maxWhole = 10 ** 15 - 1;
+  const maxFractional = 10 ** 9 - 1;
+  const maxTokenTickerLength = 4;
+  // See https://github.com/iov-one/weave/blob/4cb0080/conditions.go#L22
+  const addressLength = 20;
+  return {
+    tokens: {
+      fractionalDigits: constants.weaveFractionalDigits,
+      quantity: `${maxWhole}${maxFractional}`,
+      tokenTicker: "X".repeat(maxTokenTickerLength) as TokenTicker,
+    },
+    payer: encodeBnsAddress("tiov", new Uint8Array(addressLength)),
   };
 }
