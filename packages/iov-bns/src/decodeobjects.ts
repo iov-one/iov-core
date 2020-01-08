@@ -28,6 +28,7 @@ import {
   VersionedId,
   Vote,
   VoteOption,
+  TxFeeConfiguration,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, IovBech32Prefix } from "./util";
 
@@ -70,6 +71,13 @@ export function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): 
   const minimalFee = ensure(config.minimalFee, "minimalFee");
   return {
     minimalFee: isZeroCoin(minimalFee) ? null : decodeAmount(minimalFee),
+  };
+}
+
+export function decodeTxFeeConfiguration(config: codecImpl.txfee.IConfiguration): TxFeeConfiguration {
+  return {
+    baseFee: decodeAmount(ensure(config.baseFee, "baseFee")),
+    freeBytes: ensure(config.freeBytes, "freeBytes"),
   };
 }
 

@@ -64,6 +64,7 @@ import {
   decodeToken,
   decodeUsernameNft,
   decodeVote,
+  decodeTxFeeConfiguration,
 } from "./decodeobjects";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
@@ -82,6 +83,7 @@ import {
   Result,
   Validator,
   Vote,
+  TxFeeConfiguration,
 } from "./types";
 import {
   addressPrefix,
@@ -779,6 +781,21 @@ export class BnsConnection implements AtomicSwapConnection {
     };
     const bytesToPost = bnsCodec.bytesToPost(withDummySignatures);
     return bytesToPost.length;
+  }
+
+  public async getTxFeeConfiguration(): Promise<TxFeeConfiguration | undefined> {
+    const { results } = await this.query("/", Encoding.toAscii("_c:txfee"));
+    if (results.length > 1) {
+      throw new Error(
+        `Unexpected number of results for tx fee configuration. Expected: 0/1 Got: ${results.length}`,
+      );
+    }
+    if (results.length === 0) {
+      return undefined;
+    }
+    const config = decodeTxFeeConfiguration(codecImpl.txfee.Configuration.decode(results[0].value));
+
+    return config;
   }
 
   public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
