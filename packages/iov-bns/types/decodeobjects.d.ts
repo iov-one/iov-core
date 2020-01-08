@@ -11,9 +11,9 @@ import {
   Participant,
   Proposal,
   ProposalAction,
+  TxFeeConfiguration,
   Vote,
   VoteOption,
-  TxFeeConfiguration,
 } from "./types";
 import { IovBech32Prefix } from "./util";
 export declare function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token;

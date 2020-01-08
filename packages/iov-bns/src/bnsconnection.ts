@@ -62,9 +62,9 @@ import {
   decodeElectorate,
   decodeProposal,
   decodeToken,
+  decodeTxFeeConfiguration,
   decodeUsernameNft,
   decodeVote,
-  decodeTxFeeConfiguration,
 } from "./decodeobjects";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
@@ -81,9 +81,9 @@ import {
   Keyed,
   Proposal,
   Result,
+  TxFeeConfiguration,
   Validator,
   Vote,
-  TxFeeConfiguration,
 } from "./types";
 import {
   addressPrefix,

@@ -24,11 +24,11 @@ import {
   ProposalResult,
   ProposalStatus,
   SendAction,
+  TxFeeConfiguration,
   Validators,
   VersionedId,
   Vote,
   VoteOption,
-  TxFeeConfiguration,
 } from "./types";
 import { addressPrefix, encodeBnsAddress, IovBech32Prefix } from "./util";
 

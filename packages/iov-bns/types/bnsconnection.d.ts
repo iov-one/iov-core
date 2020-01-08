@@ -32,9 +32,9 @@ import {
   Electorate,
   Proposal,
   Result,
+  TxFeeConfiguration,
   Validator,
   Vote,
-  TxFeeConfiguration,
 } from "./types";
 export interface QueryResponse {
   readonly height?: number;
