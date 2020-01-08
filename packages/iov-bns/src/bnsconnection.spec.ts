@@ -4,6 +4,7 @@ import {
   ChainId,
   isBlockInfoPending,
   Nonce,
+  SendTransaction,
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
@@ -580,6 +581,77 @@ describe("BnsConnection (basic class methods)", () => {
         const results = await connection.getUsernames({ owner: await randomBnsAddress() });
         expect(results.length).toEqual(0);
       }
+
+      connection.disconnect();
+    });
+  });
+
+  describe("estimateTxSize", () => {
+    it("works for send transaction without fee or nonce", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const sender = await randomBnsAddress();
+      const sendTransaction: SendTransaction = {
+        kind: "bcp/send",
+        chainId: connection.chainId(),
+        sender: sender,
+        recipient: await randomBnsAddress(),
+        memo: `We ❤️ developers – iov.one`,
+        amount: defaultAmount,
+      };
+      const numberOfSignatures = 3;
+      const txSize = connection.estimateTxSize(sendTransaction, numberOfSignatures);
+      expect(txSize).toEqual(489);
+
+      connection.disconnect();
+    });
+
+    it("works for send transaction with fee", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const sender = await randomBnsAddress();
+      const sendTransaction: SendTransaction = {
+        kind: "bcp/send",
+        chainId: connection.chainId(),
+        sender: sender,
+        recipient: await randomBnsAddress(),
+        memo: `We ❤️ developers – iov.one`,
+        amount: defaultAmount,
+        fee: {
+          tokens: {
+            fractionalDigits: 9,
+            quantity: "1",
+            tokenTicker: "CASH" as TokenTicker,
+          },
+          payer: sender,
+        },
+      };
+      const numberOfSignatures = 3;
+      const txSize = connection.estimateTxSize(sendTransaction, numberOfSignatures);
+      expect(txSize).toEqual(476);
+
+      connection.disconnect();
+    });
+
+    it("works for send transaction with nonce", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const sender = await randomBnsAddress();
+      const sendTransaction: SendTransaction = {
+        kind: "bcp/send",
+        chainId: connection.chainId(),
+        sender: sender,
+        recipient: await randomBnsAddress(),
+        memo: `We ❤️ developers – iov.one`,
+        amount: defaultAmount,
+      };
+      const numberOfSignatures = 3;
+      const nonce = 1 as Nonce;
+      const txSize = connection.estimateTxSize(sendTransaction, numberOfSignatures, nonce);
+      expect(txSize).toEqual(468);
 
       connection.disconnect();
     });
