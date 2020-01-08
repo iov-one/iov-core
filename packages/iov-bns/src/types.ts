@@ -25,6 +25,11 @@ export interface CashConfiguration {
   readonly minimalFee: Amount | null;
 }
 
+export interface TxFeeConfiguration {
+  readonly freeBytes: number | null;
+  readonly baseFee: Amount | null;
+}
+
 /**
  * The message part of a bnsd.Tx
  *
