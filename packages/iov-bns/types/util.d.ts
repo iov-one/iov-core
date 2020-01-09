@@ -1,5 +1,6 @@
 import {
   Address,
+  Amount,
   ChainId,
   ConfirmedTransaction,
   Fee,
@@ -7,6 +8,7 @@ import {
   Hash,
   Identity,
   Nonce,
+  NonEmptyArray,
   PubkeyBundle,
   SignableBytes,
   SwapAbortTransaction,
@@ -53,3 +55,5 @@ export declare function isConfirmedWithSwapClaimOrAbortTransaction(
 export declare function buildQueryString(query: TransactionQuery): QueryString;
 export declare function createDummySignature(nonce?: Nonce): FullSignature;
 export declare function createDummyFee(): Fee;
+export declare function maxAmount(...[first, ...rest]: NonEmptyArray<Amount>): Amount;
+export declare function addAmounts(...[first, ...rest]: NonEmptyArray<Amount>): Amount;
