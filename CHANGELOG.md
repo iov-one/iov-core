@@ -18,6 +18,9 @@
   `ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction`.
 - @iov/bns: Add `BnsConnection.estimateTxSize` and
   `BnsConnection.getTxConfiguration` methods.
+- @iov/bns: Include transaction size fee in `BnsConnection.getFeeQuote`, which
+  now includes optional parameters `numberOfSignatures` and `nonce` for more
+  accurate estimates.
 - @iov/bns-governance: Add proposal type `ExecuteMigration`.
 - @iov/bns-governance: Make `Governor.identity` public.
 - @iov/lisk: Export `pubkeyToAddress`.

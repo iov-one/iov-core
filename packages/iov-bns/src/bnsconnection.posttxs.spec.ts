@@ -21,7 +21,6 @@ import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { decodeNumericId } from "./decodinghelpers";
 import {
-  bash,
   bnsdTendermintUrl,
   cash,
   defaultAmount,
@@ -1185,8 +1184,8 @@ describe("BnsConnection (post txs)", () => {
 
       const fee1 = {
         fractionalDigits: 9,
-        quantity: "50",
-        tokenTicker: bash,
+        quantity: "888888888",
+        tokenTicker: cash,
       };
       let proposalId1: number;
 
@@ -1248,7 +1247,7 @@ describe("BnsConnection (post txs)", () => {
       const registerUsernameTx: RegisterUsernameTx & UnsignedTransaction = {
         kind: "bns/register_username",
         chainId: chainId,
-        username: "TestyMcTestface",
+        username: "TestyMcTestface*iov",
         targets: [],
       };
       const productFee1 = await connection.getFeeQuote(registerUsernameTx);

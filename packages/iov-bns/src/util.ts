@@ -1,6 +1,7 @@
 import {
   Address,
   Algorithm,
+  Amount,
   ChainId,
   ConfirmedTransaction,
   Fee,
@@ -12,6 +13,7 @@ import {
   isSwapOfferTransaction,
   isUnsignedTransaction,
   Nonce,
+  NonEmptyArray,
   PubkeyBundle,
   PubkeyBytes,
   SignableBytes,
@@ -26,6 +28,7 @@ import {
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
 import { QueryString } from "@iov/tendermint-rpc";
+import BN from "bn.js";
 import Long from "long";
 import { As } from "type-tagger";
 
@@ -228,4 +231,22 @@ export function createDummyFee(): Fee {
     },
     payer: encodeBnsAddress("tiov", new Uint8Array(addressLength)),
   };
+}
+
+export function maxAmount(...[first, ...rest]: NonEmptyArray<Amount>): Amount {
+  return rest.reduce((max, next) => (new BN(max.quantity).gte(new BN(next.quantity)) ? max : next), first);
+}
+
+export function addAmounts(...[first, ...rest]: NonEmptyArray<Amount>): Amount {
+  if (rest.some(({ tokenTicker }) => tokenTicker !== first.tokenTicker)) {
+    throw new Error("Cannot add amounts with different token tickers");
+  }
+
+  return rest.reduce(
+    (sum, next) => ({
+      ...sum,
+      quantity: new BN(sum.quantity).add(new BN(next.quantity)).toString(),
+    }),
+    first,
+  );
 }

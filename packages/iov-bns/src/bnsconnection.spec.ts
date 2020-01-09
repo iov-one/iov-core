@@ -681,9 +681,10 @@ describe("BnsConnection (basic class methods)", () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-      const sendTransaction = {
+      const sendTransaction: SendTransaction = {
         kind: "bcp/send",
         chainId: connection.chainId(),
+        sender: await randomBnsAddress(),
         recipient: await randomBnsAddress(),
         memo: `We ❤️ developers – iov.one`,
         amount: defaultAmount,
@@ -704,11 +705,11 @@ describe("BnsConnection (basic class methods)", () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-      const username = `testuser_${Math.random()}`;
-      const usernameRegistration = {
+      const username = `testuser_${Math.random()}*iov`;
+      const usernameRegistration: RegisterUsernameTx = {
         kind: "bns/register_username",
         chainId: connection.chainId(),
-        addresses: [
+        targets: [
           {
             address: "12345678912345W" as Address,
             chainId: "somechain" as ChainId,
@@ -720,6 +721,34 @@ describe("BnsConnection (basic class methods)", () => {
       const result = await connection.getFeeQuote(usernameRegistration);
       // 5 CASH product fee
       expect(result.tokens!.quantity).toEqual("5000000000");
+      expect(result.tokens!.fractionalDigits).toEqual(9);
+      expect(result.tokens!.tokenTicker).toEqual("CASH" as TokenTicker);
+
+      expect(result.gasPrice).toBeUndefined();
+      expect(result.gasLimit).toBeUndefined();
+
+      connection.disconnect();
+    });
+
+    it("includes a size fee for large transactions", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const sendTransaction: SendTransaction = {
+        kind: "bcp/send",
+        chainId: connection.chainId(),
+        sender: await randomBnsAddress(),
+        recipient: await randomBnsAddress(),
+        memo: `We ❤️ developers – iov.one`,
+        amount: defaultAmount,
+      };
+      const numberOfSignatures = 100;
+      const result = await connection.getFeeQuote(sendTransaction, numberOfSignatures);
+      // anti-spam fee plus size fee
+      // anti-spam fee = 0.01 CASH
+      // size fee = 0.0001 CASH base fee * (11644 bytes - 1024 free bytes)^2
+      // see txfee config in genesis
+      expect(result.tokens!.quantity).toEqual("11278450000000");
       expect(result.tokens!.fractionalDigits).toEqual(9);
       expect(result.tokens!.tokenTicker).toEqual("CASH" as TokenTicker);
 
