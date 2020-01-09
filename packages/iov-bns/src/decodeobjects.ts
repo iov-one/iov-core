@@ -2,6 +2,7 @@ import { Address, Amount, ChainId, Token, TokenTicker } from "@iov/bcp";
 import { Encoding, Uint32, Uint64 } from "@iov/encoding";
 import BN from "bn.js";
 
+import { weaveFractionalDigits } from "./constants";
 import { asIntegerNumber, decodeNumericId, decodeString, ensure } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
@@ -34,13 +35,11 @@ export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token 
   return {
     tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
     tokenName: ensure(data.name),
-    fractionalDigits: 9, // fixed for all weave tokens
+    fractionalDigits: weaveFractionalDigits,
   };
 }
 
 export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
-  const fractionalDigits = 9; // fixed for all tokens in BNS
-
   const wholeNumber = asIntegerNumber(coin.whole);
   if (wholeNumber < 0) {
     throw new Error("Component `whole` must not be negative");
@@ -52,13 +51,13 @@ export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
   }
 
   const quantity = new BN(wholeNumber)
-    .imul(new BN(10 ** fractionalDigits))
+    .imul(new BN(10 ** weaveFractionalDigits))
     .iadd(new BN(fractionalNumber))
     .toString();
 
   return {
     quantity: quantity,
-    fractionalDigits: fractionalDigits,
+    fractionalDigits: weaveFractionalDigits,
     tokenTicker: (coin.ticker || "") as TokenTicker,
   };
 }

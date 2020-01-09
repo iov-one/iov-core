@@ -25,6 +25,7 @@ import {
   isAtomicSwapSenderQuery,
   isConfirmedTransaction,
   isFailedTransaction,
+  isNonEmptyArray,
   isPubkeyQuery,
   Nonce,
   OpenSwap,
@@ -33,6 +34,7 @@ import {
   PubkeyBundle,
   PubkeyBytes,
   PubkeyQuery,
+  SignedTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
   Token,
@@ -84,6 +86,8 @@ import {
 import {
   addressPrefix,
   buildQueryString,
+  createDummyFee,
+  createDummySignature,
   decodeBnsAddress,
   identityToAddress,
   IovBech32Prefix,
@@ -756,6 +760,25 @@ export class BnsConnection implements AtomicSwapConnection {
     const parser = createParser(codecImpl.username.Token, "tokens:");
     const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId()));
     return nfts;
+  }
+
+  public estimateTxSize(transaction: UnsignedTransaction, numberOfSignatures: number, nonce?: Nonce): number {
+    const signatures = [...new Array(numberOfSignatures)].map(createDummySignature.bind(null, nonce));
+    if (!isNonEmptyArray(signatures)) {
+      throw new Error("Cannot get transaction size with fewer than one signature");
+    }
+    const transactionWithFee = transaction.fee
+      ? transaction
+      : {
+          ...transaction,
+          fee: createDummyFee(),
+        };
+    const withDummySignatures: SignedTransaction = {
+      transaction: transactionWithFee,
+      signatures: signatures,
+    };
+    const bytesToPost = bnsCodec.bytesToPost(withDummySignatures);
+    return bytesToPost.length;
   }
 
   public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {

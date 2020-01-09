@@ -117,6 +117,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
   getProposals(): Promise<readonly Proposal[]>;
   getVotes(voter: Address): Promise<readonly Vote[]>;
   getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]>;
+  estimateTxSize(transaction: UnsignedTransaction, numberOfSignatures: number, nonce?: Nonce): number;
   getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
   withDefaultFee<T extends UnsignedTransaction>(transaction: T, payer?: Address): Promise<T>;
   protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
