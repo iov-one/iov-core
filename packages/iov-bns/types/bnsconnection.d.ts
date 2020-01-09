@@ -32,6 +32,7 @@ import {
   Electorate,
   Proposal,
   Result,
+  TxFeeConfiguration,
   Validator,
   Vote,
 } from "./types";
@@ -118,6 +119,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
   getVotes(voter: Address): Promise<readonly Vote[]>;
   getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]>;
   estimateTxSize(transaction: UnsignedTransaction, numberOfSignatures: number, nonce?: Nonce): number;
+  getTxFeeConfiguration(): Promise<TxFeeConfiguration | undefined>;
   getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
   withDefaultFee<T extends UnsignedTransaction>(transaction: T, payer?: Address): Promise<T>;
   protected query(path: string, data: Uint8Array): Promise<QueryResponse>;

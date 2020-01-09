@@ -24,6 +24,7 @@ import {
   ProposalResult,
   ProposalStatus,
   SendAction,
+  TxFeeConfiguration,
   Validators,
   VersionedId,
   Vote,
@@ -70,6 +71,13 @@ export function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): 
   const minimalFee = ensure(config.minimalFee, "minimalFee");
   return {
     minimalFee: isZeroCoin(minimalFee) ? null : decodeAmount(minimalFee),
+  };
+}
+
+export function decodeTxFeeConfiguration(config: codecImpl.txfee.IConfiguration): TxFeeConfiguration {
+  return {
+    baseFee: decodeAmount(ensure(config.baseFee, "baseFee")),
+    freeBytes: ensure(config.freeBytes, "freeBytes"),
   };
 }
 

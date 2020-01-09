@@ -11,6 +11,7 @@ import {
   Participant,
   Proposal,
   ProposalAction,
+  TxFeeConfiguration,
   Vote,
   VoteOption,
 } from "./types";
@@ -18,6 +19,7 @@ import { IovBech32Prefix } from "./util";
 export declare function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token;
 export declare function decodeAmount(coin: codecImpl.coin.ICoin): Amount;
 export declare function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): CashConfiguration;
+export declare function decodeTxFeeConfiguration(config: codecImpl.txfee.IConfiguration): TxFeeConfiguration;
 export declare function decodeChainAddressPair(pair: codecImpl.username.IBlockchainAddress): ChainAddressPair;
 export declare function decodeUsernameNft(
   nft: codecImpl.username.IToken & Keyed,

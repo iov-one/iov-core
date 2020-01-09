@@ -11,6 +11,7 @@ import {
 import { Random } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
+import { assert } from "@iov/utils";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
@@ -652,6 +653,24 @@ describe("BnsConnection (basic class methods)", () => {
       const nonce = 1 as Nonce;
       const txSize = connection.estimateTxSize(sendTransaction, numberOfSignatures, nonce);
       expect(txSize).toEqual(468);
+
+      connection.disconnect();
+    });
+  });
+
+  describe("getTxFeeConfiguration", () => {
+    it("works for genesis config", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      const config = await connection.getTxFeeConfiguration();
+      assert(typeof config === "object");
+      expect(config.baseFee).toEqual({
+        fractionalDigits: 9,
+        quantity: "100000",
+        tokenTicker: "CASH" as TokenTicker,
+      });
+      expect(config.freeBytes).toEqual(1024);
 
       connection.disconnect();
     });

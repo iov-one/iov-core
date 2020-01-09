@@ -16,6 +16,8 @@
 - @iov/bns: Add optional payer parameter to `BnsConnection.withDefaultFee`.
 - @iov/bns: `BnsConnection.searchTx` now resolves to an array of
   `ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction`.
+- @iov/bns: Add `BnsConnection.estimateTxSize` and
+  `BnsConnection.getTxConfiguration` methods.
 - @iov/bns-governance: Add proposal type `ExecuteMigration`.
 - @iov/bns-governance: Make `Governor.identity` public.
 - @iov/lisk: Export `pubkeyToAddress`.
