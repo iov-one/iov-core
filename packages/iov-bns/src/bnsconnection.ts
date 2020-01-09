@@ -19,6 +19,7 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
+  isAmount,
   isAtomicSwapHashQuery,
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
@@ -48,6 +49,7 @@ import {
 import { Encoding, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient, v0_31 } from "@iov/tendermint-rpc";
+import BN from "bn.js";
 import equal from "fast-deep-equal";
 import { Stream, Subscription } from "xstream";
 
@@ -86,6 +88,7 @@ import {
   Vote,
 } from "./types";
 import {
+  addAmounts,
   addressPrefix,
   buildQueryString,
   createDummyFee,
@@ -95,6 +98,7 @@ import {
   IovBech32Prefix,
   isConfirmedWithSwapClaimOrAbortTransaction,
   isConfirmedWithSwapOfferTransaction,
+  maxAmount,
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
@@ -798,12 +802,25 @@ export class BnsConnection implements AtomicSwapConnection {
     return config;
   }
 
-  public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
+  public async getFeeQuote(
+    transaction: UnsignedTransaction,
+    numberOfSignatures = 1,
+    nonce?: Nonce,
+  ): Promise<Fee> {
     if (!isBnsTx(transaction)) {
       throw new Error("Received transaction of unsupported kind.");
     }
-    // use product fee if it exists, otherwise fallback to default anti-spam fee
-    const fee = (await this.getProductFee(transaction)) || (await this.getDefaultFee());
+    const explicitProductFee = await this.getProductFee(transaction);
+    const minProductFee = await this.getDefaultFee();
+    const validProductFees = [explicitProductFee, minProductFee].filter(isAmount);
+    // Product fee is max of explicit product fee and min product fee if either/both exist
+    const productFee = isNonEmptyArray(validProductFees)
+      ? maxAmount(validProductFees[0], ...validProductFees.slice(1))
+      : undefined;
+    const sizeFee = await this.getSizeFee(transaction, numberOfSignatures, nonce);
+    const feesToAdd = [productFee, sizeFee].filter(isAmount);
+    // Total tx fee is sum of product fee and size fee if either/both exist
+    const fee = isNonEmptyArray(feesToAdd) ? addAmounts(feesToAdd[0], ...feesToAdd.slice(1)) : undefined;
     return { tokens: fee };
   }
 
@@ -839,6 +856,28 @@ export class BnsConnection implements AtomicSwapConnection {
     }
     const { minimalFee } = decodeCashConfiguration(codecImpl.cash.Configuration.decode(results[0].value));
     return minimalFee || undefined;
+  }
+
+  protected async getSizeFee(
+    tx: UnsignedTransaction,
+    numberOfSignatures: number,
+    nonce?: Nonce,
+  ): Promise<Amount | undefined> {
+    const config = await this.getTxFeeConfiguration();
+    if (config === undefined) {
+      return undefined;
+    }
+    const { baseFee, freeBytes } = config;
+    if (baseFee === null || freeBytes === null) {
+      return undefined;
+    }
+    const txSize = this.estimateTxSize(tx, numberOfSignatures, nonce);
+    const multiplier = Math.max(0, txSize - freeBytes) ** 2;
+    const quantity = new BN(multiplier).mul(new BN(baseFee.quantity));
+    return {
+      ...baseFee,
+      quantity: quantity.toString(),
+    };
   }
 
   /**
