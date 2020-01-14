@@ -1,6 +1,6 @@
 {
   "name": "@iov/bns",
-  "version": "2.0.0-alpha.5",
+  "version": "2.0.0-alpha.6",
   "description": "Transaction codec and BCP client to communicate with BNS blockchain",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
