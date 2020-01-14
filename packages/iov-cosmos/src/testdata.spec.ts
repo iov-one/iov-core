@@ -23,7 +23,7 @@ export const pubJson: PubkeyBundle = {
   data: fromBase64(data.tx.value.signatures[0].pub_key.value) as PubkeyBytes,
 };
 
-export const chainId = "cosmos:cosmoshub-2" as ChainId;
+export const chainId = "cosmos:cosmoshub-3" as ChainId;
 
 export const nonce = 99 as Nonce;
 

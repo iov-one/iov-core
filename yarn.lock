@@ -891,10 +891,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@tendermint/amino-js@^0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@tendermint/amino-js/-/amino-js-0.6.2.tgz#1548787efb5778f0b48d723342dedfc03e52e498"
-  integrity sha512-HpC7MWLTDEi/ETjDSy63WQR1mdIuk5WUZcJq7URE9+1VgjrdmRUD2KG6vy7IaeBXpZ8Lg35jbg2mpIQZjBn47Q==
+"@tendermint/amino-js@^0.7.0-alpha.1":
+  version "0.7.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@tendermint/amino-js/-/amino-js-0.7.0-alpha.1.tgz#5d9f689fb601a0c0a6bb245a16d0b9a197f616e5"
+  integrity sha512-qe6DfOjIXtMnJIZJP6yVlakjfCbVBHOGGswAi8zbwKQFaF5SGySOgLAAmgfFIvh96aGZO9oRgpY8w2ZWPpXvuw==
   dependencies:
     "@tendermint/belt" "0.2.1"
     "@tendermint/types" "0.1.1"

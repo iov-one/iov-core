@@ -3,7 +3,7 @@ set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
 # Choose from https://hub.docker.com/r/tendermint/gaia/tags
-VERSION="v2.0.0"
+VERSION="v2.0.4"
 
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/gaia.XXXXXXXXX")
 chmod 777 "$TMP_DIR"

@@ -10,7 +10,7 @@ describe("cosmoscodec", () => {
   it("properly generates bytes to sign", () => {
     const expected = {
       bytes: toUtf8(
-        '{"account_number":"0","chain_id":"cosmoshub-2","fee":{"amount":[{"amount":"5000","denom":"uatom"}],"gas":"200000"},"memo":"1122672754","msgs":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"11657995","denom":"uatom"}],"from_address":"cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r","to_address":"cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e"}}],"sequence":"99"}',
+        '{"account_number":"0","chain_id":"cosmoshub-3","fee":{"amount":[{"amount":"2500","denom":"uatom"}],"gas":"100000"},"memo":"","msgs":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"35997500","denom":"uatom"}],"from_address":"cosmos1txqfn5jmcts0x0q7krdxj8tgf98tj0965vqlmq","to_address":"cosmos1nynns8ex9fq6sjjfj8k79ymkdz4sqth06xexae"}}],"sequence":"99"}',
       ),
       prehashType: PrehashType.Sha256,
     };
