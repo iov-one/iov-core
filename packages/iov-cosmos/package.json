@@ -1,6 +1,5 @@
 {
   "name": "@iov/cosmos",
-  "private": true,
   "version": "2.0.0-alpha.5",
   "description": "Transaction codec and client to communicate with the Cosmos Hub blockchain",
   "author": "IOV SAS <admin@iov.one>",
