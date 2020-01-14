@@ -1,6 +1,6 @@
 {
   "name": "@iov/cli",
-  "version": "2.0.0-alpha.6",
+  "version": "2.0.0-alpha.7",
   "description": "Command line interface for iov core",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -33,11 +33,11 @@
     "!**/testdata/"
   ],
   "dependencies": {
-    "@iov/bns": "^2.0.0-alpha.6",
-    "@iov/ethereum": "^2.0.0-alpha.5",
-    "@iov/faucets": "^2.0.0-alpha.6",
-    "@iov/lisk": "^2.0.0-alpha.5",
-    "@iov/multichain": "^2.0.0-alpha.6",
+    "@iov/bns": "^2.0.0-alpha.7",
+    "@iov/ethereum": "^2.0.0-alpha.7",
+    "@iov/faucets": "^2.0.0-alpha.7",
+    "@iov/lisk": "^2.0.0-alpha.7",
+    "@iov/multichain": "^2.0.0-alpha.7",
     "argparse": "^1.0.10",
     "babylon": "^6.18.0",
     "colors": "^1.3.3",
