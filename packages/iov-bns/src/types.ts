@@ -30,6 +30,12 @@ export interface TxFeeConfiguration {
   readonly baseFee: Amount | null;
 }
 
+export interface AccountConfiguration {}
+
+export interface AccountMsgFee {}
+
+export interface BlockchainAddress {}
+
 /**
  * The message part of a bnsd.Tx
  *
@@ -380,6 +386,7 @@ export function isTransferUsernameTx(tx: UnsignedTransaction): tx is TransferUse
 
 export interface UpdateAccountConfigurationTx extends UnsignedTransaction {
   readonly kind: "bns/update_account_configuration";
+  readonly configuration: AccountConfiguration;
 }
 
 export function isUpdateAccountConfigurationTx(tx: UnsignedTransaction): tx is UpdateAccountConfigurationTx {
@@ -388,6 +395,12 @@ export function isUpdateAccountConfigurationTx(tx: UnsignedTransaction): tx is U
 
 export interface RegisterDomainTx extends UnsignedTransaction {
   readonly kind: "bns/register_domain";
+  readonly domain: string;
+  readonly admin: Address;
+  readonly hasSuperuser: boolean;
+  readonly thirdPartyToken: Uint8Array;
+  readonly msgFees: readonly AccountMsgFee[];
+  readonly accountRenew: number;
 }
 
 export function isRegisterDomainTx(tx: UnsignedTransaction): tx is RegisterDomainTx {
@@ -396,6 +409,8 @@ export function isRegisterDomainTx(tx: UnsignedTransaction): tx is RegisterDomai
 
 export interface TransferDomainTx extends UnsignedTransaction {
   readonly kind: "bns/transfer_domain";
+  readonly domain: string;
+  readonly newAdmin: Address;
 }
 
 export function isTransferDomainTx(tx: UnsignedTransaction): tx is TransferDomainTx {
@@ -404,6 +419,7 @@ export function isTransferDomainTx(tx: UnsignedTransaction): tx is TransferDomai
 
 export interface RenewDomainTx extends UnsignedTransaction {
   readonly kind: "bns/renew_domain";
+  readonly domain: string;
 }
 
 export function isRenewDomainTx(tx: UnsignedTransaction): tx is RenewDomainTx {
@@ -412,6 +428,7 @@ export function isRenewDomainTx(tx: UnsignedTransaction): tx is RenewDomainTx {
 
 export interface DeleteDomainTx extends UnsignedTransaction {
   readonly kind: "bns/delete_domain";
+  readonly domain: string;
 }
 
 export function isDeleteDomainTx(tx: UnsignedTransaction): tx is DeleteDomainTx {
@@ -420,6 +437,11 @@ export function isDeleteDomainTx(tx: UnsignedTransaction): tx is DeleteDomainTx 
 
 export interface RegisterAccountTx extends UnsignedTransaction {
   readonly kind: "bns/register_account";
+  readonly domain: string;
+  readonly name: string;
+  readonly owner: Address;
+  readonly targets: readonly BlockchainAddress[];
+  readonly thirdPartyToken: Uint8Array;
 }
 
 export function isRegisterAccountTx(tx: UnsignedTransaction): tx is RegisterAccountTx {
@@ -428,6 +450,9 @@ export function isRegisterAccountTx(tx: UnsignedTransaction): tx is RegisterAcco
 
 export interface TransferAccountTx extends UnsignedTransaction {
   readonly kind: "bns/transfer_account";
+  readonly domain: string;
+  readonly name: string;
+  readonly newOwner: Address;
 }
 
 export function isTransferAccountTx(tx: UnsignedTransaction): tx is TransferAccountTx {
@@ -436,6 +461,9 @@ export function isTransferAccountTx(tx: UnsignedTransaction): tx is TransferAcco
 
 export interface ReplaceAccountTargetsTx extends UnsignedTransaction {
   readonly kind: "bns/replace_account_targets";
+  readonly domain: string;
+  readonly name: string;
+  readonly newTargets: readonly BlockchainAddress[];
 }
 
 export function isReplaceAccountTargetsTx(tx: UnsignedTransaction): tx is ReplaceAccountTargetsTx {
@@ -444,6 +472,8 @@ export function isReplaceAccountTargetsTx(tx: UnsignedTransaction): tx is Replac
 
 export interface DeleteAccountTx extends UnsignedTransaction {
   readonly kind: "bns/delete_account";
+  readonly domain: string;
+  readonly name: string;
 }
 
 export function isDeleteAccountTx(tx: UnsignedTransaction): tx is DeleteAccountTx {
@@ -452,6 +482,7 @@ export function isDeleteAccountTx(tx: UnsignedTransaction): tx is DeleteAccountT
 
 export interface DeleteAllAccountsTx extends UnsignedTransaction {
   readonly kind: "bns/delete_all_accounts";
+  readonly domain: string;
 }
 
 export function isDeleteAllAccountsTx(tx: UnsignedTransaction): tx is DeleteAllAccountsTx {
@@ -460,6 +491,8 @@ export function isDeleteAllAccountsTx(tx: UnsignedTransaction): tx is DeleteAllA
 
 export interface RenewAccountTx extends UnsignedTransaction {
   readonly kind: "bns/renew_account";
+  readonly domain: string;
+  readonly name: string;
 }
 
 export function isRenewAccountTx(tx: UnsignedTransaction): tx is RenewAccountTx {
@@ -468,6 +501,9 @@ export function isRenewAccountTx(tx: UnsignedTransaction): tx is RenewAccountTx 
 
 export interface AddAccountCertificateTx extends UnsignedTransaction {
   readonly kind: "bns/add_account_certificate";
+  readonly domain: string;
+  readonly name: string;
+  readonly certificate: Uint8Array;
 }
 
 export function isAddAccountCertificateTx(tx: UnsignedTransaction): tx is AddAccountCertificateTx {
@@ -476,6 +512,8 @@ export function isAddAccountCertificateTx(tx: UnsignedTransaction): tx is AddAcc
 
 export interface ReplaceAccountMsgFeesTx extends UnsignedTransaction {
   readonly kind: "bns/replace_account_msg_fees";
+  readonly domain: string;
+  readonly newMsgFees: readonly AccountMsgFee[];
 }
 
 export function isReplaceAccountMsgFeesTx(tx: UnsignedTransaction): tx is ReplaceAccountMsgFeesTx {
@@ -484,6 +522,9 @@ export function isReplaceAccountMsgFeesTx(tx: UnsignedTransaction): tx is Replac
 
 export interface DeleteAccountCertificateTx extends UnsignedTransaction {
   readonly kind: "bns/delete_account_certificate";
+  readonly domain: string;
+  readonly name: string;
+  readonly certificateHash: Uint8Array;
 }
 
 export function isDeleteAccountCertificateTx(tx: UnsignedTransaction): tx is DeleteAccountCertificateTx {
