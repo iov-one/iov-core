@@ -376,6 +376,120 @@ export function isTransferUsernameTx(tx: UnsignedTransaction): tx is TransferUse
   return tx.kind === "bns/transfer_username";
 }
 
+// Transactions: Accounts
+
+export interface UpdateAccountConfigurationTx extends UnsignedTransaction {
+  readonly kind: "bns/update_account_configuration";
+}
+
+export function isUpdateAccountConfigurationTx(tx: UnsignedTransaction): tx is UpdateAccountConfigurationTx {
+  return tx.kind === "bns/update_account_configuration";
+}
+
+export interface RegisterDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/register_domain";
+}
+
+export function isRegisterDomainTx(tx: UnsignedTransaction): tx is RegisterDomainTx {
+  return tx.kind === "bns/register_domain";
+}
+
+export interface TransferDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/transfer_domain";
+}
+
+export function isTransferDomainTx(tx: UnsignedTransaction): tx is TransferDomainTx {
+  return tx.kind === "bns/transfer_domain";
+}
+
+export interface RenewDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/renew_domain";
+}
+
+export function isRenewDomainTx(tx: UnsignedTransaction): tx is RenewDomainTx {
+  return tx.kind === "bns/renew_domain";
+}
+
+export interface DeleteDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_domain";
+}
+
+export function isDeleteDomainTx(tx: UnsignedTransaction): tx is DeleteDomainTx {
+  return tx.kind === "bns/delete_domain";
+}
+
+export interface RegisterAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/register_account";
+}
+
+export function isRegisterAccountTx(tx: UnsignedTransaction): tx is RegisterAccountTx {
+  return tx.kind === "bns/register_account";
+}
+
+export interface TransferAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/transfer_account";
+}
+
+export function isTransferAccountTx(tx: UnsignedTransaction): tx is TransferAccountTx {
+  return tx.kind === "bns/transfer_account";
+}
+
+export interface ReplaceAccountTargetsTx extends UnsignedTransaction {
+  readonly kind: "bns/replace_account_targets";
+}
+
+export function isReplaceAccountTargetsTx(tx: UnsignedTransaction): tx is ReplaceAccountTargetsTx {
+  return tx.kind === "bns/replace_account_targets";
+}
+
+export interface DeleteAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_account";
+}
+
+export function isDeleteAccountTx(tx: UnsignedTransaction): tx is DeleteAccountTx {
+  return tx.kind === "bns/delete_account";
+}
+
+export interface DeleteAllAccountsTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_all_accounts";
+}
+
+export function isDeleteAllAccountsTx(tx: UnsignedTransaction): tx is DeleteAllAccountsTx {
+  return tx.kind === "bns/delete_all_accounts";
+}
+
+export interface RenewAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/renew_account";
+}
+
+export function isRenewAccountTx(tx: UnsignedTransaction): tx is RenewAccountTx {
+  return tx.kind === "bns/renew_account";
+}
+
+export interface AddAccountCertificateTx extends UnsignedTransaction {
+  readonly kind: "bns/add_account_certificate";
+}
+
+export function isAddAccountCertificateTx(tx: UnsignedTransaction): tx is AddAccountCertificateTx {
+  return tx.kind === "bns/add_account_certificate";
+}
+
+export interface ReplaceAccountMsgFeesTx extends UnsignedTransaction {
+  readonly kind: "bns/replace_account_msg_fees";
+}
+
+export function isReplaceAccountMsgFeesTx(tx: UnsignedTransaction): tx is ReplaceAccountMsgFeesTx {
+  return tx.kind === "bns/replace_account_msg_fees";
+}
+
+export interface DeleteAccountCertificateTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_account_certificate";
+}
+
+export function isDeleteAccountCertificateTx(tx: UnsignedTransaction): tx is DeleteAccountCertificateTx {
+  return tx.kind === "bns/delete_account_certificate";
+}
+
 // Transactions: Multisignature contracts
 
 export interface Participant {
@@ -506,6 +620,21 @@ export type BnsTx =
   | RegisterUsernameTx
   | UpdateTargetsOfUsernameTx
   | TransferUsernameTx
+  // BNS: Accounts
+  | UpdateAccountConfigurationTx
+  | RegisterDomainTx
+  | TransferDomainTx
+  | RenewDomainTx
+  | DeleteDomainTx
+  | RegisterAccountTx
+  | TransferAccountTx
+  | ReplaceAccountTargetsTx
+  | DeleteAccountTx
+  | DeleteAllAccountsTx
+  | RenewAccountTx
+  | AddAccountCertificateTx
+  | ReplaceAccountMsgFeesTx
+  | DeleteAccountCertificateTx
   // BNS: Multisignature contracts
   | CreateMultisignatureTx
   | UpdateMultisignatureTx
