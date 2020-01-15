@@ -19,14 +19,28 @@ import {
 import { asIntegerNumber, decodeNumericId, ensure } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
+  AddAccountCertificateTx,
   BnsdTxMsg,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
+  DeleteAccountCertificateTx,
+  DeleteAccountTx,
+  DeleteAllAccountsTx,
+  DeleteDomainTx,
+  RegisterAccountTx,
+  RegisterDomainTx,
   RegisterUsernameTx,
   ReleaseEscrowTx,
+  RenewAccountTx,
+  RenewDomainTx,
+  ReplaceAccountMsgFeesTx,
+  ReplaceAccountTargetsTx,
   ReturnEscrowTx,
+  TransferAccountTx,
+  TransferDomainTx,
   TransferUsernameTx,
+  UpdateAccountConfigurationTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -134,6 +148,106 @@ function decodeTransferUsernameTx(
     username: ensure(msg.username, "username"),
     newOwner: encodeBnsAddress(prefix, ensure(msg.newOwner, "newOwner")),
   };
+}
+
+// Accounts
+
+function decodeUpdateAccountConfigurationTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IUpdateConfigurationMsg,
+): UpdateAccountConfigurationTx {
+  throw new Error("not implemented");
+}
+
+function decodeRegisterDomainTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IRegisterDomainMsg,
+): RegisterDomainTx {
+  throw new Error("not implemented");
+}
+
+function decodeTransferDomainTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.ITransferDomainMsg,
+): TransferDomainTx {
+  throw new Error("not implemented");
+}
+
+function decodeRenewDomainTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IRenewDomainMsg,
+): RenewDomainTx {
+  throw new Error("not implemented");
+}
+
+function decodeDeleteDomainTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IDeleteDomainMsg,
+): DeleteDomainTx {
+  throw new Error("not implemented");
+}
+
+function decodeRegisterAccountTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IRegisterAccountMsg,
+): RegisterAccountTx {
+  throw new Error("not implemented");
+}
+
+function decodeTransferAccountTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.ITransferAccountMsg,
+): TransferAccountTx {
+  throw new Error("not implemented");
+}
+
+function decodeReplaceAccountTargetsTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IReplaceAccountTargetsMsg,
+): ReplaceAccountTargetsTx {
+  throw new Error("not implemented");
+}
+
+function decodeDeleteAccountTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IDeleteAccountMsg,
+): DeleteAccountTx {
+  throw new Error("not implemented");
+}
+
+function decodeDeleteAllAccountsTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IFlushDomainMsg,
+): DeleteAllAccountsTx {
+  throw new Error("not implemented");
+}
+
+function decodeRenewAccountTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IRenewAccountMsg,
+): RenewAccountTx {
+  throw new Error("not implemented");
+}
+
+function decodeAddAccountCertificateTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IAddAccountCertificateMsg,
+): AddAccountCertificateTx {
+  throw new Error("not implemented");
+}
+
+function decodeReplaceAccountMsgFeesTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IReplaceAccountMsgFeesMsg,
+): ReplaceAccountMsgFeesTx {
+  throw new Error("not implemented");
+}
+
+function decodeDeleteAccountCertificateTx(
+  _base: UnsignedTransaction,
+  _msg: codecImpl.account.IDeleteAccountCertificateMsg,
+): DeleteAccountCertificateTx {
+  throw new Error("not implemented");
 }
 
 // Multisignature contracts
@@ -263,6 +377,32 @@ export function decodeMsg(base: UnsignedTransaction, tx: BnsdTxMsg): UnsignedTra
     return decodeUpdateTargetsOfUsernameTx(base, tx.usernameChangeTokenTargetsMsg);
   }
   if (tx.usernameTransferTokenMsg) return decodeTransferUsernameTx(base, tx.usernameTransferTokenMsg);
+
+  // Accounts
+  if (tx.accountUpdateConfigurationMsg) {
+    return decodeUpdateAccountConfigurationTx(base, tx.accountUpdateConfigurationMsg);
+  }
+  if (tx.accountRegisterDomainMsg) return decodeRegisterDomainTx(base, tx.accountRegisterDomainMsg);
+  if (tx.accountTransferDomainMsg) return decodeTransferDomainTx(base, tx.accountTransferDomainMsg);
+  if (tx.accountRenewDomainMsg) return decodeRenewDomainTx(base, tx.accountRenewDomainMsg);
+  if (tx.accountDeleteDomainMsg) return decodeDeleteDomainTx(base, tx.accountDeleteDomainMsg);
+  if (tx.accountRegisterAccountMsg) return decodeRegisterAccountTx(base, tx.accountRegisterAccountMsg);
+  if (tx.accountTransferAccountMsg) return decodeTransferAccountTx(base, tx.accountTransferAccountMsg);
+  if (tx.accountReplaceAccountTargetsMsg) {
+    return decodeReplaceAccountTargetsTx(base, tx.accountReplaceAccountTargetsMsg);
+  }
+  if (tx.accountDeleteAccountMsg) return decodeDeleteAccountTx(base, tx.accountDeleteAccountMsg);
+  if (tx.accountFlushDomainMsg) return decodeDeleteAllAccountsTx(base, tx.accountFlushDomainMsg);
+  if (tx.accountRenewAccountMsg) return decodeRenewAccountTx(base, tx.accountRenewAccountMsg);
+  if (tx.accountAddAccountCertificateMsg) {
+    return decodeAddAccountCertificateTx(base, tx.accountAddAccountCertificateMsg);
+  }
+  if (tx.accountReplaceAccountMsgFeesMsg) {
+    return decodeReplaceAccountMsgFeesTx(base, tx.accountReplaceAccountMsgFeesMsg);
+  }
+  if (tx.accountDeleteAccountCertificateMsg) {
+    return decodeDeleteAccountCertificateTx(base, tx.accountDeleteAccountCertificateMsg);
+  }
 
   // Multisignature contracts
   if (tx.multisigCreateMsg) return decodeCreateMultisignatureTx(base, tx.multisigCreateMsg);
