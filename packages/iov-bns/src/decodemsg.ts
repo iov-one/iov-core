@@ -10,8 +10,11 @@ import {
 } from "@iov/bcp";
 
 import {
+  decodeAccountConfiguration,
   decodeAmount,
+  decodeBlockchainAddress,
   decodeChainAddressPair,
+  decodeMsgFee,
   decodeParticipants,
   decodeRawProposalOption,
   decodeVoteOption,
@@ -153,101 +156,182 @@ function decodeTransferUsernameTx(
 // Accounts
 
 function decodeUpdateAccountConfigurationTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IUpdateConfigurationMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IUpdateConfigurationMsg,
 ): UpdateAccountConfigurationTx {
-  throw new Error("not implemented");
+  return {
+    ...base,
+    kind: "bns/update_account_configuration",
+    configuration: decodeAccountConfiguration(ensure(msg.patch, "patch")),
+  };
 }
 
 function decodeRegisterDomainTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IRegisterDomainMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IRegisterDomainMsg,
 ): RegisterDomainTx {
-  throw new Error("not implemented");
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/register_domain",
+    domain: ensure(msg.domain, "domain"),
+    admin: encodeBnsAddress(prefix, ensure(msg.admin, "admin")),
+    hasSuperuser: ensure(msg.hasSuperuser, "hasSuperuser"),
+    thirdPartyToken: msg.thirdPartyToken || undefined,
+    msgFees: ensure(msg.msgFees, "msgFees").map(decodeMsgFee),
+    accountRenew: asIntegerNumber(ensure(msg.accountRenew, "accountRenew")),
+  };
 }
 
 function decodeTransferDomainTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.ITransferDomainMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.ITransferDomainMsg,
 ): TransferDomainTx {
-  throw new Error("not implemented");
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/transfer_domain",
+    domain: ensure(msg.domain, "domain"),
+    newAdmin: encodeBnsAddress(prefix, ensure(msg.newAdmin, "newAdmin")),
+  };
 }
 
 function decodeRenewDomainTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IRenewDomainMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IRenewDomainMsg,
 ): RenewDomainTx {
-  throw new Error("not implemented");
+  return {
+    ...base,
+    kind: "bns/renew_domain",
+    domain: ensure(msg.domain, "domain"),
+  };
 }
 
 function decodeDeleteDomainTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IDeleteDomainMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IDeleteDomainMsg,
 ): DeleteDomainTx {
-  throw new Error("not implemented");
+  return {
+    ...base,
+    kind: "bns/delete_domain",
+    domain: ensure(msg.domain, "domain"),
+  };
 }
 
 function decodeRegisterAccountTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IRegisterAccountMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IRegisterAccountMsg,
 ): RegisterAccountTx {
-  throw new Error("not implemented");
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/register_account",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+    owner: encodeBnsAddress(prefix, ensure(msg.owner, "owner")),
+    targets: ensure(msg.targets, "targets").map(decodeBlockchainAddress),
+    thirdPartyToken: msg.thirdPartyToken || undefined,
+  };
 }
 
 function decodeTransferAccountTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.ITransferAccountMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.ITransferAccountMsg,
 ): TransferAccountTx {
-  throw new Error("not implemented");
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/transfer_account",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+    newOwner: encodeBnsAddress(prefix, ensure(msg.newOwner, "newOwner")),
+  };
 }
 
 function decodeReplaceAccountTargetsTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IReplaceAccountTargetsMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IReplaceAccountTargetsMsg,
 ): ReplaceAccountTargetsTx {
-  throw new Error("not implemented");
+  return {
+    ...base,
+    kind: "bns/replace_account_targets",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+    newTargets: ensure(msg.newTargets, "newTargets").map(decodeBlockchainAddress),
+  };
 }
 
 function decodeDeleteAccountTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IDeleteAccountMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IDeleteAccountMsg,
 ): DeleteAccountTx {
-  throw new Error("not implemented");
+  return {
+    ...base,
+    kind: "bns/delete_account",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+  };
 }
 
 function decodeDeleteAllAccountsTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IFlushDomainMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IFlushDomainMsg,
 ): DeleteAllAccountsTx {
-  throw new Error("not implemented");
+  return {
+    ...base,
+    kind: "bns/delete_all_accounts",
+    domain: ensure(msg.domain, "domain"),
+  };
 }
 
 function decodeRenewAccountTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IRenewAccountMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IRenewAccountMsg,
 ): RenewAccountTx {
-  throw new Error("not implemented");
+  return {
+    ...base,
+    kind: "bns/renew_account",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+  };
 }
 
 function decodeAddAccountCertificateTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IAddAccountCertificateMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IAddAccountCertificateMsg,
 ): AddAccountCertificateTx {
-  throw new Error("not implemented");
+  return {
+    ...base,
+    kind: "bns/add_account_certificate",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+    certificate: ensure(msg.certificate, "certificate"),
+  };
 }
 
 function decodeReplaceAccountMsgFeesTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IReplaceAccountMsgFeesMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IReplaceAccountMsgFeesMsg,
 ): ReplaceAccountMsgFeesTx {
-  throw new Error("not implemented");
+  return {
+    ...base,
+    kind: "bns/replace_account_msg_fees",
+    domain: ensure(msg.domain, "domain"),
+    newMsgFees: ensure(msg.newMsgFees, "newMsgFees").map(decodeMsgFee),
+  };
 }
 
 function decodeDeleteAccountCertificateTx(
-  _base: UnsignedTransaction,
-  _msg: codecImpl.account.IDeleteAccountCertificateMsg,
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IDeleteAccountCertificateMsg,
 ): DeleteAccountCertificateTx {
-  throw new Error("not implemented");
+  return {
+    ...base,
+    kind: "bns/delete_account_certificate",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+    certificateHash: ensure(msg.certificateHash, "certificateHash"),
+  };
 }
 
 // Multisignature contracts

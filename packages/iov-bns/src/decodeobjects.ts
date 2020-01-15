@@ -6,7 +6,10 @@ import { weaveFractionalDigits } from "./constants";
 import { asIntegerNumber, decodeNumericId, decodeString, ensure } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
+  AccountConfiguration,
+  AccountMsgFee,
   ActionKind,
+  BlockchainAddress,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
@@ -100,6 +103,22 @@ export function decodeUsernameNft(
     owner: encodeBnsAddress(addressPrefix(registryChainId), rawOwnerAddress),
     targets: ensure(nft.targets, "targets").map(decodeChainAddressPair),
   };
+}
+
+// Accounts
+
+export function decodeAccountConfiguration(patch: codecImpl.account.IConfiguration): AccountConfiguration {
+  throw new Error("not implemented");
+}
+
+export function decodeMsgFee(msgFee: codecImpl.account.IAccountMsgFee): AccountMsgFee {
+  throw new Error("not implemented");
+}
+
+export function decodeBlockchainAddress(
+  blockchainAddress: codecImpl.account.IBlockchainAddress,
+): BlockchainAddress {
+  throw new Error("not implemented");
 }
 
 // Governance
