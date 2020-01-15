@@ -123,7 +123,7 @@ export function decodeAccountConfiguration(
   };
 }
 
-export function decodeMsgFee(msgFee: codecImpl.account.IAccountMsgFee): AccountMsgFee {
+export function decodeAccountMsgFee(msgFee: codecImpl.account.IAccountMsgFee): AccountMsgFee {
   return {
     msgPath: ensure(msgFee.msgPath, "msgPath"),
     fee: decodeAmount(ensure(msgFee.fee, "fee")),
@@ -156,7 +156,7 @@ export function decodeDomain(prefix: IovBech32Prefix, domain: codecImpl.account.
     admin: encodeBnsAddress(prefix, ensure(domain.admin, "admin")),
     validUntil: asIntegerNumber(ensure(domain.validUntil, "validUntil")),
     hasSuperuser: ensure(domain.hasSuperuser, "hasSuperuser"),
-    msgFees: ensure(domain.msgFees, "msgFees").map(decodeMsgFee),
+    msgFees: ensure(domain.msgFees, "msgFees").map(decodeAccountMsgFee),
     accountRenew: asIntegerNumber(ensure(domain.accountRenew, "accountRenew")),
   };
 }

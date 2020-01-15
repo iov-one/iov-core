@@ -11,10 +11,10 @@ import {
 
 import {
   decodeAccountConfiguration,
+  decodeAccountMsgFee,
   decodeAmount,
   decodeBlockchainAddress,
   decodeChainAddressPair,
-  decodeMsgFee,
   decodeParticipants,
   decodeRawProposalOption,
   decodeVoteOption,
@@ -179,7 +179,7 @@ function decodeRegisterDomainTx(
     admin: encodeBnsAddress(prefix, ensure(msg.admin, "admin")),
     hasSuperuser: ensure(msg.hasSuperuser, "hasSuperuser"),
     thirdPartyToken: msg.thirdPartyToken || undefined,
-    msgFees: ensure(msg.msgFees, "msgFees").map(decodeMsgFee),
+    msgFees: ensure(msg.msgFees, "msgFees").map(decodeAccountMsgFee),
     accountRenew: asIntegerNumber(ensure(msg.accountRenew, "accountRenew")),
   };
 }
@@ -318,7 +318,7 @@ function decodeReplaceAccountMsgFeesTx(
     ...base,
     kind: "bns/replace_account_msg_fees",
     domain: ensure(msg.domain, "domain"),
-    newMsgFees: ensure(msg.newMsgFees, "newMsgFees").map(decodeMsgFee),
+    newMsgFees: ensure(msg.newMsgFees, "newMsgFees").map(decodeAccountMsgFee),
   };
 }
 
