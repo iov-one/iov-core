@@ -30,11 +30,24 @@ export interface TxFeeConfiguration {
   readonly baseFee: Amount | null;
 }
 
-export interface AccountConfiguration {}
+export interface AccountConfiguration {
+  readonly owner: Address;
+  readonly validDomain: string;
+  readonly validName: string;
+  readonly validBlockchainId: string;
+  readonly validBlockchainAddress: string;
+  readonly domainRenew: number;
+}
 
-export interface AccountMsgFee {}
+export interface AccountMsgFee {
+  readonly msgPath: string;
+  readonly fee: Amount;
+}
 
-export interface BlockchainAddress {}
+export interface BlockchainAddress {
+  readonly blockchainId: string;
+  readonly address: string;
+}
 
 /**
  * The message part of a bnsd.Tx
