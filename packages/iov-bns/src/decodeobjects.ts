@@ -6,6 +6,7 @@ import { weaveFractionalDigits } from "./constants";
 import { asIntegerNumber, decodeNumericId, decodeString, ensure } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
+  Account,
   AccountConfiguration,
   AccountMsgFee,
   ActionKind,
@@ -13,6 +14,7 @@ import {
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
+  Domain,
   ElectionRule,
   Elector,
   Electorate,
@@ -134,6 +136,28 @@ export function decodeBlockchainAddress(
   return {
     blockchainId: ensure(blockchainAddress.blockchainId, "blockchainId"),
     address: ensure(blockchainAddress.address, "address"),
+  };
+}
+
+export function decodeAccount(prefix: IovBech32Prefix, account: codecImpl.account.IAccount): Account {
+  return {
+    domain: ensure(account.domain, "domain"),
+    name: ensure(account.name, "name"),
+    owner: encodeBnsAddress(prefix, ensure(account.owner, "owner")),
+    validUntil: asIntegerNumber(ensure(account.validUntil, "validUntil")),
+    targets: ensure(account.targets, "targets").map(decodeBlockchainAddress),
+    certificates: ensure(account.certificates, "certificates"),
+  };
+}
+
+export function decodeDomain(prefix: IovBech32Prefix, domain: codecImpl.account.IDomain): Domain {
+  return {
+    domain: ensure(domain.domain, "domain"),
+    admin: encodeBnsAddress(prefix, ensure(domain.admin, "admin")),
+    validUntil: asIntegerNumber(ensure(domain.validUntil, "validUntil")),
+    hasSuperuser: ensure(domain.hasSuperuser, "hasSuperuser"),
+    msgFees: ensure(domain.msgFees, "msgFees").map(decodeMsgFee),
+    accountRenew: asIntegerNumber(ensure(domain.accountRenew, "accountRenew")),
   };
 }
 

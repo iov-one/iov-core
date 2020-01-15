@@ -30,6 +30,15 @@ export interface TxFeeConfiguration {
   readonly baseFee: Amount | null;
 }
 
+/**
+ * The message part of a bnsd.Tx
+ *
+ * @see https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.24.0/docs/proto/index.html#bnsd.Tx
+ */
+export type BnsdTxMsg = Omit<codecImpl.bnsd.ITx, "fees" | "signatures" | "multisig">;
+
+// Accounts
+
 export interface AccountConfiguration {
   readonly owner: Address;
   readonly validDomain: string;
@@ -49,12 +58,23 @@ export interface BlockchainAddress {
   readonly address: string;
 }
 
-/**
- * The message part of a bnsd.Tx
- *
- * @see https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.24.0/docs/proto/index.html#bnsd.Tx
- */
-export type BnsdTxMsg = Omit<codecImpl.bnsd.ITx, "fees" | "signatures" | "multisig">;
+export interface Account {
+  readonly domain: string;
+  readonly name: string;
+  readonly owner: Address;
+  readonly validUntil: number;
+  readonly targets: readonly BlockchainAddress[];
+  readonly certificates: readonly Uint8Array[];
+}
+
+export interface Domain {
+  readonly domain: string;
+  readonly admin: Address;
+  readonly validUntil: number;
+  readonly hasSuperuser: boolean;
+  readonly msgFees: readonly AccountMsgFee[];
+  readonly accountRenew: number;
+}
 
 // Governance
 
