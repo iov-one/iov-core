@@ -12,11 +12,19 @@ import { Encoding } from "@iov/encoding";
 import { encodeAmount, encodeInt, encodeNumericId, encodeString } from "./encodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
+  AccountConfiguration,
+  AccountMsgFee,
+  AddAccountCertificateTx,
+  BlockchainAddress,
   BnsdTxMsg,
   ChainAddressPair,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
+  DeleteAccountCertificateTx,
+  DeleteAccountTx,
+  DeleteAllAccountsTx,
+  DeleteDomainTx,
   isBnsTx,
   isCreateTextResolutionAction,
   isExecuteMigrationAction,
@@ -28,35 +36,27 @@ import {
   isUpdateElectionRuleAction,
   isUpdateElectorateAction,
   Participant,
+  RegisterAccountTx,
+  RegisterDomainTx,
   RegisterUsernameTx,
   ReleaseEscrowTx,
+  RenewAccountTx,
+  RenewDomainTx,
+  ReplaceAccountMsgFeesTx,
+  ReplaceAccountTargetsTx,
   ReturnEscrowTx,
+  TransferAccountTx,
+  TransferDomainTx,
   TransferUsernameTx,
+  UpdateAccountConfigurationTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
   Validators,
   VoteOption,
   VoteTx,
-  UpdateAccountConfigurationTx,
-  AccountConfiguration,
-  RegisterDomainTx,
-  AccountMsgFee,
-  TransferDomainTx,
-  RenewDomainTx,
-  DeleteDomainTx,
-  RegisterAccountTx,
-  BlockchainAddress,
-  TransferAccountTx,
-  ReplaceAccountTargetsTx,
-  DeleteAccountTx,
-  DeleteAllAccountsTx,
-  RenewAccountTx,
-  AddAccountCertificateTx,
-  ReplaceAccountMsgFeesTx,
-  DeleteAccountCertificateTx,
 } from "./types";
-import { decodeBnsAddress, encodeBnsAddress } from "./util";
+import { decodeBnsAddress } from "./util";
 
 const maxMemoLength = 128;
 
@@ -179,8 +179,16 @@ function encodeTransferUsernameTx(tx: TransferUsernameTx): BnsdTxMsg {
 
 // Accounts
 
-function encodeAccountConfiguration(_configuration: AccountConfiguration): codecImpl.account.IConfiguration {
-  throw new Error("not implemented");
+function encodeAccountConfiguration(configuration: AccountConfiguration): codecImpl.account.IConfiguration {
+  return {
+    metadata: { schema: 1 },
+    owner: decodeBnsAddress(configuration.owner).data,
+    validDomain: configuration.validDomain,
+    validName: configuration.validName,
+    validBlockchainId: configuration.validBlockchainId,
+    validBlockchainAddress: configuration.validBlockchainAddress,
+    domainRenew: configuration.domainRenew,
+  };
 }
 
 function encodeUpdateAccountConfigurationTx(tx: UpdateAccountConfigurationTx): BnsdTxMsg {
@@ -192,8 +200,11 @@ function encodeUpdateAccountConfigurationTx(tx: UpdateAccountConfigurationTx): B
   };
 }
 
-function encodeAccountMsgFee(_msgFee: AccountMsgFee): codecImpl.account.IAccountMsgFee {
-  throw new Error("not implemented");
+function encodeAccountMsgFee(msgFee: AccountMsgFee): codecImpl.account.IAccountMsgFee {
+  return {
+    msgPath: msgFee.msgPath,
+    fee: encodeAmount(msgFee.fee),
+  };
 }
 
 function encodeRegisterDomainTx(tx: RegisterDomainTx): BnsdTxMsg {
@@ -238,10 +249,11 @@ function encodeDeleteDomainTx(tx: DeleteDomainTx): BnsdTxMsg {
   };
 }
 
-function encodeBlockchainAddress(
-  _blockchainAddress: BlockchainAddress,
-): codecImpl.account.IBlockchainAddress {
-  throw new Error("not implemented");
+function encodeBlockchainAddress(blockchainAddress: BlockchainAddress): codecImpl.account.IBlockchainAddress {
+  return {
+    blockchainId: blockchainAddress.blockchainId,
+    address: blockchainAddress.address,
+  };
 }
 
 function encodeRegisterAccountTx(tx: RegisterAccountTx): BnsdTxMsg {
