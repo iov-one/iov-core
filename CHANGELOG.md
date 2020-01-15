@@ -23,6 +23,7 @@
   accurate estimates.
 - @iov/bns-governance: Add proposal type `ExecuteMigration`.
 - @iov/bns-governance: Make `Governor.identity` public.
+- @iov/cosmos: New package to support Cosmos.
 - @iov/lisk: Export `pubkeyToAddress`.
 - @iov/utils: New package added that includes utils.
 
@@ -44,7 +45,6 @@ Breaking changes
   fee.
 - @iov/bns: Use single `signatures` field in `SignedTransaction`s.
 - @iov/bns: The new field `VoteTx.voter` must be set for new transactions.
-- @iov/cosmos: Use single `signatures` field in `SignedTransaction`s.
 - @iov/dpos: Package removed due to the removal of @iov/rise.
 - @iov/ethereum: Use single `signatures` field in `SignedTransaction`s.
 - @iov/keycontrol: `UserProfile.signTransaction` now requires the signing
