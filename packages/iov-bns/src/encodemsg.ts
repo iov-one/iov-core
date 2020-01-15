@@ -38,8 +38,25 @@ import {
   Validators,
   VoteOption,
   VoteTx,
+  UpdateAccountConfigurationTx,
+  AccountConfiguration,
+  RegisterDomainTx,
+  AccountMsgFee,
+  TransferDomainTx,
+  RenewDomainTx,
+  DeleteDomainTx,
+  RegisterAccountTx,
+  BlockchainAddress,
+  TransferAccountTx,
+  ReplaceAccountTargetsTx,
+  DeleteAccountTx,
+  DeleteAllAccountsTx,
+  RenewAccountTx,
+  AddAccountCertificateTx,
+  ReplaceAccountMsgFeesTx,
+  DeleteAccountCertificateTx,
 } from "./types";
-import { decodeBnsAddress } from "./util";
+import { decodeBnsAddress, encodeBnsAddress } from "./util";
 
 const maxMemoLength = 128;
 
@@ -156,6 +173,169 @@ function encodeTransferUsernameTx(tx: TransferUsernameTx): BnsdTxMsg {
       metadata: { schema: 1 },
       username: tx.username,
       newOwner: decodeBnsAddress(tx.newOwner).data,
+    },
+  };
+}
+
+// Accounts
+
+function encodeAccountConfiguration(_configuration: AccountConfiguration): codecImpl.account.IConfiguration {
+  throw new Error("not implemented");
+}
+
+function encodeUpdateAccountConfigurationTx(tx: UpdateAccountConfigurationTx): BnsdTxMsg {
+  return {
+    accountUpdateConfigurationMsg: {
+      metadata: { schema: 1 },
+      patch: encodeAccountConfiguration(tx.configuration),
+    },
+  };
+}
+
+function encodeAccountMsgFee(_msgFee: AccountMsgFee): codecImpl.account.IAccountMsgFee {
+  throw new Error("not implemented");
+}
+
+function encodeRegisterDomainTx(tx: RegisterDomainTx): BnsdTxMsg {
+  return {
+    accountRegisterDomainMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      admin: decodeBnsAddress(tx.admin).data,
+      hasSuperuser: tx.hasSuperuser,
+      thirdPartyToken: tx.thirdPartyToken,
+      msgFees: tx.msgFees.map(encodeAccountMsgFee),
+      accountRenew: tx.accountRenew,
+    },
+  };
+}
+
+function encodeTransferDomainTx(tx: TransferDomainTx): BnsdTxMsg {
+  return {
+    accountTransferDomainMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      newAdmin: decodeBnsAddress(tx.newAdmin).data,
+    },
+  };
+}
+
+function encodeRenewDomainTx(tx: RenewDomainTx): BnsdTxMsg {
+  return {
+    accountRenewDomainMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+    },
+  };
+}
+
+function encodeDeleteDomainTx(tx: DeleteDomainTx): BnsdTxMsg {
+  return {
+    accountDeleteDomainMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+    },
+  };
+}
+
+function encodeBlockchainAddress(
+  _blockchainAddress: BlockchainAddress,
+): codecImpl.account.IBlockchainAddress {
+  throw new Error("not implemented");
+}
+
+function encodeRegisterAccountTx(tx: RegisterAccountTx): BnsdTxMsg {
+  return {
+    accountRegisterAccountMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+      owner: decodeBnsAddress(tx.owner).data,
+      targets: tx.targets.map(encodeBlockchainAddress),
+      thirdPartyToken: tx.thirdPartyToken,
+    },
+  };
+}
+
+function encodeTransferAccountTx(tx: TransferAccountTx): BnsdTxMsg {
+  return {
+    accountTransferAccountMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+      newOwner: decodeBnsAddress(tx.newOwner).data,
+    },
+  };
+}
+
+function encodeReplaceAccountTargetsTx(tx: ReplaceAccountTargetsTx): BnsdTxMsg {
+  return {
+    accountReplaceAccountTargetsMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+      newTargets: tx.newTargets.map(encodeBlockchainAddress),
+    },
+  };
+}
+
+function encodeDeleteAccountTx(tx: DeleteAccountTx): BnsdTxMsg {
+  return {
+    accountDeleteAccountMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+    },
+  };
+}
+
+function encodeDeleteAllAccountsTx(tx: DeleteAllAccountsTx): BnsdTxMsg {
+  return {
+    accountFlushDomainMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+    },
+  };
+}
+
+function encodeRenewAccountTx(tx: RenewAccountTx): BnsdTxMsg {
+  return {
+    accountRenewAccountMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+    },
+  };
+}
+
+function encodeAddAccountCertificateTx(tx: AddAccountCertificateTx): BnsdTxMsg {
+  return {
+    accountAddAccountCertificateMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+      certificate: tx.certificate,
+    },
+  };
+}
+
+function encodeReplaceAccountMsgFeesTx(tx: ReplaceAccountMsgFeesTx): BnsdTxMsg {
+  return {
+    accountReplaceAccountMsgFeesMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      newMsgFees: tx.newMsgFees.map(encodeAccountMsgFee),
+    },
+  };
+}
+
+function encodeDeleteAccountCertificateTx(tx: DeleteAccountCertificateTx): BnsdTxMsg {
+  return {
+    accountDeleteAccountCertificateMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+      certificateHash: tx.certificateHash,
     },
   };
 }
@@ -401,6 +581,36 @@ export function encodeMsg(tx: UnsignedTransaction, strictMode = true): BnsdTxMsg
       return encodeUpdateTargetsOfUsernameTx(tx);
     case "bns/transfer_username":
       return encodeTransferUsernameTx(tx);
+
+    // BNS: Accounts
+    case "bns/update_account_configuration":
+      return encodeUpdateAccountConfigurationTx(tx);
+    case "bns/register_domain":
+      return encodeRegisterDomainTx(tx);
+    case "bns/transfer_domain":
+      return encodeTransferDomainTx(tx);
+    case "bns/renew_domain":
+      return encodeRenewDomainTx(tx);
+    case "bns/delete_domain":
+      return encodeDeleteDomainTx(tx);
+    case "bns/register_account":
+      return encodeRegisterAccountTx(tx);
+    case "bns/transfer_account":
+      return encodeTransferAccountTx(tx);
+    case "bns/replace_account_targets":
+      return encodeReplaceAccountTargetsTx(tx);
+    case "bns/delete_account":
+      return encodeDeleteAccountTx(tx);
+    case "bns/delete_all_accounts":
+      return encodeDeleteAllAccountsTx(tx);
+    case "bns/renew_account":
+      return encodeRenewAccountTx(tx);
+    case "bns/add_account_certificate":
+      return encodeAddAccountCertificateTx(tx);
+    case "bns/replace_account_msg_fees":
+      return encodeReplaceAccountMsgFeesTx(tx);
+    case "bns/delete_account_certificate":
+      return encodeDeleteAccountCertificateTx(tx);
 
     // BNS: Multisignature contracts
     case "bns/create_multisignature_contract":
