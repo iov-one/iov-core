@@ -107,18 +107,34 @@ export function decodeUsernameNft(
 
 // Accounts
 
-export function decodeAccountConfiguration(patch: codecImpl.account.IConfiguration): AccountConfiguration {
-  throw new Error("not implemented");
+export function decodeAccountConfiguration(
+  prefix: IovBech32Prefix,
+  patch: codecImpl.account.IConfiguration,
+): AccountConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(patch.owner, "owner")),
+    validDomain: ensure(patch.validDomain, "validDomain"),
+    validName: ensure(patch.validName, "validName"),
+    validBlockchainId: ensure(patch.validBlockchainId, "validBlockchainId"),
+    validBlockchainAddress: ensure(patch.validBlockchainAddress, "validBlockchainAddress"),
+    domainRenew: asIntegerNumber(ensure(patch.domainRenew, "domainRenew")),
+  };
 }
 
 export function decodeMsgFee(msgFee: codecImpl.account.IAccountMsgFee): AccountMsgFee {
-  throw new Error("not implemented");
+  return {
+    msgPath: ensure(msgFee.msgPath, "msgPath"),
+    fee: decodeAmount(ensure(msgFee.fee, "fee")),
+  };
 }
 
 export function decodeBlockchainAddress(
   blockchainAddress: codecImpl.account.IBlockchainAddress,
 ): BlockchainAddress {
-  throw new Error("not implemented");
+  return {
+    blockchainId: ensure(blockchainAddress.blockchainId, "blockchainId"),
+    address: ensure(blockchainAddress.address, "address"),
+  };
 }
 
 // Governance

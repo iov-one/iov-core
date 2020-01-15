@@ -159,10 +159,11 @@ function decodeUpdateAccountConfigurationTx(
   base: UnsignedTransaction,
   msg: codecImpl.account.IUpdateConfigurationMsg,
 ): UpdateAccountConfigurationTx {
+  const prefix = addressPrefix(base.chainId);
   return {
     ...base,
     kind: "bns/update_account_configuration",
-    configuration: decodeAccountConfiguration(ensure(msg.patch, "patch")),
+    configuration: decodeAccountConfiguration(prefix, ensure(msg.patch, "patch")),
   };
 }
 
