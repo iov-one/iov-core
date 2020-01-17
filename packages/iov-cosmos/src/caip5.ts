@@ -12,6 +12,9 @@ const hashedPrefix = "hashed-";
  * @see https://github.com/ChainAgnostic/CAIPs/pull/9
  */
 export class Caip5 {
+  /**
+   * @param native The `chain_id` field from Tendermint's genesis file
+   */
   public static encode(native: string): ChainId {
     if (!native.match(/^[-a-zA-Z0-9]{3,47}$/) || native.startsWith(hashedPrefix)) {
       const hash = toHex(new Sha256(toUtf8(native)).digest()).slice(0, 16);
