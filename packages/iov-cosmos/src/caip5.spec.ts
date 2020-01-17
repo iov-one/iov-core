@@ -14,14 +14,13 @@ describe("Caip5", () => {
       // Test vectors from CAIP-5
       expect(Caip5.encode("cosmoshub-3")).toEqual("cosmos:cosmoshub-3");
       expect(Caip5.encode("Binance-Chain-Tigris")).toEqual("cosmos:Binance-Chain-Tigris");
+      expect(Caip5.encode("x")).toEqual("cosmos:x");
       expect(Caip5.encode("hash-")).toEqual("cosmos:hash-");
       expect(Caip5.encode("hashed")).toEqual("cosmos:hashed");
     });
 
     it("works for hashed format", () => {
       // Test vectors from CAIP-5
-      expect(Caip5.encode("")).toEqual("cosmos:hashed-e3b0c44298fc1c14");
-      expect(Caip5.encode("x")).toEqual("cosmos:hashed-2d711642b726b044");
       expect(Caip5.encode("hashed-")).toEqual("cosmos:hashed-c904589232422def");
       expect(Caip5.encode("hashed-123")).toEqual("cosmos:hashed-99df5cd68192b33e");
       expect(Caip5.encode("123456789012345678901234567890123456789012345678")).toEqual(
@@ -30,10 +29,15 @@ describe("Caip5", () => {
       expect(Caip5.encode(" ")).toEqual("cosmos:hashed-36a9e7f1c95b82ff");
       expect(Caip5.encode("wonderland🧝‍♂️")).toEqual("cosmos:hashed-843d2fc87f40eeb9");
     });
+
+    it("throws for empty input", () => {
+      expect(() => Caip5.encode("")).toThrowError(/must not be empty/i);
+    });
   });
 
   describe("decode", () => {
     it("works for valid format", () => {
+      expect(Caip5.decode("cosmos:x" as ChainId)).toEqual("x");
       expect(Caip5.decode("cosmos:foo" as ChainId)).toEqual("foo");
       expect(Caip5.decode("cosmos:aA1-" as ChainId)).toEqual("aA1-");
       expect(Caip5.decode("cosmos:12345678901234567890123456789012345678901234567" as ChainId)).toEqual(
@@ -47,12 +51,10 @@ describe("Caip5", () => {
       expect(() => Caip5.decode("xyz:foobar" as ChainId)).toThrowError(/not compatible with CAIP-5/i);
       expect(() => Caip5.decode("cosmos-hash:foobar" as ChainId)).toThrowError(/not compatible with CAIP-5/i);
 
-      // too short
+      // reference too short
       expect(() => Caip5.decode("cosmos:" as ChainId)).toThrowError(/not compatible with CAIP-5/i);
-      expect(() => Caip5.decode("cosmos:1" as ChainId)).toThrowError(/not compatible with CAIP-5/i);
-      expect(() => Caip5.decode("cosmos:12" as ChainId)).toThrowError(/not compatible with CAIP-5/i);
 
-      // too long
+      // reference too long
       expect(() =>
         Caip5.decode("cosmos:123456789012345678901234567890123456789012345678" as ChainId),
       ).toThrowError(/not compatible with CAIP-5/i);
