@@ -11,21 +11,21 @@ chmod 777 "$TMP_DIR"
 echo "Using temporary dir $TMP_DIR"
 GAIAD_LOGFILE="$TMP_DIR/gaiad.log"
 REST_SERVER_LOGFILE="$TMP_DIR/rest-server.log"
-CURRENT_DIR="$(realpath "$(dirname "$0")")"
+SCRIPT_DIR="$(realpath "$(dirname "$0")")"
 HOME_DIR="/home"
 CONTAINER_NAME="gaiad"
 
-rm -rf "$CURRENT_DIR/.gaiad/data"
-mkdir -p "$CURRENT_DIR/.gaiad/data"
-cp "$CURRENT_DIR/priv_validator_state.template.json" "$CURRENT_DIR/.gaiad/data/priv_validator_state.json"
+rm -rf "$SCRIPT_DIR/.gaiad/data"
+mkdir -p "$SCRIPT_DIR/.gaiad/data"
+cp "$SCRIPT_DIR/priv_validator_state.template.json" "$SCRIPT_DIR/.gaiad/data/priv_validator_state.json"
 
 docker run \
   --rm \
   --user="$UID" \
   -t \
   --name "$CONTAINER_NAME" \
-  -v "$CURRENT_DIR/.gaiad:$HOME_DIR/.gaiad" \
-  -v "$CURRENT_DIR/.gaiacli:$HOME_DIR/.gaiacli" \
+  -v "$SCRIPT_DIR/.gaiad:$HOME_DIR/.gaiad" \
+  -v "$SCRIPT_DIR/.gaiacli:$HOME_DIR/.gaiacli" \
   -w "$HOME_DIR" \
   --env "HOME=$HOME_DIR" \
   -p 46656:46656 \
