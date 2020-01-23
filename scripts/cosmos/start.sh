@@ -3,6 +3,7 @@ set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
 # Choose from https://hub.docker.com/r/tendermint/gaia/tags
+REPOSITORY="tendermint/gaia"
 VERSION="v2.0.4"
 
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/gaia.XXXXXXXXX")
@@ -30,7 +31,7 @@ docker run \
   -p 46656:46656 \
   -p 46657:46657 \
   -p 1317:1317 \
-  "tendermint/gaia:${VERSION}" \
+  "$REPOSITORY:$VERSION" \
   gaiad start \
   --rpc.laddr tcp://0.0.0.0:46657 \
   > "$GAIAD_LOGFILE" &
