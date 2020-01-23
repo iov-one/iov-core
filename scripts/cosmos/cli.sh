@@ -3,7 +3,9 @@ set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
 # Choose from https://hub.docker.com/r/tendermint/gaia/tags
-VERSION="v2.0.0"
+REPOSITORY="tendermint/gaia"
+VERSION="v2.0.4"
+
 CURRENT_DIR="$(realpath "$(dirname "$0")")"
 GAIAD_CONTAINER_NAME="gaiad"
 HOME_DIR="/home"
@@ -17,5 +19,5 @@ docker run \
   -w "$HOME_DIR" \
   --env "HOME=$HOME_DIR" \
   --net "container:$GAIAD_CONTAINER_NAME" \
-  "tendermint/gaia:${VERSION}" \
+  "$REPOSITORY:$VERSION" \
   gaiacli "$@"
