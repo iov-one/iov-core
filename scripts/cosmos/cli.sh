@@ -7,7 +7,7 @@ REPOSITORY="tendermint/gaia"
 VERSION="v2.0.4"
 
 CURRENT_DIR="$(realpath "$(dirname "$0")")"
-GAIAD_CONTAINER_NAME="gaiad"
+BLOCKCHAIN_CONTAINER_NAME="gaiad"
 HOME_DIR="/home"
 
 docker run \
@@ -18,6 +18,6 @@ docker run \
   -v "$CURRENT_DIR/.gaiacli:$HOME_DIR/.gaiacli" \
   -w "$HOME_DIR" \
   --env "HOME=$HOME_DIR" \
-  --net "container:$GAIAD_CONTAINER_NAME" \
+  --net "container:$BLOCKCHAIN_CONTAINER_NAME" \
   "$REPOSITORY:$VERSION" \
   gaiacli "$@"
