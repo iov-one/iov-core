@@ -469,7 +469,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
     expect(event2.height).toBeGreaterThan(event1.height);
     expect(event2.time.getTime()).toBeGreaterThan(event1.time.getTime());
 
-    // Very short sleep: just enough to schedule asynchonous producer stopping
+    // Very short sleep: just enough to schedule asynchronous producer stopping
     await sleep(5);
 
     const event3 = await firstEvent(stream);
