@@ -1,6 +1,6 @@
 import { ChainConnector, ChainId } from "@iov/bcp";
 
-import { cosmosCodec } from "./cosmoscodec";
+import { CosmosCodec } from "./cosmoscodec";
 import { CosmosConnection } from "./cosmosconnection";
 
 /**
@@ -10,9 +10,11 @@ export function createCosmosConnector(
   url: string,
   expectedChainId?: ChainId,
 ): ChainConnector<CosmosConnection> {
+  // Avoid the use of default `cosmosCodec` here to prepare for codec configurations
+  const codec = new CosmosCodec();
   return {
-    establishConnection: async () => CosmosConnection.establish(url),
-    codec: cosmosCodec,
+    establishConnection: async () => CosmosConnection.establish(url, codec),
+    codec: codec,
     expectedChainId: expectedChainId,
   };
 }

@@ -68,11 +68,11 @@ function buildQueryString({
 }
 
 export class CosmosConnection implements BlockchainConnection {
-  public static async establish(url: string): Promise<CosmosConnection> {
+  public static async establish(url: string, codec: TxReadCodec = cosmosCodec): Promise<CosmosConnection> {
     const restClient = new RestClient(url);
     const { node_info } = await restClient.nodeInfo();
     const chainId = Caip5.encode(node_info.network);
-    return new CosmosConnection(restClient, chainId);
+    return new CosmosConnection(restClient, chainId, codec);
   }
 
   public readonly chainId: ChainId;
@@ -85,9 +85,9 @@ export class CosmosConnection implements BlockchainConnection {
     return "cosmos";
   }
 
-  private constructor(restClient: RestClient, chainId: ChainId) {
+  private constructor(restClient: RestClient, chainId: ChainId, codec: TxReadCodec) {
     this.chainId = chainId;
-    this.codec = cosmosCodec;
+    this.codec = codec;
     this.restClient = restClient;
     this.primaryToken = {
       fractionalDigits: 6,
