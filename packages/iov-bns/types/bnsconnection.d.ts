@@ -21,6 +21,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionQuery,
+  TxReadCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Stream } from "xstream";
@@ -48,10 +49,9 @@ export interface QueryResponse {
  */
 export declare class BnsConnection implements AtomicSwapConnection {
   static establish(url: string): Promise<BnsConnection>;
-  private static initialize;
+  readonly chainId: ChainId;
+  readonly codec: TxReadCodec;
   private readonly tmClient;
-  private readonly codec;
-  private readonly chainData;
   private readonly context;
   private tokensCache;
   private get prefix();
@@ -62,12 +62,6 @@ export declare class BnsConnection implements AtomicSwapConnection {
    */
   private constructor();
   disconnect(): void;
-  /**
-   * The chain ID this connection is connected to
-   *
-   * We store this info from the initialization, no need to query every time
-   */
-  chainId(): ChainId;
   height(): Promise<number>;
   postTx(tx: PostableBytes): Promise<PostTxResponse>;
   getToken(ticker: TokenTicker): Promise<Token | undefined>;

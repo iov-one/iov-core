@@ -97,10 +97,10 @@ class Actor {
       await signer.addChain(createEthereumConnector(ethereumBaseUrl, ethereumConnectionOptions))
     ).connection;
 
-    const bnsIdentity = await profile.createIdentity(ed25519HdWallet.id, bnsConnection.chainId(), bnsHdPath);
+    const bnsIdentity = await profile.createIdentity(ed25519HdWallet.id, bnsConnection.chainId, bnsHdPath);
     const ethereumIdentity = await profile.createIdentity(
       secp256k1HdWallet.id,
-      ethereumConnection.chainId(),
+      ethereumConnection.chainId,
       ethereumHdPath,
     );
 

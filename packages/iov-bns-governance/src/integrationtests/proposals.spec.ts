@@ -51,10 +51,9 @@ async function getGovernorOptions(
   path = adminPath,
 ): Promise<GovernorOptions & { readonly profile: UserProfile; readonly address: Address }> {
   const connection = await BnsConnection.establish(bnsdUrl);
-  const chainId = await connection.chainId();
   const profile = new UserProfile();
   const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
-  const identity = await profile.createIdentity(wallet.id, chainId, path);
+  const identity = await profile.createIdentity(wallet.id, connection.chainId, path);
   return {
     address: bnsCodec.identityToAddress(identity),
     connection: connection,

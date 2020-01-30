@@ -42,7 +42,7 @@ async function getGovernorOptions(
   path = adminPath,
 ): Promise<GovernorOptions & { readonly profile: UserProfile }> {
   const connection = await BnsConnection.establish(bnsdUrl);
-  const chainId = await connection.chainId();
+  const chainId = connection.chainId;
   const profile = new UserProfile();
   const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
   const identity = await profile.createIdentity(wallet.id, chainId, path);
@@ -550,7 +550,7 @@ describe("Governor", () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
       const { connection, identity, profile } = options;
-      const address = bnsCodec.identityToAddress(identity);
+      const address = connection.codec.identityToAddress(identity);
       const cleanRewardFundAddress = Bech32.encode("tiov", Random.getBytes(20)) as Address;
       const governor = new Governor({
         ...options,

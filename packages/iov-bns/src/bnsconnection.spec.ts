@@ -39,7 +39,7 @@ describe("BnsConnection (basic class methods)", () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
-    const chainId = await connection.chainId();
+    const chainId = await connection.chainId;
     expect(chainId).toMatch(/^[a-zA-Z0-9-]{7,25}$/);
 
     const height = await connection.height();
@@ -52,7 +52,7 @@ describe("BnsConnection (basic class methods)", () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintHttpUrl);
 
-    const chainId = await connection.chainId();
+    const chainId = await connection.chainId;
     expect(chainId).toMatch(/^[a-zA-Z0-9-]{7,25}$/);
 
     const height = await connection.height();
@@ -119,7 +119,7 @@ describe("BnsConnection (basic class methods)", () => {
     it("can get account by address and pubkey", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
+      const { profile, faucet } = await userProfileWithFaucet(connection.chainId);
       await ensureNonceNonZero(connection, profile, faucet);
       const faucetAddress = identityToAddress(faucet);
 
@@ -210,7 +210,7 @@ describe("BnsConnection (basic class methods)", () => {
     it("can query nonce from faucet by address and pubkey", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
+      const { profile, faucet } = await userProfileWithFaucet(connection.chainId);
       await ensureNonceNonZero(connection, profile, faucet);
 
       // by address
@@ -230,7 +230,7 @@ describe("BnsConnection (basic class methods)", () => {
     it("can get 0/1/2 nonces", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const { faucet } = await userProfileWithFaucet(connection.chainId());
+      const { faucet } = await userProfileWithFaucet(connection.chainId);
       const faucetAddress = identityToAddress(faucet);
 
       // by address, 0 nonces
@@ -438,7 +438,7 @@ describe("BnsConnection (basic class methods)", () => {
     it("can create a proposal and find it in list", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, admin: author } = await userProfileWithFaucet(chainId);
       const authorAddress = identityToAddress(author);
@@ -494,7 +494,7 @@ describe("BnsConnection (basic class methods)", () => {
     it("can query usernames by name", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -544,7 +544,7 @@ describe("BnsConnection (basic class methods)", () => {
     it("can query usernames owner", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -595,7 +595,7 @@ describe("BnsConnection (basic class methods)", () => {
       const sender = await randomBnsAddress();
       const sendTransaction: SendTransaction = {
         kind: "bcp/send",
-        chainId: connection.chainId(),
+        chainId: connection.chainId,
         sender: sender,
         recipient: await randomBnsAddress(),
         memo: `We ❤️ developers – iov.one`,
@@ -615,7 +615,7 @@ describe("BnsConnection (basic class methods)", () => {
       const sender = await randomBnsAddress();
       const sendTransaction: SendTransaction = {
         kind: "bcp/send",
-        chainId: connection.chainId(),
+        chainId: connection.chainId,
         sender: sender,
         recipient: await randomBnsAddress(),
         memo: `We ❤️ developers – iov.one`,
@@ -643,7 +643,7 @@ describe("BnsConnection (basic class methods)", () => {
       const sender = await randomBnsAddress();
       const sendTransaction: SendTransaction = {
         kind: "bcp/send",
-        chainId: connection.chainId(),
+        chainId: connection.chainId,
         sender: sender,
         recipient: await randomBnsAddress(),
         memo: `We ❤️ developers – iov.one`,
@@ -683,7 +683,7 @@ describe("BnsConnection (basic class methods)", () => {
 
       const sendTransaction: SendTransaction = {
         kind: "bcp/send",
-        chainId: connection.chainId(),
+        chainId: connection.chainId,
         sender: await randomBnsAddress(),
         recipient: await randomBnsAddress(),
         memo: `We ❤️ developers – iov.one`,
@@ -708,7 +708,7 @@ describe("BnsConnection (basic class methods)", () => {
       const username = `testuser_${Math.random()}*iov`;
       const usernameRegistration: RegisterUsernameTx = {
         kind: "bns/register_username",
-        chainId: connection.chainId(),
+        chainId: connection.chainId,
         targets: [
           {
             address: "12345678912345W" as Address,
@@ -736,7 +736,7 @@ describe("BnsConnection (basic class methods)", () => {
 
       const sendTransaction: SendTransaction = {
         kind: "bcp/send",
-        chainId: connection.chainId(),
+        chainId: connection.chainId,
         sender: await randomBnsAddress(),
         recipient: await randomBnsAddress(),
         memo: `We ❤️ developers – iov.one`,
@@ -764,7 +764,7 @@ describe("BnsConnection (basic class methods)", () => {
 
       const otherTransaction: UnsignedTransaction = {
         kind: "other/kind",
-        chainId: connection.chainId(),
+        chainId: connection.chainId,
       };
       await connection
         .getFeeQuote(otherTransaction)

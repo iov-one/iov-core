@@ -26,6 +26,7 @@ import {
   TransactionId,
   TransactionQuery,
   TransactionState,
+  TxReadCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
@@ -36,14 +37,11 @@ import { Stream } from "xstream";
 
 import { CosmosBech32Prefix, pubkeyToAddress } from "./address";
 import { Caip5 } from "./caip5";
+import { cosmosCodec } from "./cosmoscodec";
 import { decodeAmount, parseTxsResponse } from "./decode";
 import { RestClient, TxsResponse } from "./restclient";
 
 const { fromBase64 } = Encoding;
-
-interface ChainData {
-  readonly chainId: ChainId;
-}
 
 // poll every 0.5 seconds (block time 1s)
 const defaultPollInterval = 500;
@@ -70,19 +68,16 @@ function buildQueryString({
 }
 
 export class CosmosConnection implements BlockchainConnection {
-  public static async establish(url: string): Promise<CosmosConnection> {
+  public static async establish(url: string, codec: TxReadCodec = cosmosCodec): Promise<CosmosConnection> {
     const restClient = new RestClient(url);
-    const chainData = await this.initialize(restClient);
-    return new CosmosConnection(restClient, chainData);
-  }
-
-  private static async initialize(restClient: RestClient): Promise<ChainData> {
     const { node_info } = await restClient.nodeInfo();
-    return { chainId: Caip5.encode(node_info.network) };
+    const chainId = Caip5.encode(node_info.network);
+    return new CosmosConnection(restClient, chainId, codec);
   }
 
+  public readonly chainId: ChainId;
+  public readonly codec: TxReadCodec;
   private readonly restClient: RestClient;
-  private readonly chainData: ChainData;
   private readonly primaryToken: Token;
   private readonly supportedTokens: readonly Token[];
 
@@ -90,9 +85,10 @@ export class CosmosConnection implements BlockchainConnection {
     return "cosmos";
   }
 
-  private constructor(restClient: RestClient, chainData: ChainData) {
+  private constructor(restClient: RestClient, chainId: ChainId, codec: TxReadCodec) {
+    this.chainId = chainId;
+    this.codec = codec;
     this.restClient = restClient;
-    this.chainData = chainData;
     this.primaryToken = {
       fractionalDigits: 6,
       tokenName: "Atom",
@@ -103,10 +99,6 @@ export class CosmosConnection implements BlockchainConnection {
 
   public disconnect(): void {
     return;
-  }
-
-  public chainId(): ChainId {
-    return this.chainData.chainId;
   }
 
   public async height(): Promise<number> {
@@ -182,8 +174,7 @@ export class CosmosConnection implements BlockchainConnection {
   ): Promise<ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction> {
     try {
       const response = await this.restClient.txsById(id);
-      const chainId = await this.chainId();
-      return this.parseAndPopulateTxResponse(response, chainId);
+      return this.parseAndPopulateTxResponse(response, this.chainId);
     } catch (error) {
       if (error.response.status === 404) {
         throw new Error("Transaction does not exist");
@@ -235,9 +226,8 @@ export class CosmosConnection implements BlockchainConnection {
     query: TransactionQuery,
   ): Promise<readonly (ConfirmedTransaction<UnsignedTransaction> | FailedTransaction)[]> {
     const queryString = buildQueryString(query);
-    const chainId = this.chainId();
     const { txs: responses } = await this.restClient.txs(queryString);
-    return Promise.all(responses.map(response => this.parseAndPopulateTxResponse(response, chainId)));
+    return Promise.all(responses.map(response => this.parseAndPopulateTxResponse(response, this.chainId)));
   }
 
   public listenTx(

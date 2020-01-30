@@ -31,9 +31,9 @@ async function main(): Promise<void> {
   const signer = new MultiChainSigner(profile);
 
   const bnsdConnection = (await signer.addChain(createBnsConnector(bnsdUrl))).connection;
-  const bnsdChainId = bnsdConnection.chainId();
+  const bnsdChainId = bnsdConnection.chainId;
   const ethereumConnection = (await signer.addChain(createEthereumConnector(ethereumUrl, {}))).connection;
-  const ethereumChainId = ethereumConnection.chainId();
+  const ethereumChainId = ethereumConnection.chainId;
 
   // faucet identity
   await profile.createIdentity(ed25519Wallet.id, bnsdChainId, bnsdFaucetPath);

@@ -55,7 +55,7 @@ class Actor {
 
     const bnsConnection = await BnsConnection.establish("ws://localhost:23456");
 
-    const bnsIdentity = await profile.createIdentity(wallet.id, bnsConnection.chainId(), hdPath);
+    const bnsIdentity = await profile.createIdentity(wallet.id, bnsConnection.chainId, hdPath);
 
     return new Actor({
       profile: profile,

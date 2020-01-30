@@ -17,6 +17,7 @@ import {
   TokenTicker,
   TransactionId,
   TransactionQuery,
+  TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Stream } from "xstream";
@@ -26,11 +27,11 @@ import { Stream } from "xstream";
 export declare function generateNonce(): Nonce;
 export declare class LiskConnection implements BlockchainConnection {
   static establish(baseUrl: string): Promise<LiskConnection>;
+  readonly chainId: ChainId;
+  readonly codec: TxCodec;
   private readonly baseUrl;
-  private readonly myChainId;
   constructor(baseUrl: string, chainId: ChainId);
   disconnect(): void;
-  chainId(): ChainId;
   height(): Promise<number>;
   postTx(bytes: PostableBytes): Promise<PostTxResponse>;
   getToken(searchTicker: TokenTicker): Promise<Token | undefined>;

@@ -21,7 +21,7 @@ export class Bip39 {
   }
 
   public static async mnemonicToSeed(mnemonic: EnglishMnemonic, password?: string): Promise<Uint8Array> {
-    // reimplementation of bip39.mnemonicToSeed using the asynchonous
+    // reimplementation of bip39.mnemonicToSeed using the asynchronous
     // interface of https://www.npmjs.com/package/pbkdf2
     const mnemonicBytes = Buffer.from(unorm.nfkd(mnemonic.toString()), "utf8");
     const salt = "mnemonic" + (password ? unorm.nfkd(password) : "");

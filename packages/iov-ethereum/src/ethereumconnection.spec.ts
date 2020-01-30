@@ -172,8 +172,7 @@ describe("EthereumConnection", () => {
   it("can get chain ID", async () => {
     pendingWithoutEthereum();
     const connection = await EthereumConnection.establish(testConfig.baseHttp, testConfig.connectionOptions);
-    const chainId = connection.chainId();
-    expect(chainId).toEqual(testConfig.chainId);
+    expect(connection.chainId).toEqual(testConfig.chainId);
     connection.disconnect();
   });
 
@@ -2105,7 +2104,7 @@ describe("EthereumConnection", () => {
           testConfig.baseHttp,
           testConfig.connectionOptions,
         );
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const faucetAddress = ethereumCodec.identityToAddress(faucet);
@@ -2294,7 +2293,7 @@ describe("EthereumConnection", () => {
           testConfig.baseHttp,
           testConfig.connectionOptions,
         );
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const recipientAddress = await randomAddress();
@@ -2376,7 +2375,7 @@ describe("EthereumConnection", () => {
           testConfig.baseHttp,
           testConfig.connectionOptions,
         );
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const recipientAddress = await randomAddress();
@@ -2460,7 +2459,7 @@ describe("EthereumConnection", () => {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const faucetAddress = ethereumCodec.identityToAddress(faucet);
@@ -2687,7 +2686,7 @@ describe("EthereumConnection", () => {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const recipientAddress = await randomAddress();
@@ -2769,7 +2768,7 @@ describe("EthereumConnection", () => {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const recipientAddress = await randomAddress();

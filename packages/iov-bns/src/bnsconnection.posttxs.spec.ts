@@ -71,7 +71,7 @@ describe("BnsConnection (post txs)", () => {
     it("can send transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
       const initialHeight = await connection.height();
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
@@ -136,7 +136,7 @@ describe("BnsConnection (post txs)", () => {
     it("rejects send transaction with manual fees too low", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -175,7 +175,7 @@ describe("BnsConnection (post txs)", () => {
     it("reports post errors (CheckTx)", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -210,7 +210,7 @@ describe("BnsConnection (post txs)", () => {
 
       (async () => {
         const connection = await BnsConnection.establish(bnsdTendermintUrl);
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -274,7 +274,7 @@ describe("BnsConnection (post txs)", () => {
     it("can register a username", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -319,7 +319,7 @@ describe("BnsConnection (post txs)", () => {
     it("can register a username with empty list of targets", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -364,7 +364,7 @@ describe("BnsConnection (post txs)", () => {
     it("can update targets of username", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -458,7 +458,7 @@ describe("BnsConnection (post txs)", () => {
     it("can transfer a username", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -528,7 +528,7 @@ describe("BnsConnection (post txs)", () => {
     it("can register and update a username for an empty account", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet, walletId } = await userProfileWithFaucet(chainId);
       const faucetAddress = identityToAddress(faucet);
@@ -606,7 +606,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and update a multisignature account", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -710,7 +710,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and release an escrow", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -804,7 +804,7 @@ describe("BnsConnection (post txs)", () => {
     it("any account can return an escrow (after the timeout)", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -867,7 +867,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and return an escrow", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -962,7 +962,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and update an escrow", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -1059,7 +1059,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and vote on a proposal", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, admin: author } = await userProfileWithFaucet(chainId);
       const authorAddress = identityToAddress(author);
@@ -1169,7 +1169,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and vote on a proposal, and see the effects", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, admin: author } = await userProfileWithFaucet(chainId);
       const authorAddress = identityToAddress(author);

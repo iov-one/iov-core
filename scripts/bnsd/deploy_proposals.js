@@ -33,7 +33,7 @@ function createSignAndPoster(connection, profile) {
 
 async function main() {
   const connection = await connectionPromise;
-  const chainId = await connection.chainId();
+  const chainId = await connection.chainId;
   const profile = new UserProfile();
   const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
   const identity = await profile.createIdentity(wallet.id, chainId, adminPath);

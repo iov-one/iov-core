@@ -78,7 +78,7 @@ describe("SigningServerCore", () => {
   ): Promise<void> {
     const profile = new UserProfile();
     const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(faucetMnemonic));
-    const faucet = await profile.createIdentity(wallet.id, connection.chainId(), faucetPath);
+    const faucet = await profile.createIdentity(wallet.id, connection.chainId, faucetPath);
     const faucetAddress = bnsCodec.identityToAddress(faucet);
 
     const sendTx = await connection.withDefaultFee<SendTransaction>(
@@ -309,7 +309,7 @@ describe("SigningServerCore", () => {
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
       const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
-      const bnsChain = connection.chainId();
+      const bnsChain = connection.chainId;
 
       {
         const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
@@ -350,7 +350,7 @@ describe("SigningServerCore", () => {
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
       const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
-      const bnsChain = connection.chainId();
+      const bnsChain = connection.chainId;
 
       {
         const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
@@ -397,7 +397,7 @@ describe("SigningServerCore", () => {
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
       const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
-      const bnsChain = connection.chainId();
+      const bnsChain = connection.chainId;
 
       {
         const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
@@ -438,7 +438,7 @@ describe("SigningServerCore", () => {
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
       const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
-      const bnsChain = connection.chainId();
+      const bnsChain = connection.chainId;
 
       {
         const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
@@ -487,7 +487,7 @@ describe("SigningServerCore", () => {
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
       const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
-      const bnsChain = connection.chainId();
+      const bnsChain = connection.chainId;
 
       {
         const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));
@@ -533,7 +533,7 @@ describe("SigningServerCore", () => {
       const profile = new UserProfile();
       const signer = new MultiChainSigner(profile);
       const { connection } = await signer.addChain(createBnsConnector(bnsdUrl));
-      const bnsChain = connection.chainId();
+      const bnsChain = connection.chainId;
 
       {
         const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(16)));

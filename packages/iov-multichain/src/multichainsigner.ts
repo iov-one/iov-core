@@ -82,7 +82,7 @@ export class MultiChainSigner {
    */
   public async addChain(connector: ChainConnector): Promise<{ readonly connection: BlockchainConnection }> {
     const chain = await connectChain(connector);
-    const chainId = chain.connection.chainId();
+    const chainId = chain.connection.chainId;
     if (connector.expectedChainId && connector.expectedChainId !== chainId) {
       throw new Error(
         `Connected chain ID does not match. Got ${chainId} but expected ${connector.expectedChainId}.`,
