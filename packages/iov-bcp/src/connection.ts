@@ -186,6 +186,7 @@ export interface BlockHeader {
  */
 export interface BlockchainConnection {
   // Synchonous side-effect free getters are implemented as properties
+  /** The ID of the chain we are connected to */
   readonly chainId: ChainId;
 
   // blockchain

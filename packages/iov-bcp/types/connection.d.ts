@@ -151,6 +151,7 @@ export interface BlockHeader {
  * to enable enhanced features in the clients.
  */
 export interface BlockchainConnection {
+  /** The ID of the chain we are connected to */
   readonly chainId: ChainId;
   readonly disconnect: () => void;
   readonly height: () => Promise<number>;
