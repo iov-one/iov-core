@@ -49,7 +49,7 @@ describe("BnsConnection (txs)", () => {
       }
 
       {
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const faucetAddress = bnsCodec.identityToAddress(faucet);
 
@@ -90,7 +90,7 @@ describe("BnsConnection (txs)", () => {
     it("can get a transaction by ID and verify its signature", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
 
@@ -136,7 +136,7 @@ describe("BnsConnection (txs)", () => {
     it("can search for transactions by tags", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -179,7 +179,7 @@ describe("BnsConnection (txs)", () => {
     it("can search for transactions by height", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -223,7 +223,7 @@ describe("BnsConnection (txs)", () => {
     it("can search for transactions by ID", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -267,7 +267,7 @@ describe("BnsConnection (txs)", () => {
     it("can search for transactions by minHeight/maxHeight", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
       const initialHeight = await connection.height();
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
@@ -354,7 +354,7 @@ describe("BnsConnection (txs)", () => {
     it("reports DeliverTx errors for search by ID", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
       const initialHeight = await connection.height();
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
@@ -405,7 +405,7 @@ describe("BnsConnection (txs)", () => {
 
       (async () => {
         const connection = await BnsConnection.establish(bnsdTendermintUrl);
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -457,7 +457,7 @@ describe("BnsConnection (txs)", () => {
     it("finds an existing transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -498,7 +498,7 @@ describe("BnsConnection (txs)", () => {
     it("can wait for a future transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -535,7 +535,7 @@ describe("BnsConnection (txs)", () => {
     it("reports DeliverTx error for an existing transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
       const initialHeight = await connection.height();
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
@@ -580,7 +580,7 @@ describe("BnsConnection (txs)", () => {
     it("reports DeliverTx error for a future transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
@@ -623,7 +623,7 @@ describe("BnsConnection (txs)", () => {
   it("can watch accounts", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
+    const { profile, faucet } = await userProfileWithFaucet(connection.chainId);
     const recipientAddr = await randomBnsAddress();
 
     // watch account by pubkey and by address

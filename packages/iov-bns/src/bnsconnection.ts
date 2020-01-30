@@ -55,7 +55,7 @@ import { Stream, Subscription } from "xstream";
 
 import { bnsCodec } from "./bnscodec";
 import { swapToAddress } from "./conditions";
-import { ChainData, Context } from "./context";
+import { Context } from "./context";
 import { decodePubkey, decodeUserData } from "./decode";
 import {
   decodeAmount,
@@ -222,25 +222,20 @@ function createParser<T extends {}>(decoder: Decoder<T>, keyPrefix: string): (re
  */
 export class BnsConnection implements AtomicSwapConnection {
   public static async establish(url: string): Promise<BnsConnection> {
-    const tm = await TendermintClient.connect(url);
-    const chainData = await this.initialize(tm);
-    return new BnsConnection(tm, bnsCodec, chainData);
+    const tendermint = await TendermintClient.connect(url);
+    const chainId = (await tendermint.status()).nodeInfo.network as ChainId;
+    return new BnsConnection(tendermint, bnsCodec, chainId);
   }
 
-  private static async initialize(tmClient: TendermintClient): Promise<ChainData> {
-    const status = await tmClient.status();
-    return { chainId: status.nodeInfo.network as ChainId };
-  }
-
+  public readonly chainId: ChainId;
   private readonly tmClient: TendermintClient;
   private readonly codec: TxReadCodec;
-  private readonly chainData: ChainData;
   private readonly context: Context;
   // tslint:disable-next-line: readonly-keyword
   private tokensCache: readonly Token[] | undefined;
 
   private get prefix(): IovBech32Prefix {
-    return addressPrefix(this.chainId());
+    return addressPrefix(this.chainId);
   }
 
   /**
@@ -248,24 +243,15 @@ export class BnsConnection implements AtomicSwapConnection {
    *
    * Use BnsConnection.establish to get a BnsConnection.
    */
-  private constructor(tmClient: TendermintClient, codec: TxReadCodec, chainData: ChainData) {
+  private constructor(tmClient: TendermintClient, codec: TxReadCodec, chainId: ChainId) {
     this.tmClient = tmClient;
     this.codec = codec;
-    this.chainData = chainData;
-    this.context = new Context(chainData);
+    this.chainId = chainId;
+    this.context = new Context(chainId);
   }
 
   public disconnect(): void {
     this.tmClient.disconnect();
-  }
-
-  /**
-   * The chain ID this connection is connected to
-   *
-   * We store this info from the initialization, no need to query every time
-   */
-  public chainId(): ChainId {
-    return this.chainData.chainId;
   }
 
   public async height(): Promise<number> {
@@ -376,7 +362,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
     const address = isPubkeyQuery(query)
-      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      ? identityToAddress({ chainId: this.chainId, pubkey: query.pubkey })
       : query.address;
 
     const response = await this.query("/wallets", decodeBnsAddress(address).data);
@@ -409,7 +395,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public async getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce> {
     const address = isPubkeyQuery(query)
-      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      ? identityToAddress({ chainId: this.chainId, pubkey: query.pubkey })
       : query.address;
     const response = await this.query("/auth", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.sigs.UserData, "sigs:");
@@ -548,7 +534,6 @@ export class BnsConnection implements AtomicSwapConnection {
     // this will paginate over all transactions, even if multiple pages.
     // FIXME: consider making a streaming interface here, but that will break clients
     const res = await this.tmClient.txSearchAll({ query: buildQueryString(query) });
-    const chainId = await this.chainId();
     const currentHeight = await this.height();
 
     return res.txs.map((txResponse):
@@ -564,7 +549,7 @@ export class BnsConnection implements AtomicSwapConnection {
           transactionId: transactionId,
           log: result.log,
           result: result.data,
-          ...this.codec.parseBytes((tx as Uint8Array) as PostableBytes, chainId),
+          ...this.codec.parseBytes((tx as Uint8Array) as PostableBytes, this.chainId),
         };
       } else {
         const failed: FailedTransaction = {
@@ -584,7 +569,6 @@ export class BnsConnection implements AtomicSwapConnection {
   public listenTx(
     query: TransactionQuery,
   ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
-    const chainId = this.chainId();
     const rawQuery = buildQueryString(query);
     return this.tmClient.subscribeTx(rawQuery).map((transaction):
       | ConfirmedTransaction<UnsignedTransaction>
@@ -598,7 +582,7 @@ export class BnsConnection implements AtomicSwapConnection {
           transactionId: transactionId,
           log: transaction.result.log,
           result: transaction.result.data,
-          ...this.codec.parseBytes((transaction.tx as Uint8Array) as PostableBytes, chainId),
+          ...this.codec.parseBytes((transaction.tx as Uint8Array) as PostableBytes, this.chainId),
         };
       } else {
         const failed: FailedTransaction = {
@@ -694,7 +678,7 @@ export class BnsConnection implements AtomicSwapConnection {
    */
   public watchAccount(query: AccountQuery): Stream<Account | undefined> {
     const address = isPubkeyQuery(query)
-      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      ? identityToAddress({ chainId: this.chainId, pubkey: query.pubkey })
       : query.address;
 
     return concat(
@@ -764,7 +748,7 @@ export class BnsConnection implements AtomicSwapConnection {
     }
 
     const parser = createParser(codecImpl.username.Token, "tokens:");
-    const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId()));
+    const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId));
     return nfts;
   }
 
@@ -840,7 +824,7 @@ export class BnsConnection implements AtomicSwapConnection {
   // updateEscrowBalance will query for the proper balance and then update the accounts of escrow before
   // returning it. Designed to be used in a map chain.
   protected async updateSwapAmounts<T extends AtomicSwap>(swap: T): Promise<T> {
-    const addr = swapToAddress(this.chainId(), swap.data);
+    const addr = swapToAddress(this.chainId, swap.data);
     const account = await this.getAccount({ address: addr });
     const balance = account ? account.balance : [];
     return { ...swap, data: { ...swap.data, amounts: balance } };

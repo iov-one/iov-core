@@ -185,9 +185,11 @@ export interface BlockHeader {
  * to enable enhanced features in the clients.
  */
 export interface BlockchainConnection {
+  // Synchonous side-effect free getters are implemented as properties
+  readonly chainId: ChainId;
+
   // blockchain
   readonly disconnect: () => void;
-  readonly chainId: () => ChainId;
   readonly height: () => Promise<number>;
   readonly getToken: (ticker: TokenTicker) => Promise<Token | undefined>;
   readonly getAllTokens: () => Promise<readonly Token[]>;

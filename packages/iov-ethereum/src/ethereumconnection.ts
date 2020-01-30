@@ -286,9 +286,9 @@ export class EthereumConnection implements AtomicSwapConnection {
     return [...swaps.slice(0, swapIndex), ...swaps.slice(swapIndex + 1), newSwap];
   }
 
+  public readonly chainId: ChainId;
   private readonly pollIntervalMs: number;
   private readonly rpcClient: EthereumRpcClient;
-  private readonly myChainId: ChainId;
   private readonly scraperApiUrl: string | undefined;
   private readonly atomicSwapEtherContractAddress?: Address;
   private readonly atomicSwapErc20ContractAddress?: Address;
@@ -305,7 +305,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     this.rpcClient = baseUrlIsWs ? new WsEthereumRpcClient(baseUrl) : new HttpEthereumRpcClient(baseUrl);
     this.pollIntervalMs = options.pollInterval ? options.pollInterval * 1000 : 4_000;
-    this.myChainId = chainId;
+    this.chainId = chainId;
     this.scraperApiUrl = options.scraperApiUrl;
 
     const ethereumClient = {
@@ -347,10 +347,6 @@ export class EthereumConnection implements AtomicSwapConnection {
 
   public disconnect(): void {
     this.rpcClient.disconnect();
-  }
-
-  public chainId(): ChainId {
-    return this.myChainId;
   }
 
   public async height(): Promise<number> {
@@ -987,7 +983,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     const confirmations = currentHeight - transactionHeight + 1;
     const transaction = this.codec.parseBytes(
       Encoding.toUtf8(JSON.stringify(transactionsResponse.result)) as PostableBytes,
-      this.myChainId,
+      this.chainId,
     );
     const transactionId = Parse.transactionId(transactionsResponse.result.hash);
     return [
@@ -1066,7 +1062,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           const confirmed: ConfirmedTransaction<SendTransaction> = {
             transaction: {
               kind: "bcp/send",
-              chainId: this.chainId(),
+              chainId: this.chainId,
               sender: toChecksummedAddress(transaction.from),
               recipient: toChecksummedAddress(transaction.to),
               amount: {

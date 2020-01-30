@@ -73,8 +73,8 @@ export class LiskConnection implements BlockchainConnection {
     return new LiskConnection(baseUrl, chainId);
   }
 
+  public readonly chainId: ChainId;
   private readonly baseUrl: string;
-  private readonly myChainId: ChainId;
 
   public constructor(baseUrl: string, chainId: ChainId) {
     this.baseUrl = checkAndNormalizeUrl(baseUrl);
@@ -84,15 +84,11 @@ export class LiskConnection implements BlockchainConnection {
         "The chain ID must be a Lisk nethash, encoded as `lisk-%s` where `%s` is the 10-digit hex-encoded prefix of the relevant nethash.",
       );
     }
-    this.myChainId = chainId;
+    this.chainId = chainId;
   }
 
   public disconnect(): void {
     // no-op
-  }
-
-  public chainId(): ChainId {
-    return this.myChainId;
   }
 
   public async height(): Promise<number> {
@@ -511,7 +507,7 @@ export class LiskConnection implements BlockchainConnection {
         const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
         const transaction = liskCodec.parseBytes(
           toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
-          this.myChainId,
+          this.chainId,
         );
         return {
           ...transaction,

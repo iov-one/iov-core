@@ -219,7 +219,7 @@ describe("signingservice.worker", () => {
       method: "getIdentities",
       params: {
         reason: "string:Who are you?",
-        chainIds: [`string:${bnsConnection.chainId()}`],
+        chainIds: [`string:${bnsConnection.chainId}`],
       },
     });
 

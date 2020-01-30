@@ -59,8 +59,8 @@ class Actor {
     });
     const path1 = HdPaths.ethereum(addressIndex1);
     const path2 = HdPaths.ethereum(addressIndex2);
-    const senderIdentity = await profile.createIdentity(wallet.id, connection.chainId(), path1);
-    const receiverIdentity = await profile.createIdentity(wallet.id, connection.chainId(), path2);
+    const senderIdentity = await profile.createIdentity(wallet.id, connection.chainId, path1);
+    const receiverIdentity = await profile.createIdentity(wallet.id, connection.chainId, path2);
     return new Actor({
       profile: profile,
       connection: connection,

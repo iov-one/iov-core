@@ -16,15 +16,6 @@ import * as codecImpl from "./generated/codecimpl";
 import { Keyed } from "./types";
 import { addressPrefix, encodeBnsAddress } from "./util";
 
-/**
- * All the queries of immutable data we do on initialization to be reused by later calls
- *
- * This type is package internal and may change at any time.
- */
-export interface ChainData {
-  readonly chainId: ChainId;
-}
-
 /** Like BCP's Account but with no pubkey. Keep compatible to Account! */
 export interface WalletData {
   readonly address: Address;
@@ -32,15 +23,15 @@ export interface WalletData {
 }
 
 export class Context {
-  private readonly chainData: ChainData;
+  private readonly chainId: ChainId;
 
-  public constructor(chainData: ChainData) {
-    this.chainData = chainData;
+  public constructor(chainId: ChainId) {
+    this.chainId = chainId;
   }
 
   public wallet(acct: codecImpl.cash.ISet & Keyed): WalletData {
     return {
-      address: encodeBnsAddress(addressPrefix(this.chainData.chainId), acct._id),
+      address: encodeBnsAddress(addressPrefix(this.chainId), acct._id),
       balance: ensure(acct.coins).map(c => decodeAmount(c)),
     };
   }
@@ -52,7 +43,7 @@ export class Context {
       throw new Error("Hash must be 32 bytes (sha256)");
     }
 
-    const prefix = addressPrefix(this.chainData.chainId);
+    const prefix = addressPrefix(this.chainId);
     return {
       kind: SwapProcessState.Open,
       data: {

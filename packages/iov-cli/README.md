@@ -47,7 +47,7 @@ $ iov-cli
 > const profile = new UserProfile();
 > const signer = new MultiChainSigner(profile);
 > const { connection } = await signer.addChain(createBnsConnector("ws://localhost:23456"));
-> const chainId = connection.chainId();
+> const chainId = connection.chainId;
 
 > chainId
 'test-chain-esuZ1V'
@@ -205,7 +205,7 @@ In this example we connect to a public test network.
 
 > const signer = new MultiChainSigner(profile);
 > const { connection } = await signer.addChain(createBnsConnector("wss://rpc-private-a-x-dancenet.iov.one"));
-> const chainId = connection.chainId();
+> const chainId = connection.chainId;
 
 > const alice = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(0));
 > const aliceAddress = signer.identityToAddress(alice);

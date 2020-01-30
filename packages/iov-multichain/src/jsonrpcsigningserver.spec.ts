@@ -84,9 +84,9 @@ async function makeBnsEthereumSigningServer(
   const ethereumConnection = (await signer.addChain(createEthereumConnector(ethereumUrl, {}))).connection;
 
   // faucet identity
-  await profile.createIdentity(ed25519Wallet.id, bnsConnection.chainId(), bnsdFaucetPath);
+  await profile.createIdentity(ed25519Wallet.id, bnsConnection.chainId, bnsdFaucetPath);
   // ganache second identity
-  await profile.createIdentity(secp256k1Wallet.id, ethereumConnection.chainId(), HdPaths.bip44(60, 0, 0, 1));
+  await profile.createIdentity(secp256k1Wallet.id, ethereumConnection.chainId, HdPaths.bip44(60, 0, 0, 1));
 
   const core = new SigningServerCore(profile, signer, authorizeGetIdentities, authorizeSignAndPost);
   return new JsonRpcSigningServer(core);
@@ -216,7 +216,7 @@ describe("JsonRpcSigningServer", () => {
       method: "getIdentities",
       params: {
         reason: "string:Who are you?",
-        chainIds: [`string:${bnsConnection.chainId()}`],
+        chainIds: [`string:${bnsConnection.chainId}`],
       },
     });
     if (isJsonRpcErrorResponse(identitiesResponse)) {

@@ -50,9 +50,9 @@ export declare class EthereumConnection implements AtomicSwapConnection {
   private static parseClaimedEventBytes;
   private static parseAbortedEventBytes;
   private static updateSwapInList;
+  readonly chainId: ChainId;
   private readonly pollIntervalMs;
   private readonly rpcClient;
-  private readonly myChainId;
   private readonly scraperApiUrl;
   private readonly atomicSwapEtherContractAddress?;
   private readonly atomicSwapErc20ContractAddress?;
@@ -61,7 +61,6 @@ export declare class EthereumConnection implements AtomicSwapConnection {
   private readonly codec;
   constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions);
   disconnect(): void;
-  chainId(): ChainId;
   height(): Promise<number>;
   postTx(bytes: PostableBytes): Promise<PostTxResponse>;
   getToken(searchTicker: TokenTicker): Promise<Token | undefined>;

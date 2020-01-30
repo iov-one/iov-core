@@ -113,7 +113,7 @@ export async function sendTokensFromFaucet(
   recipient: Address,
   amount: Amount = defaultAmount,
 ): Promise<void> {
-  const chainId = connection.chainId();
+  const chainId = connection.chainId;
   const { profile, faucet } = await userProfileWithFaucet(chainId);
   const faucetAddress = bnsCodec.identityToAddress(faucet);
 

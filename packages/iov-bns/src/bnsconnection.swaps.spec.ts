@@ -41,7 +41,7 @@ describe("BnsConnection (swaps)", () => {
   it("can start atomic swap", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const chainId = connection.chainId();
+    const chainId = connection.chainId;
 
     const { profile, faucet } = await userProfileWithFaucet(chainId);
     const faucetAddr = identityToAddress(faucet);
@@ -186,7 +186,7 @@ describe("BnsConnection (swaps)", () => {
     it("works", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
+      const { profile, faucet } = await userProfileWithFaucet(connection.chainId);
       const faucetAddr = identityToAddress(faucet);
       const recipientAddr = await randomBnsAddress();
 
@@ -263,7 +263,7 @@ describe("BnsConnection (swaps)", () => {
   it("can start and watch an atomic swap lifecycle", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
+    const { profile, faucet } = await userProfileWithFaucet(connection.chainId);
     const recipientAddr = await randomBnsAddress();
 
     // create the preimages for the three swaps

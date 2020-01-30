@@ -164,8 +164,7 @@ describe("LiskConnection", () => {
   it("can get chain ID", async () => {
     pendingWithoutLiskDevnet();
     const connection = await LiskConnection.establish(devnetBase);
-    const chainId = connection.chainId();
-    expect(chainId).toEqual(devnetChainId);
+    expect(connection.chainId).toEqual(devnetChainId);
   });
 
   it("can get height", async () => {
