@@ -26,6 +26,7 @@ import {
   TransactionId,
   TransactionQuery,
   TransactionState,
+  TxReadCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Uint53 } from "@iov/encoding";
@@ -36,6 +37,7 @@ import { Stream } from "xstream";
 
 import { CosmosBech32Prefix, pubkeyToAddress } from "./address";
 import { Caip5 } from "./caip5";
+import { cosmosCodec } from "./cosmoscodec";
 import { decodeAmount, parseTxsResponse } from "./decode";
 import { RestClient, TxsResponse } from "./restclient";
 
@@ -74,6 +76,7 @@ export class CosmosConnection implements BlockchainConnection {
   }
 
   public readonly chainId: ChainId;
+  public readonly codec: TxReadCodec;
   private readonly restClient: RestClient;
   private readonly primaryToken: Token;
   private readonly supportedTokens: readonly Token[];
@@ -84,6 +87,7 @@ export class CosmosConnection implements BlockchainConnection {
 
   private constructor(restClient: RestClient, chainId: ChainId) {
     this.chainId = chainId;
+    this.codec = cosmosCodec;
     this.restClient = restClient;
     this.primaryToken = {
       fractionalDigits: 6,

@@ -287,6 +287,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   }
 
   public readonly chainId: ChainId;
+  public readonly codec: EthereumCodec;
   private readonly pollIntervalMs: number;
   private readonly rpcClient: EthereumRpcClient;
   private readonly scraperApiUrl: string | undefined;
@@ -294,7 +295,6 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly atomicSwapErc20ContractAddress?: Address;
   private readonly erc20Tokens: Erc20TokensMap;
   private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
-  private readonly codec: EthereumCodec;
 
   public constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
     const baseUrlIsHttp = isHttpUrl(baseUrl);

@@ -43,6 +43,7 @@ Breaking changes
   `SignedTransaction` with a single `signatures` field of type `NonEmptyArray`.
 - @iov/bcp: Convert getter function `BlockchainConnection.chainId()` into
   read-only property `.chainId`.
+- @iov/bcp: Add required `BlockchainConnection.codec` property.
 - @iov/bns: Require fee payer to be specified when encoding a transaction with a
   fee.
 - @iov/bns: Use single `signatures` field in `SignedTransaction`s.

@@ -228,8 +228,8 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public readonly chainId: ChainId;
+  public readonly codec: TxReadCodec;
   private readonly tmClient: TendermintClient;
-  private readonly codec: TxReadCodec;
   private readonly context: Context;
   // tslint:disable-next-line: readonly-keyword
   private tokensCache: readonly Token[] | undefined;

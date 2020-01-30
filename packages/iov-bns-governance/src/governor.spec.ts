@@ -550,7 +550,7 @@ describe("Governor", () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
       const { connection, identity, profile } = options;
-      const address = bnsCodec.identityToAddress(identity);
+      const address = connection.codec.identityToAddress(identity);
       const cleanRewardFundAddress = Bech32.encode("tiov", Random.getBytes(20)) as Address;
       const governor = new Governor({
         ...options,

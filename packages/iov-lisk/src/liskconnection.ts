@@ -24,6 +24,7 @@ import {
   TransactionId,
   TransactionQuery,
   TransactionState,
+  TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Uint53, Uint64 } from "@iov/encoding";
@@ -74,6 +75,8 @@ export class LiskConnection implements BlockchainConnection {
   }
 
   public readonly chainId: ChainId;
+  public readonly codec: TxCodec;
+
   private readonly baseUrl: string;
 
   public constructor(baseUrl: string, chainId: ChainId) {
@@ -85,6 +88,7 @@ export class LiskConnection implements BlockchainConnection {
       );
     }
     this.chainId = chainId;
+    this.codec = liskCodec;
   }
 
   public disconnect(): void {
@@ -505,7 +509,7 @@ export class LiskConnection implements BlockchainConnection {
         const height = new Uint53(transactionJson.height);
         const confirmations = new Uint53(transactionJson.confirmations);
         const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
-        const transaction = liskCodec.parseBytes(
+        const transaction = this.codec.parseBytes(
           toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
           this.chainId,
         );

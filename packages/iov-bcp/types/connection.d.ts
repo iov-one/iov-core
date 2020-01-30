@@ -2,7 +2,7 @@ import { ValueAndUpdates } from "@iov/stream";
 import { ReadonlyDate } from "readonly-date";
 import { As } from "type-tagger";
 import { Stream } from "xstream";
-import { PostableBytes } from "./codec";
+import { PostableBytes, TxReadCodec } from "./codec";
 import {
   Address,
   Amount,
@@ -153,6 +153,20 @@ export interface BlockHeader {
 export interface BlockchainConnection {
   /** The ID of the chain we are connected to */
   readonly chainId: ChainId;
+  /**
+   * The codec used by this connection to interact with the blockchain.
+   *
+   * This allows you to perform address operations on a connection
+   * instance:
+   *
+   * ```
+   * // validate
+   * const valid = connection.codec.isValidAddress(userInput);
+   * // convert
+   * const senderAddress = connection.codec.identityToAddress(sender);
+   * ```
+   */
+  readonly codec: TxReadCodec;
   readonly disconnect: () => void;
   readonly height: () => Promise<number>;
   readonly getToken: (ticker: TokenTicker) => Promise<Token | undefined>;

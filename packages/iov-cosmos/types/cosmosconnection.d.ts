@@ -17,12 +17,14 @@ import {
   TokenTicker,
   TransactionId,
   TransactionQuery,
+  TxReadCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Stream } from "xstream";
 export declare class CosmosConnection implements BlockchainConnection {
   static establish(url: string): Promise<CosmosConnection>;
   readonly chainId: ChainId;
+  readonly codec: TxReadCodec;
   private readonly restClient;
   private readonly primaryToken;
   private readonly supportedTokens;

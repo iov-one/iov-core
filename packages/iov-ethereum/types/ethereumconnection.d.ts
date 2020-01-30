@@ -25,6 +25,7 @@ import {
 } from "@iov/bcp";
 import { Stream } from "xstream";
 import { Erc20TokensMap } from "./erc20";
+import { EthereumCodec } from "./ethereumcodec";
 export interface EthereumLog {
   readonly transactionIndex: string;
   readonly data: string;
@@ -51,6 +52,7 @@ export declare class EthereumConnection implements AtomicSwapConnection {
   private static parseAbortedEventBytes;
   private static updateSwapInList;
   readonly chainId: ChainId;
+  readonly codec: EthereumCodec;
   private readonly pollIntervalMs;
   private readonly rpcClient;
   private readonly scraperApiUrl;
@@ -58,7 +60,6 @@ export declare class EthereumConnection implements AtomicSwapConnection {
   private readonly atomicSwapErc20ContractAddress?;
   private readonly erc20Tokens;
   private readonly erc20ContractReaders;
-  private readonly codec;
   constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions);
   disconnect(): void;
   height(): Promise<number>;
