@@ -26,6 +26,14 @@ export interface TxFeeConfiguration {
  * @see https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.24.0/docs/proto/index.html#bnsd.Tx
  */
 export declare type BnsdTxMsg = Omit<codecImpl.bnsd.ITx, "fees" | "signatures" | "multisig">;
+export interface AccountsByNameQuery {
+  readonly name: string;
+}
+export interface BnsAccountNft {
+  readonly id: string;
+  readonly owner: Address;
+  readonly targets: readonly BlockchainAddress[];
+}
 export interface AccountConfiguration {
   readonly owner: Address;
   readonly validDomain: string;
