@@ -585,6 +585,26 @@ describe("BnsConnection (basic class methods)", () => {
     });
   });
 
+  describe("getAccountsNft", () => {
+    fit("can query account by name", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+
+      // Query by existing name
+      {
+        const results = await connection.getAccountsNft({ name: "my-account*first-domain" });
+        expect(results.length).toEqual(1);
+        expect(results[0]).toEqual({
+          id: "my-account*first-domain",
+          owner: "tiov1x7lquh0t8fv9xntsnhqy7eksvanjnyljc77a5u",
+          targets: [],
+        });
+      }
+
+      connection.disconnect();
+    });
+  });
+
   describe("estimateTxSize", () => {
     it("works for send transaction without fee or nonce", async () => {
       pendingWithoutBnsd();
