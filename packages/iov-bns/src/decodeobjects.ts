@@ -11,6 +11,7 @@ import {
   AccountMsgFee,
   ActionKind,
   BlockchainAddress,
+  BnsAccountNft,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
@@ -108,7 +109,6 @@ export function decodeUsernameNft(
 }
 
 // Accounts
-
 export function decodeAccountConfiguration(
   prefix: IovBech32Prefix,
   patch: codecImpl.account.IConfiguration,
@@ -136,6 +136,18 @@ export function decodeBlockchainAddress(
   return {
     blockchainId: ensure(blockchainAddress.blockchainId, "blockchainId"),
     address: ensure(blockchainAddress.address, "address"),
+  };
+}
+
+export function decodeAccountNft(
+  nft: codecImpl.account.IAccount & Keyed,
+  registryChainId: ChainId,
+): BnsAccountNft {
+  const rawOwnerAddress = ensure(nft.owner, "owner");
+  return {
+    id: Encoding.fromUtf8(nft._id),
+    owner: encodeBnsAddress(addressPrefix(registryChainId), rawOwnerAddress),
+    targets: ensure(nft.targets, "targets").map(decodeBlockchainAddress),
   };
 }
 
