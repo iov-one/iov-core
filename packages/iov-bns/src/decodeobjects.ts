@@ -6,12 +6,11 @@ import { weaveFractionalDigits } from "./constants";
 import { asIntegerNumber, decodeNumericId, decodeString, ensure } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
-  Account,
   AccountConfiguration,
   AccountMsgFee,
+  AccountNft,
   ActionKind,
   BlockchainAddress,
-  BnsAccountNft,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
@@ -139,19 +138,7 @@ export function decodeBlockchainAddress(
   };
 }
 
-export function decodeAccountNft(
-  nft: codecImpl.account.IAccount & Keyed,
-  registryChainId: ChainId,
-): BnsAccountNft {
-  const rawOwnerAddress = ensure(nft.owner, "owner");
-  return {
-    id: Encoding.fromUtf8(nft._id),
-    owner: encodeBnsAddress(addressPrefix(registryChainId), rawOwnerAddress),
-    targets: ensure(nft.targets, "targets").map(decodeBlockchainAddress),
-  };
-}
-
-export function decodeAccount(prefix: IovBech32Prefix, account: codecImpl.account.IAccount): Account {
+export function decodeAccount(prefix: IovBech32Prefix, account: codecImpl.account.IAccount): AccountNft {
   return {
     domain: ensure(account.domain, "domain"),
     name: ensure(account.name, "name"),
