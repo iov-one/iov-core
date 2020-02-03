@@ -16,9 +16,8 @@ export { bnsSwapQueryTag } from "./tags";
 export {
   // Accounts
   AccountsByNameQuery,
-  Account,
+  AccountNft,
   BlockchainAddress,
-  BnsAccountNft,
   // Usernames
   ChainAddressPair,
   BnsUsernamesByOwnerQuery,
