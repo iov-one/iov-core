@@ -58,7 +58,7 @@ import { swapToAddress } from "./conditions";
 import { Context } from "./context";
 import { decodePubkey, decodeUserData } from "./decode";
 import {
-  decodeAccountNft,
+  decodeAccount,
   decodeAmount,
   decodeCashConfiguration,
   decodeElectionRule,
@@ -72,8 +72,8 @@ import {
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
+  AccountNft,
   AccountsByNameQuery,
-  BnsAccountNft,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
@@ -784,11 +784,11 @@ export class BnsConnection implements AtomicSwapConnection {
     return nfts;
   }
 
-  public async getAccountsNft(query: AccountsByNameQuery): Promise<readonly BnsAccountNft[]> {
+  public async getAccountNft(query: AccountsByNameQuery): Promise<readonly AccountNft[]> {
     const results = (await this.query("/accounts", toUtf8(query.name))).results;
 
     const parser = createParser(codecImpl.account.Account, "account:");
-    const nfts = results.map(parser).map(nft => decodeAccountNft(nft, this.chainId()));
+    const nfts = results.map(parser).map(nft => decodeAccount(this.prefix, nft));
     return nfts;
   }
 
