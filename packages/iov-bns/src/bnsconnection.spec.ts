@@ -586,7 +586,7 @@ describe("BnsConnection (basic class methods)", () => {
   });
 
   describe("getAccountsNft", () => {
-    fit("can query account by name", async () => {
+    it("can query account by name", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
 
