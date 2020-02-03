@@ -31,7 +31,13 @@ import {
   unusedPubkey,
   userProfileWithFaucet,
 } from "./testutils.spec";
-import { ActionKind, CreateProposalTx, CreateTextResolutionAction, RegisterUsernameTx } from "./types";
+import {
+  ActionKind,
+  CreateProposalTx,
+  CreateTextResolutionAction,
+  RegisterAccountTx,
+  RegisterUsernameTx,
+} from "./types";
 import { identityToAddress } from "./util";
 
 describe("BnsConnection (basic class methods)", () => {
@@ -589,19 +595,45 @@ describe("BnsConnection (basic class methods)", () => {
     it("can query account by name", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId;
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+      const identityAddress = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, identityAddress, registerAmount);
+
+      // Register account
+      const name = `testuser_${Math.random()}`;
+      const domain = "iov";
+      const targets = [{ blockchainId: "foobar" as ChainId, address: identityAddress }] as const;
+      const registration = await connection.withDefaultFee<RegisterAccountTx>(
+        {
+          kind: "bns/register_account",
+          chainId: registryChainId,
+          name: name,
+          domain: domain,
+          owner: identityAddress,
+          targets: targets,
+        },
+        identityAddress,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
 
       // Query by existing name
       {
-        const results = await connection.getAccountNft({ name: "test*iov" });
+        const results = await connection.getAccountNft({ name: `${name}*${domain}` });
         expect(results.length).toEqual(1);
-        expect(results[0]).toEqual({
-          domain: "iov",
-          name: "test",
-          owner: "tiov1l678408y7a64cj66s8j64fevmspyfxdmv38cxw",
-          targets: [],
-          certificates: [],
-          validUntil: 1895827578,
-        });
+        expect(results[0].domain).toEqual(domain);
+        expect(results[0].name).toEqual(name);
+        expect(results[0].owner).toEqual(identityAddress);
+        expect(results[0].targets).toEqual(targets);
+        expect(results[0].certificates).toEqual([]);
       }
 
       connection.disconnect();
