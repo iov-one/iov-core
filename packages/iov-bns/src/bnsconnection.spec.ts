@@ -592,12 +592,15 @@ describe("BnsConnection (basic class methods)", () => {
 
       // Query by existing name
       {
-        const results = await connection.getAccountsNft({ name: "my-account*first-domain" });
+        const results = await connection.getAccountNft({ name: "test*iov" });
         expect(results.length).toEqual(1);
         expect(results[0]).toEqual({
-          id: "my-account*first-domain",
-          owner: "tiov1x7lquh0t8fv9xntsnhqy7eksvanjnyljc77a5u",
+          domain: "iov",
+          name: "test",
+          owner: "tiov1l678408y7a64cj66s8j64fevmspyfxdmv38cxw",
           targets: [],
+          certificates: [],
+          validUntil: 1895827578,
         });
       }
 
