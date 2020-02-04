@@ -290,6 +290,13 @@ $root.bnsd = (function() {
          * @property {preregistration.IRegisterMsg|null} [preregistrationRegisterMsg] Tx preregistrationRegisterMsg
          * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] Tx cashUpdateConfigurationMsg
          * @property {txfee.IUpdateConfigurationMsg|null} [txfeeUpdateConfigurationMsg] Tx txfeeUpdateConfigurationMsg
+         * @property {termdeposit.ICreateDepositContractMsg|null} [termdepositCreateDepositContractMsg] Tx termdepositCreateDepositContractMsg
+         * @property {termdeposit.IDepositMsg|null} [termdepositDepositMsg] Tx termdepositDepositMsg
+         * @property {termdeposit.IReleaseDepositMsg|null} [termdepositReleaseDepositMsg] Tx termdepositReleaseDepositMsg
+         * @property {termdeposit.IUpdateConfigurationMsg|null} [termdepositUpdateConfigurationMsg] Tx termdepositUpdateConfigurationMsg
+         * @property {qualityscore.IUpdateConfigurationMsg|null} [qualityscoreUpdateConfigurationMsg] Tx qualityscoreUpdateConfigurationMsg
+         * @property {preregistration.IUpdateConfigurationMsg|null} [preregistrationUpdateConfigurationMsg] Tx preregistrationUpdateConfigurationMsg
+         * @property {msgfee.IUpdateConfigurationMsg|null} [msgfeeUpdateConfigurationMsg] Tx msgfeeUpdateConfigurationMsg
          */
 
         /**
@@ -693,17 +700,73 @@ $root.bnsd = (function() {
          */
         Tx.prototype.txfeeUpdateConfigurationMsg = null;
 
+        /**
+         * Tx termdepositCreateDepositContractMsg.
+         * @member {termdeposit.ICreateDepositContractMsg|null|undefined} termdepositCreateDepositContractMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.termdepositCreateDepositContractMsg = null;
+
+        /**
+         * Tx termdepositDepositMsg.
+         * @member {termdeposit.IDepositMsg|null|undefined} termdepositDepositMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.termdepositDepositMsg = null;
+
+        /**
+         * Tx termdepositReleaseDepositMsg.
+         * @member {termdeposit.IReleaseDepositMsg|null|undefined} termdepositReleaseDepositMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.termdepositReleaseDepositMsg = null;
+
+        /**
+         * Tx termdepositUpdateConfigurationMsg.
+         * @member {termdeposit.IUpdateConfigurationMsg|null|undefined} termdepositUpdateConfigurationMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.termdepositUpdateConfigurationMsg = null;
+
+        /**
+         * Tx qualityscoreUpdateConfigurationMsg.
+         * @member {qualityscore.IUpdateConfigurationMsg|null|undefined} qualityscoreUpdateConfigurationMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.qualityscoreUpdateConfigurationMsg = null;
+
+        /**
+         * Tx preregistrationUpdateConfigurationMsg.
+         * @member {preregistration.IUpdateConfigurationMsg|null|undefined} preregistrationUpdateConfigurationMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.preregistrationUpdateConfigurationMsg = null;
+
+        /**
+         * Tx msgfeeUpdateConfigurationMsg.
+         * @member {msgfee.IUpdateConfigurationMsg|null|undefined} msgfeeUpdateConfigurationMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.msgfeeUpdateConfigurationMsg = null;
+
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * msg is a sum type over all allowed messages on this chain.
-         * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"aswapCreateMsg"|"aswapReleaseMsg"|"aswapReturnMsg"|"govCreateProposalMsg"|"govDeleteProposalMsg"|"govVoteMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"preregistrationRegisterMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|undefined} sum
+         * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"aswapCreateMsg"|"aswapReleaseMsg"|"aswapReturnMsg"|"govCreateProposalMsg"|"govDeleteProposalMsg"|"govVoteMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"preregistrationRegisterMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|"termdepositCreateDepositContractMsg"|"termdepositDepositMsg"|"termdepositReleaseDepositMsg"|"termdepositUpdateConfigurationMsg"|"qualityscoreUpdateConfigurationMsg"|"preregistrationUpdateConfigurationMsg"|"msgfeeUpdateConfigurationMsg"|undefined} sum
          * @memberof bnsd.Tx
          * @instance
          */
         Object.defineProperty(Tx.prototype, "sum", {
-            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "aswapCreateMsg", "aswapReleaseMsg", "aswapReturnMsg", "govCreateProposalMsg", "govDeleteProposalMsg", "govVoteMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "preregistrationRegisterMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "aswapCreateMsg", "aswapReleaseMsg", "aswapReturnMsg", "govCreateProposalMsg", "govDeleteProposalMsg", "govVoteMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "preregistrationRegisterMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg", "termdepositCreateDepositContractMsg", "termdepositDepositMsg", "termdepositReleaseDepositMsg", "termdepositUpdateConfigurationMsg", "qualityscoreUpdateConfigurationMsg", "preregistrationUpdateConfigurationMsg", "msgfeeUpdateConfigurationMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -829,6 +892,20 @@ $root.bnsd = (function() {
                 $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
             if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg"))
                 $root.txfee.UpdateConfigurationMsg.encode(message.txfeeUpdateConfigurationMsg, writer.uint32(/* id 98, wireType 2 =*/786).fork()).ldelim();
+            if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg"))
+                $root.termdeposit.CreateDepositContractMsg.encode(message.termdepositCreateDepositContractMsg, writer.uint32(/* id 99, wireType 2 =*/794).fork()).ldelim();
+            if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg"))
+                $root.termdeposit.DepositMsg.encode(message.termdepositDepositMsg, writer.uint32(/* id 100, wireType 2 =*/802).fork()).ldelim();
+            if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg"))
+                $root.termdeposit.ReleaseDepositMsg.encode(message.termdepositReleaseDepositMsg, writer.uint32(/* id 101, wireType 2 =*/810).fork()).ldelim();
+            if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg"))
+                $root.termdeposit.UpdateConfigurationMsg.encode(message.termdepositUpdateConfigurationMsg, writer.uint32(/* id 102, wireType 2 =*/818).fork()).ldelim();
+            if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg"))
+                $root.qualityscore.UpdateConfigurationMsg.encode(message.qualityscoreUpdateConfigurationMsg, writer.uint32(/* id 103, wireType 2 =*/826).fork()).ldelim();
+            if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg"))
+                $root.preregistration.UpdateConfigurationMsg.encode(message.preregistrationUpdateConfigurationMsg, writer.uint32(/* id 104, wireType 2 =*/834).fork()).ldelim();
+            if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg"))
+                $root.msgfee.UpdateConfigurationMsg.encode(message.msgfeeUpdateConfigurationMsg, writer.uint32(/* id 105, wireType 2 =*/842).fork()).ldelim();
             return writer;
         };
 
@@ -1010,6 +1087,27 @@ $root.bnsd = (function() {
                     break;
                 case 98:
                     message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 99:
+                    message.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.decode(reader, reader.uint32());
+                    break;
+                case 100:
+                    message.termdepositDepositMsg = $root.termdeposit.DepositMsg.decode(reader, reader.uint32());
+                    break;
+                case 101:
+                    message.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.decode(reader, reader.uint32());
+                    break;
+                case 102:
+                    message.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 103:
+                    message.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 104:
+                    message.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 105:
+                    message.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1516,6 +1614,76 @@ $root.bnsd = (function() {
                         return "txfeeUpdateConfigurationMsg." + error;
                 }
             }
+            if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.termdeposit.CreateDepositContractMsg.verify(message.termdepositCreateDepositContractMsg);
+                    if (error)
+                        return "termdepositCreateDepositContractMsg." + error;
+                }
+            }
+            if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.termdeposit.DepositMsg.verify(message.termdepositDepositMsg);
+                    if (error)
+                        return "termdepositDepositMsg." + error;
+                }
+            }
+            if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.termdeposit.ReleaseDepositMsg.verify(message.termdepositReleaseDepositMsg);
+                    if (error)
+                        return "termdepositReleaseDepositMsg." + error;
+                }
+            }
+            if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.termdeposit.UpdateConfigurationMsg.verify(message.termdepositUpdateConfigurationMsg);
+                    if (error)
+                        return "termdepositUpdateConfigurationMsg." + error;
+                }
+            }
+            if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.qualityscore.UpdateConfigurationMsg.verify(message.qualityscoreUpdateConfigurationMsg);
+                    if (error)
+                        return "qualityscoreUpdateConfigurationMsg." + error;
+                }
+            }
+            if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.preregistration.UpdateConfigurationMsg.verify(message.preregistrationUpdateConfigurationMsg);
+                    if (error)
+                        return "preregistrationUpdateConfigurationMsg." + error;
+                }
+            }
+            if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.msgfee.UpdateConfigurationMsg.verify(message.msgfeeUpdateConfigurationMsg);
+                    if (error)
+                        return "msgfeeUpdateConfigurationMsg." + error;
+                }
+            }
             return null;
         };
 
@@ -1781,6 +1949,41 @@ $root.bnsd = (function() {
                     throw TypeError(".bnsd.Tx.txfeeUpdateConfigurationMsg: object expected");
                 message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.fromObject(object.txfeeUpdateConfigurationMsg);
             }
+            if (object.termdepositCreateDepositContractMsg != null) {
+                if (typeof object.termdepositCreateDepositContractMsg !== "object")
+                    throw TypeError(".bnsd.Tx.termdepositCreateDepositContractMsg: object expected");
+                message.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.fromObject(object.termdepositCreateDepositContractMsg);
+            }
+            if (object.termdepositDepositMsg != null) {
+                if (typeof object.termdepositDepositMsg !== "object")
+                    throw TypeError(".bnsd.Tx.termdepositDepositMsg: object expected");
+                message.termdepositDepositMsg = $root.termdeposit.DepositMsg.fromObject(object.termdepositDepositMsg);
+            }
+            if (object.termdepositReleaseDepositMsg != null) {
+                if (typeof object.termdepositReleaseDepositMsg !== "object")
+                    throw TypeError(".bnsd.Tx.termdepositReleaseDepositMsg: object expected");
+                message.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.fromObject(object.termdepositReleaseDepositMsg);
+            }
+            if (object.termdepositUpdateConfigurationMsg != null) {
+                if (typeof object.termdepositUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.Tx.termdepositUpdateConfigurationMsg: object expected");
+                message.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.fromObject(object.termdepositUpdateConfigurationMsg);
+            }
+            if (object.qualityscoreUpdateConfigurationMsg != null) {
+                if (typeof object.qualityscoreUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.Tx.qualityscoreUpdateConfigurationMsg: object expected");
+                message.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.fromObject(object.qualityscoreUpdateConfigurationMsg);
+            }
+            if (object.preregistrationUpdateConfigurationMsg != null) {
+                if (typeof object.preregistrationUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.Tx.preregistrationUpdateConfigurationMsg: object expected");
+                message.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.fromObject(object.preregistrationUpdateConfigurationMsg);
+            }
+            if (object.msgfeeUpdateConfigurationMsg != null) {
+                if (typeof object.msgfeeUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.Tx.msgfeeUpdateConfigurationMsg: object expected");
+                message.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.fromObject(object.msgfeeUpdateConfigurationMsg);
+            }
             return message;
         };
 
@@ -2039,6 +2242,41 @@ $root.bnsd = (function() {
                 object.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.toObject(message.txfeeUpdateConfigurationMsg, options);
                 if (options.oneofs)
                     object.sum = "txfeeUpdateConfigurationMsg";
+            }
+            if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg")) {
+                object.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.toObject(message.termdepositCreateDepositContractMsg, options);
+                if (options.oneofs)
+                    object.sum = "termdepositCreateDepositContractMsg";
+            }
+            if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg")) {
+                object.termdepositDepositMsg = $root.termdeposit.DepositMsg.toObject(message.termdepositDepositMsg, options);
+                if (options.oneofs)
+                    object.sum = "termdepositDepositMsg";
+            }
+            if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg")) {
+                object.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.toObject(message.termdepositReleaseDepositMsg, options);
+                if (options.oneofs)
+                    object.sum = "termdepositReleaseDepositMsg";
+            }
+            if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg")) {
+                object.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.toObject(message.termdepositUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.sum = "termdepositUpdateConfigurationMsg";
+            }
+            if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg")) {
+                object.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.toObject(message.qualityscoreUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.sum = "qualityscoreUpdateConfigurationMsg";
+            }
+            if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg")) {
+                object.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.toObject(message.preregistrationUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.sum = "preregistrationUpdateConfigurationMsg";
+            }
+            if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg")) {
+                object.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.toObject(message.msgfeeUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.sum = "msgfeeUpdateConfigurationMsg";
             }
             return object;
         };
@@ -2302,6 +2540,13 @@ $root.bnsd = (function() {
              * @property {account.IDeleteAccountCertificateMsg|null} [accountDeleteAccountCertificateMsg] Union accountDeleteAccountCertificateMsg
              * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] 96 is used by preregistration
              * @property {txfee.IUpdateConfigurationMsg|null} [txfeeUpdateConfigurationMsg] Union txfeeUpdateConfigurationMsg
+             * @property {termdeposit.ICreateDepositContractMsg|null} [termdepositCreateDepositContractMsg] Union termdepositCreateDepositContractMsg
+             * @property {termdeposit.IDepositMsg|null} [termdepositDepositMsg] Union termdepositDepositMsg
+             * @property {termdeposit.IReleaseDepositMsg|null} [termdepositReleaseDepositMsg] Union termdepositReleaseDepositMsg
+             * @property {termdeposit.IUpdateConfigurationMsg|null} [termdepositUpdateConfigurationMsg] Union termdepositUpdateConfigurationMsg
+             * @property {qualityscore.IUpdateConfigurationMsg|null} [qualityscoreUpdateConfigurationMsg] Union qualityscoreUpdateConfigurationMsg
+             * @property {preregistration.IUpdateConfigurationMsg|null} [preregistrationUpdateConfigurationMsg] Union preregistrationUpdateConfigurationMsg
+             * @property {msgfee.IUpdateConfigurationMsg|null} [msgfeeUpdateConfigurationMsg] Union msgfeeUpdateConfigurationMsg
              */
 
             /**
@@ -2591,17 +2836,73 @@ $root.bnsd = (function() {
              */
             Union.prototype.txfeeUpdateConfigurationMsg = null;
 
+            /**
+             * Union termdepositCreateDepositContractMsg.
+             * @member {termdeposit.ICreateDepositContractMsg|null|undefined} termdepositCreateDepositContractMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.termdepositCreateDepositContractMsg = null;
+
+            /**
+             * Union termdepositDepositMsg.
+             * @member {termdeposit.IDepositMsg|null|undefined} termdepositDepositMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.termdepositDepositMsg = null;
+
+            /**
+             * Union termdepositReleaseDepositMsg.
+             * @member {termdeposit.IReleaseDepositMsg|null|undefined} termdepositReleaseDepositMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.termdepositReleaseDepositMsg = null;
+
+            /**
+             * Union termdepositUpdateConfigurationMsg.
+             * @member {termdeposit.IUpdateConfigurationMsg|null|undefined} termdepositUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.termdepositUpdateConfigurationMsg = null;
+
+            /**
+             * Union qualityscoreUpdateConfigurationMsg.
+             * @member {qualityscore.IUpdateConfigurationMsg|null|undefined} qualityscoreUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.qualityscoreUpdateConfigurationMsg = null;
+
+            /**
+             * Union preregistrationUpdateConfigurationMsg.
+             * @member {preregistration.IUpdateConfigurationMsg|null|undefined} preregistrationUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.preregistrationUpdateConfigurationMsg = null;
+
+            /**
+             * Union msgfeeUpdateConfigurationMsg.
+             * @member {msgfee.IUpdateConfigurationMsg|null|undefined} msgfeeUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.msgfeeUpdateConfigurationMsg = null;
+
             // OneOf field names bound to virtual getters and setters
             var $oneOfFields;
 
             /**
              * Union sum.
-             * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|undefined} sum
+             * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|"termdepositCreateDepositContractMsg"|"termdepositDepositMsg"|"termdepositReleaseDepositMsg"|"termdepositUpdateConfigurationMsg"|"qualityscoreUpdateConfigurationMsg"|"preregistrationUpdateConfigurationMsg"|"msgfeeUpdateConfigurationMsg"|undefined} sum
              * @memberof bnsd.ExecuteBatchMsg.Union
              * @instance
              */
             Object.defineProperty(Union.prototype, "sum", {
-                get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg"]),
+                get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg", "termdepositCreateDepositContractMsg", "termdepositDepositMsg", "termdepositReleaseDepositMsg", "termdepositUpdateConfigurationMsg", "qualityscoreUpdateConfigurationMsg", "preregistrationUpdateConfigurationMsg", "msgfeeUpdateConfigurationMsg"]),
                 set: $util.oneOfSetter($oneOfFields)
             });
 
@@ -2697,6 +2998,20 @@ $root.bnsd = (function() {
                     $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
                 if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg"))
                     $root.txfee.UpdateConfigurationMsg.encode(message.txfeeUpdateConfigurationMsg, writer.uint32(/* id 98, wireType 2 =*/786).fork()).ldelim();
+                if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg"))
+                    $root.termdeposit.CreateDepositContractMsg.encode(message.termdepositCreateDepositContractMsg, writer.uint32(/* id 99, wireType 2 =*/794).fork()).ldelim();
+                if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg"))
+                    $root.termdeposit.DepositMsg.encode(message.termdepositDepositMsg, writer.uint32(/* id 100, wireType 2 =*/802).fork()).ldelim();
+                if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg"))
+                    $root.termdeposit.ReleaseDepositMsg.encode(message.termdepositReleaseDepositMsg, writer.uint32(/* id 101, wireType 2 =*/810).fork()).ldelim();
+                if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg"))
+                    $root.termdeposit.UpdateConfigurationMsg.encode(message.termdepositUpdateConfigurationMsg, writer.uint32(/* id 102, wireType 2 =*/818).fork()).ldelim();
+                if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg"))
+                    $root.qualityscore.UpdateConfigurationMsg.encode(message.qualityscoreUpdateConfigurationMsg, writer.uint32(/* id 103, wireType 2 =*/826).fork()).ldelim();
+                if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg"))
+                    $root.preregistration.UpdateConfigurationMsg.encode(message.preregistrationUpdateConfigurationMsg, writer.uint32(/* id 104, wireType 2 =*/834).fork()).ldelim();
+                if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg"))
+                    $root.msgfee.UpdateConfigurationMsg.encode(message.msgfeeUpdateConfigurationMsg, writer.uint32(/* id 105, wireType 2 =*/842).fork()).ldelim();
                 return writer;
             };
 
@@ -2832,6 +3147,27 @@ $root.bnsd = (function() {
                         break;
                     case 98:
                         message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 99:
+                        message.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.decode(reader, reader.uint32());
+                        break;
+                    case 100:
+                        message.termdepositDepositMsg = $root.termdeposit.DepositMsg.decode(reader, reader.uint32());
+                        break;
+                    case 101:
+                        message.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.decode(reader, reader.uint32());
+                        break;
+                    case 102:
+                        message.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 103:
+                        message.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 104:
+                        message.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 105:
+                        message.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -3207,6 +3543,76 @@ $root.bnsd = (function() {
                             return "txfeeUpdateConfigurationMsg." + error;
                     }
                 }
+                if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.termdeposit.CreateDepositContractMsg.verify(message.termdepositCreateDepositContractMsg);
+                        if (error)
+                            return "termdepositCreateDepositContractMsg." + error;
+                    }
+                }
+                if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.termdeposit.DepositMsg.verify(message.termdepositDepositMsg);
+                        if (error)
+                            return "termdepositDepositMsg." + error;
+                    }
+                }
+                if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.termdeposit.ReleaseDepositMsg.verify(message.termdepositReleaseDepositMsg);
+                        if (error)
+                            return "termdepositReleaseDepositMsg." + error;
+                    }
+                }
+                if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.termdeposit.UpdateConfigurationMsg.verify(message.termdepositUpdateConfigurationMsg);
+                        if (error)
+                            return "termdepositUpdateConfigurationMsg." + error;
+                    }
+                }
+                if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.qualityscore.UpdateConfigurationMsg.verify(message.qualityscoreUpdateConfigurationMsg);
+                        if (error)
+                            return "qualityscoreUpdateConfigurationMsg." + error;
+                    }
+                }
+                if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.preregistration.UpdateConfigurationMsg.verify(message.preregistrationUpdateConfigurationMsg);
+                        if (error)
+                            return "preregistrationUpdateConfigurationMsg." + error;
+                    }
+                }
+                if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.msgfee.UpdateConfigurationMsg.verify(message.msgfeeUpdateConfigurationMsg);
+                        if (error)
+                            return "msgfeeUpdateConfigurationMsg." + error;
+                    }
+                }
                 return null;
             };
 
@@ -3391,6 +3797,41 @@ $root.bnsd = (function() {
                     if (typeof object.txfeeUpdateConfigurationMsg !== "object")
                         throw TypeError(".bnsd.ExecuteBatchMsg.Union.txfeeUpdateConfigurationMsg: object expected");
                     message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.fromObject(object.txfeeUpdateConfigurationMsg);
+                }
+                if (object.termdepositCreateDepositContractMsg != null) {
+                    if (typeof object.termdepositCreateDepositContractMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.termdepositCreateDepositContractMsg: object expected");
+                    message.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.fromObject(object.termdepositCreateDepositContractMsg);
+                }
+                if (object.termdepositDepositMsg != null) {
+                    if (typeof object.termdepositDepositMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.termdepositDepositMsg: object expected");
+                    message.termdepositDepositMsg = $root.termdeposit.DepositMsg.fromObject(object.termdepositDepositMsg);
+                }
+                if (object.termdepositReleaseDepositMsg != null) {
+                    if (typeof object.termdepositReleaseDepositMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.termdepositReleaseDepositMsg: object expected");
+                    message.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.fromObject(object.termdepositReleaseDepositMsg);
+                }
+                if (object.termdepositUpdateConfigurationMsg != null) {
+                    if (typeof object.termdepositUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.termdepositUpdateConfigurationMsg: object expected");
+                    message.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.fromObject(object.termdepositUpdateConfigurationMsg);
+                }
+                if (object.qualityscoreUpdateConfigurationMsg != null) {
+                    if (typeof object.qualityscoreUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.qualityscoreUpdateConfigurationMsg: object expected");
+                    message.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.fromObject(object.qualityscoreUpdateConfigurationMsg);
+                }
+                if (object.preregistrationUpdateConfigurationMsg != null) {
+                    if (typeof object.preregistrationUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.preregistrationUpdateConfigurationMsg: object expected");
+                    message.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.fromObject(object.preregistrationUpdateConfigurationMsg);
+                }
+                if (object.msgfeeUpdateConfigurationMsg != null) {
+                    if (typeof object.msgfeeUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.msgfeeUpdateConfigurationMsg: object expected");
+                    message.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.fromObject(object.msgfeeUpdateConfigurationMsg);
                 }
                 return message;
             };
@@ -3578,6 +4019,41 @@ $root.bnsd = (function() {
                     if (options.oneofs)
                         object.sum = "txfeeUpdateConfigurationMsg";
                 }
+                if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg")) {
+                    object.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.toObject(message.termdepositCreateDepositContractMsg, options);
+                    if (options.oneofs)
+                        object.sum = "termdepositCreateDepositContractMsg";
+                }
+                if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg")) {
+                    object.termdepositDepositMsg = $root.termdeposit.DepositMsg.toObject(message.termdepositDepositMsg, options);
+                    if (options.oneofs)
+                        object.sum = "termdepositDepositMsg";
+                }
+                if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg")) {
+                    object.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.toObject(message.termdepositReleaseDepositMsg, options);
+                    if (options.oneofs)
+                        object.sum = "termdepositReleaseDepositMsg";
+                }
+                if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg")) {
+                    object.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.toObject(message.termdepositUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "termdepositUpdateConfigurationMsg";
+                }
+                if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg")) {
+                    object.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.toObject(message.qualityscoreUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "qualityscoreUpdateConfigurationMsg";
+                }
+                if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg")) {
+                    object.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.toObject(message.preregistrationUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "preregistrationUpdateConfigurationMsg";
+                }
+                if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg")) {
+                    object.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.toObject(message.msgfeeUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "msgfeeUpdateConfigurationMsg";
+                }
                 return object;
             };
 
@@ -3624,8 +4100,29 @@ $root.bnsd = (function() {
          * @property {gov.ICreateTextResolutionMsg|null} [govCreateTextResolutionMsg] ProposalOptions govCreateTextResolutionMsg
          * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] ProposalOptions msgfeeSetMsgFeeMsg
          * @property {datamigration.IExecuteMigrationMsg|null} [datamigrationExecuteMigrationMsg] ProposalOptions datamigrationExecuteMigrationMsg
-         * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] 82-95 are reserved for the account extension messages
+         * @property {account.IUpdateConfigurationMsg|null} [accountUpdateConfigurationMsg] ProposalOptions accountUpdateConfigurationMsg
+         * @property {account.IRegisterDomainMsg|null} [accountRegisterDomainMsg] ProposalOptions accountRegisterDomainMsg
+         * @property {account.IReplaceAccountMsgFeesMsg|null} [accountReplaceAccountMsgFeesMsg] ProposalOptions accountReplaceAccountMsgFeesMsg
+         * @property {account.ITransferDomainMsg|null} [accountTransferDomainMsg] ProposalOptions accountTransferDomainMsg
+         * @property {account.IRenewDomainMsg|null} [accountRenewDomainMsg] ProposalOptions accountRenewDomainMsg
+         * @property {account.IDeleteDomainMsg|null} [accountDeleteDomainMsg] ProposalOptions accountDeleteDomainMsg
+         * @property {account.IRegisterAccountMsg|null} [accountRegisterAccountMsg] ProposalOptions accountRegisterAccountMsg
+         * @property {account.ITransferAccountMsg|null} [accountTransferAccountMsg] ProposalOptions accountTransferAccountMsg
+         * @property {account.IReplaceAccountTargetsMsg|null} [accountReplaceAccountTargetsMsg] ProposalOptions accountReplaceAccountTargetsMsg
+         * @property {account.IDeleteAccountMsg|null} [accountDeleteAccountMsg] ProposalOptions accountDeleteAccountMsg
+         * @property {account.IFlushDomainMsg|null} [accountFlushDomainMsg] ProposalOptions accountFlushDomainMsg
+         * @property {account.IRenewAccountMsg|null} [accountRenewAccountMsg] ProposalOptions accountRenewAccountMsg
+         * @property {account.IAddAccountCertificateMsg|null} [accountAddAccountCertificateMsg] ProposalOptions accountAddAccountCertificateMsg
+         * @property {account.IDeleteAccountCertificateMsg|null} [accountDeleteAccountCertificateMsg] ProposalOptions accountDeleteAccountCertificateMsg
+         * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] ProposalOptions cashUpdateConfigurationMsg
          * @property {txfee.IUpdateConfigurationMsg|null} [txfeeUpdateConfigurationMsg] ProposalOptions txfeeUpdateConfigurationMsg
+         * @property {termdeposit.ICreateDepositContractMsg|null} [termdepositCreateDepositContractMsg] ProposalOptions termdepositCreateDepositContractMsg
+         * @property {termdeposit.IDepositMsg|null} [termdepositDepositMsg] ProposalOptions termdepositDepositMsg
+         * @property {termdeposit.IReleaseDepositMsg|null} [termdepositReleaseDepositMsg] ProposalOptions termdepositReleaseDepositMsg
+         * @property {termdeposit.IUpdateConfigurationMsg|null} [termdepositUpdateConfigurationMsg] ProposalOptions termdepositUpdateConfigurationMsg
+         * @property {qualityscore.IUpdateConfigurationMsg|null} [qualityscoreUpdateConfigurationMsg] ProposalOptions qualityscoreUpdateConfigurationMsg
+         * @property {preregistration.IUpdateConfigurationMsg|null} [preregistrationUpdateConfigurationMsg] ProposalOptions preregistrationUpdateConfigurationMsg
+         * @property {msgfee.IUpdateConfigurationMsg|null} [msgfeeUpdateConfigurationMsg] ProposalOptions msgfeeUpdateConfigurationMsg
          */
 
         /**
@@ -3804,7 +4301,119 @@ $root.bnsd = (function() {
         ProposalOptions.prototype.datamigrationExecuteMigrationMsg = null;
 
         /**
-         * 82-95 are reserved for the account extension messages
+         * ProposalOptions accountUpdateConfigurationMsg.
+         * @member {account.IUpdateConfigurationMsg|null|undefined} accountUpdateConfigurationMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountUpdateConfigurationMsg = null;
+
+        /**
+         * ProposalOptions accountRegisterDomainMsg.
+         * @member {account.IRegisterDomainMsg|null|undefined} accountRegisterDomainMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountRegisterDomainMsg = null;
+
+        /**
+         * ProposalOptions accountReplaceAccountMsgFeesMsg.
+         * @member {account.IReplaceAccountMsgFeesMsg|null|undefined} accountReplaceAccountMsgFeesMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountReplaceAccountMsgFeesMsg = null;
+
+        /**
+         * ProposalOptions accountTransferDomainMsg.
+         * @member {account.ITransferDomainMsg|null|undefined} accountTransferDomainMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountTransferDomainMsg = null;
+
+        /**
+         * ProposalOptions accountRenewDomainMsg.
+         * @member {account.IRenewDomainMsg|null|undefined} accountRenewDomainMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountRenewDomainMsg = null;
+
+        /**
+         * ProposalOptions accountDeleteDomainMsg.
+         * @member {account.IDeleteDomainMsg|null|undefined} accountDeleteDomainMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountDeleteDomainMsg = null;
+
+        /**
+         * ProposalOptions accountRegisterAccountMsg.
+         * @member {account.IRegisterAccountMsg|null|undefined} accountRegisterAccountMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountRegisterAccountMsg = null;
+
+        /**
+         * ProposalOptions accountTransferAccountMsg.
+         * @member {account.ITransferAccountMsg|null|undefined} accountTransferAccountMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountTransferAccountMsg = null;
+
+        /**
+         * ProposalOptions accountReplaceAccountTargetsMsg.
+         * @member {account.IReplaceAccountTargetsMsg|null|undefined} accountReplaceAccountTargetsMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountReplaceAccountTargetsMsg = null;
+
+        /**
+         * ProposalOptions accountDeleteAccountMsg.
+         * @member {account.IDeleteAccountMsg|null|undefined} accountDeleteAccountMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountDeleteAccountMsg = null;
+
+        /**
+         * ProposalOptions accountFlushDomainMsg.
+         * @member {account.IFlushDomainMsg|null|undefined} accountFlushDomainMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountFlushDomainMsg = null;
+
+        /**
+         * ProposalOptions accountRenewAccountMsg.
+         * @member {account.IRenewAccountMsg|null|undefined} accountRenewAccountMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountRenewAccountMsg = null;
+
+        /**
+         * ProposalOptions accountAddAccountCertificateMsg.
+         * @member {account.IAddAccountCertificateMsg|null|undefined} accountAddAccountCertificateMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountAddAccountCertificateMsg = null;
+
+        /**
+         * ProposalOptions accountDeleteAccountCertificateMsg.
+         * @member {account.IDeleteAccountCertificateMsg|null|undefined} accountDeleteAccountCertificateMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.accountDeleteAccountCertificateMsg = null;
+
+        /**
+         * ProposalOptions cashUpdateConfigurationMsg.
          * @member {cash.IUpdateConfigurationMsg|null|undefined} cashUpdateConfigurationMsg
          * @memberof bnsd.ProposalOptions
          * @instance
@@ -3819,17 +4428,73 @@ $root.bnsd = (function() {
          */
         ProposalOptions.prototype.txfeeUpdateConfigurationMsg = null;
 
+        /**
+         * ProposalOptions termdepositCreateDepositContractMsg.
+         * @member {termdeposit.ICreateDepositContractMsg|null|undefined} termdepositCreateDepositContractMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.termdepositCreateDepositContractMsg = null;
+
+        /**
+         * ProposalOptions termdepositDepositMsg.
+         * @member {termdeposit.IDepositMsg|null|undefined} termdepositDepositMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.termdepositDepositMsg = null;
+
+        /**
+         * ProposalOptions termdepositReleaseDepositMsg.
+         * @member {termdeposit.IReleaseDepositMsg|null|undefined} termdepositReleaseDepositMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.termdepositReleaseDepositMsg = null;
+
+        /**
+         * ProposalOptions termdepositUpdateConfigurationMsg.
+         * @member {termdeposit.IUpdateConfigurationMsg|null|undefined} termdepositUpdateConfigurationMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.termdepositUpdateConfigurationMsg = null;
+
+        /**
+         * ProposalOptions qualityscoreUpdateConfigurationMsg.
+         * @member {qualityscore.IUpdateConfigurationMsg|null|undefined} qualityscoreUpdateConfigurationMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.qualityscoreUpdateConfigurationMsg = null;
+
+        /**
+         * ProposalOptions preregistrationUpdateConfigurationMsg.
+         * @member {preregistration.IUpdateConfigurationMsg|null|undefined} preregistrationUpdateConfigurationMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.preregistrationUpdateConfigurationMsg = null;
+
+        /**
+         * ProposalOptions msgfeeUpdateConfigurationMsg.
+         * @member {msgfee.IUpdateConfigurationMsg|null|undefined} msgfeeUpdateConfigurationMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.msgfeeUpdateConfigurationMsg = null;
+
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * ProposalOptions option.
-         * @member {"cashSendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeProposalBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|undefined} option
+         * @member {"cashSendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeProposalBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|"termdepositCreateDepositContractMsg"|"termdepositDepositMsg"|"termdepositReleaseDepositMsg"|"termdepositUpdateConfigurationMsg"|"qualityscoreUpdateConfigurationMsg"|"preregistrationUpdateConfigurationMsg"|"msgfeeUpdateConfigurationMsg"|undefined} option
          * @memberof bnsd.ProposalOptions
          * @instance
          */
         Object.defineProperty(ProposalOptions.prototype, "option", {
-            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeProposalBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeProposalBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg", "termdepositCreateDepositContractMsg", "termdepositDepositMsg", "termdepositReleaseDepositMsg", "termdepositUpdateConfigurationMsg", "qualityscoreUpdateConfigurationMsg", "preregistrationUpdateConfigurationMsg", "msgfeeUpdateConfigurationMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -3897,10 +4562,52 @@ $root.bnsd = (function() {
                 $root.msgfee.SetMsgFeeMsg.encode(message.msgfeeSetMsgFeeMsg, writer.uint32(/* id 80, wireType 2 =*/642).fork()).ldelim();
             if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg"))
                 $root.datamigration.ExecuteMigrationMsg.encode(message.datamigrationExecuteMigrationMsg, writer.uint32(/* id 81, wireType 2 =*/650).fork()).ldelim();
+            if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg"))
+                $root.account.UpdateConfigurationMsg.encode(message.accountUpdateConfigurationMsg, writer.uint32(/* id 82, wireType 2 =*/658).fork()).ldelim();
+            if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg"))
+                $root.account.RegisterDomainMsg.encode(message.accountRegisterDomainMsg, writer.uint32(/* id 83, wireType 2 =*/666).fork()).ldelim();
+            if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg"))
+                $root.account.ReplaceAccountMsgFeesMsg.encode(message.accountReplaceAccountMsgFeesMsg, writer.uint32(/* id 84, wireType 2 =*/674).fork()).ldelim();
+            if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg"))
+                $root.account.TransferDomainMsg.encode(message.accountTransferDomainMsg, writer.uint32(/* id 85, wireType 2 =*/682).fork()).ldelim();
+            if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg"))
+                $root.account.RenewDomainMsg.encode(message.accountRenewDomainMsg, writer.uint32(/* id 86, wireType 2 =*/690).fork()).ldelim();
+            if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg"))
+                $root.account.DeleteDomainMsg.encode(message.accountDeleteDomainMsg, writer.uint32(/* id 87, wireType 2 =*/698).fork()).ldelim();
+            if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg"))
+                $root.account.RegisterAccountMsg.encode(message.accountRegisterAccountMsg, writer.uint32(/* id 88, wireType 2 =*/706).fork()).ldelim();
+            if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg"))
+                $root.account.TransferAccountMsg.encode(message.accountTransferAccountMsg, writer.uint32(/* id 89, wireType 2 =*/714).fork()).ldelim();
+            if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg"))
+                $root.account.ReplaceAccountTargetsMsg.encode(message.accountReplaceAccountTargetsMsg, writer.uint32(/* id 90, wireType 2 =*/722).fork()).ldelim();
+            if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg"))
+                $root.account.DeleteAccountMsg.encode(message.accountDeleteAccountMsg, writer.uint32(/* id 91, wireType 2 =*/730).fork()).ldelim();
+            if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg"))
+                $root.account.FlushDomainMsg.encode(message.accountFlushDomainMsg, writer.uint32(/* id 92, wireType 2 =*/738).fork()).ldelim();
+            if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg"))
+                $root.account.RenewAccountMsg.encode(message.accountRenewAccountMsg, writer.uint32(/* id 93, wireType 2 =*/746).fork()).ldelim();
+            if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg"))
+                $root.account.AddAccountCertificateMsg.encode(message.accountAddAccountCertificateMsg, writer.uint32(/* id 94, wireType 2 =*/754).fork()).ldelim();
+            if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg"))
+                $root.account.DeleteAccountCertificateMsg.encode(message.accountDeleteAccountCertificateMsg, writer.uint32(/* id 95, wireType 2 =*/762).fork()).ldelim();
             if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg"))
                 $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
             if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg"))
                 $root.txfee.UpdateConfigurationMsg.encode(message.txfeeUpdateConfigurationMsg, writer.uint32(/* id 98, wireType 2 =*/786).fork()).ldelim();
+            if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg"))
+                $root.termdeposit.CreateDepositContractMsg.encode(message.termdepositCreateDepositContractMsg, writer.uint32(/* id 99, wireType 2 =*/794).fork()).ldelim();
+            if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg"))
+                $root.termdeposit.DepositMsg.encode(message.termdepositDepositMsg, writer.uint32(/* id 100, wireType 2 =*/802).fork()).ldelim();
+            if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg"))
+                $root.termdeposit.ReleaseDepositMsg.encode(message.termdepositReleaseDepositMsg, writer.uint32(/* id 101, wireType 2 =*/810).fork()).ldelim();
+            if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg"))
+                $root.termdeposit.UpdateConfigurationMsg.encode(message.termdepositUpdateConfigurationMsg, writer.uint32(/* id 102, wireType 2 =*/818).fork()).ldelim();
+            if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg"))
+                $root.qualityscore.UpdateConfigurationMsg.encode(message.qualityscoreUpdateConfigurationMsg, writer.uint32(/* id 103, wireType 2 =*/826).fork()).ldelim();
+            if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg"))
+                $root.preregistration.UpdateConfigurationMsg.encode(message.preregistrationUpdateConfigurationMsg, writer.uint32(/* id 104, wireType 2 =*/834).fork()).ldelim();
+            if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg"))
+                $root.msgfee.UpdateConfigurationMsg.encode(message.msgfeeUpdateConfigurationMsg, writer.uint32(/* id 105, wireType 2 =*/842).fork()).ldelim();
             return writer;
         };
 
@@ -3995,11 +4702,74 @@ $root.bnsd = (function() {
                 case 81:
                     message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.decode(reader, reader.uint32());
                     break;
+                case 82:
+                    message.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 83:
+                    message.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.decode(reader, reader.uint32());
+                    break;
+                case 84:
+                    message.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.decode(reader, reader.uint32());
+                    break;
+                case 85:
+                    message.accountTransferDomainMsg = $root.account.TransferDomainMsg.decode(reader, reader.uint32());
+                    break;
+                case 86:
+                    message.accountRenewDomainMsg = $root.account.RenewDomainMsg.decode(reader, reader.uint32());
+                    break;
+                case 87:
+                    message.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.decode(reader, reader.uint32());
+                    break;
+                case 88:
+                    message.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.decode(reader, reader.uint32());
+                    break;
+                case 89:
+                    message.accountTransferAccountMsg = $root.account.TransferAccountMsg.decode(reader, reader.uint32());
+                    break;
+                case 90:
+                    message.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.decode(reader, reader.uint32());
+                    break;
+                case 91:
+                    message.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.decode(reader, reader.uint32());
+                    break;
+                case 92:
+                    message.accountFlushDomainMsg = $root.account.FlushDomainMsg.decode(reader, reader.uint32());
+                    break;
+                case 93:
+                    message.accountRenewAccountMsg = $root.account.RenewAccountMsg.decode(reader, reader.uint32());
+                    break;
+                case 94:
+                    message.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.decode(reader, reader.uint32());
+                    break;
+                case 95:
+                    message.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.decode(reader, reader.uint32());
+                    break;
                 case 97:
                     message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.decode(reader, reader.uint32());
                     break;
                 case 98:
                     message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 99:
+                    message.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.decode(reader, reader.uint32());
+                    break;
+                case 100:
+                    message.termdepositDepositMsg = $root.termdeposit.DepositMsg.decode(reader, reader.uint32());
+                    break;
+                case 101:
+                    message.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.decode(reader, reader.uint32());
+                    break;
+                case 102:
+                    message.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 103:
+                    message.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 104:
+                    message.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 105:
+                    message.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4235,6 +5005,146 @@ $root.bnsd = (function() {
                         return "datamigrationExecuteMigrationMsg." + error;
                 }
             }
+            if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.UpdateConfigurationMsg.verify(message.accountUpdateConfigurationMsg);
+                    if (error)
+                        return "accountUpdateConfigurationMsg." + error;
+                }
+            }
+            if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.RegisterDomainMsg.verify(message.accountRegisterDomainMsg);
+                    if (error)
+                        return "accountRegisterDomainMsg." + error;
+                }
+            }
+            if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.ReplaceAccountMsgFeesMsg.verify(message.accountReplaceAccountMsgFeesMsg);
+                    if (error)
+                        return "accountReplaceAccountMsgFeesMsg." + error;
+                }
+            }
+            if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.TransferDomainMsg.verify(message.accountTransferDomainMsg);
+                    if (error)
+                        return "accountTransferDomainMsg." + error;
+                }
+            }
+            if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.RenewDomainMsg.verify(message.accountRenewDomainMsg);
+                    if (error)
+                        return "accountRenewDomainMsg." + error;
+                }
+            }
+            if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.DeleteDomainMsg.verify(message.accountDeleteDomainMsg);
+                    if (error)
+                        return "accountDeleteDomainMsg." + error;
+                }
+            }
+            if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.RegisterAccountMsg.verify(message.accountRegisterAccountMsg);
+                    if (error)
+                        return "accountRegisterAccountMsg." + error;
+                }
+            }
+            if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.TransferAccountMsg.verify(message.accountTransferAccountMsg);
+                    if (error)
+                        return "accountTransferAccountMsg." + error;
+                }
+            }
+            if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.ReplaceAccountTargetsMsg.verify(message.accountReplaceAccountTargetsMsg);
+                    if (error)
+                        return "accountReplaceAccountTargetsMsg." + error;
+                }
+            }
+            if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.DeleteAccountMsg.verify(message.accountDeleteAccountMsg);
+                    if (error)
+                        return "accountDeleteAccountMsg." + error;
+                }
+            }
+            if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.FlushDomainMsg.verify(message.accountFlushDomainMsg);
+                    if (error)
+                        return "accountFlushDomainMsg." + error;
+                }
+            }
+            if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.RenewAccountMsg.verify(message.accountRenewAccountMsg);
+                    if (error)
+                        return "accountRenewAccountMsg." + error;
+                }
+            }
+            if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.AddAccountCertificateMsg.verify(message.accountAddAccountCertificateMsg);
+                    if (error)
+                        return "accountAddAccountCertificateMsg." + error;
+                }
+            }
+            if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.account.DeleteAccountCertificateMsg.verify(message.accountDeleteAccountCertificateMsg);
+                    if (error)
+                        return "accountDeleteAccountCertificateMsg." + error;
+                }
+            }
             if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
                 if (properties.option === 1)
                     return "option: multiple values";
@@ -4253,6 +5163,76 @@ $root.bnsd = (function() {
                     var error = $root.txfee.UpdateConfigurationMsg.verify(message.txfeeUpdateConfigurationMsg);
                     if (error)
                         return "txfeeUpdateConfigurationMsg." + error;
+                }
+            }
+            if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.termdeposit.CreateDepositContractMsg.verify(message.termdepositCreateDepositContractMsg);
+                    if (error)
+                        return "termdepositCreateDepositContractMsg." + error;
+                }
+            }
+            if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.termdeposit.DepositMsg.verify(message.termdepositDepositMsg);
+                    if (error)
+                        return "termdepositDepositMsg." + error;
+                }
+            }
+            if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.termdeposit.ReleaseDepositMsg.verify(message.termdepositReleaseDepositMsg);
+                    if (error)
+                        return "termdepositReleaseDepositMsg." + error;
+                }
+            }
+            if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.termdeposit.UpdateConfigurationMsg.verify(message.termdepositUpdateConfigurationMsg);
+                    if (error)
+                        return "termdepositUpdateConfigurationMsg." + error;
+                }
+            }
+            if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.qualityscore.UpdateConfigurationMsg.verify(message.qualityscoreUpdateConfigurationMsg);
+                    if (error)
+                        return "qualityscoreUpdateConfigurationMsg." + error;
+                }
+            }
+            if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.preregistration.UpdateConfigurationMsg.verify(message.preregistrationUpdateConfigurationMsg);
+                    if (error)
+                        return "preregistrationUpdateConfigurationMsg." + error;
+                }
+            }
+            if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.msgfee.UpdateConfigurationMsg.verify(message.msgfeeUpdateConfigurationMsg);
+                    if (error)
+                        return "msgfeeUpdateConfigurationMsg." + error;
                 }
             }
             return null;
@@ -4370,6 +5350,76 @@ $root.bnsd = (function() {
                     throw TypeError(".bnsd.ProposalOptions.datamigrationExecuteMigrationMsg: object expected");
                 message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.fromObject(object.datamigrationExecuteMigrationMsg);
             }
+            if (object.accountUpdateConfigurationMsg != null) {
+                if (typeof object.accountUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountUpdateConfigurationMsg: object expected");
+                message.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.fromObject(object.accountUpdateConfigurationMsg);
+            }
+            if (object.accountRegisterDomainMsg != null) {
+                if (typeof object.accountRegisterDomainMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountRegisterDomainMsg: object expected");
+                message.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.fromObject(object.accountRegisterDomainMsg);
+            }
+            if (object.accountReplaceAccountMsgFeesMsg != null) {
+                if (typeof object.accountReplaceAccountMsgFeesMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountReplaceAccountMsgFeesMsg: object expected");
+                message.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.fromObject(object.accountReplaceAccountMsgFeesMsg);
+            }
+            if (object.accountTransferDomainMsg != null) {
+                if (typeof object.accountTransferDomainMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountTransferDomainMsg: object expected");
+                message.accountTransferDomainMsg = $root.account.TransferDomainMsg.fromObject(object.accountTransferDomainMsg);
+            }
+            if (object.accountRenewDomainMsg != null) {
+                if (typeof object.accountRenewDomainMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountRenewDomainMsg: object expected");
+                message.accountRenewDomainMsg = $root.account.RenewDomainMsg.fromObject(object.accountRenewDomainMsg);
+            }
+            if (object.accountDeleteDomainMsg != null) {
+                if (typeof object.accountDeleteDomainMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountDeleteDomainMsg: object expected");
+                message.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.fromObject(object.accountDeleteDomainMsg);
+            }
+            if (object.accountRegisterAccountMsg != null) {
+                if (typeof object.accountRegisterAccountMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountRegisterAccountMsg: object expected");
+                message.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.fromObject(object.accountRegisterAccountMsg);
+            }
+            if (object.accountTransferAccountMsg != null) {
+                if (typeof object.accountTransferAccountMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountTransferAccountMsg: object expected");
+                message.accountTransferAccountMsg = $root.account.TransferAccountMsg.fromObject(object.accountTransferAccountMsg);
+            }
+            if (object.accountReplaceAccountTargetsMsg != null) {
+                if (typeof object.accountReplaceAccountTargetsMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountReplaceAccountTargetsMsg: object expected");
+                message.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.fromObject(object.accountReplaceAccountTargetsMsg);
+            }
+            if (object.accountDeleteAccountMsg != null) {
+                if (typeof object.accountDeleteAccountMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountDeleteAccountMsg: object expected");
+                message.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.fromObject(object.accountDeleteAccountMsg);
+            }
+            if (object.accountFlushDomainMsg != null) {
+                if (typeof object.accountFlushDomainMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountFlushDomainMsg: object expected");
+                message.accountFlushDomainMsg = $root.account.FlushDomainMsg.fromObject(object.accountFlushDomainMsg);
+            }
+            if (object.accountRenewAccountMsg != null) {
+                if (typeof object.accountRenewAccountMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountRenewAccountMsg: object expected");
+                message.accountRenewAccountMsg = $root.account.RenewAccountMsg.fromObject(object.accountRenewAccountMsg);
+            }
+            if (object.accountAddAccountCertificateMsg != null) {
+                if (typeof object.accountAddAccountCertificateMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountAddAccountCertificateMsg: object expected");
+                message.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.fromObject(object.accountAddAccountCertificateMsg);
+            }
+            if (object.accountDeleteAccountCertificateMsg != null) {
+                if (typeof object.accountDeleteAccountCertificateMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.accountDeleteAccountCertificateMsg: object expected");
+                message.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.fromObject(object.accountDeleteAccountCertificateMsg);
+            }
             if (object.cashUpdateConfigurationMsg != null) {
                 if (typeof object.cashUpdateConfigurationMsg !== "object")
                     throw TypeError(".bnsd.ProposalOptions.cashUpdateConfigurationMsg: object expected");
@@ -4379,6 +5429,41 @@ $root.bnsd = (function() {
                 if (typeof object.txfeeUpdateConfigurationMsg !== "object")
                     throw TypeError(".bnsd.ProposalOptions.txfeeUpdateConfigurationMsg: object expected");
                 message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.fromObject(object.txfeeUpdateConfigurationMsg);
+            }
+            if (object.termdepositCreateDepositContractMsg != null) {
+                if (typeof object.termdepositCreateDepositContractMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.termdepositCreateDepositContractMsg: object expected");
+                message.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.fromObject(object.termdepositCreateDepositContractMsg);
+            }
+            if (object.termdepositDepositMsg != null) {
+                if (typeof object.termdepositDepositMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.termdepositDepositMsg: object expected");
+                message.termdepositDepositMsg = $root.termdeposit.DepositMsg.fromObject(object.termdepositDepositMsg);
+            }
+            if (object.termdepositReleaseDepositMsg != null) {
+                if (typeof object.termdepositReleaseDepositMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.termdepositReleaseDepositMsg: object expected");
+                message.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.fromObject(object.termdepositReleaseDepositMsg);
+            }
+            if (object.termdepositUpdateConfigurationMsg != null) {
+                if (typeof object.termdepositUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.termdepositUpdateConfigurationMsg: object expected");
+                message.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.fromObject(object.termdepositUpdateConfigurationMsg);
+            }
+            if (object.qualityscoreUpdateConfigurationMsg != null) {
+                if (typeof object.qualityscoreUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.qualityscoreUpdateConfigurationMsg: object expected");
+                message.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.fromObject(object.qualityscoreUpdateConfigurationMsg);
+            }
+            if (object.preregistrationUpdateConfigurationMsg != null) {
+                if (typeof object.preregistrationUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.preregistrationUpdateConfigurationMsg: object expected");
+                message.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.fromObject(object.preregistrationUpdateConfigurationMsg);
+            }
+            if (object.msgfeeUpdateConfigurationMsg != null) {
+                if (typeof object.msgfeeUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.msgfeeUpdateConfigurationMsg: object expected");
+                message.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.fromObject(object.msgfeeUpdateConfigurationMsg);
             }
             return message;
         };
@@ -4496,6 +5581,76 @@ $root.bnsd = (function() {
                 if (options.oneofs)
                     object.option = "datamigrationExecuteMigrationMsg";
             }
+            if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg")) {
+                object.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.toObject(message.accountUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.option = "accountUpdateConfigurationMsg";
+            }
+            if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg")) {
+                object.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.toObject(message.accountRegisterDomainMsg, options);
+                if (options.oneofs)
+                    object.option = "accountRegisterDomainMsg";
+            }
+            if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg")) {
+                object.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.toObject(message.accountReplaceAccountMsgFeesMsg, options);
+                if (options.oneofs)
+                    object.option = "accountReplaceAccountMsgFeesMsg";
+            }
+            if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg")) {
+                object.accountTransferDomainMsg = $root.account.TransferDomainMsg.toObject(message.accountTransferDomainMsg, options);
+                if (options.oneofs)
+                    object.option = "accountTransferDomainMsg";
+            }
+            if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg")) {
+                object.accountRenewDomainMsg = $root.account.RenewDomainMsg.toObject(message.accountRenewDomainMsg, options);
+                if (options.oneofs)
+                    object.option = "accountRenewDomainMsg";
+            }
+            if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg")) {
+                object.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.toObject(message.accountDeleteDomainMsg, options);
+                if (options.oneofs)
+                    object.option = "accountDeleteDomainMsg";
+            }
+            if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg")) {
+                object.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.toObject(message.accountRegisterAccountMsg, options);
+                if (options.oneofs)
+                    object.option = "accountRegisterAccountMsg";
+            }
+            if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg")) {
+                object.accountTransferAccountMsg = $root.account.TransferAccountMsg.toObject(message.accountTransferAccountMsg, options);
+                if (options.oneofs)
+                    object.option = "accountTransferAccountMsg";
+            }
+            if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg")) {
+                object.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.toObject(message.accountReplaceAccountTargetsMsg, options);
+                if (options.oneofs)
+                    object.option = "accountReplaceAccountTargetsMsg";
+            }
+            if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg")) {
+                object.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.toObject(message.accountDeleteAccountMsg, options);
+                if (options.oneofs)
+                    object.option = "accountDeleteAccountMsg";
+            }
+            if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg")) {
+                object.accountFlushDomainMsg = $root.account.FlushDomainMsg.toObject(message.accountFlushDomainMsg, options);
+                if (options.oneofs)
+                    object.option = "accountFlushDomainMsg";
+            }
+            if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg")) {
+                object.accountRenewAccountMsg = $root.account.RenewAccountMsg.toObject(message.accountRenewAccountMsg, options);
+                if (options.oneofs)
+                    object.option = "accountRenewAccountMsg";
+            }
+            if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg")) {
+                object.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.toObject(message.accountAddAccountCertificateMsg, options);
+                if (options.oneofs)
+                    object.option = "accountAddAccountCertificateMsg";
+            }
+            if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg")) {
+                object.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.toObject(message.accountDeleteAccountCertificateMsg, options);
+                if (options.oneofs)
+                    object.option = "accountDeleteAccountCertificateMsg";
+            }
             if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
                 object.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.toObject(message.cashUpdateConfigurationMsg, options);
                 if (options.oneofs)
@@ -4505,6 +5660,41 @@ $root.bnsd = (function() {
                 object.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.toObject(message.txfeeUpdateConfigurationMsg, options);
                 if (options.oneofs)
                     object.option = "txfeeUpdateConfigurationMsg";
+            }
+            if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg")) {
+                object.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.toObject(message.termdepositCreateDepositContractMsg, options);
+                if (options.oneofs)
+                    object.option = "termdepositCreateDepositContractMsg";
+            }
+            if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg")) {
+                object.termdepositDepositMsg = $root.termdeposit.DepositMsg.toObject(message.termdepositDepositMsg, options);
+                if (options.oneofs)
+                    object.option = "termdepositDepositMsg";
+            }
+            if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg")) {
+                object.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.toObject(message.termdepositReleaseDepositMsg, options);
+                if (options.oneofs)
+                    object.option = "termdepositReleaseDepositMsg";
+            }
+            if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg")) {
+                object.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.toObject(message.termdepositUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.option = "termdepositUpdateConfigurationMsg";
+            }
+            if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg")) {
+                object.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.toObject(message.qualityscoreUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.option = "qualityscoreUpdateConfigurationMsg";
+            }
+            if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg")) {
+                object.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.toObject(message.preregistrationUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.option = "preregistrationUpdateConfigurationMsg";
+            }
+            if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg")) {
+                object.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.toObject(message.msgfeeUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.option = "msgfeeUpdateConfigurationMsg";
             }
             return object;
         };
@@ -4751,8 +5941,29 @@ $root.bnsd = (function() {
              * @property {gov.ICreateTextResolutionMsg|null} [govCreateTextResolutionMsg] Union govCreateTextResolutionMsg
              * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] Union msgfeeSetMsgFeeMsg
              * @property {datamigration.IExecuteMigrationMsg|null} [datamigrationExecuteMigrationMsg] Union datamigrationExecuteMigrationMsg
-             * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] 82-95 are reserved for the account extension messages
+             * @property {account.IUpdateConfigurationMsg|null} [accountUpdateConfigurationMsg] Union accountUpdateConfigurationMsg
+             * @property {account.IRegisterDomainMsg|null} [accountRegisterDomainMsg] Union accountRegisterDomainMsg
+             * @property {account.IReplaceAccountMsgFeesMsg|null} [accountReplaceAccountMsgFeesMsg] Union accountReplaceAccountMsgFeesMsg
+             * @property {account.ITransferDomainMsg|null} [accountTransferDomainMsg] Union accountTransferDomainMsg
+             * @property {account.IRenewDomainMsg|null} [accountRenewDomainMsg] Union accountRenewDomainMsg
+             * @property {account.IDeleteDomainMsg|null} [accountDeleteDomainMsg] Union accountDeleteDomainMsg
+             * @property {account.IRegisterAccountMsg|null} [accountRegisterAccountMsg] Union accountRegisterAccountMsg
+             * @property {account.ITransferAccountMsg|null} [accountTransferAccountMsg] Union accountTransferAccountMsg
+             * @property {account.IReplaceAccountTargetsMsg|null} [accountReplaceAccountTargetsMsg] Union accountReplaceAccountTargetsMsg
+             * @property {account.IDeleteAccountMsg|null} [accountDeleteAccountMsg] Union accountDeleteAccountMsg
+             * @property {account.IFlushDomainMsg|null} [accountFlushDomainMsg] Union accountFlushDomainMsg
+             * @property {account.IRenewAccountMsg|null} [accountRenewAccountMsg] Union accountRenewAccountMsg
+             * @property {account.IAddAccountCertificateMsg|null} [accountAddAccountCertificateMsg] Union accountAddAccountCertificateMsg
+             * @property {account.IDeleteAccountCertificateMsg|null} [accountDeleteAccountCertificateMsg] Union accountDeleteAccountCertificateMsg
+             * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] Union cashUpdateConfigurationMsg
              * @property {txfee.IUpdateConfigurationMsg|null} [txfeeUpdateConfigurationMsg] Union txfeeUpdateConfigurationMsg
+             * @property {termdeposit.ICreateDepositContractMsg|null} [termdepositCreateDepositContractMsg] Union termdepositCreateDepositContractMsg
+             * @property {termdeposit.IDepositMsg|null} [termdepositDepositMsg] Union termdepositDepositMsg
+             * @property {termdeposit.IReleaseDepositMsg|null} [termdepositReleaseDepositMsg] Union termdepositReleaseDepositMsg
+             * @property {termdeposit.IUpdateConfigurationMsg|null} [termdepositUpdateConfigurationMsg] Union termdepositUpdateConfigurationMsg
+             * @property {qualityscore.IUpdateConfigurationMsg|null} [qualityscoreUpdateConfigurationMsg] Union qualityscoreUpdateConfigurationMsg
+             * @property {preregistration.IUpdateConfigurationMsg|null} [preregistrationUpdateConfigurationMsg] Union preregistrationUpdateConfigurationMsg
+             * @property {msgfee.IUpdateConfigurationMsg|null} [msgfeeUpdateConfigurationMsg] Union msgfeeUpdateConfigurationMsg
              */
 
             /**
@@ -4907,7 +6118,119 @@ $root.bnsd = (function() {
             Union.prototype.datamigrationExecuteMigrationMsg = null;
 
             /**
-             * 82-95 are reserved for the account extension messages
+             * Union accountUpdateConfigurationMsg.
+             * @member {account.IUpdateConfigurationMsg|null|undefined} accountUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountUpdateConfigurationMsg = null;
+
+            /**
+             * Union accountRegisterDomainMsg.
+             * @member {account.IRegisterDomainMsg|null|undefined} accountRegisterDomainMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountRegisterDomainMsg = null;
+
+            /**
+             * Union accountReplaceAccountMsgFeesMsg.
+             * @member {account.IReplaceAccountMsgFeesMsg|null|undefined} accountReplaceAccountMsgFeesMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountReplaceAccountMsgFeesMsg = null;
+
+            /**
+             * Union accountTransferDomainMsg.
+             * @member {account.ITransferDomainMsg|null|undefined} accountTransferDomainMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountTransferDomainMsg = null;
+
+            /**
+             * Union accountRenewDomainMsg.
+             * @member {account.IRenewDomainMsg|null|undefined} accountRenewDomainMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountRenewDomainMsg = null;
+
+            /**
+             * Union accountDeleteDomainMsg.
+             * @member {account.IDeleteDomainMsg|null|undefined} accountDeleteDomainMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountDeleteDomainMsg = null;
+
+            /**
+             * Union accountRegisterAccountMsg.
+             * @member {account.IRegisterAccountMsg|null|undefined} accountRegisterAccountMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountRegisterAccountMsg = null;
+
+            /**
+             * Union accountTransferAccountMsg.
+             * @member {account.ITransferAccountMsg|null|undefined} accountTransferAccountMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountTransferAccountMsg = null;
+
+            /**
+             * Union accountReplaceAccountTargetsMsg.
+             * @member {account.IReplaceAccountTargetsMsg|null|undefined} accountReplaceAccountTargetsMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountReplaceAccountTargetsMsg = null;
+
+            /**
+             * Union accountDeleteAccountMsg.
+             * @member {account.IDeleteAccountMsg|null|undefined} accountDeleteAccountMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountDeleteAccountMsg = null;
+
+            /**
+             * Union accountFlushDomainMsg.
+             * @member {account.IFlushDomainMsg|null|undefined} accountFlushDomainMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountFlushDomainMsg = null;
+
+            /**
+             * Union accountRenewAccountMsg.
+             * @member {account.IRenewAccountMsg|null|undefined} accountRenewAccountMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountRenewAccountMsg = null;
+
+            /**
+             * Union accountAddAccountCertificateMsg.
+             * @member {account.IAddAccountCertificateMsg|null|undefined} accountAddAccountCertificateMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountAddAccountCertificateMsg = null;
+
+            /**
+             * Union accountDeleteAccountCertificateMsg.
+             * @member {account.IDeleteAccountCertificateMsg|null|undefined} accountDeleteAccountCertificateMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.accountDeleteAccountCertificateMsg = null;
+
+            /**
+             * Union cashUpdateConfigurationMsg.
              * @member {cash.IUpdateConfigurationMsg|null|undefined} cashUpdateConfigurationMsg
              * @memberof bnsd.ExecuteProposalBatchMsg.Union
              * @instance
@@ -4922,17 +6245,73 @@ $root.bnsd = (function() {
              */
             Union.prototype.txfeeUpdateConfigurationMsg = null;
 
+            /**
+             * Union termdepositCreateDepositContractMsg.
+             * @member {termdeposit.ICreateDepositContractMsg|null|undefined} termdepositCreateDepositContractMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.termdepositCreateDepositContractMsg = null;
+
+            /**
+             * Union termdepositDepositMsg.
+             * @member {termdeposit.IDepositMsg|null|undefined} termdepositDepositMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.termdepositDepositMsg = null;
+
+            /**
+             * Union termdepositReleaseDepositMsg.
+             * @member {termdeposit.IReleaseDepositMsg|null|undefined} termdepositReleaseDepositMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.termdepositReleaseDepositMsg = null;
+
+            /**
+             * Union termdepositUpdateConfigurationMsg.
+             * @member {termdeposit.IUpdateConfigurationMsg|null|undefined} termdepositUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.termdepositUpdateConfigurationMsg = null;
+
+            /**
+             * Union qualityscoreUpdateConfigurationMsg.
+             * @member {qualityscore.IUpdateConfigurationMsg|null|undefined} qualityscoreUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.qualityscoreUpdateConfigurationMsg = null;
+
+            /**
+             * Union preregistrationUpdateConfigurationMsg.
+             * @member {preregistration.IUpdateConfigurationMsg|null|undefined} preregistrationUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.preregistrationUpdateConfigurationMsg = null;
+
+            /**
+             * Union msgfeeUpdateConfigurationMsg.
+             * @member {msgfee.IUpdateConfigurationMsg|null|undefined} msgfeeUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.msgfeeUpdateConfigurationMsg = null;
+
             // OneOf field names bound to virtual getters and setters
             var $oneOfFields;
 
             /**
              * Union sum.
-             * @member {"sendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|undefined} sum
+             * @member {"sendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|"termdepositCreateDepositContractMsg"|"termdepositDepositMsg"|"termdepositReleaseDepositMsg"|"termdepositUpdateConfigurationMsg"|"qualityscoreUpdateConfigurationMsg"|"preregistrationUpdateConfigurationMsg"|"msgfeeUpdateConfigurationMsg"|undefined} sum
              * @memberof bnsd.ExecuteProposalBatchMsg.Union
              * @instance
              */
             Object.defineProperty(Union.prototype, "sum", {
-                get: $util.oneOfGetter($oneOfFields = ["sendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg"]),
+                get: $util.oneOfGetter($oneOfFields = ["sendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg", "termdepositCreateDepositContractMsg", "termdepositDepositMsg", "termdepositReleaseDepositMsg", "termdepositUpdateConfigurationMsg", "qualityscoreUpdateConfigurationMsg", "preregistrationUpdateConfigurationMsg", "msgfeeUpdateConfigurationMsg"]),
                 set: $util.oneOfSetter($oneOfFields)
             });
 
@@ -4994,10 +6373,52 @@ $root.bnsd = (function() {
                     $root.msgfee.SetMsgFeeMsg.encode(message.msgfeeSetMsgFeeMsg, writer.uint32(/* id 80, wireType 2 =*/642).fork()).ldelim();
                 if (message.datamigrationExecuteMigrationMsg != null && message.hasOwnProperty("datamigrationExecuteMigrationMsg"))
                     $root.datamigration.ExecuteMigrationMsg.encode(message.datamigrationExecuteMigrationMsg, writer.uint32(/* id 81, wireType 2 =*/650).fork()).ldelim();
+                if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg"))
+                    $root.account.UpdateConfigurationMsg.encode(message.accountUpdateConfigurationMsg, writer.uint32(/* id 82, wireType 2 =*/658).fork()).ldelim();
+                if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg"))
+                    $root.account.RegisterDomainMsg.encode(message.accountRegisterDomainMsg, writer.uint32(/* id 83, wireType 2 =*/666).fork()).ldelim();
+                if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg"))
+                    $root.account.ReplaceAccountMsgFeesMsg.encode(message.accountReplaceAccountMsgFeesMsg, writer.uint32(/* id 84, wireType 2 =*/674).fork()).ldelim();
+                if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg"))
+                    $root.account.TransferDomainMsg.encode(message.accountTransferDomainMsg, writer.uint32(/* id 85, wireType 2 =*/682).fork()).ldelim();
+                if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg"))
+                    $root.account.RenewDomainMsg.encode(message.accountRenewDomainMsg, writer.uint32(/* id 86, wireType 2 =*/690).fork()).ldelim();
+                if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg"))
+                    $root.account.DeleteDomainMsg.encode(message.accountDeleteDomainMsg, writer.uint32(/* id 87, wireType 2 =*/698).fork()).ldelim();
+                if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg"))
+                    $root.account.RegisterAccountMsg.encode(message.accountRegisterAccountMsg, writer.uint32(/* id 88, wireType 2 =*/706).fork()).ldelim();
+                if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg"))
+                    $root.account.TransferAccountMsg.encode(message.accountTransferAccountMsg, writer.uint32(/* id 89, wireType 2 =*/714).fork()).ldelim();
+                if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg"))
+                    $root.account.ReplaceAccountTargetsMsg.encode(message.accountReplaceAccountTargetsMsg, writer.uint32(/* id 90, wireType 2 =*/722).fork()).ldelim();
+                if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg"))
+                    $root.account.DeleteAccountMsg.encode(message.accountDeleteAccountMsg, writer.uint32(/* id 91, wireType 2 =*/730).fork()).ldelim();
+                if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg"))
+                    $root.account.FlushDomainMsg.encode(message.accountFlushDomainMsg, writer.uint32(/* id 92, wireType 2 =*/738).fork()).ldelim();
+                if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg"))
+                    $root.account.RenewAccountMsg.encode(message.accountRenewAccountMsg, writer.uint32(/* id 93, wireType 2 =*/746).fork()).ldelim();
+                if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg"))
+                    $root.account.AddAccountCertificateMsg.encode(message.accountAddAccountCertificateMsg, writer.uint32(/* id 94, wireType 2 =*/754).fork()).ldelim();
+                if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg"))
+                    $root.account.DeleteAccountCertificateMsg.encode(message.accountDeleteAccountCertificateMsg, writer.uint32(/* id 95, wireType 2 =*/762).fork()).ldelim();
                 if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg"))
                     $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
                 if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg"))
                     $root.txfee.UpdateConfigurationMsg.encode(message.txfeeUpdateConfigurationMsg, writer.uint32(/* id 98, wireType 2 =*/786).fork()).ldelim();
+                if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg"))
+                    $root.termdeposit.CreateDepositContractMsg.encode(message.termdepositCreateDepositContractMsg, writer.uint32(/* id 99, wireType 2 =*/794).fork()).ldelim();
+                if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg"))
+                    $root.termdeposit.DepositMsg.encode(message.termdepositDepositMsg, writer.uint32(/* id 100, wireType 2 =*/802).fork()).ldelim();
+                if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg"))
+                    $root.termdeposit.ReleaseDepositMsg.encode(message.termdepositReleaseDepositMsg, writer.uint32(/* id 101, wireType 2 =*/810).fork()).ldelim();
+                if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg"))
+                    $root.termdeposit.UpdateConfigurationMsg.encode(message.termdepositUpdateConfigurationMsg, writer.uint32(/* id 102, wireType 2 =*/818).fork()).ldelim();
+                if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg"))
+                    $root.qualityscore.UpdateConfigurationMsg.encode(message.qualityscoreUpdateConfigurationMsg, writer.uint32(/* id 103, wireType 2 =*/826).fork()).ldelim();
+                if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg"))
+                    $root.preregistration.UpdateConfigurationMsg.encode(message.preregistrationUpdateConfigurationMsg, writer.uint32(/* id 104, wireType 2 =*/834).fork()).ldelim();
+                if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg"))
+                    $root.msgfee.UpdateConfigurationMsg.encode(message.msgfeeUpdateConfigurationMsg, writer.uint32(/* id 105, wireType 2 =*/842).fork()).ldelim();
                 return writer;
             };
 
@@ -5083,11 +6504,74 @@ $root.bnsd = (function() {
                     case 81:
                         message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.decode(reader, reader.uint32());
                         break;
+                    case 82:
+                        message.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 83:
+                        message.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.decode(reader, reader.uint32());
+                        break;
+                    case 84:
+                        message.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.decode(reader, reader.uint32());
+                        break;
+                    case 85:
+                        message.accountTransferDomainMsg = $root.account.TransferDomainMsg.decode(reader, reader.uint32());
+                        break;
+                    case 86:
+                        message.accountRenewDomainMsg = $root.account.RenewDomainMsg.decode(reader, reader.uint32());
+                        break;
+                    case 87:
+                        message.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.decode(reader, reader.uint32());
+                        break;
+                    case 88:
+                        message.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.decode(reader, reader.uint32());
+                        break;
+                    case 89:
+                        message.accountTransferAccountMsg = $root.account.TransferAccountMsg.decode(reader, reader.uint32());
+                        break;
+                    case 90:
+                        message.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.decode(reader, reader.uint32());
+                        break;
+                    case 91:
+                        message.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.decode(reader, reader.uint32());
+                        break;
+                    case 92:
+                        message.accountFlushDomainMsg = $root.account.FlushDomainMsg.decode(reader, reader.uint32());
+                        break;
+                    case 93:
+                        message.accountRenewAccountMsg = $root.account.RenewAccountMsg.decode(reader, reader.uint32());
+                        break;
+                    case 94:
+                        message.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.decode(reader, reader.uint32());
+                        break;
+                    case 95:
+                        message.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.decode(reader, reader.uint32());
+                        break;
                     case 97:
                         message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.decode(reader, reader.uint32());
                         break;
                     case 98:
                         message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 99:
+                        message.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.decode(reader, reader.uint32());
+                        break;
+                    case 100:
+                        message.termdepositDepositMsg = $root.termdeposit.DepositMsg.decode(reader, reader.uint32());
+                        break;
+                    case 101:
+                        message.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.decode(reader, reader.uint32());
+                        break;
+                    case 102:
+                        message.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 103:
+                        message.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 104:
+                        message.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 105:
+                        message.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -5293,6 +6777,146 @@ $root.bnsd = (function() {
                             return "datamigrationExecuteMigrationMsg." + error;
                     }
                 }
+                if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.UpdateConfigurationMsg.verify(message.accountUpdateConfigurationMsg);
+                        if (error)
+                            return "accountUpdateConfigurationMsg." + error;
+                    }
+                }
+                if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.RegisterDomainMsg.verify(message.accountRegisterDomainMsg);
+                        if (error)
+                            return "accountRegisterDomainMsg." + error;
+                    }
+                }
+                if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.ReplaceAccountMsgFeesMsg.verify(message.accountReplaceAccountMsgFeesMsg);
+                        if (error)
+                            return "accountReplaceAccountMsgFeesMsg." + error;
+                    }
+                }
+                if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.TransferDomainMsg.verify(message.accountTransferDomainMsg);
+                        if (error)
+                            return "accountTransferDomainMsg." + error;
+                    }
+                }
+                if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.RenewDomainMsg.verify(message.accountRenewDomainMsg);
+                        if (error)
+                            return "accountRenewDomainMsg." + error;
+                    }
+                }
+                if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.DeleteDomainMsg.verify(message.accountDeleteDomainMsg);
+                        if (error)
+                            return "accountDeleteDomainMsg." + error;
+                    }
+                }
+                if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.RegisterAccountMsg.verify(message.accountRegisterAccountMsg);
+                        if (error)
+                            return "accountRegisterAccountMsg." + error;
+                    }
+                }
+                if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.TransferAccountMsg.verify(message.accountTransferAccountMsg);
+                        if (error)
+                            return "accountTransferAccountMsg." + error;
+                    }
+                }
+                if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.ReplaceAccountTargetsMsg.verify(message.accountReplaceAccountTargetsMsg);
+                        if (error)
+                            return "accountReplaceAccountTargetsMsg." + error;
+                    }
+                }
+                if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.DeleteAccountMsg.verify(message.accountDeleteAccountMsg);
+                        if (error)
+                            return "accountDeleteAccountMsg." + error;
+                    }
+                }
+                if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.FlushDomainMsg.verify(message.accountFlushDomainMsg);
+                        if (error)
+                            return "accountFlushDomainMsg." + error;
+                    }
+                }
+                if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.RenewAccountMsg.verify(message.accountRenewAccountMsg);
+                        if (error)
+                            return "accountRenewAccountMsg." + error;
+                    }
+                }
+                if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.AddAccountCertificateMsg.verify(message.accountAddAccountCertificateMsg);
+                        if (error)
+                            return "accountAddAccountCertificateMsg." + error;
+                    }
+                }
+                if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.account.DeleteAccountCertificateMsg.verify(message.accountDeleteAccountCertificateMsg);
+                        if (error)
+                            return "accountDeleteAccountCertificateMsg." + error;
+                    }
+                }
                 if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
                     if (properties.sum === 1)
                         return "sum: multiple values";
@@ -5311,6 +6935,76 @@ $root.bnsd = (function() {
                         var error = $root.txfee.UpdateConfigurationMsg.verify(message.txfeeUpdateConfigurationMsg);
                         if (error)
                             return "txfeeUpdateConfigurationMsg." + error;
+                    }
+                }
+                if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.termdeposit.CreateDepositContractMsg.verify(message.termdepositCreateDepositContractMsg);
+                        if (error)
+                            return "termdepositCreateDepositContractMsg." + error;
+                    }
+                }
+                if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.termdeposit.DepositMsg.verify(message.termdepositDepositMsg);
+                        if (error)
+                            return "termdepositDepositMsg." + error;
+                    }
+                }
+                if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.termdeposit.ReleaseDepositMsg.verify(message.termdepositReleaseDepositMsg);
+                        if (error)
+                            return "termdepositReleaseDepositMsg." + error;
+                    }
+                }
+                if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.termdeposit.UpdateConfigurationMsg.verify(message.termdepositUpdateConfigurationMsg);
+                        if (error)
+                            return "termdepositUpdateConfigurationMsg." + error;
+                    }
+                }
+                if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.qualityscore.UpdateConfigurationMsg.verify(message.qualityscoreUpdateConfigurationMsg);
+                        if (error)
+                            return "qualityscoreUpdateConfigurationMsg." + error;
+                    }
+                }
+                if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.preregistration.UpdateConfigurationMsg.verify(message.preregistrationUpdateConfigurationMsg);
+                        if (error)
+                            return "preregistrationUpdateConfigurationMsg." + error;
+                    }
+                }
+                if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.msgfee.UpdateConfigurationMsg.verify(message.msgfeeUpdateConfigurationMsg);
+                        if (error)
+                            return "msgfeeUpdateConfigurationMsg." + error;
                     }
                 }
                 return null;
@@ -5413,6 +7107,76 @@ $root.bnsd = (function() {
                         throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.datamigrationExecuteMigrationMsg: object expected");
                     message.datamigrationExecuteMigrationMsg = $root.datamigration.ExecuteMigrationMsg.fromObject(object.datamigrationExecuteMigrationMsg);
                 }
+                if (object.accountUpdateConfigurationMsg != null) {
+                    if (typeof object.accountUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountUpdateConfigurationMsg: object expected");
+                    message.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.fromObject(object.accountUpdateConfigurationMsg);
+                }
+                if (object.accountRegisterDomainMsg != null) {
+                    if (typeof object.accountRegisterDomainMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountRegisterDomainMsg: object expected");
+                    message.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.fromObject(object.accountRegisterDomainMsg);
+                }
+                if (object.accountReplaceAccountMsgFeesMsg != null) {
+                    if (typeof object.accountReplaceAccountMsgFeesMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountReplaceAccountMsgFeesMsg: object expected");
+                    message.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.fromObject(object.accountReplaceAccountMsgFeesMsg);
+                }
+                if (object.accountTransferDomainMsg != null) {
+                    if (typeof object.accountTransferDomainMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountTransferDomainMsg: object expected");
+                    message.accountTransferDomainMsg = $root.account.TransferDomainMsg.fromObject(object.accountTransferDomainMsg);
+                }
+                if (object.accountRenewDomainMsg != null) {
+                    if (typeof object.accountRenewDomainMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountRenewDomainMsg: object expected");
+                    message.accountRenewDomainMsg = $root.account.RenewDomainMsg.fromObject(object.accountRenewDomainMsg);
+                }
+                if (object.accountDeleteDomainMsg != null) {
+                    if (typeof object.accountDeleteDomainMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountDeleteDomainMsg: object expected");
+                    message.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.fromObject(object.accountDeleteDomainMsg);
+                }
+                if (object.accountRegisterAccountMsg != null) {
+                    if (typeof object.accountRegisterAccountMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountRegisterAccountMsg: object expected");
+                    message.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.fromObject(object.accountRegisterAccountMsg);
+                }
+                if (object.accountTransferAccountMsg != null) {
+                    if (typeof object.accountTransferAccountMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountTransferAccountMsg: object expected");
+                    message.accountTransferAccountMsg = $root.account.TransferAccountMsg.fromObject(object.accountTransferAccountMsg);
+                }
+                if (object.accountReplaceAccountTargetsMsg != null) {
+                    if (typeof object.accountReplaceAccountTargetsMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountReplaceAccountTargetsMsg: object expected");
+                    message.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.fromObject(object.accountReplaceAccountTargetsMsg);
+                }
+                if (object.accountDeleteAccountMsg != null) {
+                    if (typeof object.accountDeleteAccountMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountDeleteAccountMsg: object expected");
+                    message.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.fromObject(object.accountDeleteAccountMsg);
+                }
+                if (object.accountFlushDomainMsg != null) {
+                    if (typeof object.accountFlushDomainMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountFlushDomainMsg: object expected");
+                    message.accountFlushDomainMsg = $root.account.FlushDomainMsg.fromObject(object.accountFlushDomainMsg);
+                }
+                if (object.accountRenewAccountMsg != null) {
+                    if (typeof object.accountRenewAccountMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountRenewAccountMsg: object expected");
+                    message.accountRenewAccountMsg = $root.account.RenewAccountMsg.fromObject(object.accountRenewAccountMsg);
+                }
+                if (object.accountAddAccountCertificateMsg != null) {
+                    if (typeof object.accountAddAccountCertificateMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountAddAccountCertificateMsg: object expected");
+                    message.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.fromObject(object.accountAddAccountCertificateMsg);
+                }
+                if (object.accountDeleteAccountCertificateMsg != null) {
+                    if (typeof object.accountDeleteAccountCertificateMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.accountDeleteAccountCertificateMsg: object expected");
+                    message.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.fromObject(object.accountDeleteAccountCertificateMsg);
+                }
                 if (object.cashUpdateConfigurationMsg != null) {
                     if (typeof object.cashUpdateConfigurationMsg !== "object")
                         throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.cashUpdateConfigurationMsg: object expected");
@@ -5422,6 +7186,41 @@ $root.bnsd = (function() {
                     if (typeof object.txfeeUpdateConfigurationMsg !== "object")
                         throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.txfeeUpdateConfigurationMsg: object expected");
                     message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.fromObject(object.txfeeUpdateConfigurationMsg);
+                }
+                if (object.termdepositCreateDepositContractMsg != null) {
+                    if (typeof object.termdepositCreateDepositContractMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.termdepositCreateDepositContractMsg: object expected");
+                    message.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.fromObject(object.termdepositCreateDepositContractMsg);
+                }
+                if (object.termdepositDepositMsg != null) {
+                    if (typeof object.termdepositDepositMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.termdepositDepositMsg: object expected");
+                    message.termdepositDepositMsg = $root.termdeposit.DepositMsg.fromObject(object.termdepositDepositMsg);
+                }
+                if (object.termdepositReleaseDepositMsg != null) {
+                    if (typeof object.termdepositReleaseDepositMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.termdepositReleaseDepositMsg: object expected");
+                    message.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.fromObject(object.termdepositReleaseDepositMsg);
+                }
+                if (object.termdepositUpdateConfigurationMsg != null) {
+                    if (typeof object.termdepositUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.termdepositUpdateConfigurationMsg: object expected");
+                    message.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.fromObject(object.termdepositUpdateConfigurationMsg);
+                }
+                if (object.qualityscoreUpdateConfigurationMsg != null) {
+                    if (typeof object.qualityscoreUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.qualityscoreUpdateConfigurationMsg: object expected");
+                    message.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.fromObject(object.qualityscoreUpdateConfigurationMsg);
+                }
+                if (object.preregistrationUpdateConfigurationMsg != null) {
+                    if (typeof object.preregistrationUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.preregistrationUpdateConfigurationMsg: object expected");
+                    message.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.fromObject(object.preregistrationUpdateConfigurationMsg);
+                }
+                if (object.msgfeeUpdateConfigurationMsg != null) {
+                    if (typeof object.msgfeeUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.msgfeeUpdateConfigurationMsg: object expected");
+                    message.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.fromObject(object.msgfeeUpdateConfigurationMsg);
                 }
                 return message;
             };
@@ -5524,6 +7323,76 @@ $root.bnsd = (function() {
                     if (options.oneofs)
                         object.sum = "datamigrationExecuteMigrationMsg";
                 }
+                if (message.accountUpdateConfigurationMsg != null && message.hasOwnProperty("accountUpdateConfigurationMsg")) {
+                    object.accountUpdateConfigurationMsg = $root.account.UpdateConfigurationMsg.toObject(message.accountUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountUpdateConfigurationMsg";
+                }
+                if (message.accountRegisterDomainMsg != null && message.hasOwnProperty("accountRegisterDomainMsg")) {
+                    object.accountRegisterDomainMsg = $root.account.RegisterDomainMsg.toObject(message.accountRegisterDomainMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountRegisterDomainMsg";
+                }
+                if (message.accountReplaceAccountMsgFeesMsg != null && message.hasOwnProperty("accountReplaceAccountMsgFeesMsg")) {
+                    object.accountReplaceAccountMsgFeesMsg = $root.account.ReplaceAccountMsgFeesMsg.toObject(message.accountReplaceAccountMsgFeesMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountReplaceAccountMsgFeesMsg";
+                }
+                if (message.accountTransferDomainMsg != null && message.hasOwnProperty("accountTransferDomainMsg")) {
+                    object.accountTransferDomainMsg = $root.account.TransferDomainMsg.toObject(message.accountTransferDomainMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountTransferDomainMsg";
+                }
+                if (message.accountRenewDomainMsg != null && message.hasOwnProperty("accountRenewDomainMsg")) {
+                    object.accountRenewDomainMsg = $root.account.RenewDomainMsg.toObject(message.accountRenewDomainMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountRenewDomainMsg";
+                }
+                if (message.accountDeleteDomainMsg != null && message.hasOwnProperty("accountDeleteDomainMsg")) {
+                    object.accountDeleteDomainMsg = $root.account.DeleteDomainMsg.toObject(message.accountDeleteDomainMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountDeleteDomainMsg";
+                }
+                if (message.accountRegisterAccountMsg != null && message.hasOwnProperty("accountRegisterAccountMsg")) {
+                    object.accountRegisterAccountMsg = $root.account.RegisterAccountMsg.toObject(message.accountRegisterAccountMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountRegisterAccountMsg";
+                }
+                if (message.accountTransferAccountMsg != null && message.hasOwnProperty("accountTransferAccountMsg")) {
+                    object.accountTransferAccountMsg = $root.account.TransferAccountMsg.toObject(message.accountTransferAccountMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountTransferAccountMsg";
+                }
+                if (message.accountReplaceAccountTargetsMsg != null && message.hasOwnProperty("accountReplaceAccountTargetsMsg")) {
+                    object.accountReplaceAccountTargetsMsg = $root.account.ReplaceAccountTargetsMsg.toObject(message.accountReplaceAccountTargetsMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountReplaceAccountTargetsMsg";
+                }
+                if (message.accountDeleteAccountMsg != null && message.hasOwnProperty("accountDeleteAccountMsg")) {
+                    object.accountDeleteAccountMsg = $root.account.DeleteAccountMsg.toObject(message.accountDeleteAccountMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountDeleteAccountMsg";
+                }
+                if (message.accountFlushDomainMsg != null && message.hasOwnProperty("accountFlushDomainMsg")) {
+                    object.accountFlushDomainMsg = $root.account.FlushDomainMsg.toObject(message.accountFlushDomainMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountFlushDomainMsg";
+                }
+                if (message.accountRenewAccountMsg != null && message.hasOwnProperty("accountRenewAccountMsg")) {
+                    object.accountRenewAccountMsg = $root.account.RenewAccountMsg.toObject(message.accountRenewAccountMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountRenewAccountMsg";
+                }
+                if (message.accountAddAccountCertificateMsg != null && message.hasOwnProperty("accountAddAccountCertificateMsg")) {
+                    object.accountAddAccountCertificateMsg = $root.account.AddAccountCertificateMsg.toObject(message.accountAddAccountCertificateMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountAddAccountCertificateMsg";
+                }
+                if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg")) {
+                    object.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.toObject(message.accountDeleteAccountCertificateMsg, options);
+                    if (options.oneofs)
+                        object.sum = "accountDeleteAccountCertificateMsg";
+                }
                 if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
                     object.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.toObject(message.cashUpdateConfigurationMsg, options);
                     if (options.oneofs)
@@ -5533,6 +7402,41 @@ $root.bnsd = (function() {
                     object.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.toObject(message.txfeeUpdateConfigurationMsg, options);
                     if (options.oneofs)
                         object.sum = "txfeeUpdateConfigurationMsg";
+                }
+                if (message.termdepositCreateDepositContractMsg != null && message.hasOwnProperty("termdepositCreateDepositContractMsg")) {
+                    object.termdepositCreateDepositContractMsg = $root.termdeposit.CreateDepositContractMsg.toObject(message.termdepositCreateDepositContractMsg, options);
+                    if (options.oneofs)
+                        object.sum = "termdepositCreateDepositContractMsg";
+                }
+                if (message.termdepositDepositMsg != null && message.hasOwnProperty("termdepositDepositMsg")) {
+                    object.termdepositDepositMsg = $root.termdeposit.DepositMsg.toObject(message.termdepositDepositMsg, options);
+                    if (options.oneofs)
+                        object.sum = "termdepositDepositMsg";
+                }
+                if (message.termdepositReleaseDepositMsg != null && message.hasOwnProperty("termdepositReleaseDepositMsg")) {
+                    object.termdepositReleaseDepositMsg = $root.termdeposit.ReleaseDepositMsg.toObject(message.termdepositReleaseDepositMsg, options);
+                    if (options.oneofs)
+                        object.sum = "termdepositReleaseDepositMsg";
+                }
+                if (message.termdepositUpdateConfigurationMsg != null && message.hasOwnProperty("termdepositUpdateConfigurationMsg")) {
+                    object.termdepositUpdateConfigurationMsg = $root.termdeposit.UpdateConfigurationMsg.toObject(message.termdepositUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "termdepositUpdateConfigurationMsg";
+                }
+                if (message.qualityscoreUpdateConfigurationMsg != null && message.hasOwnProperty("qualityscoreUpdateConfigurationMsg")) {
+                    object.qualityscoreUpdateConfigurationMsg = $root.qualityscore.UpdateConfigurationMsg.toObject(message.qualityscoreUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "qualityscoreUpdateConfigurationMsg";
+                }
+                if (message.preregistrationUpdateConfigurationMsg != null && message.hasOwnProperty("preregistrationUpdateConfigurationMsg")) {
+                    object.preregistrationUpdateConfigurationMsg = $root.preregistration.UpdateConfigurationMsg.toObject(message.preregistrationUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "preregistrationUpdateConfigurationMsg";
+                }
+                if (message.msgfeeUpdateConfigurationMsg != null && message.hasOwnProperty("msgfeeUpdateConfigurationMsg")) {
+                    object.msgfeeUpdateConfigurationMsg = $root.msgfee.UpdateConfigurationMsg.toObject(message.msgfeeUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "msgfeeUpdateConfigurationMsg";
                 }
                 return object;
             };
@@ -11881,7 +13785,3316 @@ $root.preregistration = (function() {
         return Configuration;
     })();
 
+    preregistration.UpdateConfigurationMsg = (function() {
+
+        /**
+         * Properties of an UpdateConfigurationMsg.
+         * @memberof preregistration
+         * @interface IUpdateConfigurationMsg
+         * @property {weave.IMetadata|null} [metadata] UpdateConfigurationMsg metadata
+         * @property {preregistration.IConfiguration|null} [patch] UpdateConfigurationMsg patch
+         */
+
+        /**
+         * Constructs a new UpdateConfigurationMsg.
+         * @memberof preregistration
+         * @classdesc Represents an UpdateConfigurationMsg.
+         * @implements IUpdateConfigurationMsg
+         * @constructor
+         * @param {preregistration.IUpdateConfigurationMsg=} [properties] Properties to set
+         */
+        function UpdateConfigurationMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdateConfigurationMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.metadata = null;
+
+        /**
+         * UpdateConfigurationMsg patch.
+         * @member {preregistration.IConfiguration|null|undefined} patch
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.patch = null;
+
+        /**
+         * Creates a new UpdateConfigurationMsg instance using the specified properties.
+         * @function create
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @static
+         * @param {preregistration.IUpdateConfigurationMsg=} [properties] Properties to set
+         * @returns {preregistration.UpdateConfigurationMsg} UpdateConfigurationMsg instance
+         */
+        UpdateConfigurationMsg.create = function create(properties) {
+            return new UpdateConfigurationMsg(properties);
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link preregistration.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encode
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @static
+         * @param {preregistration.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                $root.preregistration.Configuration.encode(message.patch, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link preregistration.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @static
+         * @param {preregistration.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {preregistration.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.preregistration.UpdateConfigurationMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.patch = $root.preregistration.Configuration.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {preregistration.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdateConfigurationMsg message.
+         * @function verify
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdateConfigurationMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.patch != null && message.hasOwnProperty("patch")) {
+                var error = $root.preregistration.Configuration.verify(message.patch);
+                if (error)
+                    return "patch." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {preregistration.UpdateConfigurationMsg} UpdateConfigurationMsg
+         */
+        UpdateConfigurationMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.preregistration.UpdateConfigurationMsg)
+                return object;
+            var message = new $root.preregistration.UpdateConfigurationMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".preregistration.UpdateConfigurationMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.patch != null) {
+                if (typeof object.patch !== "object")
+                    throw TypeError(".preregistration.UpdateConfigurationMsg.patch: object expected");
+                message.patch = $root.preregistration.Configuration.fromObject(object.patch);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @static
+         * @param {preregistration.UpdateConfigurationMsg} message UpdateConfigurationMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdateConfigurationMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.patch = null;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                object.patch = $root.preregistration.Configuration.toObject(message.patch, options);
+            return object;
+        };
+
+        /**
+         * Converts this UpdateConfigurationMsg to JSON.
+         * @function toJSON
+         * @memberof preregistration.UpdateConfigurationMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdateConfigurationMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateConfigurationMsg;
+    })();
+
     return preregistration;
+})();
+
+$root.qualityscore = (function() {
+
+    /**
+     * Namespace qualityscore.
+     * @exports qualityscore
+     * @namespace
+     */
+    var qualityscore = {};
+
+    qualityscore.Configuration = (function() {
+
+        /**
+         * Properties of a Configuration.
+         * @memberof qualityscore
+         * @interface IConfiguration
+         * @property {weave.IMetadata|null} [metadata] Configuration metadata
+         * @property {Uint8Array|null} [owner] needed to make use of gconf.NewUpdateConfigurationHandler
+         * @property {weave.IFraction|null} [c] Configuration c
+         * @property {weave.IFraction|null} [k] Configuration k
+         * @property {weave.IFraction|null} [kp] Configuration kp
+         * @property {weave.IFraction|null} [q0] Configuration q0
+         * @property {weave.IFraction|null} [x] Configuration x
+         * @property {weave.IFraction|null} [xInf] Configuration xInf
+         * @property {weave.IFraction|null} [xSup] Configuration xSup
+         * @property {weave.IFraction|null} [delta] Configuration delta
+         */
+
+        /**
+         * Constructs a new Configuration.
+         * @memberof qualityscore
+         * @classdesc Represents a Configuration.
+         * @implements IConfiguration
+         * @constructor
+         * @param {qualityscore.IConfiguration=} [properties] Properties to set
+         */
+        function Configuration(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Configuration metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof qualityscore.Configuration
+         * @instance
+         */
+        Configuration.prototype.metadata = null;
+
+        /**
+         * needed to make use of gconf.NewUpdateConfigurationHandler
+         * @member {Uint8Array} owner
+         * @memberof qualityscore.Configuration
+         * @instance
+         */
+        Configuration.prototype.owner = $util.newBuffer([]);
+
+        /**
+         * Configuration c.
+         * @member {weave.IFraction|null|undefined} c
+         * @memberof qualityscore.Configuration
+         * @instance
+         */
+        Configuration.prototype.c = null;
+
+        /**
+         * Configuration k.
+         * @member {weave.IFraction|null|undefined} k
+         * @memberof qualityscore.Configuration
+         * @instance
+         */
+        Configuration.prototype.k = null;
+
+        /**
+         * Configuration kp.
+         * @member {weave.IFraction|null|undefined} kp
+         * @memberof qualityscore.Configuration
+         * @instance
+         */
+        Configuration.prototype.kp = null;
+
+        /**
+         * Configuration q0.
+         * @member {weave.IFraction|null|undefined} q0
+         * @memberof qualityscore.Configuration
+         * @instance
+         */
+        Configuration.prototype.q0 = null;
+
+        /**
+         * Configuration x.
+         * @member {weave.IFraction|null|undefined} x
+         * @memberof qualityscore.Configuration
+         * @instance
+         */
+        Configuration.prototype.x = null;
+
+        /**
+         * Configuration xInf.
+         * @member {weave.IFraction|null|undefined} xInf
+         * @memberof qualityscore.Configuration
+         * @instance
+         */
+        Configuration.prototype.xInf = null;
+
+        /**
+         * Configuration xSup.
+         * @member {weave.IFraction|null|undefined} xSup
+         * @memberof qualityscore.Configuration
+         * @instance
+         */
+        Configuration.prototype.xSup = null;
+
+        /**
+         * Configuration delta.
+         * @member {weave.IFraction|null|undefined} delta
+         * @memberof qualityscore.Configuration
+         * @instance
+         */
+        Configuration.prototype.delta = null;
+
+        /**
+         * Creates a new Configuration instance using the specified properties.
+         * @function create
+         * @memberof qualityscore.Configuration
+         * @static
+         * @param {qualityscore.IConfiguration=} [properties] Properties to set
+         * @returns {qualityscore.Configuration} Configuration instance
+         */
+        Configuration.create = function create(properties) {
+            return new Configuration(properties);
+        };
+
+        /**
+         * Encodes the specified Configuration message. Does not implicitly {@link qualityscore.Configuration.verify|verify} messages.
+         * @function encode
+         * @memberof qualityscore.Configuration
+         * @static
+         * @param {qualityscore.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
+            if (message.c != null && message.hasOwnProperty("c"))
+                $root.weave.Fraction.encode(message.c, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.k != null && message.hasOwnProperty("k"))
+                $root.weave.Fraction.encode(message.k, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.kp != null && message.hasOwnProperty("kp"))
+                $root.weave.Fraction.encode(message.kp, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            if (message.q0 != null && message.hasOwnProperty("q0"))
+                $root.weave.Fraction.encode(message.q0, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+            if (message.x != null && message.hasOwnProperty("x"))
+                $root.weave.Fraction.encode(message.x, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+            if (message.xInf != null && message.hasOwnProperty("xInf"))
+                $root.weave.Fraction.encode(message.xInf, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+            if (message.xSup != null && message.hasOwnProperty("xSup"))
+                $root.weave.Fraction.encode(message.xSup, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+            if (message.delta != null && message.hasOwnProperty("delta"))
+                $root.weave.Fraction.encode(message.delta, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Configuration message, length delimited. Does not implicitly {@link qualityscore.Configuration.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof qualityscore.Configuration
+         * @static
+         * @param {qualityscore.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer.
+         * @function decode
+         * @memberof qualityscore.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {qualityscore.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.qualityscore.Configuration();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.owner = reader.bytes();
+                    break;
+                case 3:
+                    message.c = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 4:
+                    message.k = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.kp = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 6:
+                    message.q0 = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 7:
+                    message.x = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 8:
+                    message.xInf = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 9:
+                    message.xSup = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 10:
+                    message.delta = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof qualityscore.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {qualityscore.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Configuration message.
+         * @function verify
+         * @memberof qualityscore.Configuration
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Configuration.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
+            if (message.c != null && message.hasOwnProperty("c")) {
+                var error = $root.weave.Fraction.verify(message.c);
+                if (error)
+                    return "c." + error;
+            }
+            if (message.k != null && message.hasOwnProperty("k")) {
+                var error = $root.weave.Fraction.verify(message.k);
+                if (error)
+                    return "k." + error;
+            }
+            if (message.kp != null && message.hasOwnProperty("kp")) {
+                var error = $root.weave.Fraction.verify(message.kp);
+                if (error)
+                    return "kp." + error;
+            }
+            if (message.q0 != null && message.hasOwnProperty("q0")) {
+                var error = $root.weave.Fraction.verify(message.q0);
+                if (error)
+                    return "q0." + error;
+            }
+            if (message.x != null && message.hasOwnProperty("x")) {
+                var error = $root.weave.Fraction.verify(message.x);
+                if (error)
+                    return "x." + error;
+            }
+            if (message.xInf != null && message.hasOwnProperty("xInf")) {
+                var error = $root.weave.Fraction.verify(message.xInf);
+                if (error)
+                    return "xInf." + error;
+            }
+            if (message.xSup != null && message.hasOwnProperty("xSup")) {
+                var error = $root.weave.Fraction.verify(message.xSup);
+                if (error)
+                    return "xSup." + error;
+            }
+            if (message.delta != null && message.hasOwnProperty("delta")) {
+                var error = $root.weave.Fraction.verify(message.delta);
+                if (error)
+                    return "delta." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof qualityscore.Configuration
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {qualityscore.Configuration} Configuration
+         */
+        Configuration.fromObject = function fromObject(object) {
+            if (object instanceof $root.qualityscore.Configuration)
+                return object;
+            var message = new $root.qualityscore.Configuration();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".qualityscore.Configuration.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
+            if (object.c != null) {
+                if (typeof object.c !== "object")
+                    throw TypeError(".qualityscore.Configuration.c: object expected");
+                message.c = $root.weave.Fraction.fromObject(object.c);
+            }
+            if (object.k != null) {
+                if (typeof object.k !== "object")
+                    throw TypeError(".qualityscore.Configuration.k: object expected");
+                message.k = $root.weave.Fraction.fromObject(object.k);
+            }
+            if (object.kp != null) {
+                if (typeof object.kp !== "object")
+                    throw TypeError(".qualityscore.Configuration.kp: object expected");
+                message.kp = $root.weave.Fraction.fromObject(object.kp);
+            }
+            if (object.q0 != null) {
+                if (typeof object.q0 !== "object")
+                    throw TypeError(".qualityscore.Configuration.q0: object expected");
+                message.q0 = $root.weave.Fraction.fromObject(object.q0);
+            }
+            if (object.x != null) {
+                if (typeof object.x !== "object")
+                    throw TypeError(".qualityscore.Configuration.x: object expected");
+                message.x = $root.weave.Fraction.fromObject(object.x);
+            }
+            if (object.xInf != null) {
+                if (typeof object.xInf !== "object")
+                    throw TypeError(".qualityscore.Configuration.xInf: object expected");
+                message.xInf = $root.weave.Fraction.fromObject(object.xInf);
+            }
+            if (object.xSup != null) {
+                if (typeof object.xSup !== "object")
+                    throw TypeError(".qualityscore.Configuration.xSup: object expected");
+                message.xSup = $root.weave.Fraction.fromObject(object.xSup);
+            }
+            if (object.delta != null) {
+                if (typeof object.delta !== "object")
+                    throw TypeError(".qualityscore.Configuration.delta: object expected");
+                message.delta = $root.weave.Fraction.fromObject(object.delta);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof qualityscore.Configuration
+         * @static
+         * @param {qualityscore.Configuration} message Configuration
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Configuration.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
+                object.c = null;
+                object.k = null;
+                object.kp = null;
+                object.q0 = null;
+                object.x = null;
+                object.xInf = null;
+                object.xSup = null;
+                object.delta = null;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            if (message.c != null && message.hasOwnProperty("c"))
+                object.c = $root.weave.Fraction.toObject(message.c, options);
+            if (message.k != null && message.hasOwnProperty("k"))
+                object.k = $root.weave.Fraction.toObject(message.k, options);
+            if (message.kp != null && message.hasOwnProperty("kp"))
+                object.kp = $root.weave.Fraction.toObject(message.kp, options);
+            if (message.q0 != null && message.hasOwnProperty("q0"))
+                object.q0 = $root.weave.Fraction.toObject(message.q0, options);
+            if (message.x != null && message.hasOwnProperty("x"))
+                object.x = $root.weave.Fraction.toObject(message.x, options);
+            if (message.xInf != null && message.hasOwnProperty("xInf"))
+                object.xInf = $root.weave.Fraction.toObject(message.xInf, options);
+            if (message.xSup != null && message.hasOwnProperty("xSup"))
+                object.xSup = $root.weave.Fraction.toObject(message.xSup, options);
+            if (message.delta != null && message.hasOwnProperty("delta"))
+                object.delta = $root.weave.Fraction.toObject(message.delta, options);
+            return object;
+        };
+
+        /**
+         * Converts this Configuration to JSON.
+         * @function toJSON
+         * @memberof qualityscore.Configuration
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Configuration.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Configuration;
+    })();
+
+    qualityscore.UpdateConfigurationMsg = (function() {
+
+        /**
+         * Properties of an UpdateConfigurationMsg.
+         * @memberof qualityscore
+         * @interface IUpdateConfigurationMsg
+         * @property {weave.IMetadata|null} [metadata] UpdateConfigurationMsg metadata
+         * @property {qualityscore.IConfiguration|null} [patch] UpdateConfigurationMsg patch
+         */
+
+        /**
+         * Constructs a new UpdateConfigurationMsg.
+         * @memberof qualityscore
+         * @classdesc configuration.
+         * @implements IUpdateConfigurationMsg
+         * @constructor
+         * @param {qualityscore.IUpdateConfigurationMsg=} [properties] Properties to set
+         */
+        function UpdateConfigurationMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdateConfigurationMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.metadata = null;
+
+        /**
+         * UpdateConfigurationMsg patch.
+         * @member {qualityscore.IConfiguration|null|undefined} patch
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.patch = null;
+
+        /**
+         * Creates a new UpdateConfigurationMsg instance using the specified properties.
+         * @function create
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @static
+         * @param {qualityscore.IUpdateConfigurationMsg=} [properties] Properties to set
+         * @returns {qualityscore.UpdateConfigurationMsg} UpdateConfigurationMsg instance
+         */
+        UpdateConfigurationMsg.create = function create(properties) {
+            return new UpdateConfigurationMsg(properties);
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link qualityscore.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encode
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @static
+         * @param {qualityscore.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                $root.qualityscore.Configuration.encode(message.patch, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link qualityscore.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @static
+         * @param {qualityscore.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {qualityscore.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.qualityscore.UpdateConfigurationMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.patch = $root.qualityscore.Configuration.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {qualityscore.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdateConfigurationMsg message.
+         * @function verify
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdateConfigurationMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.patch != null && message.hasOwnProperty("patch")) {
+                var error = $root.qualityscore.Configuration.verify(message.patch);
+                if (error)
+                    return "patch." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {qualityscore.UpdateConfigurationMsg} UpdateConfigurationMsg
+         */
+        UpdateConfigurationMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.qualityscore.UpdateConfigurationMsg)
+                return object;
+            var message = new $root.qualityscore.UpdateConfigurationMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".qualityscore.UpdateConfigurationMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.patch != null) {
+                if (typeof object.patch !== "object")
+                    throw TypeError(".qualityscore.UpdateConfigurationMsg.patch: object expected");
+                message.patch = $root.qualityscore.Configuration.fromObject(object.patch);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @static
+         * @param {qualityscore.UpdateConfigurationMsg} message UpdateConfigurationMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdateConfigurationMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.patch = null;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                object.patch = $root.qualityscore.Configuration.toObject(message.patch, options);
+            return object;
+        };
+
+        /**
+         * Converts this UpdateConfigurationMsg to JSON.
+         * @function toJSON
+         * @memberof qualityscore.UpdateConfigurationMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdateConfigurationMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateConfigurationMsg;
+    })();
+
+    return qualityscore;
+})();
+
+$root.termdeposit = (function() {
+
+    /**
+     * Namespace termdeposit.
+     * @exports termdeposit
+     * @namespace
+     */
+    var termdeposit = {};
+
+    termdeposit.DepositContract = (function() {
+
+        /**
+         * Properties of a DepositContract.
+         * @memberof termdeposit
+         * @interface IDepositContract
+         * @property {weave.IMetadata|null} [metadata] DepositContract metadata
+         * @property {number|Long|null} [validSince] Valid since defines the beginning of when the contract is active.
+         * @property {number|Long|null} [validUntil] depositor funds are released and deposit contract is no longer active.
+         */
+
+        /**
+         * Constructs a new DepositContract.
+         * @memberof termdeposit
+         * @classdesc lock funds and receive appropriate interest after the contract expires.
+         * @implements IDepositContract
+         * @constructor
+         * @param {termdeposit.IDepositContract=} [properties] Properties to set
+         */
+        function DepositContract(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * DepositContract metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof termdeposit.DepositContract
+         * @instance
+         */
+        DepositContract.prototype.metadata = null;
+
+        /**
+         * Valid since defines the beginning of when the contract is active.
+         * @member {number|Long} validSince
+         * @memberof termdeposit.DepositContract
+         * @instance
+         */
+        DepositContract.prototype.validSince = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * depositor funds are released and deposit contract is no longer active.
+         * @member {number|Long} validUntil
+         * @memberof termdeposit.DepositContract
+         * @instance
+         */
+        DepositContract.prototype.validUntil = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Creates a new DepositContract instance using the specified properties.
+         * @function create
+         * @memberof termdeposit.DepositContract
+         * @static
+         * @param {termdeposit.IDepositContract=} [properties] Properties to set
+         * @returns {termdeposit.DepositContract} DepositContract instance
+         */
+        DepositContract.create = function create(properties) {
+            return new DepositContract(properties);
+        };
+
+        /**
+         * Encodes the specified DepositContract message. Does not implicitly {@link termdeposit.DepositContract.verify|verify} messages.
+         * @function encode
+         * @memberof termdeposit.DepositContract
+         * @static
+         * @param {termdeposit.IDepositContract} message DepositContract message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DepositContract.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.validSince != null && message.hasOwnProperty("validSince"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.validSince);
+            if (message.validUntil != null && message.hasOwnProperty("validUntil"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.validUntil);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified DepositContract message, length delimited. Does not implicitly {@link termdeposit.DepositContract.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof termdeposit.DepositContract
+         * @static
+         * @param {termdeposit.IDepositContract} message DepositContract message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DepositContract.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a DepositContract message from the specified reader or buffer.
+         * @function decode
+         * @memberof termdeposit.DepositContract
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {termdeposit.DepositContract} DepositContract
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DepositContract.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.termdeposit.DepositContract();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.validSince = reader.int64();
+                    break;
+                case 3:
+                    message.validUntil = reader.int64();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a DepositContract message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof termdeposit.DepositContract
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {termdeposit.DepositContract} DepositContract
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DepositContract.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a DepositContract message.
+         * @function verify
+         * @memberof termdeposit.DepositContract
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        DepositContract.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.validSince != null && message.hasOwnProperty("validSince"))
+                if (!$util.isInteger(message.validSince) && !(message.validSince && $util.isInteger(message.validSince.low) && $util.isInteger(message.validSince.high)))
+                    return "validSince: integer|Long expected";
+            if (message.validUntil != null && message.hasOwnProperty("validUntil"))
+                if (!$util.isInteger(message.validUntil) && !(message.validUntil && $util.isInteger(message.validUntil.low) && $util.isInteger(message.validUntil.high)))
+                    return "validUntil: integer|Long expected";
+            return null;
+        };
+
+        /**
+         * Creates a DepositContract message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof termdeposit.DepositContract
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {termdeposit.DepositContract} DepositContract
+         */
+        DepositContract.fromObject = function fromObject(object) {
+            if (object instanceof $root.termdeposit.DepositContract)
+                return object;
+            var message = new $root.termdeposit.DepositContract();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".termdeposit.DepositContract.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.validSince != null)
+                if ($util.Long)
+                    (message.validSince = $util.Long.fromValue(object.validSince)).unsigned = false;
+                else if (typeof object.validSince === "string")
+                    message.validSince = parseInt(object.validSince, 10);
+                else if (typeof object.validSince === "number")
+                    message.validSince = object.validSince;
+                else if (typeof object.validSince === "object")
+                    message.validSince = new $util.LongBits(object.validSince.low >>> 0, object.validSince.high >>> 0).toNumber();
+            if (object.validUntil != null)
+                if ($util.Long)
+                    (message.validUntil = $util.Long.fromValue(object.validUntil)).unsigned = false;
+                else if (typeof object.validUntil === "string")
+                    message.validUntil = parseInt(object.validUntil, 10);
+                else if (typeof object.validUntil === "number")
+                    message.validUntil = object.validUntil;
+                else if (typeof object.validUntil === "object")
+                    message.validUntil = new $util.LongBits(object.validUntil.low >>> 0, object.validUntil.high >>> 0).toNumber();
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a DepositContract message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof termdeposit.DepositContract
+         * @static
+         * @param {termdeposit.DepositContract} message DepositContract
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        DepositContract.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.validSince = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.validSince = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.validUntil = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.validUntil = options.longs === String ? "0" : 0;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.validSince != null && message.hasOwnProperty("validSince"))
+                if (typeof message.validSince === "number")
+                    object.validSince = options.longs === String ? String(message.validSince) : message.validSince;
+                else
+                    object.validSince = options.longs === String ? $util.Long.prototype.toString.call(message.validSince) : options.longs === Number ? new $util.LongBits(message.validSince.low >>> 0, message.validSince.high >>> 0).toNumber() : message.validSince;
+            if (message.validUntil != null && message.hasOwnProperty("validUntil"))
+                if (typeof message.validUntil === "number")
+                    object.validUntil = options.longs === String ? String(message.validUntil) : message.validUntil;
+                else
+                    object.validUntil = options.longs === String ? $util.Long.prototype.toString.call(message.validUntil) : options.longs === Number ? new $util.LongBits(message.validUntil.low >>> 0, message.validUntil.high >>> 0).toNumber() : message.validUntil;
+            return object;
+        };
+
+        /**
+         * Converts this DepositContract to JSON.
+         * @function toJSON
+         * @memberof termdeposit.DepositContract
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        DepositContract.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return DepositContract;
+    })();
+
+    termdeposit.Deposit = (function() {
+
+        /**
+         * Properties of a Deposit.
+         * @memberof termdeposit
+         * @interface IDeposit
+         * @property {weave.IMetadata|null} [metadata] Deposit metadata
+         * @property {Uint8Array|null} [depositContractId] Deposit contract ID that this funds allocation was made with.
+         * @property {coin.ICoin|null} [amount] computation.
+         * @property {weave.IFraction|null} [rate] Pro-rated interest rate as detailed in the Confluence spec.
+         * @property {Uint8Array|null} [depositor] the contract expires.
+         * @property {boolean|null} [released] were already released or not.
+         * @property {number|Long|null} [createdAt] CreatedAt is set to the wall clock value at the deposit creation time.
+         */
+
+        /**
+         * Constructs a new Deposit.
+         * @memberof termdeposit
+         * @classdesc until the contract expiration.
+         * @implements IDeposit
+         * @constructor
+         * @param {termdeposit.IDeposit=} [properties] Properties to set
+         */
+        function Deposit(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Deposit metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof termdeposit.Deposit
+         * @instance
+         */
+        Deposit.prototype.metadata = null;
+
+        /**
+         * Deposit contract ID that this funds allocation was made with.
+         * @member {Uint8Array} depositContractId
+         * @memberof termdeposit.Deposit
+         * @instance
+         */
+        Deposit.prototype.depositContractId = $util.newBuffer([]);
+
+        /**
+         * computation.
+         * @member {coin.ICoin|null|undefined} amount
+         * @memberof termdeposit.Deposit
+         * @instance
+         */
+        Deposit.prototype.amount = null;
+
+        /**
+         * Pro-rated interest rate as detailed in the Confluence spec.
+         * @member {weave.IFraction|null|undefined} rate
+         * @memberof termdeposit.Deposit
+         * @instance
+         */
+        Deposit.prototype.rate = null;
+
+        /**
+         * the contract expires.
+         * @member {Uint8Array} depositor
+         * @memberof termdeposit.Deposit
+         * @instance
+         */
+        Deposit.prototype.depositor = $util.newBuffer([]);
+
+        /**
+         * were already released or not.
+         * @member {boolean} released
+         * @memberof termdeposit.Deposit
+         * @instance
+         */
+        Deposit.prototype.released = false;
+
+        /**
+         * CreatedAt is set to the wall clock value at the deposit creation time.
+         * @member {number|Long} createdAt
+         * @memberof termdeposit.Deposit
+         * @instance
+         */
+        Deposit.prototype.createdAt = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Creates a new Deposit instance using the specified properties.
+         * @function create
+         * @memberof termdeposit.Deposit
+         * @static
+         * @param {termdeposit.IDeposit=} [properties] Properties to set
+         * @returns {termdeposit.Deposit} Deposit instance
+         */
+        Deposit.create = function create(properties) {
+            return new Deposit(properties);
+        };
+
+        /**
+         * Encodes the specified Deposit message. Does not implicitly {@link termdeposit.Deposit.verify|verify} messages.
+         * @function encode
+         * @memberof termdeposit.Deposit
+         * @static
+         * @param {termdeposit.IDeposit} message Deposit message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Deposit.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.depositContractId != null && message.hasOwnProperty("depositContractId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.depositContractId);
+            if (message.amount != null && message.hasOwnProperty("amount"))
+                $root.coin.Coin.encode(message.amount, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.rate != null && message.hasOwnProperty("rate"))
+                $root.weave.Fraction.encode(message.rate, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.depositor != null && message.hasOwnProperty("depositor"))
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.depositor);
+            if (message.released != null && message.hasOwnProperty("released"))
+                writer.uint32(/* id 6, wireType 0 =*/48).bool(message.released);
+            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.createdAt);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Deposit message, length delimited. Does not implicitly {@link termdeposit.Deposit.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof termdeposit.Deposit
+         * @static
+         * @param {termdeposit.IDeposit} message Deposit message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Deposit.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Deposit message from the specified reader or buffer.
+         * @function decode
+         * @memberof termdeposit.Deposit
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {termdeposit.Deposit} Deposit
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Deposit.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.termdeposit.Deposit();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.depositContractId = reader.bytes();
+                    break;
+                case 3:
+                    message.amount = $root.coin.Coin.decode(reader, reader.uint32());
+                    break;
+                case 4:
+                    message.rate = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.depositor = reader.bytes();
+                    break;
+                case 6:
+                    message.released = reader.bool();
+                    break;
+                case 7:
+                    message.createdAt = reader.int64();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Deposit message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof termdeposit.Deposit
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {termdeposit.Deposit} Deposit
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Deposit.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Deposit message.
+         * @function verify
+         * @memberof termdeposit.Deposit
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Deposit.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.depositContractId != null && message.hasOwnProperty("depositContractId"))
+                if (!(message.depositContractId && typeof message.depositContractId.length === "number" || $util.isString(message.depositContractId)))
+                    return "depositContractId: buffer expected";
+            if (message.amount != null && message.hasOwnProperty("amount")) {
+                var error = $root.coin.Coin.verify(message.amount);
+                if (error)
+                    return "amount." + error;
+            }
+            if (message.rate != null && message.hasOwnProperty("rate")) {
+                var error = $root.weave.Fraction.verify(message.rate);
+                if (error)
+                    return "rate." + error;
+            }
+            if (message.depositor != null && message.hasOwnProperty("depositor"))
+                if (!(message.depositor && typeof message.depositor.length === "number" || $util.isString(message.depositor)))
+                    return "depositor: buffer expected";
+            if (message.released != null && message.hasOwnProperty("released"))
+                if (typeof message.released !== "boolean")
+                    return "released: boolean expected";
+            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
+                if (!$util.isInteger(message.createdAt) && !(message.createdAt && $util.isInteger(message.createdAt.low) && $util.isInteger(message.createdAt.high)))
+                    return "createdAt: integer|Long expected";
+            return null;
+        };
+
+        /**
+         * Creates a Deposit message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof termdeposit.Deposit
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {termdeposit.Deposit} Deposit
+         */
+        Deposit.fromObject = function fromObject(object) {
+            if (object instanceof $root.termdeposit.Deposit)
+                return object;
+            var message = new $root.termdeposit.Deposit();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".termdeposit.Deposit.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.depositContractId != null)
+                if (typeof object.depositContractId === "string")
+                    $util.base64.decode(object.depositContractId, message.depositContractId = $util.newBuffer($util.base64.length(object.depositContractId)), 0);
+                else if (object.depositContractId.length)
+                    message.depositContractId = object.depositContractId;
+            if (object.amount != null) {
+                if (typeof object.amount !== "object")
+                    throw TypeError(".termdeposit.Deposit.amount: object expected");
+                message.amount = $root.coin.Coin.fromObject(object.amount);
+            }
+            if (object.rate != null) {
+                if (typeof object.rate !== "object")
+                    throw TypeError(".termdeposit.Deposit.rate: object expected");
+                message.rate = $root.weave.Fraction.fromObject(object.rate);
+            }
+            if (object.depositor != null)
+                if (typeof object.depositor === "string")
+                    $util.base64.decode(object.depositor, message.depositor = $util.newBuffer($util.base64.length(object.depositor)), 0);
+                else if (object.depositor.length)
+                    message.depositor = object.depositor;
+            if (object.released != null)
+                message.released = Boolean(object.released);
+            if (object.createdAt != null)
+                if ($util.Long)
+                    (message.createdAt = $util.Long.fromValue(object.createdAt)).unsigned = false;
+                else if (typeof object.createdAt === "string")
+                    message.createdAt = parseInt(object.createdAt, 10);
+                else if (typeof object.createdAt === "number")
+                    message.createdAt = object.createdAt;
+                else if (typeof object.createdAt === "object")
+                    message.createdAt = new $util.LongBits(object.createdAt.low >>> 0, object.createdAt.high >>> 0).toNumber();
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Deposit message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof termdeposit.Deposit
+         * @static
+         * @param {termdeposit.Deposit} message Deposit
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Deposit.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.depositContractId = "";
+                else {
+                    object.depositContractId = [];
+                    if (options.bytes !== Array)
+                        object.depositContractId = $util.newBuffer(object.depositContractId);
+                }
+                object.amount = null;
+                object.rate = null;
+                if (options.bytes === String)
+                    object.depositor = "";
+                else {
+                    object.depositor = [];
+                    if (options.bytes !== Array)
+                        object.depositor = $util.newBuffer(object.depositor);
+                }
+                object.released = false;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.createdAt = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.createdAt = options.longs === String ? "0" : 0;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.depositContractId != null && message.hasOwnProperty("depositContractId"))
+                object.depositContractId = options.bytes === String ? $util.base64.encode(message.depositContractId, 0, message.depositContractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.depositContractId) : message.depositContractId;
+            if (message.amount != null && message.hasOwnProperty("amount"))
+                object.amount = $root.coin.Coin.toObject(message.amount, options);
+            if (message.rate != null && message.hasOwnProperty("rate"))
+                object.rate = $root.weave.Fraction.toObject(message.rate, options);
+            if (message.depositor != null && message.hasOwnProperty("depositor"))
+                object.depositor = options.bytes === String ? $util.base64.encode(message.depositor, 0, message.depositor.length) : options.bytes === Array ? Array.prototype.slice.call(message.depositor) : message.depositor;
+            if (message.released != null && message.hasOwnProperty("released"))
+                object.released = message.released;
+            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
+                if (typeof message.createdAt === "number")
+                    object.createdAt = options.longs === String ? String(message.createdAt) : message.createdAt;
+                else
+                    object.createdAt = options.longs === String ? $util.Long.prototype.toString.call(message.createdAt) : options.longs === Number ? new $util.LongBits(message.createdAt.low >>> 0, message.createdAt.high >>> 0).toNumber() : message.createdAt;
+            return object;
+        };
+
+        /**
+         * Converts this Deposit to JSON.
+         * @function toJSON
+         * @memberof termdeposit.Deposit
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Deposit.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Deposit;
+    })();
+
+    termdeposit.Configuration = (function() {
+
+        /**
+         * Properties of a Configuration.
+         * @memberof termdeposit
+         * @interface IConfiguration
+         * @property {weave.IMetadata|null} [metadata] Configuration metadata
+         * @property {Uint8Array|null} [owner] allowed to update the configuration.
+         * @property {Uint8Array|null} [admin] Admin is an address that is able to create deposit contracts.
+         * @property {Array.<termdeposit.IDepositBonus>|null} [bonuses] A list of bonus values applied to each created Deposit instance.
+         * @property {Array.<termdeposit.ICustomRate>|null} [baseRates] Base rates defines a list of addresses that have their q-score value fixed.
+         */
+
+        /**
+         * Constructs a new Configuration.
+         * @memberof termdeposit
+         * @classdesc the functionality provided by gconf package.
+         * @implements IConfiguration
+         * @constructor
+         * @param {termdeposit.IConfiguration=} [properties] Properties to set
+         */
+        function Configuration(properties) {
+            this.bonuses = [];
+            this.baseRates = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Configuration metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof termdeposit.Configuration
+         * @instance
+         */
+        Configuration.prototype.metadata = null;
+
+        /**
+         * allowed to update the configuration.
+         * @member {Uint8Array} owner
+         * @memberof termdeposit.Configuration
+         * @instance
+         */
+        Configuration.prototype.owner = $util.newBuffer([]);
+
+        /**
+         * Admin is an address that is able to create deposit contracts.
+         * @member {Uint8Array} admin
+         * @memberof termdeposit.Configuration
+         * @instance
+         */
+        Configuration.prototype.admin = $util.newBuffer([]);
+
+        /**
+         * A list of bonus values applied to each created Deposit instance.
+         * @member {Array.<termdeposit.IDepositBonus>} bonuses
+         * @memberof termdeposit.Configuration
+         * @instance
+         */
+        Configuration.prototype.bonuses = $util.emptyArray;
+
+        /**
+         * Base rates defines a list of addresses that have their q-score value fixed.
+         * @member {Array.<termdeposit.ICustomRate>} baseRates
+         * @memberof termdeposit.Configuration
+         * @instance
+         */
+        Configuration.prototype.baseRates = $util.emptyArray;
+
+        /**
+         * Creates a new Configuration instance using the specified properties.
+         * @function create
+         * @memberof termdeposit.Configuration
+         * @static
+         * @param {termdeposit.IConfiguration=} [properties] Properties to set
+         * @returns {termdeposit.Configuration} Configuration instance
+         */
+        Configuration.create = function create(properties) {
+            return new Configuration(properties);
+        };
+
+        /**
+         * Encodes the specified Configuration message. Does not implicitly {@link termdeposit.Configuration.verify|verify} messages.
+         * @function encode
+         * @memberof termdeposit.Configuration
+         * @static
+         * @param {termdeposit.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.admin);
+            if (message.bonuses != null && message.bonuses.length)
+                for (var i = 0; i < message.bonuses.length; ++i)
+                    $root.termdeposit.DepositBonus.encode(message.bonuses[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.baseRates != null && message.baseRates.length)
+                for (var i = 0; i < message.baseRates.length; ++i)
+                    $root.termdeposit.CustomRate.encode(message.baseRates[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Configuration message, length delimited. Does not implicitly {@link termdeposit.Configuration.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof termdeposit.Configuration
+         * @static
+         * @param {termdeposit.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer.
+         * @function decode
+         * @memberof termdeposit.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {termdeposit.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.termdeposit.Configuration();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.owner = reader.bytes();
+                    break;
+                case 3:
+                    message.admin = reader.bytes();
+                    break;
+                case 4:
+                    if (!(message.bonuses && message.bonuses.length))
+                        message.bonuses = [];
+                    message.bonuses.push($root.termdeposit.DepositBonus.decode(reader, reader.uint32()));
+                    break;
+                case 5:
+                    if (!(message.baseRates && message.baseRates.length))
+                        message.baseRates = [];
+                    message.baseRates.push($root.termdeposit.CustomRate.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof termdeposit.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {termdeposit.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Configuration message.
+         * @function verify
+         * @memberof termdeposit.Configuration
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Configuration.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                if (!(message.admin && typeof message.admin.length === "number" || $util.isString(message.admin)))
+                    return "admin: buffer expected";
+            if (message.bonuses != null && message.hasOwnProperty("bonuses")) {
+                if (!Array.isArray(message.bonuses))
+                    return "bonuses: array expected";
+                for (var i = 0; i < message.bonuses.length; ++i) {
+                    var error = $root.termdeposit.DepositBonus.verify(message.bonuses[i]);
+                    if (error)
+                        return "bonuses." + error;
+                }
+            }
+            if (message.baseRates != null && message.hasOwnProperty("baseRates")) {
+                if (!Array.isArray(message.baseRates))
+                    return "baseRates: array expected";
+                for (var i = 0; i < message.baseRates.length; ++i) {
+                    var error = $root.termdeposit.CustomRate.verify(message.baseRates[i]);
+                    if (error)
+                        return "baseRates." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof termdeposit.Configuration
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {termdeposit.Configuration} Configuration
+         */
+        Configuration.fromObject = function fromObject(object) {
+            if (object instanceof $root.termdeposit.Configuration)
+                return object;
+            var message = new $root.termdeposit.Configuration();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".termdeposit.Configuration.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
+            if (object.admin != null)
+                if (typeof object.admin === "string")
+                    $util.base64.decode(object.admin, message.admin = $util.newBuffer($util.base64.length(object.admin)), 0);
+                else if (object.admin.length)
+                    message.admin = object.admin;
+            if (object.bonuses) {
+                if (!Array.isArray(object.bonuses))
+                    throw TypeError(".termdeposit.Configuration.bonuses: array expected");
+                message.bonuses = [];
+                for (var i = 0; i < object.bonuses.length; ++i) {
+                    if (typeof object.bonuses[i] !== "object")
+                        throw TypeError(".termdeposit.Configuration.bonuses: object expected");
+                    message.bonuses[i] = $root.termdeposit.DepositBonus.fromObject(object.bonuses[i]);
+                }
+            }
+            if (object.baseRates) {
+                if (!Array.isArray(object.baseRates))
+                    throw TypeError(".termdeposit.Configuration.baseRates: array expected");
+                message.baseRates = [];
+                for (var i = 0; i < object.baseRates.length; ++i) {
+                    if (typeof object.baseRates[i] !== "object")
+                        throw TypeError(".termdeposit.Configuration.baseRates: object expected");
+                    message.baseRates[i] = $root.termdeposit.CustomRate.fromObject(object.baseRates[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof termdeposit.Configuration
+         * @static
+         * @param {termdeposit.Configuration} message Configuration
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Configuration.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults) {
+                object.bonuses = [];
+                object.baseRates = [];
+            }
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
+                if (options.bytes === String)
+                    object.admin = "";
+                else {
+                    object.admin = [];
+                    if (options.bytes !== Array)
+                        object.admin = $util.newBuffer(object.admin);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            if (message.admin != null && message.hasOwnProperty("admin"))
+                object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
+            if (message.bonuses && message.bonuses.length) {
+                object.bonuses = [];
+                for (var j = 0; j < message.bonuses.length; ++j)
+                    object.bonuses[j] = $root.termdeposit.DepositBonus.toObject(message.bonuses[j], options);
+            }
+            if (message.baseRates && message.baseRates.length) {
+                object.baseRates = [];
+                for (var j = 0; j < message.baseRates.length; ++j)
+                    object.baseRates[j] = $root.termdeposit.CustomRate.toObject(message.baseRates[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this Configuration to JSON.
+         * @function toJSON
+         * @memberof termdeposit.Configuration
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Configuration.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Configuration;
+    })();
+
+    termdeposit.CustomRate = (function() {
+
+        /**
+         * Properties of a CustomRate.
+         * @memberof termdeposit
+         * @interface ICustomRate
+         * @property {Uint8Array|null} [address] CustomRate address
+         * @property {weave.IFraction|null} [rate] CustomRate rate
+         */
+
+        /**
+         * Constructs a new CustomRate.
+         * @memberof termdeposit
+         * @classdesc Custom Rate allows to declare a fixed rate value for an address.
+         * @implements ICustomRate
+         * @constructor
+         * @param {termdeposit.ICustomRate=} [properties] Properties to set
+         */
+        function CustomRate(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * CustomRate address.
+         * @member {Uint8Array} address
+         * @memberof termdeposit.CustomRate
+         * @instance
+         */
+        CustomRate.prototype.address = $util.newBuffer([]);
+
+        /**
+         * CustomRate rate.
+         * @member {weave.IFraction|null|undefined} rate
+         * @memberof termdeposit.CustomRate
+         * @instance
+         */
+        CustomRate.prototype.rate = null;
+
+        /**
+         * Creates a new CustomRate instance using the specified properties.
+         * @function create
+         * @memberof termdeposit.CustomRate
+         * @static
+         * @param {termdeposit.ICustomRate=} [properties] Properties to set
+         * @returns {termdeposit.CustomRate} CustomRate instance
+         */
+        CustomRate.create = function create(properties) {
+            return new CustomRate(properties);
+        };
+
+        /**
+         * Encodes the specified CustomRate message. Does not implicitly {@link termdeposit.CustomRate.verify|verify} messages.
+         * @function encode
+         * @memberof termdeposit.CustomRate
+         * @static
+         * @param {termdeposit.ICustomRate} message CustomRate message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CustomRate.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.address != null && message.hasOwnProperty("address"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.address);
+            if (message.rate != null && message.hasOwnProperty("rate"))
+                $root.weave.Fraction.encode(message.rate, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CustomRate message, length delimited. Does not implicitly {@link termdeposit.CustomRate.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof termdeposit.CustomRate
+         * @static
+         * @param {termdeposit.ICustomRate} message CustomRate message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CustomRate.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CustomRate message from the specified reader or buffer.
+         * @function decode
+         * @memberof termdeposit.CustomRate
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {termdeposit.CustomRate} CustomRate
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CustomRate.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.termdeposit.CustomRate();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.address = reader.bytes();
+                    break;
+                case 2:
+                    message.rate = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CustomRate message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof termdeposit.CustomRate
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {termdeposit.CustomRate} CustomRate
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CustomRate.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CustomRate message.
+         * @function verify
+         * @memberof termdeposit.CustomRate
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CustomRate.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.address != null && message.hasOwnProperty("address"))
+                if (!(message.address && typeof message.address.length === "number" || $util.isString(message.address)))
+                    return "address: buffer expected";
+            if (message.rate != null && message.hasOwnProperty("rate")) {
+                var error = $root.weave.Fraction.verify(message.rate);
+                if (error)
+                    return "rate." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a CustomRate message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof termdeposit.CustomRate
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {termdeposit.CustomRate} CustomRate
+         */
+        CustomRate.fromObject = function fromObject(object) {
+            if (object instanceof $root.termdeposit.CustomRate)
+                return object;
+            var message = new $root.termdeposit.CustomRate();
+            if (object.address != null)
+                if (typeof object.address === "string")
+                    $util.base64.decode(object.address, message.address = $util.newBuffer($util.base64.length(object.address)), 0);
+                else if (object.address.length)
+                    message.address = object.address;
+            if (object.rate != null) {
+                if (typeof object.rate !== "object")
+                    throw TypeError(".termdeposit.CustomRate.rate: object expected");
+                message.rate = $root.weave.Fraction.fromObject(object.rate);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CustomRate message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof termdeposit.CustomRate
+         * @static
+         * @param {termdeposit.CustomRate} message CustomRate
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CustomRate.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.address = "";
+                else {
+                    object.address = [];
+                    if (options.bytes !== Array)
+                        object.address = $util.newBuffer(object.address);
+                }
+                object.rate = null;
+            }
+            if (message.address != null && message.hasOwnProperty("address"))
+                object.address = options.bytes === String ? $util.base64.encode(message.address, 0, message.address.length) : options.bytes === Array ? Array.prototype.slice.call(message.address) : message.address;
+            if (message.rate != null && message.hasOwnProperty("rate"))
+                object.rate = $root.weave.Fraction.toObject(message.rate, options);
+            return object;
+        };
+
+        /**
+         * Converts this CustomRate to JSON.
+         * @function toJSON
+         * @memberof termdeposit.CustomRate
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CustomRate.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CustomRate;
+    })();
+
+    termdeposit.DepositBonus = (function() {
+
+        /**
+         * Properties of a DepositBonus.
+         * @memberof termdeposit
+         * @interface IDepositBonus
+         * @property {number|null} [lockinPeriod] Deposit minimal lockin period required to use this bonus.
+         * @property {weave.IFraction|null} [bonus] Bonus rate for given range.
+         */
+
+        /**
+         * Constructs a new DepositBonus.
+         * @memberof termdeposit
+         * @classdesc longer the deposit period, the higher the deposit bonus should be.
+         * @implements IDepositBonus
+         * @constructor
+         * @param {termdeposit.IDepositBonus=} [properties] Properties to set
+         */
+        function DepositBonus(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Deposit minimal lockin period required to use this bonus.
+         * @member {number} lockinPeriod
+         * @memberof termdeposit.DepositBonus
+         * @instance
+         */
+        DepositBonus.prototype.lockinPeriod = 0;
+
+        /**
+         * Bonus rate for given range.
+         * @member {weave.IFraction|null|undefined} bonus
+         * @memberof termdeposit.DepositBonus
+         * @instance
+         */
+        DepositBonus.prototype.bonus = null;
+
+        /**
+         * Creates a new DepositBonus instance using the specified properties.
+         * @function create
+         * @memberof termdeposit.DepositBonus
+         * @static
+         * @param {termdeposit.IDepositBonus=} [properties] Properties to set
+         * @returns {termdeposit.DepositBonus} DepositBonus instance
+         */
+        DepositBonus.create = function create(properties) {
+            return new DepositBonus(properties);
+        };
+
+        /**
+         * Encodes the specified DepositBonus message. Does not implicitly {@link termdeposit.DepositBonus.verify|verify} messages.
+         * @function encode
+         * @memberof termdeposit.DepositBonus
+         * @static
+         * @param {termdeposit.IDepositBonus} message DepositBonus message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DepositBonus.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.lockinPeriod != null && message.hasOwnProperty("lockinPeriod"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.lockinPeriod);
+            if (message.bonus != null && message.hasOwnProperty("bonus"))
+                $root.weave.Fraction.encode(message.bonus, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified DepositBonus message, length delimited. Does not implicitly {@link termdeposit.DepositBonus.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof termdeposit.DepositBonus
+         * @static
+         * @param {termdeposit.IDepositBonus} message DepositBonus message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DepositBonus.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a DepositBonus message from the specified reader or buffer.
+         * @function decode
+         * @memberof termdeposit.DepositBonus
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {termdeposit.DepositBonus} DepositBonus
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DepositBonus.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.termdeposit.DepositBonus();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.lockinPeriod = reader.int32();
+                    break;
+                case 2:
+                    message.bonus = $root.weave.Fraction.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a DepositBonus message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof termdeposit.DepositBonus
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {termdeposit.DepositBonus} DepositBonus
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DepositBonus.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a DepositBonus message.
+         * @function verify
+         * @memberof termdeposit.DepositBonus
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        DepositBonus.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.lockinPeriod != null && message.hasOwnProperty("lockinPeriod"))
+                if (!$util.isInteger(message.lockinPeriod))
+                    return "lockinPeriod: integer expected";
+            if (message.bonus != null && message.hasOwnProperty("bonus")) {
+                var error = $root.weave.Fraction.verify(message.bonus);
+                if (error)
+                    return "bonus." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a DepositBonus message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof termdeposit.DepositBonus
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {termdeposit.DepositBonus} DepositBonus
+         */
+        DepositBonus.fromObject = function fromObject(object) {
+            if (object instanceof $root.termdeposit.DepositBonus)
+                return object;
+            var message = new $root.termdeposit.DepositBonus();
+            if (object.lockinPeriod != null)
+                message.lockinPeriod = object.lockinPeriod | 0;
+            if (object.bonus != null) {
+                if (typeof object.bonus !== "object")
+                    throw TypeError(".termdeposit.DepositBonus.bonus: object expected");
+                message.bonus = $root.weave.Fraction.fromObject(object.bonus);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a DepositBonus message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof termdeposit.DepositBonus
+         * @static
+         * @param {termdeposit.DepositBonus} message DepositBonus
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        DepositBonus.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.lockinPeriod = 0;
+                object.bonus = null;
+            }
+            if (message.lockinPeriod != null && message.hasOwnProperty("lockinPeriod"))
+                object.lockinPeriod = message.lockinPeriod;
+            if (message.bonus != null && message.hasOwnProperty("bonus"))
+                object.bonus = $root.weave.Fraction.toObject(message.bonus, options);
+            return object;
+        };
+
+        /**
+         * Converts this DepositBonus to JSON.
+         * @function toJSON
+         * @memberof termdeposit.DepositBonus
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        DepositBonus.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return DepositBonus;
+    })();
+
+    termdeposit.CreateDepositContractMsg = (function() {
+
+        /**
+         * Properties of a CreateDepositContractMsg.
+         * @memberof termdeposit
+         * @interface ICreateDepositContractMsg
+         * @property {weave.IMetadata|null} [metadata] CreateDepositContractMsg metadata
+         * @property {number|Long|null} [validSince] An activation date for the newly created deposit contract.
+         * @property {number|Long|null} [validUntil] An expiration date for the newly created deposit contract.
+         */
+
+        /**
+         * Constructs a new CreateDepositContractMsg.
+         * @memberof termdeposit
+         * @classdesc must be signed by the admin as configured via the Configuration entity.
+         * @implements ICreateDepositContractMsg
+         * @constructor
+         * @param {termdeposit.ICreateDepositContractMsg=} [properties] Properties to set
+         */
+        function CreateDepositContractMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * CreateDepositContractMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @instance
+         */
+        CreateDepositContractMsg.prototype.metadata = null;
+
+        /**
+         * An activation date for the newly created deposit contract.
+         * @member {number|Long} validSince
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @instance
+         */
+        CreateDepositContractMsg.prototype.validSince = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * An expiration date for the newly created deposit contract.
+         * @member {number|Long} validUntil
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @instance
+         */
+        CreateDepositContractMsg.prototype.validUntil = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Creates a new CreateDepositContractMsg instance using the specified properties.
+         * @function create
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @static
+         * @param {termdeposit.ICreateDepositContractMsg=} [properties] Properties to set
+         * @returns {termdeposit.CreateDepositContractMsg} CreateDepositContractMsg instance
+         */
+        CreateDepositContractMsg.create = function create(properties) {
+            return new CreateDepositContractMsg(properties);
+        };
+
+        /**
+         * Encodes the specified CreateDepositContractMsg message. Does not implicitly {@link termdeposit.CreateDepositContractMsg.verify|verify} messages.
+         * @function encode
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @static
+         * @param {termdeposit.ICreateDepositContractMsg} message CreateDepositContractMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreateDepositContractMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.validSince != null && message.hasOwnProperty("validSince"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.validSince);
+            if (message.validUntil != null && message.hasOwnProperty("validUntil"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.validUntil);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CreateDepositContractMsg message, length delimited. Does not implicitly {@link termdeposit.CreateDepositContractMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @static
+         * @param {termdeposit.ICreateDepositContractMsg} message CreateDepositContractMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CreateDepositContractMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CreateDepositContractMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {termdeposit.CreateDepositContractMsg} CreateDepositContractMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreateDepositContractMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.termdeposit.CreateDepositContractMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.validSince = reader.int64();
+                    break;
+                case 3:
+                    message.validUntil = reader.int64();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CreateDepositContractMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {termdeposit.CreateDepositContractMsg} CreateDepositContractMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CreateDepositContractMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CreateDepositContractMsg message.
+         * @function verify
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CreateDepositContractMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.validSince != null && message.hasOwnProperty("validSince"))
+                if (!$util.isInteger(message.validSince) && !(message.validSince && $util.isInteger(message.validSince.low) && $util.isInteger(message.validSince.high)))
+                    return "validSince: integer|Long expected";
+            if (message.validUntil != null && message.hasOwnProperty("validUntil"))
+                if (!$util.isInteger(message.validUntil) && !(message.validUntil && $util.isInteger(message.validUntil.low) && $util.isInteger(message.validUntil.high)))
+                    return "validUntil: integer|Long expected";
+            return null;
+        };
+
+        /**
+         * Creates a CreateDepositContractMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {termdeposit.CreateDepositContractMsg} CreateDepositContractMsg
+         */
+        CreateDepositContractMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.termdeposit.CreateDepositContractMsg)
+                return object;
+            var message = new $root.termdeposit.CreateDepositContractMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".termdeposit.CreateDepositContractMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.validSince != null)
+                if ($util.Long)
+                    (message.validSince = $util.Long.fromValue(object.validSince)).unsigned = false;
+                else if (typeof object.validSince === "string")
+                    message.validSince = parseInt(object.validSince, 10);
+                else if (typeof object.validSince === "number")
+                    message.validSince = object.validSince;
+                else if (typeof object.validSince === "object")
+                    message.validSince = new $util.LongBits(object.validSince.low >>> 0, object.validSince.high >>> 0).toNumber();
+            if (object.validUntil != null)
+                if ($util.Long)
+                    (message.validUntil = $util.Long.fromValue(object.validUntil)).unsigned = false;
+                else if (typeof object.validUntil === "string")
+                    message.validUntil = parseInt(object.validUntil, 10);
+                else if (typeof object.validUntil === "number")
+                    message.validUntil = object.validUntil;
+                else if (typeof object.validUntil === "object")
+                    message.validUntil = new $util.LongBits(object.validUntil.low >>> 0, object.validUntil.high >>> 0).toNumber();
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CreateDepositContractMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @static
+         * @param {termdeposit.CreateDepositContractMsg} message CreateDepositContractMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CreateDepositContractMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.validSince = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.validSince = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.validUntil = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.validUntil = options.longs === String ? "0" : 0;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.validSince != null && message.hasOwnProperty("validSince"))
+                if (typeof message.validSince === "number")
+                    object.validSince = options.longs === String ? String(message.validSince) : message.validSince;
+                else
+                    object.validSince = options.longs === String ? $util.Long.prototype.toString.call(message.validSince) : options.longs === Number ? new $util.LongBits(message.validSince.low >>> 0, message.validSince.high >>> 0).toNumber() : message.validSince;
+            if (message.validUntil != null && message.hasOwnProperty("validUntil"))
+                if (typeof message.validUntil === "number")
+                    object.validUntil = options.longs === String ? String(message.validUntil) : message.validUntil;
+                else
+                    object.validUntil = options.longs === String ? $util.Long.prototype.toString.call(message.validUntil) : options.longs === Number ? new $util.LongBits(message.validUntil.low >>> 0, message.validUntil.high >>> 0).toNumber() : message.validUntil;
+            return object;
+        };
+
+        /**
+         * Converts this CreateDepositContractMsg to JSON.
+         * @function toJSON
+         * @memberof termdeposit.CreateDepositContractMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CreateDepositContractMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return CreateDepositContractMsg;
+    })();
+
+    termdeposit.DepositMsg = (function() {
+
+        /**
+         * Properties of a DepositMsg.
+         * @memberof termdeposit
+         * @interface IDepositMsg
+         * @property {weave.IMetadata|null} [metadata] DepositMsg metadata
+         * @property {Uint8Array|null} [depositContractId] must not be expired.
+         * @property {coin.ICoin|null} [amount] Total amount that was deposited within a contract. Must be IOV tokens.
+         * @property {Uint8Array|null} [depositor] the contract expires.
+         */
+
+        /**
+         * Constructs a new DepositMsg.
+         * @memberof termdeposit
+         * @classdesc contract. Funds will stay locked until that contract expiration date.
+         * @implements IDepositMsg
+         * @constructor
+         * @param {termdeposit.IDepositMsg=} [properties] Properties to set
+         */
+        function DepositMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * DepositMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof termdeposit.DepositMsg
+         * @instance
+         */
+        DepositMsg.prototype.metadata = null;
+
+        /**
+         * must not be expired.
+         * @member {Uint8Array} depositContractId
+         * @memberof termdeposit.DepositMsg
+         * @instance
+         */
+        DepositMsg.prototype.depositContractId = $util.newBuffer([]);
+
+        /**
+         * Total amount that was deposited within a contract. Must be IOV tokens.
+         * @member {coin.ICoin|null|undefined} amount
+         * @memberof termdeposit.DepositMsg
+         * @instance
+         */
+        DepositMsg.prototype.amount = null;
+
+        /**
+         * the contract expires.
+         * @member {Uint8Array} depositor
+         * @memberof termdeposit.DepositMsg
+         * @instance
+         */
+        DepositMsg.prototype.depositor = $util.newBuffer([]);
+
+        /**
+         * Creates a new DepositMsg instance using the specified properties.
+         * @function create
+         * @memberof termdeposit.DepositMsg
+         * @static
+         * @param {termdeposit.IDepositMsg=} [properties] Properties to set
+         * @returns {termdeposit.DepositMsg} DepositMsg instance
+         */
+        DepositMsg.create = function create(properties) {
+            return new DepositMsg(properties);
+        };
+
+        /**
+         * Encodes the specified DepositMsg message. Does not implicitly {@link termdeposit.DepositMsg.verify|verify} messages.
+         * @function encode
+         * @memberof termdeposit.DepositMsg
+         * @static
+         * @param {termdeposit.IDepositMsg} message DepositMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DepositMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.depositContractId != null && message.hasOwnProperty("depositContractId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.depositContractId);
+            if (message.amount != null && message.hasOwnProperty("amount"))
+                $root.coin.Coin.encode(message.amount, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.depositor != null && message.hasOwnProperty("depositor"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.depositor);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified DepositMsg message, length delimited. Does not implicitly {@link termdeposit.DepositMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof termdeposit.DepositMsg
+         * @static
+         * @param {termdeposit.IDepositMsg} message DepositMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DepositMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a DepositMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof termdeposit.DepositMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {termdeposit.DepositMsg} DepositMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DepositMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.termdeposit.DepositMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.depositContractId = reader.bytes();
+                    break;
+                case 3:
+                    message.amount = $root.coin.Coin.decode(reader, reader.uint32());
+                    break;
+                case 4:
+                    message.depositor = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a DepositMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof termdeposit.DepositMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {termdeposit.DepositMsg} DepositMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DepositMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a DepositMsg message.
+         * @function verify
+         * @memberof termdeposit.DepositMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        DepositMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.depositContractId != null && message.hasOwnProperty("depositContractId"))
+                if (!(message.depositContractId && typeof message.depositContractId.length === "number" || $util.isString(message.depositContractId)))
+                    return "depositContractId: buffer expected";
+            if (message.amount != null && message.hasOwnProperty("amount")) {
+                var error = $root.coin.Coin.verify(message.amount);
+                if (error)
+                    return "amount." + error;
+            }
+            if (message.depositor != null && message.hasOwnProperty("depositor"))
+                if (!(message.depositor && typeof message.depositor.length === "number" || $util.isString(message.depositor)))
+                    return "depositor: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a DepositMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof termdeposit.DepositMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {termdeposit.DepositMsg} DepositMsg
+         */
+        DepositMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.termdeposit.DepositMsg)
+                return object;
+            var message = new $root.termdeposit.DepositMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".termdeposit.DepositMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.depositContractId != null)
+                if (typeof object.depositContractId === "string")
+                    $util.base64.decode(object.depositContractId, message.depositContractId = $util.newBuffer($util.base64.length(object.depositContractId)), 0);
+                else if (object.depositContractId.length)
+                    message.depositContractId = object.depositContractId;
+            if (object.amount != null) {
+                if (typeof object.amount !== "object")
+                    throw TypeError(".termdeposit.DepositMsg.amount: object expected");
+                message.amount = $root.coin.Coin.fromObject(object.amount);
+            }
+            if (object.depositor != null)
+                if (typeof object.depositor === "string")
+                    $util.base64.decode(object.depositor, message.depositor = $util.newBuffer($util.base64.length(object.depositor)), 0);
+                else if (object.depositor.length)
+                    message.depositor = object.depositor;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a DepositMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof termdeposit.DepositMsg
+         * @static
+         * @param {termdeposit.DepositMsg} message DepositMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        DepositMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.depositContractId = "";
+                else {
+                    object.depositContractId = [];
+                    if (options.bytes !== Array)
+                        object.depositContractId = $util.newBuffer(object.depositContractId);
+                }
+                object.amount = null;
+                if (options.bytes === String)
+                    object.depositor = "";
+                else {
+                    object.depositor = [];
+                    if (options.bytes !== Array)
+                        object.depositor = $util.newBuffer(object.depositor);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.depositContractId != null && message.hasOwnProperty("depositContractId"))
+                object.depositContractId = options.bytes === String ? $util.base64.encode(message.depositContractId, 0, message.depositContractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.depositContractId) : message.depositContractId;
+            if (message.amount != null && message.hasOwnProperty("amount"))
+                object.amount = $root.coin.Coin.toObject(message.amount, options);
+            if (message.depositor != null && message.hasOwnProperty("depositor"))
+                object.depositor = options.bytes === String ? $util.base64.encode(message.depositor, 0, message.depositor.length) : options.bytes === Array ? Array.prototype.slice.call(message.depositor) : message.depositor;
+            return object;
+        };
+
+        /**
+         * Converts this DepositMsg to JSON.
+         * @function toJSON
+         * @memberof termdeposit.DepositMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        DepositMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return DepositMsg;
+    })();
+
+    termdeposit.ReleaseDepositMsg = (function() {
+
+        /**
+         * Properties of a ReleaseDepositMsg.
+         * @memberof termdeposit
+         * @interface IReleaseDepositMsg
+         * @property {weave.IMetadata|null} [metadata] ReleaseDepositMsg metadata
+         * @property {Uint8Array|null} [depositId] ID of the deposit that is to be released.
+         */
+
+        /**
+         * Constructs a new ReleaseDepositMsg.
+         * @memberof termdeposit
+         * @classdesc deposit. Related contract must be expired. Anyone can submit this message.
+         * @implements IReleaseDepositMsg
+         * @constructor
+         * @param {termdeposit.IReleaseDepositMsg=} [properties] Properties to set
+         */
+        function ReleaseDepositMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ReleaseDepositMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @instance
+         */
+        ReleaseDepositMsg.prototype.metadata = null;
+
+        /**
+         * ID of the deposit that is to be released.
+         * @member {Uint8Array} depositId
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @instance
+         */
+        ReleaseDepositMsg.prototype.depositId = $util.newBuffer([]);
+
+        /**
+         * Creates a new ReleaseDepositMsg instance using the specified properties.
+         * @function create
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @static
+         * @param {termdeposit.IReleaseDepositMsg=} [properties] Properties to set
+         * @returns {termdeposit.ReleaseDepositMsg} ReleaseDepositMsg instance
+         */
+        ReleaseDepositMsg.create = function create(properties) {
+            return new ReleaseDepositMsg(properties);
+        };
+
+        /**
+         * Encodes the specified ReleaseDepositMsg message. Does not implicitly {@link termdeposit.ReleaseDepositMsg.verify|verify} messages.
+         * @function encode
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @static
+         * @param {termdeposit.IReleaseDepositMsg} message ReleaseDepositMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ReleaseDepositMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.depositId != null && message.hasOwnProperty("depositId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.depositId);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ReleaseDepositMsg message, length delimited. Does not implicitly {@link termdeposit.ReleaseDepositMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @static
+         * @param {termdeposit.IReleaseDepositMsg} message ReleaseDepositMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ReleaseDepositMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ReleaseDepositMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {termdeposit.ReleaseDepositMsg} ReleaseDepositMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ReleaseDepositMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.termdeposit.ReleaseDepositMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.depositId = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ReleaseDepositMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {termdeposit.ReleaseDepositMsg} ReleaseDepositMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ReleaseDepositMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ReleaseDepositMsg message.
+         * @function verify
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ReleaseDepositMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.depositId != null && message.hasOwnProperty("depositId"))
+                if (!(message.depositId && typeof message.depositId.length === "number" || $util.isString(message.depositId)))
+                    return "depositId: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a ReleaseDepositMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {termdeposit.ReleaseDepositMsg} ReleaseDepositMsg
+         */
+        ReleaseDepositMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.termdeposit.ReleaseDepositMsg)
+                return object;
+            var message = new $root.termdeposit.ReleaseDepositMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".termdeposit.ReleaseDepositMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.depositId != null)
+                if (typeof object.depositId === "string")
+                    $util.base64.decode(object.depositId, message.depositId = $util.newBuffer($util.base64.length(object.depositId)), 0);
+                else if (object.depositId.length)
+                    message.depositId = object.depositId;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ReleaseDepositMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @static
+         * @param {termdeposit.ReleaseDepositMsg} message ReleaseDepositMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ReleaseDepositMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.depositId = "";
+                else {
+                    object.depositId = [];
+                    if (options.bytes !== Array)
+                        object.depositId = $util.newBuffer(object.depositId);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.depositId != null && message.hasOwnProperty("depositId"))
+                object.depositId = options.bytes === String ? $util.base64.encode(message.depositId, 0, message.depositId.length) : options.bytes === Array ? Array.prototype.slice.call(message.depositId) : message.depositId;
+            return object;
+        };
+
+        /**
+         * Converts this ReleaseDepositMsg to JSON.
+         * @function toJSON
+         * @memberof termdeposit.ReleaseDepositMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ReleaseDepositMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ReleaseDepositMsg;
+    })();
+
+    termdeposit.UpdateConfigurationMsg = (function() {
+
+        /**
+         * Properties of an UpdateConfigurationMsg.
+         * @memberof termdeposit
+         * @interface IUpdateConfigurationMsg
+         * @property {weave.IMetadata|null} [metadata] UpdateConfigurationMsg metadata
+         * @property {termdeposit.IConfiguration|null} [patch] UpdateConfigurationMsg patch
+         */
+
+        /**
+         * Constructs a new UpdateConfigurationMsg.
+         * @memberof termdeposit
+         * @classdesc Represents an UpdateConfigurationMsg.
+         * @implements IUpdateConfigurationMsg
+         * @constructor
+         * @param {termdeposit.IUpdateConfigurationMsg=} [properties] Properties to set
+         */
+        function UpdateConfigurationMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdateConfigurationMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.metadata = null;
+
+        /**
+         * UpdateConfigurationMsg patch.
+         * @member {termdeposit.IConfiguration|null|undefined} patch
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.patch = null;
+
+        /**
+         * Creates a new UpdateConfigurationMsg instance using the specified properties.
+         * @function create
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @static
+         * @param {termdeposit.IUpdateConfigurationMsg=} [properties] Properties to set
+         * @returns {termdeposit.UpdateConfigurationMsg} UpdateConfigurationMsg instance
+         */
+        UpdateConfigurationMsg.create = function create(properties) {
+            return new UpdateConfigurationMsg(properties);
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link termdeposit.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encode
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @static
+         * @param {termdeposit.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                $root.termdeposit.Configuration.encode(message.patch, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link termdeposit.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @static
+         * @param {termdeposit.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {termdeposit.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.termdeposit.UpdateConfigurationMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.patch = $root.termdeposit.Configuration.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {termdeposit.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdateConfigurationMsg message.
+         * @function verify
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdateConfigurationMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.patch != null && message.hasOwnProperty("patch")) {
+                var error = $root.termdeposit.Configuration.verify(message.patch);
+                if (error)
+                    return "patch." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {termdeposit.UpdateConfigurationMsg} UpdateConfigurationMsg
+         */
+        UpdateConfigurationMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.termdeposit.UpdateConfigurationMsg)
+                return object;
+            var message = new $root.termdeposit.UpdateConfigurationMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".termdeposit.UpdateConfigurationMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.patch != null) {
+                if (typeof object.patch !== "object")
+                    throw TypeError(".termdeposit.UpdateConfigurationMsg.patch: object expected");
+                message.patch = $root.termdeposit.Configuration.fromObject(object.patch);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @static
+         * @param {termdeposit.UpdateConfigurationMsg} message UpdateConfigurationMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdateConfigurationMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.patch = null;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                object.patch = $root.termdeposit.Configuration.toObject(message.patch, options);
+            return object;
+        };
+
+        /**
+         * Converts this UpdateConfigurationMsg to JSON.
+         * @function toJSON
+         * @memberof termdeposit.UpdateConfigurationMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdateConfigurationMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateConfigurationMsg;
+    })();
+
+    return termdeposit;
 })();
 
 $root.username = (function() {
@@ -14476,6 +19689,216 @@ $root.weave = (function() {
         };
 
         return PubKey;
+    })();
+
+    weave.Fraction = (function() {
+
+        /**
+         * Properties of a Fraction.
+         * @memberof weave
+         * @interface IFraction
+         * @property {number|null} [numerator] The top number in a fraction.
+         * @property {number|null} [denominator] The bottom number
+         */
+
+        /**
+         * Constructs a new Fraction.
+         * @memberof weave
+         * @classdesc issues that native floating point type has.
+         * @implements IFraction
+         * @constructor
+         * @param {weave.IFraction=} [properties] Properties to set
+         */
+        function Fraction(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * The top number in a fraction.
+         * @member {number} numerator
+         * @memberof weave.Fraction
+         * @instance
+         */
+        Fraction.prototype.numerator = 0;
+
+        /**
+         * The bottom number
+         * @member {number} denominator
+         * @memberof weave.Fraction
+         * @instance
+         */
+        Fraction.prototype.denominator = 0;
+
+        /**
+         * Creates a new Fraction instance using the specified properties.
+         * @function create
+         * @memberof weave.Fraction
+         * @static
+         * @param {weave.IFraction=} [properties] Properties to set
+         * @returns {weave.Fraction} Fraction instance
+         */
+        Fraction.create = function create(properties) {
+            return new Fraction(properties);
+        };
+
+        /**
+         * Encodes the specified Fraction message. Does not implicitly {@link weave.Fraction.verify|verify} messages.
+         * @function encode
+         * @memberof weave.Fraction
+         * @static
+         * @param {weave.IFraction} message Fraction message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Fraction.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.numerator != null && message.hasOwnProperty("numerator"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.numerator);
+            if (message.denominator != null && message.hasOwnProperty("denominator"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.denominator);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Fraction message, length delimited. Does not implicitly {@link weave.Fraction.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof weave.Fraction
+         * @static
+         * @param {weave.IFraction} message Fraction message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Fraction.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Fraction message from the specified reader or buffer.
+         * @function decode
+         * @memberof weave.Fraction
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {weave.Fraction} Fraction
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Fraction.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.weave.Fraction();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.numerator = reader.uint32();
+                    break;
+                case 2:
+                    message.denominator = reader.uint32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Fraction message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof weave.Fraction
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {weave.Fraction} Fraction
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Fraction.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Fraction message.
+         * @function verify
+         * @memberof weave.Fraction
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Fraction.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.numerator != null && message.hasOwnProperty("numerator"))
+                if (!$util.isInteger(message.numerator))
+                    return "numerator: integer expected";
+            if (message.denominator != null && message.hasOwnProperty("denominator"))
+                if (!$util.isInteger(message.denominator))
+                    return "denominator: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a Fraction message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof weave.Fraction
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {weave.Fraction} Fraction
+         */
+        Fraction.fromObject = function fromObject(object) {
+            if (object instanceof $root.weave.Fraction)
+                return object;
+            var message = new $root.weave.Fraction();
+            if (object.numerator != null)
+                message.numerator = object.numerator >>> 0;
+            if (object.denominator != null)
+                message.denominator = object.denominator >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Fraction message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof weave.Fraction
+         * @static
+         * @param {weave.Fraction} message Fraction
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Fraction.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.numerator = 0;
+                object.denominator = 0;
+            }
+            if (message.numerator != null && message.hasOwnProperty("numerator"))
+                object.numerator = message.numerator;
+            if (message.denominator != null && message.hasOwnProperty("denominator"))
+                object.denominator = message.denominator;
+            return object;
+        };
+
+        /**
+         * Converts this Fraction to JSON.
+         * @function toJSON
+         * @memberof weave.Fraction
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Fraction.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Fraction;
     })();
 
     return weave;
