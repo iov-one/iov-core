@@ -178,7 +178,7 @@ function decodeRegisterDomainTx(
     domain: ensure(msg.domain, "domain"),
     admin: encodeBnsAddress(prefix, ensure(msg.admin, "admin")),
     hasSuperuser: ensure(msg.hasSuperuser, "hasSuperuser"),
-    thirdPartyToken: msg.thirdPartyToken || undefined,
+    broker: encodeBnsAddress(prefix, ensure(msg.thirdPartyToken, "thirdPartyToken")) || undefined,
     msgFees: ensure(msg.msgFees, "msgFees").map(decodeAccountMsgFee),
     accountRenew: asIntegerNumber(ensure(msg.accountRenew, "accountRenew")),
   };
@@ -231,7 +231,7 @@ function decodeRegisterAccountTx(
     name: ensure(msg.name, "name"),
     owner: encodeBnsAddress(prefix, ensure(msg.owner, "owner")),
     targets: ensure(msg.targets, "targets").map(decodeBlockchainAddress),
-    thirdPartyToken: msg.thirdPartyToken || undefined,
+    broker: encodeBnsAddress(prefix, ensure(msg.thirdPartyToken, "owner")) || undefined,
   };
 }
 

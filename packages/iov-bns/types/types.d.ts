@@ -327,7 +327,7 @@ export interface RegisterDomainTx extends UnsignedTransaction {
   readonly domain: string;
   readonly admin: Address;
   readonly hasSuperuser: boolean;
-  readonly thirdPartyToken?: Uint8Array;
+  readonly broker?: Address;
   readonly msgFees: readonly AccountMsgFee[];
   readonly accountRenew: number;
 }
@@ -354,7 +354,7 @@ export interface RegisterAccountTx extends UnsignedTransaction {
   readonly name: string;
   readonly owner: Address;
   readonly targets: readonly BlockchainAddress[];
-  readonly thirdPartyToken?: Uint8Array;
+  readonly broker?: Address;
 }
 export declare function isRegisterAccountTx(tx: UnsignedTransaction): tx is RegisterAccountTx;
 export interface TransferAccountTx extends UnsignedTransaction {
