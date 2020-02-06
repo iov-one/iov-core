@@ -388,7 +388,7 @@ export interface Decoder<T extends {}> {
 // Transactions: Term Deposit
 
 export interface TermDepositBonus {
-  readonly lockingPeriod: number;
+  readonly lockinPeriod: number;
   readonly bonus: Fraction;
 }
 

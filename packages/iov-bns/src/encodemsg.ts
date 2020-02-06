@@ -155,7 +155,7 @@ function encodeTermDepositBonus(
   // tslint:disable-next-line:readonly-array
 ): codecImpl.termdeposit.IDepositBonus {
   return {
-    lockinPeriod: bonus.lockingPeriod,
+    lockinPeriod: bonus.lockinPeriod,
     bonus: bonus.bonus,
   };
 }
