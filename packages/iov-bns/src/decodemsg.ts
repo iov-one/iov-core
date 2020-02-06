@@ -12,6 +12,7 @@ import {
 import {
   decodeAmount,
   decodeChainAddressPair,
+  decodeFraction,
   decodeParticipants,
   decodeRawProposalOption,
   decodeVoteOption,
@@ -23,16 +24,26 @@ import {
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
+  CreateTermDepositContractTx,
+  DepositContractIdBytes,
+  DepositIdBytes,
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
+  TermDepositBonus,
+  TermDepositConfiguration,
+  TermDepositCustomRate,
+  TermDepositReleaseTx,
+  TermDepositTx,
   TransferUsernameTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
+  UpdateTermDepositConfigurationTx,
   VoteTx,
 } from "./types";
-import { addressPrefix, encodeBnsAddress } from "./util";
+import { isTermDepositTx } from "./types";
+import { addressPrefix, encodeBnsAddress, IovBech32Prefix } from "./util";
 
 // Token sends
 
@@ -92,6 +103,87 @@ function decodeSwapAbortTransaction(
     swapId: {
       data: ensure(msg.swapId) as SwapIdBytes,
     },
+  };
+}
+
+// Term Deposits
+function decodeTermDepositCustomRate(
+  prefix: IovBech32Prefix,
+  customRate: codecImpl.termdeposit.ICustomRate,
+): TermDepositCustomRate {
+  return {
+    address: encodeBnsAddress(prefix, ensure(customRate.address, "address")),
+    rate: decodeFraction(ensure(customRate.rate, "rate")),
+  };
+}
+
+function decodeTermDepositBonus(bonus: codecImpl.termdeposit.IDepositBonus): TermDepositBonus {
+  return {
+    lockinPeriod: ensure(bonus.lockinPeriod, "lockinPeriod"),
+    bonus: decodeFraction(ensure(bonus.bonus, "bonus")),
+  };
+}
+
+function decodeTermDepositConfiguration(
+  prefix: IovBech32Prefix,
+  patch: codecImpl.termdeposit.IConfiguration,
+): TermDepositConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(patch.owner, "owner")),
+    admin: encodeBnsAddress(prefix, ensure(patch.admin, "admin")),
+    bonuses: ensure(patch.bonuses, "bonuses").map(decodeTermDepositBonus),
+    baseRates: ensure(patch.baseRates, "baseRates").map(baseRate =>
+      decodeTermDepositCustomRate(prefix, baseRate),
+    ),
+  };
+}
+
+function decodeUpdateTermDepositConfigurationTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.termdeposit.IUpdateConfigurationMsg,
+): UpdateTermDepositConfigurationTx {
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/update_termdeposit_configuration",
+    patch: decodeTermDepositConfiguration(prefix, ensure(msg.patch, "patch")),
+  };
+}
+
+function decodeCreateTermDepositContractTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.termdeposit.ICreateDepositContractMsg,
+): CreateTermDepositContractTx {
+  return {
+    ...base,
+    kind: "bns/create_termdeposit_contract",
+    validSince: ensure(msg.validSince, "validSince"),
+    validUntil: ensure(msg.validSince, "validUntil"),
+  };
+}
+
+function decodeTermDepositTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.termdeposit.IDepositMsg,
+): TermDepositTx {
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/termdeposit_deposit",
+    depositContractId: ensure(msg.depositContractId, "depositContractId") as DepositContractIdBytes,
+    amount: decodeAmount(ensure(msg.amount, "amount")),
+    depositor: encodeBnsAddress(prefix, ensure(msg.depositor, "address")),
+  };
+}
+
+function decodeTermDepositReleaseTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.termdeposit.IReleaseDepositMsg,
+): TermDepositReleaseTx {
+  return {
+    ...base,
+    kind: "bns/termdeposit_release",
+    depositId: ensure(msg.depositId, "depositId") as DepositIdBytes,
   };
 }
 
@@ -256,6 +348,20 @@ export function decodeMsg(base: UnsignedTransaction, tx: BnsdTxMsg): UnsignedTra
   if (tx.aswapCreateMsg) return decodeSwapOfferTx(base, tx.aswapCreateMsg);
   if (tx.aswapReleaseMsg) return decodeSwapClaimTx(base, tx.aswapReleaseMsg);
   if (tx.aswapReturnMsg) return decodeSwapAbortTransaction(base, tx.aswapReturnMsg);
+
+  // Term Deposits
+  if (tx.termdepositUpdateConfigurationMsg) {
+    return decodeUpdateTermDepositConfigurationTx(base, tx.termdepositUpdateConfigurationMsg);
+  }
+  if (tx.termdepositCreateDepositContractMsg) {
+    return decodeCreateTermDepositContractTx(base, tx.termdepositCreateDepositContractMsg);
+  }
+  if (tx.termdepositDepositMsg) {
+    return decodeTermDepositTx(base, tx.termdepositDepositMsg);
+  }
+  if (tx.termdepositReleaseDepositMsg) {
+    return decodeTermDepositReleaseTx(base, tx.termdepositReleaseDepositMsg);
+  }
 
   // Usernames
   if (tx.usernameRegisterTokenMsg) return decodeRegisterUsernameTx(base, tx.usernameRegisterTokenMsg);

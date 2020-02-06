@@ -123,20 +123,14 @@ function encodeSwapAbortTransaction(tx: SwapAbortTransaction): BnsdTxMsg {
 }
 
 // Term Deposit
-function encodeTermDepositCustomRate(
-  customRate: TermDepositCustomRate,
-  // tslint:disable-next-line:readonly-array
-): codecImpl.termdeposit.ICustomRate {
+function encodeTermDepositCustomRate(customRate: TermDepositCustomRate): codecImpl.termdeposit.ICustomRate {
   return {
     address: decodeBnsAddress(customRate.address).data,
     rate: customRate.rate,
   };
 }
 
-function encodeTermDepositBonus(
-  bonus: TermDepositBonus,
-  // tslint:disable-next-line:readonly-array
-): codecImpl.termdeposit.IDepositBonus {
+function encodeTermDepositBonus(bonus: TermDepositBonus): codecImpl.termdeposit.IDepositBonus {
   return {
     lockinPeriod: bonus.lockinPeriod,
     bonus: bonus.bonus,
@@ -145,7 +139,6 @@ function encodeTermDepositBonus(
 
 function encodeTermDepositConfiguration(
   configuration: TermDepositConfiguration,
-  // tslint:disable-next-line:readonly-array
 ): codecImpl.termdeposit.IConfiguration {
   return {
     owner: decodeBnsAddress(configuration.owner).data,
