@@ -194,7 +194,7 @@
     },
     "account": {
       "valid_name": "^[a-z0-9\\-_.]{3,64}$",
-      "valid_domain": "^[a-z0-9\\-_]+${3,16}",
+      "valid_domain": "^[a-z0-9\\-_]+${3,16}$",
       "valid_blockchain_id": "^[a-z0-9A-Z-]+$",
       "valid_blockchain_address": "^[a-z0-9A-Z]+$",
       "domain_renew": "2h",
