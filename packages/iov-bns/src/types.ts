@@ -417,8 +417,8 @@ export function isUpdateTermDepositConfigurationTx(
 
 export interface CreateTermDepositContractTx extends UnsignedTransaction {
   readonly kind: "bns/create_termdeposit_contract";
-  readonly validSince: number;
-  readonly validUntil: number;
+  readonly validSince: number | Long;
+  readonly validUntil: number | Long;
 }
 
 export function isCreateTermDepositContractTx(tx: UnsignedTransaction): tx is CreateTermDepositContractTx {
