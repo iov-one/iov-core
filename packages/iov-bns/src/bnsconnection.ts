@@ -143,6 +143,15 @@ function mapKindToBnsPath(transaction: BnsTx): string | undefined {
       return "aswap/release";
     case "bcp/swap_abort":
       return "aswap/return";
+    // Term Deposit
+    case "bns/update_termdeposit_configuration":
+      return "termdeposit/update_configuration";
+    case "bns/create_termdeposit_contract":
+      return "termdeposit/create_deposit_contract";
+    case "bns/termdeposit_deposit":
+      return "termdeposit/deposit";
+    case "bns/termdeposit_release":
+      return "termdeposit/release_deposit";
     // Usernames
     case "bns/register_username":
       return "username/register_token";
