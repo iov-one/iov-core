@@ -17,6 +17,7 @@ import {
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
+  CreateTermDepositContractTx,
   isBnsTx,
   isCreateTextResolutionAction,
   isExecuteMigrationAction,
@@ -31,10 +32,16 @@ import {
   RegisterUsernameTx,
   ReleaseEscrowTx,
   ReturnEscrowTx,
+  TermDepositBonus,
+  TermDepositConfiguration,
+  TermDepositCustomRate,
+  TermDepositReleaseTx,
+  TermDepositTx,
   TransferUsernameTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
+  UpdateTermDepositConfigurationTx,
   Validators,
   VoteOption,
   VoteTx,
@@ -112,6 +119,78 @@ function encodeSwapAbortTransaction(tx: SwapAbortTransaction): BnsdTxMsg {
       metadata: { schema: 1 },
       swapId: tx.swapId.data,
     }),
+  };
+}
+
+// Term Deposit
+function encodeTermDepositCustomRate(
+  customRate: TermDepositCustomRate,
+  // tslint:disable-next-line:readonly-array
+): codecImpl.termdeposit.ICustomRate {
+  return {
+    address: decodeBnsAddress(customRate.address).data,
+    rate: customRate.rate,
+  };
+}
+
+function encodeTermDepositBonus(
+  bonus: TermDepositBonus,
+  // tslint:disable-next-line:readonly-array
+): codecImpl.termdeposit.IDepositBonus {
+  return {
+    lockinPeriod: bonus.lockingPeriod,
+    bonus: bonus.bonus,
+  };
+}
+
+function encodeTermDepositConfiguration(
+  configuration: TermDepositConfiguration,
+  // tslint:disable-next-line:readonly-array
+): codecImpl.termdeposit.IConfiguration {
+  return {
+    owner: decodeBnsAddress(configuration.owner).data,
+    admin: decodeBnsAddress(configuration.admin).data,
+    bonuses: configuration.bonuses.map(encodeTermDepositBonus),
+    baseRates: configuration.baseRates.map(encodeTermDepositCustomRate),
+  };
+}
+
+function encodeUpdateTermDepositConfigurationTx(tx: UpdateTermDepositConfigurationTx): BnsdTxMsg {
+  return {
+    termdepositUpdateConfigurationMsg: {
+      metadata: { schema: 1 },
+      patch: encodeTermDepositConfiguration(tx.patch),
+    },
+  };
+}
+
+function encodeCreateTermDepositContractTx(tx: CreateTermDepositContractTx): BnsdTxMsg {
+  return {
+    termdepositCreateDepositContractMsg: {
+      metadata: { schema: 1 },
+      validSince: tx.validSince,
+      validUntil: tx.validUntil,
+    },
+  };
+}
+
+function encodeTermDepositTx(tx: TermDepositTx): BnsdTxMsg {
+  return {
+    termdepositDepositMsg: {
+      metadata: { schema: 1 },
+      depositContractId: tx.depositContractId,
+      amount: encodeAmount(tx.amount),
+      depositor: decodeBnsAddress(tx.depositor).data,
+    },
+  };
+}
+
+function encodeTermDepositReleaseTx(tx: TermDepositReleaseTx): BnsdTxMsg {
+  return {
+    termdepositReleaseDepositMsg: {
+      metadata: { schema: 1 },
+      depositId: tx.depositId,
+    },
   };
 }
 
@@ -393,6 +472,15 @@ export function encodeMsg(tx: UnsignedTransaction, strictMode = true): BnsdTxMsg
       return encodeSwapClaimTx(tx);
     case "bcp/swap_abort":
       return encodeSwapAbortTransaction(tx);
+    // BNS: Term Deposit
+    case "bns/update_termdeposit_configuration":
+      return encodeUpdateTermDepositConfigurationTx(tx);
+    case "bns/create_termdeposit_contract":
+      return encodeCreateTermDepositContractTx(tx);
+    case "bns/termdeposit_deposit":
+      return encodeTermDepositTx(tx);
+    case "bns/termdeposit_release":
+      return encodeTermDepositReleaseTx(tx);
 
     // BNS: Usernames
     case "bns/register_username":
