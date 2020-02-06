@@ -385,6 +385,69 @@ export interface Decoder<T extends {}> {
   readonly decode: (data: Uint8Array) => T;
 }
 
+// Transactions: Term Deposit
+
+export interface TermDepositBonus {
+  readonly lockingPeriod: number;
+  readonly bonus: Fraction;
+}
+
+export interface TermDepositCustomRate {
+  readonly address: Address;
+  readonly rate: Fraction;
+}
+
+export interface TermDepositConfiguration {
+  readonly owner: Address;
+  readonly admin: Address;
+  readonly bonuses: readonly TermDepositBonus[];
+  readonly baseRates: readonly TermDepositCustomRate[];
+}
+
+export interface UpdateTermDepositConfigurationTx extends UnsignedTransaction {
+  readonly kind: "bns/update_termdeposit_configuration";
+  readonly patch: TermDepositConfiguration;
+}
+
+export function isUpdateTermDepositConfigurationTx(
+  tx: UnsignedTransaction,
+): tx is UpdateTermDepositConfigurationTx {
+  return tx.kind === "bns/update_termdeposit_configuration";
+}
+
+export interface CreateTermDepositContractTx extends UnsignedTransaction {
+  readonly kind: "bns/create_termdeposit_contract";
+  readonly validSince: number;
+  readonly validUntil: number;
+}
+
+export function isCreateTermDepositContractTx(tx: UnsignedTransaction): tx is CreateTermDepositContractTx {
+  return tx.kind === "bns/create_termdeposit_contract";
+}
+
+export type DepositContractIdBytes = Uint8Array & As<"deposit-contract-id-bytes">;
+
+export interface TermDepositTx extends UnsignedTransaction {
+  readonly kind: "bns/termdeposit_deposit";
+  readonly depositContractId: DepositContractIdBytes;
+  readonly amount: Amount;
+  readonly depositor: Address;
+}
+
+export function isTermDepositTx(tx: UnsignedTransaction): tx is TermDepositTx {
+  return tx.kind === "bns/termdeposit_deposit";
+}
+
+export type DepositIdBytes = Uint8Array & As<"deposit-id-bytes">;
+export interface TermDepositReleaseTx extends UnsignedTransaction {
+  readonly kind: "bns/termdeposit_release";
+  readonly depositId: DepositIdBytes;
+}
+
+export function isTermDepositReleaseTx(tx: UnsignedTransaction): tx is TermDepositReleaseTx {
+  return tx.kind === "bns/termdeposit_release";
+}
+
 // Transactions: Usernames
 
 export interface RegisterUsernameTx extends UnsignedTransaction {
@@ -713,6 +776,11 @@ export type BnsTx =
   | AddAccountCertificateTx
   | ReplaceAccountMsgFeesTx
   | DeleteAccountCertificateTx
+  // BNS: Term Deposit
+  | UpdateTermDepositConfigurationTx
+  | CreateTermDepositContractTx
+  | TermDepositTx
+  | TermDepositReleaseTx
   // BNS: Multisignature contracts
   | CreateMultisignatureTx
   | UpdateMultisignatureTx
