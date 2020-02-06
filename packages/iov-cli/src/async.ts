@@ -1,5 +1,5 @@
 import babylon = require("babylon");
-import recast = require("recast");
+import * as recast from "recast";
 
 export function wrapInAsyncFunction(code: string): string {
   const codeInAsyncFunction = `(async () => {
