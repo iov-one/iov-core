@@ -42,7 +42,6 @@ import {
   UpdateTermDepositConfigurationTx,
   VoteTx,
 } from "./types";
-import { isTermDepositTx } from "./types";
 import { addressPrefix, encodeBnsAddress, IovBech32Prefix } from "./util";
 
 // Token sends
