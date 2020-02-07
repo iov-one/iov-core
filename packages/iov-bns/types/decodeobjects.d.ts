@@ -1,6 +1,8 @@
 import { Amount, ChainId, Token } from "@iov/bcp";
 import * as codecImpl from "./generated/codecimpl";
 import {
+  BnsTermDepositContractNft,
+  BnsTermDepositNft,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
@@ -17,9 +19,17 @@ import {
 } from "./types";
 import { IovBech32Prefix } from "./util";
 export declare function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token;
+export declare function decodeFraction(fraction: codecImpl.gov.IFraction): Fraction;
 export declare function decodeAmount(coin: codecImpl.coin.ICoin): Amount;
 export declare function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): CashConfiguration;
 export declare function decodeTxFeeConfiguration(config: codecImpl.txfee.IConfiguration): TxFeeConfiguration;
+export declare function decodeTermDepositNft(
+  nft: codecImpl.termdeposit.IDeposit & Keyed,
+  registryChainId: ChainId,
+): BnsTermDepositNft;
+export declare function decodeTermDepositContractNft(
+  nft: codecImpl.termdeposit.IDepositContract & Keyed,
+): BnsTermDepositContractNft;
 export declare function decodeChainAddressPair(pair: codecImpl.username.IBlockchainAddress): ChainAddressPair;
 export declare function decodeUsernameNft(
   nft: codecImpl.username.IToken & Keyed,
@@ -29,7 +39,6 @@ export declare function decodeElectorate(
   prefix: IovBech32Prefix,
   electorate: codecImpl.gov.IElectorate & Keyed,
 ): Electorate;
-export declare function decodeFraction(fraction: codecImpl.gov.IFraction): Fraction;
 export declare function decodeParticipants(
   prefix: IovBech32Prefix,
   maybeParticipants?: codecImpl.multisig.IParticipant[] | null,
