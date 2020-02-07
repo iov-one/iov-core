@@ -1,3 +1,4 @@
+/// <reference types="long" />
 import {
   Address,
   Algorithm,
@@ -12,6 +13,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { As } from "type-tagger";
+
 import * as codecImpl from "./generated/codecimpl";
 export interface CashConfiguration {
   readonly minimalFee: Amount | null;
@@ -261,6 +263,18 @@ export interface Vote {
   readonly elector: Elector;
   readonly selection: VoteOption;
 }
+export interface BnsTermDepositNft {
+  readonly depositContractId: DepositContractIdBytes;
+  readonly amount: Amount;
+  readonly rate: Fraction;
+  readonly depositor: Address;
+  readonly released: boolean;
+  readonly createdAt: number | Long;
+}
+export interface BnsTermDepositContractNft {
+  readonly validSince: number | Long;
+  readonly validUntil: number | Long;
+}
 export interface ChainAddressPair {
   readonly chainId: ChainId;
   readonly address: Address;
@@ -298,6 +312,49 @@ export interface Keyed {
 export interface Decoder<T extends {}> {
   readonly decode: (data: Uint8Array) => T;
 }
+export interface TermDepositBonus {
+  readonly lockinPeriod: number;
+  readonly bonus: Fraction;
+}
+export interface TermDepositCustomRate {
+  readonly address: Address;
+  readonly rate: Fraction;
+}
+export interface TermDepositConfiguration {
+  readonly owner: Address;
+  readonly admin: Address;
+  readonly bonuses: readonly TermDepositBonus[];
+  readonly baseRates: readonly TermDepositCustomRate[];
+}
+export interface UpdateTermDepositConfigurationTx extends UnsignedTransaction {
+  readonly kind: "bns/update_termdeposit_configuration";
+  readonly patch: TermDepositConfiguration;
+}
+export declare function isUpdateTermDepositConfigurationTx(
+  tx: UnsignedTransaction,
+): tx is UpdateTermDepositConfigurationTx;
+export interface CreateTermDepositContractTx extends UnsignedTransaction {
+  readonly kind: "bns/create_termdeposit_contract";
+  readonly validSince: number | Long;
+  readonly validUntil: number | Long;
+}
+export declare function isCreateTermDepositContractTx(
+  tx: UnsignedTransaction,
+): tx is CreateTermDepositContractTx;
+export declare type DepositContractIdBytes = Uint8Array & As<"deposit-contract-id-bytes">;
+export interface TermDepositTx extends UnsignedTransaction {
+  readonly kind: "bns/termdeposit_deposit";
+  readonly depositContractId: DepositContractIdBytes;
+  readonly amount: Amount;
+  readonly depositor: Address;
+}
+export declare function isTermDepositTx(tx: UnsignedTransaction): tx is TermDepositTx;
+export declare type DepositIdBytes = Uint8Array & As<"deposit-id-bytes">;
+export interface TermDepositReleaseTx extends UnsignedTransaction {
+  readonly kind: "bns/termdeposit_release";
+  readonly depositId: DepositIdBytes;
+}
+export declare function isTermDepositReleaseTx(tx: UnsignedTransaction): tx is TermDepositReleaseTx;
 export interface RegisterUsernameTx extends UnsignedTransaction {
   readonly kind: "bns/register_username";
   readonly username: string;
@@ -513,6 +570,10 @@ export declare type BnsTx =
   | AddAccountCertificateTx
   | ReplaceAccountMsgFeesTx
   | DeleteAccountCertificateTx
+  | UpdateTermDepositConfigurationTx
+  | CreateTermDepositContractTx
+  | TermDepositTx
+  | TermDepositReleaseTx
   | CreateMultisignatureTx
   | UpdateMultisignatureTx
   | CreateEscrowTx
