@@ -49,6 +49,7 @@ import {
   TermDepositBonus,
   TermDepositConfiguration,
   TermDepositCustomRate,
+  TermDepositDepositTx,
   TermDepositReleaseTx,
   TermDepositTx,
   TransferAccountTx,
@@ -184,7 +185,7 @@ function encodeCreateTermDepositContractTx(tx: CreateTermDepositContractTx): Bns
   };
 }
 
-function encodeTermDepositTx(tx: TermDepositTx): BnsdTxMsg {
+function encodeTermDepositDepositTx(tx: TermDepositDepositTx): BnsdTxMsg {
   return {
     termdepositDepositMsg: {
       metadata: { schema: 1 },
@@ -663,7 +664,7 @@ export function encodeMsg(tx: UnsignedTransaction, strictMode = true): BnsdTxMsg
     case "bns/create_termdeposit_contract":
       return encodeCreateTermDepositContractTx(tx);
     case "bns/termdeposit_deposit":
-      return encodeTermDepositTx(tx);
+      return encodeTermDepositDepositTx(tx);
     case "bns/termdeposit_release":
       return encodeTermDepositReleaseTx(tx);
 

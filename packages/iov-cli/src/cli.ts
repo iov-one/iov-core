@@ -75,8 +75,8 @@ export function main(originalArgs: readonly string[]): void {
         "isUpdateTermDepositConfigurationTx",
         "CreateTermDepositContractTx",
         "isCreateTermDepositContractTx",
-        "TermDepositTx",
-        "isTermDepositTx",
+        "TermDepositDepositTx",
+        "isTermDepositDepositTx",
         "TermDepositReleaseTx",
         "isTermDepositReleaseTx",
         // Usernames
