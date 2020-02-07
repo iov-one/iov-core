@@ -331,6 +331,21 @@ export interface Vote {
   readonly selection: VoteOption;
 }
 
+// Term Deposit NFT
+export interface BnsTermDepositNft {
+  readonly depositContractId: DepositContractIdBytes;
+  readonly amount: Amount;
+  readonly rate: Fraction;
+  readonly depositor: Address;
+  readonly released: boolean;
+  readonly createdAt: number | Long;
+}
+
+export interface BnsTermDepositContractNft {
+  readonly validSince: number | Long;
+  readonly validUntil: number | Long;
+}
+
 // username NFT
 
 export interface ChainAddressPair {

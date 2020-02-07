@@ -11,9 +11,12 @@ import {
   AccountNft,
   ActionKind,
   BlockchainAddress,
+  BnsTermDepositContractNft,
+  BnsTermDepositNft,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
+  DepositContractIdBytes,
   Domain,
   ElectionRule,
   Elector,
@@ -43,6 +46,15 @@ export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token 
     tokenName: ensure(data.name),
     fractionalDigits: weaveFractionalDigits,
   };
+}
+
+export function decodeFraction(fraction: codecImpl.gov.IFraction): Fraction {
+  const numerator = asIntegerNumber(fraction.numerator);
+  const denominator = asIntegerNumber(fraction.denominator);
+  if (denominator === 0) {
+    throw new Error("Denominator must not be 0");
+  }
+  return { numerator: numerator, denominator: denominator };
 }
 
 export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
@@ -83,6 +95,31 @@ export function decodeTxFeeConfiguration(config: codecImpl.txfee.IConfiguration)
   return {
     baseFee: decodeAmount(ensure(config.baseFee, "baseFee")),
     freeBytes: ensure(config.freeBytes, "freeBytes"),
+  };
+}
+
+// Term Deposit
+export function decodeTermDepositNft(
+  nft: codecImpl.termdeposit.IDeposit & Keyed,
+  registryChainId: ChainId,
+): BnsTermDepositNft {
+  const prefix = addressPrefix(registryChainId);
+  return {
+    depositContractId: ensure(nft.depositContractId, "depositContractId") as DepositContractIdBytes,
+    amount: decodeAmount(ensure(nft.amount, "amount")),
+    rate: decodeFraction(ensure(nft.rate, "rate")),
+    depositor: encodeBnsAddress(prefix, ensure(nft.depositor, "depositor")),
+    released: ensure(nft.released, "released"),
+    createdAt: ensure(nft.createdAt, "released"),
+  };
+}
+
+export function decodeTermDepositContractNft(
+  nft: codecImpl.termdeposit.IDepositContract & Keyed,
+): BnsTermDepositContractNft {
+  return {
+    validSince: ensure(nft.validSince, "validSince"),
+    validUntil: ensure(nft.validUntil, "validUntil"),
   };
 }
 
@@ -194,15 +231,6 @@ export function decodeElectorate(
     electors: electors,
     totalWeight: asIntegerNumber(electorate.totalElectorateWeight),
   };
-}
-
-export function decodeFraction(fraction: codecImpl.gov.IFraction): Fraction {
-  const numerator = asIntegerNumber(fraction.numerator);
-  const denominator = asIntegerNumber(fraction.denominator);
-  if (denominator === 0) {
-    throw new Error("Denominator must not be 0");
-  }
-  return { numerator: numerator, denominator: denominator };
 }
 
 export function decodeParticipants(
