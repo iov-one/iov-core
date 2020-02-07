@@ -306,13 +306,13 @@ export declare function isCreateTermDepositContractTx(
   tx: UnsignedTransaction,
 ): tx is CreateTermDepositContractTx;
 export declare type DepositContractIdBytes = Uint8Array & As<"deposit-contract-id-bytes">;
-export interface TermDepositTx extends UnsignedTransaction {
+export interface TermDepositDepositTx extends UnsignedTransaction {
   readonly kind: "bns/termdeposit_deposit";
   readonly depositContractId: DepositContractIdBytes;
   readonly amount: Amount;
   readonly depositor: Address;
 }
-export declare function isTermDepositTx(tx: UnsignedTransaction): tx is TermDepositTx;
+export declare function isTermDepositDepositTx(tx: UnsignedTransaction): tx is TermDepositDepositTx;
 export declare type DepositIdBytes = Uint8Array & As<"deposit-id-bytes">;
 export interface TermDepositReleaseTx extends UnsignedTransaction {
   readonly kind: "bns/termdeposit_release";
@@ -427,7 +427,7 @@ export declare type BnsTx =
   | TransferUsernameTx
   | UpdateTermDepositConfigurationTx
   | CreateTermDepositContractTx
-  | TermDepositTx
+  | TermDepositDepositTx
   | TermDepositReleaseTx
   | CreateMultisignatureTx
   | UpdateMultisignatureTx
