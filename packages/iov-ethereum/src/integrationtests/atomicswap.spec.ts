@@ -95,7 +95,7 @@ class Actor {
   public async sendTransaction(transaction: UnsignedTransaction, identity: Identity): Promise<void> {
     const nonce = await this.connection.getNonce({ pubkey: identity.pubkey });
     const signed = await this.profile.signTransaction(identity, transaction, ethereumCodec, nonce);
-    const postable = await ethereumCodec.bytesToPost(signed);
+    const postable = ethereumCodec.bytesToPost(signed);
     const post = await this.connection.postTx(postable);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
