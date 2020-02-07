@@ -33,8 +33,8 @@ import {
   TermDepositBonus,
   TermDepositConfiguration,
   TermDepositCustomRate,
+  TermDepositDepositTx,
   TermDepositReleaseTx,
-  TermDepositTx,
   TransferUsernameTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
@@ -161,10 +161,10 @@ function decodeCreateTermDepositContractTx(
   };
 }
 
-function decodeTermDepositTx(
+function decodeTermDepositDepositTx(
   base: UnsignedTransaction,
   msg: codecImpl.termdeposit.IDepositMsg,
-): TermDepositTx {
+): TermDepositDepositTx {
   const prefix = addressPrefix(base.chainId);
   return {
     ...base,
@@ -356,7 +356,7 @@ export function decodeMsg(base: UnsignedTransaction, tx: BnsdTxMsg): UnsignedTra
     return decodeCreateTermDepositContractTx(base, tx.termdepositCreateDepositContractMsg);
   }
   if (tx.termdepositDepositMsg) {
-    return decodeTermDepositTx(base, tx.termdepositDepositMsg);
+    return decodeTermDepositDepositTx(base, tx.termdepositDepositMsg);
   }
   if (tx.termdepositReleaseDepositMsg) {
     return decodeTermDepositReleaseTx(base, tx.termdepositReleaseDepositMsg);
