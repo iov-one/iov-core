@@ -14,6 +14,20 @@ export {
 } from "./conditions";
 export { bnsSwapQueryTag } from "./tags";
 export {
+  // Term Deposits
+  BnsTermDepositNft,
+  BnsTermDepositContractNft,
+  TermDepositBonus,
+  TermDepositCustomRate,
+  TermDepositConfiguration,
+  UpdateTermDepositConfigurationTx,
+  isUpdateTermDepositConfigurationTx,
+  CreateTermDepositContractTx,
+  isCreateTermDepositContractTx,
+  TermDepositDepositTx,
+  isTermDepositDepositTx,
+  TermDepositReleaseTx,
+  isTermDepositReleaseTx,
   // Usernames
   ChainAddressPair,
   BnsUsernamesByOwnerQuery,
