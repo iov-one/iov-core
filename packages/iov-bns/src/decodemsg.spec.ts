@@ -15,16 +15,31 @@ import {
 import { Encoding } from "@iov/encoding";
 
 import { decodeMsg } from "./decodemsg";
+import { decodeAmount } from "./decodeobjects";
 import * as codecImpl from "./generated/codecimpl";
 import {
   ActionKind,
+  isAddAccountCertificateTx,
   isCreateEscrowTx,
   isCreateMultisignatureTx,
   isCreateProposalTx,
+  isDeleteAccountCertificateTx,
+  isDeleteAccountTx,
+  isDeleteAllAccountsTx,
+  isDeleteDomainTx,
+  isRegisterAccountTx,
+  isRegisterDomainTx,
   isRegisterUsernameTx,
   isReleaseEscrowTx,
+  isRenewAccountTx,
+  isRenewDomainTx,
+  isReplaceAccountMsgFeesTx,
+  isReplaceAccountTargetsTx,
   isReturnEscrowTx,
+  isTransferAccountTx,
+  isTransferDomainTx,
   isTransferUsernameTx,
+  isUpdateAccountConfigurationTx,
   isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
   isUpdateTargetsOfUsernameTx,
@@ -220,6 +235,250 @@ describe("decodeMsg", () => {
     }
     expect(parsed.username).toEqual("bobby*iov");
     expect(parsed.newOwner).toEqual(defaultRecipient);
+  });
+
+  // Accounts
+
+  it("works for UpdateAccountConfigurationTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountUpdateConfigurationMsg: {
+        patch: {
+          owner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+          validDomain: "hole",
+          validName: "rabbit",
+          validBlockchainId: "wonderland",
+          validBlockchainAddress: "12345W",
+          domainRenew: 1234,
+        },
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isUpdateAccountConfigurationTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.configuration).toEqual({
+      owner: "tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address,
+      validDomain: "hole",
+      validName: "rabbit",
+      validBlockchainId: "wonderland",
+      validBlockchainAddress: "12345W",
+      domainRenew: 1234,
+    });
+  });
+
+  it("works for RegisterDomainTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountRegisterDomainMsg: {
+        domain: "some-domain",
+        admin: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+        hasSuperuser: true,
+        thirdPartyToken: fromHex("1234567890123456789012345678901234567890"),
+        msgFees: [{ msgPath: "some-msg-path", fee: { whole: 0, fractional: 123456789, ticker: "ASH" } }],
+        accountRenew: 1234,
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isRegisterDomainTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("some-domain");
+    expect(parsed.admin).toEqual("tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address);
+    expect(parsed.hasSuperuser).toEqual(true);
+    expect(parsed.broker).toEqual("tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address);
+    expect(parsed.msgFees).toEqual([
+      { msgPath: "some-msg-path", fee: decodeAmount({ whole: 0, fractional: 123456789, ticker: "ASH" }) },
+    ]);
+    expect(parsed.accountRenew).toEqual(1234);
+  });
+
+  it("works for TransferDomainTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountTransferDomainMsg: {
+        domain: "some-domain",
+        newAdmin: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isTransferDomainTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("some-domain");
+    expect(parsed.newAdmin).toEqual("tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address);
+  });
+
+  it("works for RenewDomainTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountRenewDomainMsg: {
+        domain: "some-domain",
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isRenewDomainTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("some-domain");
+  });
+
+  it("works for DeleteDomainTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountDeleteDomainMsg: {
+        domain: "some-domain",
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isDeleteDomainTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("some-domain");
+  });
+
+  it("works for RegisterAccountTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountRegisterAccountMsg: {
+        domain: "hole",
+        name: "alice",
+        owner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+        targets: [{ blockchainId: "wonderland", address: "12345W" }],
+        thirdPartyToken: fromHex("1234567890123456789012345678901234567890"),
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isRegisterAccountTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("hole");
+    expect(parsed.name).toEqual("alice");
+    expect(parsed.owner).toEqual("tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address);
+    expect(parsed.targets).toEqual([{ blockchainId: "wonderland", address: "12345W" }]);
+    expect(parsed.broker).toEqual("tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address);
+  });
+
+  it("works for TransferAccountTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountTransferAccountMsg: {
+        domain: "hole",
+        name: "alice",
+        newOwner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isTransferAccountTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("hole");
+    expect(parsed.name).toEqual("alice");
+    expect(parsed.newOwner).toEqual("tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address);
+  });
+
+  it("works for ReplaceAccountTargetsTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountReplaceAccountTargetsMsg: {
+        domain: "hole",
+        name: "alice",
+        newTargets: [{ blockchainId: "wonderland", address: "12345W" }],
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isReplaceAccountTargetsTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("hole");
+    expect(parsed.name).toEqual("alice");
+    expect(parsed.newTargets).toEqual([{ blockchainId: "wonderland", address: "12345W" }]);
+  });
+
+  it("works for DeleteAccountTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountDeleteAccountMsg: {
+        domain: "hole",
+        name: "alice",
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isDeleteAccountTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("hole");
+    expect(parsed.name).toEqual("alice");
+  });
+
+  it("works for DeleteAllAccountsTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountFlushDomainMsg: {
+        domain: "hole",
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isDeleteAllAccountsTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("hole");
+  });
+
+  it("works for RenewAccountTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountRenewAccountMsg: {
+        domain: "hole",
+        name: "alice",
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isRenewAccountTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("hole");
+    expect(parsed.name).toEqual("alice");
+  });
+
+  it("works for AddAccountCertificateTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountAddAccountCertificateMsg: {
+        domain: "hole",
+        name: "alice",
+        certificate: fromHex("214390591e6ac697319f20887405915e9d2690fd"),
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isAddAccountCertificateTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("hole");
+    expect(parsed.name).toEqual("alice");
+    expect(parsed.certificate).toEqual(fromHex("214390591e6ac697319f20887405915e9d2690fd"));
+  });
+
+  it("works for ReplaceAccountMsgFeesTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountReplaceAccountMsgFeesMsg: {
+        domain: "hole",
+        newMsgFees: [{ msgPath: "some-msg-path", fee: { whole: 0, fractional: 123456789, ticker: "ASH" } }],
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isReplaceAccountMsgFeesTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("hole");
+    expect(parsed.newMsgFees).toEqual([
+      { msgPath: "some-msg-path", fee: decodeAmount({ whole: 0, fractional: 123456789, ticker: "ASH" }) },
+    ]);
+  });
+
+  it("works for DeleteAccountCertificateTx", () => {
+    const transactionMessage: codecImpl.bnsd.ITx = {
+      accountDeleteAccountCertificateMsg: {
+        domain: "hole",
+        name: "alice",
+        certificateHash: fromHex("214390591e6ac697319f20887405915e9d2690fd"),
+      },
+    };
+    const parsed = decodeMsg(defaultBaseTx, transactionMessage);
+    if (!isDeleteAccountCertificateTx(parsed)) {
+      throw new Error("unexpected transaction kind");
+    }
+    expect(parsed.domain).toEqual("hole");
+    expect(parsed.name).toEqual("alice");
+    expect(parsed.certificateHash).toEqual(fromHex("214390591e6ac697319f20887405915e9d2690fd"));
   });
 
   // Multisignature contracts
