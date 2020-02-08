@@ -27,6 +27,7 @@ import {
   getRandomInteger,
   pendingWithoutBnsd,
   randomBnsAddress,
+  randomDomain,
   registerAmount,
   sendTokensFromFaucet,
   tendermintSearchIndexUpdated,
@@ -40,21 +41,29 @@ import {
   CreateMultisignatureTx,
   CreateProposalTx,
   CreateTextResolutionAction,
+  DeleteDomainTx,
   isCreateEscrowTx,
   isCreateMultisignatureTx,
+  isDeleteDomainTx,
+  isRegisterDomainTx,
   isRegisterUsernameTx,
   isReleaseEscrowTx,
+  isRenewDomainTx,
   isReturnEscrowTx,
+  isTransferDomainTx,
   isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
   Participant,
   ProposalExecutorResult,
   ProposalResult,
   ProposalStatus,
+  RegisterDomainTx,
   RegisterUsernameTx,
   ReleaseEscrowTx,
+  RenewDomainTx,
   ReturnEscrowTx,
   SetMsgFeeAction,
+  TransferDomainTx,
   TransferUsernameTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
@@ -599,6 +608,275 @@ describe("BnsConnection (post txs)", () => {
       expect(retrieved2.length).toEqual(1);
       expect(retrieved2[0].owner).toEqual(userAddress);
       expect(retrieved2[0].targets).toEqual(updatedTargets);
+
+      connection.disconnect();
+    });
+
+    it("can register a domain", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create and send registration
+      const domain = randomDomain();
+      const registerDomainTx = await connection.withDefaultFee<RegisterDomainTx>(
+        {
+          kind: "bns/register_domain",
+          chainId: registryChainId,
+          domain,
+          admin: address,
+          hasSuperuser: true,
+          msgFees: [],
+          accountRenew: 100,
+        },
+        address,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find registration transaction
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult.length).toEqual(1);
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      assert(isRegisterDomainTx(firstSearchResultTransaction), "Expected RegisterDomainTx");
+      expect(firstSearchResultTransaction.admin).toEqual(address);
+
+      connection.disconnect();
+    });
+
+    it("can transfer a domain", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create and send registration
+      const domain = randomDomain();
+      const registerDomainTx = await connection.withDefaultFee<RegisterDomainTx>(
+        {
+          kind: "bns/register_domain",
+          chainId: registryChainId,
+          domain,
+          admin: address,
+          hasSuperuser: true,
+          msgFees: [],
+          accountRenew: 100,
+        },
+        address,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find registration transaction
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult.length).toEqual(1);
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      assert(isRegisterDomainTx(firstSearchResultTransaction), "Expected RegisterDomainTx");
+      expect(firstSearchResultTransaction.admin).toEqual(address);
+
+      // Transfer domain
+      const newAdmin = await randomBnsAddress();
+      const transferDomainTx = await connection.withDefaultFee<TransferDomainTx>(
+        {
+          kind: "bns/transfer_domain",
+          chainId: registryChainId,
+          domain,
+          newAdmin,
+        },
+        address,
+      );
+
+      const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed2 = await profile.signTransaction(identity, transferDomainTx, bnsCodec, nonce2);
+      const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
+      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find transfer transaction
+      const searchResult2 = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult2.length).toEqual(2);
+      const firstSearchResultTransaction2 = searchResult2[1].transaction;
+      assert(isTransferDomainTx(firstSearchResultTransaction2), "Expected TransferDomainTx");
+      expect(firstSearchResultTransaction2.newAdmin).toEqual(newAdmin);
+
+      connection.disconnect();
+    });
+
+    it("can renew a domain", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create and send registration
+      const domain = randomDomain();
+      const registerDomainTx = await connection.withDefaultFee<RegisterDomainTx>(
+        {
+          kind: "bns/register_domain",
+          chainId: registryChainId,
+          domain,
+          admin: address,
+          hasSuperuser: true,
+          msgFees: [],
+          accountRenew: 100,
+        },
+        address,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find registration transaction
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult.length).toEqual(1);
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      assert(isRegisterDomainTx(firstSearchResultTransaction), "Expected RegisterDomainTx");
+      expect(firstSearchResultTransaction.admin).toEqual(address);
+
+      // Renew domain
+      const renewDomainTx = await connection.withDefaultFee<RenewDomainTx>(
+        {
+          kind: "bns/renew_domain",
+          chainId: registryChainId,
+          domain,
+        },
+        address,
+      );
+
+      const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed2 = await profile.signTransaction(identity, renewDomainTx, bnsCodec, nonce2);
+      const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
+      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find renew transaction
+      const searchResult2 = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult2.length).toEqual(2);
+      const firstSearchResultTransaction2 = searchResult2[1].transaction;
+      assert(isRenewDomainTx(firstSearchResultTransaction2), "Expected RenewDomainTx");
+
+      connection.disconnect();
+    });
+
+    it("can delete a domain", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId();
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create and send registration
+      const domain = randomDomain();
+      const registerDomainTx = await connection.withDefaultFee<RegisterDomainTx>(
+        {
+          kind: "bns/register_domain",
+          chainId: registryChainId,
+          domain,
+          admin: address,
+          hasSuperuser: true,
+          msgFees: [],
+          accountRenew: 100,
+        },
+        address,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find registration transaction
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult.length).toEqual(1);
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      assert(isRegisterDomainTx(firstSearchResultTransaction), "Expected RegisterDomainTx");
+      expect(firstSearchResultTransaction.admin).toEqual(address);
+
+      // Delete domain
+      const deleteDomainTx = await connection.withDefaultFee<DeleteDomainTx>(
+        {
+          kind: "bns/delete_domain",
+          chainId: registryChainId,
+          domain,
+        },
+        address,
+      );
+
+      const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed2 = await profile.signTransaction(identity, deleteDomainTx, bnsCodec, nonce2);
+      const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
+      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find delete transaction
+      const searchResult2 = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult2.length).toEqual(2);
+      const firstSearchResultTransaction2 = searchResult2[1].transaction;
+      assert(isDeleteDomainTx(firstSearchResultTransaction2), "Expected DeleteDomainTx");
 
       connection.disconnect();
     });
