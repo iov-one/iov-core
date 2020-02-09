@@ -615,7 +615,7 @@ describe("BnsConnection (post txs)", () => {
     it("can register a domain", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -662,7 +662,7 @@ describe("BnsConnection (post txs)", () => {
     it("can transfer a domain", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -738,7 +738,7 @@ describe("BnsConnection (post txs)", () => {
     it("can renew a domain", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -811,7 +811,7 @@ describe("BnsConnection (post txs)", () => {
     it("can delete a domain", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
