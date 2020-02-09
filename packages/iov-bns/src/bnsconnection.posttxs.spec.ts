@@ -631,7 +631,7 @@ describe("BnsConnection (post txs)", () => {
         {
           kind: "bns/register_domain",
           chainId: registryChainId,
-          domain,
+          domain: domain,
           admin: address,
           hasSuperuser: true,
           msgFees: [],
@@ -678,7 +678,7 @@ describe("BnsConnection (post txs)", () => {
         {
           kind: "bns/register_domain",
           chainId: registryChainId,
-          domain,
+          domain: domain,
           admin: address,
           hasSuperuser: true,
           msgFees: [],
@@ -709,8 +709,8 @@ describe("BnsConnection (post txs)", () => {
         {
           kind: "bns/transfer_domain",
           chainId: registryChainId,
-          domain,
-          newAdmin,
+          domain: domain,
+          newAdmin: newAdmin,
         },
         address,
       );
@@ -754,7 +754,7 @@ describe("BnsConnection (post txs)", () => {
         {
           kind: "bns/register_domain",
           chainId: registryChainId,
-          domain,
+          domain: domain,
           admin: address,
           hasSuperuser: true,
           msgFees: [],
@@ -784,7 +784,7 @@ describe("BnsConnection (post txs)", () => {
         {
           kind: "bns/renew_domain",
           chainId: registryChainId,
-          domain,
+          domain: domain,
         },
         address,
       );
@@ -827,7 +827,7 @@ describe("BnsConnection (post txs)", () => {
         {
           kind: "bns/register_domain",
           chainId: registryChainId,
-          domain,
+          domain: domain,
           admin: address,
           hasSuperuser: true,
           msgFees: [],
@@ -857,7 +857,7 @@ describe("BnsConnection (post txs)", () => {
         {
           kind: "bns/delete_domain",
           chainId: registryChainId,
-          domain,
+          domain: domain,
         },
         address,
       );
