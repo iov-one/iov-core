@@ -68,13 +68,16 @@ import {
   decodeUsernameNft,
   decodeVote,
 } from "./decodeobjects";
+import { decodeTermDepositNft } from "./decodeobjects";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
+  BnsTermDepositNft,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
   Decoder,
+  DepositContractIdBytes,
   ElectionRule,
   Electorate,
   isBnsTx,
@@ -743,6 +746,14 @@ export class BnsConnection implements AtomicSwapConnection {
     const parser = createParser(codecImpl.gov.Vote, "vote:");
     const votes = results.map(parser).map(vote => decodeVote(this.prefix, vote));
     return votes;
+  }
+
+  public async getDeposits(depositContractId: DepositContractIdBytes): Promise<readonly BnsTermDepositNft[]> {
+    const results = (await this.query("/deposits", depositContractId)).results;
+
+    const parser = createParser(codecImpl.username.Token, "deposits:");
+    const nfts = results.map(parser).map(nft => decodeTermDepositNft(nft, this.chainId));
+    return nfts;
   }
 
   public async getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]> {
