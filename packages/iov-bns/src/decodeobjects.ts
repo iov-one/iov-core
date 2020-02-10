@@ -17,6 +17,7 @@ import {
   CashConfiguration,
   ChainAddressPair,
   DepositContractIdBytes,
+  DepositIdBytes,
   Domain,
   ElectionRule,
   Elector,
@@ -105,11 +106,12 @@ export function decodeTermDepositNft(
 ): BnsTermDepositNft {
   const prefix = addressPrefix(registryChainId);
   return {
+    id: ensure(nft._id, "id") as DepositIdBytes,
     depositContractId: ensure(nft.depositContractId, "depositContractId") as DepositContractIdBytes,
     amount: decodeAmount(ensure(nft.amount, "amount")),
     rate: decodeFraction(ensure(nft.rate, "rate")),
     depositor: encodeBnsAddress(prefix, ensure(nft.depositor, "depositor")),
-    released: ensure(nft.released, "released"),
+    released: !!nft.released,
     createdAt: ensure(nft.createdAt, "released"),
   };
 }
@@ -118,6 +120,7 @@ export function decodeTermDepositContractNft(
   nft: codecImpl.termdeposit.IDepositContract & Keyed,
 ): BnsTermDepositContractNft {
   return {
+    id: ensure(nft._id, "id") as DepositContractIdBytes,
     validSince: ensure(nft.validSince, "validSince"),
     validUntil: ensure(nft.validUntil, "validUntil"),
   };
