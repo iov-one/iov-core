@@ -26,9 +26,12 @@ import {
 } from "@iov/bcp";
 import { Stream } from "xstream";
 import {
+  BnsTermDepositContractNft,
+  BnsTermDepositNft,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
+  DepositContractIdBytes,
   ElectionRule,
   Electorate,
   Proposal,
@@ -111,6 +114,8 @@ export declare class BnsConnection implements AtomicSwapConnection {
   getElectionRules(): Promise<readonly ElectionRule[]>;
   getProposals(): Promise<readonly Proposal[]>;
   getVotes(voter: Address): Promise<readonly Vote[]>;
+  getDeposits(depositor: Address): Promise<readonly BnsTermDepositNft[]>;
+  getContracts(depositContractId?: DepositContractIdBytes): Promise<readonly BnsTermDepositContractNft[]>;
   getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]>;
   estimateTxSize(transaction: UnsignedTransaction, numberOfSignatures: number, nonce?: Nonce): number;
   getTxFeeConfiguration(): Promise<TxFeeConfiguration | undefined>;
