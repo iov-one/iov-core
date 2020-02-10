@@ -1,6 +1,7 @@
 import {
   Address,
   Algorithm,
+  Amount,
   ChainId,
   isBlockInfoPending,
   Nonce,
@@ -37,6 +38,7 @@ import {
   CreateTermDepositContractTx,
   CreateTextResolutionAction,
   RegisterUsernameTx,
+  TermDepositDepositTx,
 } from "./types";
 import { identityToAddress } from "./util";
 
@@ -497,7 +499,7 @@ describe("BnsConnection (basic class methods)", () => {
   });
 
   describe("getDeposits", () => {
-    it("can query deposit by deposit contract id", async () => {
+    fit("can query deposit by depositor address", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId;
@@ -507,10 +509,9 @@ describe("BnsConnection (basic class methods)", () => {
       const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
       const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
       const identityAddress = identityToAddress(identity);
-      // await sendTokensFromFaucet(connection, identityAddress, registerAmount);
 
-      // Register account
-      const validSince = Date.now();
+      // Create Term Deposit contract
+      const validSince = Date.now() / 1000 - 60;
       const validUntil = validSince + 600;
       const createDeposit = await connection.withDefaultFee<CreateTermDepositContractTx>(
         {
@@ -528,16 +529,46 @@ describe("BnsConnection (basic class methods)", () => {
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       }
 
-      // Query by existing name
-      /* {
-        const results = await connection.getAccountNft({ name: `${name}*${domain}` });
-        expect(results.length).toEqual(1);
-        expect(results[0].domain).toEqual(domain);
-        expect(results[0].name).toEqual(name);
-        expect(results[0].owner).toEqual(identityAddress);
-        expect(results[0].targets).toEqual(targets);
-        expect(results[0].certificates).toEqual([]);
-      }*/
+      const results = await connection.getContracts();
+      const lastContract = results[results.length - 1];
+      const depositContractId = lastContract.id;
+      const amount: Amount = {
+        quantity: "1000000000",
+        fractionalDigits: 9,
+        tokenTicker: cash,
+      };
+      // Make deposit to contract
+
+      const depositFunds = await connection.withDefaultFee<TermDepositDepositTx>(
+        {
+          kind: "bns/termdeposit_deposit",
+          chainId: registryChainId,
+          depositContractId: depositContractId,
+          amount: amount,
+          depositor: identityAddress,
+        },
+        identityAddress,
+      );
+      const nonceDepositFunds = await connection.getNonce({ pubkey: identity.pubkey });
+      const signedDepositFunds = await profile.signTransaction(
+        identity,
+        depositFunds,
+        bnsCodec,
+        nonceDepositFunds,
+      );
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signedDepositFunds));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+
+      // Query deposits by depositor address
+      {
+        const deposits = await connection.getDeposits(identityAddress);
+        const lastDeposit = deposits[deposits.length - 1];
+        expect(lastDeposit.depositContractId).toEqual(depositContractId);
+        expect(lastDeposit.depositor).toEqual(identityAddress);
+        expect(lastDeposit.amount).toEqual(amount);
+      }
 
       connection.disconnect();
     });
