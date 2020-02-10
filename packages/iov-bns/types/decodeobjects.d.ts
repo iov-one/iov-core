@@ -1,12 +1,10 @@
 import { Amount, ChainId, Token } from "@iov/bcp";
-
 import * as codecImpl from "./generated/codecimpl";
 import {
-  Account,
   AccountConfiguration,
   AccountMsgFee,
+  AccountNft,
   BlockchainAddress,
-  BnsAccountNft,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
@@ -40,11 +38,10 @@ export declare function decodeAccountMsgFee(msgFee: codecImpl.account.IAccountMs
 export declare function decodeBlockchainAddress(
   blockchainAddress: codecImpl.account.IBlockchainAddress,
 ): BlockchainAddress;
-export declare function decodeAccountNft(
-  nft: codecImpl.account.IAccount & Keyed,
-  registryChainId: ChainId,
-): BnsAccountNft;
-export declare function decodeAccount(prefix: IovBech32Prefix, account: codecImpl.account.IAccount): Account;
+export declare function decodeAccount(
+  prefix: IovBech32Prefix,
+  account: codecImpl.account.IAccount,
+): AccountNft;
 export declare function decodeDomain(prefix: IovBech32Prefix, domain: codecImpl.account.IDomain): Domain;
 export declare function decodeElectorate(
   prefix: IovBech32Prefix,
