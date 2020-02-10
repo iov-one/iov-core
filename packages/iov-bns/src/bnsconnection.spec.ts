@@ -31,7 +31,13 @@ import {
   unusedPubkey,
   userProfileWithFaucet,
 } from "./testutils.spec";
-import { ActionKind, CreateProposalTx, CreateTextResolutionAction, RegisterUsernameTx } from "./types";
+import {
+  ActionKind,
+  CreateProposalTx,
+  CreateTermDepositContractTx,
+  CreateTextResolutionAction,
+  RegisterUsernameTx,
+} from "./types";
 import { identityToAddress } from "./util";
 
 describe("BnsConnection (basic class methods)", () => {
@@ -485,6 +491,53 @@ describe("BnsConnection (basic class methods)", () => {
       expect(myProposal!.title).toEqual(title);
       expect(myProposal!.description).toEqual(description);
       expect(myProposal!.action).toEqual(action);
+
+      connection.disconnect();
+    });
+  });
+
+  describe("getDeposits", () => {
+    it("can query deposit by deposit contract id", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId;
+
+      const profile = new UserProfile();
+      const adminMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+      const identityAddress = identityToAddress(identity);
+      // await sendTokensFromFaucet(connection, identityAddress, registerAmount);
+
+      // Register account
+      const validSince = Date.now();
+      const validUntil = validSince + 600;
+      const createDeposit = await connection.withDefaultFee<CreateTermDepositContractTx>(
+        {
+          kind: "bns/create_termdeposit_contract",
+          chainId: registryChainId,
+          validSince: validSince,
+          validUntil: validUntil,
+        },
+        identityAddress,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, createDeposit, bnsCodec, nonce);
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+
+      // Query by existing name
+      /* {
+        const results = await connection.getAccountNft({ name: `${name}*${domain}` });
+        expect(results.length).toEqual(1);
+        expect(results[0].domain).toEqual(domain);
+        expect(results[0].name).toEqual(name);
+        expect(results[0].owner).toEqual(identityAddress);
+        expect(results[0].targets).toEqual(targets);
+        expect(results[0].certificates).toEqual([]);
+      }*/
 
       connection.disconnect();
     });
