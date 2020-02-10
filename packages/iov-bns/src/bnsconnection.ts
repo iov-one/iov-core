@@ -63,6 +63,7 @@ import {
   decodeElectionRule,
   decodeElectorate,
   decodeProposal,
+  decodeTermDepositContractNft,
   decodeToken,
   decodeTxFeeConfiguration,
   decodeUsernameNft,
@@ -72,6 +73,7 @@ import { decodeTermDepositNft } from "./decodeobjects";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
+  BnsTermDepositContractNft,
   BnsTermDepositNft,
   BnsTx,
   BnsUsernameNft,
@@ -748,11 +750,28 @@ export class BnsConnection implements AtomicSwapConnection {
     return votes;
   }
 
-  public async getDeposits(depositContractId: DepositContractIdBytes): Promise<readonly BnsTermDepositNft[]> {
-    const results = (await this.query("/deposits", depositContractId)).results;
+  public async getDeposits(depositor: Address): Promise<readonly BnsTermDepositNft[]> {
+    const rawAddress = decodeBnsAddress(depositor).data;
+    const results = (await this.query("/deposits/depositor", rawAddress)).results;
 
-    const parser = createParser(codecImpl.username.Token, "deposits:");
-    const nfts = results.map(parser).map(nft => decodeTermDepositNft(nft, this.chainId));
+    const parser = createParser(codecImpl.termdeposit.Deposit, "");
+    const nfts = results.map(parser).map(nft => {
+      return decodeTermDepositNft(nft, this.chainId);
+    });
+    return nfts;
+  }
+
+  public async getContracts(
+    depositContractId?: DepositContractIdBytes,
+  ): Promise<readonly BnsTermDepositContractNft[]> {
+    const results = depositContractId
+      ? (await this.query("/depositcontracts", depositContractId)).results
+      : (await this.query("/depositcontracts?prefix", new Uint8Array([]))).results;
+
+    const parser = createParser(codecImpl.termdeposit.DepositContract, "depcontr:");
+    const nfts = results.map(parser).map(nft => {
+      return decodeTermDepositContractNft(nft);
+    });
     return nfts;
   }
 
