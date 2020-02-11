@@ -10,7 +10,10 @@ import {
 } from "@iov/bcp";
 
 import {
+  decodeAccountConfiguration,
+  decodeAccountMsgFee,
   decodeAmount,
+  decodeBlockchainAddress,
   decodeChainAddressPair,
   decodeParticipants,
   decodeRawProposalOption,
@@ -19,14 +22,28 @@ import {
 import { asIntegerNumber, decodeNumericId, ensure } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
+  AddAccountCertificateTx,
   BnsdTxMsg,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
+  DeleteAccountCertificateTx,
+  DeleteAccountTx,
+  DeleteAllAccountsTx,
+  DeleteDomainTx,
+  RegisterAccountTx,
+  RegisterDomainTx,
   RegisterUsernameTx,
   ReleaseEscrowTx,
+  RenewAccountTx,
+  RenewDomainTx,
+  ReplaceAccountMsgFeesTx,
+  ReplaceAccountTargetsTx,
   ReturnEscrowTx,
+  TransferAccountTx,
+  TransferDomainTx,
   TransferUsernameTx,
+  UpdateAccountConfigurationTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -133,6 +150,188 @@ function decodeTransferUsernameTx(
     kind: "bns/transfer_username",
     username: ensure(msg.username, "username"),
     newOwner: encodeBnsAddress(prefix, ensure(msg.newOwner, "newOwner")),
+  };
+}
+
+// Accounts
+
+function decodeUpdateAccountConfigurationTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IUpdateConfigurationMsg,
+): UpdateAccountConfigurationTx {
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/update_account_configuration",
+    configuration: decodeAccountConfiguration(prefix, ensure(msg.patch, "patch")),
+  };
+}
+
+function decodeRegisterDomainTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IRegisterDomainMsg,
+): RegisterDomainTx {
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/register_domain",
+    domain: ensure(msg.domain, "domain"),
+    admin: encodeBnsAddress(prefix, ensure(msg.admin, "admin")),
+    hasSuperuser: ensure(msg.hasSuperuser, "hasSuperuser"),
+    broker: encodeBnsAddress(prefix, ensure(msg.thirdPartyToken, "thirdPartyToken")) || undefined,
+    msgFees: ensure(msg.msgFees, "msgFees").map(decodeAccountMsgFee),
+    accountRenew: asIntegerNumber(ensure(msg.accountRenew, "accountRenew")),
+  };
+}
+
+function decodeTransferDomainTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.ITransferDomainMsg,
+): TransferDomainTx {
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/transfer_domain",
+    domain: ensure(msg.domain, "domain"),
+    newAdmin: encodeBnsAddress(prefix, ensure(msg.newAdmin, "newAdmin")),
+  };
+}
+
+function decodeRenewDomainTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IRenewDomainMsg,
+): RenewDomainTx {
+  return {
+    ...base,
+    kind: "bns/renew_domain",
+    domain: ensure(msg.domain, "domain"),
+  };
+}
+
+function decodeDeleteDomainTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IDeleteDomainMsg,
+): DeleteDomainTx {
+  return {
+    ...base,
+    kind: "bns/delete_domain",
+    domain: ensure(msg.domain, "domain"),
+  };
+}
+
+function decodeRegisterAccountTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IRegisterAccountMsg,
+): RegisterAccountTx {
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/register_account",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+    owner: encodeBnsAddress(prefix, ensure(msg.owner, "owner")),
+    targets: ensure(msg.targets, "targets").map(decodeBlockchainAddress),
+    broker: encodeBnsAddress(prefix, ensure(msg.thirdPartyToken, "owner")) || undefined,
+  };
+}
+
+function decodeTransferAccountTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.ITransferAccountMsg,
+): TransferAccountTx {
+  const prefix = addressPrefix(base.chainId);
+  return {
+    ...base,
+    kind: "bns/transfer_account",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+    newOwner: encodeBnsAddress(prefix, ensure(msg.newOwner, "newOwner")),
+  };
+}
+
+function decodeReplaceAccountTargetsTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IReplaceAccountTargetsMsg,
+): ReplaceAccountTargetsTx {
+  return {
+    ...base,
+    kind: "bns/replace_account_targets",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+    newTargets: ensure(msg.newTargets, "newTargets").map(decodeBlockchainAddress),
+  };
+}
+
+function decodeDeleteAccountTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IDeleteAccountMsg,
+): DeleteAccountTx {
+  return {
+    ...base,
+    kind: "bns/delete_account",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+  };
+}
+
+function decodeDeleteAllAccountsTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IFlushDomainMsg,
+): DeleteAllAccountsTx {
+  return {
+    ...base,
+    kind: "bns/delete_all_accounts",
+    domain: ensure(msg.domain, "domain"),
+  };
+}
+
+function decodeRenewAccountTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IRenewAccountMsg,
+): RenewAccountTx {
+  return {
+    ...base,
+    kind: "bns/renew_account",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+  };
+}
+
+function decodeAddAccountCertificateTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IAddAccountCertificateMsg,
+): AddAccountCertificateTx {
+  return {
+    ...base,
+    kind: "bns/add_account_certificate",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+    certificate: ensure(msg.certificate, "certificate"),
+  };
+}
+
+function decodeReplaceAccountMsgFeesTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IReplaceAccountMsgFeesMsg,
+): ReplaceAccountMsgFeesTx {
+  return {
+    ...base,
+    kind: "bns/replace_account_msg_fees",
+    domain: ensure(msg.domain, "domain"),
+    newMsgFees: ensure(msg.newMsgFees, "newMsgFees").map(decodeAccountMsgFee),
+  };
+}
+
+function decodeDeleteAccountCertificateTx(
+  base: UnsignedTransaction,
+  msg: codecImpl.account.IDeleteAccountCertificateMsg,
+): DeleteAccountCertificateTx {
+  return {
+    ...base,
+    kind: "bns/delete_account_certificate",
+    domain: ensure(msg.domain, "domain"),
+    name: ensure(msg.name, "name"),
+    certificateHash: ensure(msg.certificateHash, "certificateHash"),
   };
 }
 
@@ -263,6 +462,32 @@ export function decodeMsg(base: UnsignedTransaction, tx: BnsdTxMsg): UnsignedTra
     return decodeUpdateTargetsOfUsernameTx(base, tx.usernameChangeTokenTargetsMsg);
   }
   if (tx.usernameTransferTokenMsg) return decodeTransferUsernameTx(base, tx.usernameTransferTokenMsg);
+
+  // Accounts
+  if (tx.accountUpdateConfigurationMsg) {
+    return decodeUpdateAccountConfigurationTx(base, tx.accountUpdateConfigurationMsg);
+  }
+  if (tx.accountRegisterDomainMsg) return decodeRegisterDomainTx(base, tx.accountRegisterDomainMsg);
+  if (tx.accountTransferDomainMsg) return decodeTransferDomainTx(base, tx.accountTransferDomainMsg);
+  if (tx.accountRenewDomainMsg) return decodeRenewDomainTx(base, tx.accountRenewDomainMsg);
+  if (tx.accountDeleteDomainMsg) return decodeDeleteDomainTx(base, tx.accountDeleteDomainMsg);
+  if (tx.accountRegisterAccountMsg) return decodeRegisterAccountTx(base, tx.accountRegisterAccountMsg);
+  if (tx.accountTransferAccountMsg) return decodeTransferAccountTx(base, tx.accountTransferAccountMsg);
+  if (tx.accountReplaceAccountTargetsMsg) {
+    return decodeReplaceAccountTargetsTx(base, tx.accountReplaceAccountTargetsMsg);
+  }
+  if (tx.accountDeleteAccountMsg) return decodeDeleteAccountTx(base, tx.accountDeleteAccountMsg);
+  if (tx.accountFlushDomainMsg) return decodeDeleteAllAccountsTx(base, tx.accountFlushDomainMsg);
+  if (tx.accountRenewAccountMsg) return decodeRenewAccountTx(base, tx.accountRenewAccountMsg);
+  if (tx.accountAddAccountCertificateMsg) {
+    return decodeAddAccountCertificateTx(base, tx.accountAddAccountCertificateMsg);
+  }
+  if (tx.accountReplaceAccountMsgFeesMsg) {
+    return decodeReplaceAccountMsgFeesTx(base, tx.accountReplaceAccountMsgFeesMsg);
+  }
+  if (tx.accountDeleteAccountCertificateMsg) {
+    return decodeDeleteAccountCertificateTx(base, tx.accountDeleteAccountCertificateMsg);
+  }
 
   // Multisignature contracts
   if (tx.multisigCreateMsg) return decodeCreateMultisignatureTx(base, tx.multisigCreateMsg);

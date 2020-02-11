@@ -150,6 +150,35 @@ function mapKindToBnsPath(transaction: BnsTx): string | undefined {
       return "username/change_token_targets";
     case "bns/transfer_username":
       return "username/transfer_token";
+    // Accounts
+    case "bns/update_account_configuration":
+      return "account/update_configuration";
+    case "bns/register_domain":
+      return "account/register_domain";
+    case "bns/transfer_domain":
+      return "account/transfer_domain";
+    case "bns/renew_domain":
+      return "account/renew_domain";
+    case "bns/delete_domain":
+      return "account/delete_domain";
+    case "bns/register_account":
+      return "account/register_account";
+    case "bns/transfer_account":
+      return "account/transfer_account";
+    case "bns/replace_account_targets":
+      return "account/replace_account_targets";
+    case "bns/delete_account":
+      return "account/delete_account";
+    case "bns/delete_all_accounts":
+      return "account/delete_all_accounts";
+    case "bns/renew_account":
+      return "account/renew_account";
+    case "bns/add_account_certificate":
+      return "account/add_account_certificate";
+    case "bns/replace_account_msg_fees":
+      return "account/replace_account_msg_fees";
+    case "bns/delete_account_certificate":
+      return "account/delete_account_certificate";
     // Escrows
     case "bns/create_escrow":
       return "escrow/create";

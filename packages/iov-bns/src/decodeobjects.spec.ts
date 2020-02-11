@@ -2,8 +2,13 @@ import { Address, ChainId, TokenTicker } from "@iov/bcp";
 import { Bech32, Encoding } from "@iov/encoding";
 
 import {
+  decodeAccount,
+  decodeAccountConfiguration,
+  decodeAccountMsgFee,
   decodeAmount,
+  decodeBlockchainAddress,
   decodeCashConfiguration,
+  decodeDomain,
   decodeElectionRule,
   decodeElectorate,
   decodeProposal,
@@ -161,6 +166,104 @@ describe("decodeobjects", () => {
         chainId: "wonderland" as ChainId,
         address: "12345W" as Address,
       });
+    });
+  });
+
+  describe("decodeAccountConfiguration", () => {
+    it("works", () => {
+      const prefix = "tiov";
+      const conf: codecImpl.account.IConfiguration & Keyed = {
+        _id: toUtf8("alice"),
+        owner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+        validDomain: "hole",
+        validName: "rabbit",
+        validBlockchainId: "wonderland",
+        validBlockchainAddress: "12345W",
+        domainRenew: 1234,
+      };
+      const decoded = decodeAccountConfiguration(prefix, conf);
+      expect(decoded.owner).toEqual(
+        Bech32.encode(prefix, fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472")),
+      );
+      expect(decoded.validDomain).toEqual("hole");
+      expect(decoded.validName).toEqual("rabbit");
+      expect(decoded.validBlockchainId).toEqual("wonderland");
+      expect(decoded.validBlockchainAddress).toEqual("12345W");
+      expect(decoded.domainRenew).toEqual(1234);
+    });
+  });
+
+  describe("decodeAccountMsgFee", () => {
+    it("works", () => {
+      const msgFee: codecImpl.account.IAccountMsgFee & Keyed = {
+        _id: toUtf8("some-id"),
+        msgPath: "some-msg-path",
+        fee: { whole: 0, fractional: 123456789, ticker: "ASH" },
+      };
+      const decoded = decodeAccountMsgFee(msgFee);
+      expect(decoded.msgPath).toEqual("some-msg-path");
+      expect(decoded.fee).toEqual(decodeAmount({ whole: 0, fractional: 123456789, ticker: "ASH" }));
+    });
+  });
+
+  describe("decodeBlockchainAddress", () => {
+    it("works", () => {
+      const blockchainAddress: codecImpl.account.IBlockchainAddress & Keyed = {
+        _id: toUtf8("some-id"),
+        blockchainId: "some-id",
+        address: "some-address",
+      };
+      const decoded = decodeBlockchainAddress(blockchainAddress);
+      expect(decoded.blockchainId).toEqual("some-id");
+      expect(decoded.address).toEqual("some-address");
+    });
+  });
+
+  describe("decodeAccount", () => {
+    it("works", () => {
+      const prefix = "tiov";
+      const account: codecImpl.account.IAccount & Keyed = {
+        _id: toUtf8("alice"),
+        domain: "hole",
+        name: "rabbit",
+        owner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+        validUntil: 1234,
+        targets: [{ blockchainId: "wonderland", address: "12345W" }],
+        certificates: [fromHex("214390591e6ac697319f20887405915e9d2690fd")],
+      };
+      const decoded = decodeAccount(prefix, account);
+      expect(decoded.domain).toEqual("hole");
+      expect(decoded.name).toEqual("rabbit");
+      expect(decoded.owner).toEqual(
+        Bech32.encode(prefix, fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472")),
+      );
+      expect(decoded.validUntil).toEqual(1234);
+      expect(decoded.targets).toEqual([{ blockchainId: "wonderland", address: "12345W" }]);
+      expect(decoded.certificates).toEqual([fromHex("214390591e6ac697319f20887405915e9d2690fd")]);
+    });
+  });
+
+  describe("decodeDomain", () => {
+    it("works", () => {
+      const prefix = "tiov";
+      const account: codecImpl.account.IDomain & Keyed = {
+        _id: toUtf8("alice"),
+        domain: "hole",
+        admin: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+        validUntil: 1234,
+        hasSuperuser: true,
+        msgFees: [{ msgPath: "some-msg-path", fee: { whole: 0, fractional: 123456789, ticker: "ASH" } }],
+        accountRenew: 5678,
+      };
+      const decoded = decodeDomain(prefix, account);
+      expect(decoded.domain).toEqual("hole");
+      expect(decoded.admin).toEqual("tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address);
+      expect(decoded.validUntil).toEqual(1234);
+      expect(decoded.hasSuperuser).toEqual(true);
+      expect(decoded.msgFees).toEqual([
+        { msgPath: "some-msg-path", fee: decodeAmount({ whole: 0, fractional: 123456789, ticker: "ASH" }) },
+      ]);
+      expect(decoded.accountRenew).toEqual(5678);
     });
   });
 
