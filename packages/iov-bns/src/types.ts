@@ -39,6 +39,15 @@ export type BnsdTxMsg = Omit<codecImpl.bnsd.ITx, "fees" | "signatures" | "multis
 
 // Accounts
 
+export interface BlockchainAddress {
+  readonly blockchainId: string;
+  readonly address: string;
+}
+
+export interface AccountsByNameQuery {
+  readonly name: string;
+}
+
 export interface AccountConfiguration {
   readonly owner: Address;
   readonly validDomain: string;
@@ -53,12 +62,7 @@ export interface AccountMsgFee {
   readonly fee: Amount;
 }
 
-export interface BlockchainAddress {
-  readonly blockchainId: string;
-  readonly address: string;
-}
-
-export interface Account {
+export interface AccountNft {
   readonly domain: string;
   readonly name: string;
   readonly owner: Address;

@@ -6,9 +6,9 @@ import { weaveFractionalDigits } from "./constants";
 import { asIntegerNumber, decodeNumericId, decodeString, ensure } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
-  Account,
   AccountConfiguration,
   AccountMsgFee,
+  AccountNft,
   ActionKind,
   BlockchainAddress,
   BnsUsernameNft,
@@ -108,7 +108,6 @@ export function decodeUsernameNft(
 }
 
 // Accounts
-
 export function decodeAccountConfiguration(
   prefix: IovBech32Prefix,
   patch: codecImpl.account.IConfiguration,
@@ -139,7 +138,7 @@ export function decodeBlockchainAddress(
   };
 }
 
-export function decodeAccount(prefix: IovBech32Prefix, account: codecImpl.account.IAccount): Account {
+export function decodeAccount(prefix: IovBech32Prefix, account: codecImpl.account.IAccount): AccountNft {
   return {
     domain: ensure(account.domain, "domain"),
     name: ensure(account.name, "name"),
