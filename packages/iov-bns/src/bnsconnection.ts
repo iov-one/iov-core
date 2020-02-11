@@ -58,6 +58,7 @@ import { swapToAddress } from "./conditions";
 import { Context } from "./context";
 import { decodePubkey, decodeUserData } from "./decode";
 import {
+  decodeAccount,
   decodeAmount,
   decodeCashConfiguration,
   decodeElectionRule,
@@ -71,6 +72,8 @@ import {
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
+  AccountNft,
+  AccountsByNameQuery,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
@@ -150,6 +153,35 @@ function mapKindToBnsPath(transaction: BnsTx): string | undefined {
       return "username/change_token_targets";
     case "bns/transfer_username":
       return "username/transfer_token";
+    // Accounts
+    case "bns/update_account_configuration":
+      return "account/update_configuration";
+    case "bns/register_domain":
+      return "account/register_domain";
+    case "bns/transfer_domain":
+      return "account/transfer_domain";
+    case "bns/renew_domain":
+      return "account/renew_domain";
+    case "bns/delete_domain":
+      return "account/delete_domain";
+    case "bns/register_account":
+      return "account/register_account";
+    case "bns/transfer_account":
+      return "account/transfer_account";
+    case "bns/replace_account_targets":
+      return "account/replace_account_targets";
+    case "bns/delete_account":
+      return "account/delete_account";
+    case "bns/delete_all_accounts":
+      return "account/delete_all_accounts";
+    case "bns/renew_account":
+      return "account/renew_account";
+    case "bns/add_account_certificate":
+      return "account/add_account_certificate";
+    case "bns/replace_account_msg_fees":
+      return "account/replace_account_msg_fees";
+    case "bns/delete_account_certificate":
+      return "account/delete_account_certificate";
     // Escrows
     case "bns/create_escrow":
       return "escrow/create";
@@ -749,6 +781,14 @@ export class BnsConnection implements AtomicSwapConnection {
 
     const parser = createParser(codecImpl.username.Token, "tokens:");
     const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId));
+    return nfts;
+  }
+
+  public async getAccountNft(query: AccountsByNameQuery): Promise<readonly AccountNft[]> {
+    const results = (await this.query("/accounts", toUtf8(query.name))).results;
+
+    const parser = createParser(codecImpl.account.Account, "account:");
+    const nfts = results.map(parser).map(nft => decodeAccount(this.prefix, nft));
     return nfts;
   }
 

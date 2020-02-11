@@ -26,6 +26,41 @@ export interface TxFeeConfiguration {
  * @see https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.24.0/docs/proto/index.html#bnsd.Tx
  */
 export declare type BnsdTxMsg = Omit<codecImpl.bnsd.ITx, "fees" | "signatures" | "multisig">;
+export interface BlockchainAddress {
+  readonly blockchainId: string;
+  readonly address: string;
+}
+export interface AccountsByNameQuery {
+  readonly name: string;
+}
+export interface AccountConfiguration {
+  readonly owner: Address;
+  readonly validDomain: string;
+  readonly validName: string;
+  readonly validBlockchainId: string;
+  readonly validBlockchainAddress: string;
+  readonly domainRenew: number;
+}
+export interface AccountMsgFee {
+  readonly msgPath: string;
+  readonly fee: Amount;
+}
+export interface AccountNft {
+  readonly domain: string;
+  readonly name: string;
+  readonly owner: Address;
+  readonly validUntil: number;
+  readonly targets: readonly BlockchainAddress[];
+  readonly certificates: readonly Uint8Array[];
+}
+export interface Domain {
+  readonly domain: string;
+  readonly admin: Address;
+  readonly validUntil: number;
+  readonly hasSuperuser: boolean;
+  readonly msgFees: readonly AccountMsgFee[];
+  readonly accountRenew: number;
+}
 export interface ValidatorProperties {
   readonly power: number;
 }
@@ -283,6 +318,101 @@ export interface TransferUsernameTx extends UnsignedTransaction {
   readonly newOwner: Address;
 }
 export declare function isTransferUsernameTx(tx: UnsignedTransaction): tx is TransferUsernameTx;
+export interface UpdateAccountConfigurationTx extends UnsignedTransaction {
+  readonly kind: "bns/update_account_configuration";
+  readonly configuration: AccountConfiguration;
+}
+export declare function isUpdateAccountConfigurationTx(
+  tx: UnsignedTransaction,
+): tx is UpdateAccountConfigurationTx;
+export interface RegisterDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/register_domain";
+  readonly domain: string;
+  readonly admin: Address;
+  readonly hasSuperuser: boolean;
+  readonly broker?: Address;
+  readonly msgFees: readonly AccountMsgFee[];
+  readonly accountRenew: number;
+}
+export declare function isRegisterDomainTx(tx: UnsignedTransaction): tx is RegisterDomainTx;
+export interface TransferDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/transfer_domain";
+  readonly domain: string;
+  readonly newAdmin: Address;
+}
+export declare function isTransferDomainTx(tx: UnsignedTransaction): tx is TransferDomainTx;
+export interface RenewDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/renew_domain";
+  readonly domain: string;
+}
+export declare function isRenewDomainTx(tx: UnsignedTransaction): tx is RenewDomainTx;
+export interface DeleteDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_domain";
+  readonly domain: string;
+}
+export declare function isDeleteDomainTx(tx: UnsignedTransaction): tx is DeleteDomainTx;
+export interface RegisterAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/register_account";
+  readonly domain: string;
+  readonly name: string;
+  readonly owner: Address;
+  readonly targets: readonly BlockchainAddress[];
+  readonly broker?: Address;
+}
+export declare function isRegisterAccountTx(tx: UnsignedTransaction): tx is RegisterAccountTx;
+export interface TransferAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/transfer_account";
+  readonly domain: string;
+  readonly name: string;
+  readonly newOwner: Address;
+}
+export declare function isTransferAccountTx(tx: UnsignedTransaction): tx is TransferAccountTx;
+export interface ReplaceAccountTargetsTx extends UnsignedTransaction {
+  readonly kind: "bns/replace_account_targets";
+  readonly domain: string;
+  readonly name: string;
+  readonly newTargets: readonly BlockchainAddress[];
+}
+export declare function isReplaceAccountTargetsTx(tx: UnsignedTransaction): tx is ReplaceAccountTargetsTx;
+export interface DeleteAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_account";
+  readonly domain: string;
+  readonly name: string;
+}
+export declare function isDeleteAccountTx(tx: UnsignedTransaction): tx is DeleteAccountTx;
+export interface DeleteAllAccountsTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_all_accounts";
+  readonly domain: string;
+}
+export declare function isDeleteAllAccountsTx(tx: UnsignedTransaction): tx is DeleteAllAccountsTx;
+export interface RenewAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/renew_account";
+  readonly domain: string;
+  readonly name: string;
+}
+export declare function isRenewAccountTx(tx: UnsignedTransaction): tx is RenewAccountTx;
+export interface AddAccountCertificateTx extends UnsignedTransaction {
+  readonly kind: "bns/add_account_certificate";
+  readonly domain: string;
+  readonly name: string;
+  readonly certificate: Uint8Array;
+}
+export declare function isAddAccountCertificateTx(tx: UnsignedTransaction): tx is AddAccountCertificateTx;
+export interface ReplaceAccountMsgFeesTx extends UnsignedTransaction {
+  readonly kind: "bns/replace_account_msg_fees";
+  readonly domain: string;
+  readonly newMsgFees: readonly AccountMsgFee[];
+}
+export declare function isReplaceAccountMsgFeesTx(tx: UnsignedTransaction): tx is ReplaceAccountMsgFeesTx;
+export interface DeleteAccountCertificateTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_account_certificate";
+  readonly domain: string;
+  readonly name: string;
+  readonly certificateHash: Uint8Array;
+}
+export declare function isDeleteAccountCertificateTx(
+  tx: UnsignedTransaction,
+): tx is DeleteAccountCertificateTx;
 export interface Participant {
   readonly address: Address;
   readonly weight: number;
@@ -369,6 +499,20 @@ export declare type BnsTx =
   | RegisterUsernameTx
   | UpdateTargetsOfUsernameTx
   | TransferUsernameTx
+  | UpdateAccountConfigurationTx
+  | RegisterDomainTx
+  | TransferDomainTx
+  | RenewDomainTx
+  | DeleteDomainTx
+  | RegisterAccountTx
+  | TransferAccountTx
+  | ReplaceAccountTargetsTx
+  | DeleteAccountTx
+  | DeleteAllAccountsTx
+  | RenewAccountTx
+  | AddAccountCertificateTx
+  | ReplaceAccountMsgFeesTx
+  | DeleteAccountCertificateTx
   | CreateMultisignatureTx
   | UpdateMultisignatureTx
   | CreateEscrowTx

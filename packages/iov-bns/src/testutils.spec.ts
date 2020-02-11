@@ -51,6 +51,14 @@ export async function randomBnsAddress(): Promise<Address> {
   return encodeBnsAddress("tiov", Random.getBytes(20));
 }
 
+export function randomDomain(): string {
+  const randomNumber = Math.random()
+    .toString()
+    // valid domain has length 3 to 16, we limit to `domain${randomNumber}` length (16 max).
+    .substring(10);
+  return `domain${randomNumber}`;
+}
+
 export function getRandomInteger(min: number, max: number): number {
   if (!Number.isInteger(min)) throw new Error("Argument min is not an integer");
   if (!Number.isInteger(max)) throw new Error("Argument max is not an integer");

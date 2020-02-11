@@ -17,6 +17,32 @@
       "coins": ["4000 BASH"]
     }
   ],
+  "account": {
+    "domains": [
+      {
+        "admin": "seq:test/alice/1",
+        "domain": "iov",
+        "valid_until": 1895827578
+      }
+    ],
+    "accounts": [
+      {
+        "metadata": {
+          "schema": 1
+        },
+        "domain": "iov",
+        "name": "test",
+        "owner": "bech32:tiov1l678408y7a64cj66s8j64fevmspyfxdmv38cxw",
+        "valid_until": 1895827578,
+        "targets": [
+          {
+            "blockchain_id": "localiovdevnet",
+            "address": "bech32:tiov1l678408y7a64cj66s8j64fevmspyfxdmv38bcd"
+          }
+        ]
+      }
+    ]
+  },
   "username": [
     {
       "username": "ledger-dev*iov",
@@ -165,6 +191,14 @@
       "owner": "cond:gov/rule/0000000000000002",
       "valid_username_name": "^[a-z0-9\\-_.]{3,64}$",
       "valid_username_label": "^iov$"
+    },
+    "account": {
+      "valid_name": "^[a-z0-9\\-_.]{3,64}$",
+      "valid_domain": "^[a-z0-9\\-_]{3,16}$",
+      "valid_blockchain_id": "^[a-z0-9A-Z-]+$",
+      "valid_blockchain_address": "^[a-z0-9A-Z]+$",
+      "domain_renew": "2h",
+      "owner": "cond:gov/rule/000000000000000002"
     }
   },
   "msgfee": [
@@ -235,11 +269,31 @@
       "ver": 1
     },
     {
+      "pkg": "account",
+      "ver": 1
+    },
+    {
       "pkg": "utils",
       "ver": 1
     },
     {
       "pkg": "validators",
+      "ver": 1
+    },
+    {
+      "pkg": "datamigration",
+      "ver": 1
+    },
+    {
+      "pkg": "preregistration",
+      "ver": 1
+    },
+    {
+      "pkg": "qualityscore",
+      "ver": 1
+    },
+    {
+      "pkg": "termdeposit",
       "ver": 1
     }
   ]
