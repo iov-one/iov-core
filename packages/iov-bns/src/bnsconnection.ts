@@ -755,7 +755,7 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public async getDeposits(query: BnsDepositQuery): Promise<readonly BnsTermDepositNft[]> {
-    let keyPrefix = "deposit:";
+    let keyPrefix;
     let results: readonly Result[];
     if (isBnsDepositsByDepositorQuery(query)) {
       keyPrefix = "";
@@ -765,6 +765,7 @@ export class BnsConnection implements AtomicSwapConnection {
       keyPrefix = "";
       results = (await this.query("/deposits/contract", query.depositContractId)).results;
     } else if (isBnsDepositByDepositIdQuery(query)) {
+      keyPrefix = "deposit:";
       results = (await this.query("/deposits", query.depositId)).results;
     } else {
       throw new Error("Unsupported query");
