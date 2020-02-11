@@ -227,6 +227,28 @@ export interface Vote {
   readonly elector: Elector;
   readonly selection: VoteOption;
 }
+export interface BnsDepositsByDepositorQuery {
+  readonly depositor: Address;
+}
+export interface BnsDepositsByContractIdQuery {
+  readonly depositContractId: DepositContractIdBytes;
+}
+export interface BnsDepositByDepositIdQuery {
+  readonly depositId: DepositIdBytes;
+}
+export declare type BnsDepositQuery =
+  | BnsDepositsByDepositorQuery
+  | BnsDepositsByContractIdQuery
+  | BnsDepositByDepositIdQuery;
+export declare function isBnsDepositsByDepositorQuery(
+  query: BnsDepositQuery,
+): query is BnsDepositsByDepositorQuery;
+export declare function isBnsDepositsByContractIdQuery(
+  query: BnsDepositQuery,
+): query is BnsDepositsByContractIdQuery;
+export declare function isBnsDepositByDepositIdQuery(
+  query: BnsDepositQuery,
+): query is BnsDepositByDepositIdQuery;
 export interface BnsTermDepositNft {
   readonly id: DepositIdBytes;
   readonly depositContractId: DepositContractIdBytes;
