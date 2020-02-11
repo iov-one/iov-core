@@ -504,11 +504,11 @@ describe("BnsConnection (basic class methods)", () => {
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId;
 
-      const profile = new UserProfile();
+      const admiProfile = new UserProfile();
       const adminMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
-      const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
-      const identityAddress = identityToAddress(identity);
+      const adminWallet = admiProfile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
+      const adminIdentity = await admiProfile.createIdentity(adminWallet.id, registryChainId, HdPaths.iov(0));
+      const adminIdentityAddress = identityToAddress(adminIdentity);
 
       // Create Term Deposit contract
       const validSince = Date.now() / 1000 - 60;
@@ -520,24 +520,31 @@ describe("BnsConnection (basic class methods)", () => {
           validSince: validSince,
           validUntil: validUntil,
         },
-        identityAddress,
+        adminIdentityAddress,
       );
-      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
-      const signed = await profile.signTransaction(identity, createDeposit, bnsCodec, nonce);
+      const nonce = await connection.getNonce({ pubkey: adminIdentity.pubkey });
+      const signed = await admiProfile.signTransaction(adminIdentity, createDeposit, bnsCodec, nonce);
       {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       }
 
+      // Make deposit to contract
+
       const results = await connection.getContracts();
       const lastContract = results[results.length - 1];
       const depositContractId = lastContract.id;
       const amount: Amount = {
-        quantity: "1000000000",
+        quantity: "1000000",
         fractionalDigits: 9,
         tokenTicker: cash,
       };
-      // Make deposit to contract
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+      const identityAddress = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, identityAddress, defaultAmount);
 
       const depositFunds = await connection.withDefaultFee<TermDepositDepositTx>(
         {
@@ -549,8 +556,8 @@ describe("BnsConnection (basic class methods)", () => {
         },
         identityAddress,
       );
-      const nonceDepositFunds = await connection.getNonce({ pubkey: identity.pubkey });
-      const signedDepositFunds = await profile.signTransaction(
+      let nonceDepositFunds = await connection.getNonce({ pubkey: identity.pubkey });
+      let signedDepositFunds = await profile.signTransaction(
         identity,
         depositFunds,
         bnsCodec,
@@ -561,9 +568,17 @@ describe("BnsConnection (basic class methods)", () => {
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       }
 
+      nonceDepositFunds = await connection.getNonce({ pubkey: identity.pubkey });
+      signedDepositFunds = await profile.signTransaction(identity, depositFunds, bnsCodec, nonceDepositFunds);
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signedDepositFunds));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+
       // Query deposits by depositor address
       {
         const deposits = await connection.getDeposits(identityAddress);
+        expect(deposits.length).toEqual(2);
         const lastDeposit = deposits[deposits.length - 1];
         expect(lastDeposit.depositContractId).toEqual(depositContractId);
         expect(lastDeposit.depositor).toEqual(identityAddress);
