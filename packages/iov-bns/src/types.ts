@@ -332,6 +332,38 @@ export interface Vote {
 }
 
 // Term Deposit NFT
+
+export interface BnsDepositsByDepositorQuery {
+  readonly depositor: Address;
+}
+
+export interface BnsDepositsByContractIdQuery {
+  readonly depositContractId: DepositContractIdBytes;
+}
+
+export interface BnsDepositByDepositIdQuery {
+  readonly depositId: DepositIdBytes;
+}
+
+export type BnsDepositQuery =
+  | BnsDepositsByDepositorQuery
+  | BnsDepositsByContractIdQuery
+  | BnsDepositByDepositIdQuery;
+
+export function isBnsDepositsByDepositorQuery(query: BnsDepositQuery): query is BnsDepositsByDepositorQuery {
+  return typeof (query as BnsDepositsByDepositorQuery).depositor !== "undefined";
+}
+
+export function isBnsDepositsByContractIdQuery(
+  query: BnsDepositQuery,
+): query is BnsDepositsByContractIdQuery {
+  return typeof (query as BnsDepositsByContractIdQuery).depositContractId !== "undefined";
+}
+
+export function isBnsDepositByDepositIdQuery(query: BnsDepositQuery): query is BnsDepositByDepositIdQuery {
+  return typeof (query as BnsDepositByDepositIdQuery).depositId !== "undefined";
+}
+
 export interface BnsTermDepositNft {
   readonly id: DepositIdBytes;
   readonly depositContractId: DepositContractIdBytes;
