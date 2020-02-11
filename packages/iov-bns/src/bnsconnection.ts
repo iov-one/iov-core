@@ -73,13 +73,16 @@ import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
   AccountNft,
-  AccountsByNameQuery,
+  BnsAccountsQuery,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
   Decoder,
   ElectionRule,
   Electorate,
+  isBnsAccountByNameQuery,
+  isBnsAccountsByDomainQuery,
+  isBnsAccountsByOwnerQuery,
   isBnsTx,
   isBnsUsernamesByOwnerQuery,
   isBnsUsernamesByUsernameQuery,
@@ -784,10 +787,22 @@ export class BnsConnection implements AtomicSwapConnection {
     return nfts;
   }
 
-  public async getAccountNft(query: AccountsByNameQuery): Promise<readonly AccountNft[]> {
-    const results = (await this.query("/accounts", toUtf8(query.name))).results;
+  public async getAccounts(query: BnsAccountsQuery): Promise<readonly AccountNft[]> {
+    let keyPrefix = "account:";
+    let results: readonly Result[];
+    if (isBnsAccountByNameQuery(query)) {
+      results = (await this.query("/accounts", toUtf8(query.name))).results;
+    } else if (isBnsAccountsByOwnerQuery(query)) {
+      keyPrefix = "";
+      const rawAddress = decodeBnsAddress(query.owner).data;
+      results = (await this.query("/accounts/owner", rawAddress)).results;
+    } else if (isBnsAccountsByDomainQuery(query)) {
+      results = (await this.query("/accounts/domain", toUtf8(query.domain))).results;
+    } else {
+      throw new Error("Unsupported query");
+    }
 
-    const parser = createParser(codecImpl.account.Account, "account:");
+    const parser = createParser(codecImpl.account.Account, keyPrefix);
     const nfts = results.map(parser).map(nft => decodeAccount(this.prefix, nft));
     return nfts;
   }
