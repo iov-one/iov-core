@@ -27,7 +27,7 @@ import {
 import { Stream } from "xstream";
 import {
   AccountNft,
-  AccountsByNameQuery,
+  BnsAccountsQuery,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
@@ -114,7 +114,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
   getProposals(): Promise<readonly Proposal[]>;
   getVotes(voter: Address): Promise<readonly Vote[]>;
   getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]>;
-  getAccountNft(query: AccountsByNameQuery): Promise<readonly AccountNft[]>;
+  getAccounts(query: BnsAccountsQuery): Promise<readonly AccountNft[]>;
   estimateTxSize(transaction: UnsignedTransaction, numberOfSignatures: number, nonce?: Nonce): number;
   getTxFeeConfiguration(): Promise<TxFeeConfiguration | undefined>;
   getFeeQuote(transaction: UnsignedTransaction, numberOfSignatures?: number, nonce?: Nonce): Promise<Fee>;
