@@ -15,7 +15,6 @@ import {
   AccountConfiguration,
   AccountMsgFee,
   AddAccountCertificateTx,
-  BlockchainAddress,
   BnsdTxMsg,
   ChainAddressPair,
   CreateEscrowTx,
@@ -249,9 +248,11 @@ function encodeDeleteDomainTx(tx: DeleteDomainTx): BnsdTxMsg {
   };
 }
 
-function encodeBlockchainAddress(blockchainAddress: BlockchainAddress): codecImpl.account.IBlockchainAddress {
+function encodeAccountChainAddress(
+  blockchainAddress: ChainAddressPair,
+): codecImpl.account.IBlockchainAddress {
   return {
-    blockchainId: blockchainAddress.blockchainId,
+    blockchainId: blockchainAddress.chainId,
     address: blockchainAddress.address,
   };
 }
@@ -263,7 +264,7 @@ function encodeRegisterAccountTx(tx: RegisterAccountTx): BnsdTxMsg {
       domain: tx.domain,
       name: tx.name,
       owner: decodeBnsAddress(tx.owner).data,
-      targets: tx.targets.map(encodeBlockchainAddress),
+      targets: tx.targets.map(encodeAccountChainAddress),
       thirdPartyToken: tx.broker ? decodeBnsAddress(tx.broker).data : null,
     },
   };
@@ -286,7 +287,7 @@ function encodeReplaceAccountTargetsTx(tx: ReplaceAccountTargetsTx): BnsdTxMsg {
       metadata: { schema: 1 },
       domain: tx.domain,
       name: tx.name,
-      newTargets: tx.newTargets.map(encodeBlockchainAddress),
+      newTargets: tx.newTargets.map(encodeAccountChainAddress),
     },
   };
 }

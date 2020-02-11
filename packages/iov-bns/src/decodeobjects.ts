@@ -10,7 +10,6 @@ import {
   AccountMsgFee,
   AccountNft,
   ActionKind,
-  BlockchainAddress,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
@@ -129,12 +128,10 @@ export function decodeAccountMsgFee(msgFee: codecImpl.account.IAccountMsgFee): A
   };
 }
 
-export function decodeBlockchainAddress(
-  blockchainAddress: codecImpl.account.IBlockchainAddress,
-): BlockchainAddress {
+export function decodeBlockchainAddress(pair: codecImpl.account.IBlockchainAddress): ChainAddressPair {
   return {
-    blockchainId: ensure(blockchainAddress.blockchainId, "blockchainId"),
-    address: ensure(blockchainAddress.address, "address"),
+    chainId: ensure(pair.blockchainId, "blockchainId") as ChainId,
+    address: ensure(pair.address, "address") as Address,
   };
 }
 
