@@ -2,6 +2,7 @@ import {
   Address,
   Algorithm,
   ChainId,
+  Identity,
   isBlockInfoPending,
   Nonce,
   SendTransaction,
@@ -13,6 +14,7 @@ import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 import { assert } from "@iov/utils";
 
+import { ChainAddressPair } from "../types/types";
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import {
@@ -592,21 +594,30 @@ describe("BnsConnection (basic class methods)", () => {
   });
 
   describe("getAccountsNft", () => {
-    it("can query account by name", async () => {
-      pendingWithoutBnsd();
-      const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId;
+    let connection: BnsConnection;
+    let name: string;
+    let domain: string;
+    let identityAddress: Address;
+    let targets: readonly ChainAddressPair[];
+    let registryChainId: ChainId;
+    let identity: Identity;
+    let profile: UserProfile;
 
-      const profile = new UserProfile();
+    beforeEach(async () => {
+      pendingWithoutBnsd();
+      connection = await BnsConnection.establish(bnsdTendermintUrl);
+      registryChainId = connection.chainId;
+
+      profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
-      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
-      const identityAddress = identityToAddress(identity);
+      identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+      identityAddress = identityToAddress(identity);
       await sendTokensFromFaucet(connection, identityAddress, registerAmount);
 
       // Register account
-      const name = `testuser_${Math.random()}`;
-      const domain = "iov";
-      const targets = [{ blockchainId: "foobar" as ChainId, address: identityAddress }] as const;
+      name = `testuser_${Math.random()}`;
+      domain = "iov";
+      targets = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
       const registration = await connection.withDefaultFee<RegisterAccountTx>(
         {
           kind: "bns/register_account",
@@ -624,19 +635,68 @@ describe("BnsConnection (basic class methods)", () => {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       }
+    });
 
-      // Query by existing name
-      {
-        const results = await connection.getAccountNft({ name: `${name}*${domain}` });
-        expect(results.length).toEqual(1);
-        expect(results[0].domain).toEqual(domain);
-        expect(results[0].name).toEqual(name);
-        expect(results[0].owner).toEqual(identityAddress);
-        expect(results[0].targets).toEqual(targets);
-        expect(results[0].certificates).toEqual([]);
-      }
-
+    afterEach(() => {
       connection.disconnect();
+    });
+
+    it("can query account by name", async () => {
+      const results = await connection.getAccounts({ name: `${name}*${domain}` });
+      expect(results.length).toEqual(1);
+      expect(results[0].domain).toEqual(domain);
+      expect(results[0].name).toEqual(name);
+      expect(results[0].owner).toEqual(identityAddress);
+      expect(results[0].targets).toEqual(targets);
+      expect(results[0].certificates).toEqual([]);
+    });
+
+    it("can query accounts by owner", async () => {
+      // Register account
+      const name2 = `testuser_${Math.random()}`;
+      const targets2 = [{ chainId: "foobar" as ChainId, address: identityAddress }] as const;
+      const registration = await connection.withDefaultFee<RegisterAccountTx>(
+        {
+          kind: "bns/register_account",
+          chainId: registryChainId,
+          name: name2,
+          domain: domain,
+          owner: identityAddress,
+          targets: targets2,
+        },
+        identityAddress,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+      const results = await connection.getAccounts({ owner: identityAddress });
+      expect(results.length).toEqual(2);
+      // First account
+      expect(results[0].domain).toEqual(domain);
+      expect(results[0].name).toEqual(name);
+      expect(results[0].owner).toEqual(identityAddress);
+      expect(results[0].targets).toEqual(targets);
+      expect(results[0].certificates).toEqual([]);
+      // Second account
+      expect(results[1].domain).toEqual(domain);
+      expect(results[1].name).toEqual(name2);
+      expect(results[1].owner).toEqual(identityAddress);
+      expect(results[1].targets).toEqual(targets2);
+      expect(results[1].certificates).toEqual([]);
+    });
+
+    fit("can query accounts by domain", async () => {
+      const results = await connection.getAccounts({ owner: identityAddress });
+      expect(results.length).toBeGreaterThan(0);
+      const lastDomain = results[results.length - 1];
+      expect(lastDomain.domain).toEqual(domain);
+      expect(lastDomain.name).toEqual(name);
+      expect(lastDomain.owner).toEqual(identityAddress);
+      expect(lastDomain.targets).toEqual(targets);
+      expect(lastDomain.certificates).toEqual([]);
     });
   });
 
