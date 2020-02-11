@@ -37,15 +37,37 @@ export interface TxFeeConfiguration {
  */
 export type BnsdTxMsg = Omit<codecImpl.bnsd.ITx, "fees" | "signatures" | "multisig">;
 
-// Accounts
+// Accounts NFT
 
-export interface BlockchainAddress {
-  readonly blockchainId: string;
-  readonly address: string;
+export interface ChainAddressPair {
+  readonly chainId: ChainId;
+  readonly address: Address;
 }
 
-export interface AccountsByNameQuery {
+export interface BnsAccountByNameQuery {
   readonly name: string;
+}
+
+export interface BnsAccountsByOwnerQuery {
+  readonly owner: Address;
+}
+
+export interface BnsAccountsByDomainQuery {
+  readonly domain: string;
+}
+
+export type BnsAccountsQuery = BnsAccountByNameQuery | BnsAccountsByOwnerQuery | BnsAccountsByDomainQuery;
+
+export function isBnsAccountByNameQuery(query: BnsAccountsQuery): query is BnsAccountByNameQuery {
+  return typeof (query as BnsAccountByNameQuery).name !== "undefined";
+}
+
+export function isBnsAccountsByOwnerQuery(query: BnsAccountsQuery): query is BnsAccountsByOwnerQuery {
+  return typeof (query as BnsAccountsByOwnerQuery).owner !== "undefined";
+}
+
+export function isBnsAccountsByDomainQuery(query: BnsAccountsQuery): query is BnsAccountsByDomainQuery {
+  return typeof (query as BnsAccountsByDomainQuery).domain !== "undefined";
 }
 
 export interface AccountConfiguration {
@@ -67,7 +89,7 @@ export interface AccountNft {
   readonly name: string;
   readonly owner: Address;
   readonly validUntil: number;
-  readonly targets: readonly BlockchainAddress[];
+  readonly targets: readonly ChainAddressPair[];
   readonly certificates: readonly Uint8Array[];
 }
 
@@ -332,12 +354,6 @@ export interface Vote {
 }
 
 // username NFT
-
-export interface ChainAddressPair {
-  readonly chainId: ChainId;
-  readonly address: Address;
-}
-
 export interface BnsUsernameNft {
   readonly id: string;
   readonly owner: Address;
@@ -477,7 +493,7 @@ export interface RegisterAccountTx extends UnsignedTransaction {
   readonly domain: string;
   readonly name: string;
   readonly owner: Address;
-  readonly targets: readonly BlockchainAddress[];
+  readonly targets: readonly ChainAddressPair[];
   readonly broker?: Address;
 }
 
@@ -500,7 +516,7 @@ export interface ReplaceAccountTargetsTx extends UnsignedTransaction {
   readonly kind: "bns/replace_account_targets";
   readonly domain: string;
   readonly name: string;
-  readonly newTargets: readonly BlockchainAddress[];
+  readonly newTargets: readonly ChainAddressPair[];
 }
 
 export function isReplaceAccountTargetsTx(tx: UnsignedTransaction): tx is ReplaceAccountTargetsTx {
