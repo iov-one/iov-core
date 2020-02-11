@@ -36,6 +36,10 @@ Breaking changes
 - ALL: Upgrade TypeScript from 3.5 to 3.7. This changes the signature of getters
   in declaration files (see
   https://devblogs.microsoft.com/typescript/announcing-typescript-3-6/#get-and-set-accessors-allowed-in-ambient-contexts)
+- ALL: Change ECMAScript target version to ES2017, which results in JavaScript
+  output that is smaller, faster and easier to read and debug. The main change
+  is the usage of native `async`/`await`, which is
+  [supported by all relevant JavaScript environments](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function#Browser_compatibility).
 - @iov/bcp: Remove `LightTransaction` and `WithCreator` types and helpers.
 - @iov/bcp: `UnsignedTransaction` now has a `chainId` field instead of
   `creator`.
