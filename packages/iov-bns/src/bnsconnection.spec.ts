@@ -17,7 +17,6 @@ import { assert } from "@iov/utils";
 import { ChainAddressPair } from "../types/types";
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
-import { account } from "./generated/codecimpl";
 import {
   bash,
   blockTime,
