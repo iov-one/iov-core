@@ -788,15 +788,17 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public async getAccounts(query: BnsAccountsQuery): Promise<readonly AccountNft[]> {
-    let keyPrefix = "account:";
+    let keyPrefix: string;
     let results: readonly Result[];
     if (isBnsAccountByNameQuery(query)) {
+      keyPrefix = "account:";
       results = (await this.query("/accounts", toUtf8(query.name))).results;
     } else if (isBnsAccountsByOwnerQuery(query)) {
       keyPrefix = "";
       const rawAddress = decodeBnsAddress(query.owner).data;
       results = (await this.query("/accounts/owner", rawAddress)).results;
     } else if (isBnsAccountsByDomainQuery(query)) {
+      keyPrefix = "account:";
       results = (await this.query("/accounts/domain", toUtf8(query.domain))).results;
     } else {
       throw new Error("Unsupported query");
