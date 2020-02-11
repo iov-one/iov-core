@@ -14,6 +14,7 @@ import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 import { assert } from "@iov/utils";
 
+import { BnsDepositsByContractIdQuery } from "../types/types";
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import {
@@ -34,6 +35,9 @@ import {
 } from "./testutils.spec";
 import {
   ActionKind,
+  BnsDepositByDepositIdQuery,
+  BnsDepositsByDepositorQuery,
+  BnsTermDepositNft,
   CreateProposalTx,
   CreateTermDepositContractTx,
   CreateTextResolutionAction,
@@ -499,7 +503,7 @@ describe("BnsConnection (basic class methods)", () => {
   });
 
   describe("getDeposits", () => {
-    fit("can query deposit by depositor address", async () => {
+    it("can query deposit by depositor address, contract id and deposit id", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
       const registryChainId = connection.chainId;
@@ -531,8 +535,8 @@ describe("BnsConnection (basic class methods)", () => {
 
       // Make deposit to contract
 
-      const results = await connection.getContracts();
-      const lastContract = results[results.length - 1];
+      const allContracts = await connection.getContracts();
+      const lastContract = allContracts[allContracts.length - 1];
       const depositContractId = lastContract.id;
       const amount: Amount = {
         quantity: "1000000",
@@ -575,14 +579,43 @@ describe("BnsConnection (basic class methods)", () => {
         await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
       }
 
+      let lastDeposit: BnsTermDepositNft;
       // Query deposits by depositor address
       {
-        const deposits = await connection.getDeposits(identityAddress);
+        const depositorQuery: BnsDepositsByDepositorQuery = {
+          depositor: identityAddress,
+        };
+        const deposits = await connection.getDeposits(depositorQuery);
         expect(deposits.length).toEqual(2);
-        const lastDeposit = deposits[deposits.length - 1];
+        lastDeposit = deposits[1];
         expect(lastDeposit.depositContractId).toEqual(depositContractId);
         expect(lastDeposit.depositor).toEqual(identityAddress);
         expect(lastDeposit.amount).toEqual(amount);
+      }
+
+      // Query deposits by deposit contract id
+      {
+        const contractQuery: BnsDepositsByContractIdQuery = {
+          depositContractId: depositContractId,
+        };
+        const deposits = await connection.getDeposits(contractQuery);
+        expect(deposits.length).toEqual(2);
+        lastDeposit = deposits[1];
+        expect(lastDeposit.depositContractId).toEqual(depositContractId);
+        expect(lastDeposit.depositor).toEqual(identityAddress);
+        expect(lastDeposit.amount).toEqual(amount);
+      }
+
+      // Query deposit by deposit id
+      {
+        const contractQuery: BnsDepositByDepositIdQuery = {
+          depositId: lastDeposit.id,
+        };
+        const deposit = await connection.getDeposits(contractQuery);
+        expect(deposit.length).toEqual(1);
+        expect(deposit[0].depositContractId).toEqual(depositContractId);
+        expect(deposit[0].depositor).toEqual(identityAddress);
+        expect(deposit[0].amount).toEqual(amount);
       }
 
       connection.disconnect();
