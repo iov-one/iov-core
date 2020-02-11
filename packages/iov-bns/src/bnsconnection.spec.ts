@@ -17,6 +17,7 @@ import { assert } from "@iov/utils";
 import { ChainAddressPair } from "../types/types";
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
+import { account } from "./generated/codecimpl";
 import {
   bash,
   blockTime,
@@ -675,14 +676,18 @@ describe("BnsConnection (basic class methods)", () => {
       const results = await connection.getAccounts({ owner: identityAddress });
       expect(results.length).toEqual(2);
       // First account
-      expect(results[0].domain).toEqual(domain);
-      expect(results[0].name).toEqual(name);
-      expect(results[0].owner).toEqual(identityAddress);
-      expect(results[0].targets).toEqual(targets);
-      expect(results[0].certificates).toEqual([]);
+      const firstAccount = results.find(acc => acc.name === name);
+      expect(firstAccount).toBeDefined();
+      expect(firstAccount!.domain).toEqual(domain);
+      expect(firstAccount!.owner).toEqual(identityAddress);
+      expect(firstAccount!.targets).toEqual(targets);
+      expect(firstAccount!.certificates).toEqual([]);
+
       // Second account
-      expect(results[1].domain).toEqual(domain);
-      expect(results[1].name).toEqual(name2);
+      const secondAccount = results.find(acc => acc.name === name2);
+      expect(secondAccount).toBeDefined();
+      expect(secondAccount!.domain).toEqual(domain);
+      expect(secondAccount!.name).toEqual(name2);
       expect(results[1].owner).toEqual(identityAddress);
       expect(results[1].targets).toEqual(targets2);
       expect(results[1].certificates).toEqual([]);
