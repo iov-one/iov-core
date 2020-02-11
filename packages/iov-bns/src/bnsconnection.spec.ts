@@ -688,7 +688,7 @@ describe("BnsConnection (basic class methods)", () => {
       expect(results[1].certificates).toEqual([]);
     });
 
-    fit("can query accounts by domain", async () => {
+    it("can query accounts by domain", async () => {
       const results = await connection.getAccounts({ owner: identityAddress });
       expect(results.length).toBeGreaterThan(0);
       const lastDomain = results[results.length - 1];
