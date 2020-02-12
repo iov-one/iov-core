@@ -48,6 +48,15 @@ export declare function isBnsAccountsByOwnerQuery(query: BnsAccountsQuery): quer
 export declare function isBnsAccountsByDomainQuery(
   query: BnsAccountsQuery,
 ): query is BnsAccountsByDomainQuery;
+export interface BnsDomainByNameQuery {
+  readonly name: string;
+}
+export interface BnsDomainsByAdminQuery {
+  readonly admin: Address;
+}
+export declare type BnsDomainsQuery = BnsDomainByNameQuery | BnsDomainsByAdminQuery;
+export declare function isBnsDomainByNameQuery(query: BnsDomainsQuery): query is BnsDomainByNameQuery;
+export declare function isBnsDomainsByAdminQuery(query: BnsDomainsQuery): query is BnsDomainsByAdminQuery;
 export interface AccountConfiguration {
   readonly owner: Address;
   readonly validDomain: string;
@@ -62,7 +71,7 @@ export interface AccountMsgFee {
 }
 export interface AccountNft {
   readonly domain: string;
-  readonly name: string;
+  readonly name?: string;
   readonly owner: Address;
   readonly validUntil: number;
   readonly targets: readonly ChainAddressPair[];
