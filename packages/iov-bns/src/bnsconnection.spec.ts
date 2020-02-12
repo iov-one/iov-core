@@ -1,6 +1,7 @@
 import {
   Address,
   Algorithm,
+  Amount,
   ChainId,
   isBlockInfoPending,
   Nonce,
@@ -13,6 +14,7 @@ import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 import { assert } from "@iov/utils";
 
+import { BnsDepositsByContractIdQuery } from "../types/types";
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import {
@@ -33,10 +35,15 @@ import {
 } from "./testutils.spec";
 import {
   ActionKind,
+  BnsDepositByDepositIdQuery,
+  BnsDepositsByDepositorQuery,
+  BnsTermDepositNft,
   CreateProposalTx,
+  CreateTermDepositContractTx,
   CreateTextResolutionAction,
   RegisterAccountTx,
   RegisterUsernameTx,
+  TermDepositDepositTx,
 } from "./types";
 import { identityToAddress } from "./util";
 
@@ -489,6 +496,126 @@ describe("BnsConnection (basic class methods)", () => {
       expect(myProposal!.title).toEqual(title);
       expect(myProposal!.description).toEqual(description);
       expect(myProposal!.action).toEqual(action);
+
+      connection.disconnect();
+    });
+  });
+
+  describe("getDeposits", () => {
+    it("can query deposit by depositor address, contract id and deposit id", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId;
+
+      const admiProfile = new UserProfile();
+      const adminMnemonic = "degree tackle suggest window test behind mesh extra cover prepare oak script";
+      const adminWallet = admiProfile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
+      const adminIdentity = await admiProfile.createIdentity(adminWallet.id, registryChainId, HdPaths.iov(0));
+      const adminIdentityAddress = identityToAddress(adminIdentity);
+
+      // Create Term Deposit contract
+      const validSince = Date.now() / 1000 - 60;
+      const validUntil = validSince + 600;
+      const createDeposit = await connection.withDefaultFee<CreateTermDepositContractTx>(
+        {
+          kind: "bns/create_termdeposit_contract",
+          chainId: registryChainId,
+          validSince: validSince,
+          validUntil: validUntil,
+        },
+        adminIdentityAddress,
+      );
+      const nonce = await connection.getNonce({ pubkey: adminIdentity.pubkey });
+      const signed = await admiProfile.signTransaction(adminIdentity, createDeposit, bnsCodec, nonce);
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+
+      // Make deposit to contract
+
+      const allContracts = await connection.getContracts();
+      const lastContract = allContracts[allContracts.length - 1];
+      const depositContractId = lastContract.id;
+      const amount: Amount = {
+        quantity: "1000000",
+        fractionalDigits: 9,
+        tokenTicker: cash,
+      };
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+      const identityAddress = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, identityAddress, defaultAmount);
+
+      const depositFunds = await connection.withDefaultFee<TermDepositDepositTx>(
+        {
+          kind: "bns/termdeposit_deposit",
+          chainId: registryChainId,
+          depositContractId: depositContractId,
+          amount: amount,
+          depositor: identityAddress,
+        },
+        identityAddress,
+      );
+      let nonceDepositFunds = await connection.getNonce({ pubkey: identity.pubkey });
+      let signedDepositFunds = await profile.signTransaction(
+        identity,
+        depositFunds,
+        bnsCodec,
+        nonceDepositFunds,
+      );
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signedDepositFunds));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+
+      nonceDepositFunds = await connection.getNonce({ pubkey: identity.pubkey });
+      signedDepositFunds = await profile.signTransaction(identity, depositFunds, bnsCodec, nonceDepositFunds);
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signedDepositFunds));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+
+      let lastDeposit: BnsTermDepositNft;
+      // Query deposits by depositor address
+      {
+        const depositorQuery: BnsDepositsByDepositorQuery = {
+          depositor: identityAddress,
+        };
+        const deposits = await connection.getDeposits(depositorQuery);
+        expect(deposits.length).toEqual(2);
+        lastDeposit = deposits[1];
+        expect(lastDeposit.depositContractId).toEqual(depositContractId);
+        expect(lastDeposit.depositor).toEqual(identityAddress);
+        expect(lastDeposit.amount).toEqual(amount);
+      }
+
+      // Query deposits by deposit contract id
+      {
+        const contractQuery: BnsDepositsByContractIdQuery = {
+          depositContractId: depositContractId,
+        };
+        const deposits = await connection.getDeposits(contractQuery);
+        expect(deposits.length).toEqual(2);
+        lastDeposit = deposits[1];
+        expect(lastDeposit.depositContractId).toEqual(depositContractId);
+        expect(lastDeposit.depositor).toEqual(identityAddress);
+        expect(lastDeposit.amount).toEqual(amount);
+      }
+
+      // Query deposit by deposit id
+      {
+        const contractQuery: BnsDepositByDepositIdQuery = {
+          depositId: lastDeposit.id,
+        };
+        const deposit = await connection.getDeposits(contractQuery);
+        expect(deposit.length).toEqual(1);
+        expect(deposit[0].depositContractId).toEqual(depositContractId);
+        expect(deposit[0].depositor).toEqual(identityAddress);
+        expect(deposit[0].amount).toEqual(amount);
+      }
 
       connection.disconnect();
     });

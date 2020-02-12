@@ -240,6 +240,27 @@ export namespace bnsd {
 
     /** Tx txfeeUpdateConfigurationMsg */
     txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
+
+    /** Tx termdepositCreateDepositContractMsg */
+    termdepositCreateDepositContractMsg?: termdeposit.ICreateDepositContractMsg | null;
+
+    /** Tx termdepositDepositMsg */
+    termdepositDepositMsg?: termdeposit.IDepositMsg | null;
+
+    /** Tx termdepositReleaseDepositMsg */
+    termdepositReleaseDepositMsg?: termdeposit.IReleaseDepositMsg | null;
+
+    /** Tx termdepositUpdateConfigurationMsg */
+    termdepositUpdateConfigurationMsg?: termdeposit.IUpdateConfigurationMsg | null;
+
+    /** Tx qualityscoreUpdateConfigurationMsg */
+    qualityscoreUpdateConfigurationMsg?: qualityscore.IUpdateConfigurationMsg | null;
+
+    /** Tx preregistrationUpdateConfigurationMsg */
+    preregistrationUpdateConfigurationMsg?: preregistration.IUpdateConfigurationMsg | null;
+
+    /** Tx msgfeeUpdateConfigurationMsg */
+    msgfeeUpdateConfigurationMsg?: msgfee.IUpdateConfigurationMsg | null;
   }
 
   /** old fields got deprecated. This is done to maintain binary compatibility. */
@@ -394,6 +415,27 @@ export namespace bnsd {
     /** Tx txfeeUpdateConfigurationMsg. */
     public txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
 
+    /** Tx termdepositCreateDepositContractMsg. */
+    public termdepositCreateDepositContractMsg?: termdeposit.ICreateDepositContractMsg | null;
+
+    /** Tx termdepositDepositMsg. */
+    public termdepositDepositMsg?: termdeposit.IDepositMsg | null;
+
+    /** Tx termdepositReleaseDepositMsg. */
+    public termdepositReleaseDepositMsg?: termdeposit.IReleaseDepositMsg | null;
+
+    /** Tx termdepositUpdateConfigurationMsg. */
+    public termdepositUpdateConfigurationMsg?: termdeposit.IUpdateConfigurationMsg | null;
+
+    /** Tx qualityscoreUpdateConfigurationMsg. */
+    public qualityscoreUpdateConfigurationMsg?: qualityscore.IUpdateConfigurationMsg | null;
+
+    /** Tx preregistrationUpdateConfigurationMsg. */
+    public preregistrationUpdateConfigurationMsg?: preregistration.IUpdateConfigurationMsg | null;
+
+    /** Tx msgfeeUpdateConfigurationMsg. */
+    public msgfeeUpdateConfigurationMsg?: msgfee.IUpdateConfigurationMsg | null;
+
     /** msg is a sum type over all allowed messages on this chain. */
     public sum?:
       | "cashSendMsg"
@@ -440,7 +482,14 @@ export namespace bnsd {
       | "accountDeleteAccountCertificateMsg"
       | "preregistrationRegisterMsg"
       | "cashUpdateConfigurationMsg"
-      | "txfeeUpdateConfigurationMsg";
+      | "txfeeUpdateConfigurationMsg"
+      | "termdepositCreateDepositContractMsg"
+      | "termdepositDepositMsg"
+      | "termdepositReleaseDepositMsg"
+      | "termdepositUpdateConfigurationMsg"
+      | "qualityscoreUpdateConfigurationMsg"
+      | "preregistrationUpdateConfigurationMsg"
+      | "msgfeeUpdateConfigurationMsg";
 
     /**
      * Creates a new Tx instance using the specified properties.
@@ -711,6 +760,27 @@ export namespace bnsd {
 
       /** Union txfeeUpdateConfigurationMsg */
       txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
+
+      /** Union termdepositCreateDepositContractMsg */
+      termdepositCreateDepositContractMsg?: termdeposit.ICreateDepositContractMsg | null;
+
+      /** Union termdepositDepositMsg */
+      termdepositDepositMsg?: termdeposit.IDepositMsg | null;
+
+      /** Union termdepositReleaseDepositMsg */
+      termdepositReleaseDepositMsg?: termdeposit.IReleaseDepositMsg | null;
+
+      /** Union termdepositUpdateConfigurationMsg */
+      termdepositUpdateConfigurationMsg?: termdeposit.IUpdateConfigurationMsg | null;
+
+      /** Union qualityscoreUpdateConfigurationMsg */
+      qualityscoreUpdateConfigurationMsg?: qualityscore.IUpdateConfigurationMsg | null;
+
+      /** Union preregistrationUpdateConfigurationMsg */
+      preregistrationUpdateConfigurationMsg?: preregistration.IUpdateConfigurationMsg | null;
+
+      /** Union msgfeeUpdateConfigurationMsg */
+      msgfeeUpdateConfigurationMsg?: msgfee.IUpdateConfigurationMsg | null;
     }
 
     /** Represents an Union. */
@@ -823,6 +893,27 @@ export namespace bnsd {
       /** Union txfeeUpdateConfigurationMsg. */
       public txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
 
+      /** Union termdepositCreateDepositContractMsg. */
+      public termdepositCreateDepositContractMsg?: termdeposit.ICreateDepositContractMsg | null;
+
+      /** Union termdepositDepositMsg. */
+      public termdepositDepositMsg?: termdeposit.IDepositMsg | null;
+
+      /** Union termdepositReleaseDepositMsg. */
+      public termdepositReleaseDepositMsg?: termdeposit.IReleaseDepositMsg | null;
+
+      /** Union termdepositUpdateConfigurationMsg. */
+      public termdepositUpdateConfigurationMsg?: termdeposit.IUpdateConfigurationMsg | null;
+
+      /** Union qualityscoreUpdateConfigurationMsg. */
+      public qualityscoreUpdateConfigurationMsg?: qualityscore.IUpdateConfigurationMsg | null;
+
+      /** Union preregistrationUpdateConfigurationMsg. */
+      public preregistrationUpdateConfigurationMsg?: preregistration.IUpdateConfigurationMsg | null;
+
+      /** Union msgfeeUpdateConfigurationMsg. */
+      public msgfeeUpdateConfigurationMsg?: msgfee.IUpdateConfigurationMsg | null;
+
       /** Union sum. */
       public sum?:
         | "cashSendMsg"
@@ -858,7 +949,14 @@ export namespace bnsd {
         | "accountAddAccountCertificateMsg"
         | "accountDeleteAccountCertificateMsg"
         | "cashUpdateConfigurationMsg"
-        | "txfeeUpdateConfigurationMsg";
+        | "txfeeUpdateConfigurationMsg"
+        | "termdepositCreateDepositContractMsg"
+        | "termdepositDepositMsg"
+        | "termdepositReleaseDepositMsg"
+        | "termdepositUpdateConfigurationMsg"
+        | "qualityscoreUpdateConfigurationMsg"
+        | "preregistrationUpdateConfigurationMsg"
+        | "msgfeeUpdateConfigurationMsg";
 
       /**
        * Creates a new Union instance using the specified properties.
@@ -1003,11 +1101,74 @@ export namespace bnsd {
     /** ProposalOptions datamigrationExecuteMigrationMsg */
     datamigrationExecuteMigrationMsg?: datamigration.IExecuteMigrationMsg | null;
 
-    /** 82-95 are reserved for the account extension messages */
+    /** ProposalOptions accountUpdateConfigurationMsg */
+    accountUpdateConfigurationMsg?: account.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions accountRegisterDomainMsg */
+    accountRegisterDomainMsg?: account.IRegisterDomainMsg | null;
+
+    /** ProposalOptions accountReplaceAccountMsgFeesMsg */
+    accountReplaceAccountMsgFeesMsg?: account.IReplaceAccountMsgFeesMsg | null;
+
+    /** ProposalOptions accountTransferDomainMsg */
+    accountTransferDomainMsg?: account.ITransferDomainMsg | null;
+
+    /** ProposalOptions accountRenewDomainMsg */
+    accountRenewDomainMsg?: account.IRenewDomainMsg | null;
+
+    /** ProposalOptions accountDeleteDomainMsg */
+    accountDeleteDomainMsg?: account.IDeleteDomainMsg | null;
+
+    /** ProposalOptions accountRegisterAccountMsg */
+    accountRegisterAccountMsg?: account.IRegisterAccountMsg | null;
+
+    /** ProposalOptions accountTransferAccountMsg */
+    accountTransferAccountMsg?: account.ITransferAccountMsg | null;
+
+    /** ProposalOptions accountReplaceAccountTargetsMsg */
+    accountReplaceAccountTargetsMsg?: account.IReplaceAccountTargetsMsg | null;
+
+    /** ProposalOptions accountDeleteAccountMsg */
+    accountDeleteAccountMsg?: account.IDeleteAccountMsg | null;
+
+    /** ProposalOptions accountFlushDomainMsg */
+    accountFlushDomainMsg?: account.IFlushDomainMsg | null;
+
+    /** ProposalOptions accountRenewAccountMsg */
+    accountRenewAccountMsg?: account.IRenewAccountMsg | null;
+
+    /** ProposalOptions accountAddAccountCertificateMsg */
+    accountAddAccountCertificateMsg?: account.IAddAccountCertificateMsg | null;
+
+    /** ProposalOptions accountDeleteAccountCertificateMsg */
+    accountDeleteAccountCertificateMsg?: account.IDeleteAccountCertificateMsg | null;
+
+    /** ProposalOptions cashUpdateConfigurationMsg */
     cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
 
     /** ProposalOptions txfeeUpdateConfigurationMsg */
     txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions termdepositCreateDepositContractMsg */
+    termdepositCreateDepositContractMsg?: termdeposit.ICreateDepositContractMsg | null;
+
+    /** ProposalOptions termdepositDepositMsg */
+    termdepositDepositMsg?: termdeposit.IDepositMsg | null;
+
+    /** ProposalOptions termdepositReleaseDepositMsg */
+    termdepositReleaseDepositMsg?: termdeposit.IReleaseDepositMsg | null;
+
+    /** ProposalOptions termdepositUpdateConfigurationMsg */
+    termdepositUpdateConfigurationMsg?: termdeposit.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions qualityscoreUpdateConfigurationMsg */
+    qualityscoreUpdateConfigurationMsg?: qualityscore.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions preregistrationUpdateConfigurationMsg */
+    preregistrationUpdateConfigurationMsg?: preregistration.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions msgfeeUpdateConfigurationMsg */
+    msgfeeUpdateConfigurationMsg?: msgfee.IUpdateConfigurationMsg | null;
   }
 
   /** Trimmed down somewhat arbitrary to what is believed to be reasonable */
@@ -1078,11 +1239,74 @@ export namespace bnsd {
     /** ProposalOptions datamigrationExecuteMigrationMsg. */
     public datamigrationExecuteMigrationMsg?: datamigration.IExecuteMigrationMsg | null;
 
-    /** 82-95 are reserved for the account extension messages */
+    /** ProposalOptions accountUpdateConfigurationMsg. */
+    public accountUpdateConfigurationMsg?: account.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions accountRegisterDomainMsg. */
+    public accountRegisterDomainMsg?: account.IRegisterDomainMsg | null;
+
+    /** ProposalOptions accountReplaceAccountMsgFeesMsg. */
+    public accountReplaceAccountMsgFeesMsg?: account.IReplaceAccountMsgFeesMsg | null;
+
+    /** ProposalOptions accountTransferDomainMsg. */
+    public accountTransferDomainMsg?: account.ITransferDomainMsg | null;
+
+    /** ProposalOptions accountRenewDomainMsg. */
+    public accountRenewDomainMsg?: account.IRenewDomainMsg | null;
+
+    /** ProposalOptions accountDeleteDomainMsg. */
+    public accountDeleteDomainMsg?: account.IDeleteDomainMsg | null;
+
+    /** ProposalOptions accountRegisterAccountMsg. */
+    public accountRegisterAccountMsg?: account.IRegisterAccountMsg | null;
+
+    /** ProposalOptions accountTransferAccountMsg. */
+    public accountTransferAccountMsg?: account.ITransferAccountMsg | null;
+
+    /** ProposalOptions accountReplaceAccountTargetsMsg. */
+    public accountReplaceAccountTargetsMsg?: account.IReplaceAccountTargetsMsg | null;
+
+    /** ProposalOptions accountDeleteAccountMsg. */
+    public accountDeleteAccountMsg?: account.IDeleteAccountMsg | null;
+
+    /** ProposalOptions accountFlushDomainMsg. */
+    public accountFlushDomainMsg?: account.IFlushDomainMsg | null;
+
+    /** ProposalOptions accountRenewAccountMsg. */
+    public accountRenewAccountMsg?: account.IRenewAccountMsg | null;
+
+    /** ProposalOptions accountAddAccountCertificateMsg. */
+    public accountAddAccountCertificateMsg?: account.IAddAccountCertificateMsg | null;
+
+    /** ProposalOptions accountDeleteAccountCertificateMsg. */
+    public accountDeleteAccountCertificateMsg?: account.IDeleteAccountCertificateMsg | null;
+
+    /** ProposalOptions cashUpdateConfigurationMsg. */
     public cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
 
     /** ProposalOptions txfeeUpdateConfigurationMsg. */
     public txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions termdepositCreateDepositContractMsg. */
+    public termdepositCreateDepositContractMsg?: termdeposit.ICreateDepositContractMsg | null;
+
+    /** ProposalOptions termdepositDepositMsg. */
+    public termdepositDepositMsg?: termdeposit.IDepositMsg | null;
+
+    /** ProposalOptions termdepositReleaseDepositMsg. */
+    public termdepositReleaseDepositMsg?: termdeposit.IReleaseDepositMsg | null;
+
+    /** ProposalOptions termdepositUpdateConfigurationMsg. */
+    public termdepositUpdateConfigurationMsg?: termdeposit.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions qualityscoreUpdateConfigurationMsg. */
+    public qualityscoreUpdateConfigurationMsg?: qualityscore.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions preregistrationUpdateConfigurationMsg. */
+    public preregistrationUpdateConfigurationMsg?: preregistration.IUpdateConfigurationMsg | null;
+
+    /** ProposalOptions msgfeeUpdateConfigurationMsg. */
+    public msgfeeUpdateConfigurationMsg?: msgfee.IUpdateConfigurationMsg | null;
 
     /** ProposalOptions option. */
     public option?:
@@ -1106,8 +1330,29 @@ export namespace bnsd {
       | "govCreateTextResolutionMsg"
       | "msgfeeSetMsgFeeMsg"
       | "datamigrationExecuteMigrationMsg"
+      | "accountUpdateConfigurationMsg"
+      | "accountRegisterDomainMsg"
+      | "accountReplaceAccountMsgFeesMsg"
+      | "accountTransferDomainMsg"
+      | "accountRenewDomainMsg"
+      | "accountDeleteDomainMsg"
+      | "accountRegisterAccountMsg"
+      | "accountTransferAccountMsg"
+      | "accountReplaceAccountTargetsMsg"
+      | "accountDeleteAccountMsg"
+      | "accountFlushDomainMsg"
+      | "accountRenewAccountMsg"
+      | "accountAddAccountCertificateMsg"
+      | "accountDeleteAccountCertificateMsg"
       | "cashUpdateConfigurationMsg"
-      | "txfeeUpdateConfigurationMsg";
+      | "txfeeUpdateConfigurationMsg"
+      | "termdepositCreateDepositContractMsg"
+      | "termdepositDepositMsg"
+      | "termdepositReleaseDepositMsg"
+      | "termdepositUpdateConfigurationMsg"
+      | "qualityscoreUpdateConfigurationMsg"
+      | "preregistrationUpdateConfigurationMsg"
+      | "msgfeeUpdateConfigurationMsg";
 
     /**
      * Creates a new ProposalOptions instance using the specified properties.
@@ -1337,11 +1582,74 @@ export namespace bnsd {
       /** Union datamigrationExecuteMigrationMsg */
       datamigrationExecuteMigrationMsg?: datamigration.IExecuteMigrationMsg | null;
 
-      /** 82-95 are reserved for the account extension messages */
+      /** Union accountUpdateConfigurationMsg */
+      accountUpdateConfigurationMsg?: account.IUpdateConfigurationMsg | null;
+
+      /** Union accountRegisterDomainMsg */
+      accountRegisterDomainMsg?: account.IRegisterDomainMsg | null;
+
+      /** Union accountReplaceAccountMsgFeesMsg */
+      accountReplaceAccountMsgFeesMsg?: account.IReplaceAccountMsgFeesMsg | null;
+
+      /** Union accountTransferDomainMsg */
+      accountTransferDomainMsg?: account.ITransferDomainMsg | null;
+
+      /** Union accountRenewDomainMsg */
+      accountRenewDomainMsg?: account.IRenewDomainMsg | null;
+
+      /** Union accountDeleteDomainMsg */
+      accountDeleteDomainMsg?: account.IDeleteDomainMsg | null;
+
+      /** Union accountRegisterAccountMsg */
+      accountRegisterAccountMsg?: account.IRegisterAccountMsg | null;
+
+      /** Union accountTransferAccountMsg */
+      accountTransferAccountMsg?: account.ITransferAccountMsg | null;
+
+      /** Union accountReplaceAccountTargetsMsg */
+      accountReplaceAccountTargetsMsg?: account.IReplaceAccountTargetsMsg | null;
+
+      /** Union accountDeleteAccountMsg */
+      accountDeleteAccountMsg?: account.IDeleteAccountMsg | null;
+
+      /** Union accountFlushDomainMsg */
+      accountFlushDomainMsg?: account.IFlushDomainMsg | null;
+
+      /** Union accountRenewAccountMsg */
+      accountRenewAccountMsg?: account.IRenewAccountMsg | null;
+
+      /** Union accountAddAccountCertificateMsg */
+      accountAddAccountCertificateMsg?: account.IAddAccountCertificateMsg | null;
+
+      /** Union accountDeleteAccountCertificateMsg */
+      accountDeleteAccountCertificateMsg?: account.IDeleteAccountCertificateMsg | null;
+
+      /** Union cashUpdateConfigurationMsg */
       cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
 
       /** Union txfeeUpdateConfigurationMsg */
       txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
+
+      /** Union termdepositCreateDepositContractMsg */
+      termdepositCreateDepositContractMsg?: termdeposit.ICreateDepositContractMsg | null;
+
+      /** Union termdepositDepositMsg */
+      termdepositDepositMsg?: termdeposit.IDepositMsg | null;
+
+      /** Union termdepositReleaseDepositMsg */
+      termdepositReleaseDepositMsg?: termdeposit.IReleaseDepositMsg | null;
+
+      /** Union termdepositUpdateConfigurationMsg */
+      termdepositUpdateConfigurationMsg?: termdeposit.IUpdateConfigurationMsg | null;
+
+      /** Union qualityscoreUpdateConfigurationMsg */
+      qualityscoreUpdateConfigurationMsg?: qualityscore.IUpdateConfigurationMsg | null;
+
+      /** Union preregistrationUpdateConfigurationMsg */
+      preregistrationUpdateConfigurationMsg?: preregistration.IUpdateConfigurationMsg | null;
+
+      /** Union msgfeeUpdateConfigurationMsg */
+      msgfeeUpdateConfigurationMsg?: msgfee.IUpdateConfigurationMsg | null;
     }
 
     /** Represents an Union. */
@@ -1403,11 +1711,74 @@ export namespace bnsd {
       /** Union datamigrationExecuteMigrationMsg. */
       public datamigrationExecuteMigrationMsg?: datamigration.IExecuteMigrationMsg | null;
 
-      /** 82-95 are reserved for the account extension messages */
+      /** Union accountUpdateConfigurationMsg. */
+      public accountUpdateConfigurationMsg?: account.IUpdateConfigurationMsg | null;
+
+      /** Union accountRegisterDomainMsg. */
+      public accountRegisterDomainMsg?: account.IRegisterDomainMsg | null;
+
+      /** Union accountReplaceAccountMsgFeesMsg. */
+      public accountReplaceAccountMsgFeesMsg?: account.IReplaceAccountMsgFeesMsg | null;
+
+      /** Union accountTransferDomainMsg. */
+      public accountTransferDomainMsg?: account.ITransferDomainMsg | null;
+
+      /** Union accountRenewDomainMsg. */
+      public accountRenewDomainMsg?: account.IRenewDomainMsg | null;
+
+      /** Union accountDeleteDomainMsg. */
+      public accountDeleteDomainMsg?: account.IDeleteDomainMsg | null;
+
+      /** Union accountRegisterAccountMsg. */
+      public accountRegisterAccountMsg?: account.IRegisterAccountMsg | null;
+
+      /** Union accountTransferAccountMsg. */
+      public accountTransferAccountMsg?: account.ITransferAccountMsg | null;
+
+      /** Union accountReplaceAccountTargetsMsg. */
+      public accountReplaceAccountTargetsMsg?: account.IReplaceAccountTargetsMsg | null;
+
+      /** Union accountDeleteAccountMsg. */
+      public accountDeleteAccountMsg?: account.IDeleteAccountMsg | null;
+
+      /** Union accountFlushDomainMsg. */
+      public accountFlushDomainMsg?: account.IFlushDomainMsg | null;
+
+      /** Union accountRenewAccountMsg. */
+      public accountRenewAccountMsg?: account.IRenewAccountMsg | null;
+
+      /** Union accountAddAccountCertificateMsg. */
+      public accountAddAccountCertificateMsg?: account.IAddAccountCertificateMsg | null;
+
+      /** Union accountDeleteAccountCertificateMsg. */
+      public accountDeleteAccountCertificateMsg?: account.IDeleteAccountCertificateMsg | null;
+
+      /** Union cashUpdateConfigurationMsg. */
       public cashUpdateConfigurationMsg?: cash.IUpdateConfigurationMsg | null;
 
       /** Union txfeeUpdateConfigurationMsg. */
       public txfeeUpdateConfigurationMsg?: txfee.IUpdateConfigurationMsg | null;
+
+      /** Union termdepositCreateDepositContractMsg. */
+      public termdepositCreateDepositContractMsg?: termdeposit.ICreateDepositContractMsg | null;
+
+      /** Union termdepositDepositMsg. */
+      public termdepositDepositMsg?: termdeposit.IDepositMsg | null;
+
+      /** Union termdepositReleaseDepositMsg. */
+      public termdepositReleaseDepositMsg?: termdeposit.IReleaseDepositMsg | null;
+
+      /** Union termdepositUpdateConfigurationMsg. */
+      public termdepositUpdateConfigurationMsg?: termdeposit.IUpdateConfigurationMsg | null;
+
+      /** Union qualityscoreUpdateConfigurationMsg. */
+      public qualityscoreUpdateConfigurationMsg?: qualityscore.IUpdateConfigurationMsg | null;
+
+      /** Union preregistrationUpdateConfigurationMsg. */
+      public preregistrationUpdateConfigurationMsg?: preregistration.IUpdateConfigurationMsg | null;
+
+      /** Union msgfeeUpdateConfigurationMsg. */
+      public msgfeeUpdateConfigurationMsg?: msgfee.IUpdateConfigurationMsg | null;
 
       /** Union sum. */
       public sum?:
@@ -1428,8 +1799,29 @@ export namespace bnsd {
         | "govCreateTextResolutionMsg"
         | "msgfeeSetMsgFeeMsg"
         | "datamigrationExecuteMigrationMsg"
+        | "accountUpdateConfigurationMsg"
+        | "accountRegisterDomainMsg"
+        | "accountReplaceAccountMsgFeesMsg"
+        | "accountTransferDomainMsg"
+        | "accountRenewDomainMsg"
+        | "accountDeleteDomainMsg"
+        | "accountRegisterAccountMsg"
+        | "accountTransferAccountMsg"
+        | "accountReplaceAccountTargetsMsg"
+        | "accountDeleteAccountMsg"
+        | "accountFlushDomainMsg"
+        | "accountRenewAccountMsg"
+        | "accountAddAccountCertificateMsg"
+        | "accountDeleteAccountCertificateMsg"
         | "cashUpdateConfigurationMsg"
-        | "txfeeUpdateConfigurationMsg";
+        | "txfeeUpdateConfigurationMsg"
+        | "termdepositCreateDepositContractMsg"
+        | "termdepositDepositMsg"
+        | "termdepositReleaseDepositMsg"
+        | "termdepositUpdateConfigurationMsg"
+        | "qualityscoreUpdateConfigurationMsg"
+        | "preregistrationUpdateConfigurationMsg"
+        | "msgfeeUpdateConfigurationMsg";
 
       /**
        * Creates a new Union instance using the specified properties.
@@ -4113,6 +4505,1371 @@ export namespace preregistration {
      */
     public toJSON(): { [k: string]: any };
   }
+
+  /** Properties of an UpdateConfigurationMsg. */
+  interface IUpdateConfigurationMsg {
+    /** UpdateConfigurationMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch */
+    patch?: preregistration.IConfiguration | null;
+  }
+
+  /** Represents an UpdateConfigurationMsg. */
+  class UpdateConfigurationMsg implements IUpdateConfigurationMsg {
+    /**
+     * Constructs a new UpdateConfigurationMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: preregistration.IUpdateConfigurationMsg);
+
+    /** UpdateConfigurationMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch. */
+    public patch?: preregistration.IConfiguration | null;
+
+    /**
+     * Creates a new UpdateConfigurationMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns UpdateConfigurationMsg instance
+     */
+    public static create(
+      properties?: preregistration.IUpdateConfigurationMsg,
+    ): preregistration.UpdateConfigurationMsg;
+
+    /**
+     * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link preregistration.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: preregistration.IUpdateConfigurationMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link preregistration.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: preregistration.IUpdateConfigurationMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns UpdateConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): preregistration.UpdateConfigurationMsg;
+
+    /**
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns UpdateConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(
+      reader: $protobuf.Reader | Uint8Array,
+    ): preregistration.UpdateConfigurationMsg;
+
+    /**
+     * Verifies an UpdateConfigurationMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns UpdateConfigurationMsg
+     */
+    public static fromObject(object: { [k: string]: any }): preregistration.UpdateConfigurationMsg;
+
+    /**
+     * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+     * @param message UpdateConfigurationMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: preregistration.UpdateConfigurationMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this UpdateConfigurationMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
+/** Namespace qualityscore. */
+export namespace qualityscore {
+  /** Properties of a Configuration. */
+  interface IConfiguration {
+    /** Configuration metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** needed to make use of gconf.NewUpdateConfigurationHandler */
+    owner?: Uint8Array | null;
+
+    /** Configuration c */
+    c?: weave.IFraction | null;
+
+    /** Configuration k */
+    k?: weave.IFraction | null;
+
+    /** Configuration kp */
+    kp?: weave.IFraction | null;
+
+    /** Configuration q0 */
+    q0?: weave.IFraction | null;
+
+    /** Configuration x */
+    x?: weave.IFraction | null;
+
+    /** Configuration xInf */
+    xInf?: weave.IFraction | null;
+
+    /** Configuration xSup */
+    xSup?: weave.IFraction | null;
+
+    /** Configuration delta */
+    delta?: weave.IFraction | null;
+  }
+
+  /** Represents a Configuration. */
+  class Configuration implements IConfiguration {
+    /**
+     * Constructs a new Configuration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: qualityscore.IConfiguration);
+
+    /** Configuration metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** needed to make use of gconf.NewUpdateConfigurationHandler */
+    public owner: Uint8Array;
+
+    /** Configuration c. */
+    public c?: weave.IFraction | null;
+
+    /** Configuration k. */
+    public k?: weave.IFraction | null;
+
+    /** Configuration kp. */
+    public kp?: weave.IFraction | null;
+
+    /** Configuration q0. */
+    public q0?: weave.IFraction | null;
+
+    /** Configuration x. */
+    public x?: weave.IFraction | null;
+
+    /** Configuration xInf. */
+    public xInf?: weave.IFraction | null;
+
+    /** Configuration xSup. */
+    public xSup?: weave.IFraction | null;
+
+    /** Configuration delta. */
+    public delta?: weave.IFraction | null;
+
+    /**
+     * Creates a new Configuration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Configuration instance
+     */
+    public static create(properties?: qualityscore.IConfiguration): qualityscore.Configuration;
+
+    /**
+     * Encodes the specified Configuration message. Does not implicitly {@link qualityscore.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: qualityscore.IConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Configuration message, length delimited. Does not implicitly {@link qualityscore.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: qualityscore.IConfiguration,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): qualityscore.Configuration;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): qualityscore.Configuration;
+
+    /**
+     * Verifies a Configuration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Configuration
+     */
+    public static fromObject(object: { [k: string]: any }): qualityscore.Configuration;
+
+    /**
+     * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+     * @param message Configuration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: qualityscore.Configuration,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Configuration to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an UpdateConfigurationMsg. */
+  interface IUpdateConfigurationMsg {
+    /** UpdateConfigurationMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch */
+    patch?: qualityscore.IConfiguration | null;
+  }
+
+  /** configuration. */
+  class UpdateConfigurationMsg implements IUpdateConfigurationMsg {
+    /**
+     * Constructs a new UpdateConfigurationMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: qualityscore.IUpdateConfigurationMsg);
+
+    /** UpdateConfigurationMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch. */
+    public patch?: qualityscore.IConfiguration | null;
+
+    /**
+     * Creates a new UpdateConfigurationMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns UpdateConfigurationMsg instance
+     */
+    public static create(
+      properties?: qualityscore.IUpdateConfigurationMsg,
+    ): qualityscore.UpdateConfigurationMsg;
+
+    /**
+     * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link qualityscore.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: qualityscore.IUpdateConfigurationMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link qualityscore.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: qualityscore.IUpdateConfigurationMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns UpdateConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): qualityscore.UpdateConfigurationMsg;
+
+    /**
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns UpdateConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): qualityscore.UpdateConfigurationMsg;
+
+    /**
+     * Verifies an UpdateConfigurationMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns UpdateConfigurationMsg
+     */
+    public static fromObject(object: { [k: string]: any }): qualityscore.UpdateConfigurationMsg;
+
+    /**
+     * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+     * @param message UpdateConfigurationMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: qualityscore.UpdateConfigurationMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this UpdateConfigurationMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+}
+
+/** Namespace termdeposit. */
+export namespace termdeposit {
+  /** Properties of a DepositContract. */
+  interface IDepositContract {
+    /** DepositContract metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Valid since defines the beginning of when the contract is active. */
+    validSince?: number | Long | null;
+
+    /** depositor funds are released and deposit contract is no longer active. */
+    validUntil?: number | Long | null;
+  }
+
+  /** lock funds and receive appropriate interest after the contract expires. */
+  class DepositContract implements IDepositContract {
+    /**
+     * Constructs a new DepositContract.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: termdeposit.IDepositContract);
+
+    /** DepositContract metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Valid since defines the beginning of when the contract is active. */
+    public validSince: number | Long;
+
+    /** depositor funds are released and deposit contract is no longer active. */
+    public validUntil: number | Long;
+
+    /**
+     * Creates a new DepositContract instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns DepositContract instance
+     */
+    public static create(properties?: termdeposit.IDepositContract): termdeposit.DepositContract;
+
+    /**
+     * Encodes the specified DepositContract message. Does not implicitly {@link termdeposit.DepositContract.verify|verify} messages.
+     * @param message DepositContract message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: termdeposit.IDepositContract, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified DepositContract message, length delimited. Does not implicitly {@link termdeposit.DepositContract.verify|verify} messages.
+     * @param message DepositContract message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: termdeposit.IDepositContract,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a DepositContract message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns DepositContract
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): termdeposit.DepositContract;
+
+    /**
+     * Decodes a DepositContract message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns DepositContract
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): termdeposit.DepositContract;
+
+    /**
+     * Verifies a DepositContract message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a DepositContract message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns DepositContract
+     */
+    public static fromObject(object: { [k: string]: any }): termdeposit.DepositContract;
+
+    /**
+     * Creates a plain object from a DepositContract message. Also converts values to other types if specified.
+     * @param message DepositContract
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: termdeposit.DepositContract,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this DepositContract to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Deposit. */
+  interface IDeposit {
+    /** Deposit metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** Deposit contract ID that this funds allocation was made with. */
+    depositContractId?: Uint8Array | null;
+
+    /** computation. */
+    amount?: coin.ICoin | null;
+
+    /** Pro-rated interest rate as detailed in the Confluence spec. */
+    rate?: weave.IFraction | null;
+
+    /** the contract expires. */
+    depositor?: Uint8Array | null;
+
+    /** were already released or not. */
+    released?: boolean | null;
+
+    /** CreatedAt is set to the wall clock value at the deposit creation time. */
+    createdAt?: number | Long | null;
+  }
+
+  /** until the contract expiration. */
+  class Deposit implements IDeposit {
+    /**
+     * Constructs a new Deposit.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: termdeposit.IDeposit);
+
+    /** Deposit metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** Deposit contract ID that this funds allocation was made with. */
+    public depositContractId: Uint8Array;
+
+    /** computation. */
+    public amount?: coin.ICoin | null;
+
+    /** Pro-rated interest rate as detailed in the Confluence spec. */
+    public rate?: weave.IFraction | null;
+
+    /** the contract expires. */
+    public depositor: Uint8Array;
+
+    /** were already released or not. */
+    public released: boolean;
+
+    /** CreatedAt is set to the wall clock value at the deposit creation time. */
+    public createdAt: number | Long;
+
+    /**
+     * Creates a new Deposit instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Deposit instance
+     */
+    public static create(properties?: termdeposit.IDeposit): termdeposit.Deposit;
+
+    /**
+     * Encodes the specified Deposit message. Does not implicitly {@link termdeposit.Deposit.verify|verify} messages.
+     * @param message Deposit message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: termdeposit.IDeposit, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Deposit message, length delimited. Does not implicitly {@link termdeposit.Deposit.verify|verify} messages.
+     * @param message Deposit message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: termdeposit.IDeposit, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Deposit message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Deposit
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): termdeposit.Deposit;
+
+    /**
+     * Decodes a Deposit message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Deposit
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): termdeposit.Deposit;
+
+    /**
+     * Verifies a Deposit message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Deposit message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Deposit
+     */
+    public static fromObject(object: { [k: string]: any }): termdeposit.Deposit;
+
+    /**
+     * Creates a plain object from a Deposit message. Also converts values to other types if specified.
+     * @param message Deposit
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: termdeposit.Deposit,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Deposit to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Configuration. */
+  interface IConfiguration {
+    /** Configuration metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** allowed to update the configuration. */
+    owner?: Uint8Array | null;
+
+    /** Admin is an address that is able to create deposit contracts. */
+    admin?: Uint8Array | null;
+
+    /** A list of bonus values applied to each created Deposit instance. */
+    bonuses?: termdeposit.IDepositBonus[] | null;
+
+    /** Base rates defines a list of addresses that have their q-score value fixed. */
+    baseRates?: termdeposit.ICustomRate[] | null;
+  }
+
+  /** the functionality provided by gconf package. */
+  class Configuration implements IConfiguration {
+    /**
+     * Constructs a new Configuration.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: termdeposit.IConfiguration);
+
+    /** Configuration metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** allowed to update the configuration. */
+    public owner: Uint8Array;
+
+    /** Admin is an address that is able to create deposit contracts. */
+    public admin: Uint8Array;
+
+    /** A list of bonus values applied to each created Deposit instance. */
+    public bonuses: termdeposit.IDepositBonus[];
+
+    /** Base rates defines a list of addresses that have their q-score value fixed. */
+    public baseRates: termdeposit.ICustomRate[];
+
+    /**
+     * Creates a new Configuration instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Configuration instance
+     */
+    public static create(properties?: termdeposit.IConfiguration): termdeposit.Configuration;
+
+    /**
+     * Encodes the specified Configuration message. Does not implicitly {@link termdeposit.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: termdeposit.IConfiguration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Configuration message, length delimited. Does not implicitly {@link termdeposit.Configuration.verify|verify} messages.
+     * @param message Configuration message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: termdeposit.IConfiguration,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): termdeposit.Configuration;
+
+    /**
+     * Decodes a Configuration message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Configuration
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): termdeposit.Configuration;
+
+    /**
+     * Verifies a Configuration message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Configuration
+     */
+    public static fromObject(object: { [k: string]: any }): termdeposit.Configuration;
+
+    /**
+     * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+     * @param message Configuration
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: termdeposit.Configuration,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Configuration to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a CustomRate. */
+  interface ICustomRate {
+    /** CustomRate address */
+    address?: Uint8Array | null;
+
+    /** CustomRate rate */
+    rate?: weave.IFraction | null;
+  }
+
+  /** Custom Rate allows to declare a fixed rate value for an address. */
+  class CustomRate implements ICustomRate {
+    /**
+     * Constructs a new CustomRate.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: termdeposit.ICustomRate);
+
+    /** CustomRate address. */
+    public address: Uint8Array;
+
+    /** CustomRate rate. */
+    public rate?: weave.IFraction | null;
+
+    /**
+     * Creates a new CustomRate instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns CustomRate instance
+     */
+    public static create(properties?: termdeposit.ICustomRate): termdeposit.CustomRate;
+
+    /**
+     * Encodes the specified CustomRate message. Does not implicitly {@link termdeposit.CustomRate.verify|verify} messages.
+     * @param message CustomRate message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: termdeposit.ICustomRate, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified CustomRate message, length delimited. Does not implicitly {@link termdeposit.CustomRate.verify|verify} messages.
+     * @param message CustomRate message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: termdeposit.ICustomRate,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a CustomRate message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns CustomRate
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): termdeposit.CustomRate;
+
+    /**
+     * Decodes a CustomRate message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns CustomRate
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): termdeposit.CustomRate;
+
+    /**
+     * Verifies a CustomRate message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a CustomRate message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns CustomRate
+     */
+    public static fromObject(object: { [k: string]: any }): termdeposit.CustomRate;
+
+    /**
+     * Creates a plain object from a CustomRate message. Also converts values to other types if specified.
+     * @param message CustomRate
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: termdeposit.CustomRate,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this CustomRate to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a DepositBonus. */
+  interface IDepositBonus {
+    /** Deposit minimal lockin period required to use this bonus. */
+    lockinPeriod?: number | null;
+
+    /** Bonus rate for given range. */
+    bonus?: weave.IFraction | null;
+  }
+
+  /** longer the deposit period, the higher the deposit bonus should be. */
+  class DepositBonus implements IDepositBonus {
+    /**
+     * Constructs a new DepositBonus.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: termdeposit.IDepositBonus);
+
+    /** Deposit minimal lockin period required to use this bonus. */
+    public lockinPeriod: number;
+
+    /** Bonus rate for given range. */
+    public bonus?: weave.IFraction | null;
+
+    /**
+     * Creates a new DepositBonus instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns DepositBonus instance
+     */
+    public static create(properties?: termdeposit.IDepositBonus): termdeposit.DepositBonus;
+
+    /**
+     * Encodes the specified DepositBonus message. Does not implicitly {@link termdeposit.DepositBonus.verify|verify} messages.
+     * @param message DepositBonus message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: termdeposit.IDepositBonus, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified DepositBonus message, length delimited. Does not implicitly {@link termdeposit.DepositBonus.verify|verify} messages.
+     * @param message DepositBonus message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: termdeposit.IDepositBonus,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a DepositBonus message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns DepositBonus
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): termdeposit.DepositBonus;
+
+    /**
+     * Decodes a DepositBonus message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns DepositBonus
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): termdeposit.DepositBonus;
+
+    /**
+     * Verifies a DepositBonus message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a DepositBonus message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns DepositBonus
+     */
+    public static fromObject(object: { [k: string]: any }): termdeposit.DepositBonus;
+
+    /**
+     * Creates a plain object from a DepositBonus message. Also converts values to other types if specified.
+     * @param message DepositBonus
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: termdeposit.DepositBonus,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this DepositBonus to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a CreateDepositContractMsg. */
+  interface ICreateDepositContractMsg {
+    /** CreateDepositContractMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** An activation date for the newly created deposit contract. */
+    validSince?: number | Long | null;
+
+    /** An expiration date for the newly created deposit contract. */
+    validUntil?: number | Long | null;
+  }
+
+  /** must be signed by the admin as configured via the Configuration entity. */
+  class CreateDepositContractMsg implements ICreateDepositContractMsg {
+    /**
+     * Constructs a new CreateDepositContractMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: termdeposit.ICreateDepositContractMsg);
+
+    /** CreateDepositContractMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** An activation date for the newly created deposit contract. */
+    public validSince: number | Long;
+
+    /** An expiration date for the newly created deposit contract. */
+    public validUntil: number | Long;
+
+    /**
+     * Creates a new CreateDepositContractMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns CreateDepositContractMsg instance
+     */
+    public static create(
+      properties?: termdeposit.ICreateDepositContractMsg,
+    ): termdeposit.CreateDepositContractMsg;
+
+    /**
+     * Encodes the specified CreateDepositContractMsg message. Does not implicitly {@link termdeposit.CreateDepositContractMsg.verify|verify} messages.
+     * @param message CreateDepositContractMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: termdeposit.ICreateDepositContractMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified CreateDepositContractMsg message, length delimited. Does not implicitly {@link termdeposit.CreateDepositContractMsg.verify|verify} messages.
+     * @param message CreateDepositContractMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: termdeposit.ICreateDepositContractMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a CreateDepositContractMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns CreateDepositContractMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): termdeposit.CreateDepositContractMsg;
+
+    /**
+     * Decodes a CreateDepositContractMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns CreateDepositContractMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(
+      reader: $protobuf.Reader | Uint8Array,
+    ): termdeposit.CreateDepositContractMsg;
+
+    /**
+     * Verifies a CreateDepositContractMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a CreateDepositContractMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns CreateDepositContractMsg
+     */
+    public static fromObject(object: { [k: string]: any }): termdeposit.CreateDepositContractMsg;
+
+    /**
+     * Creates a plain object from a CreateDepositContractMsg message. Also converts values to other types if specified.
+     * @param message CreateDepositContractMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: termdeposit.CreateDepositContractMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this CreateDepositContractMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a DepositMsg. */
+  interface IDepositMsg {
+    /** DepositMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** must not be expired. */
+    depositContractId?: Uint8Array | null;
+
+    /** Total amount that was deposited within a contract. Must be IOV tokens. */
+    amount?: coin.ICoin | null;
+
+    /** the contract expires. */
+    depositor?: Uint8Array | null;
+  }
+
+  /** contract. Funds will stay locked until that contract expiration date. */
+  class DepositMsg implements IDepositMsg {
+    /**
+     * Constructs a new DepositMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: termdeposit.IDepositMsg);
+
+    /** DepositMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** must not be expired. */
+    public depositContractId: Uint8Array;
+
+    /** Total amount that was deposited within a contract. Must be IOV tokens. */
+    public amount?: coin.ICoin | null;
+
+    /** the contract expires. */
+    public depositor: Uint8Array;
+
+    /**
+     * Creates a new DepositMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns DepositMsg instance
+     */
+    public static create(properties?: termdeposit.IDepositMsg): termdeposit.DepositMsg;
+
+    /**
+     * Encodes the specified DepositMsg message. Does not implicitly {@link termdeposit.DepositMsg.verify|verify} messages.
+     * @param message DepositMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: termdeposit.IDepositMsg, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified DepositMsg message, length delimited. Does not implicitly {@link termdeposit.DepositMsg.verify|verify} messages.
+     * @param message DepositMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: termdeposit.IDepositMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a DepositMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns DepositMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): termdeposit.DepositMsg;
+
+    /**
+     * Decodes a DepositMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns DepositMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): termdeposit.DepositMsg;
+
+    /**
+     * Verifies a DepositMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a DepositMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns DepositMsg
+     */
+    public static fromObject(object: { [k: string]: any }): termdeposit.DepositMsg;
+
+    /**
+     * Creates a plain object from a DepositMsg message. Also converts values to other types if specified.
+     * @param message DepositMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: termdeposit.DepositMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this DepositMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a ReleaseDepositMsg. */
+  interface IReleaseDepositMsg {
+    /** ReleaseDepositMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** ID of the deposit that is to be released. */
+    depositId?: Uint8Array | null;
+  }
+
+  /** deposit. Related contract must be expired. Anyone can submit this message. */
+  class ReleaseDepositMsg implements IReleaseDepositMsg {
+    /**
+     * Constructs a new ReleaseDepositMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: termdeposit.IReleaseDepositMsg);
+
+    /** ReleaseDepositMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** ID of the deposit that is to be released. */
+    public depositId: Uint8Array;
+
+    /**
+     * Creates a new ReleaseDepositMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ReleaseDepositMsg instance
+     */
+    public static create(properties?: termdeposit.IReleaseDepositMsg): termdeposit.ReleaseDepositMsg;
+
+    /**
+     * Encodes the specified ReleaseDepositMsg message. Does not implicitly {@link termdeposit.ReleaseDepositMsg.verify|verify} messages.
+     * @param message ReleaseDepositMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: termdeposit.IReleaseDepositMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ReleaseDepositMsg message, length delimited. Does not implicitly {@link termdeposit.ReleaseDepositMsg.verify|verify} messages.
+     * @param message ReleaseDepositMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: termdeposit.IReleaseDepositMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes a ReleaseDepositMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ReleaseDepositMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): termdeposit.ReleaseDepositMsg;
+
+    /**
+     * Decodes a ReleaseDepositMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ReleaseDepositMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): termdeposit.ReleaseDepositMsg;
+
+    /**
+     * Verifies a ReleaseDepositMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a ReleaseDepositMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ReleaseDepositMsg
+     */
+    public static fromObject(object: { [k: string]: any }): termdeposit.ReleaseDepositMsg;
+
+    /**
+     * Creates a plain object from a ReleaseDepositMsg message. Also converts values to other types if specified.
+     * @param message ReleaseDepositMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: termdeposit.ReleaseDepositMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this ReleaseDepositMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of an UpdateConfigurationMsg. */
+  interface IUpdateConfigurationMsg {
+    /** UpdateConfigurationMsg metadata */
+    metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch */
+    patch?: termdeposit.IConfiguration | null;
+  }
+
+  /** Represents an UpdateConfigurationMsg. */
+  class UpdateConfigurationMsg implements IUpdateConfigurationMsg {
+    /**
+     * Constructs a new UpdateConfigurationMsg.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: termdeposit.IUpdateConfigurationMsg);
+
+    /** UpdateConfigurationMsg metadata. */
+    public metadata?: weave.IMetadata | null;
+
+    /** UpdateConfigurationMsg patch. */
+    public patch?: termdeposit.IConfiguration | null;
+
+    /**
+     * Creates a new UpdateConfigurationMsg instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns UpdateConfigurationMsg instance
+     */
+    public static create(
+      properties?: termdeposit.IUpdateConfigurationMsg,
+    ): termdeposit.UpdateConfigurationMsg;
+
+    /**
+     * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link termdeposit.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(
+      message: termdeposit.IUpdateConfigurationMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link termdeposit.UpdateConfigurationMsg.verify|verify} messages.
+     * @param message UpdateConfigurationMsg message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(
+      message: termdeposit.IUpdateConfigurationMsg,
+      writer?: $protobuf.Writer,
+    ): $protobuf.Writer;
+
+    /**
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns UpdateConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(
+      reader: $protobuf.Reader | Uint8Array,
+      length?: number,
+    ): termdeposit.UpdateConfigurationMsg;
+
+    /**
+     * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns UpdateConfigurationMsg
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): termdeposit.UpdateConfigurationMsg;
+
+    /**
+     * Verifies an UpdateConfigurationMsg message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns UpdateConfigurationMsg
+     */
+    public static fromObject(object: { [k: string]: any }): termdeposit.UpdateConfigurationMsg;
+
+    /**
+     * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+     * @param message UpdateConfigurationMsg
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: termdeposit.UpdateConfigurationMsg,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this UpdateConfigurationMsg to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
 }
 
 /** Namespace username. */
@@ -5242,6 +6999,103 @@ export namespace weave {
 
     /**
      * Converts this PubKey to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+  }
+
+  /** Properties of a Fraction. */
+  interface IFraction {
+    /** The top number in a fraction. */
+    numerator?: number | null;
+
+    /** The bottom number */
+    denominator?: number | null;
+  }
+
+  /** issues that native floating point type has. */
+  class Fraction implements IFraction {
+    /**
+     * Constructs a new Fraction.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: weave.IFraction);
+
+    /** The top number in a fraction. */
+    public numerator: number;
+
+    /** The bottom number */
+    public denominator: number;
+
+    /**
+     * Creates a new Fraction instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Fraction instance
+     */
+    public static create(properties?: weave.IFraction): weave.Fraction;
+
+    /**
+     * Encodes the specified Fraction message. Does not implicitly {@link weave.Fraction.verify|verify} messages.
+     * @param message Fraction message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: weave.IFraction, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Fraction message, length delimited. Does not implicitly {@link weave.Fraction.verify|verify} messages.
+     * @param message Fraction message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: weave.IFraction, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Fraction message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Fraction
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: $protobuf.Reader | Uint8Array, length?: number): weave.Fraction;
+
+    /**
+     * Decodes a Fraction message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Fraction
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: $protobuf.Reader | Uint8Array): weave.Fraction;
+
+    /**
+     * Verifies a Fraction message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): string | null;
+
+    /**
+     * Creates a Fraction message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Fraction
+     */
+    public static fromObject(object: { [k: string]: any }): weave.Fraction;
+
+    /**
+     * Creates a plain object from a Fraction message. Also converts values to other types if specified.
+     * @param message Fraction
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(
+      message: weave.Fraction,
+      options?: $protobuf.IConversionOptions,
+    ): { [k: string]: any };
+
+    /**
+     * Converts this Fraction to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };

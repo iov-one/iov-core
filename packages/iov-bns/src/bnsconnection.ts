@@ -64,6 +64,8 @@ import {
   decodeElectionRule,
   decodeElectorate,
   decodeProposal,
+  decodeTermDepositContractNft,
+  decodeTermDepositNft,
   decodeToken,
   decodeTxFeeConfiguration,
   decodeUsernameNft,
@@ -74,12 +76,19 @@ import { bnsSwapQueryTag } from "./tags";
 import {
   AccountNft,
   AccountsByNameQuery,
+  BnsDepositQuery,
+  BnsTermDepositContractNft,
+  BnsTermDepositNft,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
   Decoder,
+  DepositContractIdBytes,
   ElectionRule,
   Electorate,
+  isBnsDepositByDepositIdQuery,
+  isBnsDepositsByContractIdQuery,
+  isBnsDepositsByDepositorQuery,
   isBnsTx,
   isBnsUsernamesByOwnerQuery,
   isBnsUsernamesByUsernameQuery,
@@ -146,6 +155,15 @@ function mapKindToBnsPath(transaction: BnsTx): string | undefined {
       return "aswap/release";
     case "bcp/swap_abort":
       return "aswap/return";
+    // Term Deposit
+    case "bns/update_termdeposit_configuration":
+      return "termdeposit/update_configuration";
+    case "bns/create_termdeposit_contract":
+      return "termdeposit/create_deposit_contract";
+    case "bns/termdeposit_deposit":
+      return "termdeposit/deposit";
+    case "bns/termdeposit_release":
+      return "termdeposit/release_deposit";
     // Usernames
     case "bns/register_username":
       return "username/register_token";
@@ -766,6 +784,44 @@ export class BnsConnection implements AtomicSwapConnection {
     const parser = createParser(codecImpl.gov.Vote, "vote:");
     const votes = results.map(parser).map(vote => decodeVote(this.prefix, vote));
     return votes;
+  }
+
+  public async getDeposits(query: BnsDepositQuery): Promise<readonly BnsTermDepositNft[]> {
+    let keyPrefix;
+    let results: readonly Result[];
+    if (isBnsDepositsByDepositorQuery(query)) {
+      keyPrefix = "";
+      const rawAddress = decodeBnsAddress(query.depositor).data;
+      results = (await this.query("/deposits/depositor", rawAddress)).results;
+    } else if (isBnsDepositsByContractIdQuery(query)) {
+      keyPrefix = "";
+      results = (await this.query("/deposits/contract", query.depositContractId)).results;
+    } else if (isBnsDepositByDepositIdQuery(query)) {
+      keyPrefix = "deposit:";
+      results = (await this.query("/deposits", query.depositId)).results;
+    } else {
+      throw new Error("Unsupported query");
+    }
+
+    const parser = createParser(codecImpl.termdeposit.Deposit, keyPrefix);
+    const nfts = results.map(parser).map(nft => {
+      return decodeTermDepositNft(nft, this.chainId);
+    });
+    return nfts;
+  }
+
+  public async getContracts(
+    depositContractId?: DepositContractIdBytes,
+  ): Promise<readonly BnsTermDepositContractNft[]> {
+    const results = depositContractId
+      ? (await this.query("/depositcontracts", depositContractId)).results
+      : (await this.query("/depositcontracts?prefix", new Uint8Array([]))).results;
+
+    const parser = createParser(codecImpl.termdeposit.DepositContract, "depcontr:");
+    const nfts = results.map(parser).map(nft => {
+      return decodeTermDepositContractNft(nft);
+    });
+    return nfts;
   }
 
   public async getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]> {

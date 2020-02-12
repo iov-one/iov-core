@@ -199,6 +199,27 @@
       "valid_blockchain_address": "^[a-z0-9A-Z]+$",
       "domain_renew": "2h",
       "owner": "cond:gov/rule/000000000000000002"
+    },
+    "termdeposit": {
+      "owner": "bech32:tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea",
+      "admin": "bech32:tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea",
+      "bonuses": [
+        {
+          "lockin_period": 1515600,
+          "bonus": {
+            "numerator": 33,
+            "denominator": 100
+          }
+        },
+        {
+          "lockin_period": 298800,
+          "bonus": {
+            "numerator": 1,
+            "denominator": 10
+          }
+        }
+      ],
+      "base_rates": []
     }
   },
   "msgfee": [
