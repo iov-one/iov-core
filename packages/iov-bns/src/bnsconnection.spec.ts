@@ -43,6 +43,7 @@ import {
   RegisterAccountTx,
   RegisterUsernameTx,
   TermDepositDepositTx,
+  CreateTermDepositContractTx,
 } from "./types";
 import { identityToAddress } from "./util";
 

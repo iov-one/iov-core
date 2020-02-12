@@ -51,7 +51,6 @@ import {
   TermDepositCustomRate,
   TermDepositDepositTx,
   TermDepositReleaseTx,
-  TermDepositTx,
   TransferAccountTx,
   TransferDomainTx,
   TransferUsernameTx,
