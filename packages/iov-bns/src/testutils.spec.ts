@@ -52,10 +52,9 @@ export async function randomBnsAddress(): Promise<Address> {
 }
 
 export function randomDomain(): string {
-  const randomNumber = Math.random()
-    .toString()
-    // valid domain has length 3 to 16, we limit to `domain${randomNumber}` length (16 max).
-    .substring(10);
+  // Valid domain has length 3 to 16
+  // Make an integer < 1000000000 (i.e. up to 9 digits)
+  const randomNumber = Math.floor(Math.random() * 1_000_000_000).toString();
   return `domain${randomNumber}`;
 }
 
