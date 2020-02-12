@@ -17,6 +17,7 @@ import { assert } from "@iov/utils";
 import { ChainAddressPair } from "../types/types";
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
+import { decodeAmount } from "./decodeobjects";
 import {
   bash,
   blockTime,
@@ -34,10 +35,12 @@ import {
   userProfileWithFaucet,
 } from "./testutils.spec";
 import {
+  AccountMsgFee,
   ActionKind,
   CreateProposalTx,
   CreateTextResolutionAction,
   RegisterAccountTx,
+  RegisterDomainTx,
   RegisterUsernameTx,
 } from "./types";
 import { identityToAddress } from "./util";
@@ -593,7 +596,7 @@ describe("BnsConnection (basic class methods)", () => {
     });
   });
 
-  describe("getAccountsNft", () => {
+  describe("getAccounts", () => {
     let connection: BnsConnection;
     let name: string;
     let domain: string;
@@ -701,6 +704,64 @@ describe("BnsConnection (basic class methods)", () => {
       expect(lastDomain.owner).toEqual(identityAddress);
       expect(lastDomain.targets).toEqual(targets);
       expect(lastDomain.certificates).toEqual([]);
+    });
+  });
+
+  describe("getDomains", () => {
+    let connection: BnsConnection;
+    let domain: string;
+    let adminAddress: Address;
+    let registryChainId: ChainId;
+    let adminIdentity: Identity;
+    let profile: UserProfile;
+    let accountMsgFees: readonly AccountMsgFee[];
+
+    beforeEach(async () => {
+      pendingWithoutBnsd();
+      connection = await BnsConnection.establish(bnsdTendermintUrl);
+      registryChainId = connection.chainId;
+
+      profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      adminIdentity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+      adminAddress = identityToAddress(adminIdentity);
+      await sendTokensFromFaucet(connection, adminAddress, registerAmount);
+
+      // Register domain
+
+      domain = `iov_${Math.trunc(Math.random() * 100000)}`;
+      accountMsgFees = [
+        { msgPath: "some-msg-path", fee: decodeAmount({ whole: 1, fractional: 2, ticker: "ASH" }) },
+      ];
+      const registration = await connection.withDefaultFee<RegisterDomainTx>(
+        {
+          kind: "bns/register_domain",
+          chainId: registryChainId,
+          domain: domain,
+          admin: adminAddress,
+          hasSuperuser: true,
+          msgFees: accountMsgFees,
+          accountRenew: 1234,
+        },
+        adminAddress,
+      );
+      const nonce = await connection.getNonce({ pubkey: adminIdentity.pubkey });
+      const signed = await profile.signTransaction(adminIdentity, registration, bnsCodec, nonce);
+      {
+        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      }
+    });
+
+    afterEach(() => {
+      connection.disconnect();
+    });
+
+    fit("can query domains by admin address", async () => {
+      const domains = await connection.getDomains(adminAddress);
+      expect(domains.length).toEqual(1);
+      expect(domains[0].domain).toEqual(domain);
+      expect(domains[0].msgFees).toEqual(accountMsgFees);
     });
   });
 

@@ -31,6 +31,7 @@ import {
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
+  Domain,
   ElectionRule,
   Electorate,
   Proposal,
@@ -115,6 +116,7 @@ export declare class BnsConnection implements AtomicSwapConnection {
   getVotes(voter: Address): Promise<readonly Vote[]>;
   getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]>;
   getAccounts(query: BnsAccountsQuery): Promise<readonly AccountNft[]>;
+  getDomains(admin?: Address): Promise<readonly Domain[]>;
   estimateTxSize(transaction: UnsignedTransaction, numberOfSignatures: number, nonce?: Nonce): number;
   getTxFeeConfiguration(): Promise<TxFeeConfiguration | undefined>;
   getFeeQuote(transaction: UnsignedTransaction, numberOfSignatures?: number, nonce?: Nonce): Promise<Fee>;
