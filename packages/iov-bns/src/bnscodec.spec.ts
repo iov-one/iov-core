@@ -29,10 +29,98 @@ import {
   swapClaimTxJson,
   swapOfferTxJson,
 } from "./testdata.spec";
-import { MultisignatureTx, VoteOption, VoteTx } from "./types";
+import { MultisignatureTx, UpdateMultisignatureTx, VoteOption, VoteTx } from "./types";
 import { encodeBnsAddress } from "./util";
 
 describe("bnscodec", () => {
+  fit("generate update multisig test data", () => {
+    const nonce = 71 as Nonce;
+    const fee: Fee = {
+      tokens: { quantity: "100000000", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
+    };
+    const participants: readonly {
+      readonly participant: Identity;
+    }[] = [
+      // Testnet
+      {
+        participant: {
+          chainId: "iov-exchangenet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "bd59db1fb5b1c835970d33262f743f8bfc23c866aa95f16abaf72730c5388761", // alice
+            ) as PubkeyBytes,
+          },
+        },
+      },
+      // Mainnet
+      {
+        participant: {
+          chainId: "iov-mainnet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "34299fa3fe218a6210ace221f86597c800ecff3d27e1e6a7937248514a6784ee",
+            ) as PubkeyBytes,
+          },
+        },
+      },
+    ];
+
+    const multisigs: readonly (readonly number[])[] = [
+      [42],
+      [0, Number.MAX_SAFE_INTEGER],
+      [1, 123, 455, 2877],
+    ];
+
+    // tslint:disable-next-line: readonly-array
+    const out: any[] = [];
+
+    for (const { participant } of participants) {
+      const newbie: Identity = {
+        chainId: participant.chainId,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: Encoding.fromHex(
+            "a54fb18c039cee5f2b28999daca61f326e2998f67202d67ad27bcbc4e38da2ae",
+          ) as PubkeyBytes,
+        },
+      };
+      const cohorts = [
+        {
+          address: bnsCodec.identityToAddress(participant),
+          weight: 1,
+        },
+        {
+          address: bnsCodec.identityToAddress(newbie),
+          weight: 5,
+        },
+      ];
+      for (const multisig of multisigs) {
+        const send: UpdateMultisignatureTx & MultisignatureTx = {
+          kind: "bns/update_multisignature_contract",
+          chainId: participant.chainId,
+          contractId: new Uint8Array([1]),
+          participants: cohorts,
+          activationThreshold: 2,
+          adminThreshold: 3,
+          multisig: multisig,
+          fee: fee,
+        };
+        const { bytes } = bnsCodec.bytesToSign(send, nonce);
+        out.push({
+          transaction: TransactionEncoder.toJson(send),
+          nonce: nonce,
+          bytes: Encoding.toHex(bytes),
+        });
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs = require("fs");
+    fs.writeFileSync("updatetx_multisig_tests.json", JSON.stringify(out, null, 2) + "\n", "utf8");
+  });
+
   fit("generate vote test data", () => {
     const nonce = 69 as Nonce;
     const proposalId = 70;
