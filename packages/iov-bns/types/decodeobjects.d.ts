@@ -1,5 +1,4 @@
 import { Amount, ChainId, Token } from "@iov/bcp";
-
 import * as codecImpl from "./generated/codecimpl";
 import {
   AccountConfiguration,

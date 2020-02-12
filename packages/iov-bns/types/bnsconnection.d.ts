@@ -25,14 +25,16 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Stream } from "xstream";
-
 import {
+  AccountNft,
+  AccountsByNameQuery,
   BnsDepositQuery,
   BnsTermDepositContractNft,
   BnsTermDepositNft,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
+  DepositContractIdBytes,
   ElectionRule,
   Electorate,
   Proposal,

@@ -13,7 +13,6 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { As } from "type-tagger";
-
 import * as codecImpl from "./generated/codecimpl";
 export interface CashConfiguration {
   readonly minimalFee: Amount | null;
@@ -286,6 +285,7 @@ export declare function isBnsDepositByDepositIdQuery(
   query: BnsDepositQuery,
 ): query is BnsDepositByDepositIdQuery;
 export interface BnsTermDepositNft {
+  readonly id: DepositIdBytes;
   readonly depositContractId: DepositContractIdBytes;
   readonly amount: Amount;
   readonly rate: Fraction;
@@ -294,6 +294,7 @@ export interface BnsTermDepositNft {
   readonly createdAt: number | Long;
 }
 export interface BnsTermDepositContractNft {
+  readonly id: DepositContractIdBytes;
   readonly validSince: number | Long;
   readonly validUntil: number | Long;
 }
