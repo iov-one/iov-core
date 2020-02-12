@@ -29,11 +29,77 @@ import {
   swapClaimTxJson,
   swapOfferTxJson,
 } from "./testdata.spec";
-import { MultisignatureTx } from "./types";
+import { MultisignatureTx, VoteOption, VoteTx } from "./types";
 import { encodeBnsAddress } from "./util";
 
 describe("bnscodec", () => {
-  fit("generate test data", () => {
+  fit("generate vote test data", () => {
+    const nonce = 69 as Nonce;
+    const proposalId = 70;
+    const fee: Fee = {
+      tokens: { quantity: "100000000", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
+    };
+    const voters: readonly {
+      readonly voter: Identity;
+    }[] = [
+      // Testnet
+      {
+        voter: {
+          chainId: "iov-exchangenet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "bd59db1fb5b1c835970d33262f743f8bfc23c866aa95f16abaf72730c5388761", // alice
+            ) as PubkeyBytes,
+          },
+        },
+      },
+      // Mainnet
+      {
+        voter: {
+          chainId: "iov-mainnet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "34299fa3fe218a6210ace221f86597c800ecff3d27e1e6a7937248514a6784ee",
+            ) as PubkeyBytes,
+          },
+        },
+      },
+    ];
+
+    // tslint:disable-next-line: readonly-array
+    const out: any[] = [];
+
+    for (const { voter } of voters) {
+      const address = bnsCodec.identityToAddress(voter);
+      for (const selection of [VoteOption.Yes, VoteOption.No, VoteOption.Abstain]) {
+        const vote: VoteTx = {
+          kind: "bns/vote",
+          chainId: voter.chainId,
+          proposalId: proposalId,
+          selection: selection,
+          voter: address,
+          fee: {
+            ...fee,
+            payer: address,
+          },
+        };
+        const { bytes } = bnsCodec.bytesToSign(vote, nonce);
+        out.push({
+          transaction: TransactionEncoder.toJson(vote),
+          nonce: nonce,
+          bytes: Encoding.toHex(bytes),
+        });
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs = require("fs");
+    fs.writeFileSync("votetx_tests.json", JSON.stringify(out, null, 2) + "\n", "utf8");
+  });
+
+  fit("generate send test data", () => {
     const nonces = [0 as Nonce, 1 as Nonce, Number.MAX_SAFE_INTEGER as Nonce] as const;
     const fees: readonly (Fee | undefined)[] = [
       undefined,
@@ -129,7 +195,7 @@ describe("bnscodec", () => {
     fs.writeFileSync("sendtx_tests.json", JSON.stringify(out, null, 2) + "\n", "utf8");
   });
 
-  fit("generate multisig test data", () => {
+  fit("generate multisig send test data", () => {
     const nonce = 7 as Nonce;
     const fee: Fee = {
       tokens: { quantity: "100000000", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
