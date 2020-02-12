@@ -4,7 +4,6 @@ import {
   AccountConfiguration,
   AccountMsgFee,
   AccountNft,
-  BlockchainAddress,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
@@ -35,9 +34,7 @@ export declare function decodeAccountConfiguration(
   patch: codecImpl.account.IConfiguration,
 ): AccountConfiguration;
 export declare function decodeAccountMsgFee(msgFee: codecImpl.account.IAccountMsgFee): AccountMsgFee;
-export declare function decodeBlockchainAddress(
-  blockchainAddress: codecImpl.account.IBlockchainAddress,
-): BlockchainAddress;
+export declare function decodeBlockchainAddress(pair: codecImpl.account.IBlockchainAddress): ChainAddressPair;
 export declare function decodeAccount(
   prefix: IovBech32Prefix,
   account: codecImpl.account.IAccount,

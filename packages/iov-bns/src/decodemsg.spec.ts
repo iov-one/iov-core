@@ -349,7 +349,7 @@ describe("decodeMsg", () => {
     expect(parsed.domain).toEqual("hole");
     expect(parsed.name).toEqual("alice");
     expect(parsed.owner).toEqual("tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address);
-    expect(parsed.targets).toEqual([{ blockchainId: "wonderland", address: "12345W" }]);
+    expect(parsed.targets).toEqual([{ chainId: "wonderland", address: "12345W" }]);
     expect(parsed.broker).toEqual("tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address);
   });
 
@@ -384,7 +384,7 @@ describe("decodeMsg", () => {
     }
     expect(parsed.domain).toEqual("hole");
     expect(parsed.name).toEqual("alice");
-    expect(parsed.newTargets).toEqual([{ blockchainId: "wonderland", address: "12345W" }]);
+    expect(parsed.newTargets).toEqual([{ chainId: "wonderland", address: "12345W" }]);
   });
 
   it("works for DeleteAccountTx", () => {

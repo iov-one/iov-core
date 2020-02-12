@@ -259,7 +259,7 @@ describe("encodeMsg", () => {
       domain: "hole",
       name: "rabbit",
       owner: "tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address,
-      targets: [{ blockchainId: "wonderland", address: "12345W" }],
+      targets: [{ chainId: "wonderland" as ChainId, address: "12345W" as Address }],
       broker: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
     };
     const msg = encodeMsg(transfer).accountRegisterAccountMsg!;
@@ -290,7 +290,7 @@ describe("encodeMsg", () => {
       chainId: defaultChainId,
       domain: "hole",
       name: "rabbit",
-      newTargets: [{ blockchainId: "wonderland", address: "12345W" }],
+      newTargets: [{ chainId: "wonderland" as ChainId, address: "12345W" as Address }],
     };
     const msg = encodeMsg(transfer).accountReplaceAccountTargetsMsg!;
     expect(msg.domain).toEqual("hole");

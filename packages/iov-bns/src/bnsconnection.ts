@@ -61,6 +61,7 @@ import {
   decodeAccount,
   decodeAmount,
   decodeCashConfiguration,
+  decodeDomain,
   decodeElectionRule,
   decodeElectorate,
   decodeProposal,
@@ -73,13 +74,20 @@ import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
   AccountNft,
-  AccountsByNameQuery,
+  BnsAccountsQuery,
+  BnsDomainsQuery,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
   Decoder,
+  Domain,
   ElectionRule,
   Electorate,
+  isBnsAccountByNameQuery,
+  isBnsAccountsByDomainQuery,
+  isBnsAccountsByOwnerQuery,
+  isBnsDomainByNameQuery,
+  isBnsDomainsByAdminQuery,
   isBnsTx,
   isBnsUsernamesByOwnerQuery,
   isBnsUsernamesByUsernameQuery,
@@ -784,11 +792,44 @@ export class BnsConnection implements AtomicSwapConnection {
     return nfts;
   }
 
-  public async getAccountNft(query: AccountsByNameQuery): Promise<readonly AccountNft[]> {
-    const results = (await this.query("/accounts", toUtf8(query.name))).results;
+  public async getAccounts(query: BnsAccountsQuery): Promise<readonly AccountNft[]> {
+    let keyPrefix: string;
+    let results: readonly Result[];
+    if (isBnsAccountByNameQuery(query)) {
+      keyPrefix = "account:";
+      results = (await this.query("/accounts", toUtf8(query.name))).results;
+    } else if (isBnsAccountsByOwnerQuery(query)) {
+      keyPrefix = "";
+      const rawAddress = decodeBnsAddress(query.owner).data;
+      results = (await this.query("/accounts/owner", rawAddress)).results;
+    } else if (isBnsAccountsByDomainQuery(query)) {
+      keyPrefix = "";
+      results = (await this.query("/accounts/domain", toUtf8(query.domain))).results;
+    } else {
+      throw new Error("Unsupported query");
+    }
 
-    const parser = createParser(codecImpl.account.Account, "account:");
+    const parser = createParser(codecImpl.account.Account, keyPrefix);
     const nfts = results.map(parser).map(nft => decodeAccount(this.prefix, nft));
+    return nfts;
+  }
+
+  public async getDomains(query: BnsDomainsQuery): Promise<readonly Domain[]> {
+    let keyPrefix: string;
+    let results: readonly Result[];
+    if (isBnsDomainByNameQuery(query)) {
+      keyPrefix = "domain:";
+      results = (await this.query("/domains", toUtf8(query.name))).results;
+    } else if (isBnsDomainsByAdminQuery(query)) {
+      keyPrefix = "";
+      const rawAddress = decodeBnsAddress(query.admin).data;
+      results = (await this.query("/domains/admin", rawAddress)).results;
+    } else {
+      throw new Error("Unsupported query");
+    }
+
+    const parser = createParser(codecImpl.account.Domain, keyPrefix);
+    const nfts = results.map(parser).map(nft => decodeDomain(this.prefix, nft));
     return nfts;
   }
 

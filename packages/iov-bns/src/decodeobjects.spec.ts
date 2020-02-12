@@ -214,7 +214,7 @@ describe("decodeobjects", () => {
         address: "some-address",
       };
       const decoded = decodeBlockchainAddress(blockchainAddress);
-      expect(decoded.blockchainId).toEqual("some-id");
+      expect(decoded.chainId).toEqual("some-id");
       expect(decoded.address).toEqual("some-address");
     });
   });
@@ -238,7 +238,7 @@ describe("decodeobjects", () => {
         Bech32.encode(prefix, fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472")),
       );
       expect(decoded.validUntil).toEqual(1234);
-      expect(decoded.targets).toEqual([{ blockchainId: "wonderland", address: "12345W" }]);
+      expect(decoded.targets).toEqual([{ chainId: "wonderland", address: "12345W" }]);
       expect(decoded.certificates).toEqual([fromHex("214390591e6ac697319f20887405915e9d2690fd")]);
     });
   });
