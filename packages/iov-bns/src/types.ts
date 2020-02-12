@@ -70,6 +70,24 @@ export function isBnsAccountsByDomainQuery(query: BnsAccountsQuery): query is Bn
   return typeof (query as BnsAccountsByDomainQuery).domain !== "undefined";
 }
 
+export interface BnsDomainByNameQuery {
+  readonly name: string;
+}
+
+export interface BnsDomainsByAdminQuery {
+  readonly admin: Address;
+}
+
+export type BnsDomainsQuery = BnsDomainByNameQuery | BnsDomainsByAdminQuery;
+
+export function isBnsDomainByNameQuery(query: BnsDomainsQuery): query is BnsDomainByNameQuery {
+  return typeof (query as BnsDomainByNameQuery).name !== "undefined";
+}
+
+export function isBnsDomainsByAdminQuery(query: BnsDomainsQuery): query is BnsDomainsByAdminQuery {
+  return typeof (query as BnsDomainsByAdminQuery).admin !== "undefined";
+}
+
 export interface AccountConfiguration {
   readonly owner: Address;
   readonly validDomain: string;

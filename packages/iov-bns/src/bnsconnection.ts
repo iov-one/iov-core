@@ -61,6 +61,7 @@ import {
   decodeAccount,
   decodeAmount,
   decodeCashConfiguration,
+  decodeDomain,
   decodeElectionRule,
   decodeElectorate,
   decodeProposal,
@@ -74,15 +75,19 @@ import { bnsSwapQueryTag } from "./tags";
 import {
   AccountNft,
   BnsAccountsQuery,
+  BnsDomainsQuery,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
   Decoder,
+  Domain,
   ElectionRule,
   Electorate,
   isBnsAccountByNameQuery,
   isBnsAccountsByDomainQuery,
   isBnsAccountsByOwnerQuery,
+  isBnsDomainByNameQuery,
+  isBnsDomainsByAdminQuery,
   isBnsTx,
   isBnsUsernamesByOwnerQuery,
   isBnsUsernamesByUsernameQuery,
@@ -806,6 +811,29 @@ export class BnsConnection implements AtomicSwapConnection {
 
     const parser = createParser(codecImpl.account.Account, keyPrefix);
     const nfts = results.map(parser).map(nft => decodeAccount(this.prefix, nft));
+    return nfts;
+  }
+
+  public async getDomains(query: BnsDomainsQuery): Promise<readonly Domain[]> {
+    let keyPrefix: string;
+    let results: readonly Result[];
+    if (isBnsDomainByNameQuery(query)) {
+      keyPrefix = "account:";
+      results = (await this.query("/accounts", toUtf8(query.name))).results;
+    } else if (isBnsDomainsByAdminQuery(query)) {
+      keyPrefix = "";
+      const rawAddress = decodeBnsAddress(query.owner).data;
+      results = (await this.query("/accounts/owner", rawAddress)).results;
+    } else {
+      throw new Error("Unsupported query");
+    }
+    const results = admin
+      ? (await this.query("/domains/admin", decodeBnsAddress(admin).data)).results
+      : (await this.query("/domains?prefix", new Uint8Array([]))).results;
+
+    console.log(results);
+    const parser = createParser(codecImpl.account.Domain, "domain:");
+    const nfts = results.map(parser).map(nft => decodeDomain(this.prefix, nft));
     return nfts;
   }
 
