@@ -138,7 +138,7 @@ export function decodeBlockchainAddress(pair: codecImpl.account.IBlockchainAddre
 export function decodeAccount(prefix: IovBech32Prefix, account: codecImpl.account.IAccount): AccountNft {
   return {
     domain: ensure(account.domain, "domain"),
-    name: ensure(account.name, "name"),
+    name: account.name ? account.name : undefined,
     owner: encodeBnsAddress(prefix, ensure(account.owner, "owner")),
     validUntil: asIntegerNumber(ensure(account.validUntil, "validUntil")),
     targets: ensure(account.targets, "targets").map(decodeBlockchainAddress),

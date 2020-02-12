@@ -104,7 +104,7 @@ export interface AccountMsgFee {
 
 export interface AccountNft {
   readonly domain: string;
-  readonly name: string;
+  readonly name?: string;
   readonly owner: Address;
   readonly validUntil: number;
   readonly targets: readonly ChainAddressPair[];
