@@ -803,7 +803,7 @@ export class BnsConnection implements AtomicSwapConnection {
       const rawAddress = decodeBnsAddress(query.owner).data;
       results = (await this.query("/accounts/owner", rawAddress)).results;
     } else if (isBnsAccountsByDomainQuery(query)) {
-      keyPrefix = "account:";
+      keyPrefix = "";
       results = (await this.query("/accounts/domain", toUtf8(query.domain))).results;
     } else {
       throw new Error("Unsupported query");
@@ -818,21 +818,17 @@ export class BnsConnection implements AtomicSwapConnection {
     let keyPrefix: string;
     let results: readonly Result[];
     if (isBnsDomainByNameQuery(query)) {
-      keyPrefix = "account:";
-      results = (await this.query("/accounts", toUtf8(query.name))).results;
+      keyPrefix = "domain:";
+      results = (await this.query("/domains", toUtf8(query.name))).results;
     } else if (isBnsDomainsByAdminQuery(query)) {
       keyPrefix = "";
-      const rawAddress = decodeBnsAddress(query.owner).data;
-      results = (await this.query("/accounts/owner", rawAddress)).results;
+      const rawAddress = decodeBnsAddress(query.admin).data;
+      results = (await this.query("/domains/admin", rawAddress)).results;
     } else {
       throw new Error("Unsupported query");
     }
-    const results = admin
-      ? (await this.query("/domains/admin", decodeBnsAddress(admin).data)).results
-      : (await this.query("/domains?prefix", new Uint8Array([]))).results;
 
-    console.log(results);
-    const parser = createParser(codecImpl.account.Domain, "domain:");
+    const parser = createParser(codecImpl.account.Domain, keyPrefix);
     const nfts = results.map(parser).map(nft => decodeDomain(this.prefix, nft));
     return nfts;
   }
