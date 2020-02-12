@@ -28,6 +28,7 @@ import {
   ensureNonceNonZero,
   pendingWithoutBnsd,
   randomBnsAddress,
+  randomDomain,
   registerAmount,
   sendTokensFromFaucet,
   unusedAddress,
@@ -696,14 +697,15 @@ describe("BnsConnection (basic class methods)", () => {
     });
 
     it("can query accounts by domain", async () => {
-      const results = await connection.getAccounts({ owner: identityAddress });
+      const results = await connection.getAccounts({ domain: domain });
       expect(results.length).toBeGreaterThan(0);
-      const lastDomain = results[results.length - 1];
-      expect(lastDomain.domain).toEqual(domain);
-      expect(lastDomain.name).toEqual(name);
-      expect(lastDomain.owner).toEqual(identityAddress);
-      expect(lastDomain.targets).toEqual(targets);
-      expect(lastDomain.certificates).toEqual([]);
+      const lastDomain = results.find(acc => acc.name === name);
+      expect(lastDomain).toBeDefined();
+      expect(lastDomain!.domain).toEqual(domain);
+      expect(lastDomain!.name).toEqual(name);
+      expect(lastDomain!.owner).toEqual(identityAddress);
+      expect(lastDomain!.targets).toEqual(targets);
+      expect(lastDomain!.certificates).toEqual([]);
     });
   });
 
@@ -729,7 +731,7 @@ describe("BnsConnection (basic class methods)", () => {
 
       // Register domain
 
-      domain = `iov_${Math.trunc(Math.random() * 100000)}`;
+      domain = randomDomain();
       accountMsgFees = [
         { msgPath: "some-msg-path", fee: decodeAmount({ whole: 1, fractional: 2, ticker: "ASH" }) },
       ];
@@ -757,8 +759,36 @@ describe("BnsConnection (basic class methods)", () => {
       connection.disconnect();
     });
 
-    fit("can query domains by admin address", async () => {
-      const domains = await connection.getDomains(adminAddress);
+    it("can query domains by admin address", async () => {
+      const domains = await connection.getDomains({ admin: adminAddress });
+      expect(domains.length).toEqual(1);
+      expect(domains[0].domain).toEqual(domain);
+      expect(domains[0].msgFees).toEqual(accountMsgFees);
+    });
+
+    it("can query domains by admin address and account", async () => {
+      // Query domain
+      {
+        const domains = await connection.getDomains({ admin: adminAddress });
+        expect(domains.length).toEqual(1);
+        expect(domains[0].domain).toEqual(domain);
+        expect(domains[0].msgFees).toEqual(accountMsgFees);
+      }
+
+      // Query default account
+      {
+        const results = await connection.getAccounts({ domain: domain });
+        expect(results.length).toEqual(1);
+        expect(results[0].domain).toEqual(domain);
+        expect(results[0].name).toBeUndefined();
+        expect(results[0].owner).toEqual(adminAddress);
+        expect(results[0].targets).toEqual([]);
+        expect(results[0].certificates).toEqual([]);
+      }
+    });
+
+    it("can query domains by domain name", async () => {
+      const domains = await connection.getDomains({ name: domain });
       expect(domains.length).toEqual(1);
       expect(domains[0].domain).toEqual(domain);
       expect(domains[0].msgFees).toEqual(accountMsgFees);
