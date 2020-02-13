@@ -100,7 +100,7 @@ describe("bnscodec", () => {
         const update: UpdateMultisignatureTx & MultisignatureTx = {
           kind: "bns/update_multisignature_contract",
           chainId: participant.chainId,
-          contractId: new Uint8Array([0, 0, 0, 1]),
+          contractId: Number.MAX_SAFE_INTEGER,
           participants: cohorts,
           activationThreshold: 2,
           adminThreshold: 3,
