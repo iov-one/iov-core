@@ -14,6 +14,15 @@ export {
 } from "./conditions";
 export { bnsSwapQueryTag } from "./tags";
 export {
+  // Accounts
+  BnsAccountByNameQuery,
+  isBnsAccountByNameQuery,
+  BnsAccountsByOwnerQuery,
+  isBnsAccountsByOwnerQuery,
+  BnsAccountsByDomainQuery,
+  isBnsAccountsByDomainQuery,
+  BnsAccountsQuery,
+  AccountNft,
   // Usernames
   ChainAddressPair,
   BnsUsernamesByOwnerQuery,

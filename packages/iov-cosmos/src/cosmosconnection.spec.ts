@@ -53,8 +53,7 @@ describe("CosmosConnection", () => {
     it("displays the chain ID", async () => {
       pendingWithoutCosmos();
       const connection = await CosmosConnection.establish(httpUrl);
-      const chainId = connection.chainId();
-      expect(chainId).toEqual(defaultChainId);
+      expect(connection.chainId).toEqual(defaultChainId);
       connection.disconnect();
     });
   });

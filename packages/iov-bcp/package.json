@@ -1,6 +1,6 @@
 {
   "name": "@iov/bcp",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.7",
   "description": "General types and helpers for IOV's blockchain communication protocol",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -24,7 +24,7 @@
     "docs": "shx rm -rf docs && typedoc --options typedoc.js",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
     "lint": "eslint --max-warnings 0 \"**/*.{js,ts}\" && tslint -t verbose --project .",
-    "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && rm -rf ./types/testdata && shx rm ./types/*.spec.d.ts",
+    "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && rm -rf ./types/testdata && shx rm -f ./types/*.spec.d.ts",
     "format-types": "prettier --write --loglevel warn \"./types/**/*.d.ts\"",
     "build": "shx rm -rf ./build && tsc && yarn move-types && yarn format-types",
     "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
@@ -37,9 +37,9 @@
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari"
   },
   "dependencies": {
-    "@iov/crypto": "^2.0.0-alpha.1",
-    "@iov/encoding": "^2.0.0-alpha.1",
-    "@iov/stream": "^2.0.0-alpha.1",
+    "@iov/crypto": "^2.0.0-alpha.7",
+    "@iov/encoding": "^2.0.0-alpha.7",
+    "@iov/stream": "^2.0.0-alpha.7",
     "type-tagger": "^1.0.0",
     "xstream": "^11.10.0"
   }

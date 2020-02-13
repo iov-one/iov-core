@@ -2,6 +2,7 @@ import { Amount } from "@iov/bcp";
 import { Int53 } from "@iov/encoding";
 import BN from "bn.js";
 
+import { weaveFractionalDigits } from "./constants";
 import * as codecImpl from "./generated/codecimpl";
 
 export function encodeInt(intNumber: number): number | null {
@@ -19,8 +20,8 @@ export function encodeString(data: string | undefined): string | null {
 }
 
 export function encodeAmount(amount: Amount): codecImpl.coin.ICoin {
-  if (amount.fractionalDigits !== 9) {
-    throw new Error(`Fractional digits must be 9 but was ${amount.fractionalDigits}`);
+  if (amount.fractionalDigits !== weaveFractionalDigits) {
+    throw new Error(`Fractional digits must be ${weaveFractionalDigits} but was ${amount.fractionalDigits}`);
   }
 
   const whole = Int53.fromString(amount.quantity.slice(0, -amount.fractionalDigits) || "0");

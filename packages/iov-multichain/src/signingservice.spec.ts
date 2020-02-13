@@ -25,6 +25,7 @@ import {
   SimpleMessagingConnection,
 } from "@iov/jsonrpc";
 import { firstEvent } from "@iov/stream";
+import { sleep } from "@iov/utils";
 import { Producer, Stream } from "xstream";
 
 const { fromHex } = Encoding;
@@ -45,10 +46,6 @@ function pendingWithoutWorker(): void {
   if (typeof Worker === "undefined") {
     pending("Environment without WebWorker support detected. Marked as pending.");
   }
-}
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function randomBnsAddress(): Promise<Address> {
@@ -222,7 +219,7 @@ describe("signingservice.worker", () => {
       method: "getIdentities",
       params: {
         reason: "string:Who are you?",
-        chainIds: [`string:${bnsConnection.chainId()}`],
+        chainIds: [`string:${bnsConnection.chainId}`],
       },
     });
 

@@ -22,6 +22,7 @@ import {
 } from "@iov/bcp";
 import { Slip10RawIndex } from "@iov/crypto";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { sleep } from "@iov/utils";
 import BN from "bn.js";
 
 import { bnsCodec } from "../bnscodec";
@@ -29,10 +30,6 @@ import { BnsConnection } from "../bnsconnection";
 
 const CASH = "CASH" as TokenTicker;
 const BASH = "BASH" as TokenTicker;
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function tendermintSearchIndexUpdated(): Promise<void> {
   // Tendermint needs some time before a committed transaction is found in search
@@ -58,7 +55,7 @@ class Actor {
 
     const bnsConnection = await BnsConnection.establish("ws://localhost:23456");
 
-    const bnsIdentity = await profile.createIdentity(wallet.id, bnsConnection.chainId(), hdPath);
+    const bnsIdentity = await profile.createIdentity(wallet.id, bnsConnection.chainId, hdPath);
 
     return new Actor({
       profile: profile,

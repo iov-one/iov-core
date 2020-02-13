@@ -4,6 +4,7 @@ const { bnsCodec, BnsConnection, VoteOption } = require("@iov/bns");
 const { Governor, ProposalType } = require("@iov/bns-governance");
 const { Encoding } = require("@iov/encoding");
 const { Ed25519HdWallet, HdPaths, UserProfile } = require("@iov/keycontrol");
+const { sleep } = require("@iov/utils");
 
 // Dev admin
 // path: m/44'/234'/0'
@@ -30,13 +31,9 @@ function createSignAndPoster(connection, profile) {
   };
 }
 
-async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function main() {
   const connection = await connectionPromise;
-  const chainId = await connection.chainId();
+  const chainId = await connection.chainId;
   const profile = new UserProfile();
   const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
   const identity = await profile.createIdentity(wallet.id, chainId, adminPath);
@@ -185,9 +182,14 @@ async function main() {
   }
 }
 
-main()
-  .catch(console.error)
-  .finally(async () => {
+main().then(
+  async () => {
     (await connectionPromise).disconnect();
     process.exit(0);
-  });
+  },
+  async error => {
+    console.error(error);
+    (await connectionPromise).disconnect();
+    process.exit(1);
+  },
+);

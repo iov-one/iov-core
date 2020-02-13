@@ -2,20 +2,30 @@
 
 ## 2.0.0
 
-- @iov/bns: Add support for weave v0.24.0.
 - @iov/bcp: Add optional payer field to `Fee` type.
 - @iov/bcp: Add optional feePayer parameter to
   `BlockchainConnection.withDefaultFee`.
 - @iov/bcp: Add optional senderPubkey parameter to `SendTransaction`.
+- @iov/bcp: Add `isSignedTransaction` helper.
 - @iov/bcp: Add `isConfirmedAndSignedTransaction` helper.
 - @iov/bcp: Add `NonEmptyArray` and `isNonEmptyArray`/`newNonEmptyArray` helper
   functions.
+- @iov/bns: Add support for weave v0.24.0.
+- @iov/bns: Add support for weave v0.25.0.
 - @iov/bns: Support ExecuteMigration in CreateProposal transactions.
 - @iov/bns: Add optional payer parameter to `BnsConnection.withDefaultFee`.
 - @iov/bns: `BnsConnection.searchTx` now resolves to an array of
   `ConfirmedAndSignedTransaction<UnsignedTransaction> | FailedTransaction`.
+- @iov/bns: Add `BnsConnection.estimateTxSize` and
+  `BnsConnection.getTxConfiguration` methods.
+- @iov/bns: Include transaction size fee in `BnsConnection.getFeeQuote`, which
+  now includes optional parameters `numberOfSignatures` and `nonce` for more
+  accurate estimates.
 - @iov/bns-governance: Add proposal type `ExecuteMigration`.
+- @iov/bns-governance: Make `Governor.identity` public.
+- @iov/cosmos: New package to support Cosmos.
 - @iov/lisk: Export `pubkeyToAddress`.
+- @iov/utils: New package added that includes utils.
 
 Breaking changes
 
@@ -26,16 +36,22 @@ Breaking changes
 - ALL: Upgrade TypeScript from 3.5 to 3.7. This changes the signature of getters
   in declaration files (see
   https://devblogs.microsoft.com/typescript/announcing-typescript-3-6/#get-and-set-accessors-allowed-in-ambient-contexts)
+- ALL: Change ECMAScript target version to ES2017, which results in JavaScript
+  output that is smaller, faster and easier to read and debug. The main change
+  is the usage of native `async`/`await`, which is
+  [supported by all relevant JavaScript environments](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function#Browser_compatibility).
 - @iov/bcp: Remove `LightTransaction` and `WithCreator` types and helpers.
 - @iov/bcp: `UnsignedTransaction` now has a `chainId` field instead of
   `creator`.
 - @iov/bcp: Replace `primarySignature` and `otherSignatures` in
   `SignedTransaction` with a single `signatures` field of type `NonEmptyArray`.
+- @iov/bcp: Convert getter function `BlockchainConnection.chainId()` into
+  read-only property `.chainId`.
+- @iov/bcp: Add required `BlockchainConnection.codec` property.
 - @iov/bns: Require fee payer to be specified when encoding a transaction with a
   fee.
 - @iov/bns: Use single `signatures` field in `SignedTransaction`s.
 - @iov/bns: The new field `VoteTx.voter` must be set for new transactions.
-- @iov/cosmos: Use single `signatures` field in `SignedTransaction`s.
 - @iov/dpos: Package removed due to the removal of @iov/rise.
 - @iov/ethereum: Use single `signatures` field in `SignedTransaction`s.
 - @iov/keycontrol: `UserProfile.signTransaction` now requires the signing

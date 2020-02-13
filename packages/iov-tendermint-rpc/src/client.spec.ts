@@ -1,6 +1,7 @@
 // tslint:disable:readonly-array
 import { Encoding } from "@iov/encoding";
 import { firstEvent, toListPromise } from "@iov/stream";
+import { sleep } from "@iov/utils";
 import { ReadonlyDate } from "readonly-date";
 import { Stream } from "xstream";
 
@@ -17,10 +18,6 @@ function pendingWithoutTendermint(): void {
   if (!process.env.TENDERMINT_ENABLED) {
     pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
   }
-}
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function tendermintSearchIndexUpdated(): Promise<void> {
@@ -472,7 +469,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
     expect(event2.height).toBeGreaterThan(event1.height);
     expect(event2.time.getTime()).toBeGreaterThan(event1.time.getTime());
 
-    // Very short sleep: just enough to schedule asynchonous producer stopping
+    // Very short sleep: just enough to schedule asynchronous producer stopping
     await sleep(5);
 
     const event3 = await firstEvent(stream);

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Address, Algorithm, isBlockInfoPending, PubkeyBytes, TokenTicker } from "@iov/bcp";
+import { Address, Algorithm, isBlockInfoPending, PubkeyBundle, PubkeyBytes, TokenTicker } from "@iov/bcp";
 import { ActionKind, bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
 import { Random } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { sleep } from "@iov/utils";
 import { ReadonlyDate } from "readonly-date";
 
 import { Governor, GovernorOptions } from "./governor";
@@ -13,6 +14,17 @@ function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {
     pending("Set BNSD_ENABLED to enable bnsd-based tests");
   }
+}
+
+function randomBnsAddress(): Address {
+  return Bech32.encode("tiov", Random.getBytes(20)) as Address;
+}
+
+function randomBnsPubkey(): PubkeyBundle {
+  return {
+    algo: Algorithm.Ed25519,
+    data: Random.getBytes(32) as PubkeyBytes,
+  };
 }
 
 // Dev admin
@@ -26,15 +38,11 @@ const bnsdUrl = "ws://localhost:23456";
 const guaranteeFundEscrowId = 6;
 const rewardFundAddress = "tiov15nuhg3l8ma2mdmcdvgy7hme20v3xy5mkxcezea" as Address;
 
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function getGovernorOptions(
   path = adminPath,
 ): Promise<GovernorOptions & { readonly profile: UserProfile }> {
   const connection = await BnsConnection.establish(bnsdUrl);
-  const chainId = await connection.chainId();
+  const chainId = connection.chainId;
   const profile = new UserProfile();
   const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
   const identity = await profile.createIdentity(wallet.id, chainId, path);
@@ -223,28 +231,29 @@ describe("Governor", () => {
       const options = await getGovernorOptions();
       const governor = new Governor(options);
 
+      const address = randomBnsAddress();
       const tx = await governor.buildCreateProposalTx({
         type: ProposalType.AddCommitteeMember,
-        title: "Add abcd to committee 5",
-        description: "Proposal to add abcd to committee 5",
+        title: `Add ${address} to committee 5`,
+        description: `Proposal to add ${address} to committee 5`,
         startTime: new ReadonlyDate(1562164525898),
         electionRuleId: 1,
         committee: 5 as CommitteeId,
-        address: "abcd" as Address,
+        address: address,
         weight: 4,
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
         chainId: options.identity.chainId,
-        title: "Add abcd to committee 5",
+        title: `Add ${address} to committee 5`,
         action: {
           kind: ActionKind.UpdateElectorate,
           electorateId: 5,
           diffElectors: {
-            abcd: { weight: 4 },
+            [address]: { weight: 4 },
           },
         },
-        description: "Proposal to add abcd to committee 5",
+        description: `Proposal to add ${address} to committee 5`,
         electionRuleId: 1,
         startTime: 1562164525,
         author: governor.address,
@@ -266,27 +275,28 @@ describe("Governor", () => {
       const options = await getGovernorOptions();
       const governor = new Governor(options);
 
+      const address = randomBnsAddress();
       const tx = await governor.buildCreateProposalTx({
         type: ProposalType.RemoveCommitteeMember,
-        title: "Remove abcd from committee 5",
-        description: "Proposal to remove abcd from committee 5",
+        title: `Remove ${address} from committee 5`,
+        description: `Proposal to remove ${address} from committee 5`,
         startTime: new ReadonlyDate(1562164525898),
         electionRuleId: 1,
         committee: 5 as CommitteeId,
-        address: "abcd" as Address,
+        address: address,
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
         chainId: options.identity.chainId,
-        title: "Remove abcd from committee 5",
+        title: `Remove ${address} from committee 5`,
         action: {
           kind: ActionKind.UpdateElectorate,
           electorateId: 5,
           diffElectors: {
-            abcd: { weight: 0 },
+            [address]: { weight: 0 },
           },
         },
-        description: "Proposal to remove abcd from committee 5",
+        description: `Proposal to remove ${address} from committee 5`,
         electionRuleId: 1,
         startTime: 1562164525,
         author: governor.address,
@@ -410,29 +420,28 @@ describe("Governor", () => {
       const options = await getGovernorOptions();
       const governor = new Governor(options);
 
+      const pubkey = randomBnsPubkey();
+      const pubkeyHex = Encoding.toHex(pubkey.data);
       const tx = await governor.buildCreateProposalTx({
         type: ProposalType.AddValidator,
-        title: "Add abcd as validator",
-        description: "Proposal to add abcd as validator",
+        title: `Add ${pubkeyHex} as validator`,
+        description: `Proposal to add ${pubkeyHex} as validator`,
         startTime: new ReadonlyDate(1562164525898),
         electionRuleId: 1,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: Encoding.fromHex("abcd") as PubkeyBytes,
-        },
+        pubkey: pubkey,
         power: 12,
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
         chainId: options.identity.chainId,
-        title: "Add abcd as validator",
+        title: `Add ${pubkeyHex} as validator`,
         action: {
           kind: ActionKind.SetValidators,
           validatorUpdates: {
-            ed25519_abcd: { power: 12 },
+            [`ed25519_${pubkeyHex}`]: { power: 12 },
           },
         },
-        description: "Proposal to add abcd as validator",
+        description: `Proposal to add ${pubkeyHex} as validator`,
         electionRuleId: 1,
         startTime: 1562164525,
         author: governor.address,
@@ -454,28 +463,27 @@ describe("Governor", () => {
       const options = await getGovernorOptions();
       const governor = new Governor(options);
 
+      const pubkey = randomBnsPubkey();
+      const pubkeyHex = Encoding.toHex(pubkey.data);
       const tx = await governor.buildCreateProposalTx({
         type: ProposalType.RemoveValidator,
-        title: "Remove validator abcd",
-        description: "Proposal to remove validator abcd",
+        title: `Remove validator ${pubkeyHex}`,
+        description: `Proposal to remove validator ${pubkeyHex}`,
         startTime: new ReadonlyDate(1562164525898),
         electionRuleId: 1,
-        pubkey: {
-          algo: Algorithm.Ed25519,
-          data: Encoding.fromHex("abcd") as PubkeyBytes,
-        },
+        pubkey: pubkey,
       });
       expect(tx).toEqual({
         kind: "bns/create_proposal",
         chainId: options.identity.chainId,
-        title: "Remove validator abcd",
+        title: `Remove validator ${pubkeyHex}`,
         action: {
           kind: ActionKind.SetValidators,
           validatorUpdates: {
-            ed25519_abcd: { power: 0 },
+            [`ed25519_${pubkeyHex}`]: { power: 0 },
           },
         },
-        description: "Proposal to remove validator abcd",
+        description: `Proposal to remove validator ${pubkeyHex}`,
         electionRuleId: 1,
         startTime: 1562164525,
         author: governor.address,
@@ -542,7 +550,7 @@ describe("Governor", () => {
       pendingWithoutBnsd();
       const options = await getGovernorOptions();
       const { connection, identity, profile } = options;
-      const address = bnsCodec.identityToAddress(identity);
+      const address = connection.codec.identityToAddress(identity);
       const cleanRewardFundAddress = Bech32.encode("tiov", Random.getBytes(20)) as Address;
       const governor = new Governor({
         ...options,
@@ -568,6 +576,8 @@ describe("Governor", () => {
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
 
+      const recipient1 = randomBnsAddress();
+      const recipient2 = randomBnsAddress();
       const tx = await governor.buildCreateProposalTx({
         type: ProposalType.DistributeFunds,
         title: "Distribute funds",
@@ -576,11 +586,11 @@ describe("Governor", () => {
         electionRuleId: 1,
         recipients: [
           {
-            address: "tiov222222222222222222222222222222222222222" as Address,
+            address: recipient1,
             weight: 2,
           },
           {
-            address: "tiov555555555555555555555555555555555555555" as Address,
+            address: recipient2,
             weight: 5,
           },
         ],
@@ -595,7 +605,7 @@ describe("Governor", () => {
             {
               kind: ActionKind.Send,
               sender: cleanRewardFundAddress,
-              recipient: "tiov222222222222222222222222222222222222222" as Address,
+              recipient: recipient1,
               amount: {
                 quantity: "285428571428",
                 fractionalDigits: 9,
@@ -605,7 +615,7 @@ describe("Governor", () => {
             {
               kind: ActionKind.Send,
               sender: cleanRewardFundAddress,
-              recipient: "tiov555555555555555555555555555555555555555" as Address,
+              recipient: recipient2,
               amount: {
                 quantity: "713571428571",
                 fractionalDigits: 9,

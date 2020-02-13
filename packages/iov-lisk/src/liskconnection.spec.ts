@@ -44,7 +44,10 @@ function pendingWithoutLiskDevnet(): void {
 }
 
 async function randomAddress(): Promise<Address> {
-  const pubkey = Random.getBytes(32);
+  const pubkey = {
+    algo: Algorithm.Ed25519,
+    data: Random.getBytes(32) as PubkeyBytes,
+  };
   return Derivation.pubkeyToAddress(pubkey);
 }
 
@@ -161,8 +164,8 @@ describe("LiskConnection", () => {
   it("can get chain ID", async () => {
     pendingWithoutLiskDevnet();
     const connection = await LiskConnection.establish(devnetBase);
-    const chainId = connection.chainId();
-    expect(chainId).toEqual(devnetChainId);
+    expect(connection.chainId).toEqual(devnetChainId);
+    connection.disconnect();
   });
 
   it("can get height", async () => {
@@ -171,6 +174,7 @@ describe("LiskConnection", () => {
     const height = await connection.height();
     expect(height).toBeGreaterThan(0);
     expect(height).toBeLessThan(10000000);
+    connection.disconnect();
   });
 
   describe("getAccount", () => {
@@ -189,6 +193,7 @@ describe("LiskConnection", () => {
       expect(account!.balance[0].tokenTicker).toEqual("LSK");
       expect(account!.balance[0].fractionalDigits).toEqual(8);
       expect(account!.balance[0].quantity).toEqual("10034556677");
+      connection.disconnect();
     });
 
     it("can get account from pubkey", async () => {
@@ -207,6 +212,7 @@ describe("LiskConnection", () => {
       expect(account!.balance[0].tokenTicker).toEqual("LSK");
       expect(account!.balance[0].fractionalDigits).toEqual(8);
       expect(account!.balance[0].quantity).toEqual("10034556677");
+      connection.disconnect();
     });
 
     it("returns empty list when getting an unused account", async () => {
@@ -215,6 +221,7 @@ describe("LiskConnection", () => {
       const connection = await LiskConnection.establish(devnetBase);
       const response = await connection.getAccount({ address: unusedAddress });
       expect(response).toBeUndefined();
+      connection.disconnect();
     });
 
     it("returns undefined pubkey for receive only address", async () => {
@@ -223,6 +230,7 @@ describe("LiskConnection", () => {
       const response = await connection.getAccount({ address: devnetDefaultRecipient });
       expect(response!.address).toEqual(devnetDefaultRecipient);
       expect(response!.pubkey).toBeUndefined();
+      connection.disconnect();
     });
   });
 
@@ -813,7 +821,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -833,7 +841,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -863,7 +871,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -883,7 +891,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -908,7 +916,7 @@ describe("LiskConnection", () => {
           }
           expect(
             transaction.recipient === searchAddress ||
-              Derivation.pubkeyToAddress(transaction.senderPubkey.data) === searchAddress,
+              Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
           ).toEqual(true);
         }
       }
@@ -1196,7 +1204,7 @@ describe("LiskConnection", () => {
         chainId: dummynetChainId,
         pubkey: {
           algo: Algorithm.Ed25519,
-          data: fromHex("aabbccdd") as PubkeyBytes,
+          data: fromHex("aabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccddaabbccdd") as PubkeyBytes,
         },
       };
 

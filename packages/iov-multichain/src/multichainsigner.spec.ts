@@ -91,7 +91,7 @@ describe("MultiChainSigner", () => {
       const signer = new MultiChainSigner(profile);
       const { connection } = await signer.addChain(createBnsConnector(bnsdTendermintUrl));
       expect(signer.chainIds().length).toEqual(1);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { faucet } = await addWalletWithFaucet(profile, chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -273,7 +273,7 @@ describe("MultiChainSigner", () => {
 
     // can add with unspecified expectedChainId
     const { connection } = await signer.addChain(connector);
-    const chainId = connection.chainId();
+    const chainId = connection.chainId;
     // this should error on second add to same signer
     await signer
       .addChain(connector)
@@ -309,8 +309,8 @@ describe("MultiChainSigner", () => {
       const ethereumConnection = (await signer.addChain(createEthereumConnector(httpEthereumUrl, {})))
         .connection;
 
-      const bnsChainId = bnsConnection.chainId();
-      const ethereumChainId = ethereumConnection.chainId();
+      const bnsChainId = bnsConnection.chainId;
+      const ethereumChainId = ethereumConnection.chainId;
 
       // valid
       expect(signer.isValidAddress(bnsChainId, "tiov142424242424242424242424242424242vmucnv")).toEqual(true);

@@ -91,6 +91,7 @@ export {
   isUnsignedTransaction,
   TransactionContainer,
   SignedTransaction,
+  isSignedTransaction,
   ConfirmedTransaction,
   FailedTransaction,
   isConfirmedTransaction,

@@ -39,6 +39,7 @@ import {
 import { ExtendedSecp256k1Signature, Keccak256, Random, Secp256k1 } from "@iov/crypto";
 import { HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
+import { sleep } from "@iov/utils";
 
 import { pubkeyToAddress } from "./address";
 import { Erc20ApproveTransaction } from "./erc20";
@@ -66,10 +67,6 @@ function pendingWithoutEthereumScraper(): void {
   if (!process.env.ETHEREUM_SCRAPER) {
     return pending("Set ETHEREUM_SCRAPER to enable out-of-blockchain functionality tests");
   }
-}
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function randomAddress(): Promise<Address> {
@@ -175,8 +172,7 @@ describe("EthereumConnection", () => {
   it("can get chain ID", async () => {
     pendingWithoutEthereum();
     const connection = await EthereumConnection.establish(testConfig.baseHttp, testConfig.connectionOptions);
-    const chainId = connection.chainId();
-    expect(chainId).toEqual(testConfig.chainId);
+    expect(connection.chainId).toEqual(testConfig.chainId);
     connection.disconnect();
   });
 
@@ -2108,7 +2104,7 @@ describe("EthereumConnection", () => {
           testConfig.baseHttp,
           testConfig.connectionOptions,
         );
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const faucetAddress = ethereumCodec.identityToAddress(faucet);
@@ -2297,7 +2293,7 @@ describe("EthereumConnection", () => {
           testConfig.baseHttp,
           testConfig.connectionOptions,
         );
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const recipientAddress = await randomAddress();
@@ -2379,7 +2375,7 @@ describe("EthereumConnection", () => {
           testConfig.baseHttp,
           testConfig.connectionOptions,
         );
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const recipientAddress = await randomAddress();
@@ -2463,7 +2459,7 @@ describe("EthereumConnection", () => {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const faucetAddress = ethereumCodec.identityToAddress(faucet);
@@ -2690,7 +2686,7 @@ describe("EthereumConnection", () => {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const recipientAddress = await randomAddress();
@@ -2772,7 +2768,7 @@ describe("EthereumConnection", () => {
           ...testConfig.connectionOptions,
           erc20Tokens: testConfig.erc20Tokens,
         });
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const recipientAddress = await randomAddress();

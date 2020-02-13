@@ -19,12 +19,14 @@ import {
   ConfirmedTransaction,
   FailedTransaction,
   Fee,
+  isAmount,
   isAtomicSwapHashQuery,
   isAtomicSwapIdQuery,
   isAtomicSwapRecipientQuery,
   isAtomicSwapSenderQuery,
   isConfirmedTransaction,
   isFailedTransaction,
+  isNonEmptyArray,
   isPubkeyQuery,
   Nonce,
   OpenSwap,
@@ -33,6 +35,7 @@ import {
   PubkeyBundle,
   PubkeyBytes,
   PubkeyQuery,
+  SignedTransaction,
   SwapAbortTransaction,
   SwapClaimTransaction,
   Token,
@@ -46,49 +49,67 @@ import {
 import { Encoding, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient, v0_31 } from "@iov/tendermint-rpc";
+import BN from "bn.js";
 import equal from "fast-deep-equal";
 import { Stream, Subscription } from "xstream";
 
 import { bnsCodec } from "./bnscodec";
 import { swapToAddress } from "./conditions";
-import { ChainData, Context } from "./context";
+import { Context } from "./context";
 import { decodePubkey, decodeUserData } from "./decode";
 import {
+  decodeAccount,
   decodeAmount,
   decodeCashConfiguration,
+  decodeDomain,
   decodeElectionRule,
   decodeElectorate,
   decodeProposal,
   decodeToken,
+  decodeTxFeeConfiguration,
   decodeUsernameNft,
   decodeVote,
 } from "./decodeobjects";
 import * as codecImpl from "./generated/codecimpl";
 import { bnsSwapQueryTag } from "./tags";
 import {
+  AccountNft,
+  BnsAccountsQuery,
+  BnsDomainsQuery,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
   Decoder,
+  Domain,
   ElectionRule,
   Electorate,
+  isBnsAccountByNameQuery,
+  isBnsAccountsByDomainQuery,
+  isBnsAccountsByOwnerQuery,
+  isBnsDomainByNameQuery,
+  isBnsDomainsByAdminQuery,
   isBnsTx,
   isBnsUsernamesByOwnerQuery,
   isBnsUsernamesByUsernameQuery,
   Keyed,
   Proposal,
   Result,
+  TxFeeConfiguration,
   Validator,
   Vote,
 } from "./types";
 import {
+  addAmounts,
   addressPrefix,
   buildQueryString,
+  createDummyFee,
+  createDummySignature,
   decodeBnsAddress,
   identityToAddress,
   IovBech32Prefix,
   isConfirmedWithSwapClaimOrAbortTransaction,
   isConfirmedWithSwapOfferTransaction,
+  maxAmount,
 } from "./util";
 
 const { toAscii, toHex, toUtf8 } = Encoding;
@@ -140,6 +161,35 @@ function mapKindToBnsPath(transaction: BnsTx): string | undefined {
       return "username/change_token_targets";
     case "bns/transfer_username":
       return "username/transfer_token";
+    // Accounts
+    case "bns/update_account_configuration":
+      return "account/update_configuration";
+    case "bns/register_domain":
+      return "account/register_domain";
+    case "bns/transfer_domain":
+      return "account/transfer_domain";
+    case "bns/renew_domain":
+      return "account/renew_domain";
+    case "bns/delete_domain":
+      return "account/delete_domain";
+    case "bns/register_account":
+      return "account/register_account";
+    case "bns/transfer_account":
+      return "account/transfer_account";
+    case "bns/replace_account_targets":
+      return "account/replace_account_targets";
+    case "bns/delete_account":
+      return "account/delete_account";
+    case "bns/delete_all_accounts":
+      return "account/delete_all_accounts";
+    case "bns/renew_account":
+      return "account/renew_account";
+    case "bns/add_account_certificate":
+      return "account/add_account_certificate";
+    case "bns/replace_account_msg_fees":
+      return "account/replace_account_msg_fees";
+    case "bns/delete_account_certificate":
+      return "account/delete_account_certificate";
     // Escrows
     case "bns/create_escrow":
       return "escrow/create";
@@ -212,25 +262,20 @@ function createParser<T extends {}>(decoder: Decoder<T>, keyPrefix: string): (re
  */
 export class BnsConnection implements AtomicSwapConnection {
   public static async establish(url: string): Promise<BnsConnection> {
-    const tm = await TendermintClient.connect(url);
-    const chainData = await this.initialize(tm);
-    return new BnsConnection(tm, bnsCodec, chainData);
+    const tendermint = await TendermintClient.connect(url);
+    const chainId = (await tendermint.status()).nodeInfo.network as ChainId;
+    return new BnsConnection(tendermint, bnsCodec, chainId);
   }
 
-  private static async initialize(tmClient: TendermintClient): Promise<ChainData> {
-    const status = await tmClient.status();
-    return { chainId: status.nodeInfo.network as ChainId };
-  }
-
+  public readonly chainId: ChainId;
+  public readonly codec: TxReadCodec;
   private readonly tmClient: TendermintClient;
-  private readonly codec: TxReadCodec;
-  private readonly chainData: ChainData;
   private readonly context: Context;
   // tslint:disable-next-line: readonly-keyword
   private tokensCache: readonly Token[] | undefined;
 
   private get prefix(): IovBech32Prefix {
-    return addressPrefix(this.chainId());
+    return addressPrefix(this.chainId);
   }
 
   /**
@@ -238,24 +283,15 @@ export class BnsConnection implements AtomicSwapConnection {
    *
    * Use BnsConnection.establish to get a BnsConnection.
    */
-  private constructor(tmClient: TendermintClient, codec: TxReadCodec, chainData: ChainData) {
+  private constructor(tmClient: TendermintClient, codec: TxReadCodec, chainId: ChainId) {
     this.tmClient = tmClient;
     this.codec = codec;
-    this.chainData = chainData;
-    this.context = new Context(chainData);
+    this.chainId = chainId;
+    this.context = new Context(chainId);
   }
 
   public disconnect(): void {
     this.tmClient.disconnect();
-  }
-
-  /**
-   * The chain ID this connection is connected to
-   *
-   * We store this info from the initialization, no need to query every time
-   */
-  public chainId(): ChainId {
-    return this.chainData.chainId;
   }
 
   public async height(): Promise<number> {
@@ -366,7 +402,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
     const address = isPubkeyQuery(query)
-      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      ? identityToAddress({ chainId: this.chainId, pubkey: query.pubkey })
       : query.address;
 
     const response = await this.query("/wallets", decodeBnsAddress(address).data);
@@ -399,7 +435,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public async getNonce(query: AddressQuery | PubkeyQuery): Promise<Nonce> {
     const address = isPubkeyQuery(query)
-      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      ? identityToAddress({ chainId: this.chainId, pubkey: query.pubkey })
       : query.address;
     const response = await this.query("/auth", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.sigs.UserData, "sigs:");
@@ -538,7 +574,6 @@ export class BnsConnection implements AtomicSwapConnection {
     // this will paginate over all transactions, even if multiple pages.
     // FIXME: consider making a streaming interface here, but that will break clients
     const res = await this.tmClient.txSearchAll({ query: buildQueryString(query) });
-    const chainId = await this.chainId();
     const currentHeight = await this.height();
 
     return res.txs.map((txResponse):
@@ -554,7 +589,7 @@ export class BnsConnection implements AtomicSwapConnection {
           transactionId: transactionId,
           log: result.log,
           result: result.data,
-          ...this.codec.parseBytes((tx as Uint8Array) as PostableBytes, chainId),
+          ...this.codec.parseBytes((tx as Uint8Array) as PostableBytes, this.chainId),
         };
       } else {
         const failed: FailedTransaction = {
@@ -574,7 +609,6 @@ export class BnsConnection implements AtomicSwapConnection {
   public listenTx(
     query: TransactionQuery,
   ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
-    const chainId = this.chainId();
     const rawQuery = buildQueryString(query);
     return this.tmClient.subscribeTx(rawQuery).map((transaction):
       | ConfirmedTransaction<UnsignedTransaction>
@@ -588,7 +622,7 @@ export class BnsConnection implements AtomicSwapConnection {
           transactionId: transactionId,
           log: transaction.result.log,
           result: transaction.result.data,
-          ...this.codec.parseBytes((transaction.tx as Uint8Array) as PostableBytes, chainId),
+          ...this.codec.parseBytes((transaction.tx as Uint8Array) as PostableBytes, this.chainId),
         };
       } else {
         const failed: FailedTransaction = {
@@ -684,7 +718,7 @@ export class BnsConnection implements AtomicSwapConnection {
    */
   public watchAccount(query: AccountQuery): Stream<Account | undefined> {
     const address = isPubkeyQuery(query)
-      ? identityToAddress({ chainId: this.chainId(), pubkey: query.pubkey })
+      ? identityToAddress({ chainId: this.chainId, pubkey: query.pubkey })
       : query.address;
 
     return concat(
@@ -754,16 +788,104 @@ export class BnsConnection implements AtomicSwapConnection {
     }
 
     const parser = createParser(codecImpl.username.Token, "tokens:");
-    const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId()));
+    const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId));
     return nfts;
   }
 
-  public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
+  public async getAccounts(query: BnsAccountsQuery): Promise<readonly AccountNft[]> {
+    let keyPrefix: string;
+    let results: readonly Result[];
+    if (isBnsAccountByNameQuery(query)) {
+      keyPrefix = "account:";
+      results = (await this.query("/accounts", toUtf8(query.name))).results;
+    } else if (isBnsAccountsByOwnerQuery(query)) {
+      keyPrefix = "";
+      const rawAddress = decodeBnsAddress(query.owner).data;
+      results = (await this.query("/accounts/owner", rawAddress)).results;
+    } else if (isBnsAccountsByDomainQuery(query)) {
+      keyPrefix = "";
+      results = (await this.query("/accounts/domain", toUtf8(query.domain))).results;
+    } else {
+      throw new Error("Unsupported query");
+    }
+
+    const parser = createParser(codecImpl.account.Account, keyPrefix);
+    const nfts = results.map(parser).map(nft => decodeAccount(this.prefix, nft));
+    return nfts;
+  }
+
+  public async getDomains(query: BnsDomainsQuery): Promise<readonly Domain[]> {
+    let keyPrefix: string;
+    let results: readonly Result[];
+    if (isBnsDomainByNameQuery(query)) {
+      keyPrefix = "domain:";
+      results = (await this.query("/domains", toUtf8(query.name))).results;
+    } else if (isBnsDomainsByAdminQuery(query)) {
+      keyPrefix = "";
+      const rawAddress = decodeBnsAddress(query.admin).data;
+      results = (await this.query("/domains/admin", rawAddress)).results;
+    } else {
+      throw new Error("Unsupported query");
+    }
+
+    const parser = createParser(codecImpl.account.Domain, keyPrefix);
+    const nfts = results.map(parser).map(nft => decodeDomain(this.prefix, nft));
+    return nfts;
+  }
+
+  public estimateTxSize(transaction: UnsignedTransaction, numberOfSignatures: number, nonce?: Nonce): number {
+    const signatures = [...new Array(numberOfSignatures)].map(createDummySignature.bind(null, nonce));
+    if (!isNonEmptyArray(signatures)) {
+      throw new Error("Cannot get transaction size with fewer than one signature");
+    }
+    const transactionWithFee = transaction.fee
+      ? transaction
+      : {
+          ...transaction,
+          fee: createDummyFee(),
+        };
+    const withDummySignatures: SignedTransaction = {
+      transaction: transactionWithFee,
+      signatures: signatures,
+    };
+    const bytesToPost = bnsCodec.bytesToPost(withDummySignatures);
+    return bytesToPost.length;
+  }
+
+  public async getTxFeeConfiguration(): Promise<TxFeeConfiguration | undefined> {
+    const { results } = await this.query("/", Encoding.toAscii("_c:txfee"));
+    if (results.length > 1) {
+      throw new Error(
+        `Unexpected number of results for tx fee configuration. Expected: 0/1 Got: ${results.length}`,
+      );
+    }
+    if (results.length === 0) {
+      return undefined;
+    }
+    const config = decodeTxFeeConfiguration(codecImpl.txfee.Configuration.decode(results[0].value));
+
+    return config;
+  }
+
+  public async getFeeQuote(
+    transaction: UnsignedTransaction,
+    numberOfSignatures = 1,
+    nonce?: Nonce,
+  ): Promise<Fee> {
     if (!isBnsTx(transaction)) {
       throw new Error("Received transaction of unsupported kind.");
     }
-    // use product fee if it exists, otherwise fallback to default anti-spam fee
-    const fee = (await this.getProductFee(transaction)) || (await this.getDefaultFee());
+    const explicitProductFee = await this.getProductFee(transaction);
+    const minProductFee = await this.getDefaultFee();
+    const validProductFees = [explicitProductFee, minProductFee].filter(isAmount);
+    // Product fee is max of explicit product fee and min product fee if either/both exist
+    const productFee = isNonEmptyArray(validProductFees)
+      ? maxAmount(validProductFees[0], ...validProductFees.slice(1))
+      : undefined;
+    const sizeFee = await this.getSizeFee(transaction, numberOfSignatures, nonce);
+    const feesToAdd = [productFee, sizeFee].filter(isAmount);
+    // Total tx fee is sum of product fee and size fee if either/both exist
+    const fee = isNonEmptyArray(feesToAdd) ? addAmounts(feesToAdd[0], ...feesToAdd.slice(1)) : undefined;
     return { tokens: fee };
   }
 
@@ -783,7 +905,7 @@ export class BnsConnection implements AtomicSwapConnection {
   // updateEscrowBalance will query for the proper balance and then update the accounts of escrow before
   // returning it. Designed to be used in a map chain.
   protected async updateSwapAmounts<T extends AtomicSwap>(swap: T): Promise<T> {
-    const addr = swapToAddress(this.chainId(), swap.data);
+    const addr = swapToAddress(this.chainId, swap.data);
     const account = await this.getAccount({ address: addr });
     const balance = account ? account.balance : [];
     return { ...swap, data: { ...swap.data, amounts: balance } };
@@ -799,6 +921,28 @@ export class BnsConnection implements AtomicSwapConnection {
     }
     const { minimalFee } = decodeCashConfiguration(codecImpl.cash.Configuration.decode(results[0].value));
     return minimalFee || undefined;
+  }
+
+  protected async getSizeFee(
+    tx: UnsignedTransaction,
+    numberOfSignatures: number,
+    nonce?: Nonce,
+  ): Promise<Amount | undefined> {
+    const config = await this.getTxFeeConfiguration();
+    if (config === undefined) {
+      return undefined;
+    }
+    const { baseFee, freeBytes } = config;
+    if (baseFee === null || freeBytes === null) {
+      return undefined;
+    }
+    const txSize = this.estimateTxSize(tx, numberOfSignatures, nonce);
+    const multiplier = Math.max(0, txSize - freeBytes) ** 2;
+    const quantity = new BN(multiplier).mul(new BN(baseFee.quantity));
+    return {
+      ...baseFee,
+      quantity: quantity.toString(),
+    };
   }
 
   /**

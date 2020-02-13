@@ -1,17 +1,18 @@
 {
+  "//source": "https://hubble.figment.network/cosmos/chains/cosmoshub-3/blocks/415777/transactions/2BD600EA6090FC75FD844CA73542CC90A828770F4C01C5B483C3C1C43CCB65F4?format=json",
   "tx": {
-    "type": "auth/StdTx",
+    "type": "cosmos-sdk/StdTx",
     "value": {
       "msg": [
         {
           "type": "cosmos-sdk/MsgSend",
           "value": {
-            "from_address": "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r",
-            "to_address": "cosmos1z7g5w84ynmjyg0kqpahdjqpj7yq34v3suckp0e",
+            "from_address": "cosmos1txqfn5jmcts0x0q7krdxj8tgf98tj0965vqlmq",
+            "to_address": "cosmos1nynns8ex9fq6sjjfj8k79ymkdz4sqth06xexae",
             "amount": [
               {
                 "denom": "uatom",
-                "amount": "11657995"
+                "amount": "35997500"
               }
             ]
           }
@@ -21,23 +22,23 @@
         "amount": [
           {
             "denom": "uatom",
-            "amount": "5000"
+            "amount": "2500"
           }
         ],
-        "gas": "200000"
+        "gas": "100000"
       },
       "signatures": [
         {
           "pub_key": {
             "type": "tendermint/PubKeySecp256k1",
-            "value": "AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP"
+            "value": "A5qFcJBJvEK/fOmEAY0DHNWwSRZ9TEfNZyH8VoVvDtAq"
           },
-          "signature": "1nUcIH0CLT0/nQ0mBTDrT6kMG20NY/PsH7P2gc4bpYNGLEYjBmdWevXUJouSE/9A/60QG9cYeqyTe5kFDeIPxQ=="
+          "signature": "NK1Oy4EUGAsoC03c1wi9GG03JC/39LEdautC5Jk643oIbEPqeXHMwaqbdvO/Jws0X/NAXaN8SAy2KNY5Qml+5Q=="
         }
       ],
-      "memo": "1122672754"
+      "memo": ""
     }
   },
-  "tx_data": "1gHwYl3uCkOoo2GaChS536x615s3L5HNHZqLKYPpCK3tiRIUF5FHHqSe5EQ+wA9u2QAy8QEasjAaEQoFdWF0b20SCDExNjU3OTk1EhMKDQoFdWF0b20SBDUwMDAQwJoMGmoKJuta6YchAtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJPEkDWdRwgfQItPT+dDSYFMOtPqQwbbQ1j8+wfs/aBzhulg0YsRiMGZ1Z69dQmi5IT/0D/rRAb1xh6rJN7mQUN4g/FIgoxMTIyNjcyNzU0",
-  "id": "2268EB5AB730B45F8426078827BB5BB49819CE2B0D74B2C1D191070BADB379F1"
+  "tx_data": "ygEoKBapCkOoo2GaChRZgJnSW8Lg8zwesNppHWhJTrk8uhIUmSc4HyYqQahKSZHt4pN2aKsALu8aEQoFdWF0b20SCDM1OTk3NTAwEhMKDQoFdWF0b20SBDI1MDAQoI0GGmoKJuta6YchA5qFcJBJvEK/fOmEAY0DHNWwSRZ9TEfNZyH8VoVvDtAqEkA0rU7LgRQYCygLTdzXCL0YbTckL/f0sR1q60LkmTrjeghsQ+p5cczBqpt2878nCzRf80Bdo3xIDLYo1jlCaX7l",
+  "id": "2BD600EA6090FC75FD844CA73542CC90A828770F4C01C5B483C3C1C43CCB65F4"
 }

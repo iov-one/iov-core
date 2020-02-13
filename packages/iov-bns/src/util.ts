@@ -1,8 +1,11 @@
 import {
   Address,
   Algorithm,
+  Amount,
   ChainId,
   ConfirmedTransaction,
+  Fee,
+  FullSignature,
   Hash,
   Identity,
   isSwapAbortTransaction,
@@ -10,17 +13,22 @@ import {
   isSwapOfferTransaction,
   isUnsignedTransaction,
   Nonce,
+  NonEmptyArray,
   PubkeyBundle,
+  PubkeyBytes,
   SignableBytes,
+  SignatureBytes,
   SwapAbortTransaction,
   SwapClaimTransaction,
   SwapOfferTransaction,
+  TokenTicker,
   TransactionQuery,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
 import { Bech32, Encoding } from "@iov/encoding";
 import { QueryString } from "@iov/tendermint-rpc";
+import BN from "bn.js";
 import Long from "long";
 import { As } from "type-tagger";
 
@@ -189,4 +197,56 @@ export function buildQueryString(query: TransactionQuery): QueryString {
     ...maxHeightComponents,
   ];
   return components.join(" AND ") as QueryString;
+}
+
+export function createDummySignature(nonce: Nonce = Number.MAX_SAFE_INTEGER as Nonce): FullSignature {
+  return {
+    // nonce is stored as a varint, so we use this default to be confident we pay a large enough fee
+    // at the risk of paying slightly too much
+    nonce: nonce,
+    pubkey: {
+      algo: Algorithm.Ed25519,
+      // ed25519 pubkey has 32 bytes https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/
+      data: new Uint8Array(32) as PubkeyBytes,
+    },
+    // ed25519 signature has 64 bytes https://blog.mozilla.org/warner/2011/11/29/ed25519-keys/
+    signature: new Uint8Array(64) as SignatureBytes,
+  };
+}
+
+export function createDummyFee(): Fee {
+  // See limits specified here: https://github.com/iov-one/weave/blob/2c0f082/coin/codec.proto
+  // whole and fractional are stored as varints, so we use these values to be confident we pay a large enough fee
+  // at the risk of paying slightly too much
+  const maxWhole = 10 ** 15 - 1;
+  const maxFractional = 10 ** 9 - 1;
+  const maxTokenTickerLength = 4;
+  // See https://github.com/iov-one/weave/blob/4cb0080/conditions.go#L22
+  const addressLength = 20;
+  return {
+    tokens: {
+      fractionalDigits: constants.weaveFractionalDigits,
+      quantity: `${maxWhole}${maxFractional}`,
+      tokenTicker: "X".repeat(maxTokenTickerLength) as TokenTicker,
+    },
+    payer: encodeBnsAddress("tiov", new Uint8Array(addressLength)),
+  };
+}
+
+export function maxAmount(...[first, ...rest]: NonEmptyArray<Amount>): Amount {
+  return rest.reduce((max, next) => (new BN(max.quantity).gte(new BN(next.quantity)) ? max : next), first);
+}
+
+export function addAmounts(...[first, ...rest]: NonEmptyArray<Amount>): Amount {
+  if (rest.some(({ tokenTicker }) => tokenTicker !== first.tokenTicker)) {
+    throw new Error("Cannot add amounts with different token tickers");
+  }
+
+  return rest.reduce(
+    (sum, next) => ({
+      ...sum,
+      quantity: new BN(sum.quantity).add(new BN(next.quantity)).toString(),
+    }),
+    first,
+  );
 }

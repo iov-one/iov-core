@@ -14,6 +14,7 @@ import {
 import { Ed25519, Sha512 } from "@iov/crypto";
 import { HdPaths } from "@iov/keycontrol";
 import { firstEvent, lastValue } from "@iov/stream";
+import { assert, sleep } from "@iov/utils";
 import Long from "long";
 
 import { bnsCodec } from "./bnscodec";
@@ -26,7 +27,6 @@ import {
   randomBnsAddress,
   sendCash,
   sendTokensFromFaucet,
-  sleep,
   tendermintSearchIndexUpdated,
   userProfileWithFaucet,
 } from "./testutils.spec";
@@ -49,7 +49,7 @@ describe("BnsConnection (txs)", () => {
       }
 
       {
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const faucetAddress = bnsCodec.identityToAddress(faucet);
 
@@ -77,13 +77,9 @@ describe("BnsConnection (txs)", () => {
         const result = await connection.getTx(transactionId);
         expect(result.height).toBeGreaterThanOrEqual(2);
         expect(result.transactionId).toEqual(transactionId);
-        if (isFailedTransaction(result)) {
-          throw new Error("Expected ConfirmedTransaction, received FailedTransaction");
-        }
+        assert(isConfirmedTransaction(result), "Expected ConfirmedTransaction");
         const transaction = result.transaction;
-        if (!isSendTransaction(transaction)) {
-          throw new Error("Unexpected transaction type");
-        }
+        assert(isSendTransaction(transaction), "Expected SendTransaction");
         expect(transaction.recipient).toEqual(sendTx.recipient);
         expect(transaction.amount).toEqual(defaultAmount);
       }
@@ -94,7 +90,7 @@ describe("BnsConnection (txs)", () => {
     it("can get a transaction by ID and verify its signature", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
 
@@ -120,16 +116,12 @@ describe("BnsConnection (txs)", () => {
       await tendermintSearchIndexUpdated();
 
       const result = await connection.getTx(transactionId);
-      if (isFailedTransaction(result)) {
-        throw new Error("Expected ConfirmedTransaction, received FailedTransaction");
-      }
+      assert(isConfirmedTransaction(result), "Expected ConfirmedTransaction");
       const {
         transaction,
         signatures: [signature],
       } = result;
-      if (!isSendTransaction(transaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(transaction), "Expected SendTransaction");
       const signingJob = bnsCodec.bytesToSign(transaction, signature.nonce);
       const txBytes = new Sha512(signingJob.bytes).digest();
 
@@ -144,7 +136,7 @@ describe("BnsConnection (txs)", () => {
     it("can search for transactions by tags", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -178,9 +170,7 @@ describe("BnsConnection (txs)", () => {
       );
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResultTransaction = results[results.length - 1].transaction;
-      if (!isSendTransaction(mostRecentResultTransaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
       expect(mostRecentResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
@@ -189,7 +179,7 @@ describe("BnsConnection (txs)", () => {
     it("can search for transactions by height", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -224,9 +214,7 @@ describe("BnsConnection (txs)", () => {
       );
       expect(results.length).toBeGreaterThanOrEqual(1);
       const mostRecentResultTransaction = results[results.length - 1].transaction;
-      if (!isSendTransaction(mostRecentResultTransaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
       expect(mostRecentResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
@@ -235,7 +223,7 @@ describe("BnsConnection (txs)", () => {
     it("can search for transactions by ID", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -268,9 +256,7 @@ describe("BnsConnection (txs)", () => {
       expect(searchResults.length).toEqual(1);
       expect(searchResults[0].transactionId).toEqual(transactionIdToSearch);
       const searchResultTransaction = searchResults[0].transaction;
-      if (!isSendTransaction(searchResultTransaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(searchResultTransaction), "Expected SendTransaction");
       expect(searchResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
@@ -281,7 +267,7 @@ describe("BnsConnection (txs)", () => {
     it("can search for transactions by minHeight/maxHeight", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
       const initialHeight = await connection.height();
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
@@ -316,9 +302,7 @@ describe("BnsConnection (txs)", () => {
         );
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
-        if (!isSendTransaction(mostRecentResultTransaction)) {
-          throw new Error("Expected send transaction");
-        }
+        assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
         expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
@@ -332,9 +316,7 @@ describe("BnsConnection (txs)", () => {
         ).filter(isConfirmedAndSignedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
-        if (!isSendTransaction(mostRecentResultTransaction)) {
-          throw new Error("Expected send transaction");
-        }
+        assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
         expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
@@ -348,9 +330,7 @@ describe("BnsConnection (txs)", () => {
         ).filter(isConfirmedAndSignedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
-        if (!isSendTransaction(mostRecentResultTransaction)) {
-          throw new Error("Expected send transaction");
-        }
+        assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
         expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
@@ -364,9 +344,7 @@ describe("BnsConnection (txs)", () => {
         ).filter(isConfirmedAndSignedTransaction);
         expect(results.length).toBeGreaterThanOrEqual(1);
         const mostRecentResultTransaction = results[results.length - 1].transaction;
-        if (!isSendTransaction(mostRecentResultTransaction)) {
-          throw new Error("Expected send transaction");
-        }
+        assert(isSendTransaction(mostRecentResultTransaction), "Expected SendTransaction");
         expect(mostRecentResultTransaction.memo).toEqual(memo);
       }
 
@@ -376,7 +354,7 @@ describe("BnsConnection (txs)", () => {
     it("reports DeliverTx errors for search by ID", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
       const initialHeight = await connection.height();
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
@@ -411,9 +389,7 @@ describe("BnsConnection (txs)", () => {
 
       expect(results.length).toEqual(1);
       const result = results[0];
-      if (!isFailedTransaction(result)) {
-        throw new Error("Expected failed transaction");
-      }
+      assert(isFailedTransaction(result), "Expected FailedTransaction");
       expect(result.height).toBeGreaterThan(initialHeight);
       // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
       expect(result.code).toEqual(13);
@@ -429,7 +405,7 @@ describe("BnsConnection (txs)", () => {
 
       (async () => {
         const connection = await BnsConnection.establish(bnsdTendermintUrl);
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -481,7 +457,7 @@ describe("BnsConnection (txs)", () => {
     it("finds an existing transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -510,14 +486,10 @@ describe("BnsConnection (txs)", () => {
       // finds transaction using id
       const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
-      if (!isConfirmedTransaction(result)) {
-        throw new Error("Expected confirmed transaction");
-      }
+      assert(isConfirmedTransaction(result), "Expected ConfirmedTransaction");
       const searchResultTransaction = result.transaction;
       expect(result.transactionId).toEqual(transactionIdToSearch);
-      if (!isSendTransaction(searchResultTransaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(searchResultTransaction), "Expected SendTransaction");
       expect(searchResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
@@ -526,7 +498,7 @@ describe("BnsConnection (txs)", () => {
     it("can wait for a future transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -551,14 +523,10 @@ describe("BnsConnection (txs)", () => {
 
       const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
-      if (!isConfirmedTransaction(result)) {
-        throw new Error("Expected confirmed transaction");
-      }
+      assert(isConfirmedTransaction(result), "Expected ConfirmedTransaction");
       const searchResultTransaction = result.transaction;
       expect(result.transactionId).toEqual(transactionIdToSearch);
-      if (!isSendTransaction(searchResultTransaction)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(searchResultTransaction), "Expected SendTransaction");
       expect(searchResultTransaction.memo).toEqual(memo);
 
       connection.disconnect();
@@ -567,7 +535,7 @@ describe("BnsConnection (txs)", () => {
     it("reports DeliverTx error for an existing transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
       const initialHeight = await connection.height();
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
@@ -600,9 +568,7 @@ describe("BnsConnection (txs)", () => {
 
       const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
-      if (!isFailedTransaction(result)) {
-        throw new Error("Expected failed transaction");
-      }
+      assert(isFailedTransaction(result), "Expected FailedTransaction");
       expect(result.height).toBeGreaterThan(initialHeight);
       // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
       expect(result.code).toEqual(13);
@@ -614,7 +580,7 @@ describe("BnsConnection (txs)", () => {
     it("reports DeliverTx error for a future transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, walletId } = await userProfileWithFaucet(chainId);
       // this will never have tokens, but can try to sign
@@ -644,9 +610,7 @@ describe("BnsConnection (txs)", () => {
 
       const result = await firstEvent(connection.liveTx({ id: transactionIdToSearch }));
 
-      if (!isFailedTransaction(result)) {
-        throw new Error("Expected failed transaction");
-      }
+      assert(isFailedTransaction(result), "Expected FailedTransaction");
       // https://github.com/iov-one/weave/blob/v0.15.0/errors/errors.go#L52
       expect(result.code).toEqual(13);
       expect(result.message).toMatch(/invalid amount/i);
@@ -659,7 +623,7 @@ describe("BnsConnection (txs)", () => {
   it("can watch accounts", async () => {
     pendingWithoutBnsd();
     const connection = await BnsConnection.establish(bnsdTendermintUrl);
-    const { profile, faucet } = await userProfileWithFaucet(connection.chainId());
+    const { profile, faucet } = await userProfileWithFaucet(connection.chainId);
     const recipientAddr = await randomBnsAddress();
 
     // watch account by pubkey and by address

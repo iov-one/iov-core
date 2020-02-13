@@ -9,11 +9,14 @@ import {
   isFullSignature,
   isIdentity,
   isPubkeyBundle,
+  isSignedTransaction,
   isTimestampTimeout,
   Nonce,
   PubkeyBundle,
   PubkeyBytes,
   SignatureBytes,
+  SignedTransaction,
+  UnsignedTransaction,
 } from "./transactions";
 
 const { fromHex } = Encoding;
@@ -189,6 +192,67 @@ describe("transactions", () => {
         },
       };
       expect(isFullSignature(missingSignature)).toEqual(false);
+    });
+  });
+
+  describe("isSignedTransaction", () => {
+    const goodTransaction: UnsignedTransaction = {
+      kind: "foo/bar",
+      chainId: "local-blubb-devnet" as ChainId,
+    };
+
+    const goodSignature: FullSignature = {
+      nonce: 66 as Nonce,
+      pubkey: {
+        algo: Algorithm.Ed25519,
+        data: fromHex("aabbccdd") as PubkeyBytes,
+      },
+      signature: fromHex("eeff0011") as SignatureBytes,
+    };
+
+    it("returns true for valid SignedTransaction", () => {
+      const good: SignedTransaction = {
+        transaction: goodTransaction,
+        signatures: [goodSignature],
+      };
+      expect(isSignedTransaction(good)).toEqual(true);
+    });
+
+    it("ignores additional fields", () => {
+      const withOtherData: SignedTransaction & { readonly other: number } = {
+        transaction: goodTransaction,
+        signatures: [goodSignature],
+        other: 123,
+      };
+      expect(isSignedTransaction(withOtherData)).toEqual(true);
+    });
+
+    it("returns false for empty signatures list", () => {
+      const emptySignatures: Omit<SignedTransaction, "signatures"> & {
+        readonly signatures: readonly FullSignature[];
+      } = {
+        transaction: goodTransaction,
+        signatures: [],
+      };
+      expect(isSignedTransaction(emptySignatures)).toEqual(false);
+    });
+
+    it("returns false for a bunch of other stuff", () => {
+      expect(isSignedTransaction("abc")).toEqual(false);
+      expect(isSignedTransaction({})).toEqual(false);
+      expect(isSignedTransaction(null)).toEqual(false);
+      expect(isSignedTransaction(undefined)).toEqual(false);
+      expect(isSignedTransaction(fromHex("aabb"))).toEqual(false);
+
+      const missingSignatures: Omit<SignedTransaction, "signatures"> = {
+        transaction: goodTransaction,
+      };
+      expect(isSignedTransaction(missingSignatures)).toEqual(false);
+
+      const missingTransaction: Omit<SignedTransaction, "transaction"> = {
+        signatures: [goodSignature],
+      };
+      expect(isSignedTransaction(missingTransaction)).toEqual(false);
     });
   });
 

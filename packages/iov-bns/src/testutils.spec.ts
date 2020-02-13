@@ -22,6 +22,7 @@ import {
 import { Random } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
+import { sleep } from "@iov/utils";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
@@ -41,10 +42,6 @@ export function pendingWithoutBnsd(): void {
   }
 }
 
-export async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export async function tendermintSearchIndexUpdated(): Promise<void> {
   // Tendermint needs some time before a committed transaction is found in search
   return sleep(50);
@@ -52,6 +49,13 @@ export async function tendermintSearchIndexUpdated(): Promise<void> {
 
 export async function randomBnsAddress(): Promise<Address> {
   return encodeBnsAddress("tiov", Random.getBytes(20));
+}
+
+export function randomDomain(): string {
+  // Valid domain has length 3 to 16
+  // Make an integer < 1000000000 (i.e. up to 9 digits)
+  const randomNumber = Math.floor(Math.random() * 1_000_000_000).toString();
+  return `domain${randomNumber}`;
 }
 
 export function getRandomInteger(min: number, max: number): number {
@@ -116,7 +120,7 @@ export async function sendTokensFromFaucet(
   recipient: Address,
   amount: Amount = defaultAmount,
 ): Promise<void> {
-  const chainId = connection.chainId();
+  const chainId = connection.chainId;
   const { profile, faucet } = await userProfileWithFaucet(chainId);
   const faucetAddress = bnsCodec.identityToAddress(faucet);
 

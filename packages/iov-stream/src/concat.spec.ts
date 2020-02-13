@@ -118,7 +118,7 @@ describe("concat", () => {
     });
   });
 
-  it("buffers asynchonous events of second stream until first stream completes", done => {
+  it("buffers asynchronous events of second stream until first stream completes", done => {
     const sourceStream = Stream.periodic(25);
     const stream1 = sourceStream.take(3);
     const stream2 = sourceStream.take(3);

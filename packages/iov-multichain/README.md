@@ -85,7 +85,7 @@ import { HdPaths } from "@iov/keycontrol";
 import { Encoding } from "@iov/encoding";
 const { fromHex, toHex } = Encoding;
 
-const chainId = "iov-lovenet" as ChainId;
+const chainId = "iov-dancenet" as ChainId;
 // this creates two different public key identities, generated from the
 // first mnemonic using two different SLIP-0010 paths
 const id1a = await profile.createIdentity(wallet1.id, chainId, HdPaths.iov(0));
@@ -141,13 +141,13 @@ can check out [bcp-demo](https://github.com/iov-one/bcp-demo), and build the
 against your one-node "dev net"...
 
 But, if you just want to see how the client works, let's run against IOV's
-testnet and use the faucet to get some tokens. As of July 29, 2019, the current
-testnet is located at https://rpc.lovenet.iov.one/.
+testnet and use the faucet to get some tokens. As of December 17, 2019, the
+current testnet is located at https://rpc-private-a-x-dancenet.iov.one/.
 
 To connect, you need to know the address of the rpc server (above). It is also
 helpful to know the `chainId` of the chain. You can find that quite easily by
-looking at the [genesis file](https://rpc.lovenet.iov.one/genesis) under
-`.result.genesis.chain_id`. In our case this is `iov-lovenet`.
+looking at the [genesis file](https://rpc-private-a-x-dancenet.iov.one/genesis)
+under `.result.genesis.chain_id`. In our case this is `iov-dancenet`.
 
 ### Executing the commands
 
@@ -170,7 +170,9 @@ Now, connect to the network:
 import { createBnsConnector, MultiChainSigner } from "@iov/multichain";
 
 const signer = new MultiChainSigner(profile);
-await signer.addChain(createBnsConnector("wss://rpc.lovenet.iov.one/"));
+await signer.addChain(
+  createBnsConnector("wss://rpc-private-a-x-dancenet.iov.one"),
+);
 
 console.log(signer.chainIds()[0]); // is this what you got yourself?
 ```
@@ -190,8 +192,8 @@ Query the testnet for some existing genesis accounts:
 // this is pulled from the genesis account
 import { Address } from "@iov/bcp";
 
-const bert = "tiov1u29wnfhtjn7g3de7kl9adwrmlyltn0hsjckecc" as Address;
-const acct = await connection.getAccount({ address: bert });
+const alice = "tiov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr" as Address;
+const acct = await connection.getAccount({ address: alice });
 console.log(acct);
 ```
 
@@ -201,7 +203,7 @@ If you are running the testnet faucet, just ask for some free money.
 import { TokenTicker } from "@iov/bcp";
 import { IovFaucet } from "@iov/faucets";
 
-const faucet = new IovFaucet("https://bns-faucet.lovenet.iov.one/");
+const faucet = new IovFaucet("https://faucet.x-dancenet.iov.one/");
 await faucet.credit(addr, "ALT" as TokenTicker);
 ```
 

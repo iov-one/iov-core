@@ -73,7 +73,7 @@ export function buildUnsignedTx(tx: UnsignedTransaction): AminoTx {
     throw new Error("Received transaction of unsupported kind");
   }
   return {
-    type: "auth/StdTx",
+    type: "cosmos-sdk/StdTx",
     value: {
       msg: [
         {

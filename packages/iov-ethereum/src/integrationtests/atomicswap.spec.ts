@@ -59,8 +59,8 @@ class Actor {
     });
     const path1 = HdPaths.ethereum(addressIndex1);
     const path2 = HdPaths.ethereum(addressIndex2);
-    const senderIdentity = await profile.createIdentity(wallet.id, connection.chainId(), path1);
-    const receiverIdentity = await profile.createIdentity(wallet.id, connection.chainId(), path2);
+    const senderIdentity = await profile.createIdentity(wallet.id, connection.chainId, path1);
+    const receiverIdentity = await profile.createIdentity(wallet.id, connection.chainId, path2);
     return new Actor({
       profile: profile,
       connection: connection,
@@ -95,7 +95,7 @@ class Actor {
   public async sendTransaction(transaction: UnsignedTransaction, identity: Identity): Promise<void> {
     const nonce = await this.connection.getNonce({ pubkey: identity.pubkey });
     const signed = await this.profile.signTransaction(identity, transaction, ethereumCodec, nonce);
-    const postable = await ethereumCodec.bytesToPost(signed);
+    const postable = ethereumCodec.bytesToPost(signed);
     const post = await this.connection.postTx(postable);
     const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {

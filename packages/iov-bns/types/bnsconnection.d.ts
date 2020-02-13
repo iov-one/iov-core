@@ -21,17 +21,23 @@ import {
   TokenTicker,
   TransactionId,
   TransactionQuery,
+  TxReadCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Stream } from "xstream";
 import {
+  AccountNft,
+  BnsAccountsQuery,
+  BnsDomainsQuery,
   BnsTx,
   BnsUsernameNft,
   BnsUsernamesQuery,
+  Domain,
   ElectionRule,
   Electorate,
   Proposal,
   Result,
+  TxFeeConfiguration,
   Validator,
   Vote,
 } from "./types";
@@ -47,10 +53,9 @@ export interface QueryResponse {
  */
 export declare class BnsConnection implements AtomicSwapConnection {
   static establish(url: string): Promise<BnsConnection>;
-  private static initialize;
+  readonly chainId: ChainId;
+  readonly codec: TxReadCodec;
   private readonly tmClient;
-  private readonly codec;
-  private readonly chainData;
   private readonly context;
   private tokensCache;
   private get prefix();
@@ -61,12 +66,6 @@ export declare class BnsConnection implements AtomicSwapConnection {
    */
   private constructor();
   disconnect(): void;
-  /**
-   * The chain ID this connection is connected to
-   *
-   * We store this info from the initialization, no need to query every time
-   */
-  chainId(): ChainId;
   height(): Promise<number>;
   postTx(tx: PostableBytes): Promise<PostTxResponse>;
   getToken(ticker: TokenTicker): Promise<Token | undefined>;
@@ -117,7 +116,11 @@ export declare class BnsConnection implements AtomicSwapConnection {
   getProposals(): Promise<readonly Proposal[]>;
   getVotes(voter: Address): Promise<readonly Vote[]>;
   getUsernames(query: BnsUsernamesQuery): Promise<readonly BnsUsernameNft[]>;
-  getFeeQuote(transaction: UnsignedTransaction): Promise<Fee>;
+  getAccounts(query: BnsAccountsQuery): Promise<readonly AccountNft[]>;
+  getDomains(query: BnsDomainsQuery): Promise<readonly Domain[]>;
+  estimateTxSize(transaction: UnsignedTransaction, numberOfSignatures: number, nonce?: Nonce): number;
+  getTxFeeConfiguration(): Promise<TxFeeConfiguration | undefined>;
+  getFeeQuote(transaction: UnsignedTransaction, numberOfSignatures?: number, nonce?: Nonce): Promise<Fee>;
   withDefaultFee<T extends UnsignedTransaction>(transaction: T, payer?: Address): Promise<T>;
   protected query(path: string, data: Uint8Array): Promise<QueryResponse>;
   protected updateSwapAmounts<T extends AtomicSwap>(swap: T): Promise<T>;
@@ -125,6 +128,11 @@ export declare class BnsConnection implements AtomicSwapConnection {
    * Queries the blockchain for the enforced anti-spam fee
    */
   protected getDefaultFee(): Promise<Amount | undefined>;
+  protected getSizeFee(
+    tx: UnsignedTransaction,
+    numberOfSignatures: number,
+    nonce?: Nonce,
+  ): Promise<Amount | undefined>;
   /**
    * Queries the blockchain for the enforced product fee for this kind of transaction.
    * Returns undefined if no product fee is defined

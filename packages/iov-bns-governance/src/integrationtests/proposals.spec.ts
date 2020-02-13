@@ -22,6 +22,7 @@ import {
 } from "@iov/bns";
 import { Encoding } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { sleep } from "@iov/utils";
 import BN from "bn.js";
 import { ReadonlyDate } from "readonly-date";
 
@@ -46,18 +47,13 @@ function pendingWithoutBnsd(): void {
   }
 }
 
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function getGovernorOptions(
   path = adminPath,
 ): Promise<GovernorOptions & { readonly profile: UserProfile; readonly address: Address }> {
   const connection = await BnsConnection.establish(bnsdUrl);
-  const chainId = await connection.chainId();
   const profile = new UserProfile();
   const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
-  const identity = await profile.createIdentity(wallet.id, chainId, path);
+  const identity = await profile.createIdentity(wallet.id, connection.chainId, path);
   return {
     address: bnsCodec.identityToAddress(identity),
     connection: connection,

@@ -25,12 +25,100 @@ export interface CashConfiguration {
   readonly minimalFee: Amount | null;
 }
 
+export interface TxFeeConfiguration {
+  readonly freeBytes: number | null;
+  readonly baseFee: Amount | null;
+}
+
 /**
  * The message part of a bnsd.Tx
  *
  * @see https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.24.0/docs/proto/index.html#bnsd.Tx
  */
 export type BnsdTxMsg = Omit<codecImpl.bnsd.ITx, "fees" | "signatures" | "multisig">;
+
+// Accounts NFT
+
+export interface ChainAddressPair {
+  readonly chainId: ChainId;
+  readonly address: Address;
+}
+
+export interface BnsAccountByNameQuery {
+  readonly name: string;
+}
+
+export interface BnsAccountsByOwnerQuery {
+  readonly owner: Address;
+}
+
+export interface BnsAccountsByDomainQuery {
+  readonly domain: string;
+}
+
+export type BnsAccountsQuery = BnsAccountByNameQuery | BnsAccountsByOwnerQuery | BnsAccountsByDomainQuery;
+
+export function isBnsAccountByNameQuery(query: BnsAccountsQuery): query is BnsAccountByNameQuery {
+  return typeof (query as BnsAccountByNameQuery).name !== "undefined";
+}
+
+export function isBnsAccountsByOwnerQuery(query: BnsAccountsQuery): query is BnsAccountsByOwnerQuery {
+  return typeof (query as BnsAccountsByOwnerQuery).owner !== "undefined";
+}
+
+export function isBnsAccountsByDomainQuery(query: BnsAccountsQuery): query is BnsAccountsByDomainQuery {
+  return typeof (query as BnsAccountsByDomainQuery).domain !== "undefined";
+}
+
+export interface BnsDomainByNameQuery {
+  readonly name: string;
+}
+
+export interface BnsDomainsByAdminQuery {
+  readonly admin: Address;
+}
+
+export type BnsDomainsQuery = BnsDomainByNameQuery | BnsDomainsByAdminQuery;
+
+export function isBnsDomainByNameQuery(query: BnsDomainsQuery): query is BnsDomainByNameQuery {
+  return typeof (query as BnsDomainByNameQuery).name !== "undefined";
+}
+
+export function isBnsDomainsByAdminQuery(query: BnsDomainsQuery): query is BnsDomainsByAdminQuery {
+  return typeof (query as BnsDomainsByAdminQuery).admin !== "undefined";
+}
+
+export interface AccountConfiguration {
+  readonly owner: Address;
+  readonly validDomain: string;
+  readonly validName: string;
+  readonly validBlockchainId: string;
+  readonly validBlockchainAddress: string;
+  readonly domainRenew: number;
+}
+
+export interface AccountMsgFee {
+  readonly msgPath: string;
+  readonly fee: Amount;
+}
+
+export interface AccountNft {
+  readonly domain: string;
+  readonly name?: string;
+  readonly owner: Address;
+  readonly validUntil: number;
+  readonly targets: readonly ChainAddressPair[];
+  readonly certificates: readonly Uint8Array[];
+}
+
+export interface Domain {
+  readonly domain: string;
+  readonly admin: Address;
+  readonly validUntil: number;
+  readonly hasSuperuser: boolean;
+  readonly msgFees: readonly AccountMsgFee[];
+  readonly accountRenew: number;
+}
 
 // Governance
 
@@ -284,12 +372,6 @@ export interface Vote {
 }
 
 // username NFT
-
-export interface ChainAddressPair {
-  readonly chainId: ChainId;
-  readonly address: Address;
-}
-
 export interface BnsUsernameNft {
   readonly id: string;
   readonly owner: Address;
@@ -369,6 +451,155 @@ export interface TransferUsernameTx extends UnsignedTransaction {
 
 export function isTransferUsernameTx(tx: UnsignedTransaction): tx is TransferUsernameTx {
   return tx.kind === "bns/transfer_username";
+}
+
+// Transactions: Accounts
+
+export interface UpdateAccountConfigurationTx extends UnsignedTransaction {
+  readonly kind: "bns/update_account_configuration";
+  readonly configuration: AccountConfiguration;
+}
+
+export function isUpdateAccountConfigurationTx(tx: UnsignedTransaction): tx is UpdateAccountConfigurationTx {
+  return tx.kind === "bns/update_account_configuration";
+}
+
+export interface RegisterDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/register_domain";
+  readonly domain: string;
+  readonly admin: Address;
+  readonly hasSuperuser: boolean;
+  readonly broker?: Address;
+  readonly msgFees: readonly AccountMsgFee[];
+  readonly accountRenew: number;
+}
+
+export function isRegisterDomainTx(tx: UnsignedTransaction): tx is RegisterDomainTx {
+  return tx.kind === "bns/register_domain";
+}
+
+export interface TransferDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/transfer_domain";
+  readonly domain: string;
+  readonly newAdmin: Address;
+}
+
+export function isTransferDomainTx(tx: UnsignedTransaction): tx is TransferDomainTx {
+  return tx.kind === "bns/transfer_domain";
+}
+
+export interface RenewDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/renew_domain";
+  readonly domain: string;
+}
+
+export function isRenewDomainTx(tx: UnsignedTransaction): tx is RenewDomainTx {
+  return tx.kind === "bns/renew_domain";
+}
+
+export interface DeleteDomainTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_domain";
+  readonly domain: string;
+}
+
+export function isDeleteDomainTx(tx: UnsignedTransaction): tx is DeleteDomainTx {
+  return tx.kind === "bns/delete_domain";
+}
+
+export interface RegisterAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/register_account";
+  readonly domain: string;
+  readonly name: string;
+  readonly owner: Address;
+  readonly targets: readonly ChainAddressPair[];
+  readonly broker?: Address;
+}
+
+export function isRegisterAccountTx(tx: UnsignedTransaction): tx is RegisterAccountTx {
+  return tx.kind === "bns/register_account";
+}
+
+export interface TransferAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/transfer_account";
+  readonly domain: string;
+  readonly name: string;
+  readonly newOwner: Address;
+}
+
+export function isTransferAccountTx(tx: UnsignedTransaction): tx is TransferAccountTx {
+  return tx.kind === "bns/transfer_account";
+}
+
+export interface ReplaceAccountTargetsTx extends UnsignedTransaction {
+  readonly kind: "bns/replace_account_targets";
+  readonly domain: string;
+  readonly name: string;
+  readonly newTargets: readonly ChainAddressPair[];
+}
+
+export function isReplaceAccountTargetsTx(tx: UnsignedTransaction): tx is ReplaceAccountTargetsTx {
+  return tx.kind === "bns/replace_account_targets";
+}
+
+export interface DeleteAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_account";
+  readonly domain: string;
+  readonly name: string;
+}
+
+export function isDeleteAccountTx(tx: UnsignedTransaction): tx is DeleteAccountTx {
+  return tx.kind === "bns/delete_account";
+}
+
+export interface DeleteAllAccountsTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_all_accounts";
+  readonly domain: string;
+}
+
+export function isDeleteAllAccountsTx(tx: UnsignedTransaction): tx is DeleteAllAccountsTx {
+  return tx.kind === "bns/delete_all_accounts";
+}
+
+export interface RenewAccountTx extends UnsignedTransaction {
+  readonly kind: "bns/renew_account";
+  readonly domain: string;
+  readonly name: string;
+}
+
+export function isRenewAccountTx(tx: UnsignedTransaction): tx is RenewAccountTx {
+  return tx.kind === "bns/renew_account";
+}
+
+export interface AddAccountCertificateTx extends UnsignedTransaction {
+  readonly kind: "bns/add_account_certificate";
+  readonly domain: string;
+  readonly name: string;
+  readonly certificate: Uint8Array;
+}
+
+export function isAddAccountCertificateTx(tx: UnsignedTransaction): tx is AddAccountCertificateTx {
+  return tx.kind === "bns/add_account_certificate";
+}
+
+export interface ReplaceAccountMsgFeesTx extends UnsignedTransaction {
+  readonly kind: "bns/replace_account_msg_fees";
+  readonly domain: string;
+  readonly newMsgFees: readonly AccountMsgFee[];
+}
+
+export function isReplaceAccountMsgFeesTx(tx: UnsignedTransaction): tx is ReplaceAccountMsgFeesTx {
+  return tx.kind === "bns/replace_account_msg_fees";
+}
+
+export interface DeleteAccountCertificateTx extends UnsignedTransaction {
+  readonly kind: "bns/delete_account_certificate";
+  readonly domain: string;
+  readonly name: string;
+  readonly certificateHash: Uint8Array;
+}
+
+export function isDeleteAccountCertificateTx(tx: UnsignedTransaction): tx is DeleteAccountCertificateTx {
+  return tx.kind === "bns/delete_account_certificate";
 }
 
 // Transactions: Multisignature contracts
@@ -501,6 +732,21 @@ export type BnsTx =
   | RegisterUsernameTx
   | UpdateTargetsOfUsernameTx
   | TransferUsernameTx
+  // BNS: Accounts
+  | UpdateAccountConfigurationTx
+  | RegisterDomainTx
+  | TransferDomainTx
+  | RenewDomainTx
+  | DeleteDomainTx
+  | RegisterAccountTx
+  | TransferAccountTx
+  | ReplaceAccountTargetsTx
+  | DeleteAccountTx
+  | DeleteAllAccountsTx
+  | RenewAccountTx
+  | AddAccountCertificateTx
+  | ReplaceAccountMsgFeesTx
+  | DeleteAccountCertificateTx
   // BNS: Multisignature contracts
   | CreateMultisignatureTx
   | UpdateMultisignatureTx

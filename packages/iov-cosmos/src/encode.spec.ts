@@ -181,7 +181,7 @@ describe("encode", () => {
         memo: defaultMemo,
       };
       expect(buildUnsignedTx(tx)).toEqual({
-        type: "auth/StdTx",
+        type: "cosmos-sdk/StdTx",
         value: {
           msg: [
             {
@@ -226,7 +226,7 @@ describe("encode", () => {
         },
       };
       expect(buildUnsignedTx(tx)).toEqual({
-        type: "auth/StdTx",
+        type: "cosmos-sdk/StdTx",
         value: {
           msg: [
             {
@@ -287,7 +287,7 @@ describe("encode", () => {
         ],
       };
       expect(buildSignedTx(tx)).toEqual({
-        type: "auth/StdTx",
+        type: "cosmos-sdk/StdTx",
         value: {
           msg: [
             {

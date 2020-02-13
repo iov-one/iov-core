@@ -23,6 +23,7 @@ import { createBnsConnector } from "@iov/bns";
 import { Slip10RawIndex } from "@iov/crypto";
 import { createEthereumConnector, Erc20ApproveTransaction, EthereumConnection } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
+import { sleep } from "@iov/utils";
 import BN from "bn.js";
 
 import { MultiChainSigner } from "../multichainsigner";
@@ -53,10 +54,6 @@ const ethereumConnectionOptions = {
     ],
   ]),
 };
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function tendermintSearchIndexUpdated(): Promise<void> {
   // Tendermint needs some time before a committed transaction is found in search
@@ -100,10 +97,10 @@ class Actor {
       await signer.addChain(createEthereumConnector(ethereumBaseUrl, ethereumConnectionOptions))
     ).connection;
 
-    const bnsIdentity = await profile.createIdentity(ed25519HdWallet.id, bnsConnection.chainId(), bnsHdPath);
+    const bnsIdentity = await profile.createIdentity(ed25519HdWallet.id, bnsConnection.chainId, bnsHdPath);
     const ethereumIdentity = await profile.createIdentity(
       secp256k1HdWallet.id,
-      ethereumConnection.chainId(),
+      ethereumConnection.chainId,
       ethereumHdPath,
     );
 

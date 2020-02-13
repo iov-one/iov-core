@@ -12,24 +12,24 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint64 } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
+import { assert, sleep } from "@iov/utils";
 import BN from "bn.js";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { decodeNumericId } from "./decodinghelpers";
 import {
-  bash,
   bnsdTendermintUrl,
   cash,
   defaultAmount,
   getRandomInteger,
   pendingWithoutBnsd,
   randomBnsAddress,
+  randomDomain,
   registerAmount,
   sendTokensFromFaucet,
-  sleep,
   tendermintSearchIndexUpdated,
   unusedAddress,
   userProfileWithFaucet,
@@ -41,21 +41,29 @@ import {
   CreateMultisignatureTx,
   CreateProposalTx,
   CreateTextResolutionAction,
+  DeleteDomainTx,
   isCreateEscrowTx,
   isCreateMultisignatureTx,
+  isDeleteDomainTx,
+  isRegisterDomainTx,
   isRegisterUsernameTx,
   isReleaseEscrowTx,
+  isRenewDomainTx,
   isReturnEscrowTx,
+  isTransferDomainTx,
   isUpdateEscrowPartiesTx,
   isUpdateMultisignatureTx,
   Participant,
   ProposalExecutorResult,
   ProposalResult,
   ProposalStatus,
+  RegisterDomainTx,
   RegisterUsernameTx,
   ReleaseEscrowTx,
+  RenewDomainTx,
   ReturnEscrowTx,
   SetMsgFeeAction,
+  TransferDomainTx,
   TransferUsernameTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
@@ -72,7 +80,7 @@ describe("BnsConnection (post txs)", () => {
     it("can send transaction", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
       const initialHeight = await connection.height();
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
@@ -127,9 +135,7 @@ describe("BnsConnection (post txs)", () => {
       expect(mine.height).toBeGreaterThan(initialHeight);
       expect(mine.transactionId).toMatch(/^[0-9A-F]{64}$/);
       const tx = mine.transaction;
-      if (!isSendTransaction(tx)) {
-        throw new Error("Expected send transaction");
-      }
+      assert(isSendTransaction(tx), "Expected SendTransaction");
       expect(tx).toEqual(sendTx);
 
       connection.disconnect();
@@ -139,7 +145,7 @@ describe("BnsConnection (post txs)", () => {
     it("rejects send transaction with manual fees too low", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -178,7 +184,7 @@ describe("BnsConnection (post txs)", () => {
     it("reports post errors (CheckTx)", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet } = await userProfileWithFaucet(chainId);
       const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -213,7 +219,7 @@ describe("BnsConnection (post txs)", () => {
 
       (async () => {
         const connection = await BnsConnection.establish(bnsdTendermintUrl);
-        const chainId = connection.chainId();
+        const chainId = connection.chainId;
 
         const { profile, faucet } = await userProfileWithFaucet(chainId);
         const faucetAddress = bnsCodec.identityToAddress(faucet);
@@ -277,7 +283,7 @@ describe("BnsConnection (post txs)", () => {
     it("can register a username", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -312,9 +318,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult.length).toEqual(1);
       const firstSearchResultTransaction = searchResult[0].transaction;
-      if (!isRegisterUsernameTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isRegisterUsernameTx(firstSearchResultTransaction), "Expected RegisterUsernameTx");
       expect(firstSearchResultTransaction.username).toEqual(username);
       expect(firstSearchResultTransaction.targets.length).toEqual(1);
 
@@ -324,7 +328,7 @@ describe("BnsConnection (post txs)", () => {
     it("can register a username with empty list of targets", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -359,9 +363,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult.length).toEqual(1);
       const firstSearchResultTransaction = searchResult[0].transaction;
-      if (!isRegisterUsernameTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isRegisterUsernameTx(firstSearchResultTransaction), "Expected RegisterUsernameTx");
       expect(firstSearchResultTransaction.username).toEqual(username);
       expect(firstSearchResultTransaction.targets.length).toEqual(0);
 
@@ -371,7 +373,7 @@ describe("BnsConnection (post txs)", () => {
     it("can update targets of username", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -465,7 +467,7 @@ describe("BnsConnection (post txs)", () => {
     it("can transfer a username", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -535,7 +537,7 @@ describe("BnsConnection (post txs)", () => {
     it("can register and update a username for an empty account", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, faucet, walletId } = await userProfileWithFaucet(chainId);
       const faucetAddress = identityToAddress(faucet);
@@ -610,10 +612,279 @@ describe("BnsConnection (post txs)", () => {
       connection.disconnect();
     });
 
+    it("can register a domain", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId;
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create and send registration
+      const domain = randomDomain();
+      const registerDomainTx = await connection.withDefaultFee<RegisterDomainTx>(
+        {
+          kind: "bns/register_domain",
+          chainId: registryChainId,
+          domain: domain,
+          admin: address,
+          hasSuperuser: true,
+          msgFees: [],
+          accountRenew: 100,
+        },
+        address,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find registration transaction
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult.length).toEqual(1);
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      assert(isRegisterDomainTx(firstSearchResultTransaction), "Expected RegisterDomainTx");
+      expect(firstSearchResultTransaction.admin).toEqual(address);
+
+      connection.disconnect();
+    });
+
+    it("can transfer a domain", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId;
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create and send registration
+      const domain = randomDomain();
+      const registerDomainTx = await connection.withDefaultFee<RegisterDomainTx>(
+        {
+          kind: "bns/register_domain",
+          chainId: registryChainId,
+          domain: domain,
+          admin: address,
+          hasSuperuser: true,
+          msgFees: [],
+          accountRenew: 100,
+        },
+        address,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find registration transaction
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult.length).toEqual(1);
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      assert(isRegisterDomainTx(firstSearchResultTransaction), "Expected RegisterDomainTx");
+      expect(firstSearchResultTransaction.admin).toEqual(address);
+
+      // Transfer domain
+      const newAdmin = await randomBnsAddress();
+      const transferDomainTx = await connection.withDefaultFee<TransferDomainTx>(
+        {
+          kind: "bns/transfer_domain",
+          chainId: registryChainId,
+          domain: domain,
+          newAdmin: newAdmin,
+        },
+        address,
+      );
+
+      const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed2 = await profile.signTransaction(identity, transferDomainTx, bnsCodec, nonce2);
+      const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
+      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find transfer transaction
+      const searchResult2 = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult2.length).toEqual(2);
+      const firstSearchResultTransaction2 = searchResult2[1].transaction;
+      assert(isTransferDomainTx(firstSearchResultTransaction2), "Expected TransferDomainTx");
+      expect(firstSearchResultTransaction2.newAdmin).toEqual(newAdmin);
+
+      connection.disconnect();
+    });
+
+    it("can renew a domain", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId;
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create and send registration
+      const domain = randomDomain();
+      const registerDomainTx = await connection.withDefaultFee<RegisterDomainTx>(
+        {
+          kind: "bns/register_domain",
+          chainId: registryChainId,
+          domain: domain,
+          admin: address,
+          hasSuperuser: true,
+          msgFees: [],
+          accountRenew: 100,
+        },
+        address,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find registration transaction
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult.length).toEqual(1);
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      assert(isRegisterDomainTx(firstSearchResultTransaction), "Expected RegisterDomainTx");
+      expect(firstSearchResultTransaction.admin).toEqual(address);
+
+      // Renew domain
+      const renewDomainTx = await connection.withDefaultFee<RenewDomainTx>(
+        {
+          kind: "bns/renew_domain",
+          chainId: registryChainId,
+          domain: domain,
+        },
+        address,
+      );
+
+      const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed2 = await profile.signTransaction(identity, renewDomainTx, bnsCodec, nonce2);
+      const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
+      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find renew transaction
+      const searchResult2 = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult2.length).toEqual(2);
+      const firstSearchResultTransaction2 = searchResult2[1].transaction;
+      assert(isRenewDomainTx(firstSearchResultTransaction2), "Expected RenewDomainTx");
+
+      connection.disconnect();
+    });
+
+    it("can delete a domain", async () => {
+      pendingWithoutBnsd();
+      const connection = await BnsConnection.establish(bnsdTendermintUrl);
+      const registryChainId = connection.chainId;
+
+      const profile = new UserProfile();
+      const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
+      const identity = await profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(0));
+
+      // we need funds to pay the fees
+      const address = identityToAddress(identity);
+      await sendTokensFromFaucet(connection, address, registerAmount);
+
+      // Create and send registration
+      const domain = randomDomain();
+      const registerDomainTx = await connection.withDefaultFee<RegisterDomainTx>(
+        {
+          kind: "bns/register_domain",
+          chainId: registryChainId,
+          domain: domain,
+          admin: address,
+          hasSuperuser: true,
+          msgFees: [],
+          accountRenew: 100,
+        },
+        address,
+      );
+      const nonce = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
+      const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find registration transaction
+      const searchResult = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult.length).toEqual(1);
+      const firstSearchResultTransaction = searchResult[0].transaction;
+      assert(isRegisterDomainTx(firstSearchResultTransaction), "Expected RegisterDomainTx");
+      expect(firstSearchResultTransaction.admin).toEqual(address);
+
+      // Delete domain
+      const deleteDomainTx = await connection.withDefaultFee<DeleteDomainTx>(
+        {
+          kind: "bns/delete_domain",
+          chainId: registryChainId,
+          domain: domain,
+        },
+        address,
+      );
+
+      const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
+      const signed2 = await profile.signTransaction(identity, deleteDomainTx, bnsCodec, nonce2);
+      const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
+      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
+
+      await tendermintSearchIndexUpdated();
+
+      // Find delete transaction
+      const searchResult2 = (await connection.searchTx({ signedBy: address })).filter(
+        isConfirmedAndSignedTransaction,
+      );
+      expect(searchResult2.length).toEqual(2);
+      const firstSearchResultTransaction2 = searchResult2[1].transaction;
+      assert(isDeleteDomainTx(firstSearchResultTransaction2), "Expected DeleteDomainTx");
+
+      connection.disconnect();
+    });
+
     it("can create and update a multisignature account", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -656,9 +927,11 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult1.length).toEqual(1);
       const { result: contractId, transaction: firstSearchResultTransaction } = searchResult1[0];
-      if (!isCreateMultisignatureTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(contractId, "Contract ID must be set");
+      // Contract ID is an incrementing fixed length uint64
+      expect(contractId.length).toEqual(8);
+      expect(Uint64.fromBytesBigEndian(contractId).toNumber()).toBeLessThan(800);
+      assert(isCreateMultisignatureTx(firstSearchResultTransaction), "Expected CreateMultisignatureTx");
       expect(firstSearchResultTransaction.participants.length).toEqual(6);
       firstSearchResultTransaction.participants.forEach((participant, i) => {
         expect(participant.address).toEqual(participants[i].address);
@@ -666,7 +939,6 @@ describe("BnsConnection (post txs)", () => {
       });
       expect(firstSearchResultTransaction.activationThreshold).toEqual(4);
       expect(firstSearchResultTransaction.adminThreshold).toEqual(5);
-      expect(contractId).toBeDefined();
 
       // Update multisignature
       const participantsUpdated: readonly Participant[] = (
@@ -681,7 +953,7 @@ describe("BnsConnection (post txs)", () => {
         {
           kind: "bns/update_multisignature_contract",
           chainId: registryChainId,
-          contractId: contractId!,
+          contractId: contractId,
           participants: participantsUpdated,
           activationThreshold: 2,
           adminThreshold: 6,
@@ -703,9 +975,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult2.length).toEqual(2);
       const { transaction: secondSearchResultTransaction } = searchResult2[1];
-      if (!isUpdateMultisignatureTx(secondSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isUpdateMultisignatureTx(secondSearchResultTransaction), "Expected UpdateMultisignatureTx");
       expect(secondSearchResultTransaction.participants.length).toEqual(3);
       secondSearchResultTransaction.participants.forEach((participant, i) => {
         expect(participant.address).toEqual(participantsUpdated[i].address);
@@ -721,7 +991,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and release an escrow", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -769,9 +1039,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult1.length).toEqual(1);
       const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
-      if (!isCreateEscrowTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isCreateEscrowTx(firstSearchResultTransaction), "Expected CreateEscrowTx");
       expect(firstSearchResultTransaction.sender).toEqual(senderAddress);
       expect(firstSearchResultTransaction.recipient).toEqual(recipientAddress);
       expect(firstSearchResultTransaction.arbiter).toEqual(arbiterAddress);
@@ -807,9 +1075,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult2.length).toEqual(1);
       const { transaction: secondSearchResultTransaction } = searchResult2[0];
-      if (!isReleaseEscrowTx(secondSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isReleaseEscrowTx(secondSearchResultTransaction), "Expected ReleaseEscrowTx");
       expect(secondSearchResultTransaction.escrowId).toEqual(escrowId);
       expect(secondSearchResultTransaction.amounts).toEqual([defaultAmount]);
 
@@ -819,7 +1085,7 @@ describe("BnsConnection (post txs)", () => {
     it("any account can return an escrow (after the timeout)", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -849,7 +1115,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(sender, createEscrowTx, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) throw new Error("Transaction did not succeed");
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         escrowId = blockInfo.result || fromHex("");
       }
 
@@ -882,7 +1148,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and return an escrow", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -930,9 +1196,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult1.length).toEqual(1);
       const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
-      if (!isCreateEscrowTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isCreateEscrowTx(firstSearchResultTransaction), "Expected CreateEscrowTx");
       expect(firstSearchResultTransaction.sender).toEqual(senderAddress);
       expect(firstSearchResultTransaction.recipient).toEqual(recipientAddress);
       expect(firstSearchResultTransaction.arbiter).toEqual(arbiterAddress);
@@ -970,9 +1234,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult2.length).toEqual(1);
       const { transaction: secondSearchResultTransaction } = searchResult2[0];
-      if (!isReturnEscrowTx(secondSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isReturnEscrowTx(secondSearchResultTransaction), "Expected ReturnEscrowTx");
       expect(secondSearchResultTransaction.escrowId).toEqual(escrowId);
 
       connection.disconnect();
@@ -981,7 +1243,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and update an escrow", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const registryChainId = connection.chainId();
+      const registryChainId = connection.chainId;
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
@@ -1032,9 +1294,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult1.length).toEqual(1);
       const { result, transaction: firstSearchResultTransaction } = searchResult1[0];
-      if (!isCreateEscrowTx(firstSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isCreateEscrowTx(firstSearchResultTransaction), "Expected CreateEscrowTx");
       expect(firstSearchResultTransaction.sender).toEqual(senderAddress);
       expect(firstSearchResultTransaction.recipient).toEqual(recipientAddress);
       expect(firstSearchResultTransaction.arbiter).toEqual(arbiterAddress);
@@ -1070,9 +1330,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult2.length).toEqual(1);
       const { transaction: secondSearchResultTransaction } = searchResult2[0];
-      if (!isUpdateEscrowPartiesTx(secondSearchResultTransaction)) {
-        throw new Error("Unexpected transaction kind");
-      }
+      assert(isUpdateEscrowPartiesTx(secondSearchResultTransaction), "Expected UpdateEscrowPartiesTx");
       expect(secondSearchResultTransaction.escrowId).toEqual(escrowId);
       expect(secondSearchResultTransaction.arbiter).toEqual(newArbiterAddress);
 
@@ -1082,7 +1340,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and vote on a proposal", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, admin: author } = await userProfileWithFaucet(chainId);
       const authorAddress = identityToAddress(author);
@@ -1122,9 +1380,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) {
-          throw new Error("Transaction did not succeed");
-        }
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         if (!blockInfo.result) {
           throw new Error("Transaction result missing");
         }
@@ -1194,7 +1450,7 @@ describe("BnsConnection (post txs)", () => {
     it("can create and vote on a proposal, and see the effects", async () => {
       pendingWithoutBnsd();
       const connection = await BnsConnection.establish(bnsdTendermintUrl);
-      const chainId = connection.chainId();
+      const chainId = connection.chainId;
 
       const { profile, admin: author } = await userProfileWithFaucet(chainId);
       const authorAddress = identityToAddress(author);
@@ -1209,8 +1465,8 @@ describe("BnsConnection (post txs)", () => {
 
       const fee1 = {
         fractionalDigits: 9,
-        quantity: "50",
-        tokenTicker: bash,
+        quantity: "888888888",
+        tokenTicker: cash,
       };
       let proposalId1: number;
 
@@ -1240,9 +1496,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) {
-          throw new Error("Transaction did not succeed");
-        }
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         if (!blockInfo.result) {
           throw new Error("Transaction result missing");
         }
@@ -1266,9 +1520,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(author, voteForProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) {
-          throw new Error("Transaction did not succeed");
-        }
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
       }
 
       await sleep(15_000);
@@ -1276,7 +1528,7 @@ describe("BnsConnection (post txs)", () => {
       const registerUsernameTx: RegisterUsernameTx & UnsignedTransaction = {
         kind: "bns/register_username",
         chainId: chainId,
-        username: "TestyMcTestface",
+        username: "TestyMcTestface*iov",
         targets: [],
       };
       const productFee1 = await connection.getFeeQuote(registerUsernameTx);
@@ -1315,9 +1567,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) {
-          throw new Error("Transaction did not succeed");
-        }
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         if (!blockInfo.result) {
           throw new Error("Transaction result missing");
         }
@@ -1341,9 +1591,7 @@ describe("BnsConnection (post txs)", () => {
         const signed = await profile.signTransaction(author, voteForProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
         const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        if (!isBlockInfoSucceeded(blockInfo)) {
-          throw new Error("Transaction did not succeed");
-        }
+        assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
       }
 
       await sleep(15_000);

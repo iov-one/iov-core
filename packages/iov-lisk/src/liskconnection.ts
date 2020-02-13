@@ -24,6 +24,7 @@ import {
   TransactionId,
   TransactionQuery,
   TransactionState,
+  TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding, Uint53, Uint64 } from "@iov/encoding";
@@ -73,8 +74,10 @@ export class LiskConnection implements BlockchainConnection {
     return new LiskConnection(baseUrl, chainId);
   }
 
+  public readonly chainId: ChainId;
+  public readonly codec: TxCodec;
+
   private readonly baseUrl: string;
-  private readonly myChainId: ChainId;
 
   public constructor(baseUrl: string, chainId: ChainId) {
     this.baseUrl = checkAndNormalizeUrl(baseUrl);
@@ -84,15 +87,12 @@ export class LiskConnection implements BlockchainConnection {
         "The chain ID must be a Lisk nethash, encoded as `lisk-%s` where `%s` is the 10-digit hex-encoded prefix of the relevant nethash.",
       );
     }
-    this.myChainId = chainId;
+    this.chainId = chainId;
+    this.codec = liskCodec;
   }
 
   public disconnect(): void {
     // no-op
-  }
-
-  public chainId(): ChainId {
-    return this.myChainId;
   }
 
   public async height(): Promise<number> {
@@ -169,7 +169,7 @@ export class LiskConnection implements BlockchainConnection {
   }
 
   public async getAccount(query: AccountQuery): Promise<Account | undefined> {
-    const address = isPubkeyQuery(query) ? Derivation.pubkeyToAddress(query.pubkey.data) : query.address;
+    const address = isPubkeyQuery(query) ? Derivation.pubkeyToAddress(query.pubkey) : query.address;
 
     const url = this.baseUrl + `/api/accounts?address=${address}`;
     const result = await axios.get(url);
@@ -509,9 +509,9 @@ export class LiskConnection implements BlockchainConnection {
         const height = new Uint53(transactionJson.height);
         const confirmations = new Uint53(transactionJson.confirmations);
         const transactionId = Uint64.fromString(transactionJson.id).toString() as TransactionId;
-        const transaction = liskCodec.parseBytes(
+        const transaction = this.codec.parseBytes(
           toUtf8(JSON.stringify(transactionJson)) as PostableBytes,
-          this.myChainId,
+          this.chainId,
         );
         return {
           ...transaction,

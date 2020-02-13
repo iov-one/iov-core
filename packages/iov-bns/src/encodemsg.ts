@@ -12,11 +12,18 @@ import { Encoding } from "@iov/encoding";
 import { encodeAmount, encodeInt, encodeNumericId, encodeString } from "./encodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
+  AccountConfiguration,
+  AccountMsgFee,
+  AddAccountCertificateTx,
   BnsdTxMsg,
   ChainAddressPair,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
+  DeleteAccountCertificateTx,
+  DeleteAccountTx,
+  DeleteAllAccountsTx,
+  DeleteDomainTx,
   isBnsTx,
   isCreateTextResolutionAction,
   isExecuteMigrationAction,
@@ -28,10 +35,19 @@ import {
   isUpdateElectionRuleAction,
   isUpdateElectorateAction,
   Participant,
+  RegisterAccountTx,
+  RegisterDomainTx,
   RegisterUsernameTx,
   ReleaseEscrowTx,
+  RenewAccountTx,
+  RenewDomainTx,
+  ReplaceAccountMsgFeesTx,
+  ReplaceAccountTargetsTx,
   ReturnEscrowTx,
+  TransferAccountTx,
+  TransferDomainTx,
   TransferUsernameTx,
+  UpdateAccountConfigurationTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -156,6 +172,183 @@ function encodeTransferUsernameTx(tx: TransferUsernameTx): BnsdTxMsg {
       metadata: { schema: 1 },
       username: tx.username,
       newOwner: decodeBnsAddress(tx.newOwner).data,
+    },
+  };
+}
+
+// Accounts
+
+function encodeAccountConfiguration(configuration: AccountConfiguration): codecImpl.account.IConfiguration {
+  return {
+    metadata: { schema: 1 },
+    owner: decodeBnsAddress(configuration.owner).data,
+    validDomain: configuration.validDomain,
+    validName: configuration.validName,
+    validBlockchainId: configuration.validBlockchainId,
+    validBlockchainAddress: configuration.validBlockchainAddress,
+    domainRenew: configuration.domainRenew,
+  };
+}
+
+function encodeUpdateAccountConfigurationTx(tx: UpdateAccountConfigurationTx): BnsdTxMsg {
+  return {
+    accountUpdateConfigurationMsg: {
+      metadata: { schema: 1 },
+      patch: encodeAccountConfiguration(tx.configuration),
+    },
+  };
+}
+
+function encodeAccountMsgFee(msgFee: AccountMsgFee): codecImpl.account.IAccountMsgFee {
+  return {
+    msgPath: msgFee.msgPath,
+    fee: encodeAmount(msgFee.fee),
+  };
+}
+
+function encodeRegisterDomainTx(tx: RegisterDomainTx): BnsdTxMsg {
+  return {
+    accountRegisterDomainMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      admin: decodeBnsAddress(tx.admin).data,
+      hasSuperuser: tx.hasSuperuser,
+      thirdPartyToken: tx.broker ? decodeBnsAddress(tx.broker).data : null,
+      msgFees: tx.msgFees.map(encodeAccountMsgFee),
+      accountRenew: tx.accountRenew,
+    },
+  };
+}
+
+function encodeTransferDomainTx(tx: TransferDomainTx): BnsdTxMsg {
+  return {
+    accountTransferDomainMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      newAdmin: decodeBnsAddress(tx.newAdmin).data,
+    },
+  };
+}
+
+function encodeRenewDomainTx(tx: RenewDomainTx): BnsdTxMsg {
+  return {
+    accountRenewDomainMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+    },
+  };
+}
+
+function encodeDeleteDomainTx(tx: DeleteDomainTx): BnsdTxMsg {
+  return {
+    accountDeleteDomainMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+    },
+  };
+}
+
+function encodeAccountChainAddress(
+  blockchainAddress: ChainAddressPair,
+): codecImpl.account.IBlockchainAddress {
+  return {
+    blockchainId: blockchainAddress.chainId,
+    address: blockchainAddress.address,
+  };
+}
+
+function encodeRegisterAccountTx(tx: RegisterAccountTx): BnsdTxMsg {
+  return {
+    accountRegisterAccountMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+      owner: decodeBnsAddress(tx.owner).data,
+      targets: tx.targets.map(encodeAccountChainAddress),
+      thirdPartyToken: tx.broker ? decodeBnsAddress(tx.broker).data : null,
+    },
+  };
+}
+
+function encodeTransferAccountTx(tx: TransferAccountTx): BnsdTxMsg {
+  return {
+    accountTransferAccountMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+      newOwner: decodeBnsAddress(tx.newOwner).data,
+    },
+  };
+}
+
+function encodeReplaceAccountTargetsTx(tx: ReplaceAccountTargetsTx): BnsdTxMsg {
+  return {
+    accountReplaceAccountTargetsMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+      newTargets: tx.newTargets.map(encodeAccountChainAddress),
+    },
+  };
+}
+
+function encodeDeleteAccountTx(tx: DeleteAccountTx): BnsdTxMsg {
+  return {
+    accountDeleteAccountMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+    },
+  };
+}
+
+function encodeDeleteAllAccountsTx(tx: DeleteAllAccountsTx): BnsdTxMsg {
+  return {
+    accountFlushDomainMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+    },
+  };
+}
+
+function encodeRenewAccountTx(tx: RenewAccountTx): BnsdTxMsg {
+  return {
+    accountRenewAccountMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+    },
+  };
+}
+
+function encodeAddAccountCertificateTx(tx: AddAccountCertificateTx): BnsdTxMsg {
+  return {
+    accountAddAccountCertificateMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+      certificate: tx.certificate,
+    },
+  };
+}
+
+function encodeReplaceAccountMsgFeesTx(tx: ReplaceAccountMsgFeesTx): BnsdTxMsg {
+  return {
+    accountReplaceAccountMsgFeesMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      newMsgFees: tx.newMsgFees.map(encodeAccountMsgFee),
+    },
+  };
+}
+
+function encodeDeleteAccountCertificateTx(tx: DeleteAccountCertificateTx): BnsdTxMsg {
+  return {
+    accountDeleteAccountCertificateMsg: {
+      metadata: { schema: 1 },
+      domain: tx.domain,
+      name: tx.name,
+      certificateHash: tx.certificateHash,
     },
   };
 }
@@ -401,6 +594,36 @@ export function encodeMsg(tx: UnsignedTransaction, strictMode = true): BnsdTxMsg
       return encodeUpdateTargetsOfUsernameTx(tx);
     case "bns/transfer_username":
       return encodeTransferUsernameTx(tx);
+
+    // BNS: Accounts
+    case "bns/update_account_configuration":
+      return encodeUpdateAccountConfigurationTx(tx);
+    case "bns/register_domain":
+      return encodeRegisterDomainTx(tx);
+    case "bns/transfer_domain":
+      return encodeTransferDomainTx(tx);
+    case "bns/renew_domain":
+      return encodeRenewDomainTx(tx);
+    case "bns/delete_domain":
+      return encodeDeleteDomainTx(tx);
+    case "bns/register_account":
+      return encodeRegisterAccountTx(tx);
+    case "bns/transfer_account":
+      return encodeTransferAccountTx(tx);
+    case "bns/replace_account_targets":
+      return encodeReplaceAccountTargetsTx(tx);
+    case "bns/delete_account":
+      return encodeDeleteAccountTx(tx);
+    case "bns/delete_all_accounts":
+      return encodeDeleteAllAccountsTx(tx);
+    case "bns/renew_account":
+      return encodeRenewAccountTx(tx);
+    case "bns/add_account_certificate":
+      return encodeAddAccountCertificateTx(tx);
+    case "bns/replace_account_msg_fees":
+      return encodeReplaceAccountMsgFeesTx(tx);
+    case "bns/delete_account_certificate":
+      return encodeDeleteAccountCertificateTx(tx);
 
     // BNS: Multisignature contracts
     case "bns/create_multisignature_contract":

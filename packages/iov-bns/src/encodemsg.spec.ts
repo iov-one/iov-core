@@ -2,19 +2,34 @@ import { Address, Amount, ChainId, Hash, SendTransaction, SwapOfferTransaction, 
 import { Encoding } from "@iov/encoding";
 import Long from "long";
 
+import { decodeAmount } from "./decodeobjects";
 import { encodeMsg } from "./encodemsg";
 import * as codecImpl from "./generated/codecimpl";
 import { pubJson, sendTxBin, sendTxJson } from "./testdata.spec";
 import {
   ActionKind,
+  AddAccountCertificateTx,
   CreateEscrowTx,
   CreateMultisignatureTx,
   CreateProposalTx,
+  DeleteAccountCertificateTx,
+  DeleteAccountTx,
+  DeleteAllAccountsTx,
+  DeleteDomainTx,
   Participant,
+  RegisterAccountTx,
+  RegisterDomainTx,
   RegisterUsernameTx,
   ReleaseEscrowTx,
+  RenewAccountTx,
+  RenewDomainTx,
+  ReplaceAccountMsgFeesTx,
+  ReplaceAccountTargetsTx,
   ReturnEscrowTx,
+  TransferAccountTx,
+  TransferDomainTx,
   TransferUsernameTx,
+  UpdateAccountConfigurationTx,
   UpdateEscrowPartiesTx,
   UpdateMultisignatureTx,
   UpdateTargetsOfUsernameTx,
@@ -157,6 +172,208 @@ describe("encodeMsg", () => {
     const msg = encodeMsg(transfer).usernameTransferTokenMsg!;
     expect(msg.username).toEqual("alice*iov");
     expect(msg.newOwner).toEqual(fromHex("b1ca7e78f74423ae01da3b51e676934d9105f282"));
+  });
+
+  // Accounts
+
+  it("works for UpdateAccountConfigurationTx", () => {
+    const transfer: UpdateAccountConfigurationTx = {
+      kind: "bns/update_account_configuration",
+      chainId: defaultChainId,
+      configuration: {
+        owner: "tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address,
+        validDomain: "hole",
+        validName: "rabbit",
+        validBlockchainId: "wonderland",
+        validBlockchainAddress: "12345W",
+        domainRenew: 1234,
+      },
+    };
+    const msg = encodeMsg(transfer).accountUpdateConfigurationMsg!;
+    expect(msg.patch?.owner).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
+    expect(msg.patch?.validDomain).toEqual("hole");
+    expect(msg.patch?.validName).toEqual("rabbit");
+    expect(msg.patch?.validBlockchainId).toEqual("wonderland");
+    expect(msg.patch?.validBlockchainAddress).toEqual("12345W");
+    expect(msg.patch?.domainRenew).toEqual(1234);
+  });
+
+  it("works for RegisterDomainTx", () => {
+    const transfer: RegisterDomainTx = {
+      kind: "bns/register_domain",
+      chainId: defaultChainId,
+      domain: "hole",
+      admin: "tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address,
+      hasSuperuser: true,
+      broker: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
+      msgFees: [{ msgPath: "some-msg-path", fee: decodeAmount({ whole: 1, fractional: 2, ticker: "ASH" }) }],
+      accountRenew: 1234,
+    };
+    const msg = encodeMsg(transfer).accountRegisterDomainMsg!;
+    expect(msg.domain).toEqual("hole");
+    expect(msg.admin).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
+    expect(msg.hasSuperuser).toEqual(true);
+    expect(msg.thirdPartyToken).toEqual(fromHex("1234567890123456789012345678901234567890"));
+    expect(msg.msgFees).toEqual([
+      { msgPath: "some-msg-path", fee: { whole: 1, fractional: 2, ticker: "ASH" } },
+    ]);
+    expect(msg.accountRenew).toEqual(1234);
+  });
+
+  it("works for TransferDomainTx", () => {
+    const transfer: TransferDomainTx = {
+      kind: "bns/transfer_domain",
+      chainId: defaultChainId,
+      domain: "hole",
+      newAdmin: "tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address,
+    };
+    const msg = encodeMsg(transfer).accountTransferDomainMsg!;
+    expect(msg.domain).toEqual("hole");
+    expect(msg.newAdmin).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
+  });
+
+  it("works for RenewDomainTx", () => {
+    const transfer: RenewDomainTx = {
+      kind: "bns/renew_domain",
+      chainId: defaultChainId,
+      domain: "hole",
+    };
+    const msg = encodeMsg(transfer).accountRenewDomainMsg!;
+    expect(msg.domain).toEqual("hole");
+  });
+
+  it("works for DeleteDomainTx", () => {
+    const transfer: DeleteDomainTx = {
+      kind: "bns/delete_domain",
+      chainId: defaultChainId,
+      domain: "hole",
+    };
+    const msg = encodeMsg(transfer).accountDeleteDomainMsg!;
+    expect(msg.domain).toEqual("hole");
+  });
+
+  it("works for RegisterAccountTx", () => {
+    const transfer: RegisterAccountTx = {
+      kind: "bns/register_account",
+      chainId: defaultChainId,
+      domain: "hole",
+      name: "rabbit",
+      owner: "tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address,
+      targets: [{ chainId: "wonderland" as ChainId, address: "12345W" as Address }],
+      broker: "tiov1zg69v7yszg69v7yszg69v7yszg69v7ysy7xxgy" as Address,
+    };
+    const msg = encodeMsg(transfer).accountRegisterAccountMsg!;
+    expect(msg.domain).toEqual("hole");
+    expect(msg.name).toEqual("rabbit");
+    expect(msg.owner).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
+    expect(msg.targets).toEqual([{ blockchainId: "wonderland", address: "12345W" }]);
+    expect(msg.thirdPartyToken).toEqual(fromHex("1234567890123456789012345678901234567890"));
+  });
+
+  it("works for TransferAccountTx", () => {
+    const transfer: TransferAccountTx = {
+      kind: "bns/transfer_account",
+      chainId: defaultChainId,
+      domain: "hole",
+      name: "rabbit",
+      newOwner: "tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address,
+    };
+    const msg = encodeMsg(transfer).accountTransferAccountMsg!;
+    expect(msg.domain).toEqual("hole");
+    expect(msg.name).toEqual("rabbit");
+    expect(msg.newOwner).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
+  });
+
+  it("works for ReplaceAccountTargetsTx", () => {
+    const transfer: ReplaceAccountTargetsTx = {
+      kind: "bns/replace_account_targets",
+      chainId: defaultChainId,
+      domain: "hole",
+      name: "rabbit",
+      newTargets: [{ chainId: "wonderland" as ChainId, address: "12345W" as Address }],
+    };
+    const msg = encodeMsg(transfer).accountReplaceAccountTargetsMsg!;
+    expect(msg.domain).toEqual("hole");
+    expect(msg.name).toEqual("rabbit");
+    expect(msg.newTargets).toEqual([{ blockchainId: "wonderland", address: "12345W" }]);
+  });
+
+  it("works for DeleteAccountTx", () => {
+    const transfer: DeleteAccountTx = {
+      kind: "bns/delete_account",
+      chainId: defaultChainId,
+      domain: "hole",
+      name: "rabbit",
+    };
+    const msg = encodeMsg(transfer).accountDeleteAccountMsg!;
+    expect(msg.domain).toEqual("hole");
+    expect(msg.name).toEqual("rabbit");
+  });
+
+  it("works for DeleteAllAccountsTx", () => {
+    const transfer: DeleteAllAccountsTx = {
+      kind: "bns/delete_all_accounts",
+      chainId: defaultChainId,
+      domain: "hole",
+    };
+    const msg = encodeMsg(transfer).accountFlushDomainMsg!;
+    expect(msg.domain).toEqual("hole");
+  });
+
+  it("works for RenewAccountTx", () => {
+    const transfer: RenewAccountTx = {
+      kind: "bns/renew_account",
+      chainId: defaultChainId,
+      domain: "hole",
+      name: "rabbit",
+    };
+    const msg = encodeMsg(transfer).accountRenewAccountMsg!;
+    expect(msg.domain).toEqual("hole");
+    expect(msg.name).toEqual("rabbit");
+  });
+
+  it("works for AddAccountCertificateTx", () => {
+    const transfer: AddAccountCertificateTx = {
+      kind: "bns/add_account_certificate",
+      chainId: defaultChainId,
+      domain: "hole",
+      name: "rabbit",
+      certificate: fromHex("214390591e6ac697319f20887405915e9d2690fd"),
+    };
+    const msg = encodeMsg(transfer).accountAddAccountCertificateMsg!;
+    expect(msg.domain).toEqual("hole");
+    expect(msg.name).toEqual("rabbit");
+    expect(msg.certificate).toEqual(fromHex("214390591e6ac697319f20887405915e9d2690fd"));
+  });
+
+  it("works for ReplaceAccountMsgFeesTx", () => {
+    const transfer: ReplaceAccountMsgFeesTx = {
+      kind: "bns/replace_account_msg_fees",
+      chainId: defaultChainId,
+      domain: "hole",
+      newMsgFees: [
+        { msgPath: "some-msg-path", fee: decodeAmount({ whole: 1, fractional: 2, ticker: "ASH" }) },
+      ],
+    };
+    const msg = encodeMsg(transfer).accountReplaceAccountMsgFeesMsg!;
+    expect(msg.domain).toEqual("hole");
+    expect(msg.newMsgFees).toEqual([
+      { msgPath: "some-msg-path", fee: { whole: 1, fractional: 2, ticker: "ASH" } },
+    ]);
+  });
+
+  it("works for DeleteAccountCertificateTx", () => {
+    const transfer: DeleteAccountCertificateTx = {
+      kind: "bns/delete_account_certificate",
+      chainId: defaultChainId,
+      domain: "hole",
+      name: "rabbit",
+      certificateHash: fromHex("214390591e6ac697319f20887405915e9d2690fd"),
+    };
+    const msg = encodeMsg(transfer).accountDeleteAccountCertificateMsg!;
+    expect(msg.domain).toEqual("hole");
+    expect(msg.name).toEqual("rabbit");
+    expect(msg.certificateHash).toEqual(fromHex("214390591e6ac697319f20887405915e9d2690fd"));
   });
 
   // Multisignature contracts

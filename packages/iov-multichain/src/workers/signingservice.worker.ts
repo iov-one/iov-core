@@ -6,6 +6,7 @@
 import { createBnsConnector } from "@iov/bns";
 import { createEthereumConnector } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
+import { sleep } from "@iov/utils";
 
 import { JsonRpcSigningServer } from "../jsonrpcsigningserver";
 import { MultiChainSigner } from "../multichainsigner";
@@ -23,10 +24,6 @@ const bnsdFaucetPath = HdPaths.iovFaucet();
 const ethereumUrl = "http://localhost:8545";
 const ganacheMnemonic = "oxygen fall sure lava energy veteran enroll frown question detail include maximum";
 
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function main(): Promise<void> {
   const profile = new UserProfile();
   const ed25519Wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(bnsdFaucetMnemonic));
@@ -34,9 +31,9 @@ async function main(): Promise<void> {
   const signer = new MultiChainSigner(profile);
 
   const bnsdConnection = (await signer.addChain(createBnsConnector(bnsdUrl))).connection;
-  const bnsdChainId = bnsdConnection.chainId();
+  const bnsdChainId = bnsdConnection.chainId;
   const ethereumConnection = (await signer.addChain(createEthereumConnector(ethereumUrl, {}))).connection;
-  const ethereumChainId = ethereumConnection.chainId();
+  const ethereumChainId = ethereumConnection.chainId;
 
   // faucet identity
   await profile.createIdentity(ed25519Wallet.id, bnsdChainId, bnsdFaucetPath);

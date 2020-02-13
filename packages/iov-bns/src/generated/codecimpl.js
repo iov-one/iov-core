@@ -287,7 +287,9 @@ $root.bnsd = (function() {
          * @property {account.IRenewAccountMsg|null} [accountRenewAccountMsg] Tx accountRenewAccountMsg
          * @property {account.IAddAccountCertificateMsg|null} [accountAddAccountCertificateMsg] Tx accountAddAccountCertificateMsg
          * @property {account.IDeleteAccountCertificateMsg|null} [accountDeleteAccountCertificateMsg] Tx accountDeleteAccountCertificateMsg
+         * @property {preregistration.IRegisterMsg|null} [preregistrationRegisterMsg] Tx preregistrationRegisterMsg
          * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] Tx cashUpdateConfigurationMsg
+         * @property {txfee.IUpdateConfigurationMsg|null} [txfeeUpdateConfigurationMsg] Tx txfeeUpdateConfigurationMsg
          */
 
         /**
@@ -668,6 +670,14 @@ $root.bnsd = (function() {
         Tx.prototype.accountDeleteAccountCertificateMsg = null;
 
         /**
+         * Tx preregistrationRegisterMsg.
+         * @member {preregistration.IRegisterMsg|null|undefined} preregistrationRegisterMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.preregistrationRegisterMsg = null;
+
+        /**
          * Tx cashUpdateConfigurationMsg.
          * @member {cash.IUpdateConfigurationMsg|null|undefined} cashUpdateConfigurationMsg
          * @memberof bnsd.Tx
@@ -675,17 +685,25 @@ $root.bnsd = (function() {
          */
         Tx.prototype.cashUpdateConfigurationMsg = null;
 
+        /**
+         * Tx txfeeUpdateConfigurationMsg.
+         * @member {txfee.IUpdateConfigurationMsg|null|undefined} txfeeUpdateConfigurationMsg
+         * @memberof bnsd.Tx
+         * @instance
+         */
+        Tx.prototype.txfeeUpdateConfigurationMsg = null;
+
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * msg is a sum type over all allowed messages on this chain.
-         * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"aswapCreateMsg"|"aswapReleaseMsg"|"aswapReturnMsg"|"govCreateProposalMsg"|"govDeleteProposalMsg"|"govVoteMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"cashUpdateConfigurationMsg"|undefined} sum
+         * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"aswapCreateMsg"|"aswapReleaseMsg"|"aswapReturnMsg"|"govCreateProposalMsg"|"govDeleteProposalMsg"|"govVoteMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"preregistrationRegisterMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|undefined} sum
          * @memberof bnsd.Tx
          * @instance
          */
         Object.defineProperty(Tx.prototype, "sum", {
-            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "aswapCreateMsg", "aswapReleaseMsg", "aswapReturnMsg", "govCreateProposalMsg", "govDeleteProposalMsg", "govVoteMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "cashUpdateConfigurationMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "aswapCreateMsg", "aswapReleaseMsg", "aswapReturnMsg", "govCreateProposalMsg", "govDeleteProposalMsg", "govVoteMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "preregistrationRegisterMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -805,8 +823,12 @@ $root.bnsd = (function() {
                 $root.account.AddAccountCertificateMsg.encode(message.accountAddAccountCertificateMsg, writer.uint32(/* id 94, wireType 2 =*/754).fork()).ldelim();
             if (message.accountDeleteAccountCertificateMsg != null && message.hasOwnProperty("accountDeleteAccountCertificateMsg"))
                 $root.account.DeleteAccountCertificateMsg.encode(message.accountDeleteAccountCertificateMsg, writer.uint32(/* id 95, wireType 2 =*/762).fork()).ldelim();
+            if (message.preregistrationRegisterMsg != null && message.hasOwnProperty("preregistrationRegisterMsg"))
+                $root.preregistration.RegisterMsg.encode(message.preregistrationRegisterMsg, writer.uint32(/* id 96, wireType 2 =*/770).fork()).ldelim();
             if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg"))
                 $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
+            if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg"))
+                $root.txfee.UpdateConfigurationMsg.encode(message.txfeeUpdateConfigurationMsg, writer.uint32(/* id 98, wireType 2 =*/786).fork()).ldelim();
             return writer;
         };
 
@@ -980,8 +1002,14 @@ $root.bnsd = (function() {
                 case 95:
                     message.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.decode(reader, reader.uint32());
                     break;
+                case 96:
+                    message.preregistrationRegisterMsg = $root.preregistration.RegisterMsg.decode(reader, reader.uint32());
+                    break;
                 case 97:
                     message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 98:
+                    message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1458,6 +1486,16 @@ $root.bnsd = (function() {
                         return "accountDeleteAccountCertificateMsg." + error;
                 }
             }
+            if (message.preregistrationRegisterMsg != null && message.hasOwnProperty("preregistrationRegisterMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.preregistration.RegisterMsg.verify(message.preregistrationRegisterMsg);
+                    if (error)
+                        return "preregistrationRegisterMsg." + error;
+                }
+            }
             if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
                 if (properties.sum === 1)
                     return "sum: multiple values";
@@ -1466,6 +1504,16 @@ $root.bnsd = (function() {
                     var error = $root.cash.UpdateConfigurationMsg.verify(message.cashUpdateConfigurationMsg);
                     if (error)
                         return "cashUpdateConfigurationMsg." + error;
+                }
+            }
+            if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg")) {
+                if (properties.sum === 1)
+                    return "sum: multiple values";
+                properties.sum = 1;
+                {
+                    var error = $root.txfee.UpdateConfigurationMsg.verify(message.txfeeUpdateConfigurationMsg);
+                    if (error)
+                        return "txfeeUpdateConfigurationMsg." + error;
                 }
             }
             return null;
@@ -1718,10 +1766,20 @@ $root.bnsd = (function() {
                     throw TypeError(".bnsd.Tx.accountDeleteAccountCertificateMsg: object expected");
                 message.accountDeleteAccountCertificateMsg = $root.account.DeleteAccountCertificateMsg.fromObject(object.accountDeleteAccountCertificateMsg);
             }
+            if (object.preregistrationRegisterMsg != null) {
+                if (typeof object.preregistrationRegisterMsg !== "object")
+                    throw TypeError(".bnsd.Tx.preregistrationRegisterMsg: object expected");
+                message.preregistrationRegisterMsg = $root.preregistration.RegisterMsg.fromObject(object.preregistrationRegisterMsg);
+            }
             if (object.cashUpdateConfigurationMsg != null) {
                 if (typeof object.cashUpdateConfigurationMsg !== "object")
                     throw TypeError(".bnsd.Tx.cashUpdateConfigurationMsg: object expected");
                 message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.fromObject(object.cashUpdateConfigurationMsg);
+            }
+            if (object.txfeeUpdateConfigurationMsg != null) {
+                if (typeof object.txfeeUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.Tx.txfeeUpdateConfigurationMsg: object expected");
+                message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.fromObject(object.txfeeUpdateConfigurationMsg);
             }
             return message;
         };
@@ -1967,10 +2025,20 @@ $root.bnsd = (function() {
                 if (options.oneofs)
                     object.sum = "accountDeleteAccountCertificateMsg";
             }
+            if (message.preregistrationRegisterMsg != null && message.hasOwnProperty("preregistrationRegisterMsg")) {
+                object.preregistrationRegisterMsg = $root.preregistration.RegisterMsg.toObject(message.preregistrationRegisterMsg, options);
+                if (options.oneofs)
+                    object.sum = "preregistrationRegisterMsg";
+            }
             if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg")) {
                 object.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.toObject(message.cashUpdateConfigurationMsg, options);
                 if (options.oneofs)
                     object.sum = "cashUpdateConfigurationMsg";
+            }
+            if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg")) {
+                object.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.toObject(message.txfeeUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.sum = "txfeeUpdateConfigurationMsg";
             }
             return object;
         };
@@ -2232,7 +2300,8 @@ $root.bnsd = (function() {
              * @property {account.IRenewAccountMsg|null} [accountRenewAccountMsg] Union accountRenewAccountMsg
              * @property {account.IAddAccountCertificateMsg|null} [accountAddAccountCertificateMsg] Union accountAddAccountCertificateMsg
              * @property {account.IDeleteAccountCertificateMsg|null} [accountDeleteAccountCertificateMsg] Union accountDeleteAccountCertificateMsg
-             * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] Union cashUpdateConfigurationMsg
+             * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] 96 is used by preregistration
+             * @property {txfee.IUpdateConfigurationMsg|null} [txfeeUpdateConfigurationMsg] Union txfeeUpdateConfigurationMsg
              */
 
             /**
@@ -2507,24 +2576,32 @@ $root.bnsd = (function() {
             Union.prototype.accountDeleteAccountCertificateMsg = null;
 
             /**
-             * Union cashUpdateConfigurationMsg.
+             * 96 is used by preregistration
              * @member {cash.IUpdateConfigurationMsg|null|undefined} cashUpdateConfigurationMsg
              * @memberof bnsd.ExecuteBatchMsg.Union
              * @instance
              */
             Union.prototype.cashUpdateConfigurationMsg = null;
 
+            /**
+             * Union txfeeUpdateConfigurationMsg.
+             * @member {txfee.IUpdateConfigurationMsg|null|undefined} txfeeUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.txfeeUpdateConfigurationMsg = null;
+
             // OneOf field names bound to virtual getters and setters
             var $oneOfFields;
 
             /**
              * Union sum.
-             * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"cashUpdateConfigurationMsg"|undefined} sum
+             * @member {"cashSendMsg"|"escrowCreateMsg"|"escrowReleaseMsg"|"escrowReturnMsg"|"escrowUpdatePartiesMsg"|"multisigCreateMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"accountUpdateConfigurationMsg"|"accountRegisterDomainMsg"|"accountReplaceAccountMsgFeesMsg"|"accountTransferDomainMsg"|"accountRenewDomainMsg"|"accountDeleteDomainMsg"|"accountRegisterAccountMsg"|"accountTransferAccountMsg"|"accountReplaceAccountTargetsMsg"|"accountDeleteAccountMsg"|"accountFlushDomainMsg"|"accountRenewAccountMsg"|"accountAddAccountCertificateMsg"|"accountDeleteAccountCertificateMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|undefined} sum
              * @memberof bnsd.ExecuteBatchMsg.Union
              * @instance
              */
             Object.defineProperty(Union.prototype, "sum", {
-                get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "cashUpdateConfigurationMsg"]),
+                get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowCreateMsg", "escrowReleaseMsg", "escrowReturnMsg", "escrowUpdatePartiesMsg", "multisigCreateMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "accountUpdateConfigurationMsg", "accountRegisterDomainMsg", "accountReplaceAccountMsgFeesMsg", "accountTransferDomainMsg", "accountRenewDomainMsg", "accountDeleteDomainMsg", "accountRegisterAccountMsg", "accountTransferAccountMsg", "accountReplaceAccountTargetsMsg", "accountDeleteAccountMsg", "accountFlushDomainMsg", "accountRenewAccountMsg", "accountAddAccountCertificateMsg", "accountDeleteAccountCertificateMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg"]),
                 set: $util.oneOfSetter($oneOfFields)
             });
 
@@ -2618,6 +2695,8 @@ $root.bnsd = (function() {
                     $root.account.DeleteAccountCertificateMsg.encode(message.accountDeleteAccountCertificateMsg, writer.uint32(/* id 95, wireType 2 =*/762).fork()).ldelim();
                 if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg"))
                     $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
+                if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg"))
+                    $root.txfee.UpdateConfigurationMsg.encode(message.txfeeUpdateConfigurationMsg, writer.uint32(/* id 98, wireType 2 =*/786).fork()).ldelim();
                 return writer;
             };
 
@@ -2750,6 +2829,9 @@ $root.bnsd = (function() {
                         break;
                     case 97:
                         message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 98:
+                        message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -3115,6 +3197,16 @@ $root.bnsd = (function() {
                             return "cashUpdateConfigurationMsg." + error;
                     }
                 }
+                if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.txfee.UpdateConfigurationMsg.verify(message.txfeeUpdateConfigurationMsg);
+                        if (error)
+                            return "txfeeUpdateConfigurationMsg." + error;
+                    }
+                }
                 return null;
             };
 
@@ -3294,6 +3386,11 @@ $root.bnsd = (function() {
                     if (typeof object.cashUpdateConfigurationMsg !== "object")
                         throw TypeError(".bnsd.ExecuteBatchMsg.Union.cashUpdateConfigurationMsg: object expected");
                     message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.fromObject(object.cashUpdateConfigurationMsg);
+                }
+                if (object.txfeeUpdateConfigurationMsg != null) {
+                    if (typeof object.txfeeUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteBatchMsg.Union.txfeeUpdateConfigurationMsg: object expected");
+                    message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.fromObject(object.txfeeUpdateConfigurationMsg);
                 }
                 return message;
             };
@@ -3476,6 +3573,11 @@ $root.bnsd = (function() {
                     if (options.oneofs)
                         object.sum = "cashUpdateConfigurationMsg";
                 }
+                if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg")) {
+                    object.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.toObject(message.txfeeUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "txfeeUpdateConfigurationMsg";
+                }
                 return object;
             };
 
@@ -3522,7 +3624,8 @@ $root.bnsd = (function() {
          * @property {gov.ICreateTextResolutionMsg|null} [govCreateTextResolutionMsg] ProposalOptions govCreateTextResolutionMsg
          * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] ProposalOptions msgfeeSetMsgFeeMsg
          * @property {datamigration.IExecuteMigrationMsg|null} [datamigrationExecuteMigrationMsg] ProposalOptions datamigrationExecuteMigrationMsg
-         * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] ProposalOptions cashUpdateConfigurationMsg
+         * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] 82-95 are reserved for the account extension messages
+         * @property {txfee.IUpdateConfigurationMsg|null} [txfeeUpdateConfigurationMsg] ProposalOptions txfeeUpdateConfigurationMsg
          */
 
         /**
@@ -3701,24 +3804,32 @@ $root.bnsd = (function() {
         ProposalOptions.prototype.datamigrationExecuteMigrationMsg = null;
 
         /**
-         * ProposalOptions cashUpdateConfigurationMsg.
+         * 82-95 are reserved for the account extension messages
          * @member {cash.IUpdateConfigurationMsg|null|undefined} cashUpdateConfigurationMsg
          * @memberof bnsd.ProposalOptions
          * @instance
          */
         ProposalOptions.prototype.cashUpdateConfigurationMsg = null;
 
+        /**
+         * ProposalOptions txfeeUpdateConfigurationMsg.
+         * @member {txfee.IUpdateConfigurationMsg|null|undefined} txfeeUpdateConfigurationMsg
+         * @memberof bnsd.ProposalOptions
+         * @instance
+         */
+        ProposalOptions.prototype.txfeeUpdateConfigurationMsg = null;
+
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
 
         /**
          * ProposalOptions option.
-         * @member {"cashSendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeProposalBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"cashUpdateConfigurationMsg"|undefined} option
+         * @member {"cashSendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"currencyCreateMsg"|"executeProposalBatchMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"migrationUpgradeSchemaMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|undefined} option
          * @memberof bnsd.ProposalOptions
          * @instance
          */
         Object.defineProperty(ProposalOptions.prototype, "option", {
-            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeProposalBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "cashUpdateConfigurationMsg"]),
+            get: $util.oneOfGetter($oneOfFields = ["cashSendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "currencyCreateMsg", "executeProposalBatchMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "migrationUpgradeSchemaMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -3788,6 +3899,8 @@ $root.bnsd = (function() {
                 $root.datamigration.ExecuteMigrationMsg.encode(message.datamigrationExecuteMigrationMsg, writer.uint32(/* id 81, wireType 2 =*/650).fork()).ldelim();
             if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg"))
                 $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
+            if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg"))
+                $root.txfee.UpdateConfigurationMsg.encode(message.txfeeUpdateConfigurationMsg, writer.uint32(/* id 98, wireType 2 =*/786).fork()).ldelim();
             return writer;
         };
 
@@ -3884,6 +3997,9 @@ $root.bnsd = (function() {
                     break;
                 case 97:
                     message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                    break;
+                case 98:
+                    message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4129,6 +4245,16 @@ $root.bnsd = (function() {
                         return "cashUpdateConfigurationMsg." + error;
                 }
             }
+            if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg")) {
+                if (properties.option === 1)
+                    return "option: multiple values";
+                properties.option = 1;
+                {
+                    var error = $root.txfee.UpdateConfigurationMsg.verify(message.txfeeUpdateConfigurationMsg);
+                    if (error)
+                        return "txfeeUpdateConfigurationMsg." + error;
+                }
+            }
             return null;
         };
 
@@ -4248,6 +4374,11 @@ $root.bnsd = (function() {
                 if (typeof object.cashUpdateConfigurationMsg !== "object")
                     throw TypeError(".bnsd.ProposalOptions.cashUpdateConfigurationMsg: object expected");
                 message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.fromObject(object.cashUpdateConfigurationMsg);
+            }
+            if (object.txfeeUpdateConfigurationMsg != null) {
+                if (typeof object.txfeeUpdateConfigurationMsg !== "object")
+                    throw TypeError(".bnsd.ProposalOptions.txfeeUpdateConfigurationMsg: object expected");
+                message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.fromObject(object.txfeeUpdateConfigurationMsg);
             }
             return message;
         };
@@ -4369,6 +4500,11 @@ $root.bnsd = (function() {
                 object.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.toObject(message.cashUpdateConfigurationMsg, options);
                 if (options.oneofs)
                     object.option = "cashUpdateConfigurationMsg";
+            }
+            if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg")) {
+                object.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.toObject(message.txfeeUpdateConfigurationMsg, options);
+                if (options.oneofs)
+                    object.option = "txfeeUpdateConfigurationMsg";
             }
             return object;
         };
@@ -4615,7 +4751,8 @@ $root.bnsd = (function() {
              * @property {gov.ICreateTextResolutionMsg|null} [govCreateTextResolutionMsg] Union govCreateTextResolutionMsg
              * @property {msgfee.ISetMsgFeeMsg|null} [msgfeeSetMsgFeeMsg] Union msgfeeSetMsgFeeMsg
              * @property {datamigration.IExecuteMigrationMsg|null} [datamigrationExecuteMigrationMsg] Union datamigrationExecuteMigrationMsg
-             * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] Union cashUpdateConfigurationMsg
+             * @property {cash.IUpdateConfigurationMsg|null} [cashUpdateConfigurationMsg] 82-95 are reserved for the account extension messages
+             * @property {txfee.IUpdateConfigurationMsg|null} [txfeeUpdateConfigurationMsg] Union txfeeUpdateConfigurationMsg
              */
 
             /**
@@ -4770,24 +4907,32 @@ $root.bnsd = (function() {
             Union.prototype.datamigrationExecuteMigrationMsg = null;
 
             /**
-             * Union cashUpdateConfigurationMsg.
+             * 82-95 are reserved for the account extension messages
              * @member {cash.IUpdateConfigurationMsg|null|undefined} cashUpdateConfigurationMsg
              * @memberof bnsd.ExecuteProposalBatchMsg.Union
              * @instance
              */
             Union.prototype.cashUpdateConfigurationMsg = null;
 
+            /**
+             * Union txfeeUpdateConfigurationMsg.
+             * @member {txfee.IUpdateConfigurationMsg|null|undefined} txfeeUpdateConfigurationMsg
+             * @memberof bnsd.ExecuteProposalBatchMsg.Union
+             * @instance
+             */
+            Union.prototype.txfeeUpdateConfigurationMsg = null;
+
             // OneOf field names bound to virtual getters and setters
             var $oneOfFields;
 
             /**
              * Union sum.
-             * @member {"sendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"cashUpdateConfigurationMsg"|undefined} sum
+             * @member {"sendMsg"|"escrowReleaseMsg"|"updateEscrowPartiesMsg"|"multisigUpdateMsg"|"validatorsApplyDiffMsg"|"usernameRegisterTokenMsg"|"usernameTransferTokenMsg"|"usernameChangeTokenTargetsMsg"|"usernameUpdateConfigurationMsg"|"distributionCreateMsg"|"distributionMsg"|"distributionResetMsg"|"govUpdateElectorateMsg"|"govUpdateElectionRuleMsg"|"govCreateTextResolutionMsg"|"msgfeeSetMsgFeeMsg"|"datamigrationExecuteMigrationMsg"|"cashUpdateConfigurationMsg"|"txfeeUpdateConfigurationMsg"|undefined} sum
              * @memberof bnsd.ExecuteProposalBatchMsg.Union
              * @instance
              */
             Object.defineProperty(Union.prototype, "sum", {
-                get: $util.oneOfGetter($oneOfFields = ["sendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "cashUpdateConfigurationMsg"]),
+                get: $util.oneOfGetter($oneOfFields = ["sendMsg", "escrowReleaseMsg", "updateEscrowPartiesMsg", "multisigUpdateMsg", "validatorsApplyDiffMsg", "usernameRegisterTokenMsg", "usernameTransferTokenMsg", "usernameChangeTokenTargetsMsg", "usernameUpdateConfigurationMsg", "distributionCreateMsg", "distributionMsg", "distributionResetMsg", "govUpdateElectorateMsg", "govUpdateElectionRuleMsg", "govCreateTextResolutionMsg", "msgfeeSetMsgFeeMsg", "datamigrationExecuteMigrationMsg", "cashUpdateConfigurationMsg", "txfeeUpdateConfigurationMsg"]),
                 set: $util.oneOfSetter($oneOfFields)
             });
 
@@ -4851,6 +4996,8 @@ $root.bnsd = (function() {
                     $root.datamigration.ExecuteMigrationMsg.encode(message.datamigrationExecuteMigrationMsg, writer.uint32(/* id 81, wireType 2 =*/650).fork()).ldelim();
                 if (message.cashUpdateConfigurationMsg != null && message.hasOwnProperty("cashUpdateConfigurationMsg"))
                     $root.cash.UpdateConfigurationMsg.encode(message.cashUpdateConfigurationMsg, writer.uint32(/* id 97, wireType 2 =*/778).fork()).ldelim();
+                if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg"))
+                    $root.txfee.UpdateConfigurationMsg.encode(message.txfeeUpdateConfigurationMsg, writer.uint32(/* id 98, wireType 2 =*/786).fork()).ldelim();
                 return writer;
             };
 
@@ -4938,6 +5085,9 @@ $root.bnsd = (function() {
                         break;
                     case 97:
                         message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.decode(reader, reader.uint32());
+                        break;
+                    case 98:
+                        message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.decode(reader, reader.uint32());
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -5153,6 +5303,16 @@ $root.bnsd = (function() {
                             return "cashUpdateConfigurationMsg." + error;
                     }
                 }
+                if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg")) {
+                    if (properties.sum === 1)
+                        return "sum: multiple values";
+                    properties.sum = 1;
+                    {
+                        var error = $root.txfee.UpdateConfigurationMsg.verify(message.txfeeUpdateConfigurationMsg);
+                        if (error)
+                            return "txfeeUpdateConfigurationMsg." + error;
+                    }
+                }
                 return null;
             };
 
@@ -5257,6 +5417,11 @@ $root.bnsd = (function() {
                     if (typeof object.cashUpdateConfigurationMsg !== "object")
                         throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.cashUpdateConfigurationMsg: object expected");
                     message.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.fromObject(object.cashUpdateConfigurationMsg);
+                }
+                if (object.txfeeUpdateConfigurationMsg != null) {
+                    if (typeof object.txfeeUpdateConfigurationMsg !== "object")
+                        throw TypeError(".bnsd.ExecuteProposalBatchMsg.Union.txfeeUpdateConfigurationMsg: object expected");
+                    message.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.fromObject(object.txfeeUpdateConfigurationMsg);
                 }
                 return message;
             };
@@ -5363,6 +5528,11 @@ $root.bnsd = (function() {
                     object.cashUpdateConfigurationMsg = $root.cash.UpdateConfigurationMsg.toObject(message.cashUpdateConfigurationMsg, options);
                     if (options.oneofs)
                         object.sum = "cashUpdateConfigurationMsg";
+                }
+                if (message.txfeeUpdateConfigurationMsg != null && message.hasOwnProperty("txfeeUpdateConfigurationMsg")) {
+                    object.txfeeUpdateConfigurationMsg = $root.txfee.UpdateConfigurationMsg.toObject(message.txfeeUpdateConfigurationMsg, options);
+                    if (options.oneofs)
+                        object.sum = "txfeeUpdateConfigurationMsg";
                 }
                 return object;
             };
@@ -10984,6 +11154,734 @@ $root.account = (function() {
     })();
 
     return account;
+})();
+
+$root.preregistration = (function() {
+
+    /**
+     * Namespace preregistration.
+     * @exports preregistration
+     * @namespace
+     */
+    var preregistration = {};
+
+    preregistration.Record = (function() {
+
+        /**
+         * Properties of a Record.
+         * @memberof preregistration
+         * @interface IRecord
+         * @property {weave.IMetadata|null} [metadata] Record metadata
+         * @property {string|null} [domain] Record domain
+         * @property {Uint8Array|null} [owner] Record owner
+         */
+
+        /**
+         * Constructs a new Record.
+         * @memberof preregistration
+         * @classdesc Represents a Record.
+         * @implements IRecord
+         * @constructor
+         * @param {preregistration.IRecord=} [properties] Properties to set
+         */
+        function Record(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Record metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof preregistration.Record
+         * @instance
+         */
+        Record.prototype.metadata = null;
+
+        /**
+         * Record domain.
+         * @member {string} domain
+         * @memberof preregistration.Record
+         * @instance
+         */
+        Record.prototype.domain = "";
+
+        /**
+         * Record owner.
+         * @member {Uint8Array} owner
+         * @memberof preregistration.Record
+         * @instance
+         */
+        Record.prototype.owner = $util.newBuffer([]);
+
+        /**
+         * Creates a new Record instance using the specified properties.
+         * @function create
+         * @memberof preregistration.Record
+         * @static
+         * @param {preregistration.IRecord=} [properties] Properties to set
+         * @returns {preregistration.Record} Record instance
+         */
+        Record.create = function create(properties) {
+            return new Record(properties);
+        };
+
+        /**
+         * Encodes the specified Record message. Does not implicitly {@link preregistration.Record.verify|verify} messages.
+         * @function encode
+         * @memberof preregistration.Record
+         * @static
+         * @param {preregistration.IRecord} message Record message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Record.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.domain);
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.owner);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Record message, length delimited. Does not implicitly {@link preregistration.Record.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof preregistration.Record
+         * @static
+         * @param {preregistration.IRecord} message Record message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Record.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Record message from the specified reader or buffer.
+         * @function decode
+         * @memberof preregistration.Record
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {preregistration.Record} Record
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Record.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.preregistration.Record();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.domain = reader.string();
+                    break;
+                case 3:
+                    message.owner = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Record message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof preregistration.Record
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {preregistration.Record} Record
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Record.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Record message.
+         * @function verify
+         * @memberof preregistration.Record
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Record.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                if (!$util.isString(message.domain))
+                    return "domain: string expected";
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a Record message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof preregistration.Record
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {preregistration.Record} Record
+         */
+        Record.fromObject = function fromObject(object) {
+            if (object instanceof $root.preregistration.Record)
+                return object;
+            var message = new $root.preregistration.Record();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".preregistration.Record.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.domain != null)
+                message.domain = String(object.domain);
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Record message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof preregistration.Record
+         * @static
+         * @param {preregistration.Record} message Record
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Record.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.domain = "";
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                object.domain = message.domain;
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            return object;
+        };
+
+        /**
+         * Converts this Record to JSON.
+         * @function toJSON
+         * @memberof preregistration.Record
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Record.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Record;
+    })();
+
+    preregistration.RegisterMsg = (function() {
+
+        /**
+         * Properties of a RegisterMsg.
+         * @memberof preregistration
+         * @interface IRegisterMsg
+         * @property {weave.IMetadata|null} [metadata] RegisterMsg metadata
+         * @property {string|null} [domain] RegisterMsg domain
+         * @property {Uint8Array|null} [owner] RegisterMsg owner
+         */
+
+        /**
+         * Constructs a new RegisterMsg.
+         * @memberof preregistration
+         * @classdesc Represents a RegisterMsg.
+         * @implements IRegisterMsg
+         * @constructor
+         * @param {preregistration.IRegisterMsg=} [properties] Properties to set
+         */
+        function RegisterMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * RegisterMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof preregistration.RegisterMsg
+         * @instance
+         */
+        RegisterMsg.prototype.metadata = null;
+
+        /**
+         * RegisterMsg domain.
+         * @member {string} domain
+         * @memberof preregistration.RegisterMsg
+         * @instance
+         */
+        RegisterMsg.prototype.domain = "";
+
+        /**
+         * RegisterMsg owner.
+         * @member {Uint8Array} owner
+         * @memberof preregistration.RegisterMsg
+         * @instance
+         */
+        RegisterMsg.prototype.owner = $util.newBuffer([]);
+
+        /**
+         * Creates a new RegisterMsg instance using the specified properties.
+         * @function create
+         * @memberof preregistration.RegisterMsg
+         * @static
+         * @param {preregistration.IRegisterMsg=} [properties] Properties to set
+         * @returns {preregistration.RegisterMsg} RegisterMsg instance
+         */
+        RegisterMsg.create = function create(properties) {
+            return new RegisterMsg(properties);
+        };
+
+        /**
+         * Encodes the specified RegisterMsg message. Does not implicitly {@link preregistration.RegisterMsg.verify|verify} messages.
+         * @function encode
+         * @memberof preregistration.RegisterMsg
+         * @static
+         * @param {preregistration.IRegisterMsg} message RegisterMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RegisterMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.domain);
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.owner);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified RegisterMsg message, length delimited. Does not implicitly {@link preregistration.RegisterMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof preregistration.RegisterMsg
+         * @static
+         * @param {preregistration.IRegisterMsg} message RegisterMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RegisterMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a RegisterMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof preregistration.RegisterMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {preregistration.RegisterMsg} RegisterMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RegisterMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.preregistration.RegisterMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.domain = reader.string();
+                    break;
+                case 3:
+                    message.owner = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a RegisterMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof preregistration.RegisterMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {preregistration.RegisterMsg} RegisterMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RegisterMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a RegisterMsg message.
+         * @function verify
+         * @memberof preregistration.RegisterMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        RegisterMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                if (!$util.isString(message.domain))
+                    return "domain: string expected";
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a RegisterMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof preregistration.RegisterMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {preregistration.RegisterMsg} RegisterMsg
+         */
+        RegisterMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.preregistration.RegisterMsg)
+                return object;
+            var message = new $root.preregistration.RegisterMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".preregistration.RegisterMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.domain != null)
+                message.domain = String(object.domain);
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a RegisterMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof preregistration.RegisterMsg
+         * @static
+         * @param {preregistration.RegisterMsg} message RegisterMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        RegisterMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.domain = "";
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.domain != null && message.hasOwnProperty("domain"))
+                object.domain = message.domain;
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            return object;
+        };
+
+        /**
+         * Converts this RegisterMsg to JSON.
+         * @function toJSON
+         * @memberof preregistration.RegisterMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        RegisterMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return RegisterMsg;
+    })();
+
+    preregistration.Configuration = (function() {
+
+        /**
+         * Properties of a Configuration.
+         * @memberof preregistration
+         * @interface IConfiguration
+         * @property {weave.IMetadata|null} [metadata] Configuration metadata
+         * @property {Uint8Array|null} [owner] needed to make use of gconf.NewUpdateConfigurationHandler
+         */
+
+        /**
+         * Constructs a new Configuration.
+         * @memberof preregistration
+         * @classdesc Represents a Configuration.
+         * @implements IConfiguration
+         * @constructor
+         * @param {preregistration.IConfiguration=} [properties] Properties to set
+         */
+        function Configuration(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Configuration metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof preregistration.Configuration
+         * @instance
+         */
+        Configuration.prototype.metadata = null;
+
+        /**
+         * needed to make use of gconf.NewUpdateConfigurationHandler
+         * @member {Uint8Array} owner
+         * @memberof preregistration.Configuration
+         * @instance
+         */
+        Configuration.prototype.owner = $util.newBuffer([]);
+
+        /**
+         * Creates a new Configuration instance using the specified properties.
+         * @function create
+         * @memberof preregistration.Configuration
+         * @static
+         * @param {preregistration.IConfiguration=} [properties] Properties to set
+         * @returns {preregistration.Configuration} Configuration instance
+         */
+        Configuration.create = function create(properties) {
+            return new Configuration(properties);
+        };
+
+        /**
+         * Encodes the specified Configuration message. Does not implicitly {@link preregistration.Configuration.verify|verify} messages.
+         * @function encode
+         * @memberof preregistration.Configuration
+         * @static
+         * @param {preregistration.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Configuration message, length delimited. Does not implicitly {@link preregistration.Configuration.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof preregistration.Configuration
+         * @static
+         * @param {preregistration.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer.
+         * @function decode
+         * @memberof preregistration.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {preregistration.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.preregistration.Configuration();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.owner = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof preregistration.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {preregistration.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Configuration message.
+         * @function verify
+         * @memberof preregistration.Configuration
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Configuration.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof preregistration.Configuration
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {preregistration.Configuration} Configuration
+         */
+        Configuration.fromObject = function fromObject(object) {
+            if (object instanceof $root.preregistration.Configuration)
+                return object;
+            var message = new $root.preregistration.Configuration();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".preregistration.Configuration.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof preregistration.Configuration
+         * @static
+         * @param {preregistration.Configuration} message Configuration
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Configuration.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            return object;
+        };
+
+        /**
+         * Converts this Configuration to JSON.
+         * @function toJSON
+         * @memberof preregistration.Configuration
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Configuration.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Configuration;
+    })();
+
+    return preregistration;
 })();
 
 $root.username = (function() {
@@ -18521,7 +19419,7 @@ $root.cash = (function() {
          * Properties of a FeeInfo.
          * @memberof cash
          * @interface IFeeInfo
-         * @property {Uint8Array|null} [payer] FeeInfo payer
+         * @property {Uint8Array|null} [payer] field, as the signer order is not guaranteed.
          * @property {coin.ICoin|null} [fees] FeeInfo fees
          */
 
@@ -18541,7 +19439,7 @@ $root.cash = (function() {
         }
 
         /**
-         * FeeInfo payer.
+         * field, as the signer order is not guaranteed.
          * @member {Uint8Array} payer
          * @memberof cash.FeeInfo
          * @instance
@@ -21721,7 +22619,7 @@ $root.escrow = (function() {
         /**
          * Constructs a new CreateMsg.
          * @memberof escrow
-         * @classdesc The rest must be defined
+         * @classdesc Message must be authorized by the source.
          * @implements ICreateMsg
          * @constructor
          * @param {escrow.ICreateMsg=} [properties] Properties to set
@@ -22105,7 +23003,7 @@ $root.escrow = (function() {
         /**
          * Constructs a new ReleaseMsg.
          * @memberof escrow
-         * @classdesc May be a subset of the current balance.
+         * @classdesc current balance.
          * @implements IReleaseMsg
          * @constructor
          * @param {escrow.IReleaseMsg=} [properties] Properties to set
@@ -25717,7 +26615,7 @@ $root.gov = (function() {
          * @property {string|null} [description] Human readable description with 3 to 5000 chars.
          * @property {Uint8Array|null} [electionRuleId] ElectionRuleID is a reference to the election rule
          * @property {number|Long|null} [startTime] Unix timestamp when the proposal starts. Must be in the future.
-         * @property {Uint8Array|null} [author] When not set it will default to the main signer.
+         * @property {Uint8Array|null} [author] field, as the signer order is not guaranteed.
          */
 
         /**
@@ -25784,7 +26682,7 @@ $root.gov = (function() {
         CreateProposalMsg.prototype.startTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * When not set it will default to the main signer.
+         * field, as the signer order is not guaranteed.
          * @member {Uint8Array} author
          * @memberof gov.CreateProposalMsg
          * @instance
@@ -26321,7 +27219,7 @@ $root.gov = (function() {
          * @interface IVoteMsg
          * @property {weave.IMetadata|null} [metadata] VoteMsg metadata
          * @property {Uint8Array|null} [proposalId] The unique id of the proposal.
-         * @property {Uint8Array|null} [voter] must be included in the electorate for a valid vote.
+         * @property {Uint8Array|null} [voter] field, as the signer order is not guaranteed.
          * @property {gov.VoteOption|null} [selected] Option for the vote. Must be Yes, No or Abstain for a valid vote.
          */
 
@@ -26357,7 +27255,7 @@ $root.gov = (function() {
         VoteMsg.prototype.proposalId = $util.newBuffer([]);
 
         /**
-         * must be included in the electorate for a valid vote.
+         * field, as the signer order is not guaranteed.
          * @member {Uint8Array} voter
          * @memberof gov.VoteMsg
          * @instance
@@ -32342,6 +33240,511 @@ $root.sigs = (function() {
     })();
 
     return sigs;
+})();
+
+$root.txfee = (function() {
+
+    /**
+     * Namespace txfee.
+     * @exports txfee
+     * @namespace
+     */
+    var txfee = {};
+
+    txfee.Configuration = (function() {
+
+        /**
+         * Properties of a Configuration.
+         * @memberof txfee
+         * @interface IConfiguration
+         * @property {weave.IMetadata|null} [metadata] Configuration metadata
+         * @property {Uint8Array|null} [owner] needed to make use of gconf.NewUpdateConfigurationHandler
+         * @property {number|null} [freeBytes] All computations are done using uint64 precision and only integer values.
+         * @property {coin.ICoin|null} [baseFee] fee amount.
+         */
+
+        /**
+         * Constructs a new Configuration.
+         * @memberof txfee
+         * @classdesc Represents a Configuration.
+         * @implements IConfiguration
+         * @constructor
+         * @param {txfee.IConfiguration=} [properties] Properties to set
+         */
+        function Configuration(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Configuration metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof txfee.Configuration
+         * @instance
+         */
+        Configuration.prototype.metadata = null;
+
+        /**
+         * needed to make use of gconf.NewUpdateConfigurationHandler
+         * @member {Uint8Array} owner
+         * @memberof txfee.Configuration
+         * @instance
+         */
+        Configuration.prototype.owner = $util.newBuffer([]);
+
+        /**
+         * All computations are done using uint64 precision and only integer values.
+         * @member {number} freeBytes
+         * @memberof txfee.Configuration
+         * @instance
+         */
+        Configuration.prototype.freeBytes = 0;
+
+        /**
+         * fee amount.
+         * @member {coin.ICoin|null|undefined} baseFee
+         * @memberof txfee.Configuration
+         * @instance
+         */
+        Configuration.prototype.baseFee = null;
+
+        /**
+         * Creates a new Configuration instance using the specified properties.
+         * @function create
+         * @memberof txfee.Configuration
+         * @static
+         * @param {txfee.IConfiguration=} [properties] Properties to set
+         * @returns {txfee.Configuration} Configuration instance
+         */
+        Configuration.create = function create(properties) {
+            return new Configuration(properties);
+        };
+
+        /**
+         * Encodes the specified Configuration message. Does not implicitly {@link txfee.Configuration.verify|verify} messages.
+         * @function encode
+         * @memberof txfee.Configuration
+         * @static
+         * @param {txfee.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
+            if (message.freeBytes != null && message.hasOwnProperty("freeBytes"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.freeBytes);
+            if (message.baseFee != null && message.hasOwnProperty("baseFee"))
+                $root.coin.Coin.encode(message.baseFee, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Configuration message, length delimited. Does not implicitly {@link txfee.Configuration.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof txfee.Configuration
+         * @static
+         * @param {txfee.IConfiguration} message Configuration message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Configuration.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer.
+         * @function decode
+         * @memberof txfee.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {txfee.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.txfee.Configuration();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.owner = reader.bytes();
+                    break;
+                case 3:
+                    message.freeBytes = reader.int32();
+                    break;
+                case 4:
+                    message.baseFee = $root.coin.Coin.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Configuration message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof txfee.Configuration
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {txfee.Configuration} Configuration
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Configuration.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Configuration message.
+         * @function verify
+         * @memberof txfee.Configuration
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Configuration.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
+            if (message.freeBytes != null && message.hasOwnProperty("freeBytes"))
+                if (!$util.isInteger(message.freeBytes))
+                    return "freeBytes: integer expected";
+            if (message.baseFee != null && message.hasOwnProperty("baseFee")) {
+                var error = $root.coin.Coin.verify(message.baseFee);
+                if (error)
+                    return "baseFee." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a Configuration message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof txfee.Configuration
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {txfee.Configuration} Configuration
+         */
+        Configuration.fromObject = function fromObject(object) {
+            if (object instanceof $root.txfee.Configuration)
+                return object;
+            var message = new $root.txfee.Configuration();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".txfee.Configuration.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length)
+                    message.owner = object.owner;
+            if (object.freeBytes != null)
+                message.freeBytes = object.freeBytes | 0;
+            if (object.baseFee != null) {
+                if (typeof object.baseFee !== "object")
+                    throw TypeError(".txfee.Configuration.baseFee: object expected");
+                message.baseFee = $root.coin.Coin.fromObject(object.baseFee);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Configuration message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof txfee.Configuration
+         * @static
+         * @param {txfee.Configuration} message Configuration
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Configuration.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
+                }
+                object.freeBytes = 0;
+                object.baseFee = null;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
+            if (message.freeBytes != null && message.hasOwnProperty("freeBytes"))
+                object.freeBytes = message.freeBytes;
+            if (message.baseFee != null && message.hasOwnProperty("baseFee"))
+                object.baseFee = $root.coin.Coin.toObject(message.baseFee, options);
+            return object;
+        };
+
+        /**
+         * Converts this Configuration to JSON.
+         * @function toJSON
+         * @memberof txfee.Configuration
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Configuration.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return Configuration;
+    })();
+
+    txfee.UpdateConfigurationMsg = (function() {
+
+        /**
+         * Properties of an UpdateConfigurationMsg.
+         * @memberof txfee
+         * @interface IUpdateConfigurationMsg
+         * @property {weave.IMetadata|null} [metadata] UpdateConfigurationMsg metadata
+         * @property {txfee.IConfiguration|null} [patch] UpdateConfigurationMsg patch
+         */
+
+        /**
+         * Constructs a new UpdateConfigurationMsg.
+         * @memberof txfee
+         * @classdesc Represents an UpdateConfigurationMsg.
+         * @implements IUpdateConfigurationMsg
+         * @constructor
+         * @param {txfee.IUpdateConfigurationMsg=} [properties] Properties to set
+         */
+        function UpdateConfigurationMsg(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdateConfigurationMsg metadata.
+         * @member {weave.IMetadata|null|undefined} metadata
+         * @memberof txfee.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.metadata = null;
+
+        /**
+         * UpdateConfigurationMsg patch.
+         * @member {txfee.IConfiguration|null|undefined} patch
+         * @memberof txfee.UpdateConfigurationMsg
+         * @instance
+         */
+        UpdateConfigurationMsg.prototype.patch = null;
+
+        /**
+         * Creates a new UpdateConfigurationMsg instance using the specified properties.
+         * @function create
+         * @memberof txfee.UpdateConfigurationMsg
+         * @static
+         * @param {txfee.IUpdateConfigurationMsg=} [properties] Properties to set
+         * @returns {txfee.UpdateConfigurationMsg} UpdateConfigurationMsg instance
+         */
+        UpdateConfigurationMsg.create = function create(properties) {
+            return new UpdateConfigurationMsg(properties);
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message. Does not implicitly {@link txfee.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encode
+         * @memberof txfee.UpdateConfigurationMsg
+         * @static
+         * @param {txfee.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                $root.weave.Metadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                $root.txfee.Configuration.encode(message.patch, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdateConfigurationMsg message, length delimited. Does not implicitly {@link txfee.UpdateConfigurationMsg.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof txfee.UpdateConfigurationMsg
+         * @static
+         * @param {txfee.IUpdateConfigurationMsg} message UpdateConfigurationMsg message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdateConfigurationMsg.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer.
+         * @function decode
+         * @memberof txfee.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {txfee.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.txfee.UpdateConfigurationMsg();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.metadata = $root.weave.Metadata.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.patch = $root.txfee.Configuration.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdateConfigurationMsg message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof txfee.UpdateConfigurationMsg
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {txfee.UpdateConfigurationMsg} UpdateConfigurationMsg
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdateConfigurationMsg.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdateConfigurationMsg message.
+         * @function verify
+         * @memberof txfee.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdateConfigurationMsg.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                var error = $root.weave.Metadata.verify(message.metadata);
+                if (error)
+                    return "metadata." + error;
+            }
+            if (message.patch != null && message.hasOwnProperty("patch")) {
+                var error = $root.txfee.Configuration.verify(message.patch);
+                if (error)
+                    return "patch." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates an UpdateConfigurationMsg message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof txfee.UpdateConfigurationMsg
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {txfee.UpdateConfigurationMsg} UpdateConfigurationMsg
+         */
+        UpdateConfigurationMsg.fromObject = function fromObject(object) {
+            if (object instanceof $root.txfee.UpdateConfigurationMsg)
+                return object;
+            var message = new $root.txfee.UpdateConfigurationMsg();
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".txfee.UpdateConfigurationMsg.metadata: object expected");
+                message.metadata = $root.weave.Metadata.fromObject(object.metadata);
+            }
+            if (object.patch != null) {
+                if (typeof object.patch !== "object")
+                    throw TypeError(".txfee.UpdateConfigurationMsg.patch: object expected");
+                message.patch = $root.txfee.Configuration.fromObject(object.patch);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdateConfigurationMsg message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof txfee.UpdateConfigurationMsg
+         * @static
+         * @param {txfee.UpdateConfigurationMsg} message UpdateConfigurationMsg
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdateConfigurationMsg.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.metadata = null;
+                object.patch = null;
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
+            if (message.patch != null && message.hasOwnProperty("patch"))
+                object.patch = $root.txfee.Configuration.toObject(message.patch, options);
+            return object;
+        };
+
+        /**
+         * Converts this UpdateConfigurationMsg to JSON.
+         * @function toJSON
+         * @memberof txfee.UpdateConfigurationMsg
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdateConfigurationMsg.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return UpdateConfigurationMsg;
+    })();
+
+    return txfee;
 })();
 
 $root.validators = (function() {

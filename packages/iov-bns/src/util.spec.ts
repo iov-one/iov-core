@@ -19,7 +19,7 @@ const { fromHex, toAscii, toHex, toUtf8 } = Encoding;
 describe("Util", () => {
   describe("addressPrefix", () => {
     it("works for testnet", () => {
-      expect(addressPrefix("iov-lovenet" as ChainId)).toEqual("tiov");
+      expect(addressPrefix("iov-dancenet" as ChainId)).toEqual("tiov");
     });
 
     it("works for mainnet", () => {

@@ -47,6 +47,7 @@ import { Random } from "@iov/crypto";
 import { Encoding, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, makeJsonRpcId } from "@iov/jsonrpc";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
+import { sleep } from "@iov/utils";
 import axios from "axios";
 import BN from "bn.js";
 import equal from "fast-deep-equal";
@@ -73,10 +74,6 @@ import {
   toEthereumHex,
 } from "./utils";
 import { WsEthereumRpcClient } from "./wsethereumrpcclient";
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 function isHttpUrl(url: string): boolean {
   return ["http://", "https://"].some(prefix => url.startsWith(prefix));
@@ -289,15 +286,15 @@ export class EthereumConnection implements AtomicSwapConnection {
     return [...swaps.slice(0, swapIndex), ...swaps.slice(swapIndex + 1), newSwap];
   }
 
+  public readonly chainId: ChainId;
+  public readonly codec: EthereumCodec;
   private readonly pollIntervalMs: number;
   private readonly rpcClient: EthereumRpcClient;
-  private readonly myChainId: ChainId;
   private readonly scraperApiUrl: string | undefined;
   private readonly atomicSwapEtherContractAddress?: Address;
   private readonly atomicSwapErc20ContractAddress?: Address;
   private readonly erc20Tokens: Erc20TokensMap;
   private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
-  private readonly codec: EthereumCodec;
 
   public constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
     const baseUrlIsHttp = isHttpUrl(baseUrl);
@@ -308,7 +305,7 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     this.rpcClient = baseUrlIsWs ? new WsEthereumRpcClient(baseUrl) : new HttpEthereumRpcClient(baseUrl);
     this.pollIntervalMs = options.pollInterval ? options.pollInterval * 1000 : 4_000;
-    this.myChainId = chainId;
+    this.chainId = chainId;
     this.scraperApiUrl = options.scraperApiUrl;
 
     const ethereumClient = {
@@ -350,10 +347,6 @@ export class EthereumConnection implements AtomicSwapConnection {
 
   public disconnect(): void {
     this.rpcClient.disconnect();
-  }
-
-  public chainId(): ChainId {
-    return this.myChainId;
   }
 
   public async height(): Promise<number> {
@@ -990,7 +983,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     const confirmations = currentHeight - transactionHeight + 1;
     const transaction = this.codec.parseBytes(
       Encoding.toUtf8(JSON.stringify(transactionsResponse.result)) as PostableBytes,
-      this.myChainId,
+      this.chainId,
     );
     const transactionId = Parse.transactionId(transactionsResponse.result.hash);
     return [
@@ -1069,7 +1062,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           const confirmed: ConfirmedTransaction<SendTransaction> = {
             transaction: {
               kind: "bcp/send",
-              chainId: this.chainId(),
+              chainId: this.chainId,
               sender: toChecksummedAddress(transaction.from),
               recipient: toChecksummedAddress(transaction.to),
               amount: {

@@ -2,13 +2,18 @@ import { Address, Amount, ChainId, Token, TokenTicker } from "@iov/bcp";
 import { Encoding, Uint32, Uint64 } from "@iov/encoding";
 import BN from "bn.js";
 
+import { weaveFractionalDigits } from "./constants";
 import { asIntegerNumber, decodeNumericId, decodeString, ensure } from "./decodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
+  AccountConfiguration,
+  AccountMsgFee,
+  AccountNft,
   ActionKind,
   BnsUsernameNft,
   CashConfiguration,
   ChainAddressPair,
+  Domain,
   ElectionRule,
   Elector,
   Electorate,
@@ -23,6 +28,7 @@ import {
   ProposalResult,
   ProposalStatus,
   SendAction,
+  TxFeeConfiguration,
   Validators,
   VersionedId,
   Vote,
@@ -34,13 +40,11 @@ export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token 
   return {
     tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
     tokenName: ensure(data.name),
-    fractionalDigits: 9, // fixed for all weave tokens
+    fractionalDigits: weaveFractionalDigits,
   };
 }
 
 export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
-  const fractionalDigits = 9; // fixed for all tokens in BNS
-
   const wholeNumber = asIntegerNumber(coin.whole);
   if (wholeNumber < 0) {
     throw new Error("Component `whole` must not be negative");
@@ -52,13 +56,13 @@ export function decodeAmount(coin: codecImpl.coin.ICoin): Amount {
   }
 
   const quantity = new BN(wholeNumber)
-    .imul(new BN(10 ** fractionalDigits))
+    .imul(new BN(10 ** weaveFractionalDigits))
     .iadd(new BN(fractionalNumber))
     .toString();
 
   return {
     quantity: quantity,
-    fractionalDigits: fractionalDigits,
+    fractionalDigits: weaveFractionalDigits,
     tokenTicker: (coin.ticker || "") as TokenTicker,
   };
 }
@@ -71,6 +75,13 @@ export function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): 
   const minimalFee = ensure(config.minimalFee, "minimalFee");
   return {
     minimalFee: isZeroCoin(minimalFee) ? null : decodeAmount(minimalFee),
+  };
+}
+
+export function decodeTxFeeConfiguration(config: codecImpl.txfee.IConfiguration): TxFeeConfiguration {
+  return {
+    baseFee: decodeAmount(ensure(config.baseFee, "baseFee")),
+    freeBytes: ensure(config.freeBytes, "freeBytes"),
   };
 }
 
@@ -92,6 +103,57 @@ export function decodeUsernameNft(
     id: Encoding.fromUtf8(nft._id),
     owner: encodeBnsAddress(addressPrefix(registryChainId), rawOwnerAddress),
     targets: ensure(nft.targets, "targets").map(decodeChainAddressPair),
+  };
+}
+
+// Accounts
+export function decodeAccountConfiguration(
+  prefix: IovBech32Prefix,
+  patch: codecImpl.account.IConfiguration,
+): AccountConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(patch.owner, "owner")),
+    validDomain: ensure(patch.validDomain, "validDomain"),
+    validName: ensure(patch.validName, "validName"),
+    validBlockchainId: ensure(patch.validBlockchainId, "validBlockchainId"),
+    validBlockchainAddress: ensure(patch.validBlockchainAddress, "validBlockchainAddress"),
+    domainRenew: asIntegerNumber(ensure(patch.domainRenew, "domainRenew")),
+  };
+}
+
+export function decodeAccountMsgFee(msgFee: codecImpl.account.IAccountMsgFee): AccountMsgFee {
+  return {
+    msgPath: ensure(msgFee.msgPath, "msgPath"),
+    fee: decodeAmount(ensure(msgFee.fee, "fee")),
+  };
+}
+
+export function decodeBlockchainAddress(pair: codecImpl.account.IBlockchainAddress): ChainAddressPair {
+  return {
+    chainId: ensure(pair.blockchainId, "blockchainId") as ChainId,
+    address: ensure(pair.address, "address") as Address,
+  };
+}
+
+export function decodeAccount(prefix: IovBech32Prefix, account: codecImpl.account.IAccount): AccountNft {
+  return {
+    domain: ensure(account.domain, "domain"),
+    name: account.name ? account.name : undefined,
+    owner: encodeBnsAddress(prefix, ensure(account.owner, "owner")),
+    validUntil: asIntegerNumber(ensure(account.validUntil, "validUntil")),
+    targets: ensure(account.targets, "targets").map(decodeBlockchainAddress),
+    certificates: ensure(account.certificates, "certificates"),
+  };
+}
+
+export function decodeDomain(prefix: IovBech32Prefix, domain: codecImpl.account.IDomain): Domain {
+  return {
+    domain: ensure(domain.domain, "domain"),
+    admin: encodeBnsAddress(prefix, ensure(domain.admin, "admin")),
+    validUntil: asIntegerNumber(ensure(domain.validUntil, "validUntil")),
+    hasSuperuser: ensure(domain.hasSuperuser, "hasSuperuser"),
+    msgFees: ensure(domain.msgFees, "msgFees").map(decodeAccountMsgFee),
+    accountRenew: asIntegerNumber(ensure(domain.accountRenew, "accountRenew")),
   };
 }
 
