@@ -132,6 +132,9 @@ export class RestClient {
     return responseData as BlocksResponse;
   }
 
+  /**
+   * @param height This argument seems to be broken. Use with extreme caution. See test case for this function.
+   */
   public async authAccounts(address: Address, height?: string): Promise<AuthAccountsResponse> {
     const path =
       height === undefined ? `/auth/accounts/${address}` : `/auth/accounts/${address}?tx.height=${height}`;

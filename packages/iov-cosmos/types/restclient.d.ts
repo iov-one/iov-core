@@ -69,6 +69,9 @@ export declare class RestClient {
   nodeInfo(): Promise<NodeInfoResponse>;
   blocksLatest(): Promise<BlocksResponse>;
   blocks(height: number): Promise<BlocksResponse>;
+  /**
+   * @param height This argument seems to be broken. Use with extreme caution. See test case for this function.
+   */
   authAccounts(address: Address, height?: string): Promise<AuthAccountsResponse>;
   txs(query: string): Promise<SearchTxsResponse>;
   txsById(id: TransactionId): Promise<TxsResponse>;
