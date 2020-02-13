@@ -927,6 +927,7 @@ describe("BnsConnection (post txs)", () => {
       );
       expect(searchResult1.length).toEqual(1);
       const { result: contractId, transaction: firstSearchResultTransaction } = searchResult1[0];
+      assert(contractId, "Contract ID must be set");
       assert(isCreateMultisignatureTx(firstSearchResultTransaction), "Expected CreateMultisignatureTx");
       expect(firstSearchResultTransaction.participants.length).toEqual(6);
       firstSearchResultTransaction.participants.forEach((participant, i) => {
@@ -935,7 +936,6 @@ describe("BnsConnection (post txs)", () => {
       });
       expect(firstSearchResultTransaction.activationThreshold).toEqual(4);
       expect(firstSearchResultTransaction.adminThreshold).toEqual(5);
-      expect(contractId).toBeDefined();
 
       // Update multisignature
       const participantsUpdated: readonly Participant[] = (
@@ -950,7 +950,7 @@ describe("BnsConnection (post txs)", () => {
         {
           kind: "bns/update_multisignature_contract",
           chainId: registryChainId,
-          contractId: contractId!,
+          contractId: contractId,
           participants: participantsUpdated,
           activationThreshold: 2,
           adminThreshold: 6,
