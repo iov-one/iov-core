@@ -16,6 +16,7 @@ import { Encoding } from "@iov/encoding";
 
 import { decodeMsg } from "./decodemsg";
 import { decodeAmount } from "./decodeobjects";
+import { encodeNumericId } from "./encodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import {
   ActionKind,
@@ -561,7 +562,7 @@ describe("decodeMsg", () => {
     ];
     const transactionMessage: codecImpl.bnsd.ITx = {
       multisigUpdateMsg: {
-        contractId: fromHex("0123456789"),
+        contractId: encodeNumericId(Number.MAX_SAFE_INTEGER),
         participants: iParticipants,
         activationThreshold: 2,
         adminThreshold: 3,
@@ -571,7 +572,7 @@ describe("decodeMsg", () => {
     if (!isUpdateMultisignatureTx(parsed)) {
       throw new Error("unexpected transaction kind");
     }
-    expect(parsed.contractId).toEqual(fromHex("0123456789"));
+    expect(parsed.contractId).toEqual(Number.MAX_SAFE_INTEGER);
     expect(parsed.participants).toEqual(participants);
     expect(parsed.activationThreshold).toEqual(2);
     expect(parsed.adminThreshold).toEqual(3);

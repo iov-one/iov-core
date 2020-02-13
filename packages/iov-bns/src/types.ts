@@ -626,7 +626,7 @@ export function isCreateMultisignatureTx(tx: UnsignedTransaction): tx is CreateM
 
 export interface UpdateMultisignatureTx extends UnsignedTransaction {
   readonly kind: "bns/update_multisignature_contract";
-  readonly contractId: Uint8Array;
+  readonly contractId: number;
   readonly participants: readonly Participant[];
   readonly activationThreshold: number;
   readonly adminThreshold: number;

@@ -4,6 +4,7 @@ import Long from "long";
 
 import { decodeAmount } from "./decodeobjects";
 import { encodeMsg } from "./encodemsg";
+import { encodeNumericId } from "./encodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
 import { pubJson, sendTxBin, sendTxJson } from "./testdata.spec";
 import {
@@ -454,13 +455,13 @@ describe("encodeMsg", () => {
     const updateMultisignature: UpdateMultisignatureTx = {
       kind: "bns/update_multisignature_contract",
       chainId: defaultChainId,
-      contractId: fromHex("abcdef0123"),
+      contractId: Number.MAX_SAFE_INTEGER,
       participants: participants,
       activationThreshold: 3,
       adminThreshold: 4,
     };
     const msg = encodeMsg(updateMultisignature).multisigUpdateMsg!;
-    expect(msg.contractId).toEqual(fromHex("abcdef0123"));
+    expect(msg.contractId).toEqual(encodeNumericId(Number.MAX_SAFE_INTEGER));
     expect(msg.participants).toEqual(iParticipants);
     expect(msg.activationThreshold).toEqual(3);
     expect(msg.adminThreshold).toEqual(4);
