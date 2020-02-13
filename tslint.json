@@ -28,7 +28,7 @@
     "no-object-mutation": true,
     "no-parameter-reassignment": false,
     "no-unnecessary-class": [true, "allow-static-only"],
-    "no-unnecessary-type-assertion": true,
+    "no-unnecessary-type-assertion": false,
     "no-var-keyword": true,
     "object-literal-shorthand": [true, "never"],
     "object-literal-sort-keys": false,
