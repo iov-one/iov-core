@@ -97,7 +97,7 @@ describe("bnscodec", () => {
         },
       ];
       for (const multisig of multisigs) {
-        const send: UpdateMultisignatureTx & MultisignatureTx = {
+        const update: UpdateMultisignatureTx & MultisignatureTx = {
           kind: "bns/update_multisignature_contract",
           chainId: participant.chainId,
           contractId: new Uint8Array([0, 0, 0, 1]),
@@ -107,9 +107,9 @@ describe("bnscodec", () => {
           multisig: multisig,
           fee: fee,
         };
-        const { bytes } = bnsCodec.bytesToSign(send, nonce);
+        const { bytes } = bnsCodec.bytesToSign(update, nonce);
         out.push({
-          transaction: TransactionEncoder.toJson(send),
+          transaction: TransactionEncoder.toJson(update),
           nonce: nonce,
           bytes: Encoding.toHex(bytes),
         });
