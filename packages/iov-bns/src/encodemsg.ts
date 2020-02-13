@@ -370,7 +370,7 @@ function encodeUpdateMultisignatureTx(tx: UpdateMultisignatureTx): BnsdTxMsg {
   return {
     multisigUpdateMsg: {
       metadata: { schema: 1 },
-      contractId: tx.contractId,
+      contractId: encodeNumericId(tx.contractId),
       participants: encodeParticipants(tx.participants),
       activationThreshold: tx.activationThreshold,
       adminThreshold: tx.adminThreshold,

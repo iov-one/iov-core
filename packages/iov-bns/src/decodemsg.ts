@@ -359,7 +359,7 @@ function decodeUpdateMultisignatureTx(
   return {
     ...base,
     kind: "bns/update_multisignature_contract",
-    contractId: ensure(msg.contractId, "contractId"),
+    contractId: decodeNumericId(ensure(msg.contractId, "contractId")),
     participants: decodeParticipants(prefix, msg.participants),
     activationThreshold: ensure(msg.activationThreshold, "activationThreshold"),
     adminThreshold: ensure(msg.adminThreshold, "adminThreshold"),
