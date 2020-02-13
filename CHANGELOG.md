@@ -232,6 +232,7 @@ Breaking changes
 
 Breaking changes
 
+- @iov/bns: Add support for `Accounts` module.
 - @iov/bcp: `ConfirmedTransaction` does not extend `SignedTransaction` anymore,
   allowing `BlockchainConnection.searchTx`, `.listenTx` and `.liveTx` to use
   scrapers as a data source, that do not include signatures. The new type
