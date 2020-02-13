@@ -211,10 +211,14 @@ export enum ProposalStatus {
   Withdrawn,
 }
 
+/**
+ * Raw values are used for the JSON representation (e.g. in the wallet to browser extension communication)
+ * and must remain unchanged across different semver compatible versions of IOV Core.
+ */
 export enum VoteOption {
-  Yes,
-  No,
-  Abstain,
+  Yes = "yes",
+  No = "no",
+  Abstain = "abstain",
 }
 
 export enum ActionKind {
