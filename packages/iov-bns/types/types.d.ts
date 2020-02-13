@@ -161,10 +161,14 @@ export declare enum ProposalStatus {
   Closed = 1,
   Withdrawn = 2,
 }
+/**
+ * Raw values are used for the JSON representation (e.g. in the wallet to browser extension communication)
+ * and must remain unchanged across different semver compatible versions of IOV Core.
+ */
 export declare enum VoteOption {
-  Yes = 0,
-  No = 1,
-  Abstain = 2,
+  Yes = "yes",
+  No = "no",
+  Abstain = "abstain",
 }
 export declare enum ActionKind {
   CreateTextResolution = "gov_create_text_resolution",
