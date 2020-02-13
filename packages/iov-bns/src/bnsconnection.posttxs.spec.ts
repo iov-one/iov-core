@@ -12,7 +12,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, Uint64 } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { assert, sleep } from "@iov/utils";
 import BN from "bn.js";
@@ -928,6 +928,9 @@ describe("BnsConnection (post txs)", () => {
       expect(searchResult1.length).toEqual(1);
       const { result: contractId, transaction: firstSearchResultTransaction } = searchResult1[0];
       assert(contractId, "Contract ID must be set");
+      // Contract ID is an incrementing fixed length uint64
+      expect(contractId.length).toEqual(8);
+      expect(Uint64.fromBytesBigEndian(contractId).toNumber()).toBeLessThan(800);
       assert(isCreateMultisignatureTx(firstSearchResultTransaction), "Expected CreateMultisignatureTx");
       expect(firstSearchResultTransaction.participants.length).toEqual(6);
       firstSearchResultTransaction.participants.forEach((participant, i) => {
