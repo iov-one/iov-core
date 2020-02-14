@@ -2,6 +2,7 @@
 
 ## 2.0.2
 
+- @iov/bns: Add support for `Accounts` module.
 - @iov/bcp: Add optional payer field to `Fee` type.
 - @iov/bcp: Add optional feePayer parameter to
   `BlockchainConnection.withDefaultFee`.
