@@ -26,6 +26,7 @@
 - @iov/cosmos: New package to support Cosmos.
 - @iov/lisk: Export `pubkeyToAddress`.
 - @iov/utils: New package added that includes utils.
+- @iov/bns: Convert `UpdateMultisignatureTx.contractId` to number.
 
 Breaking changes
 
