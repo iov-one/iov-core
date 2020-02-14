@@ -926,11 +926,9 @@ describe("BnsConnection (post txs)", () => {
         isConfirmedAndSignedTransaction,
       );
       expect(searchResult1.length).toEqual(1);
-      const { result: contractId, transaction: firstSearchResultTransaction } = searchResult1[0];
-      assert(contractId, "Contract ID must be set");
-      // Contract ID is an incrementing fixed length uint64
-      expect(contractId.length).toEqual(8);
-      expect(decodeNumericId(contractId)).toBeLessThan(Number.MAX_SAFE_INTEGER);
+      const { result: idBytes, transaction: firstSearchResultTransaction } = searchResult1[0];
+      assert(idBytes, "Contract ID must be set in the result of the create contract transaction");
+      const contractId = decodeNumericId(idBytes);
       assert(isCreateMultisignatureTx(firstSearchResultTransaction), "Expected CreateMultisignatureTx");
       expect(firstSearchResultTransaction.participants.length).toEqual(6);
       firstSearchResultTransaction.participants.forEach((participant, i) => {
@@ -953,7 +951,7 @@ describe("BnsConnection (post txs)", () => {
         {
           kind: "bns/update_multisignature_contract",
           chainId: registryChainId,
-          contractId: decodeNumericId(contractId),
+          contractId: contractId,
           participants: participantsUpdated,
           activationThreshold: 2,
           adminThreshold: 6,
