@@ -118,7 +118,7 @@ describe("bnscodec", () => {
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const fs = require("fs");
-    fs.writeFileSync("updatetx_multisig_tests.json", JSON.stringify(out, null, 2) + "\n", "utf8");
+    fs.writeFileSync("updatemultisigtx_tests.json", JSON.stringify(out, null, 2) + "\n", "utf8");
   });
 
   fit("generate vote test data", () => {
