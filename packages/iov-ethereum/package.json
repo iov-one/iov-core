@@ -1,6 +1,6 @@
 {
   "name": "@iov/ethereum",
-  "version": "2.0.0-alpha.7",
+  "version": "2.0.2",
   "description": "Transaction codec and client to communicate with the Ethereum blockchain",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -37,14 +37,14 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp": "^2.0.0-alpha.7",
-    "@iov/crypto": "^2.0.0-alpha.7",
-    "@iov/encoding": "^2.0.0-alpha.7",
-    "@iov/jsonrpc": "^2.0.0-alpha.7",
-    "@iov/keycontrol": "^2.0.0-alpha.7",
-    "@iov/socket": "^2.0.0-alpha.7",
-    "@iov/stream": "^2.0.0-alpha.7",
-    "@iov/utils": "^2.0.0-alpha.7",
+    "@iov/bcp": "^2.0.2",
+    "@iov/crypto": "^2.0.2",
+    "@iov/encoding": "^2.0.2",
+    "@iov/jsonrpc": "^2.0.2",
+    "@iov/keycontrol": "^2.0.2",
+    "@iov/socket": "^2.0.2",
+    "@iov/stream": "^2.0.2",
+    "@iov/utils": "^2.0.2",
     "@types/long": "^4.0.0",
     "axios": "^0.19.0",
     "bn.js": "^4.11.8",
@@ -53,5 +53,8 @@
     "readonly-date": "^1.0.0",
     "rlp": "^2.2.3",
     "xstream": "^11.10.0"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^4.11.6"
   }
 }

@@ -1,7 +1,8 @@
 # Changelog
 
-## 2.0.0
+## 2.0.2
 
+- @iov/bns: Add support for `Accounts` module.
 - @iov/bcp: Add optional payer field to `Fee` type.
 - @iov/bcp: Add optional feePayer parameter to
   `BlockchainConnection.withDefaultFee`.
@@ -21,6 +22,7 @@
 - @iov/bns: Include transaction size fee in `BnsConnection.getFeeQuote`, which
   now includes optional parameters `numberOfSignatures` and `nonce` for more
   accurate estimates.
+- @iov/bns: Exports Txs from the `accounts` module.
 - @iov/bns-governance: Add proposal type `ExecuteMigration`.
 - @iov/bns-governance: Make `Governor.identity` public.
 - @iov/cosmos: New package to support Cosmos.
