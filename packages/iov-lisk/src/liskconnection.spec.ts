@@ -43,7 +43,7 @@ function pendingWithoutLiskDevnet(): void {
   }
 }
 
-async function randomAddress(): Promise<Address> {
+function randomAddress(): Address {
   const pubkey = {
     algo: Algorithm.Ed25519,
     data: Random.getBytes(32) as PubkeyBytes,
@@ -362,7 +362,7 @@ describe("LiskConnection", () => {
       (async () => {
         const connection = await LiskConnection.establish(devnetBase);
 
-        const recipient = await randomAddress();
+        const recipient = randomAddress();
 
         const events = new Array<Account | undefined>();
         const subscription = connection.watchAccount({ address: recipient }).subscribe({
@@ -801,7 +801,7 @@ describe("LiskConnection", () => {
 
       // by non-existing address
       {
-        const unusedAddress = await randomAddress();
+        const unusedAddress = randomAddress();
         const results = await connection.searchTx({ sentFromOrTo: unusedAddress });
         expect(results.length).toEqual(0);
       }
@@ -997,7 +997,7 @@ describe("LiskConnection", () => {
       (async () => {
         const connection = await LiskConnection.establish(devnetBase);
 
-        const recipientAddress = await randomAddress();
+        const recipientAddress = randomAddress();
 
         // send transactions
 
@@ -1096,7 +1096,7 @@ describe("LiskConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-        const recipientAddress = await randomAddress();
+        const recipientAddress = randomAddress();
         const send: SendTransaction = {
           kind: "bcp/send",
           chainId: devnetChainId,
@@ -1147,7 +1147,7 @@ describe("LiskConnection", () => {
       (async () => {
         const connection = await LiskConnection.establish(devnetBase);
 
-        const recipientAddress = await randomAddress();
+        const recipientAddress = randomAddress();
 
         // send transactions
 
