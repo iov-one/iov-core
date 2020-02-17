@@ -29,10 +29,114 @@ import {
   swapClaimTxJson,
   swapOfferTxJson,
 } from "./testdata.spec";
-import { MultisignatureTx, UpdateMultisignatureTx, VoteOption, VoteTx } from "./types";
+import {
+  ActionKind,
+  CreateProposalTx,
+  ElectorProperties,
+  MultisignatureTx,
+  UpdateElectorateAction,
+  UpdateMultisignatureTx,
+  VoteOption,
+  VoteTx,
+  Electors,
+  Elector,
+} from "./types";
 import { encodeBnsAddress } from "./util";
 
 describe("bnscodec", () => {
+  fit("generate update electorate test data", () => {
+    const nonce = 72 as Nonce;
+    const fee: Fee = {
+      tokens: { quantity: "100000000", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
+    };
+    const participants: readonly {
+      readonly participant: Identity;
+    }[] = [
+      // Testnet
+      {
+        participant: {
+          chainId: "iov-exchangenet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "bd59db1fb5b1c835970d33262f743f8bfc23c866aa95f16abaf72730c5388761", // alice
+            ) as PubkeyBytes,
+          },
+        },
+      },
+      // Mainnet
+      {
+        participant: {
+          chainId: "iov-mainnet" as ChainId,
+          pubkey: {
+            algo: Algorithm.Ed25519,
+            data: Encoding.fromHex(
+              "34299fa3fe218a6210ace221f86597c800ecff3d27e1e6a7937248514a6784ee",
+            ) as PubkeyBytes,
+          },
+        },
+      },
+    ];
+
+    // tslint:disable-next-line: readonly-array
+    const out: any[] = [];
+
+    for (const { participant } of participants) {
+      const newbie: Identity = {
+        chainId: participant.chainId,
+        pubkey: {
+          algo: Algorithm.Ed25519,
+          data: Encoding.fromHex(
+            "a54fb18c039cee5f2b28999daca61f326e2998f67202d67ad27bcbc4e38da2ae",
+          ) as PubkeyBytes,
+        },
+      };
+      const startTime = Math.floor(Date.now() / 1000) + 3;
+      const title = `Hello ${Math.random()}`;
+      const description = `Hello ${Math.random()}`;
+      const author = bnsCodec.identityToAddress(participant);
+
+      // https://htmlpreview.github.io/?https://github.com/iov-one/weave/blob/v0.16.0/docs/proto/index.html#gov.UpdateElectorateMsg
+      for (const weight of [0, 1]) {
+        const diffElectors = [participant, newbie].reduce((electors, elector) => {
+          electors[bnsCodec.identityToAddress(elector)] = {
+            weight: elector === participant ? 1 : weight,
+          };
+          return electors;
+        }, {} as { [index: string]: ElectorProperties });
+        const action: UpdateElectorateAction = {
+          kind: ActionKind.UpdateElectorate,
+          electorateId: 1,
+          diffElectors: diffElectors,
+        };
+        const createProposal: CreateProposalTx = {
+          kind: "bns/create_proposal",
+          chainId: participant.chainId,
+          title: title,
+          description: description,
+          author: author,
+          electionRuleId: 2,
+          action: action,
+          startTime: startTime,
+          fee: {
+            ...fee,
+            payer: author,
+          },
+        };
+        const { bytes } = bnsCodec.bytesToSign(createProposal, nonce);
+        out.push({
+          transaction: TransactionEncoder.toJson(createProposal),
+          nonce: nonce,
+          bytes: Encoding.toHex(bytes),
+        });
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs = require("fs");
+    fs.writeFileSync("updateelectoratetx_tests.json", JSON.stringify(out, null, 2) + "\n", "utf8");
+  });
+
   fit("generate update multisig test data", () => {
     const nonce = 71 as Nonce;
     const fee: Fee = {
