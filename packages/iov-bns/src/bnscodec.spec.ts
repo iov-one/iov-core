@@ -219,7 +219,7 @@ describe("bnscodec", () => {
       // Testnet
       {
         creator: {
-          chainId: "iov-lovenet" as ChainId,
+          chainId: "iov-exchangenet" as ChainId,
           pubkey: {
             algo: Algorithm.Ed25519,
             data: Encoding.fromHex(
@@ -300,7 +300,7 @@ describe("bnscodec", () => {
       // Testnet
       {
         creator: {
-          chainId: "iov-lovenet" as ChainId,
+          chainId: "iov-exchangenet" as ChainId,
           pubkey: {
             algo: Algorithm.Ed25519,
             data: Encoding.fromHex(
