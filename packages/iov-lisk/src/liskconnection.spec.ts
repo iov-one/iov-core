@@ -440,34 +440,34 @@ describe("LiskConnection", () => {
       const connection = await LiskConnection.establish(devnetBase);
 
       // not an integer
-      await connection
-        .getBlockHeader(NaN)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
-      await connection
-        .getBlockHeader(NaN)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
-      await connection
-        .getBlockHeader(1.1)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
-      await connection
-        .getBlockHeader(Number.POSITIVE_INFINITY)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection.getBlockHeader(NaN).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
+      await connection.getBlockHeader(NaN).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
+      await connection.getBlockHeader(1.1).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
+      await connection.getBlockHeader(Number.POSITIVE_INFINITY).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
 
       // out of range
-      await connection
-        .getBlockHeader(Number.MAX_SAFE_INTEGER + 1)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection.getBlockHeader(Number.MAX_SAFE_INTEGER + 1).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
 
       // negative
-      await connection
-        .getBlockHeader(-1)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection.getBlockHeader(-1).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
 
       connection.disconnect();
     });
@@ -489,10 +489,10 @@ describe("LiskConnection", () => {
       pendingWithoutLiskDevnet();
       const connection = await LiskConnection.establish(devnetBase);
 
-      await connection
-        .getBlockHeader(20_000_000)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/block does not exist/i));
+      await connection.getBlockHeader(20_000_000).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/block does not exist/i),
+      );
 
       connection.disconnect();
     });
@@ -693,10 +693,10 @@ describe("LiskConnection", () => {
       const bytesToPost = liskCodec.bytesToPost(corruptedSignedTransaction);
 
       const connection = await LiskConnection.establish(devnetBase);
-      await connection
-        .postTx(bytesToPost)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/failed with status code 409/i));
+      await connection.postTx(bytesToPost).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/failed with status code 409/i),
+      );
     });
   });
 
@@ -708,11 +708,10 @@ describe("LiskConnection", () => {
       // by non-existing ID
       {
         const nonExistentId = "98568736528934587" as TransactionId;
-        await connection
-          .getTx(nonExistentId)
-          .then(fail.bind(null, "should not resolve"), error =>
-            expect(error).toMatch(/transaction does not exist/i),
-          );
+        await connection.getTx(nonExistentId).then(
+          () => fail("should not resolve"),
+          error => expect(error).toMatch(/transaction does not exist/i),
+        );
       }
 
       // by existing ID (from lisk/init.sh)
@@ -1188,10 +1187,10 @@ describe("LiskConnection", () => {
         kind: "other/kind",
         chainId: dummynetChainId,
       };
-      await connection
-        .getFeeQuote(otherTransaction)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/transaction of unsupported kind/i));
+      await connection.getFeeQuote(otherTransaction).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/transaction of unsupported kind/i),
+      );
     });
   });
 });
