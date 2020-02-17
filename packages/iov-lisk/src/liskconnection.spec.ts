@@ -723,9 +723,7 @@ describe("LiskConnection", () => {
         expect(result.height).toBeLessThan(100);
         expect(result.transactionId).toEqual(existingId);
         const transaction = result.transaction;
-        if (!isSendTransaction(transaction)) {
-          throw new Error("Unexpected transaction type");
-        }
+        assert(isSendTransaction(transaction), "Unexpected transaction type");
         expect(transaction.recipient).toEqual("1349293588603668134L");
         expect(transaction.amount.quantity).toEqual("10044556677");
       }
@@ -743,12 +741,8 @@ describe("LiskConnection", () => {
         transaction,
         signatures: [primarySignature],
       } = await connection.getTx(existingId);
-      if (!isSendTransaction(transaction)) {
-        throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-      }
-      if (!transaction.senderPubkey) {
-        throw new Error("Expected transaction to have senderPubkey");
-      }
+      assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+      assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
       const publicKey = transaction.senderPubkey.data;
       const signingJob = liskCodec.bytesToSign(transaction, primarySignature.nonce);
       const txBytes = new Sha256(signingJob.bytes).digest();
@@ -782,9 +776,7 @@ describe("LiskConnection", () => {
         expect(result.height).toBeLessThan(100);
         expect(result.transactionId).toEqual(searchId);
         const transaction = result.transaction;
-        if (!isSendTransaction(transaction)) {
-          throw new Error("Unexpected transaction type");
-        }
+        assert(isSendTransaction(transaction), "Unexpected transaction type");
         expect(transaction.recipient).toEqual("1349293588603668134L");
         expect(transaction.amount.quantity).toEqual("10044556677");
       }
@@ -810,12 +802,8 @@ describe("LiskConnection", () => {
         expect(results.length).toBeGreaterThanOrEqual(1);
         for (const result of results) {
           const transaction = result.transaction;
-          if (!isSendTransaction(transaction)) {
-            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-          }
-          if (!transaction.senderPubkey) {
-            throw new Error("Expected transaction to have senderPubkey");
-          }
+          assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+          assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
           expect(
             transaction.recipient === searchAddress ||
               Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
@@ -830,12 +818,8 @@ describe("LiskConnection", () => {
         expect(results.length).toBeGreaterThanOrEqual(1);
         for (const result of results) {
           const transaction = result.transaction;
-          if (!isSendTransaction(transaction)) {
-            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-          }
-          if (!transaction.senderPubkey) {
-            throw new Error("Expected transaction to have senderPubkey");
-          }
+          assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+          assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
           expect(
             transaction.recipient === searchAddress ||
               Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
@@ -860,12 +844,8 @@ describe("LiskConnection", () => {
         for (const result of results) {
           expect(result.height).toBeGreaterThanOrEqual(2);
           const transaction = result.transaction;
-          if (!isSendTransaction(transaction)) {
-            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-          }
-          if (!transaction.senderPubkey) {
-            throw new Error("Expected transaction to have senderPubkey");
-          }
+          assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+          assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
           expect(
             transaction.recipient === searchAddress ||
               Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
@@ -880,12 +860,8 @@ describe("LiskConnection", () => {
         for (const result of results) {
           expect(result.height).toBeLessThanOrEqual(100);
           const transaction = result.transaction;
-          if (!isSendTransaction(transaction)) {
-            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-          }
-          if (!transaction.senderPubkey) {
-            throw new Error("Expected transaction to have senderPubkey");
-          }
+          assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+          assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
           expect(
             transaction.recipient === searchAddress ||
               Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
@@ -905,12 +881,8 @@ describe("LiskConnection", () => {
           expect(result.height).toBeGreaterThanOrEqual(2);
           expect(result.height).toBeLessThanOrEqual(100);
           const transaction = result.transaction;
-          if (!isSendTransaction(transaction)) {
-            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-          }
-          if (!transaction.senderPubkey) {
-            throw new Error("Expected transaction to have senderPubkey");
-          }
+          assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+          assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
           expect(
             transaction.recipient === searchAddress ||
               Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
@@ -1054,15 +1026,10 @@ describe("LiskConnection", () => {
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
-            if (!isConfirmedTransaction(event)) {
-              throw new Error("Confirmed transaction expected");
-            }
-
+            assert(isConfirmedTransaction(event), "Confirmed transaction expected");
             events.push(event);
 
-            if (!isSendTransaction(event.transaction)) {
-              throw new Error("Unexpected transaction type");
-            }
+            assert(isSendTransaction(event.transaction), "Unexpected transaction type");
             expect(event.transaction.recipient).toEqual(recipientAddress);
 
             if (events.length === 3) {
@@ -1118,15 +1085,10 @@ describe("LiskConnection", () => {
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
-            if (!isConfirmedTransaction(event)) {
-              throw new Error("Confirmed transaction expected");
-            }
-
+            assert(isConfirmedTransaction(event), "Confirmed transaction expected");
             events.push(event);
 
-            if (!isSendTransaction(event.transaction)) {
-              throw new Error("Unexpected transaction type");
-            }
+            assert(isSendTransaction(event.transaction), "Unexpected transaction type");
             expect(event.transaction.recipient).toEqual(recipientAddress);
             expect(event.transactionId).toEqual(transactionId);
 
@@ -1173,15 +1135,10 @@ describe("LiskConnection", () => {
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
-            if (!isConfirmedTransaction(event)) {
-              throw new Error("Confirmed transaction expected");
-            }
-
+            assert(isConfirmedTransaction(event), "Confirmed transaction expected");
             events.push(event);
 
-            if (!isSendTransaction(event.transaction)) {
-              throw new Error("Unexpected transaction type");
-            }
+            assert(isSendTransaction(event.transaction), "Unexpected transaction type");
             expect(event.transaction.recipient).toEqual(recipientAddress);
             expect(event.transactionId).toEqual(transactionId);
 
