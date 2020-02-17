@@ -27,6 +27,7 @@ import { Ed25519, Random, Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
+import { assert } from "@iov/utils";
 import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
@@ -374,18 +375,14 @@ describe("LiskConnection", () => {
 
               expect(event1).toBeUndefined();
 
-              if (!event2) {
-                throw new Error("Second event must not be undefined");
-              }
+              assert(event2, "Second event must not be undefined");
               expect(event2.address).toEqual(recipient);
               expect(event2.pubkey).toBeUndefined();
               expect(event2.balance.length).toEqual(1);
               expect(event2.balance[0].quantity).toEqual(devnetDefaultAmount.quantity);
               expect(event2.balance[0].tokenTicker).toEqual(devnetDefaultAmount.tokenTicker);
 
-              if (!event3) {
-                throw new Error("Second event must not be undefined");
-              }
+              assert(event3, "Third event must not be undefined");
               expect(event3.address).toEqual(recipient);
               expect(event3.pubkey).toBeUndefined();
               expect(event3.balance.length).toEqual(1);

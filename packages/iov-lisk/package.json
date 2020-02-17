@@ -48,5 +48,8 @@
     "long": "^4.0.0",
     "readonly-date": "^1.0.0",
     "xstream": "^11.10.0"
+  },
+  "devDependencies": {
+    "@iov/utils": "^2.0.2"
   }
 }
