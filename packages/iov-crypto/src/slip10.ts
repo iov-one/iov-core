@@ -148,7 +148,7 @@ export class Slip10 {
     // step 5
     const n = this.n(curve);
     const returnChildKeyAsNumber = new BN(il).add(new BN(parentPrivkey)).mod(n);
-    const returnChildKey = returnChildKeyAsNumber.toArrayLike(Uint8Array, "be", 32);
+    const returnChildKey = Uint8Array.from(returnChildKeyAsNumber.toArray("be", 32));
 
     // step 6
     if (this.isGteN(curve, il) || this.isZero(returnChildKey)) {

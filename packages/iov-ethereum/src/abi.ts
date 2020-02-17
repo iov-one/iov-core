@@ -47,7 +47,7 @@ export class Abi {
       throw new Error("Invalid string format");
     }
     const numericValue = new BN(value, 10);
-    return numericValue.toArrayLike(Uint8Array, "be", 32);
+    return Uint8Array.from(numericValue.toArray("be", 32));
   }
 
   public static decodeAddress(binary: Uint8Array): Address {

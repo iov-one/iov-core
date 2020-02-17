@@ -199,11 +199,11 @@ export class Uint64 implements Integer, WithByteConverters {
   }
 
   public toBytesBigEndian(): Uint8Array {
-    return this.data.toArrayLike(Uint8Array, "be", 8);
+    return Uint8Array.from(this.data.toArray("be", 8));
   }
 
   public toBytesLittleEndian(): Uint8Array {
-    return this.data.toArrayLike(Uint8Array, "le", 8);
+    return Uint8Array.from(this.data.toArray("le", 8));
   }
 
   public toString(): string {

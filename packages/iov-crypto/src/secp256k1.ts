@@ -65,8 +65,8 @@ export class Secp256k1 {
     // the `canonical` option ensures creation of lowS signature representations
     const signature = keypair.sign(messageHash, { canonical: true });
     return new ExtendedSecp256k1Signature(
-      (signature.r as BN).toArrayLike(Uint8Array),
-      (signature.s as BN).toArrayLike(Uint8Array),
+      Uint8Array.from((signature.r as BN).toArray()),
+      Uint8Array.from((signature.s as BN).toArray()),
       signature.recoveryParam,
     );
   }
