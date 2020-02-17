@@ -286,7 +286,7 @@ export class Serialization {
     if (numericValue.isZero()) {
       return new Uint8Array([]);
     } else {
-      return numericValue.toArrayLike(Uint8Array, "be");
+      return Uint8Array.from(numericValue.toArray("be"));
     }
   }
 

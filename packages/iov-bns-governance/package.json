@@ -46,6 +46,7 @@
     "type-tagger": "^1.0.0"
   },
   "devDependencies": {
-    "@iov/utils": "^2.0.2"
+    "@iov/utils": "^2.0.2",
+    "@types/bn.js": "^4.11.6"
   }
 }

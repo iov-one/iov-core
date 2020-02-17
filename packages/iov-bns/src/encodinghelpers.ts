@@ -1,6 +1,5 @@
 import { Amount } from "@iov/bcp";
-import { Int53 } from "@iov/encoding";
-import BN from "bn.js";
+import { Int53, Uint64 } from "@iov/encoding";
 
 import { weaveFractionalDigits } from "./constants";
 import * as codecImpl from "./generated/codecimpl";
@@ -34,5 +33,5 @@ export function encodeAmount(amount: Amount): codecImpl.coin.ICoin {
 }
 
 export function encodeNumericId(id: number): Uint8Array {
-  return new BN(id).toArrayLike(Uint8Array, "be", 8);
+  return Uint64.fromNumber(id).toBytesBigEndian();
 }
