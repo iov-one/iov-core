@@ -31,7 +31,7 @@ function sortJson(json: any): any {
   if (Array.isArray(json)) {
     return json.map(sortJson);
   }
-  const sortedKeys = Object.keys(json).sort();
+  const sortedKeys = Object.keys(json).sort((a, b) => a.localeCompare(b));
   const result = sortedKeys.reduce(
     (accumulator, key) => ({
       ...accumulator,
