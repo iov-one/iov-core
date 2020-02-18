@@ -34,6 +34,7 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
     "@typescript-eslint/no-unnecessary-type-assertion": "warn",
     "@typescript-eslint/no-use-before-define": "warn",
+    "@typescript-eslint/require-array-sort-compare": "warn",
   },
   overrides: [
     {
