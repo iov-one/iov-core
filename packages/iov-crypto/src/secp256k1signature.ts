@@ -13,6 +13,23 @@ function trimLeadingNullBytes(inData: Uint8Array): Uint8Array {
 const derTagInteger = 0x02;
 
 export class Secp256k1Signature {
+  /**
+   * Takes the pair of integers (r, s) as 2x32 byte of binary data.
+   *
+   * Note: This is the format Cosmos SDK uses natively.
+   *
+   * @param data a 64 byte value containing integers r and s.
+   */
+  public static fromFixedLength(data: Uint8Array): Secp256k1Signature {
+    if (data.length !== 64) {
+      throw new Error(`Got invalid data length: ${data.length}. Expected 2x 32 bytes for the pair (r, s)`);
+    }
+    return new Secp256k1Signature(
+      trimLeadingNullBytes(data.slice(0, 32)),
+      trimLeadingNullBytes(data.slice(32, 64)),
+    );
+  }
+
   public static fromDer(data: Uint8Array): Secp256k1Signature {
     let pos = 0;
 
