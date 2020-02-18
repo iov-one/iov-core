@@ -5,6 +5,24 @@ import { ExtendedSecp256k1Signature, Secp256k1Signature } from "./secp256k1signa
 const { fromHex } = Encoding;
 
 describe("Secp256k1Signature", () => {
+  describe("fromFixedLength", () => {
+    it("works", () => {
+      const data = fromHex(
+        "000000000000000000000000000000000000000000000000000000000000223300000000000000000000000000000000000000000000000000000000000000aa",
+      );
+      const signature = Secp256k1Signature.fromFixedLength(data);
+      expect(signature.r()).toEqual(new Uint8Array([0x22, 0x33]));
+      expect(signature.s()).toEqual(new Uint8Array([0xaa]));
+    });
+
+    it("throws for invalid length", () => {
+      const data = fromHex(
+        "000000000000000000000000000000000000000000000000000000000000223300000000000000000000000000000000000000000000000000000000000000aa01",
+      );
+      expect(() => Secp256k1Signature.fromFixedLength(data)).toThrowError(/got invalid data length/i);
+    });
+  });
+
   it("can be constructed", () => {
     const signature = new Secp256k1Signature(new Uint8Array([0x22, 0x33]), new Uint8Array([0xaa]));
     expect(signature).toBeTruthy();

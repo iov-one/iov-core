@@ -1,4 +1,12 @@
 export declare class Secp256k1Signature {
+  /**
+   * Takes the pair of integers (r, s) as 2x32 byte of binary data.
+   *
+   * Note: This is the format Cosmos SDK uses natively.
+   *
+   * @param data a 64 byte value containing integers r and s.
+   */
+  static fromFixedLength(data: Uint8Array): Secp256k1Signature;
   static fromDer(data: Uint8Array): Secp256k1Signature;
   private readonly data;
   constructor(r: Uint8Array, s: Uint8Array);
