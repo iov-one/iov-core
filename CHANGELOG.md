@@ -2,7 +2,8 @@
 
 ## 2.1.0
 
-- @iov/crypto: Add `Secp256k1Signature.fromFixedLength`
+- @iov/cli: Add support for `Accounts` and `Domains`.
+- @iov/crypto: Add `Secp256k1Signature.fromFixedLength`.
 
 ## 2.0.2
 
