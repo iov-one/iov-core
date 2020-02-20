@@ -204,13 +204,13 @@ In this example we connect to a public test network.
 > const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
 
 > const signer = new MultiChainSigner(profile);
-> const { connection } = await signer.addChain(createBnsConnector("wss://rpc-private-a-x-dancenet.iov.one"));
+> const { connection } = await signer.addChain(createBnsConnector("ws://rpc-private-a-x-exchangenet.iov.one:16657"));
 > const chainId = connection.chainId;
 
 > const alice = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(0));
 > const aliceAddress = signer.identityToAddress(alice);
 
-> const faucet = new IovFaucet("https://faucet.x-dancenet.iov.one/");
+> const faucet = new IovFaucet("http://faucet.x-exchangenet.iov.one:8080/");
 
 > await faucet.credit(aliceAddress, "IOV" as TokenTicker)
 > (await connection.getAccount({ address: aliceAddress })).balance

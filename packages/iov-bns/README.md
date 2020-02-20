@@ -17,25 +17,26 @@ transaction parser:
 
 ```ts
 const connection = await BnsConnection.establish(
-  "wss://rpc-private-a-x-dancenet.iov.one",
+  "ws://rpc-private-a-x-exchangenet.iov.one:16657",
 );
 ```
 
 ## Supported weave (bnsd) versions
 
-| IOV-Core version | Supported weave versions |
-| ---------------- | ------------------------ |
-| 2.0              | 0.22.x, 0.24.x – 0.25.x  |
-| 1.2              | 0.22.x                   |
-| 1.1              | 0.21.x                   |
-| 1.0              | 0.21.x                   |
-| 0.17             | 0.21.x                   |
-| 0.16             | 0.19.x - 0.20.x          |
-| 0.15             | 0.16.x                   |
-| 0.14             | 0.14.x                   |
-| 0.12 – 0.13      | 0.10.x - 0.11.x          |
-| 0.9 – 0.11       | 0.4.x - 0.9.x            |
-| 0.1 – 0.8        | 0.4.x - 0.8.x            |
+| IOV-Core version | Supported weave versions       |
+| ---------------- | ------------------------------ |
+| 2.1.x            | 1.0.x                          |
+| 2.0.2            | 0.22.x, 0.24.x – 0.25.x, 1.0.x |
+| 1.2              | 0.22.x                         |
+| 1.1              | 0.21.x                         |
+| 1.0              | 0.21.x                         |
+| 0.17             | 0.21.x                         |
+| 0.16             | 0.19.x - 0.20.x                |
+| 0.15             | 0.16.x                         |
+| 0.14             | 0.14.x                         |
+| 0.12 – 0.13      | 0.10.x - 0.11.x                |
+| 0.9 – 0.11       | 0.4.x - 0.9.x                  |
+| 0.1 – 0.8        | 0.4.x - 0.8.x                  |
 
 ## API Documentation
 
