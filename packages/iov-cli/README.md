@@ -148,32 +148,6 @@ UserProfile {
   ...
 ```
 
-### Register a username on the IOV Name Service
-
-Assuming you have a `profile`, a `signer` and a `recipient` identity with
-transactions associated from above
-
-```
-> .editor
-const registrationTx = await connection.withDefaultFee<RegisterUsernameTx>({
-  kind: "bns/register_username",
-  chainId: recipient.chainId,
-  targets: [],
-  username: "hans*iov",
-}, recipientAddress);
-^D
-> await signer.signAndPost(recipient, registrationTx);
-> const bnsConnection = connection as BnsConnection;
-> await bnsConnection.getUsernames({ owner: recipientAddress });
-[ { username: 'hans*iov',
-    owner: 'tiov14cn8m57wtrlewmlnjucctsahpnxlj92l0crkvq',
-    targets: [] } ]
-> await bnsConnection.getUsernames({ username: "hans*iov" });
-[ { username: 'hans*iov',
-    owner: 'tiov14cn8m57wtrlewmlnjucctsahpnxlj92l0crkvq',
-    targets: [] } ]
-```
-
 ### Disconnecting
 
 When you are done using a WebSocket connection, disconnect the connection
@@ -204,13 +178,13 @@ In this example we connect to a public test network.
 > const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(mnemonic));
 
 > const signer = new MultiChainSigner(profile);
-> const { connection } = await signer.addChain(createBnsConnector("wss://rpc-private-a-x-dancenet.iov.one"));
+> const { connection } = await signer.addChain(createBnsConnector("ws://rpc-private-a-x-exchangenet.iov.one:16657"));
 > const chainId = connection.chainId;
 
 > const alice = await profile.createIdentity(wallet.id, chainId, HdPaths.iov(0));
 > const aliceAddress = signer.identityToAddress(alice);
 
-> const faucet = new IovFaucet("https://faucet.x-dancenet.iov.one/");
+> const faucet = new IovFaucet("http://faucet.x-exchangenet.iov.one:8080/");
 
 > await faucet.credit(aliceAddress, "IOV" as TokenTicker)
 > (await connection.getAccount({ address: aliceAddress })).balance

@@ -27,6 +27,7 @@ import { Ed25519, Random, Sha256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
+import { assert } from "@iov/utils";
 import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
@@ -43,7 +44,7 @@ function pendingWithoutLiskDevnet(): void {
   }
 }
 
-async function randomAddress(): Promise<Address> {
+function randomAddress(): Address {
   const pubkey = {
     algo: Algorithm.Ed25519,
     data: Random.getBytes(32) as PubkeyBytes,
@@ -362,7 +363,7 @@ describe("LiskConnection", () => {
       (async () => {
         const connection = await LiskConnection.establish(devnetBase);
 
-        const recipient = await randomAddress();
+        const recipient = randomAddress();
 
         const events = new Array<Account | undefined>();
         const subscription = connection.watchAccount({ address: recipient }).subscribe({
@@ -374,18 +375,14 @@ describe("LiskConnection", () => {
 
               expect(event1).toBeUndefined();
 
-              if (!event2) {
-                throw new Error("Second event must not be undefined");
-              }
+              assert(event2, "Second event must not be undefined");
               expect(event2.address).toEqual(recipient);
               expect(event2.pubkey).toBeUndefined();
               expect(event2.balance.length).toEqual(1);
               expect(event2.balance[0].quantity).toEqual(devnetDefaultAmount.quantity);
               expect(event2.balance[0].tokenTicker).toEqual(devnetDefaultAmount.tokenTicker);
 
-              if (!event3) {
-                throw new Error("Second event must not be undefined");
-              }
+              assert(event3, "Third event must not be undefined");
               expect(event3.address).toEqual(recipient);
               expect(event3.pubkey).toBeUndefined();
               expect(event3.balance.length).toEqual(1);
@@ -443,34 +440,34 @@ describe("LiskConnection", () => {
       const connection = await LiskConnection.establish(devnetBase);
 
       // not an integer
-      await connection
-        .getBlockHeader(NaN)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
-      await connection
-        .getBlockHeader(NaN)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
-      await connection
-        .getBlockHeader(1.1)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
-      await connection
-        .getBlockHeader(Number.POSITIVE_INFINITY)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection.getBlockHeader(NaN).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
+      await connection.getBlockHeader(NaN).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
+      await connection.getBlockHeader(1.1).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
+      await connection.getBlockHeader(Number.POSITIVE_INFINITY).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
 
       // out of range
-      await connection
-        .getBlockHeader(Number.MAX_SAFE_INTEGER + 1)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection.getBlockHeader(Number.MAX_SAFE_INTEGER + 1).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
 
       // negative
-      await connection
-        .getBlockHeader(-1)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+      await connection.getBlockHeader(-1).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+      );
 
       connection.disconnect();
     });
@@ -492,10 +489,10 @@ describe("LiskConnection", () => {
       pendingWithoutLiskDevnet();
       const connection = await LiskConnection.establish(devnetBase);
 
-      await connection
-        .getBlockHeader(20_000_000)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/block does not exist/i));
+      await connection.getBlockHeader(20_000_000).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/block does not exist/i),
+      );
 
       connection.disconnect();
     });
@@ -696,10 +693,10 @@ describe("LiskConnection", () => {
       const bytesToPost = liskCodec.bytesToPost(corruptedSignedTransaction);
 
       const connection = await LiskConnection.establish(devnetBase);
-      await connection
-        .postTx(bytesToPost)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/failed with status code 409/i));
+      await connection.postTx(bytesToPost).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/failed with status code 409/i),
+      );
     });
   });
 
@@ -711,11 +708,10 @@ describe("LiskConnection", () => {
       // by non-existing ID
       {
         const nonExistentId = "98568736528934587" as TransactionId;
-        await connection
-          .getTx(nonExistentId)
-          .then(fail.bind(null, "should not resolve"), error =>
-            expect(error).toMatch(/transaction does not exist/i),
-          );
+        await connection.getTx(nonExistentId).then(
+          () => fail("should not resolve"),
+          error => expect(error).toMatch(/transaction does not exist/i),
+        );
       }
 
       // by existing ID (from lisk/init.sh)
@@ -726,9 +722,7 @@ describe("LiskConnection", () => {
         expect(result.height).toBeLessThan(100);
         expect(result.transactionId).toEqual(existingId);
         const transaction = result.transaction;
-        if (!isSendTransaction(transaction)) {
-          throw new Error("Unexpected transaction type");
-        }
+        assert(isSendTransaction(transaction), "Unexpected transaction type");
         expect(transaction.recipient).toEqual("1349293588603668134L");
         expect(transaction.amount.quantity).toEqual("10044556677");
       }
@@ -746,12 +740,8 @@ describe("LiskConnection", () => {
         transaction,
         signatures: [primarySignature],
       } = await connection.getTx(existingId);
-      if (!isSendTransaction(transaction)) {
-        throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-      }
-      if (!transaction.senderPubkey) {
-        throw new Error("Expected transaction to have senderPubkey");
-      }
+      assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+      assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
       const publicKey = transaction.senderPubkey.data;
       const signingJob = liskCodec.bytesToSign(transaction, primarySignature.nonce);
       const txBytes = new Sha256(signingJob.bytes).digest();
@@ -785,9 +775,7 @@ describe("LiskConnection", () => {
         expect(result.height).toBeLessThan(100);
         expect(result.transactionId).toEqual(searchId);
         const transaction = result.transaction;
-        if (!isSendTransaction(transaction)) {
-          throw new Error("Unexpected transaction type");
-        }
+        assert(isSendTransaction(transaction), "Unexpected transaction type");
         expect(transaction.recipient).toEqual("1349293588603668134L");
         expect(transaction.amount.quantity).toEqual("10044556677");
       }
@@ -801,7 +789,7 @@ describe("LiskConnection", () => {
 
       // by non-existing address
       {
-        const unusedAddress = await randomAddress();
+        const unusedAddress = randomAddress();
         const results = await connection.searchTx({ sentFromOrTo: unusedAddress });
         expect(results.length).toEqual(0);
       }
@@ -813,12 +801,8 @@ describe("LiskConnection", () => {
         expect(results.length).toBeGreaterThanOrEqual(1);
         for (const result of results) {
           const transaction = result.transaction;
-          if (!isSendTransaction(transaction)) {
-            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-          }
-          if (!transaction.senderPubkey) {
-            throw new Error("Expected transaction to have senderPubkey");
-          }
+          assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+          assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
           expect(
             transaction.recipient === searchAddress ||
               Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
@@ -833,12 +817,8 @@ describe("LiskConnection", () => {
         expect(results.length).toBeGreaterThanOrEqual(1);
         for (const result of results) {
           const transaction = result.transaction;
-          if (!isSendTransaction(transaction)) {
-            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-          }
-          if (!transaction.senderPubkey) {
-            throw new Error("Expected transaction to have senderPubkey");
-          }
+          assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+          assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
           expect(
             transaction.recipient === searchAddress ||
               Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
@@ -863,12 +843,8 @@ describe("LiskConnection", () => {
         for (const result of results) {
           expect(result.height).toBeGreaterThanOrEqual(2);
           const transaction = result.transaction;
-          if (!isSendTransaction(transaction)) {
-            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-          }
-          if (!transaction.senderPubkey) {
-            throw new Error("Expected transaction to have senderPubkey");
-          }
+          assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+          assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
           expect(
             transaction.recipient === searchAddress ||
               Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
@@ -883,12 +859,8 @@ describe("LiskConnection", () => {
         for (const result of results) {
           expect(result.height).toBeLessThanOrEqual(100);
           const transaction = result.transaction;
-          if (!isSendTransaction(transaction)) {
-            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-          }
-          if (!transaction.senderPubkey) {
-            throw new Error("Expected transaction to have senderPubkey");
-          }
+          assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+          assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
           expect(
             transaction.recipient === searchAddress ||
               Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
@@ -908,12 +880,8 @@ describe("LiskConnection", () => {
           expect(result.height).toBeGreaterThanOrEqual(2);
           expect(result.height).toBeLessThanOrEqual(100);
           const transaction = result.transaction;
-          if (!isSendTransaction(transaction)) {
-            throw new Error(`Unexpected transaction type: ${transaction.kind}`);
-          }
-          if (!transaction.senderPubkey) {
-            throw new Error("Expected transaction to have senderPubkey");
-          }
+          assert(isSendTransaction(transaction), `Unexpected transaction type: ${transaction.kind}`);
+          assert(transaction.senderPubkey, "Expected transaction to have senderPubkey");
           expect(
             transaction.recipient === searchAddress ||
               Derivation.pubkeyToAddress(transaction.senderPubkey) === searchAddress,
@@ -997,7 +965,7 @@ describe("LiskConnection", () => {
       (async () => {
         const connection = await LiskConnection.establish(devnetBase);
 
-        const recipientAddress = await randomAddress();
+        const recipientAddress = randomAddress();
 
         // send transactions
 
@@ -1057,15 +1025,10 @@ describe("LiskConnection", () => {
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
           next: event => {
-            if (!isConfirmedTransaction(event)) {
-              throw new Error("Confirmed transaction expected");
-            }
-
+            assert(isConfirmedTransaction(event), "Confirmed transaction expected");
             events.push(event);
 
-            if (!isSendTransaction(event.transaction)) {
-              throw new Error("Unexpected transaction type");
-            }
+            assert(isSendTransaction(event.transaction), "Unexpected transaction type");
             expect(event.transaction.recipient).toEqual(recipientAddress);
 
             if (events.length === 3) {
@@ -1096,7 +1059,7 @@ describe("LiskConnection", () => {
         const wallet = profile.addWallet(new Ed25519Wallet());
         const sender = await profile.createIdentity(wallet.id, devnetChainId, await devnetDefaultKeypair);
 
-        const recipientAddress = await randomAddress();
+        const recipientAddress = randomAddress();
         const send: SendTransaction = {
           kind: "bcp/send",
           chainId: devnetChainId,
@@ -1121,15 +1084,10 @@ describe("LiskConnection", () => {
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
-            if (!isConfirmedTransaction(event)) {
-              throw new Error("Confirmed transaction expected");
-            }
-
+            assert(isConfirmedTransaction(event), "Confirmed transaction expected");
             events.push(event);
 
-            if (!isSendTransaction(event.transaction)) {
-              throw new Error("Unexpected transaction type");
-            }
+            assert(isSendTransaction(event.transaction), "Unexpected transaction type");
             expect(event.transaction.recipient).toEqual(recipientAddress);
             expect(event.transactionId).toEqual(transactionId);
 
@@ -1147,7 +1105,7 @@ describe("LiskConnection", () => {
       (async () => {
         const connection = await LiskConnection.establish(devnetBase);
 
-        const recipientAddress = await randomAddress();
+        const recipientAddress = randomAddress();
 
         // send transactions
 
@@ -1176,15 +1134,10 @@ describe("LiskConnection", () => {
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
           next: event => {
-            if (!isConfirmedTransaction(event)) {
-              throw new Error("Confirmed transaction expected");
-            }
-
+            assert(isConfirmedTransaction(event), "Confirmed transaction expected");
             events.push(event);
 
-            if (!isSendTransaction(event.transaction)) {
-              throw new Error("Unexpected transaction type");
-            }
+            assert(isSendTransaction(event.transaction), "Unexpected transaction type");
             expect(event.transaction.recipient).toEqual(recipientAddress);
             expect(event.transactionId).toEqual(transactionId);
 
@@ -1234,10 +1187,10 @@ describe("LiskConnection", () => {
         kind: "other/kind",
         chainId: dummynetChainId,
       };
-      await connection
-        .getFeeQuote(otherTransaction)
-        .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/transaction of unsupported kind/i));
+      await connection.getFeeQuote(otherTransaction).then(
+        () => fail("must not resolve"),
+        error => expect(error).toMatch(/transaction of unsupported kind/i),
+      );
     });
   });
 });

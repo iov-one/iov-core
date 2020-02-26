@@ -53,7 +53,6 @@ export class QueueingStreamingSocket {
 
   public connect(): void {
     this.connectionStatusProducer.update(ConnectionStatus.Connecting);
-    // tslint:disable-next-line:no-floating-promises
     this.socket.connected.then(
       async () => {
         this.connectionStatusProducer.update(ConnectionStatus.Connected);
@@ -78,7 +77,7 @@ export class QueueingStreamingSocket {
       },
       error: () => this.connectionStatusProducer.update(ConnectionStatus.Disconnected),
     });
-    // tslint:disable-next-line:no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.socket.connected.then(() => {
       if (this.reconnectedHandler) {
         this.reconnectedHandler();
@@ -94,7 +93,7 @@ export class QueueingStreamingSocket {
   public queueRequest(request: string): void {
     this.queue.push(request);
     // We don’t need to wait for the queue to be processed.
-    // tslint:disable-next-line:no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.processQueue();
   }
 

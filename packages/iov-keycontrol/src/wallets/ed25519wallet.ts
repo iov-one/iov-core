@@ -243,7 +243,9 @@ export class Ed25519Wallet implements Wallet {
 
   public printableSecret(): string {
     const libsodiumPrivkeys = [...this.privkeys.values()].map(pair => pair.toLibsodiumPrivkey());
-    const hexstringsSorted = libsodiumPrivkeys.map(privkey => Encoding.toHex(privkey)).sort();
+    const hexstringsSorted = libsodiumPrivkeys
+      .map(privkey => Encoding.toHex(privkey))
+      .sort((a, b) => a.localeCompare(b));
     const outStrings = hexstringsSorted.map(hexstring => (hexstring.match(/.{1,16}/g) || []).join(" "));
     return outStrings.join("; ");
   }

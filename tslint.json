@@ -18,7 +18,7 @@
     "no-empty": false,
     "no-empty-interface": false,
     "no-expression-statement": false,
-    "no-floating-promises": true,
+    "no-floating-promises": false,
     "no-if-statement": false,
     "no-implicit-dependencies": false,
     "no-let": false,

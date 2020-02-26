@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0
+
+- @iov/cli: Add support for `Accounts` and `Domains`.
+- @iov/crypto: Add `Secp256k1Signature.fromFixedLength`.
+
 ## 2.0.2
 
 - @iov/bns: Add support for `Accounts` module.

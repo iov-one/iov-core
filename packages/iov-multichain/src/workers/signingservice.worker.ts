@@ -65,5 +65,5 @@ async function main(): Promise<void> {
   };
 }
 
-// tslint:disable-next-line: no-floating-promises
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 main();
