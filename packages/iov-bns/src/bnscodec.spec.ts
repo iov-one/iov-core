@@ -227,7 +227,7 @@ describe("bnscodec", () => {
 
   fit("generate vote test data", () => {
     const nonce = 69 as Nonce;
-    const proposalId = 70;
+    const proposalIds = [70, 1, Number.MAX_SAFE_INTEGER - 1, Number.MAX_SAFE_INTEGER];
     const fee: Fee = {
       tokens: { quantity: "100000000", fractionalDigits: 9, tokenTicker: "CASH" as TokenTicker },
     };
@@ -266,23 +266,25 @@ describe("bnscodec", () => {
     for (const { voter } of voters) {
       const address = bnsCodec.identityToAddress(voter);
       for (const selection of [VoteOption.Yes, VoteOption.No, VoteOption.Abstain]) {
-        const vote: VoteTx = {
-          kind: "bns/vote",
-          chainId: voter.chainId,
-          proposalId: proposalId,
-          selection: selection,
-          voter: address,
-          fee: {
-            ...fee,
-            payer: address,
-          },
-        };
-        const { bytes } = bnsCodec.bytesToSign(vote, nonce);
-        out.push({
-          transaction: TransactionEncoder.toJson(vote),
-          nonce: nonce,
-          bytes: Encoding.toHex(bytes),
-        });
+        for (const proposalId of proposalIds) {
+          const vote: VoteTx = {
+            kind: "bns/vote",
+            chainId: voter.chainId,
+            proposalId: proposalId,
+            selection: selection,
+            voter: address,
+            fee: {
+              ...fee,
+              payer: address,
+            },
+          };
+          const { bytes } = bnsCodec.bytesToSign(vote, nonce);
+          out.push({
+            transaction: TransactionEncoder.toJson(vote),
+            nonce: nonce,
+            bytes: Encoding.toHex(bytes),
+          });
+        }
       }
     }
 
