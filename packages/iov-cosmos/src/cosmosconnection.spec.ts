@@ -37,7 +37,7 @@ describe("CosmosConnection", () => {
   };
   const faucetMnemonic =
     "economy stock theory fatal elder harbor betray wasp final emotion task crumble siren bottom lizard educate guess current outdoor pair theory focus wife stone";
-  const faucetPath = HdPaths.cosmos(0);
+  const faucetPath = HdPaths.cosmosHub(0);
   const defaultRecipient = "cosmos1t70qnpr0az8tf7py83m4ue5y89w58lkjmx0yq2" as Address;
 
   describe("establish", () => {

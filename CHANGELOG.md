@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0
+
+- @iov/keycontrol: Deprecate `HdPaths.cosmos` in favour of the new
+  `HdPaths.cosmosHub`.
+
 ## 2.1.0
 
 - @iov/cli: Add support for `Accounts` and `Domains`.
