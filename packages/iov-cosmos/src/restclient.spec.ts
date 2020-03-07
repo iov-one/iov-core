@@ -17,7 +17,7 @@ describe("RestClient", () => {
       "economy stock theory fatal elder harbor betray wasp final emotion task crumble siren bottom lizard educate guess current outdoor pair theory focus wife stone",
     address: "cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs6" as Address,
   };
-  const faucetPath = HdPaths.cosmos(0);
+  const faucetPath = HdPaths.cosmosHub(0);
   const atom = "ATOM" as TokenTicker;
   const defaultRecipient = "cosmos1t70qnpr0az8tf7py83m4ue5y89w58lkjmx0yq2" as Address;
   const defaultChainId = "cosmos:testing" as ChainId;

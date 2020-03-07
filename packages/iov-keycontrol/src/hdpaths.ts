@@ -112,8 +112,17 @@ export class HdPaths {
    *
    * @param account The account index `a` starting at 0
    */
-  public static cosmos(account: number): readonly Slip10RawIndex[] {
+  public static cosmosHub(account: number): readonly Slip10RawIndex[] {
     return HdPaths.bip44(HdPaths.coinTypes.atom, 0, 0, account);
+  }
+
+  /**
+   * @deprecated Use `HdPaths.cosmosHub`. The term "cosmos" is misleading in this
+   * context since this returns an ATOM specific path that is explicitely designed for
+   * Cosmos Hub and should not be reused carelessly for other Cosmos blockchains.
+   */
+  public static cosmos(account: number): readonly Slip10RawIndex[] {
+    return HdPaths.cosmosHub(account);
   }
 
   private static readonly purposes = {

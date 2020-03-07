@@ -76,6 +76,12 @@ export declare class HdPaths {
    *
    * @param account The account index `a` starting at 0
    */
+  static cosmosHub(account: number): readonly Slip10RawIndex[];
+  /**
+   * @deprecated Use `HdPaths.cosmosHub`. The term "cosmos" is misleading in this
+   * context since this returns an ATOM specific path that is explicitely designed for
+   * Cosmos Hub and should not be reused carelessly for other Cosmos blockchains.
+   */
   static cosmos(account: number): readonly Slip10RawIndex[];
   private static readonly purposes;
   /**
