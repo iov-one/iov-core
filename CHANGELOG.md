@@ -4,6 +4,7 @@
 
 - @iov/keycontrol: Deprecate `HdPaths.cosmos` in favour of the new
   `HdPaths.cosmosHub`.
+- @iov/cosmos*: Rename package `cosmos` to `cosmoshub`.
 
 ## 2.1.0
 
