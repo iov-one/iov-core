@@ -72,7 +72,7 @@ echo "use bnsd? ${BNSD_ENABLED:-no}"
 echo "use IOV faucet? ${FAUCET_ENABLED:-no}"
 echo "use ethereum? ${ETHEREUM_ENABLED:-no}"
 echo "use Lisk? ${LISK_ENABLED:-no}"
-echo "use Cosmos? ${COSMOSHUB_ENABLED:-no}"
+echo "use cosmoshub? ${COSMOSHUB_ENABLED:-no}"
 
 #
 # Build
