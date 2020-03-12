@@ -20,8 +20,8 @@ import { CosmosConnection } from "./cosmosconnection";
 const { fromBase64, toHex } = Encoding;
 
 function pendingWithoutCosmos(): void {
-  if (!process.env.COSMOS_ENABLED) {
-    return pending("Set COSMOS_ENABLED to enable Cosmos node-based tests");
+  if (!process.env.COSMOSHUB_ENABLED) {
+    return pending("Set COSMOSHUB_ENABLED to enable Cosmos node-based tests");
   }
 }
 
