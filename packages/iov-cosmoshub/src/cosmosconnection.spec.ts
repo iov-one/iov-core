@@ -19,13 +19,13 @@ import { CosmosConnection } from "./cosmosconnection";
 
 const { fromBase64, toHex } = Encoding;
 
-function pendingWithoutCosmos(): void {
+function pendingWithoutCosmosHub(): void {
   if (!process.env.COSMOSHUB_ENABLED) {
     return pending("Set COSMOSHUB_ENABLED to enable Cosmos node-based tests");
   }
 }
 
-describe("CosmosConnection", () => {
+describe("CosmosHubConnection", () => {
   const atom = "ATOM" as TokenTicker;
   const httpUrl = "http://localhost:1317";
   const defaultChainId = "cosmos:testing" as ChainId;
@@ -41,8 +41,8 @@ describe("CosmosConnection", () => {
   const defaultRecipient = "cosmos1t70qnpr0az8tf7py83m4ue5y89w58lkjmx0yq2" as Address;
 
   describe("establish", () => {
-    it("can connect to Cosmos via http", async () => {
-      pendingWithoutCosmos();
+    it("can connect to cosmoshub via http", async () => {
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       expect(connection).toBeTruthy();
       connection.disconnect();
@@ -51,7 +51,7 @@ describe("CosmosConnection", () => {
 
   describe("chainId", () => {
     it("displays the chain ID", async () => {
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       expect(connection.chainId).toEqual(defaultChainId);
       connection.disconnect();
@@ -60,7 +60,7 @@ describe("CosmosConnection", () => {
 
   describe("height", () => {
     it("displays the current height", async () => {
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       const height = await connection.height();
       expect(height).toBeGreaterThan(0);
@@ -70,7 +70,7 @@ describe("CosmosConnection", () => {
 
   describe("getToken", () => {
     it("displays a given token", async () => {
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       const token = await connection.getToken("ATOM" as TokenTicker);
       expect(token).toEqual({
@@ -82,7 +82,7 @@ describe("CosmosConnection", () => {
     });
 
     it("resolves to undefined if the token is not supported", async () => {
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       const token = await connection.getToken("whatever" as TokenTicker);
       expect(token).toBeUndefined();
@@ -92,7 +92,7 @@ describe("CosmosConnection", () => {
 
   describe("getAllTokens", () => {
     it("resolves to a list of all supported tokens", async () => {
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       const tokens = await connection.getAllTokens();
       expect(tokens).toEqual([
@@ -108,7 +108,7 @@ describe("CosmosConnection", () => {
 
   describe("getAccount", () => {
     it("gets an empty account by address", async () => {
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       const account = await connection.getAccount({ address: defaultEmptyAddress });
       expect(account).toBeUndefined();
@@ -116,7 +116,7 @@ describe("CosmosConnection", () => {
     });
 
     it("gets an account by address", async () => {
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       const account = await connection.getAccount({ address: defaultAddress });
       if (account === undefined) {
@@ -130,7 +130,7 @@ describe("CosmosConnection", () => {
     });
 
     it("gets an account by pubkey", async () => {
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       const account = await connection.getAccount({ pubkey: defaultPubkey });
       if (account === undefined) {
@@ -149,7 +149,7 @@ describe("CosmosConnection", () => {
 
   describe("integration tests", () => {
     it("can post and get a transaction", async () => {
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(faucetMnemonic));
@@ -208,7 +208,7 @@ describe("CosmosConnection", () => {
     });
 
     it("can post and search for a transaction", async () => {
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const connection = await CosmosConnection.establish(httpUrl);
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(faucetMnemonic));
