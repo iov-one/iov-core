@@ -41,8 +41,8 @@ if command -v docker > /dev/null ; then
   export LISK_ENABLED=1
   fold_end
 
-  fold_start "cosmos-start"
-  ./scripts/cosmos/start.sh
+  fold_start "cosmoshub-start"
+  ./scripts/cosmoshub/start.sh
   export COSMOS_ENABLED=1
   fold_end
 
@@ -171,9 +171,9 @@ if [[ -n ${BNSD_ENABLED:-} ]]; then
 fi
 
 if [[ -n ${COSMOS_ENABLED:-} ]]; then
-  fold_start "cosmos-stop"
+  fold_start "cosmoshub-stop"
   unset COSMOS_ENABLED
-  ./scripts/cosmos/stop.sh
+  ./scripts/cosmoshub/stop.sh
   fold_end
 fi
 
