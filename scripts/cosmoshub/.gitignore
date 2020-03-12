@@ -1,2 +1,3 @@
 .gaiacli/keys/
+.gaiad/config/addrbook.json
 .gaiad/data/
