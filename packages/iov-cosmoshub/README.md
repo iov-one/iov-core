@@ -1,6 +1,6 @@
-# @iov/cosmos
+# @iov/cosmoshub
 
-[![npm version](https://img.shields.io/npm/v/@iov/cosmos.svg)](https://www.npmjs.com/package/@iov/cosmos)
+[![npm version](https://img.shields.io/npm/v/@iov/cosmos.svg)](https://www.npmjs.com/package/@iov/cosmoshub)
 
 ## License
 
