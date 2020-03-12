@@ -1,3 +1,3 @@
-export { cosmosCodec, CosmosCodec } from "./cosmoscodec";
-export { CosmosConnection } from "./cosmosconnection";
-export { createCosmosConnector } from "./cosmosconnector";
+export { cosmosHubCodec } from "./cosmoshubcodec";
+export { CosmosHubConnection as CosmosConnection } from "./cosmoshubconnection";
+export { createCosmosHubConnector as createCosmosConnector } from "./cosmoshubconnector";

@@ -37,7 +37,7 @@ import { Stream } from "xstream";
 
 import { CosmosBech32Prefix, pubkeyToAddress } from "./address";
 import { Caip5 } from "./caip5";
-import { cosmosCodec } from "./cosmoscodec";
+import { cosmosHubCodec } from "./cosmoshubcodec";
 import { decodeAmount, parseTxsResponse } from "./decode";
 import { RestClient, TxsResponse } from "./restclient";
 
@@ -67,12 +67,15 @@ function buildQueryString({
   return components.filter(Boolean).join("&");
 }
 
-export class CosmosConnection implements BlockchainConnection {
-  public static async establish(url: string, codec: TxReadCodec = cosmosCodec): Promise<CosmosConnection> {
+export class CosmosHubConnection implements BlockchainConnection {
+  public static async establish(
+    url: string,
+    codec: TxReadCodec = cosmosHubCodec,
+  ): Promise<CosmosHubConnection> {
     const restClient = new RestClient(url);
     const { node_info } = await restClient.nodeInfo();
     const chainId = Caip5.encode(node_info.network);
-    return new CosmosConnection(restClient, chainId, codec);
+    return new CosmosHubConnection(restClient, chainId, codec);
   }
 
   public readonly chainId: ChainId;

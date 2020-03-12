@@ -42,7 +42,7 @@ function sortJson(json: any): any {
   return result;
 }
 
-export class CosmosCodec implements TxCodec {
+export class CosmosHubCodec implements TxCodec {
   public bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob {
     const accountNumber = 0;
     const memo = (unsigned as any).memo;
@@ -94,4 +94,4 @@ export class CosmosCodec implements TxCodec {
   }
 }
 
-export const cosmosCodec = new CosmosCodec();
+export const cosmosHubCodec = new CosmosHubCodec();
