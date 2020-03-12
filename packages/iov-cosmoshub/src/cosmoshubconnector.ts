@@ -1,19 +1,19 @@
 import { ChainConnector, ChainId } from "@iov/bcp";
 
-import { CosmosCodec } from "./cosmoscodec";
-import { CosmosConnection } from "./cosmosconnection";
+import { CosmosHubCodec } from "./cosmoshubcodec";
+import { CosmosHubConnection } from "./cosmoshubconnection";
 
 /**
  * A helper to connect to a cosmos-based chain at a given url
  */
-export function createCosmosConnector(
+export function createCosmosHubConnector(
   url: string,
   expectedChainId?: ChainId,
-): ChainConnector<CosmosConnection> {
+): ChainConnector<CosmosHubConnection> {
   // Avoid the use of default `cosmosCodec` here to prepare for codec configurations
-  const codec = new CosmosCodec();
+  const codec = new CosmosHubCodec();
   return {
-    establishConnection: async () => CosmosConnection.establish(url, codec),
+    establishConnection: async () => CosmosHubConnection.establish(url, codec),
     codec: codec,
     expectedChainId: expectedChainId,
   };

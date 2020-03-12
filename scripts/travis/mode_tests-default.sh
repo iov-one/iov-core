@@ -41,9 +41,9 @@ if command -v docker > /dev/null ; then
   export LISK_ENABLED=1
   fold_end
 
-  fold_start "cosmos-start"
-  ./scripts/cosmos/start.sh
-  export COSMOS_ENABLED=1
+  fold_start "cosmoshub-start"
+  ./scripts/cosmoshub/start.sh
+  export COSMOSHUB_ENABLED=1
   fold_end
 
   fold_start "ethereum-start"
@@ -72,7 +72,7 @@ echo "use bnsd? ${BNSD_ENABLED:-no}"
 echo "use IOV faucet? ${FAUCET_ENABLED:-no}"
 echo "use ethereum? ${ETHEREUM_ENABLED:-no}"
 echo "use Lisk? ${LISK_ENABLED:-no}"
-echo "use Cosmos? ${COSMOS_ENABLED:-no}"
+echo "use cosmoshub? ${COSMOSHUB_ENABLED:-no}"
 
 #
 # Build
@@ -170,10 +170,10 @@ if [[ -n ${BNSD_ENABLED:-} ]]; then
   fold_end
 fi
 
-if [[ -n ${COSMOS_ENABLED:-} ]]; then
-  fold_start "cosmos-stop"
-  unset COSMOS_ENABLED
-  ./scripts/cosmos/stop.sh
+if [[ -n ${COSMOSHUB_ENABLED:-} ]]; then
+  fold_start "cosmoshub-stop"
+  unset COSMOSHUB_ENABLED
+  ./scripts/cosmoshub/stop.sh
   fold_end
 fi
 

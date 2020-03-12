@@ -21,8 +21,8 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Stream } from "xstream";
-export declare class CosmosConnection implements BlockchainConnection {
-  static establish(url: string, codec?: TxReadCodec): Promise<CosmosConnection>;
+export declare class CosmosHubConnection implements BlockchainConnection {
+  static establish(url: string, codec?: TxReadCodec): Promise<CosmosHubConnection>;
   readonly chainId: ChainId;
   readonly codec: TxReadCodec;
   private readonly restClient;

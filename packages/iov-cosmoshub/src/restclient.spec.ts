@@ -1,12 +1,12 @@
 import { Address, ChainId, Nonce, SendTransaction, TokenTicker } from "@iov/bcp";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
-import { cosmosCodec } from "./cosmoscodec";
+import { cosmosHubCodec } from "./cosmoshubcodec";
 import { RestClient } from "./restclient";
 
-function pendingWithoutCosmos(): void {
-  if (!process.env.COSMOS_ENABLED) {
-    return pending("Set COSMOS_ENABLED to enable Cosmos node-based tests");
+function pendingWithoutCosmosHub(): void {
+  if (!process.env.COSMOSHUB_ENABLED) {
+    return pending("Set COSMOSHUB_ENABLED to enable Cosmos node-based tests");
   }
 }
 
@@ -48,13 +48,13 @@ describe("RestClient", () => {
       pending(
         "This test fails because the height argument of authAccounts does not work. TODO: Either remove or fix the argument.",
       );
-      pendingWithoutCosmos();
+      pendingWithoutCosmosHub();
       const client = new RestClient(httpUrl);
 
       const profile = new UserProfile();
       const wallet = profile.addWallet(Secp256k1HdWallet.fromMnemonic(faucet.mnemonic));
       const senderIdentity = await profile.createIdentity(wallet.id, defaultChainId, faucetPath);
-      const senderAddress = cosmosCodec.identityToAddress(senderIdentity);
+      const senderAddress = cosmosHubCodec.identityToAddress(senderIdentity);
 
       const latestTx = Array.from((await client.txs(`message.sender=${senderAddress}&limit=100`)).txs)
         .reverse()
@@ -64,8 +64,13 @@ describe("RestClient", () => {
       // it works without height argument
       const sequence = parseInt((await client.authAccounts(senderAddress)).result.value.sequence, 10);
 
-      const signed = await profile.signTransaction(senderIdentity, unsigned, cosmosCodec, sequence as Nonce);
-      const postableBytes = cosmosCodec.bytesToPost(signed);
+      const signed = await profile.signTransaction(
+        senderIdentity,
+        unsigned,
+        cosmosHubCodec,
+        sequence as Nonce,
+      );
+      const postableBytes = cosmosHubCodec.bytesToPost(signed);
       const { code, height: heightString } = await client.postTx(postableBytes);
       expect(code).toBeFalsy();
       const height = parseInt(heightString, 10);

@@ -1,9 +1,9 @@
 import { ChainConnector, ChainId } from "@iov/bcp";
-import { CosmosConnection } from "./cosmosconnection";
+import { CosmosHubConnection } from "./cosmoshubconnection";
 /**
  * A helper to connect to a cosmos-based chain at a given url
  */
-export declare function createCosmosConnector(
+export declare function createCosmosHubConnector(
   url: string,
   expectedChainId?: ChainId,
-): ChainConnector<CosmosConnection>;
+): ChainConnector<CosmosHubConnection>;

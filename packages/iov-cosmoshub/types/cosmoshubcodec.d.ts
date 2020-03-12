@@ -10,7 +10,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-export declare class CosmosCodec implements TxCodec {
+export declare class CosmosHubCodec implements TxCodec {
   bytesToSign(unsigned: UnsignedTransaction, nonce: Nonce): SigningJob;
   bytesToPost(signed: SignedTransaction): PostableBytes;
   identifier(signed: SignedTransaction): TransactionId;
@@ -18,4 +18,4 @@ export declare class CosmosCodec implements TxCodec {
   identityToAddress(identity: Identity): Address;
   isValidAddress(address: string): boolean;
 }
-export declare const cosmosCodec: CosmosCodec;
+export declare const cosmosHubCodec: CosmosHubCodec;
