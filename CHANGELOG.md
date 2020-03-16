@@ -1,8 +1,12 @@
 # Changelog
 
-## 2.2.1
+## 2.2.2
 
 - @iov/bns: Fix `ReplaceAccountTargetsTx` type.
+
+## 2.2.1
+
+- @iov/cosmoshub: Fix types export.
 
 ## 2.2.0
 
