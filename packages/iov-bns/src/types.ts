@@ -537,7 +537,7 @@ export function isTransferAccountTx(tx: UnsignedTransaction): tx is TransferAcco
 export interface ReplaceAccountTargetsTx extends UnsignedTransaction {
   readonly kind: "bns/replace_account_targets";
   readonly domain: string;
-  readonly name: string;
+  readonly name: string | undefined;
   readonly newTargets: readonly ChainAddressPair[];
 }
 

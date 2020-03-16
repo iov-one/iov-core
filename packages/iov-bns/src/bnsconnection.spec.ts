@@ -43,6 +43,7 @@ import {
   RegisterAccountTx,
   RegisterDomainTx,
   RegisterUsernameTx,
+  ReplaceAccountTargetsTx,
 } from "./types";
 import { identityToAddress } from "./util";
 
@@ -712,6 +713,7 @@ describe("BnsConnection (basic class methods)", () => {
   describe("getDomains", () => {
     let connection: BnsConnection;
     let domain: string;
+    let targets: readonly ChainAddressPair[];
     let adminAddress: Address;
     let registryChainId: ChainId;
     let adminIdentity: Identity;
@@ -735,23 +737,47 @@ describe("BnsConnection (basic class methods)", () => {
       accountMsgFees = [
         { msgPath: "some-msg-path", fee: decodeAmount({ whole: 1, fractional: 2, ticker: "ASH" }) },
       ];
-      const registration = await connection.withDefaultFee<RegisterDomainTx>(
-        {
-          kind: "bns/register_domain",
-          chainId: registryChainId,
-          domain: domain,
-          admin: adminAddress,
-          hasSuperuser: true,
-          msgFees: accountMsgFees,
-          accountRenew: 1234,
-        },
-        adminAddress,
-      );
-      const nonce = await connection.getNonce({ pubkey: adminIdentity.pubkey });
-      const signed = await profile.signTransaction(adminIdentity, registration, bnsCodec, nonce);
       {
-        const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const registration = await connection.withDefaultFee<RegisterDomainTx>(
+          {
+            kind: "bns/register_domain",
+            chainId: registryChainId,
+            domain: domain,
+            admin: adminAddress,
+            hasSuperuser: true,
+            msgFees: accountMsgFees,
+            accountRenew: 1234,
+          },
+          adminAddress,
+        );
+        const nonce = await connection.getNonce({ pubkey: adminIdentity.pubkey });
+        const signed = await profile.signTransaction(adminIdentity, registration, bnsCodec, nonce);
+        {
+          const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+          await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        }
+      }
+
+      targets = [{ chainId: "wonderland" as ChainId, address: "12345W" as Address }];
+
+      {
+        const transfer = await connection.withDefaultFee<ReplaceAccountTargetsTx>(
+          {
+            kind: "bns/replace_account_targets",
+            chainId: registryChainId,
+            domain: domain,
+            name: undefined,
+            newTargets: targets,
+          },
+          adminAddress,
+        );
+
+        const nonce = await connection.getNonce({ pubkey: adminIdentity.pubkey });
+        const signed = await profile.signTransaction(adminIdentity, transfer, bnsCodec, nonce);
+        {
+          const response = await connection.postTx(bnsCodec.bytesToPost(signed));
+          await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        }
       }
     });
 
@@ -782,7 +808,7 @@ describe("BnsConnection (basic class methods)", () => {
         expect(results[0].domain).toEqual(domain);
         expect(results[0].name).toBeUndefined();
         expect(results[0].owner).toEqual(adminAddress);
-        expect(results[0].targets).toEqual([]);
+        expect(results[0].targets).toEqual(targets);
         expect(results[0].certificates).toEqual([]);
       }
     });

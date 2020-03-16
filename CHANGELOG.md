@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1
+
+- @iov/bns: Fix `ReplaceAccountTargetsTx` type.
+
 ## 2.2.0
 
 - @iov/keycontrol: Deprecate `HdPaths.cosmos` in favour of the new
