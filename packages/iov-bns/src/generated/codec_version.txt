@@ -1,1 +1,1 @@
-daf10da65e2cd2c36fffa7e4d15f3a36f9b845af (HEAD, tag: v0.25.1) release 0.25.1 (#1104)
+ed08f8dac2c7d362cfaf8c8e13010c9386829acc (HEAD, tag: v1.0.0) version 1.0 release (#1153)
