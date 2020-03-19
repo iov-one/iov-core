@@ -1,6 +1,6 @@
 {
   "name": "@iov/bns-governance",
-  "version": "2.2.1",
+  "version": "2.2.3",
   "description": "Makes the most common governance tasks as easy as possible",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@iov/bcp": "^2.2.0",
-    "@iov/bns": "^2.2.1",
+    "@iov/bns": "^2.2.3",
     "@iov/keycontrol": "^2.2.0",
     "bn.js": "^4.11.8",
     "readonly-date": "^1.0.0",
