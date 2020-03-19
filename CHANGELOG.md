@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.3
+
+- @iov/bns: Add support for weave v1.0.0.
+
 ## 2.2.2
 
 - @iov/bns: Fix `ReplaceAccountTargetsTx` type.
