@@ -369,6 +369,12 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       kind: ActionKind.ExecuteMigration,
       id: ensure(option.datamigrationExecuteMigrationMsg.migrationId, "migrationId"),
     };
+  } else if (option.migrationUpgradeSchemaMsg) {
+    return {
+      kind: ActionKind.UpgradeSchema,
+      pkg: ensure(option.migrationUpgradeSchemaMsg.pkg, "pkg"),
+      toVersion: ensure(option.migrationUpgradeSchemaMsg.toVersion, "toVersion"),
+    };
   } else {
     throw new Error("Unsupported ProposalOptions");
   }

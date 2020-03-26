@@ -231,6 +231,7 @@ export enum ActionKind {
   UpdateElectionRule = "gov_update_election_rule",
   UpdateElectorate = "gov_update_electorate",
   ExecuteMigration = "datamigration_execute_migration",
+  UpgradeSchema = "migration_upgrade_schema",
 }
 
 export interface TallyResult {
@@ -330,6 +331,16 @@ export function isExecuteMigrationAction(action: ProposalAction): action is Exec
   return action.kind === ActionKind.ExecuteMigration;
 }
 
+export interface UpgradeSchemaAction {
+  readonly kind: ActionKind.UpgradeSchema;
+  readonly pkg: string;
+  readonly toVersion: number;
+}
+
+export function isUpgradeSchemaAction(action: ProposalAction): action is UpgradeSchemaAction {
+  return action.kind === ActionKind.UpgradeSchema;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -340,7 +351,8 @@ export type ProposalAction =
   | SetValidatorsAction
   | UpdateElectorateAction
   | UpdateElectionRuleAction
-  | ExecuteMigrationAction;
+  | ExecuteMigrationAction
+  | UpgradeSchemaAction;
 
 export interface Proposal {
   readonly id: number;
