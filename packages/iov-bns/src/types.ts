@@ -35,6 +35,10 @@ export interface MsgFeeConfiguration {
   readonly feeAdmin: Address | null;
 }
 
+export interface PreRegistrationConfiguration {
+  readonly owner: Address | null;
+}
+
 /**
  * The message part of a bnsd.Tx
  *
@@ -238,6 +242,7 @@ export enum ActionKind {
   ExecuteMigration = "datamigration_execute_migration",
   UpgradeSchema = "migration_upgrade_schema",
   SetMsgFeeConfiguration = "msgfee_update_configuration_msg",
+  SetPreRegistrationConfiguration = "preregistration_update_configuration_msg",
 }
 
 export interface TallyResult {
@@ -358,6 +363,17 @@ export function isSetMsgFeeConfigurationAction(
   return action.kind === ActionKind.SetMsgFeeConfiguration;
 }
 
+export interface SetPreRegistrationConfigurationAction {
+  readonly kind: ActionKind.SetPreRegistrationConfiguration;
+  readonly patch: PreRegistrationConfiguration;
+}
+
+export function isSetPreRegistrationConfigurationAction(
+  action: ProposalAction,
+): action is SetPreRegistrationConfigurationAction {
+  return action.kind === ActionKind.SetPreRegistrationConfiguration;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -370,7 +386,8 @@ export type ProposalAction =
   | UpdateElectionRuleAction
   | ExecuteMigrationAction
   | UpgradeSchemaAction
-  | SetMsgFeeConfigurationAction;
+  | SetMsgFeeConfigurationAction
+  | SetPreRegistrationConfigurationAction;
 
 export interface Proposal {
   readonly id: number;

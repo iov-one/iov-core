@@ -23,6 +23,7 @@ import {
   Keyed,
   MsgFeeConfiguration,
   Participant,
+  PreRegistrationConfiguration,
   Proposal,
   ProposalAction,
   ProposalExecutorResult,
@@ -304,6 +305,15 @@ function decodeMsgFeeConfiguration(
   };
 }
 
+function decodePreRegistrationConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.preregistration.IConfiguration,
+): PreRegistrationConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
+  };
+}
+
 export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.bnsd.ProposalOptions.decode(rawOption);
   if (option.govCreateTextResolutionMsg) {
@@ -390,6 +400,14 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
     return {
       kind: ActionKind.SetMsgFeeConfiguration,
       patch: decodeMsgFeeConfiguration(prefix, ensure(option.msgfeeUpdateConfigurationMsg.patch, "patch")),
+    };
+  } else if (option.preregistrationUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetPreRegistrationConfiguration,
+      patch: decodePreRegistrationConfiguration(
+        prefix,
+        ensure(option.preregistrationUpdateConfigurationMsg.patch, "patch"),
+      ),
     };
   } else {
     throw new Error("Unsupported ProposalOptions");
