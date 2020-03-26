@@ -22,28 +22,28 @@ import * as codecImpl from "./generated/codecimpl";
 // Internal (those are not used outside of @iov/bns)
 
 export interface CashConfiguration {
-  readonly owner: Address | null;
-  readonly collectorAddress: Address | null;
+  readonly owner: Address;
+  readonly collectorAddress: Address;
   readonly minimalFee: Amount | null;
 }
 
 export interface TxFeeConfiguration {
-  readonly owner: Address | null;
+  readonly owner: Address;
   readonly freeBytes: number | null;
   readonly baseFee: Amount | null;
 }
 
 export interface MsgFeeConfiguration {
-  readonly owner: Address | null;
+  readonly owner: Address;
   readonly feeAdmin: Address | null;
 }
 
 export interface PreRegistrationConfiguration {
-  readonly owner: Address | null;
+  readonly owner: Address;
 }
 
 export interface QualityScoreConfiguration {
-  readonly owner: Address | null;
+  readonly owner: Address;
   readonly c: Fraction;
   readonly k: Fraction;
   readonly kp: Fraction;
@@ -66,7 +66,7 @@ export interface TermDepositCustomRate {
 }
 
 export interface TermDepositConfiguration {
-  readonly owner: Address | null;
+  readonly owner: Address;
   readonly admin: Address | null;
 
   readonly standardRates: TermDepositStandardRate[]; // represents the horribly named "bonuses"
