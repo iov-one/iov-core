@@ -21,6 +21,7 @@ import {
   Electors,
   Fraction,
   Keyed,
+  MsgFeeConfiguration,
   Participant,
   Proposal,
   ProposalAction,
@@ -293,6 +294,16 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
   }
 }
 
+function decodeMsgFeeConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.msgfee.IConfiguration,
+): MsgFeeConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
+    feeAdmin: encodeBnsAddress(prefix, ensure(config.feeAdmin, "feeAdmin")),
+  };
+}
+
 export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.bnsd.ProposalOptions.decode(rawOption);
   if (option.govCreateTextResolutionMsg) {
@@ -374,6 +385,11 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       kind: ActionKind.UpgradeSchema,
       pkg: ensure(option.migrationUpgradeSchemaMsg.pkg, "pkg"),
       toVersion: ensure(option.migrationUpgradeSchemaMsg.toVersion, "toVersion"),
+    };
+  } else if (option.msgfeeUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetMsgFeeConfiguration,
+      patch: decodeMsgFeeConfiguration(prefix, ensure(option.msgfeeUpdateConfigurationMsg.patch, "patch")),
     };
   } else {
     throw new Error("Unsupported ProposalOptions");

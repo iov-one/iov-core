@@ -30,6 +30,11 @@ export interface TxFeeConfiguration {
   readonly baseFee: Amount | null;
 }
 
+export interface MsgFeeConfiguration {
+  readonly owner: Address | null;
+  readonly feeAdmin: Address | null;
+}
+
 /**
  * The message part of a bnsd.Tx
  *
@@ -232,6 +237,7 @@ export enum ActionKind {
   UpdateElectorate = "gov_update_electorate",
   ExecuteMigration = "datamigration_execute_migration",
   UpgradeSchema = "migration_upgrade_schema",
+  SetMsgFeeConfiguration = "msgfee_update_configuration_msg",
 }
 
 export interface TallyResult {
@@ -341,6 +347,17 @@ export function isUpgradeSchemaAction(action: ProposalAction): action is Upgrade
   return action.kind === ActionKind.UpgradeSchema;
 }
 
+export interface SetMsgFeeConfigurationAction {
+  readonly kind: ActionKind.SetMsgFeeConfiguration;
+  readonly patch: MsgFeeConfiguration;
+}
+
+export function isSetMsgFeeConfigurationAction(
+  action: ProposalAction,
+): action is SetMsgFeeConfigurationAction {
+  return action.kind === ActionKind.SetMsgFeeConfiguration;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -352,7 +369,8 @@ export type ProposalAction =
   | UpdateElectorateAction
   | UpdateElectionRuleAction
   | ExecuteMigrationAction
-  | UpgradeSchemaAction;
+  | UpgradeSchemaAction
+  | SetMsgFeeConfigurationAction;
 
 export interface Proposal {
   readonly id: number;
