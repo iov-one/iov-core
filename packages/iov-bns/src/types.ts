@@ -22,6 +22,8 @@ import * as codecImpl from "./generated/codecimpl";
 // Internal (those are not used outside of @iov/bns)
 
 export interface CashConfiguration {
+  readonly owner: Address | null;
+  readonly collectorAddress: Address | null;
   readonly minimalFee: Amount | null;
 }
 
@@ -278,6 +280,7 @@ export enum ActionKind {
   SetQualityScoreConfiguration = "qualityscore_update_configuration_msg",
   SetTermDepositConfiguration = "termdeposit_update_configuration_msg",
   SetTxFeeConfiguration = "txfee_update_configuration_msg",
+  SetCashConfiguration = "cash_update_configuration_msg",
 }
 
 export interface TallyResult {
@@ -440,6 +443,15 @@ export function isSetTxFeeConfigurationAction(action: ProposalAction): action is
   return action.kind === ActionKind.SetTxFeeConfiguration;
 }
 
+export interface SetCashConfigurationAction {
+  readonly kind: ActionKind.SetCashConfiguration;
+  readonly patch: CashConfiguration;
+}
+
+export function isSetCashConfigurationAction(action: ProposalAction): action is SetCashConfigurationAction {
+  return action.kind === ActionKind.SetCashConfiguration;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -456,7 +468,8 @@ export type ProposalAction =
   | SetPreRegistrationConfigurationAction
   | SetQualityScoreConfigurationAction
   | SetTermDepositConfigurationAction
-  | SetTxFeeConfigurationAction;
+  | SetTxFeeConfigurationAction
+  | SetCashConfigurationAction;
 
 export interface Proposal {
   readonly id: number;

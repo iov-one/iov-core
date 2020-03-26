@@ -77,9 +77,14 @@ function isZeroCoin({ whole, fractional }: codecImpl.coin.ICoin): boolean {
   return asIntegerNumber(whole) === 0 && asIntegerNumber(fractional) === 0;
 }
 
-export function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): CashConfiguration {
+export function decodeCashConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.cash.IConfiguration,
+): CashConfiguration {
   const minimalFee = ensure(config.minimalFee, "minimalFee");
   return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
+    collectorAddress: encodeBnsAddress(prefix, ensure(config.collectorAddress, "collectorAddress")),
     minimalFee: isZeroCoin(minimalFee) ? null : decodeAmount(minimalFee),
   };
 }
@@ -489,6 +494,11 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
     return {
       kind: ActionKind.SetTxFeeConfiguration,
       patch: decodeTxFeeConfiguration(prefix, ensure(option.txfeeUpdateConfigurationMsg.patch, "patch")),
+    };
+  } else if (option.cashUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetCashConfiguration,
+      patch: decodeCashConfiguration(prefix, ensure(option.cashUpdateConfigurationMsg.patch, "patch")),
     };
   } else {
     throw new Error("Unsupported ProposalOptions");

@@ -922,7 +922,10 @@ export class BnsConnection implements AtomicSwapConnection {
     if (results.length !== 1) {
       throw new Error(`Unexpected number of results for minimal fee. Expected: 1 Got: ${results.length}`);
     }
-    const { minimalFee } = decodeCashConfiguration(codecImpl.cash.Configuration.decode(results[0].value));
+    const { minimalFee } = decodeCashConfiguration(
+      this.prefix,
+      codecImpl.cash.Configuration.decode(results[0].value),
+    );
     return minimalFee || undefined;
   }
 

@@ -14,6 +14,8 @@ import {
 import { As } from "type-tagger";
 import * as codecImpl from "./generated/codecimpl";
 export interface CashConfiguration {
+  readonly owner: Address | null;
+  readonly collectorAddress: Address | null;
   readonly minimalFee: Amount | null;
 }
 export interface TxFeeConfiguration {
@@ -219,6 +221,7 @@ export declare enum ActionKind {
   SetQualityScoreConfiguration = "qualityscore_update_configuration_msg",
   SetTermDepositConfiguration = "termdeposit_update_configuration_msg",
   SetTxFeeConfiguration = "txfee_update_configuration_msg",
+  SetCashConfiguration = "cash_update_configuration_msg",
 }
 export interface TallyResult {
   readonly totalYes: number;
@@ -327,6 +330,13 @@ export interface SetTxFeeConfigurationAction {
 export declare function isSetTxFeeConfigurationAction(
   action: ProposalAction,
 ): action is SetTxFeeConfigurationAction;
+export interface SetCashConfigurationAction {
+  readonly kind: ActionKind.SetCashConfiguration;
+  readonly patch: CashConfiguration;
+}
+export declare function isSetCashConfigurationAction(
+  action: ProposalAction,
+): action is SetCashConfigurationAction;
 /** The action to be executed when the proposal is accepted */
 export declare type ProposalAction =
   | CreateTextResolutionAction
@@ -343,7 +353,8 @@ export declare type ProposalAction =
   | SetPreRegistrationConfigurationAction
   | SetQualityScoreConfigurationAction
   | SetTermDepositConfigurationAction
-  | SetTxFeeConfigurationAction;
+  | SetTxFeeConfigurationAction
+  | SetCashConfigurationAction;
 export interface Proposal {
   readonly id: number;
   readonly title: string;

@@ -111,16 +111,22 @@ describe("decodeobjects", () => {
   });
 
   describe("decodeCashConfiguration", () => {
+    const prefix = "tiov";
+
     it("can decode configuration with non-null minimal fee", () => {
       const config: codecImpl.cash.IConfiguration = {
+        owner: fromHex("0011223344556677889900112233445566778899"),
+        collectorAddress: fromHex("04C3DB7CCCACF58EEFCC296FF7AD0F6DB7C2FA17"),
         minimalFee: {
           whole: 1234567890,
           fractional: 123456789,
           ticker: "ASH",
         },
       };
-      const decoded = decodeCashConfiguration(config);
+      const decoded = decodeCashConfiguration(prefix, config);
       expect(decoded).toEqual({
+        owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        collectorAddress: "tiov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh56x6uz",
         minimalFee: {
           quantity: "1234567890123456789",
           fractionalDigits: 9,
@@ -131,14 +137,18 @@ describe("decodeobjects", () => {
 
     it("can decode configuration with null minimal fee", () => {
       const config: codecImpl.cash.IConfiguration = {
+        owner: fromHex("0011223344556677889900112233445566778899"),
+        collectorAddress: fromHex("04C3DB7CCCACF58EEFCC296FF7AD0F6DB7C2FA17"),
         minimalFee: {
           whole: 0,
           fractional: 0,
           ticker: "",
         },
       };
-      const decoded = decodeCashConfiguration(config);
+      const decoded = decodeCashConfiguration(prefix, config);
       expect(decoded).toEqual({
+        owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        collectorAddress: "tiov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh56x6uz",
         minimalFee: null,
       });
     });
