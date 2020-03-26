@@ -1224,6 +1224,77 @@ describe("decodeMsg", () => {
         }),
       );
     });
+
+    it("works with SetTermDepositConfiguration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            termdepositUpdateConfigurationMsg: {
+              metadata: { schema: 1 },
+              patch: {
+                owner: fromHex("0011223344556677889900112233445566778899"),
+                admin: fromHex("04C3DB7CCCACF58EEFCC296FF7AD0F6DB7C2FA17"),
+                // standardRates
+                bonuses: [
+                  { lockinPeriod: 69, bonus: { numerator: 2, denominator: 3 } },
+                  { lockinPeriod: 70, bonus: { numerator: 5, denominator: 7 } },
+                ],
+                // customRates
+                baseRates: [
+                  {
+                    address: fromHex("0011223344556677889900112233445566778899"),
+                    rate: { numerator: 11, denominator: 13 },
+                  },
+                  {
+                    address: fromHex("04C3DB7CCCACF58EEFCC296FF7AD0F6DB7C2FA17"),
+                    rate: { numerator: 17, denominator: 19 },
+                  },
+                ],
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetTermDepositConfiguration,
+            patch: {
+              owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+              admin: "tiov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh56x6uz",
+              standardRates: [
+                { lockinPeriod: 69, rate: { numerator: 2, denominator: 3 } },
+                { lockinPeriod: 70, rate: { numerator: 5, denominator: 7 } },
+              ],
+              customRates: [
+                {
+                  address: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+                  rate: { numerator: 11, denominator: 13 },
+                },
+                {
+                  address: "tiov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh56x6uz",
+                  rate: { numerator: 17, denominator: 19 },
+                },
+              ],
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
   });
 
   describe("VoteTx", () => {

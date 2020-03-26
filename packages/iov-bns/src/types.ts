@@ -51,6 +51,25 @@ export interface QualityScoreConfiguration {
   readonly delta: Fraction;
 }
 
+// TermDepositStandardRate represents the horribly named IDepositBonus
+export interface TermDepositStandardRate {
+  readonly lockinPeriod: number;
+  readonly rate: Fraction;
+}
+
+export interface TermDepositCustomRate {
+  readonly address: Address;
+  readonly rate: Fraction;
+}
+
+export interface TermDepositConfiguration {
+  readonly owner: Address | null;
+  readonly admin: Address | null;
+
+  readonly standardRates: TermDepositStandardRate[]; // represents the horribly named "bonuses"
+  readonly customRates: TermDepositCustomRate[]; // represents the horribly named "baseRates"
+}
+
 /**
  * The message part of a bnsd.Tx
  *
@@ -256,6 +275,7 @@ export enum ActionKind {
   SetMsgFeeConfiguration = "msgfee_update_configuration_msg",
   SetPreRegistrationConfiguration = "preregistration_update_configuration_msg",
   SetQualityScoreConfiguration = "qualityscore_update_configuration_msg",
+  SetTermDepositConfiguration = "termdeposit_update_configuration_msg",
 }
 
 export interface TallyResult {
@@ -398,6 +418,17 @@ export function isSetQualityScoreConfigurationAction(
   return action.kind === ActionKind.SetQualityScoreConfiguration;
 }
 
+export interface SetTermDepositConfigurationAction {
+  readonly kind: ActionKind.SetTermDepositConfiguration;
+  readonly patch: TermDepositConfiguration;
+}
+
+export function isSetTermDepositConfigurationAction(
+  action: ProposalAction,
+): action is SetTermDepositConfigurationAction {
+  return action.kind === ActionKind.SetTermDepositConfiguration;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -412,7 +443,8 @@ export type ProposalAction =
   | UpgradeSchemaAction
   | SetMsgFeeConfigurationAction
   | SetPreRegistrationConfigurationAction
-  | SetQualityScoreConfigurationAction;
+  | SetQualityScoreConfigurationAction
+  | SetTermDepositConfigurationAction;
 
 export interface Proposal {
   readonly id: number;

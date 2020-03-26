@@ -31,6 +31,9 @@ import {
   ProposalStatus,
   QualityScoreConfiguration,
   SendAction,
+  TermDepositConfiguration,
+  TermDepositCustomRate,
+  TermDepositStandardRate,
   TxFeeConfiguration,
   Validators,
   VersionedId,
@@ -332,6 +335,41 @@ function decodeQualityScoreConfiguration(
   };
 }
 
+function decodeTermDepositStandardRates(
+  rates: readonly codecImpl.termdeposit.IDepositBonus[],
+): TermDepositStandardRate[] {
+  return rates.map(rate => {
+    return {
+      lockinPeriod: ensure(rate.lockinPeriod, "lockinPeriod"),
+      rate: decodeFraction(ensure(rate.bonus, "bonus")),
+    } as TermDepositStandardRate;
+  });
+}
+
+function decodeTermDepositCustomRates(
+  prefix: IovBech32Prefix,
+  rates: readonly codecImpl.termdeposit.ICustomRate[],
+): TermDepositCustomRate[] {
+  return rates.map(rate => {
+    return {
+      address: encodeBnsAddress(prefix, ensure(rate.address, "address")),
+      rate: decodeFraction(ensure(rate.rate, "rate")),
+    } as TermDepositCustomRate;
+  });
+}
+
+function decodeTermDepositConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.termdeposit.IConfiguration,
+): TermDepositConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
+    admin: encodeBnsAddress(prefix, ensure(config.admin, "admin")),
+    standardRates: decodeTermDepositStandardRates(ensure(config.bonuses, "bonuses")),
+    customRates: decodeTermDepositCustomRates(prefix, ensure(config.baseRates, "baseRates")),
+  };
+}
+
 export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.bnsd.ProposalOptions.decode(rawOption);
   if (option.govCreateTextResolutionMsg) {
@@ -433,6 +471,14 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       patch: decodeQualityScoreConfiguration(
         prefix,
         ensure(option.qualityscoreUpdateConfigurationMsg.patch, "patch"),
+      ),
+    };
+  } else if (option.termdepositUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetTermDepositConfiguration,
+      patch: decodeTermDepositConfiguration(
+        prefix,
+        ensure(option.termdepositUpdateConfigurationMsg.patch, "patch"),
       ),
     };
   } else {
