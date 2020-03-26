@@ -1295,6 +1295,57 @@ describe("decodeMsg", () => {
         }),
       );
     });
+
+    it("works with SetTxFeeConfiguration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            txfeeUpdateConfigurationMsg: {
+              metadata: { schema: 1 },
+              patch: {
+                owner: fromHex("0011223344556677889900112233445566778899"),
+                freeBytes: 4096,
+                baseFee: {
+                  whole: 10,
+                  fractional: 1,
+                  ticker: "CASH",
+                },
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetTxFeeConfiguration,
+            patch: {
+              owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+              freeBytes: 4096,
+              baseFee: {
+                fractionalDigits: 9,
+                quantity: "10000000001",
+                tokenTicker: "CASH" as TokenTicker,
+              },
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
   });
 
   describe("VoteTx", () => {

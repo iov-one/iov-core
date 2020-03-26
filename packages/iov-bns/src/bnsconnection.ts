@@ -862,7 +862,10 @@ export class BnsConnection implements AtomicSwapConnection {
     if (results.length === 0) {
       return undefined;
     }
-    const config = decodeTxFeeConfiguration(codecImpl.txfee.Configuration.decode(results[0].value));
+    const config = decodeTxFeeConfiguration(
+      this.prefix,
+      codecImpl.txfee.Configuration.decode(results[0].value),
+    );
 
     return config;
   }

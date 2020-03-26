@@ -26,6 +26,7 @@ export interface CashConfiguration {
 }
 
 export interface TxFeeConfiguration {
+  readonly owner: Address | null;
   readonly freeBytes: number | null;
   readonly baseFee: Amount | null;
 }
@@ -276,6 +277,7 @@ export enum ActionKind {
   SetPreRegistrationConfiguration = "preregistration_update_configuration_msg",
   SetQualityScoreConfiguration = "qualityscore_update_configuration_msg",
   SetTermDepositConfiguration = "termdeposit_update_configuration_msg",
+  SetTxFeeConfiguration = "txfee_update_configuration_msg",
 }
 
 export interface TallyResult {
@@ -429,6 +431,15 @@ export function isSetTermDepositConfigurationAction(
   return action.kind === ActionKind.SetTermDepositConfiguration;
 }
 
+export interface SetTxFeeConfigurationAction {
+  readonly kind: ActionKind.SetTxFeeConfiguration;
+  readonly patch: TxFeeConfiguration;
+}
+
+export function isSetTxFeeConfigurationAction(action: ProposalAction): action is SetTxFeeConfigurationAction {
+  return action.kind === ActionKind.SetTxFeeConfiguration;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -444,7 +455,8 @@ export type ProposalAction =
   | SetMsgFeeConfigurationAction
   | SetPreRegistrationConfigurationAction
   | SetQualityScoreConfigurationAction
-  | SetTermDepositConfigurationAction;
+  | SetTermDepositConfigurationAction
+  | SetTxFeeConfigurationAction;
 
 export interface Proposal {
   readonly id: number;

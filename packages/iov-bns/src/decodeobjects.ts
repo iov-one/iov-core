@@ -84,8 +84,12 @@ export function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): 
   };
 }
 
-export function decodeTxFeeConfiguration(config: codecImpl.txfee.IConfiguration): TxFeeConfiguration {
+export function decodeTxFeeConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.txfee.IConfiguration,
+): TxFeeConfiguration {
   return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
     baseFee: decodeAmount(ensure(config.baseFee, "baseFee")),
     freeBytes: ensure(config.freeBytes, "freeBytes"),
   };
@@ -480,6 +484,11 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
         prefix,
         ensure(option.termdepositUpdateConfigurationMsg.patch, "patch"),
       ),
+    };
+  } else if (option.txfeeUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetTxFeeConfiguration,
+      patch: decodeTxFeeConfiguration(prefix, ensure(option.txfeeUpdateConfigurationMsg.patch, "patch")),
     };
   } else {
     throw new Error("Unsupported ProposalOptions");
