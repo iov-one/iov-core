@@ -1169,6 +1169,61 @@ describe("decodeMsg", () => {
         }),
       );
     });
+
+    it("works with SetQualityScoreConfiguration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            qualityscoreUpdateConfigurationMsg: {
+              metadata: { schema: 1 },
+              patch: {
+                owner: fromHex("0011223344556677889900112233445566778899"),
+                c: { numerator: 2, denominator: 3 },
+                k: { numerator: 3, denominator: 5 },
+                kp: { numerator: 5, denominator: 7 },
+                q0: { numerator: 7, denominator: 11 },
+                x: { numerator: 11, denominator: 13 },
+                xInf: { numerator: 13, denominator: 17 },
+                xSup: { numerator: 17, denominator: 19 },
+                delta: { numerator: 19, denominator: 23 },
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetQualityScoreConfiguration,
+            patch: {
+              owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+              c: { numerator: 2, denominator: 3 },
+              k: { numerator: 3, denominator: 5 },
+              kp: { numerator: 5, denominator: 7 },
+              q0: { numerator: 7, denominator: 11 },
+              x: { numerator: 11, denominator: 13 },
+              xInf: { numerator: 13, denominator: 17 },
+              xSup: { numerator: 17, denominator: 19 },
+              delta: { numerator: 19, denominator: 23 },
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
   });
 
   describe("VoteTx", () => {

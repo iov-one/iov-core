@@ -29,6 +29,7 @@ import {
   ProposalExecutorResult,
   ProposalResult,
   ProposalStatus,
+  QualityScoreConfiguration,
   SendAction,
   TxFeeConfiguration,
   Validators,
@@ -314,6 +315,23 @@ function decodePreRegistrationConfiguration(
   };
 }
 
+function decodeQualityScoreConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.qualityscore.IConfiguration,
+): QualityScoreConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
+    c: decodeFraction(ensure(config.c, "c")),
+    k: decodeFraction(ensure(config.k, "k")),
+    kp: decodeFraction(ensure(config.kp, "kp")),
+    q0: decodeFraction(ensure(config.q0, "q0")),
+    x: decodeFraction(ensure(config.x, "x")),
+    xInf: decodeFraction(ensure(config.xInf, "xInf")),
+    xSup: decodeFraction(ensure(config.xSup, "xSup")),
+    delta: decodeFraction(ensure(config.delta, "delta")),
+  };
+}
+
 export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.bnsd.ProposalOptions.decode(rawOption);
   if (option.govCreateTextResolutionMsg) {
@@ -407,6 +425,14 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       patch: decodePreRegistrationConfiguration(
         prefix,
         ensure(option.preregistrationUpdateConfigurationMsg.patch, "patch"),
+      ),
+    };
+  } else if (option.qualityscoreUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetQualityScoreConfiguration,
+      patch: decodeQualityScoreConfiguration(
+        prefix,
+        ensure(option.qualityscoreUpdateConfigurationMsg.patch, "patch"),
       ),
     };
   } else {

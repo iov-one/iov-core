@@ -39,6 +39,18 @@ export interface PreRegistrationConfiguration {
   readonly owner: Address | null;
 }
 
+export interface QualityScoreConfiguration {
+  readonly owner: Address | null;
+  readonly c: Fraction;
+  readonly k: Fraction;
+  readonly kp: Fraction;
+  readonly q0: Fraction;
+  readonly x: Fraction;
+  readonly xInf: Fraction;
+  readonly xSup: Fraction;
+  readonly delta: Fraction;
+}
+
 /**
  * The message part of a bnsd.Tx
  *
@@ -243,6 +255,7 @@ export enum ActionKind {
   UpgradeSchema = "migration_upgrade_schema",
   SetMsgFeeConfiguration = "msgfee_update_configuration_msg",
   SetPreRegistrationConfiguration = "preregistration_update_configuration_msg",
+  SetQualityScoreConfiguration = "qualityscore_update_configuration_msg",
 }
 
 export interface TallyResult {
@@ -374,6 +387,17 @@ export function isSetPreRegistrationConfigurationAction(
   return action.kind === ActionKind.SetPreRegistrationConfiguration;
 }
 
+export interface SetQualityScoreConfigurationAction {
+  readonly kind: ActionKind.SetQualityScoreConfiguration;
+  readonly patch: QualityScoreConfiguration;
+}
+
+export function isSetQualityScoreConfigurationAction(
+  action: ProposalAction,
+): action is SetQualityScoreConfigurationAction {
+  return action.kind === ActionKind.SetQualityScoreConfiguration;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -387,7 +411,8 @@ export type ProposalAction =
   | ExecuteMigrationAction
   | UpgradeSchemaAction
   | SetMsgFeeConfigurationAction
-  | SetPreRegistrationConfigurationAction;
+  | SetPreRegistrationConfigurationAction
+  | SetQualityScoreConfigurationAction;
 
 export interface Proposal {
   readonly id: number;
