@@ -52,8 +52,8 @@ export interface TermDepositCustomRate {
 export interface TermDepositConfiguration {
   readonly owner: Address;
   readonly admin: Address | null;
-  readonly standardRates: TermDepositStandardRate[];
-  readonly customRates: TermDepositCustomRate[];
+  readonly standardRates: readonly TermDepositStandardRate[];
+  readonly customRates: readonly TermDepositCustomRate[];
 }
 /**
  * The message part of a bnsd.Tx

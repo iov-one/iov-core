@@ -346,24 +346,26 @@ function decodeQualityScoreConfiguration(
 
 function decodeTermDepositStandardRates(
   rates: readonly codecImpl.termdeposit.IDepositBonus[],
-): TermDepositStandardRate[] {
+): readonly TermDepositStandardRate[] {
   return rates.map(rate => {
-    return {
+    const renamed: TermDepositStandardRate = {
       lockinPeriod: ensure(rate.lockinPeriod, "lockinPeriod"),
       rate: decodeFraction(ensure(rate.bonus, "bonus")),
-    } as TermDepositStandardRate;
+    };
+    return renamed;
   });
 }
 
 function decodeTermDepositCustomRates(
   prefix: IovBech32Prefix,
   rates: readonly codecImpl.termdeposit.ICustomRate[],
-): TermDepositCustomRate[] {
+): readonly TermDepositCustomRate[] {
   return rates.map(rate => {
-    return {
+    const renamed: TermDepositCustomRate = {
       address: encodeBnsAddress(prefix, ensure(rate.address, "address")),
       rate: decodeFraction(ensure(rate.rate, "rate")),
-    } as TermDepositCustomRate;
+    };
+    return renamed;
   });
 }
 

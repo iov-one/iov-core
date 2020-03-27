@@ -69,8 +69,8 @@ export interface TermDepositConfiguration {
   readonly owner: Address;
   readonly admin: Address | null;
 
-  readonly standardRates: TermDepositStandardRate[]; // represents the horribly named "bonuses"
-  readonly customRates: TermDepositCustomRate[]; // represents the horribly named "baseRates"
+  readonly standardRates: readonly TermDepositStandardRate[]; // represents the horribly named "bonuses"
+  readonly customRates: readonly TermDepositCustomRate[]; // represents the horribly named "baseRates"
 }
 
 /**
