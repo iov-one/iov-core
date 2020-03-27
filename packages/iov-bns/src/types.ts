@@ -281,6 +281,7 @@ export enum ActionKind {
   SetTermDepositConfiguration = "termdeposit_update_configuration_msg",
   SetTxFeeConfiguration = "txfee_update_configuration_msg",
   SetCashConfiguration = "cash_update_configuration_msg",
+  SetAccountConfiguration = "account_update_configuration_msg",
 }
 
 export interface TallyResult {
@@ -452,6 +453,17 @@ export function isSetCashConfigurationAction(action: ProposalAction): action is 
   return action.kind === ActionKind.SetCashConfiguration;
 }
 
+export interface SetAccountConfigurationAction {
+  readonly kind: ActionKind.SetAccountConfiguration;
+  readonly patch: AccountConfiguration;
+}
+
+export function isSetAccountConfigurationAction(
+  action: ProposalAction,
+): action is SetAccountConfigurationAction {
+  return action.kind === ActionKind.SetAccountConfiguration;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -469,7 +481,8 @@ export type ProposalAction =
   | SetQualityScoreConfigurationAction
   | SetTermDepositConfigurationAction
   | SetTxFeeConfigurationAction
-  | SetCashConfigurationAction;
+  | SetCashConfigurationAction
+  | SetAccountConfigurationAction;
 
 export interface Proposal {
   readonly id: number;

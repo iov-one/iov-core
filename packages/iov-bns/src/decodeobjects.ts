@@ -500,6 +500,11 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       kind: ActionKind.SetCashConfiguration,
       patch: decodeCashConfiguration(prefix, ensure(option.cashUpdateConfigurationMsg.patch, "patch")),
     };
+  } else if (option.accountUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetAccountConfiguration,
+      patch: decodeAccountConfiguration(prefix, ensure(option.accountUpdateConfigurationMsg.patch, "patch")),
+    };
   } else {
     throw new Error("Unsupported ProposalOptions");
   }
