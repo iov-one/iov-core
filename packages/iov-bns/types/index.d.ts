@@ -109,8 +109,6 @@ export {
   isUpdateElectionRuleAction,
   UpdateElectorateAction,
   isUpdateElectorateAction,
-  BnsTx,
-  isBnsTx,
   ExecuteMigrationAction,
   isExecuteMigrationAction,
   UpgradeSchemaAction,
@@ -129,5 +127,7 @@ export {
   isSetCashConfigurationAction,
   SetAccountConfigurationAction,
   isSetAccountConfigurationAction,
+  BnsTx,
+  isBnsTx,
 } from "./types";
 export { pubkeyToAddress } from "./util";
