@@ -1052,6 +1052,400 @@ describe("decodeMsg", () => {
         }),
       );
     });
+
+    it("works with UpgradeSchema action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            migrationUpgradeSchemaMsg: {
+              metadata: { schema: 1 },
+              pkg: "datamigration",
+              toVersion: 1,
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.UpgradeSchema,
+            pkg: "datamigration",
+            toVersion: 1,
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
+
+    it("works with SetMsgFeeConfiguration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            msgfeeUpdateConfigurationMsg: {
+              metadata: { schema: 1 },
+              patch: {
+                owner: fromHex("0011223344556677889900112233445566778899"),
+                feeAdmin: fromHex("0011223344556677889900112233445566778899"),
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetMsgFeeConfiguration,
+            patch: {
+              owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+              feeAdmin: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
+
+    it("works with SetPreRegistrationConfiguration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            preregistrationUpdateConfigurationMsg: {
+              metadata: { schema: 1 },
+              patch: {
+                owner: fromHex("0011223344556677889900112233445566778899"),
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetPreRegistrationConfiguration,
+            patch: {
+              owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
+
+    it("works with SetQualityScoreConfiguration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            qualityscoreUpdateConfigurationMsg: {
+              metadata: { schema: 1 },
+              patch: {
+                owner: fromHex("0011223344556677889900112233445566778899"),
+                c: { numerator: 2, denominator: 3 },
+                k: { numerator: 3, denominator: 5 },
+                kp: { numerator: 5, denominator: 7 },
+                q0: { numerator: 7, denominator: 11 },
+                x: { numerator: 11, denominator: 13 },
+                xInf: { numerator: 13, denominator: 17 },
+                xSup: { numerator: 17, denominator: 19 },
+                delta: { numerator: 19, denominator: 23 },
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetQualityScoreConfiguration,
+            patch: {
+              owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+              c: { numerator: 2, denominator: 3 },
+              k: { numerator: 3, denominator: 5 },
+              kp: { numerator: 5, denominator: 7 },
+              q0: { numerator: 7, denominator: 11 },
+              x: { numerator: 11, denominator: 13 },
+              xInf: { numerator: 13, denominator: 17 },
+              xSup: { numerator: 17, denominator: 19 },
+              delta: { numerator: 19, denominator: 23 },
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
+
+    it("works with SetTermDepositConfiguration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            termdepositUpdateConfigurationMsg: {
+              metadata: { schema: 1 },
+              patch: {
+                owner: fromHex("0011223344556677889900112233445566778899"),
+                admin: fromHex("04C3DB7CCCACF58EEFCC296FF7AD0F6DB7C2FA17"),
+                // standardRates
+                bonuses: [
+                  { lockinPeriod: 69, bonus: { numerator: 2, denominator: 3 } },
+                  { lockinPeriod: 70, bonus: { numerator: 5, denominator: 7 } },
+                ],
+                // customRates
+                baseRates: [
+                  {
+                    address: fromHex("0011223344556677889900112233445566778899"),
+                    rate: { numerator: 11, denominator: 13 },
+                  },
+                  {
+                    address: fromHex("04C3DB7CCCACF58EEFCC296FF7AD0F6DB7C2FA17"),
+                    rate: { numerator: 17, denominator: 19 },
+                  },
+                ],
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetTermDepositConfiguration,
+            patch: {
+              owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+              admin: "tiov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh56x6uz",
+              standardRates: [
+                { lockinPeriod: 69, rate: { numerator: 2, denominator: 3 } },
+                { lockinPeriod: 70, rate: { numerator: 5, denominator: 7 } },
+              ],
+              customRates: [
+                {
+                  address: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+                  rate: { numerator: 11, denominator: 13 },
+                },
+                {
+                  address: "tiov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh56x6uz",
+                  rate: { numerator: 17, denominator: 19 },
+                },
+              ],
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
+
+    it("works with SetTxFeeConfiguration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            txfeeUpdateConfigurationMsg: {
+              metadata: { schema: 1 },
+              patch: {
+                owner: fromHex("0011223344556677889900112233445566778899"),
+                freeBytes: 4096,
+                baseFee: {
+                  whole: 10,
+                  fractional: 1,
+                  ticker: "CASH",
+                },
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetTxFeeConfiguration,
+            patch: {
+              owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+              freeBytes: 4096,
+              baseFee: {
+                fractionalDigits: 9,
+                quantity: "10000000001",
+                tokenTicker: "CASH" as TokenTicker,
+              },
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
+
+    it("works with SetCashConfiguration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            cashUpdateConfigurationMsg: {
+              metadata: { schema: 1 },
+              patch: {
+                owner: fromHex("0011223344556677889900112233445566778899"),
+                collectorAddress: fromHex("04C3DB7CCCACF58EEFCC296FF7AD0F6DB7C2FA17"),
+                minimalFee: {
+                  whole: 10,
+                  fractional: 1,
+                  ticker: "CASH",
+                },
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetCashConfiguration,
+            patch: {
+              owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+              collectorAddress: "tiov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh56x6uz",
+              minimalFee: {
+                fractionalDigits: 9,
+                quantity: "10000000001",
+                tokenTicker: "CASH" as TokenTicker,
+              },
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
+
+    it("works with SetAccountConfiguration action", () => {
+      const transactionMessage: codecImpl.bnsd.ITx = {
+        govCreateProposalMsg: {
+          title: "This will happen next",
+          rawOption: codecImpl.bnsd.ProposalOptions.encode({
+            accountUpdateConfigurationMsg: {
+              metadata: { schema: 1 },
+              patch: {
+                owner: fromHex("0011223344556677889900112233445566778899"),
+                validDomain: "regex",
+                validName: "regex",
+                validBlockchainId: "regex",
+                validBlockchainAddress: "regex",
+                domainRenew: 654321,
+              },
+            },
+          }).finish(),
+          description: "foo bar",
+          electionRuleId: fromHex("000000bbccddbbff"),
+          startTime: 42424242,
+          author: fromHex("0011223344556677889900112233445566778899"),
+        },
+      };
+      const decoded = decodeMsg(defaultBaseTx, transactionMessage);
+      if (!isCreateProposalTx(decoded)) {
+        throw new Error("unexpected transaction kind");
+      }
+      expect(decoded).toEqual(
+        jasmine.objectContaining({
+          title: "This will happen next",
+          description: "foo bar",
+          action: {
+            kind: ActionKind.SetAccountConfiguration,
+            patch: {
+              owner: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+              validDomain: "regex",
+              validName: "regex",
+              validBlockchainId: "regex",
+              validBlockchainAddress: "regex",
+              domainRenew: 654321,
+            },
+          },
+          electionRuleId: 806595967999,
+          startTime: 42424242,
+          author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt",
+        }),
+      );
+    });
   });
 
   describe("VoteTx", () => {

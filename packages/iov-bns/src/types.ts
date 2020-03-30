@@ -22,12 +22,55 @@ import * as codecImpl from "./generated/codecimpl";
 // Internal (those are not used outside of @iov/bns)
 
 export interface CashConfiguration {
+  readonly owner: Address;
+  readonly collectorAddress: Address;
   readonly minimalFee: Amount | null;
 }
 
 export interface TxFeeConfiguration {
+  readonly owner: Address;
   readonly freeBytes: number | null;
   readonly baseFee: Amount | null;
+}
+
+export interface MsgFeeConfiguration {
+  readonly owner: Address;
+  readonly feeAdmin: Address | null;
+}
+
+export interface PreRegistrationConfiguration {
+  readonly owner: Address;
+}
+
+export interface QualityScoreConfiguration {
+  readonly owner: Address;
+  readonly c: Fraction;
+  readonly k: Fraction;
+  readonly kp: Fraction;
+  readonly q0: Fraction;
+  readonly x: Fraction;
+  readonly xInf: Fraction;
+  readonly xSup: Fraction;
+  readonly delta: Fraction;
+}
+
+// TermDepositStandardRate represents the horribly named IDepositBonus
+export interface TermDepositStandardRate {
+  readonly lockinPeriod: number;
+  readonly rate: Fraction;
+}
+
+export interface TermDepositCustomRate {
+  readonly address: Address;
+  readonly rate: Fraction;
+}
+
+export interface TermDepositConfiguration {
+  readonly owner: Address;
+  readonly admin: Address | null;
+
+  readonly standardRates: readonly TermDepositStandardRate[]; // represents the horribly named "bonuses"
+  readonly customRates: readonly TermDepositCustomRate[]; // represents the horribly named "baseRates"
 }
 
 /**
@@ -231,6 +274,14 @@ export enum ActionKind {
   UpdateElectionRule = "gov_update_election_rule",
   UpdateElectorate = "gov_update_electorate",
   ExecuteMigration = "datamigration_execute_migration",
+  UpgradeSchema = "migration_upgrade_schema",
+  SetMsgFeeConfiguration = "msgfee_update_configuration_msg",
+  SetPreRegistrationConfiguration = "preregistration_update_configuration_msg",
+  SetQualityScoreConfiguration = "qualityscore_update_configuration_msg",
+  SetTermDepositConfiguration = "termdeposit_update_configuration_msg",
+  SetTxFeeConfiguration = "txfee_update_configuration_msg",
+  SetCashConfiguration = "cash_update_configuration_msg",
+  SetAccountConfiguration = "account_update_configuration_msg",
 }
 
 export interface TallyResult {
@@ -330,6 +381,89 @@ export function isExecuteMigrationAction(action: ProposalAction): action is Exec
   return action.kind === ActionKind.ExecuteMigration;
 }
 
+export interface UpgradeSchemaAction {
+  readonly kind: ActionKind.UpgradeSchema;
+  readonly pkg: string;
+  readonly toVersion: number;
+}
+
+export function isUpgradeSchemaAction(action: ProposalAction): action is UpgradeSchemaAction {
+  return action.kind === ActionKind.UpgradeSchema;
+}
+
+export interface SetMsgFeeConfigurationAction {
+  readonly kind: ActionKind.SetMsgFeeConfiguration;
+  readonly patch: MsgFeeConfiguration;
+}
+
+export function isSetMsgFeeConfigurationAction(
+  action: ProposalAction,
+): action is SetMsgFeeConfigurationAction {
+  return action.kind === ActionKind.SetMsgFeeConfiguration;
+}
+
+export interface SetPreRegistrationConfigurationAction {
+  readonly kind: ActionKind.SetPreRegistrationConfiguration;
+  readonly patch: PreRegistrationConfiguration;
+}
+
+export function isSetPreRegistrationConfigurationAction(
+  action: ProposalAction,
+): action is SetPreRegistrationConfigurationAction {
+  return action.kind === ActionKind.SetPreRegistrationConfiguration;
+}
+
+export interface SetQualityScoreConfigurationAction {
+  readonly kind: ActionKind.SetQualityScoreConfiguration;
+  readonly patch: QualityScoreConfiguration;
+}
+
+export function isSetQualityScoreConfigurationAction(
+  action: ProposalAction,
+): action is SetQualityScoreConfigurationAction {
+  return action.kind === ActionKind.SetQualityScoreConfiguration;
+}
+
+export interface SetTermDepositConfigurationAction {
+  readonly kind: ActionKind.SetTermDepositConfiguration;
+  readonly patch: TermDepositConfiguration;
+}
+
+export function isSetTermDepositConfigurationAction(
+  action: ProposalAction,
+): action is SetTermDepositConfigurationAction {
+  return action.kind === ActionKind.SetTermDepositConfiguration;
+}
+
+export interface SetTxFeeConfigurationAction {
+  readonly kind: ActionKind.SetTxFeeConfiguration;
+  readonly patch: TxFeeConfiguration;
+}
+
+export function isSetTxFeeConfigurationAction(action: ProposalAction): action is SetTxFeeConfigurationAction {
+  return action.kind === ActionKind.SetTxFeeConfiguration;
+}
+
+export interface SetCashConfigurationAction {
+  readonly kind: ActionKind.SetCashConfiguration;
+  readonly patch: CashConfiguration;
+}
+
+export function isSetCashConfigurationAction(action: ProposalAction): action is SetCashConfigurationAction {
+  return action.kind === ActionKind.SetCashConfiguration;
+}
+
+export interface SetAccountConfigurationAction {
+  readonly kind: ActionKind.SetAccountConfiguration;
+  readonly patch: AccountConfiguration;
+}
+
+export function isSetAccountConfigurationAction(
+  action: ProposalAction,
+): action is SetAccountConfigurationAction {
+  return action.kind === ActionKind.SetAccountConfiguration;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -340,7 +474,15 @@ export type ProposalAction =
   | SetValidatorsAction
   | UpdateElectorateAction
   | UpdateElectionRuleAction
-  | ExecuteMigrationAction;
+  | ExecuteMigrationAction
+  | UpgradeSchemaAction
+  | SetMsgFeeConfigurationAction
+  | SetPreRegistrationConfigurationAction
+  | SetQualityScoreConfigurationAction
+  | SetTermDepositConfigurationAction
+  | SetTxFeeConfigurationAction
+  | SetCashConfigurationAction
+  | SetAccountConfigurationAction;
 
 export interface Proposal {
   readonly id: number;

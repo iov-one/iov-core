@@ -14,11 +14,46 @@ import {
 import { As } from "type-tagger";
 import * as codecImpl from "./generated/codecimpl";
 export interface CashConfiguration {
+  readonly owner: Address;
+  readonly collectorAddress: Address;
   readonly minimalFee: Amount | null;
 }
 export interface TxFeeConfiguration {
+  readonly owner: Address;
   readonly freeBytes: number | null;
   readonly baseFee: Amount | null;
+}
+export interface MsgFeeConfiguration {
+  readonly owner: Address;
+  readonly feeAdmin: Address | null;
+}
+export interface PreRegistrationConfiguration {
+  readonly owner: Address;
+}
+export interface QualityScoreConfiguration {
+  readonly owner: Address;
+  readonly c: Fraction;
+  readonly k: Fraction;
+  readonly kp: Fraction;
+  readonly q0: Fraction;
+  readonly x: Fraction;
+  readonly xInf: Fraction;
+  readonly xSup: Fraction;
+  readonly delta: Fraction;
+}
+export interface TermDepositStandardRate {
+  readonly lockinPeriod: number;
+  readonly rate: Fraction;
+}
+export interface TermDepositCustomRate {
+  readonly address: Address;
+  readonly rate: Fraction;
+}
+export interface TermDepositConfiguration {
+  readonly owner: Address;
+  readonly admin: Address | null;
+  readonly standardRates: readonly TermDepositStandardRate[];
+  readonly customRates: readonly TermDepositCustomRate[];
 }
 /**
  * The message part of a bnsd.Tx
@@ -180,6 +215,14 @@ export declare enum ActionKind {
   UpdateElectionRule = "gov_update_election_rule",
   UpdateElectorate = "gov_update_electorate",
   ExecuteMigration = "datamigration_execute_migration",
+  UpgradeSchema = "migration_upgrade_schema",
+  SetMsgFeeConfiguration = "msgfee_update_configuration_msg",
+  SetPreRegistrationConfiguration = "preregistration_update_configuration_msg",
+  SetQualityScoreConfiguration = "qualityscore_update_configuration_msg",
+  SetTermDepositConfiguration = "termdeposit_update_configuration_msg",
+  SetTxFeeConfiguration = "txfee_update_configuration_msg",
+  SetCashConfiguration = "cash_update_configuration_msg",
+  SetAccountConfiguration = "account_update_configuration_msg",
 }
 export interface TallyResult {
   readonly totalYes: number;
@@ -247,6 +290,61 @@ export interface ExecuteMigrationAction {
   readonly id: string;
 }
 export declare function isExecuteMigrationAction(action: ProposalAction): action is ExecuteMigrationAction;
+export interface UpgradeSchemaAction {
+  readonly kind: ActionKind.UpgradeSchema;
+  readonly pkg: string;
+  readonly toVersion: number;
+}
+export declare function isUpgradeSchemaAction(action: ProposalAction): action is UpgradeSchemaAction;
+export interface SetMsgFeeConfigurationAction {
+  readonly kind: ActionKind.SetMsgFeeConfiguration;
+  readonly patch: MsgFeeConfiguration;
+}
+export declare function isSetMsgFeeConfigurationAction(
+  action: ProposalAction,
+): action is SetMsgFeeConfigurationAction;
+export interface SetPreRegistrationConfigurationAction {
+  readonly kind: ActionKind.SetPreRegistrationConfiguration;
+  readonly patch: PreRegistrationConfiguration;
+}
+export declare function isSetPreRegistrationConfigurationAction(
+  action: ProposalAction,
+): action is SetPreRegistrationConfigurationAction;
+export interface SetQualityScoreConfigurationAction {
+  readonly kind: ActionKind.SetQualityScoreConfiguration;
+  readonly patch: QualityScoreConfiguration;
+}
+export declare function isSetQualityScoreConfigurationAction(
+  action: ProposalAction,
+): action is SetQualityScoreConfigurationAction;
+export interface SetTermDepositConfigurationAction {
+  readonly kind: ActionKind.SetTermDepositConfiguration;
+  readonly patch: TermDepositConfiguration;
+}
+export declare function isSetTermDepositConfigurationAction(
+  action: ProposalAction,
+): action is SetTermDepositConfigurationAction;
+export interface SetTxFeeConfigurationAction {
+  readonly kind: ActionKind.SetTxFeeConfiguration;
+  readonly patch: TxFeeConfiguration;
+}
+export declare function isSetTxFeeConfigurationAction(
+  action: ProposalAction,
+): action is SetTxFeeConfigurationAction;
+export interface SetCashConfigurationAction {
+  readonly kind: ActionKind.SetCashConfiguration;
+  readonly patch: CashConfiguration;
+}
+export declare function isSetCashConfigurationAction(
+  action: ProposalAction,
+): action is SetCashConfigurationAction;
+export interface SetAccountConfigurationAction {
+  readonly kind: ActionKind.SetAccountConfiguration;
+  readonly patch: AccountConfiguration;
+}
+export declare function isSetAccountConfigurationAction(
+  action: ProposalAction,
+): action is SetAccountConfigurationAction;
 /** The action to be executed when the proposal is accepted */
 export declare type ProposalAction =
   | CreateTextResolutionAction
@@ -257,7 +355,15 @@ export declare type ProposalAction =
   | SetValidatorsAction
   | UpdateElectorateAction
   | UpdateElectionRuleAction
-  | ExecuteMigrationAction;
+  | ExecuteMigrationAction
+  | UpgradeSchemaAction
+  | SetMsgFeeConfigurationAction
+  | SetPreRegistrationConfigurationAction
+  | SetQualityScoreConfigurationAction
+  | SetTermDepositConfigurationAction
+  | SetTxFeeConfigurationAction
+  | SetCashConfigurationAction
+  | SetAccountConfigurationAction;
 export interface Proposal {
   readonly id: number;
   readonly title: string;

@@ -21,13 +21,19 @@ import {
   Electors,
   Fraction,
   Keyed,
+  MsgFeeConfiguration,
   Participant,
+  PreRegistrationConfiguration,
   Proposal,
   ProposalAction,
   ProposalExecutorResult,
   ProposalResult,
   ProposalStatus,
+  QualityScoreConfiguration,
   SendAction,
+  TermDepositConfiguration,
+  TermDepositCustomRate,
+  TermDepositStandardRate,
   TxFeeConfiguration,
   Validators,
   VersionedId,
@@ -71,15 +77,24 @@ function isZeroCoin({ whole, fractional }: codecImpl.coin.ICoin): boolean {
   return asIntegerNumber(whole) === 0 && asIntegerNumber(fractional) === 0;
 }
 
-export function decodeCashConfiguration(config: codecImpl.cash.IConfiguration): CashConfiguration {
+export function decodeCashConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.cash.IConfiguration,
+): CashConfiguration {
   const minimalFee = ensure(config.minimalFee, "minimalFee");
   return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
+    collectorAddress: encodeBnsAddress(prefix, ensure(config.collectorAddress, "collectorAddress")),
     minimalFee: isZeroCoin(minimalFee) ? null : decodeAmount(minimalFee),
   };
 }
 
-export function decodeTxFeeConfiguration(config: codecImpl.txfee.IConfiguration): TxFeeConfiguration {
+export function decodeTxFeeConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.txfee.IConfiguration,
+): TxFeeConfiguration {
   return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
     baseFee: decodeAmount(ensure(config.baseFee, "baseFee")),
     freeBytes: ensure(config.freeBytes, "freeBytes"),
   };
@@ -293,6 +308,79 @@ function decodeProposalStatus(status: codecImpl.gov.Proposal.Status): ProposalSt
   }
 }
 
+function decodeMsgFeeConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.msgfee.IConfiguration,
+): MsgFeeConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
+    feeAdmin: encodeBnsAddress(prefix, ensure(config.feeAdmin, "feeAdmin")),
+  };
+}
+
+function decodePreRegistrationConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.preregistration.IConfiguration,
+): PreRegistrationConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
+  };
+}
+
+function decodeQualityScoreConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.qualityscore.IConfiguration,
+): QualityScoreConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
+    c: decodeFraction(ensure(config.c, "c")),
+    k: decodeFraction(ensure(config.k, "k")),
+    kp: decodeFraction(ensure(config.kp, "kp")),
+    q0: decodeFraction(ensure(config.q0, "q0")),
+    x: decodeFraction(ensure(config.x, "x")),
+    xInf: decodeFraction(ensure(config.xInf, "xInf")),
+    xSup: decodeFraction(ensure(config.xSup, "xSup")),
+    delta: decodeFraction(ensure(config.delta, "delta")),
+  };
+}
+
+function decodeTermDepositStandardRates(
+  rates: readonly codecImpl.termdeposit.IDepositBonus[],
+): readonly TermDepositStandardRate[] {
+  return rates.map(rate => {
+    const renamed: TermDepositStandardRate = {
+      lockinPeriod: ensure(rate.lockinPeriod, "lockinPeriod"),
+      rate: decodeFraction(ensure(rate.bonus, "bonus")),
+    };
+    return renamed;
+  });
+}
+
+function decodeTermDepositCustomRates(
+  prefix: IovBech32Prefix,
+  rates: readonly codecImpl.termdeposit.ICustomRate[],
+): readonly TermDepositCustomRate[] {
+  return rates.map(rate => {
+    const renamed: TermDepositCustomRate = {
+      address: encodeBnsAddress(prefix, ensure(rate.address, "address")),
+      rate: decodeFraction(ensure(rate.rate, "rate")),
+    };
+    return renamed;
+  });
+}
+
+function decodeTermDepositConfiguration(
+  prefix: IovBech32Prefix,
+  config: codecImpl.termdeposit.IConfiguration,
+): TermDepositConfiguration {
+  return {
+    owner: encodeBnsAddress(prefix, ensure(config.owner, "owner")),
+    admin: encodeBnsAddress(prefix, ensure(config.admin, "admin")),
+    standardRates: decodeTermDepositStandardRates(ensure(config.bonuses, "bonuses")),
+    customRates: decodeTermDepositCustomRates(prefix, ensure(config.baseRates, "baseRates")),
+  };
+}
+
 export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint8Array): ProposalAction {
   const option = codecImpl.bnsd.ProposalOptions.decode(rawOption);
   if (option.govCreateTextResolutionMsg) {
@@ -368,6 +456,56 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
     return {
       kind: ActionKind.ExecuteMigration,
       id: ensure(option.datamigrationExecuteMigrationMsg.migrationId, "migrationId"),
+    };
+  } else if (option.migrationUpgradeSchemaMsg) {
+    return {
+      kind: ActionKind.UpgradeSchema,
+      pkg: ensure(option.migrationUpgradeSchemaMsg.pkg, "pkg"),
+      toVersion: ensure(option.migrationUpgradeSchemaMsg.toVersion, "toVersion"),
+    };
+  } else if (option.msgfeeUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetMsgFeeConfiguration,
+      patch: decodeMsgFeeConfiguration(prefix, ensure(option.msgfeeUpdateConfigurationMsg.patch, "patch")),
+    };
+  } else if (option.preregistrationUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetPreRegistrationConfiguration,
+      patch: decodePreRegistrationConfiguration(
+        prefix,
+        ensure(option.preregistrationUpdateConfigurationMsg.patch, "patch"),
+      ),
+    };
+  } else if (option.qualityscoreUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetQualityScoreConfiguration,
+      patch: decodeQualityScoreConfiguration(
+        prefix,
+        ensure(option.qualityscoreUpdateConfigurationMsg.patch, "patch"),
+      ),
+    };
+  } else if (option.termdepositUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetTermDepositConfiguration,
+      patch: decodeTermDepositConfiguration(
+        prefix,
+        ensure(option.termdepositUpdateConfigurationMsg.patch, "patch"),
+      ),
+    };
+  } else if (option.txfeeUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetTxFeeConfiguration,
+      patch: decodeTxFeeConfiguration(prefix, ensure(option.txfeeUpdateConfigurationMsg.patch, "patch")),
+    };
+  } else if (option.cashUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetCashConfiguration,
+      patch: decodeCashConfiguration(prefix, ensure(option.cashUpdateConfigurationMsg.patch, "patch")),
+    };
+  } else if (option.accountUpdateConfigurationMsg) {
+    return {
+      kind: ActionKind.SetAccountConfiguration,
+      patch: decodeAccountConfiguration(prefix, ensure(option.accountUpdateConfigurationMsg.patch, "patch")),
     };
   } else {
     throw new Error("Unsupported ProposalOptions");
