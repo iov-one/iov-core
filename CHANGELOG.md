@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.4
+
+- @iov/bns: Add minimal proposal decoding for weave v1.0.x.
+
 ## 2.2.3
 
 - @iov/bns: Add support for weave v1.0.0.
