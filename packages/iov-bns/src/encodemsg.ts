@@ -213,7 +213,7 @@ function encodeRegisterDomainTx(tx: RegisterDomainTx): BnsdTxMsg {
       domain: tx.domain,
       admin: decodeBnsAddress(tx.admin).data,
       hasSuperuser: tx.hasSuperuser,
-      thirdPartyToken: tx.broker ? decodeBnsAddress(tx.broker).data : null,
+      broker: tx.broker ? decodeBnsAddress(tx.broker).data : null,
       msgFees: tx.msgFees.map(encodeAccountMsgFee),
       accountRenew: tx.accountRenew,
     },
@@ -265,7 +265,7 @@ function encodeRegisterAccountTx(tx: RegisterAccountTx): BnsdTxMsg {
       name: tx.name,
       owner: decodeBnsAddress(tx.owner).data,
       targets: tx.targets.map(encodeAccountChainAddress),
-      thirdPartyToken: tx.broker ? decodeBnsAddress(tx.broker).data : null,
+      broker: tx.broker ? decodeBnsAddress(tx.broker).data : null,
     },
   };
 }

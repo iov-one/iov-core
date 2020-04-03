@@ -214,7 +214,7 @@ describe("encodeMsg", () => {
     expect(msg.domain).toEqual("hole");
     expect(msg.admin).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
     expect(msg.hasSuperuser).toEqual(true);
-    expect(msg.thirdPartyToken).toEqual(fromHex("1234567890123456789012345678901234567890"));
+    expect(msg.broker).toEqual(fromHex("1234567890123456789012345678901234567890"));
     expect(msg.msgFees).toEqual([
       { msgPath: "some-msg-path", fee: { whole: 1, fractional: 2, ticker: "ASH" } },
     ]);
@@ -268,7 +268,7 @@ describe("encodeMsg", () => {
     expect(msg.name).toEqual("rabbit");
     expect(msg.owner).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
     expect(msg.targets).toEqual([{ blockchainId: "wonderland", address: "12345W" }]);
-    expect(msg.thirdPartyToken).toEqual(fromHex("1234567890123456789012345678901234567890"));
+    expect(msg.broker).toEqual(fromHex("1234567890123456789012345678901234567890"));
   });
 
   it("works for TransferAccountTx", () => {
