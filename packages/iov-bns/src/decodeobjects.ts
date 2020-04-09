@@ -525,6 +525,14 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       kind: ActionKind.RenewDomain,
       domain: ensure(option.accountRenewDomainMsg.domain, "domain"),
     };
+  } else if (option.accountReplaceAccountMsgFeesMsg) {
+    return {
+      kind: ActionKind.SetAccountMsgFees,
+      domain: ensure(option.accountReplaceAccountMsgFeesMsg.domain, "domain"),
+      newMsgFees: ensure(option.accountReplaceAccountMsgFeesMsg.newMsgFees, "newMsgFees").map(
+        decodeAccountMsgFee,
+      ),
+    };
   } else {
     throw new Error("Unsupported ProposalOptions");
   }

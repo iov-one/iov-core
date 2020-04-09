@@ -642,5 +642,81 @@ describe("decodeobjects", () => {
         executorResult: ProposalExecutorResult.NotRun,
       });
     });
+
+    it("accountReplaceAccountMsgFeesMsg", () => {
+      const proposal: codecImpl.gov.IProposal & Keyed = {
+        _id: fromHex("001100220033aabb"),
+        metadata: { schema: 1 },
+        title: "This will happen next",
+        rawOption: codecImpl.bnsd.ProposalOptions.encode({
+          accountReplaceAccountMsgFeesMsg: {
+            metadata: { schema: 1 },
+            domain: "dave",
+            newMsgFees: [
+              { msgPath: "some-msg-path", fee: { whole: 0, fractional: 123456789, ticker: "ASH" } },
+            ],
+          },
+        }).finish(),
+        description: "foo bar",
+        electionRuleRef: {
+          id: fromHex("0000aabbccddbbff"),
+          version: 28,
+        },
+        electorateRef: {
+          id: fromHex("001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: fromHex("0011223344556677889900112233445566778899"),
+        voteState: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED,
+        result: codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED,
+        executorResult: codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN,
+      };
+
+      expect(decodeProposal("tiov", proposal)).toEqual({
+        id: 4785220636355259,
+        title: "This will happen next",
+        action: {
+          kind: ActionKind.SetAccountMsgFees,
+          domain: "dave",
+          newMsgFees: [
+            {
+              msgPath: "some-msg-path",
+              fee: decodeAmount({ whole: 0, fractional: 123456789, ticker: "ASH" }),
+            },
+          ],
+        },
+        description: "foo bar",
+        electionRule: {
+          id: 187723572689919,
+          version: 28,
+        },
+        electorate: {
+          id: 4785147619683003,
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+        state: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: ProposalStatus.Submitted,
+        result: ProposalResult.Undefined,
+        executorResult: ProposalExecutorResult.NotRun,
+      });
+    });
   });
 });

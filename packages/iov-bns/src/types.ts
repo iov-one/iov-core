@@ -286,6 +286,7 @@ export enum ActionKind {
   SetAccountConfiguration = "account_update_configuration_msg",
   RegisterDomain = "account_register_domain_msg",
   RenewDomain = "account_renew_domain_msg",
+  SetAccountMsgFees = "account_replace_account_msg_fees_msg",
 }
 
 export interface TallyResult {
@@ -491,6 +492,16 @@ export function isRenewDomainAction(action: ProposalAction): action is RenewDoma
   return action.kind === ActionKind.RenewDomain;
 }
 
+export interface SetAccountMsgFeesAction {
+  readonly kind: ActionKind.SetAccountMsgFees;
+  readonly domain: string;
+  readonly newMsgFees: readonly AccountMsgFee[];
+}
+
+export function isSetAccountMsgFeesAction(action: ProposalAction): action is SetAccountMsgFeesAction {
+  return action.kind === ActionKind.SetAccountMsgFees;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -511,7 +522,8 @@ export type ProposalAction =
   | SetCashConfigurationAction
   | SetAccountConfigurationAction
   | RegisterDomainAction
-  | RenewDomainAction;
+  | RenewDomainAction
+  | SetAccountMsgFeesAction;
 
 export interface Proposal {
   readonly id: number;
