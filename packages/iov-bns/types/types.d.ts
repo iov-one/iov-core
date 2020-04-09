@@ -99,6 +99,7 @@ export interface AccountConfiguration {
   readonly validBlockchainId: string;
   readonly validBlockchainAddress: string;
   readonly domainRenew: number;
+  readonly domainGracePeriod: number;
 }
 export interface AccountMsgFee {
   readonly msgPath: string;

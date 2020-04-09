@@ -133,6 +133,7 @@ export function decodeAccountConfiguration(
     validBlockchainId: ensure(patch.validBlockchainId, "validBlockchainId"),
     validBlockchainAddress: ensure(patch.validBlockchainAddress, "validBlockchainAddress"),
     domainRenew: asIntegerNumber(ensure(patch.domainRenew, "domainRenew")),
+    domainGracePeriod: asIntegerNumber(ensure(patch.domainGracePeriod, "domainGracePeriod")),
   };
 }
 

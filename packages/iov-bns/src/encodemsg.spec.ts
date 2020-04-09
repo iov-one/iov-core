@@ -188,6 +188,7 @@ describe("encodeMsg", () => {
         validBlockchainId: "wonderland",
         validBlockchainAddress: "12345W",
         domainRenew: 1234,
+        domainGracePeriod: 12345,
       },
     };
     const msg = encodeMsg(transfer).accountUpdateConfigurationMsg!;
@@ -197,6 +198,7 @@ describe("encodeMsg", () => {
     expect(msg.patch?.validBlockchainId).toEqual("wonderland");
     expect(msg.patch?.validBlockchainAddress).toEqual("12345W");
     expect(msg.patch?.domainRenew).toEqual(1234);
+    expect(msg.patch?.domainGracePeriod).toEqual(12345);
   });
 
   it("works for RegisterDomainTx", () => {

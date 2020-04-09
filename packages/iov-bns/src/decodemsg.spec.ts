@@ -250,6 +250,7 @@ describe("decodeMsg", () => {
           validBlockchainId: "wonderland",
           validBlockchainAddress: "12345W",
           domainRenew: 1234,
+          domainGracePeriod: 69,
         },
       },
     };
@@ -264,6 +265,7 @@ describe("decodeMsg", () => {
       validBlockchainId: "wonderland",
       validBlockchainAddress: "12345W",
       domainRenew: 1234,
+      domainGracePeriod: 69,
     });
   });
 
@@ -1412,6 +1414,7 @@ describe("decodeMsg", () => {
                 validBlockchainId: "regex",
                 validBlockchainAddress: "regex",
                 domainRenew: 654321,
+                domainGracePeriod: 8675309,
               },
             },
           }).finish(),
@@ -1438,6 +1441,7 @@ describe("decodeMsg", () => {
               validBlockchainId: "regex",
               validBlockchainAddress: "regex",
               domainRenew: 654321,
+              domainGracePeriod: 8675309,
             },
           },
           electionRuleId: 806595967999,

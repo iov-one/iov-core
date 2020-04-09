@@ -190,6 +190,7 @@ describe("decodeobjects", () => {
         validBlockchainId: "wonderland",
         validBlockchainAddress: "12345W",
         domainRenew: 1234,
+        domainGracePeriod: 12345,
       };
       const decoded = decodeAccountConfiguration(prefix, conf);
       expect(decoded.owner).toEqual(
@@ -200,6 +201,7 @@ describe("decodeobjects", () => {
       expect(decoded.validBlockchainId).toEqual("wonderland");
       expect(decoded.validBlockchainAddress).toEqual("12345W");
       expect(decoded.domainRenew).toEqual(1234);
+      expect(decoded.domainGracePeriod).toEqual(12345);
     });
   });
 

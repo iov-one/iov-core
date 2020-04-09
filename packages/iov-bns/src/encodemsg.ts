@@ -187,6 +187,7 @@ function encodeAccountConfiguration(configuration: AccountConfiguration): codecI
     validBlockchainId: configuration.validBlockchainId,
     validBlockchainAddress: configuration.validBlockchainAddress,
     domainRenew: configuration.domainRenew,
+    domainGracePeriod: configuration.domainGracePeriod,
   };
 }
 
