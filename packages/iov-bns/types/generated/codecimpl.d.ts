@@ -2529,8 +2529,11 @@ export namespace account {
     /** blockchain address must match. */
     validBlockchainAddress?: string | null;
 
-    /** Domain review defines the duration of the domain renewal period. */
+    /** Domain renew defines the duration of the domain renewal period. */
     domainRenew?: number | Long | null;
+
+    /** can delete the domain after the grace period ends. */
+    domainGracePeriod?: number | Long | null;
   }
 
   /** the functionality provided by gconf package. */
@@ -2559,8 +2562,11 @@ export namespace account {
     /** blockchain address must match. */
     public validBlockchainAddress: string;
 
-    /** Domain review defines the duration of the domain renewal period. */
+    /** Domain renew defines the duration of the domain renewal period. */
     public domainRenew: number | Long;
+
+    /** can delete the domain after the grace period ends. */
+    public domainGracePeriod: number | Long;
 
     /**
      * Creates a new Configuration instance using the specified properties.

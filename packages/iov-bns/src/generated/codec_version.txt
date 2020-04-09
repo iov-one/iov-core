@@ -1,1 +1,1 @@
-0a81763eae7b17b3feb556a8c1ce6413b5470e2c (HEAD, tag: v1.0.2, origin/master, origin/HEAD) Release v1.0.2 (#1203)
+6f420b64017e9655a6420afb7e3d89ed3cbb151b (HEAD, tag: v1.0.3, origin/master, origin/HEAD) Merge pull request #1206 from iov-one/make-protoc
