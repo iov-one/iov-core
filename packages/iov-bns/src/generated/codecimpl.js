@@ -9132,7 +9132,8 @@ $root.account = (function() {
          * @property {string|null} [validName] account must match. Rule must not include the asterisk (*) character.
          * @property {string|null} [validBlockchainId] blockchain ID must match.
          * @property {string|null} [validBlockchainAddress] blockchain address must match.
-         * @property {number|Long|null} [domainRenew] Domain review defines the duration of the domain renewal period.
+         * @property {number|Long|null} [domainRenew] Domain renew defines the duration of the domain renewal period.
+         * @property {number|Long|null} [domainGracePeriod] can delete the domain after the grace period ends.
          */
 
         /**
@@ -9199,12 +9200,20 @@ $root.account = (function() {
         Configuration.prototype.validBlockchainAddress = "";
 
         /**
-         * Domain review defines the duration of the domain renewal period.
+         * Domain renew defines the duration of the domain renewal period.
          * @member {number|Long} domainRenew
          * @memberof account.Configuration
          * @instance
          */
         Configuration.prototype.domainRenew = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * can delete the domain after the grace period ends.
+         * @member {number|Long} domainGracePeriod
+         * @memberof account.Configuration
+         * @instance
+         */
+        Configuration.prototype.domainGracePeriod = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
          * Creates a new Configuration instance using the specified properties.
@@ -9244,6 +9253,8 @@ $root.account = (function() {
                 writer.uint32(/* id 6, wireType 2 =*/50).string(message.validBlockchainAddress);
             if (message.domainRenew != null && message.hasOwnProperty("domainRenew"))
                 writer.uint32(/* id 7, wireType 0 =*/56).int64(message.domainRenew);
+            if (message.domainGracePeriod != null && message.hasOwnProperty("domainGracePeriod"))
+                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.domainGracePeriod);
             return writer;
         };
 
@@ -9298,6 +9309,9 @@ $root.account = (function() {
                     break;
                 case 7:
                     message.domainRenew = reader.int64();
+                    break;
+                case 8:
+                    message.domainGracePeriod = reader.int64();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -9357,6 +9371,9 @@ $root.account = (function() {
             if (message.domainRenew != null && message.hasOwnProperty("domainRenew"))
                 if (!$util.isInteger(message.domainRenew) && !(message.domainRenew && $util.isInteger(message.domainRenew.low) && $util.isInteger(message.domainRenew.high)))
                     return "domainRenew: integer|Long expected";
+            if (message.domainGracePeriod != null && message.hasOwnProperty("domainGracePeriod"))
+                if (!$util.isInteger(message.domainGracePeriod) && !(message.domainGracePeriod && $util.isInteger(message.domainGracePeriod.low) && $util.isInteger(message.domainGracePeriod.high)))
+                    return "domainGracePeriod: integer|Long expected";
             return null;
         };
 
@@ -9399,6 +9416,15 @@ $root.account = (function() {
                     message.domainRenew = object.domainRenew;
                 else if (typeof object.domainRenew === "object")
                     message.domainRenew = new $util.LongBits(object.domainRenew.low >>> 0, object.domainRenew.high >>> 0).toNumber();
+            if (object.domainGracePeriod != null)
+                if ($util.Long)
+                    (message.domainGracePeriod = $util.Long.fromValue(object.domainGracePeriod)).unsigned = false;
+                else if (typeof object.domainGracePeriod === "string")
+                    message.domainGracePeriod = parseInt(object.domainGracePeriod, 10);
+                else if (typeof object.domainGracePeriod === "number")
+                    message.domainGracePeriod = object.domainGracePeriod;
+                else if (typeof object.domainGracePeriod === "object")
+                    message.domainGracePeriod = new $util.LongBits(object.domainGracePeriod.low >>> 0, object.domainGracePeriod.high >>> 0).toNumber();
             return message;
         };
 
@@ -9433,6 +9459,11 @@ $root.account = (function() {
                     object.domainRenew = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.domainRenew = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.domainGracePeriod = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.domainGracePeriod = options.longs === String ? "0" : 0;
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -9451,6 +9482,11 @@ $root.account = (function() {
                     object.domainRenew = options.longs === String ? String(message.domainRenew) : message.domainRenew;
                 else
                     object.domainRenew = options.longs === String ? $util.Long.prototype.toString.call(message.domainRenew) : options.longs === Number ? new $util.LongBits(message.domainRenew.low >>> 0, message.domainRenew.high >>> 0).toNumber() : message.domainRenew;
+            if (message.domainGracePeriod != null && message.hasOwnProperty("domainGracePeriod"))
+                if (typeof message.domainGracePeriod === "number")
+                    object.domainGracePeriod = options.longs === String ? String(message.domainGracePeriod) : message.domainGracePeriod;
+                else
+                    object.domainGracePeriod = options.longs === String ? $util.Long.prototype.toString.call(message.domainGracePeriod) : options.longs === Number ? new $util.LongBits(message.domainGracePeriod.low >>> 0, message.domainGracePeriod.high >>> 0).toNumber() : message.domainGracePeriod;
             return object;
         };
 
