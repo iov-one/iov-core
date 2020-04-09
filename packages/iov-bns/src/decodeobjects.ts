@@ -170,6 +170,7 @@ export function decodeDomain(prefix: IovBech32Prefix, domain: codecImpl.account.
     hasSuperuser: ensure(domain.hasSuperuser, "hasSuperuser"),
     msgFees: ensure(domain.msgFees, "msgFees").map(decodeAccountMsgFee),
     accountRenew: asIntegerNumber(ensure(domain.accountRenew, "accountRenew")),
+    broker: domain.broker ? encodeBnsAddress(prefix, domain.broker) : ("" as Address),
   };
 }
 
@@ -507,6 +508,17 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
     return {
       kind: ActionKind.SetAccountConfiguration,
       patch: decodeAccountConfiguration(prefix, ensure(option.accountUpdateConfigurationMsg.patch, "patch")),
+    };
+  } else if (option.accountRegisterDomainMsg) {
+    const msg: codecImpl.account.IRegisterDomainMsg = option.accountRegisterDomainMsg;
+    return {
+      kind: ActionKind.RegisterDomain,
+      accountRenew: asIntegerNumber(ensure(msg.accountRenew, "accountRenew")),
+      admin: encodeBnsAddress(prefix, ensure(msg.admin, "admin")),
+      broker: msg.broker ? encodeBnsAddress(prefix, msg.broker) : ("" as Address),
+      domain: ensure(msg.domain, "domain"),
+      hasSuperuser: ensure(msg.hasSuperuser, "hasSuperuser"),
+      msgFees: ensure(msg.msgFees, "msgFees").map(decodeAccountMsgFee),
     };
   } else {
     throw new Error("Unsupported ProposalOptions");

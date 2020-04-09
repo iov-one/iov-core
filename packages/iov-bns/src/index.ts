@@ -135,6 +135,8 @@ export {
   isSetCashConfigurationAction,
   SetAccountConfigurationAction,
   isSetAccountConfigurationAction,
+  RegisterDomainAction,
+  isRegisterDomainAction,
   // Transactions
   BnsTx,
   isBnsTx,

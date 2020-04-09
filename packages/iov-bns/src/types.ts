@@ -158,6 +158,7 @@ export interface AccountNft {
 export interface Domain {
   readonly domain: string;
   readonly admin: Address;
+  readonly broker: Address;
   readonly validUntil: number;
   readonly hasSuperuser: boolean;
   readonly msgFees: readonly AccountMsgFee[];
@@ -283,6 +284,7 @@ export enum ActionKind {
   SetTxFeeConfiguration = "txfee_update_configuration_msg",
   SetCashConfiguration = "cash_update_configuration_msg",
   SetAccountConfiguration = "account_update_configuration_msg",
+  RegisterDomain = "account_register_domain_msg",
 }
 
 export interface TallyResult {
@@ -465,6 +467,20 @@ export function isSetAccountConfigurationAction(
   return action.kind === ActionKind.SetAccountConfiguration;
 }
 
+export interface RegisterDomainAction {
+  readonly kind: ActionKind.RegisterDomain;
+  readonly domain: string;
+  readonly admin: Address;
+  readonly broker?: Address;
+  readonly hasSuperuser: boolean;
+  readonly msgFees: readonly AccountMsgFee[];
+  readonly accountRenew: number;
+}
+
+export function isRegisterDomainAction(action: ProposalAction): action is RegisterDomainAction {
+  return action.kind === ActionKind.RegisterDomain;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -483,7 +499,8 @@ export type ProposalAction =
   | SetTermDepositConfigurationAction
   | SetTxFeeConfigurationAction
   | SetCashConfigurationAction
-  | SetAccountConfigurationAction;
+  | SetAccountConfigurationAction
+  | RegisterDomainAction;
 
 export interface Proposal {
   readonly id: number;
