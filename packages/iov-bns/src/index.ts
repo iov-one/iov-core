@@ -141,6 +141,8 @@ export {
   isRenewDomainAction,
   SetAccountMsgFeesAction,
   isSetAccountMsgFeesAction,
+  SetAccountTargetsAction,
+  isSetAccountTargetsAction,
   // Transactions
   BnsTx,
   isBnsTx,

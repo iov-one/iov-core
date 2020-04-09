@@ -533,6 +533,15 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
         decodeAccountMsgFee,
       ),
     };
+  } else if (option.accountReplaceAccountTargetsMsg) {
+    return {
+      kind: ActionKind.SetAccountTargets,
+      domain: ensure(option.accountReplaceAccountTargetsMsg.domain, "domain"),
+      name: ensure(option.accountReplaceAccountTargetsMsg.name, "name"),
+      newTargets: ensure(option.accountReplaceAccountTargetsMsg.newTargets, "newTargets").map(
+        decodeChainAddressPair,
+      ),
+    };
   } else {
     throw new Error("Unsupported ProposalOptions");
   }
