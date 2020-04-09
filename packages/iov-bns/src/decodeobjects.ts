@@ -559,7 +559,7 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       ),
     };
   } else {
-    throw new Error("Unsupported ProposalOptions");
+    throw new Error(`Unsupported ProposalOptions: ${JSON.stringify(option)}`);
   }
 }
 
