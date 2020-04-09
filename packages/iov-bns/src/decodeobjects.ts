@@ -542,6 +542,13 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
         decodeChainAddressPair,
       ),
     };
+  } else if (option.accountAddAccountCertificateMsg) {
+    return {
+      kind: ActionKind.AddAccountCertificate,
+      domain: ensure(option.accountAddAccountCertificateMsg.domain, "domain"),
+      name: ensure(option.accountAddAccountCertificateMsg.name, "name"),
+      certificate: Uint8Array.from(ensure(option.accountAddAccountCertificateMsg.certificate, "certificate")),
+    };
   } else {
     throw new Error("Unsupported ProposalOptions");
   }

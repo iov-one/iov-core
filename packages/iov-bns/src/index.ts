@@ -143,6 +143,8 @@ export {
   isSetAccountMsgFeesAction,
   SetAccountTargetsAction,
   isSetAccountTargetsAction,
+  AddAccountCertificateAction,
+  isAddAccountCertificateAction,
   // Transactions
   BnsTx,
   isBnsTx,
