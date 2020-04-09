@@ -289,6 +289,7 @@ export enum ActionKind {
   SetAccountMsgFees = "account_replace_account_msg_fees_msg",
   SetAccountTargets = "account_replace_account_targets_msg",
   AddAccountCertificate = "account_add_account_certificate_msg",
+  DeleteAccountCertificate = "account_delete_account_certificate_msg",
 }
 
 export interface TallyResult {
@@ -526,6 +527,19 @@ export function isAddAccountCertificateAction(action: ProposalAction): action is
   return action.kind === ActionKind.AddAccountCertificate;
 }
 
+export interface DeleteAccountCertificateAction {
+  readonly kind: ActionKind.DeleteAccountCertificate;
+  readonly domain: string;
+  readonly name: string;
+  readonly certificateHash: Uint8Array;
+}
+
+export function isDeleteAccountCertificateAction(
+  action: ProposalAction,
+): action is DeleteAccountCertificateAction {
+  return action.kind === ActionKind.DeleteAccountCertificate;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -549,7 +563,8 @@ export type ProposalAction =
   | RenewDomainAction
   | SetAccountMsgFeesAction
   | SetAccountTargetsAction
-  | AddAccountCertificateAction;
+  | AddAccountCertificateAction
+  | DeleteAccountCertificateAction;
 
 export interface Proposal {
   readonly id: number;

@@ -145,6 +145,8 @@ export {
   isSetAccountTargetsAction,
   AddAccountCertificateAction,
   isAddAccountCertificateAction,
+  DeleteAccountCertificateAction,
+  isDeleteAccountCertificateAction,
   // Transactions
   BnsTx,
   isBnsTx,
