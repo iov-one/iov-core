@@ -137,6 +137,8 @@ export {
   isSetAccountConfigurationAction,
   RegisterDomainAction,
   isRegisterDomainAction,
+  RenewDomainAction,
+  isRenewDomainAction,
   // Transactions
   BnsTx,
   isBnsTx,

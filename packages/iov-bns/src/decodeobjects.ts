@@ -520,6 +520,11 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       hasSuperuser: ensure(msg.hasSuperuser, "hasSuperuser"),
       msgFees: ensure(msg.msgFees, "msgFees").map(decodeAccountMsgFee),
     };
+  } else if (option.accountRenewDomainMsg) {
+    return {
+      kind: ActionKind.RenewDomain,
+      domain: ensure(option.accountRenewDomainMsg.domain, "domain"),
+    };
   } else {
     throw new Error("Unsupported ProposalOptions");
   }
