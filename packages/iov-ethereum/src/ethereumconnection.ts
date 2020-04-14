@@ -54,7 +54,8 @@ import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
 
-import { Abi, SwapContractEvent } from "./abi";
+import { Abi } from "./abi";
+import { AtomicSwapContract, SwapContractEvent } from "./smartcontracts/atomicswapcontract";
 import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20TokensMap } from "./erc20";
@@ -1241,7 +1242,7 @@ export class EthereumConnection implements AtomicSwapConnection {
       },
     };
 
-    const kind = Abi.decodeSwapProcessState(resultArray.slice(stateBegin, stateEnd));
+    const kind = AtomicSwapContract.abiDecodeSwapProcessState(resultArray.slice(stateBegin, stateEnd));
     let swap: AtomicSwap;
     if (isSwapProcessStateOpen(kind)) {
       swap = {
@@ -1290,7 +1291,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     ]
       .reduce((accumulator: readonly AtomicSwap[], log: EthereumLogWithPrefix): readonly AtomicSwap[] => {
         const dataArray = Encoding.fromHex(normalizeHex(log.data));
-        const kind = Abi.decodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
+        const kind = AtomicSwapContract.abiDecodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
         switch (kind) {
           case SwapContractEvent.Opened: {
             const parsed = EthereumConnection.parseOpenedEventBytes(dataArray, log.prefix, this.erc20Tokens);

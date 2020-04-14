@@ -1,7 +1,8 @@
 import { Address, SwapProcessState } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
-import { Abi, SwapContractEvent, SwapContractMethod } from "./abi";
+import { Abi } from "./abi";
+import { AtomicSwapContract, SwapContractEvent, SwapContractMethod } from "./smartcontracts/atomicswapcontract";
 
 const { fromHex } = Encoding;
 
@@ -318,27 +319,27 @@ describe("Abi", () => {
   describe("decodeSwapProcessState", () => {
     it("works for Open", () => {
       const data = fromHex("0000000000000000000000000000000000000000000000000000000000000001");
-      const result = Abi.decodeSwapProcessState(data);
+      const result = AtomicSwapContract.abiDecodeSwapProcessState(data);
       expect(result).toEqual(SwapProcessState.Open);
     });
 
     it("works for Claimed", () => {
       const data = fromHex("0000000000000000000000000000000000000000000000000000000000000002");
-      const result = Abi.decodeSwapProcessState(data);
+      const result = AtomicSwapContract.abiDecodeSwapProcessState(data);
       expect(result).toEqual(SwapProcessState.Claimed);
     });
 
     it("works for Aborted", () => {
       const data = fromHex("0000000000000000000000000000000000000000000000000000000000000003");
-      const result = Abi.decodeSwapProcessState(data);
+      const result = AtomicSwapContract.abiDecodeSwapProcessState(data);
       expect(result).toEqual(SwapProcessState.Aborted);
     });
 
     it("throws for anything else", () => {
       const data1 = fromHex("0000000000000000000000000000000000000000000000000000000000000000");
-      expect(() => Abi.decodeSwapProcessState(data1)).toThrowError(/invalid swap process state/i);
+      expect(() => AtomicSwapContract.abiDecodeSwapProcessState(data1)).toThrowError(/invalid swap process state/i);
       const data2 = fromHex("0000000000000000000000000000000000000000000000000000000000000004");
-      expect(() => Abi.decodeSwapProcessState(data2)).toThrowError(/invalid swap process state/i);
+      expect(() => AtomicSwapContract.abiDecodeSwapProcessState(data2)).toThrowError(/invalid swap process state/i);
     });
   });
 
@@ -346,35 +347,35 @@ describe("Abi", () => {
     it("works for Opened (ETH)", () => {
       // Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256)");
       const data = fromHex("22f9086560da4f3a67d5fcc1a440655671d27a7e0884f260be3ce12ead52e156");
-      const result = Abi.decodeEventSignature(data);
+      const result = AtomicSwapContract.abiDecodeEventSignature(data);
       expect(result).toEqual(SwapContractEvent.Opened);
     });
 
     it("works for Opened (ERC20)", () => {
       // Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256,address)");
       const data = fromHex("26bc31c92066e78c047aa344b0f41cf8ee926fe610bb21ee73329697475bc9d3");
-      const result = Abi.decodeEventSignature(data);
+      const result = AtomicSwapContract.abiDecodeEventSignature(data);
       expect(result).toEqual(SwapContractEvent.Opened);
     });
 
     it("works for Claimed", () => {
       // Abi.calculateMethodHash("Claimed(bytes32,bytes32)");
       const data = fromHex("38d6042dbdae8e73a7f6afbabd3fbe0873f9f5ed3cd71294591c3908c2e65fee");
-      const result = Abi.decodeEventSignature(data);
+      const result = AtomicSwapContract.abiDecodeEventSignature(data);
       expect(result).toEqual(SwapContractEvent.Claimed);
     });
 
     it("works for Aborted", () => {
       // Abi.calculateMethodHash("Aborted(bytes32)");
       const data = fromHex("f7fe6a2a9810864c5fce35c9d3c75940da5f9612d43350b505aa0aa4c6494d99");
-      const result = Abi.decodeEventSignature(data);
+      const result = AtomicSwapContract.abiDecodeEventSignature(data);
       expect(result).toEqual(SwapContractEvent.Aborted);
     });
 
     it("throws for anything else", () => {
       // Same as Aborted with final byte edited
       const data = fromHex("f7fe6a2a9810864c5fce35c9d3c75940da5f9612d43350b505aa0aa4c6494d9a");
-      expect(() => Abi.decodeEventSignature(data)).toThrowError(/invalid event signature/i);
+      expect(() => AtomicSwapContract.abiDecodeEventSignature(data)).toThrowError(/invalid event signature/i);
     });
   });
 
@@ -382,35 +383,35 @@ describe("Abi", () => {
     it("works for Open (ETH)", () => {
       // Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)");
       const data = fromHex("0eed8548");
-      const result = Abi.decodeMethodId(data);
+      const result = AtomicSwapContract.abiDecodeMethodId(data);
       expect(result).toEqual(SwapContractMethod.Open);
     });
 
     it("works for Open (ERC20)", () => {
       // Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)");
       const data = fromHex("e8d8a293");
-      const result = Abi.decodeMethodId(data);
+      const result = AtomicSwapContract.abiDecodeMethodId(data);
       expect(result).toEqual(SwapContractMethod.Open);
     });
 
     it("works for Claim", () => {
       // Abi.calculateMethodId("claim(bytes32,bytes32)");
       const data = fromHex("84cc9dfb");
-      const result = Abi.decodeMethodId(data);
+      const result = AtomicSwapContract.abiDecodeMethodId(data);
       expect(result).toEqual(SwapContractMethod.Claim);
     });
 
     it("works for Abort", () => {
       // Abi.calculateMethodId("abort(bytes32)");
       const data = fromHex("09d6ce0e");
-      const result = Abi.decodeMethodId(data);
+      const result = AtomicSwapContract.abiDecodeMethodId(data);
       expect(result).toEqual(SwapContractMethod.Abort);
     });
 
     it("throws for anything else", () => {
       // Same as Abort with final byte edited
       const data = fromHex("09d6ce0f");
-      expect(() => Abi.decodeMethodId(data)).toThrowError(/invalid method id/i);
+      expect(() => AtomicSwapContract.abiDecodeMethodId(data)).toThrowError(/invalid method id/i);
     });
   });
 });
