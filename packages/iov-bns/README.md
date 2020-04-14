@@ -17,7 +17,7 @@ transaction parser:
 
 ```ts
 const connection = await BnsConnection.establish(
-  "ws://rpc-private-a-x-exchangenet.iov.one:16657",
+  "wss://rpc-private-a-x-exchangenet.iov.one",
 );
 ```
 
@@ -25,7 +25,7 @@ const connection = await BnsConnection.establish(
 
 | IOV-Core version | Supported weave versions       |
 | ---------------- | ------------------------------ |
-| 2.2.5            | 1.0.1                          |
+| 2.2.5            | 1.0.4+                         |
 | 2.0.2            | 0.22.x, 0.24.x – 0.25.x, 1.0.0 |
 | 1.2              | 0.22.x                         |
 | 1.1              | 0.21.x                         |

@@ -1,5 +1,14 @@
 # Changelog
 
+## HEAD
+
+## 2.2.5
+
+- @iov/bns: Rename `thirdPartyToken` to `broker`.
+- @iov/bns: Add `domainGracePeriod`.
+- @iov/bns: Add missing minimal proposal decoding for weave v1.0.x.
+- @iov/ethereum: Add `smartcontracts` directory.
+
 ## 2.2.4
 
 - @iov/bns: Add minimal proposal decoding for weave v1.0.x.
