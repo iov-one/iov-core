@@ -1,1 +1,1 @@
-6f420b64017e9655a6420afb7e3d89ed3cbb151b (HEAD, tag: v1.0.3, origin/master, origin/HEAD) Merge pull request #1206 from iov-one/make-protoc
+dfdb7cda77c7d3152eecf0478d3a91fe2a0edd5e (HEAD, tag: v1.0.4) Bump tendermint to v0.31.12
