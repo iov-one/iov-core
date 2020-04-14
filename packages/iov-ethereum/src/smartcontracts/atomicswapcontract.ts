@@ -15,7 +15,6 @@ export enum SwapContractMethod {
 }
 
 export class AtomicSwapContract {
-
   // ABI methods previously decodeSwapProcessState in ABI file
 
   public static abiDecodeSwapProcessState(data: Uint8Array): SwapProcessState {
@@ -43,7 +42,7 @@ export class AtomicSwapContract {
       throw new Error("Input data not 32 bit long");
     }
     const key = Encoding.toHex(data);
-    
+
     const map: { readonly [key: string]: SwapContractMethod } = {
       [AtomicSwapContract.abiMethodIds.openEth]: SwapContractMethod.Open,
       [AtomicSwapContract.abiMethodIds.openErc20]: SwapContractMethod.Open,
@@ -110,7 +109,4 @@ export class AtomicSwapContract {
     claim: Encoding.toHex(Abi.calculateMethodId("claim(bytes32,bytes32)")),
     abort: Encoding.toHex(Abi.calculateMethodId("abort(bytes32)")),
   };
-
-
-  
 }
