@@ -1,4 +1,4 @@
-import { Address, SwapProcessState } from "@iov/bcp";
+import { Address } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import BN from "bn.js";
