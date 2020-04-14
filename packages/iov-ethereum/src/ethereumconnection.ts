@@ -934,6 +934,24 @@ export class EthereumConnection implements AtomicSwapConnection {
     return { ...transaction, fee: await this.getFeeQuote(transaction) };
   }
 
+  public async getSwaps(
+    query: AtomicSwapQuery,
+    minHeight = 0,
+    maxHeight: number = Number.MAX_SAFE_INTEGER,
+  ): Promise<readonly AtomicSwap[]> {
+    if (isAtomicSwapIdQuery(query)) {
+      return this.getSwapsById(query);
+    } else if (
+      isAtomicSwapRecipientQuery(query) ||
+      isAtomicSwapSenderQuery(query) ||
+      isAtomicSwapHashQuery(query)
+    ) {
+      return this.getSwapsWithFilter(query, minHeight, maxHeight);
+    } else {
+      throw new Error("unsupported query type");
+    }
+  }
+
   public watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap> {
     throw new Error("not implemented");
   }
@@ -1147,26 +1165,6 @@ export class EthereumConnection implements AtomicSwapConnection {
 
     const transactions = searches.map(search => search[0]);
     return transactions;
-  }
-
-  // Swaps functions to read Swaps
-
-  public async getSwaps(
-    query: AtomicSwapQuery,
-    minHeight = 0,
-    maxHeight: number = Number.MAX_SAFE_INTEGER,
-  ): Promise<readonly AtomicSwap[]> {
-    if (isAtomicSwapIdQuery(query)) {
-      return this.getSwapsById(query);
-    } else if (
-      isAtomicSwapRecipientQuery(query) ||
-      isAtomicSwapSenderQuery(query) ||
-      isAtomicSwapHashQuery(query)
-    ) {
-      return this.getSwapsWithFilter(query, minHeight, maxHeight);
-    } else {
-      throw new Error("unsupported query type");
-    }
   }
 
   private async getSwapsById(query: AtomicSwapIdQuery): Promise<readonly AtomicSwap[]> {
