@@ -231,7 +231,7 @@ function decodeRegisterAccountTx(
     name: ensure(msg.name, "name"),
     owner: encodeBnsAddress(prefix, ensure(msg.owner, "owner")),
     targets: ensure(msg.targets, "targets").map(decodeBlockchainAddress),
-    broker: encodeBnsAddress(prefix, ensure(msg.broker, "owner")) || undefined,
+    broker: encodeBnsAddress(prefix, ensure(msg.broker, "broker")) || undefined,
   };
 }
 
