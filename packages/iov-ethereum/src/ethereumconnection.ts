@@ -1291,7 +1291,9 @@ export class EthereumConnection implements AtomicSwapConnection {
     ]
       .reduce((accumulator: readonly AtomicSwap[], log: EthereumLogWithPrefix): readonly AtomicSwap[] => {
         const dataArray = Encoding.fromHex(normalizeHex(log.data));
-        const kind = AtomicSwapContract.abiDecodeEventSignature(Encoding.fromHex(normalizeHex(log.topics[0])));
+        const kind = AtomicSwapContract.abiDecodeEventSignature(
+          Encoding.fromHex(normalizeHex(log.topics[0])),
+        );
         switch (kind) {
           case SwapContractEvent.Opened: {
             const parsed = EthereumConnection.parseOpenedEventBytes(dataArray, log.prefix, this.erc20Tokens);

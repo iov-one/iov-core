@@ -2,7 +2,11 @@ import { Address, SwapProcessState } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 
 import { Abi } from "./abi";
-import { AtomicSwapContract, SwapContractEvent, SwapContractMethod } from "./smartcontracts/atomicswapcontract";
+import {
+  AtomicSwapContract,
+  SwapContractEvent,
+  SwapContractMethod,
+} from "./smartcontracts/atomicswapcontract";
 
 const { fromHex } = Encoding;
 
@@ -337,9 +341,13 @@ describe("Abi", () => {
 
     it("throws for anything else", () => {
       const data1 = fromHex("0000000000000000000000000000000000000000000000000000000000000000");
-      expect(() => AtomicSwapContract.abiDecodeSwapProcessState(data1)).toThrowError(/invalid swap process state/i);
+      expect(() => AtomicSwapContract.abiDecodeSwapProcessState(data1)).toThrowError(
+        /invalid swap process state/i,
+      );
       const data2 = fromHex("0000000000000000000000000000000000000000000000000000000000000004");
-      expect(() => AtomicSwapContract.abiDecodeSwapProcessState(data2)).toThrowError(/invalid swap process state/i);
+      expect(() => AtomicSwapContract.abiDecodeSwapProcessState(data2)).toThrowError(
+        /invalid swap process state/i,
+      );
     });
   });
 

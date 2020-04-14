@@ -192,7 +192,9 @@ export class EthereumCodec implements TxCodec {
       const positionSwapIdBegin = positionMethodIdEnd;
       const positionSwapIdEnd = positionSwapIdBegin + 32;
 
-      const method = AtomicSwapContract.abiDecodeMethodId(input.slice(positionMethodIdBegin, positionMethodIdEnd));
+      const method = AtomicSwapContract.abiDecodeMethodId(
+        input.slice(positionMethodIdBegin, positionMethodIdEnd),
+      );
       const swapIdWithoutPrefix = {
         data: input.slice(positionSwapIdBegin, positionSwapIdEnd) as SwapIdBytes,
       };
