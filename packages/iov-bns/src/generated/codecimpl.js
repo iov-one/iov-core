@@ -7872,6 +7872,7 @@ $root.account = (function() {
          * @property {boolean|null} [hasSuperuser] Has Superuser is a feature switch flag.
          * @property {Array.<account.IAccountMsgFee>|null} [msgFees] required when processing a message within this domain.
          * @property {number|Long|null} [accountRenew] account that belongs to this domain.
+         * @property {Uint8Array|null} [broker] for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws.
          */
 
         /**
@@ -7947,6 +7948,14 @@ $root.account = (function() {
         Domain.prototype.accountRenew = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
+         * for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws.
+         * @member {Uint8Array} broker
+         * @memberof account.Domain
+         * @instance
+         */
+        Domain.prototype.broker = $util.newBuffer([]);
+
+        /**
          * Creates a new Domain instance using the specified properties.
          * @function create
          * @memberof account.Domain
@@ -7985,6 +7994,8 @@ $root.account = (function() {
                     $root.account.AccountMsgFee.encode(message.msgFees[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
             if (message.accountRenew != null && message.hasOwnProperty("accountRenew"))
                 writer.uint32(/* id 7, wireType 0 =*/56).int64(message.accountRenew);
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.broker);
             return writer;
         };
 
@@ -8041,6 +8052,9 @@ $root.account = (function() {
                     break;
                 case 7:
                     message.accountRenew = reader.int64();
+                    break;
+                case 8:
+                    message.broker = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -8106,6 +8120,9 @@ $root.account = (function() {
             if (message.accountRenew != null && message.hasOwnProperty("accountRenew"))
                 if (!$util.isInteger(message.accountRenew) && !(message.accountRenew && $util.isInteger(message.accountRenew.low) && $util.isInteger(message.accountRenew.high)))
                     return "accountRenew: integer|Long expected";
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                if (!(message.broker && typeof message.broker.length === "number" || $util.isString(message.broker)))
+                    return "broker: buffer expected";
             return null;
         };
 
@@ -8163,6 +8180,11 @@ $root.account = (function() {
                     message.accountRenew = object.accountRenew;
                 else if (typeof object.accountRenew === "object")
                     message.accountRenew = new $util.LongBits(object.accountRenew.low >>> 0, object.accountRenew.high >>> 0).toNumber();
+            if (object.broker != null)
+                if (typeof object.broker === "string")
+                    $util.base64.decode(object.broker, message.broker = $util.newBuffer($util.base64.length(object.broker)), 0);
+                else if (object.broker.length)
+                    message.broker = object.broker;
             return message;
         };
 
@@ -8202,6 +8224,13 @@ $root.account = (function() {
                     object.accountRenew = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.accountRenew = options.longs === String ? "0" : 0;
+                if (options.bytes === String)
+                    object.broker = "";
+                else {
+                    object.broker = [];
+                    if (options.bytes !== Array)
+                        object.broker = $util.newBuffer(object.broker);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -8226,6 +8255,8 @@ $root.account = (function() {
                     object.accountRenew = options.longs === String ? String(message.accountRenew) : message.accountRenew;
                 else
                     object.accountRenew = options.longs === String ? $util.Long.prototype.toString.call(message.accountRenew) : options.longs === Number ? new $util.LongBits(message.accountRenew.low >>> 0, message.accountRenew.high >>> 0).toNumber() : message.accountRenew;
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                object.broker = options.bytes === String ? $util.base64.encode(message.broker, 0, message.broker.length) : options.bytes === Array ? Array.prototype.slice.call(message.broker) : message.broker;
             return object;
         };
 
@@ -8471,6 +8502,7 @@ $root.account = (function() {
          * @property {number|Long|null} [validUntil] accounts as well, event if that account valid until date is not yet due.
          * @property {Array.<account.IBlockchainAddress>|null} [targets] Account targets
          * @property {Array.<Uint8Array>|null} [certificates] Account certificates
+         * @property {Uint8Array|null} [broker] for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws.
          */
 
         /**
@@ -8547,6 +8579,14 @@ $root.account = (function() {
         Account.prototype.certificates = $util.emptyArray;
 
         /**
+         * for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws.
+         * @member {Uint8Array} broker
+         * @memberof account.Account
+         * @instance
+         */
+        Account.prototype.broker = $util.newBuffer([]);
+
+        /**
          * Creates a new Account instance using the specified properties.
          * @function create
          * @memberof account.Account
@@ -8586,6 +8626,8 @@ $root.account = (function() {
             if (message.certificates != null && message.certificates.length)
                 for (var i = 0; i < message.certificates.length; ++i)
                     writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.certificates[i]);
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.broker);
             return writer;
         };
 
@@ -8644,6 +8686,9 @@ $root.account = (function() {
                     if (!(message.certificates && message.certificates.length))
                         message.certificates = [];
                     message.certificates.push(reader.bytes());
+                    break;
+                case 8:
+                    message.broker = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -8713,6 +8758,9 @@ $root.account = (function() {
                     if (!(message.certificates[i] && typeof message.certificates[i].length === "number" || $util.isString(message.certificates[i])))
                         return "certificates: buffer[] expected";
             }
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                if (!(message.broker && typeof message.broker.length === "number" || $util.isString(message.broker)))
+                    return "broker: buffer expected";
             return null;
         };
 
@@ -8771,6 +8819,11 @@ $root.account = (function() {
                     else if (object.certificates[i].length)
                         message.certificates[i] = object.certificates[i];
             }
+            if (object.broker != null)
+                if (typeof object.broker === "string")
+                    $util.base64.decode(object.broker, message.broker = $util.newBuffer($util.base64.length(object.broker)), 0);
+                else if (object.broker.length)
+                    message.broker = object.broker;
             return message;
         };
 
@@ -8807,6 +8860,13 @@ $root.account = (function() {
                     object.validUntil = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.validUntil = options.longs === String ? "0" : 0;
+                if (options.bytes === String)
+                    object.broker = "";
+                else {
+                    object.broker = [];
+                    if (options.bytes !== Array)
+                        object.broker = $util.newBuffer(object.broker);
+                }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -8831,6 +8891,8 @@ $root.account = (function() {
                 for (var j = 0; j < message.certificates.length; ++j)
                     object.certificates[j] = options.bytes === String ? $util.base64.encode(message.certificates[j], 0, message.certificates[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.certificates[j]) : message.certificates[j];
             }
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                object.broker = options.bytes === String ? $util.base64.encode(message.broker, 0, message.broker.length) : options.bytes === Array ? Array.prototype.slice.call(message.broker) : message.broker;
             return object;
         };
 
@@ -9070,7 +9132,8 @@ $root.account = (function() {
          * @property {string|null} [validName] account must match. Rule must not include the asterisk (*) character.
          * @property {string|null} [validBlockchainId] blockchain ID must match.
          * @property {string|null} [validBlockchainAddress] blockchain address must match.
-         * @property {number|Long|null} [domainRenew] Domain review defines the duration of the domain renewal period.
+         * @property {number|Long|null} [domainRenew] Domain renew defines the duration of the domain renewal period.
+         * @property {number|Long|null} [domainGracePeriod] can delete the domain after the grace period ends.
          */
 
         /**
@@ -9137,12 +9200,20 @@ $root.account = (function() {
         Configuration.prototype.validBlockchainAddress = "";
 
         /**
-         * Domain review defines the duration of the domain renewal period.
+         * Domain renew defines the duration of the domain renewal period.
          * @member {number|Long} domainRenew
          * @memberof account.Configuration
          * @instance
          */
         Configuration.prototype.domainRenew = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * can delete the domain after the grace period ends.
+         * @member {number|Long} domainGracePeriod
+         * @memberof account.Configuration
+         * @instance
+         */
+        Configuration.prototype.domainGracePeriod = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
          * Creates a new Configuration instance using the specified properties.
@@ -9182,6 +9253,8 @@ $root.account = (function() {
                 writer.uint32(/* id 6, wireType 2 =*/50).string(message.validBlockchainAddress);
             if (message.domainRenew != null && message.hasOwnProperty("domainRenew"))
                 writer.uint32(/* id 7, wireType 0 =*/56).int64(message.domainRenew);
+            if (message.domainGracePeriod != null && message.hasOwnProperty("domainGracePeriod"))
+                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.domainGracePeriod);
             return writer;
         };
 
@@ -9236,6 +9309,9 @@ $root.account = (function() {
                     break;
                 case 7:
                     message.domainRenew = reader.int64();
+                    break;
+                case 8:
+                    message.domainGracePeriod = reader.int64();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -9295,6 +9371,9 @@ $root.account = (function() {
             if (message.domainRenew != null && message.hasOwnProperty("domainRenew"))
                 if (!$util.isInteger(message.domainRenew) && !(message.domainRenew && $util.isInteger(message.domainRenew.low) && $util.isInteger(message.domainRenew.high)))
                     return "domainRenew: integer|Long expected";
+            if (message.domainGracePeriod != null && message.hasOwnProperty("domainGracePeriod"))
+                if (!$util.isInteger(message.domainGracePeriod) && !(message.domainGracePeriod && $util.isInteger(message.domainGracePeriod.low) && $util.isInteger(message.domainGracePeriod.high)))
+                    return "domainGracePeriod: integer|Long expected";
             return null;
         };
 
@@ -9337,6 +9416,15 @@ $root.account = (function() {
                     message.domainRenew = object.domainRenew;
                 else if (typeof object.domainRenew === "object")
                     message.domainRenew = new $util.LongBits(object.domainRenew.low >>> 0, object.domainRenew.high >>> 0).toNumber();
+            if (object.domainGracePeriod != null)
+                if ($util.Long)
+                    (message.domainGracePeriod = $util.Long.fromValue(object.domainGracePeriod)).unsigned = false;
+                else if (typeof object.domainGracePeriod === "string")
+                    message.domainGracePeriod = parseInt(object.domainGracePeriod, 10);
+                else if (typeof object.domainGracePeriod === "number")
+                    message.domainGracePeriod = object.domainGracePeriod;
+                else if (typeof object.domainGracePeriod === "object")
+                    message.domainGracePeriod = new $util.LongBits(object.domainGracePeriod.low >>> 0, object.domainGracePeriod.high >>> 0).toNumber();
             return message;
         };
 
@@ -9371,6 +9459,11 @@ $root.account = (function() {
                     object.domainRenew = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.domainRenew = options.longs === String ? "0" : 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.domainGracePeriod = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.domainGracePeriod = options.longs === String ? "0" : 0;
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
                 object.metadata = $root.weave.Metadata.toObject(message.metadata, options);
@@ -9389,6 +9482,11 @@ $root.account = (function() {
                     object.domainRenew = options.longs === String ? String(message.domainRenew) : message.domainRenew;
                 else
                     object.domainRenew = options.longs === String ? $util.Long.prototype.toString.call(message.domainRenew) : options.longs === Number ? new $util.LongBits(message.domainRenew.low >>> 0, message.domainRenew.high >>> 0).toNumber() : message.domainRenew;
+            if (message.domainGracePeriod != null && message.hasOwnProperty("domainGracePeriod"))
+                if (typeof message.domainGracePeriod === "number")
+                    object.domainGracePeriod = options.longs === String ? String(message.domainGracePeriod) : message.domainGracePeriod;
+                else
+                    object.domainGracePeriod = options.longs === String ? $util.Long.prototype.toString.call(message.domainGracePeriod) : options.longs === Number ? new $util.LongBits(message.domainGracePeriod.low >>> 0, message.domainGracePeriod.high >>> 0).toNumber() : message.domainGracePeriod;
             return object;
         };
 
@@ -9636,7 +9734,7 @@ $root.account = (function() {
          * @property {string|null} [domain] RegisterDomainMsg domain
          * @property {Uint8Array|null} [admin] Admin holds the address of the newly registered domain.
          * @property {boolean|null} [hasSuperuser] Has Superuser is a feature switch flag.
-         * @property {Uint8Array|null} [thirdPartyToken] token helps identify contribution of such party later.
+         * @property {Uint8Array|null} [broker] for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws.
          * @property {Array.<account.IAccountMsgFee>|null} [msgFees] RegisterDomainMsg msgFees
          * @property {number|Long|null} [accountRenew] RegisterDomainMsg accountRenew
          */
@@ -9690,12 +9788,12 @@ $root.account = (function() {
         RegisterDomainMsg.prototype.hasSuperuser = false;
 
         /**
-         * token helps identify contribution of such party later.
-         * @member {Uint8Array} thirdPartyToken
+         * for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws.
+         * @member {Uint8Array} broker
          * @memberof account.RegisterDomainMsg
          * @instance
          */
-        RegisterDomainMsg.prototype.thirdPartyToken = $util.newBuffer([]);
+        RegisterDomainMsg.prototype.broker = $util.newBuffer([]);
 
         /**
          * RegisterDomainMsg msgFees.
@@ -9745,8 +9843,8 @@ $root.account = (function() {
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.admin);
             if (message.hasSuperuser != null && message.hasOwnProperty("hasSuperuser"))
                 writer.uint32(/* id 4, wireType 0 =*/32).bool(message.hasSuperuser);
-            if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.thirdPartyToken);
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.broker);
             if (message.msgFees != null && message.msgFees.length)
                 for (var i = 0; i < message.msgFees.length; ++i)
                     $root.account.AccountMsgFee.encode(message.msgFees[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
@@ -9799,7 +9897,7 @@ $root.account = (function() {
                     message.hasSuperuser = reader.bool();
                     break;
                 case 5:
-                    message.thirdPartyToken = reader.bytes();
+                    message.broker = reader.bytes();
                     break;
                 case 6:
                     if (!(message.msgFees && message.msgFees.length))
@@ -9858,9 +9956,9 @@ $root.account = (function() {
             if (message.hasSuperuser != null && message.hasOwnProperty("hasSuperuser"))
                 if (typeof message.hasSuperuser !== "boolean")
                     return "hasSuperuser: boolean expected";
-            if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
-                if (!(message.thirdPartyToken && typeof message.thirdPartyToken.length === "number" || $util.isString(message.thirdPartyToken)))
-                    return "thirdPartyToken: buffer expected";
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                if (!(message.broker && typeof message.broker.length === "number" || $util.isString(message.broker)))
+                    return "broker: buffer expected";
             if (message.msgFees != null && message.hasOwnProperty("msgFees")) {
                 if (!Array.isArray(message.msgFees))
                     return "msgFees: array expected";
@@ -9902,11 +10000,11 @@ $root.account = (function() {
                     message.admin = object.admin;
             if (object.hasSuperuser != null)
                 message.hasSuperuser = Boolean(object.hasSuperuser);
-            if (object.thirdPartyToken != null)
-                if (typeof object.thirdPartyToken === "string")
-                    $util.base64.decode(object.thirdPartyToken, message.thirdPartyToken = $util.newBuffer($util.base64.length(object.thirdPartyToken)), 0);
-                else if (object.thirdPartyToken.length)
-                    message.thirdPartyToken = object.thirdPartyToken;
+            if (object.broker != null)
+                if (typeof object.broker === "string")
+                    $util.base64.decode(object.broker, message.broker = $util.newBuffer($util.base64.length(object.broker)), 0);
+                else if (object.broker.length)
+                    message.broker = object.broker;
             if (object.msgFees) {
                 if (!Array.isArray(object.msgFees))
                     throw TypeError(".account.RegisterDomainMsg.msgFees: array expected");
@@ -9956,11 +10054,11 @@ $root.account = (function() {
                 }
                 object.hasSuperuser = false;
                 if (options.bytes === String)
-                    object.thirdPartyToken = "";
+                    object.broker = "";
                 else {
-                    object.thirdPartyToken = [];
+                    object.broker = [];
                     if (options.bytes !== Array)
-                        object.thirdPartyToken = $util.newBuffer(object.thirdPartyToken);
+                        object.broker = $util.newBuffer(object.broker);
                 }
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
@@ -9976,8 +10074,8 @@ $root.account = (function() {
                 object.admin = options.bytes === String ? $util.base64.encode(message.admin, 0, message.admin.length) : options.bytes === Array ? Array.prototype.slice.call(message.admin) : message.admin;
             if (message.hasSuperuser != null && message.hasOwnProperty("hasSuperuser"))
                 object.hasSuperuser = message.hasSuperuser;
-            if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
-                object.thirdPartyToken = options.bytes === String ? $util.base64.encode(message.thirdPartyToken, 0, message.thirdPartyToken.length) : options.bytes === Array ? Array.prototype.slice.call(message.thirdPartyToken) : message.thirdPartyToken;
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                object.broker = options.bytes === String ? $util.base64.encode(message.broker, 0, message.broker.length) : options.bytes === Array ? Array.prototype.slice.call(message.broker) : message.broker;
             if (message.msgFees && message.msgFees.length) {
                 object.msgFees = [];
                 for (var j = 0; j < message.msgFees.length; ++j)
@@ -10951,7 +11049,7 @@ $root.account = (function() {
          * @property {string|null} [name] Name that a new account is the be registered with.
          * @property {Uint8Array|null} [owner] leave the administration to the domain owner only.
          * @property {Array.<account.IBlockchainAddress>|null} [targets] RegisterAccountMsg targets
-         * @property {Uint8Array|null} [thirdPartyToken] helps identify contribution of such party later.
+         * @property {Uint8Array|null} [broker] for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws.
          */
 
         /**
@@ -11011,12 +11109,12 @@ $root.account = (function() {
         RegisterAccountMsg.prototype.targets = $util.emptyArray;
 
         /**
-         * helps identify contribution of such party later.
-         * @member {Uint8Array} thirdPartyToken
+         * for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws.
+         * @member {Uint8Array} broker
          * @memberof account.RegisterAccountMsg
          * @instance
          */
-        RegisterAccountMsg.prototype.thirdPartyToken = $util.newBuffer([]);
+        RegisterAccountMsg.prototype.broker = $util.newBuffer([]);
 
         /**
          * Creates a new RegisterAccountMsg instance using the specified properties.
@@ -11053,8 +11151,8 @@ $root.account = (function() {
             if (message.targets != null && message.targets.length)
                 for (var i = 0; i < message.targets.length; ++i)
                     $root.account.BlockchainAddress.encode(message.targets[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-            if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.thirdPartyToken);
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.broker);
             return writer;
         };
 
@@ -11107,7 +11205,7 @@ $root.account = (function() {
                     message.targets.push($root.account.BlockchainAddress.decode(reader, reader.uint32()));
                     break;
                 case 6:
-                    message.thirdPartyToken = reader.bytes();
+                    message.broker = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -11167,9 +11265,9 @@ $root.account = (function() {
                         return "targets." + error;
                 }
             }
-            if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
-                if (!(message.thirdPartyToken && typeof message.thirdPartyToken.length === "number" || $util.isString(message.thirdPartyToken)))
-                    return "thirdPartyToken: buffer expected";
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                if (!(message.broker && typeof message.broker.length === "number" || $util.isString(message.broker)))
+                    return "broker: buffer expected";
             return null;
         };
 
@@ -11209,11 +11307,11 @@ $root.account = (function() {
                     message.targets[i] = $root.account.BlockchainAddress.fromObject(object.targets[i]);
                 }
             }
-            if (object.thirdPartyToken != null)
-                if (typeof object.thirdPartyToken === "string")
-                    $util.base64.decode(object.thirdPartyToken, message.thirdPartyToken = $util.newBuffer($util.base64.length(object.thirdPartyToken)), 0);
-                else if (object.thirdPartyToken.length)
-                    message.thirdPartyToken = object.thirdPartyToken;
+            if (object.broker != null)
+                if (typeof object.broker === "string")
+                    $util.base64.decode(object.broker, message.broker = $util.newBuffer($util.base64.length(object.broker)), 0);
+                else if (object.broker.length)
+                    message.broker = object.broker;
             return message;
         };
 
@@ -11244,11 +11342,11 @@ $root.account = (function() {
                         object.owner = $util.newBuffer(object.owner);
                 }
                 if (options.bytes === String)
-                    object.thirdPartyToken = "";
+                    object.broker = "";
                 else {
-                    object.thirdPartyToken = [];
+                    object.broker = [];
                     if (options.bytes !== Array)
-                        object.thirdPartyToken = $util.newBuffer(object.thirdPartyToken);
+                        object.broker = $util.newBuffer(object.broker);
                 }
             }
             if (message.metadata != null && message.hasOwnProperty("metadata"))
@@ -11264,8 +11362,8 @@ $root.account = (function() {
                 for (var j = 0; j < message.targets.length; ++j)
                     object.targets[j] = $root.account.BlockchainAddress.toObject(message.targets[j], options);
             }
-            if (message.thirdPartyToken != null && message.hasOwnProperty("thirdPartyToken"))
-                object.thirdPartyToken = options.bytes === String ? $util.base64.encode(message.thirdPartyToken, 0, message.thirdPartyToken.length) : options.bytes === Array ? Array.prototype.slice.call(message.thirdPartyToken) : message.thirdPartyToken;
+            if (message.broker != null && message.hasOwnProperty("broker"))
+                object.broker = options.bytes === String ? $util.base64.encode(message.broker, 0, message.broker.length) : options.bytes === Array ? Array.prototype.slice.call(message.broker) : message.broker;
             return object;
         };
 

@@ -138,6 +138,7 @@ export interface AccountConfiguration {
   readonly validBlockchainId: string;
   readonly validBlockchainAddress: string;
   readonly domainRenew: number;
+  readonly domainGracePeriod: number;
 }
 
 export interface AccountMsgFee {
@@ -157,6 +158,7 @@ export interface AccountNft {
 export interface Domain {
   readonly domain: string;
   readonly admin: Address;
+  readonly broker: Address;
   readonly validUntil: number;
   readonly hasSuperuser: boolean;
   readonly msgFees: readonly AccountMsgFee[];
@@ -282,6 +284,12 @@ export enum ActionKind {
   SetTxFeeConfiguration = "txfee_update_configuration_msg",
   SetCashConfiguration = "cash_update_configuration_msg",
   SetAccountConfiguration = "account_update_configuration_msg",
+  RegisterDomain = "account_register_domain_msg",
+  RenewDomain = "account_renew_domain_msg",
+  SetAccountMsgFees = "account_replace_account_msg_fees_msg",
+  SetAccountTargets = "account_replace_account_targets_msg",
+  AddAccountCertificate = "account_add_account_certificate_msg",
+  DeleteAccountCertificate = "account_delete_account_certificate_msg",
 }
 
 export interface TallyResult {
@@ -464,6 +472,74 @@ export function isSetAccountConfigurationAction(
   return action.kind === ActionKind.SetAccountConfiguration;
 }
 
+export interface RegisterDomainAction {
+  readonly kind: ActionKind.RegisterDomain;
+  readonly domain: string;
+  readonly admin: Address;
+  readonly broker?: Address;
+  readonly hasSuperuser: boolean;
+  readonly msgFees: readonly AccountMsgFee[];
+  readonly accountRenew: number;
+}
+
+export function isRegisterDomainAction(action: ProposalAction): action is RegisterDomainAction {
+  return action.kind === ActionKind.RegisterDomain;
+}
+
+export interface RenewDomainAction {
+  readonly kind: ActionKind.RenewDomain;
+  readonly domain: string;
+}
+
+export function isRenewDomainAction(action: ProposalAction): action is RenewDomainAction {
+  return action.kind === ActionKind.RenewDomain;
+}
+
+export interface SetAccountMsgFeesAction {
+  readonly kind: ActionKind.SetAccountMsgFees;
+  readonly domain: string;
+  readonly newMsgFees: readonly AccountMsgFee[];
+}
+
+export function isSetAccountMsgFeesAction(action: ProposalAction): action is SetAccountMsgFeesAction {
+  return action.kind === ActionKind.SetAccountMsgFees;
+}
+
+export interface SetAccountTargetsAction {
+  readonly kind: ActionKind.SetAccountTargets;
+  readonly domain: string;
+  readonly name: string;
+  readonly newTargets: readonly ChainAddressPair[];
+}
+
+export function isSetAccountTargetsAction(action: ProposalAction): action is SetAccountTargetsAction {
+  return action.kind === ActionKind.SetAccountTargets;
+}
+
+export interface AddAccountCertificateAction {
+  readonly kind: ActionKind.AddAccountCertificate;
+  readonly domain: string;
+  readonly name: string;
+  readonly certificate: Uint8Array;
+}
+
+export function isAddAccountCertificateAction(action: ProposalAction): action is AddAccountCertificateAction {
+  return action.kind === ActionKind.AddAccountCertificate;
+}
+
+export interface DeleteAccountCertificateAction {
+  readonly kind: ActionKind.DeleteAccountCertificate;
+  readonly domain: string;
+  readonly name: string;
+  readonly certificateHash: Uint8Array;
+}
+
+export function isDeleteAccountCertificateAction(
+  action: ProposalAction,
+): action is DeleteAccountCertificateAction {
+  return action.kind === ActionKind.DeleteAccountCertificate;
+}
+
 /** The action to be executed when the proposal is accepted */
 export type ProposalAction =
   | CreateTextResolutionAction
@@ -482,7 +558,13 @@ export type ProposalAction =
   | SetTermDepositConfigurationAction
   | SetTxFeeConfigurationAction
   | SetCashConfigurationAction
-  | SetAccountConfigurationAction;
+  | SetAccountConfigurationAction
+  | RegisterDomainAction
+  | RenewDomainAction
+  | SetAccountMsgFeesAction
+  | SetAccountTargetsAction
+  | AddAccountCertificateAction
+  | DeleteAccountCertificateAction;
 
 export interface Proposal {
   readonly id: number;

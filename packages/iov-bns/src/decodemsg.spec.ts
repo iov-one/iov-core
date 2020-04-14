@@ -250,6 +250,7 @@ describe("decodeMsg", () => {
           validBlockchainId: "wonderland",
           validBlockchainAddress: "12345W",
           domainRenew: 1234,
+          domainGracePeriod: 69,
         },
       },
     };
@@ -264,6 +265,7 @@ describe("decodeMsg", () => {
       validBlockchainId: "wonderland",
       validBlockchainAddress: "12345W",
       domainRenew: 1234,
+      domainGracePeriod: 69,
     });
   });
 
@@ -273,7 +275,7 @@ describe("decodeMsg", () => {
         domain: "some-domain",
         admin: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
         hasSuperuser: true,
-        thirdPartyToken: fromHex("1234567890123456789012345678901234567890"),
+        broker: fromHex("1234567890123456789012345678901234567890"),
         msgFees: [{ msgPath: "some-msg-path", fee: { whole: 0, fractional: 123456789, ticker: "ASH" } }],
         accountRenew: 1234,
       },
@@ -340,7 +342,7 @@ describe("decodeMsg", () => {
         name: "alice",
         owner: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
         targets: [{ blockchainId: "wonderland", address: "12345W" }],
-        thirdPartyToken: fromHex("1234567890123456789012345678901234567890"),
+        broker: fromHex("1234567890123456789012345678901234567890"),
       },
     };
     const parsed = decodeMsg(defaultBaseTx, transactionMessage);
@@ -1412,6 +1414,7 @@ describe("decodeMsg", () => {
                 validBlockchainId: "regex",
                 validBlockchainAddress: "regex",
                 domainRenew: 654321,
+                domainGracePeriod: 8675309,
               },
             },
           }).finish(),
@@ -1438,6 +1441,7 @@ describe("decodeMsg", () => {
               validBlockchainId: "regex",
               validBlockchainAddress: "regex",
               domainRenew: 654321,
+              domainGracePeriod: 8675309,
             },
           },
           electionRuleId: 806595967999,

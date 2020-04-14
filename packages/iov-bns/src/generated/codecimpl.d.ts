@@ -2065,6 +2065,9 @@ export namespace account {
 
     /** account that belongs to this domain. */
     accountRenew?: number | Long | null;
+
+    /** for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws. */
+    broker?: Uint8Array | null;
   }
 
   /** Each domain controls expiration of all accounts that belong to that domain. */
@@ -2095,6 +2098,9 @@ export namespace account {
 
     /** account that belongs to this domain. */
     public accountRenew: number | Long;
+
+    /** for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws. */
+    public broker: Uint8Array;
 
     /**
      * Creates a new Domain instance using the specified properties.
@@ -2292,6 +2298,9 @@ export namespace account {
 
     /** Account certificates */
     certificates?: Uint8Array[] | null;
+
+    /** for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws. */
+    broker?: Uint8Array | null;
   }
 
   /** An account must always belong to an existing domain. */
@@ -2322,6 +2331,9 @@ export namespace account {
 
     /** Account certificates. */
     public certificates: Uint8Array[];
+
+    /** for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws. */
+    public broker: Uint8Array;
 
     /**
      * Creates a new Account instance using the specified properties.
@@ -2517,8 +2529,11 @@ export namespace account {
     /** blockchain address must match. */
     validBlockchainAddress?: string | null;
 
-    /** Domain review defines the duration of the domain renewal period. */
+    /** Domain renew defines the duration of the domain renewal period. */
     domainRenew?: number | Long | null;
+
+    /** can delete the domain after the grace period ends. */
+    domainGracePeriod?: number | Long | null;
   }
 
   /** the functionality provided by gconf package. */
@@ -2547,8 +2562,11 @@ export namespace account {
     /** blockchain address must match. */
     public validBlockchainAddress: string;
 
-    /** Domain review defines the duration of the domain renewal period. */
+    /** Domain renew defines the duration of the domain renewal period. */
     public domainRenew: number | Long;
+
+    /** can delete the domain after the grace period ends. */
+    public domainGracePeriod: number | Long;
 
     /**
      * Creates a new Configuration instance using the specified properties.
@@ -2747,8 +2765,8 @@ export namespace account {
     /** Has Superuser is a feature switch flag. */
     hasSuperuser?: boolean | null;
 
-    /** token helps identify contribution of such party later. */
-    thirdPartyToken?: Uint8Array | null;
+    /** for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws. */
+    broker?: Uint8Array | null;
 
     /** RegisterDomainMsg msgFees */
     msgFees?: account.IAccountMsgFee[] | null;
@@ -2777,8 +2795,8 @@ export namespace account {
     /** Has Superuser is a feature switch flag. */
     public hasSuperuser: boolean;
 
-    /** token helps identify contribution of such party later. */
-    public thirdPartyToken: Uint8Array;
+    /** for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws. */
+    public broker: Uint8Array;
 
     /** RegisterDomainMsg msgFees. */
     public msgFees: account.IAccountMsgFee[];
@@ -3298,8 +3316,8 @@ export namespace account {
     /** RegisterAccountMsg targets */
     targets?: account.IBlockchainAddress[] | null;
 
-    /** helps identify contribution of such party later. */
-    thirdPartyToken?: Uint8Array | null;
+    /** for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws. */
+    broker?: Uint8Array | null;
   }
 
   /** signed by the domain admin. */
@@ -3325,8 +3343,8 @@ export namespace account {
     /** RegisterAccountMsg targets. */
     public targets: account.IBlockchainAddress[];
 
-    /** helps identify contribution of such party later. */
-    public thirdPartyToken: Uint8Array;
+    /** for example: bech32:tiov16hzpmhecd65u993lasmexrdlkvhcxtlnf7f4ws. */
+    public broker: Uint8Array;
 
     /**
      * Creates a new RegisterAccountMsg instance using the specified properties.

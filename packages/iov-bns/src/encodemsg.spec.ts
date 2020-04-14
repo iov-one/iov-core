@@ -188,6 +188,7 @@ describe("encodeMsg", () => {
         validBlockchainId: "wonderland",
         validBlockchainAddress: "12345W",
         domainRenew: 1234,
+        domainGracePeriod: 12345,
       },
     };
     const msg = encodeMsg(transfer).accountUpdateConfigurationMsg!;
@@ -197,6 +198,7 @@ describe("encodeMsg", () => {
     expect(msg.patch?.validBlockchainId).toEqual("wonderland");
     expect(msg.patch?.validBlockchainAddress).toEqual("12345W");
     expect(msg.patch?.domainRenew).toEqual(1234);
+    expect(msg.patch?.domainGracePeriod).toEqual(12345);
   });
 
   it("works for RegisterDomainTx", () => {
@@ -214,7 +216,7 @@ describe("encodeMsg", () => {
     expect(msg.domain).toEqual("hole");
     expect(msg.admin).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
     expect(msg.hasSuperuser).toEqual(true);
-    expect(msg.thirdPartyToken).toEqual(fromHex("1234567890123456789012345678901234567890"));
+    expect(msg.broker).toEqual(fromHex("1234567890123456789012345678901234567890"));
     expect(msg.msgFees).toEqual([
       { msgPath: "some-msg-path", fee: { whole: 1, fractional: 2, ticker: "ASH" } },
     ]);
@@ -268,7 +270,7 @@ describe("encodeMsg", () => {
     expect(msg.name).toEqual("rabbit");
     expect(msg.owner).toEqual(fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"));
     expect(msg.targets).toEqual([{ blockchainId: "wonderland", address: "12345W" }]);
-    expect(msg.thirdPartyToken).toEqual(fromHex("1234567890123456789012345678901234567890"));
+    expect(msg.broker).toEqual(fromHex("1234567890123456789012345678901234567890"));
   });
 
   it("works for TransferAccountTx", () => {

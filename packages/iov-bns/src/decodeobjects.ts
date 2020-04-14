@@ -133,6 +133,7 @@ export function decodeAccountConfiguration(
     validBlockchainId: ensure(patch.validBlockchainId, "validBlockchainId"),
     validBlockchainAddress: ensure(patch.validBlockchainAddress, "validBlockchainAddress"),
     domainRenew: asIntegerNumber(ensure(patch.domainRenew, "domainRenew")),
+    domainGracePeriod: asIntegerNumber(ensure(patch.domainGracePeriod, "domainGracePeriod")),
   };
 }
 
@@ -166,9 +167,10 @@ export function decodeDomain(prefix: IovBech32Prefix, domain: codecImpl.account.
     domain: ensure(domain.domain, "domain"),
     admin: encodeBnsAddress(prefix, ensure(domain.admin, "admin")),
     validUntil: asIntegerNumber(ensure(domain.validUntil, "validUntil")),
-    hasSuperuser: ensure(domain.hasSuperuser, "hasSuperuser"),
+    hasSuperuser: !!domain.hasSuperuser,
     msgFees: ensure(domain.msgFees, "msgFees").map(decodeAccountMsgFee),
     accountRenew: asIntegerNumber(ensure(domain.accountRenew, "accountRenew")),
+    broker: domain.broker ? encodeBnsAddress(prefix, domain.broker) : ("" as Address),
   };
 }
 
@@ -507,8 +509,57 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       kind: ActionKind.SetAccountConfiguration,
       patch: decodeAccountConfiguration(prefix, ensure(option.accountUpdateConfigurationMsg.patch, "patch")),
     };
+  } else if (option.accountRegisterDomainMsg) {
+    const msg: codecImpl.account.IRegisterDomainMsg = option.accountRegisterDomainMsg;
+    return {
+      kind: ActionKind.RegisterDomain,
+      accountRenew: asIntegerNumber(ensure(msg.accountRenew, "accountRenew")),
+      admin: encodeBnsAddress(prefix, ensure(msg.admin, "admin")),
+      broker: msg.broker ? encodeBnsAddress(prefix, msg.broker) : ("" as Address),
+      domain: ensure(msg.domain, "domain"),
+      hasSuperuser: !!msg.hasSuperuser,
+      msgFees: ensure(msg.msgFees, "msgFees").map(decodeAccountMsgFee),
+    };
+  } else if (option.accountRenewDomainMsg) {
+    return {
+      kind: ActionKind.RenewDomain,
+      domain: ensure(option.accountRenewDomainMsg.domain, "domain"),
+    };
+  } else if (option.accountReplaceAccountMsgFeesMsg) {
+    return {
+      kind: ActionKind.SetAccountMsgFees,
+      domain: ensure(option.accountReplaceAccountMsgFeesMsg.domain, "domain"),
+      newMsgFees: ensure(option.accountReplaceAccountMsgFeesMsg.newMsgFees, "newMsgFees").map(
+        decodeAccountMsgFee,
+      ),
+    };
+  } else if (option.accountReplaceAccountTargetsMsg) {
+    return {
+      kind: ActionKind.SetAccountTargets,
+      domain: ensure(option.accountReplaceAccountTargetsMsg.domain, "domain"),
+      name: ensure(option.accountReplaceAccountTargetsMsg.name, "name"),
+      newTargets: ensure(option.accountReplaceAccountTargetsMsg.newTargets, "newTargets").map(
+        decodeChainAddressPair,
+      ),
+    };
+  } else if (option.accountAddAccountCertificateMsg) {
+    return {
+      kind: ActionKind.AddAccountCertificate,
+      domain: ensure(option.accountAddAccountCertificateMsg.domain, "domain"),
+      name: ensure(option.accountAddAccountCertificateMsg.name, "name"),
+      certificate: Uint8Array.from(ensure(option.accountAddAccountCertificateMsg.certificate, "certificate")),
+    };
+  } else if (option.accountDeleteAccountCertificateMsg) {
+    return {
+      kind: ActionKind.DeleteAccountCertificate,
+      domain: ensure(option.accountDeleteAccountCertificateMsg.domain, "domain"),
+      name: ensure(option.accountDeleteAccountCertificateMsg.name, "name"),
+      certificateHash: Uint8Array.from(
+        ensure(option.accountDeleteAccountCertificateMsg.certificateHash, "certificateHash"),
+      ),
+    };
   } else {
-    throw new Error("Unsupported ProposalOptions");
+    throw new Error(`Unsupported ProposalOptions: ${JSON.stringify(option)}`);
   }
 }
 

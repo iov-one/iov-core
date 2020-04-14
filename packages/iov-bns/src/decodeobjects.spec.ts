@@ -190,6 +190,7 @@ describe("decodeobjects", () => {
         validBlockchainId: "wonderland",
         validBlockchainAddress: "12345W",
         domainRenew: 1234,
+        domainGracePeriod: 12345,
       };
       const decoded = decodeAccountConfiguration(prefix, conf);
       expect(decoded.owner).toEqual(
@@ -200,6 +201,7 @@ describe("decodeobjects", () => {
       expect(decoded.validBlockchainId).toEqual("wonderland");
       expect(decoded.validBlockchainAddress).toEqual("12345W");
       expect(decoded.domainRenew).toEqual(1234);
+      expect(decoded.domainGracePeriod).toEqual(12345);
     });
   });
 
@@ -270,6 +272,27 @@ describe("decodeobjects", () => {
       expect(decoded.admin).toEqual("tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address);
       expect(decoded.validUntil).toEqual(1234);
       expect(decoded.hasSuperuser).toEqual(true);
+      expect(decoded.msgFees).toEqual([
+        { msgPath: "some-msg-path", fee: decodeAmount({ whole: 0, fractional: 123456789, ticker: "ASH" }) },
+      ]);
+      expect(decoded.accountRenew).toEqual(5678);
+    });
+
+    it("works without superuser", () => {
+      const prefix = "tiov";
+      const account: codecImpl.account.IDomain & Keyed = {
+        _id: toUtf8("alice"),
+        domain: "hole",
+        admin: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+        validUntil: 1234,
+        msgFees: [{ msgPath: "some-msg-path", fee: { whole: 0, fractional: 123456789, ticker: "ASH" } }],
+        accountRenew: 5678,
+      };
+      const decoded = decodeDomain(prefix, account);
+      expect(decoded.domain).toEqual("hole");
+      expect(decoded.admin).toEqual("tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address);
+      expect(decoded.validUntil).toEqual(1234);
+      expect(decoded.hasSuperuser).toEqual(false);
       expect(decoded.msgFees).toEqual([
         { msgPath: "some-msg-path", fee: decodeAmount({ whole: 0, fractional: 123456789, ticker: "ASH" }) },
       ]);
@@ -466,6 +489,444 @@ describe("decodeobjects", () => {
           kind: ActionKind.UpgradeSchema,
           pkg: "datamigration",
           toVersion: 1,
+        },
+        description: "foo bar",
+        electionRule: {
+          id: 187723572689919,
+          version: 28,
+        },
+        electorate: {
+          id: 4785147619683003,
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+        state: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: ProposalStatus.Submitted,
+        result: ProposalResult.Undefined,
+        executorResult: ProposalExecutorResult.NotRun,
+      });
+    });
+
+    it("accountRegisterDomainMsg", () => {
+      const proposal: codecImpl.gov.IProposal & Keyed = {
+        _id: fromHex("001100220033aabb"),
+        metadata: { schema: 1 },
+        title: "This will happen next",
+        rawOption: codecImpl.bnsd.ProposalOptions.encode({
+          accountRegisterDomainMsg: {
+            metadata: { schema: 1 },
+            accountRenew: 456789,
+            admin: fromHex("5555556688770011001100110011001100110011"),
+            broker: fromHex("0011223344556677889900112233445566778899"),
+            domain: "dave",
+            hasSuperuser: true,
+            msgFees: [{ msgPath: "some-msg-path", fee: { whole: 0, fractional: 123456789, ticker: "ASH" } }],
+          },
+        }).finish(),
+        description: "foo bar",
+        electionRuleRef: {
+          id: fromHex("0000aabbccddbbff"),
+          version: 28,
+        },
+        electorateRef: {
+          id: fromHex("001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: fromHex("0011223344556677889900112233445566778899"),
+        voteState: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED,
+        result: codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED,
+        executorResult: codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN,
+      };
+
+      expect(decodeProposal("tiov", proposal)).toEqual({
+        id: 4785220636355259,
+        title: "This will happen next",
+        action: {
+          kind: ActionKind.RegisterDomain,
+          accountRenew: 456789,
+          admin: "tiov124242e5gwuqpzqq3qqgsqygqzyqpzqq350k5np" as Address,
+          broker: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+          domain: "dave",
+          hasSuperuser: true,
+          msgFees: [
+            {
+              msgPath: "some-msg-path",
+              fee: decodeAmount({ whole: 0, fractional: 123456789, ticker: "ASH" }),
+            },
+          ],
+        },
+        description: "foo bar",
+        electionRule: {
+          id: 187723572689919,
+          version: 28,
+        },
+        electorate: {
+          id: 4785147619683003,
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+        state: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: ProposalStatus.Submitted,
+        result: ProposalResult.Undefined,
+        executorResult: ProposalExecutorResult.NotRun,
+      });
+    });
+
+    it("accountRenewDomainMsg", () => {
+      const proposal: codecImpl.gov.IProposal & Keyed = {
+        _id: fromHex("001100220033aabb"),
+        metadata: { schema: 1 },
+        title: "This will happen next",
+        rawOption: codecImpl.bnsd.ProposalOptions.encode({
+          accountRenewDomainMsg: {
+            metadata: { schema: 1 },
+            domain: "dave",
+          },
+        }).finish(),
+        description: "foo bar",
+        electionRuleRef: {
+          id: fromHex("0000aabbccddbbff"),
+          version: 28,
+        },
+        electorateRef: {
+          id: fromHex("001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: fromHex("0011223344556677889900112233445566778899"),
+        voteState: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED,
+        result: codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED,
+        executorResult: codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN,
+      };
+
+      expect(decodeProposal("tiov", proposal)).toEqual({
+        id: 4785220636355259,
+        title: "This will happen next",
+        action: {
+          kind: ActionKind.RenewDomain,
+          domain: "dave",
+        },
+        description: "foo bar",
+        electionRule: {
+          id: 187723572689919,
+          version: 28,
+        },
+        electorate: {
+          id: 4785147619683003,
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+        state: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: ProposalStatus.Submitted,
+        result: ProposalResult.Undefined,
+        executorResult: ProposalExecutorResult.NotRun,
+      });
+    });
+
+    it("accountReplaceAccountMsgFeesMsg", () => {
+      const proposal: codecImpl.gov.IProposal & Keyed = {
+        _id: fromHex("001100220033aabb"),
+        metadata: { schema: 1 },
+        title: "This will happen next",
+        rawOption: codecImpl.bnsd.ProposalOptions.encode({
+          accountReplaceAccountMsgFeesMsg: {
+            metadata: { schema: 1 },
+            domain: "dave",
+            newMsgFees: [
+              { msgPath: "some-msg-path", fee: { whole: 0, fractional: 123456789, ticker: "ASH" } },
+            ],
+          },
+        }).finish(),
+        description: "foo bar",
+        electionRuleRef: {
+          id: fromHex("0000aabbccddbbff"),
+          version: 28,
+        },
+        electorateRef: {
+          id: fromHex("001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: fromHex("0011223344556677889900112233445566778899"),
+        voteState: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED,
+        result: codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED,
+        executorResult: codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN,
+      };
+
+      expect(decodeProposal("tiov", proposal)).toEqual({
+        id: 4785220636355259,
+        title: "This will happen next",
+        action: {
+          kind: ActionKind.SetAccountMsgFees,
+          domain: "dave",
+          newMsgFees: [
+            {
+              msgPath: "some-msg-path",
+              fee: decodeAmount({ whole: 0, fractional: 123456789, ticker: "ASH" }),
+            },
+          ],
+        },
+        description: "foo bar",
+        electionRule: {
+          id: 187723572689919,
+          version: 28,
+        },
+        electorate: {
+          id: 4785147619683003,
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+        state: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: ProposalStatus.Submitted,
+        result: ProposalResult.Undefined,
+        executorResult: ProposalExecutorResult.NotRun,
+      });
+    });
+
+    it("accountReplaceAccountTargetsMsg", () => {
+      const proposal: codecImpl.gov.IProposal & Keyed = {
+        _id: fromHex("001100220033aabb"),
+        metadata: { schema: 1 },
+        title: "This will happen next",
+        rawOption: codecImpl.bnsd.ProposalOptions.encode({
+          accountReplaceAccountTargetsMsg: {
+            metadata: { schema: 1 },
+            domain: "dave",
+            name: "coinbase",
+            newTargets: [{ blockchainId: "wonderland", address: "12345W" }],
+          },
+        }).finish(),
+        description: "foo bar",
+        electionRuleRef: {
+          id: fromHex("0000aabbccddbbff"),
+          version: 28,
+        },
+        electorateRef: {
+          id: fromHex("001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: fromHex("0011223344556677889900112233445566778899"),
+        voteState: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED,
+        result: codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED,
+        executorResult: codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN,
+      };
+
+      expect(decodeProposal("tiov", proposal)).toEqual({
+        id: 4785220636355259,
+        title: "This will happen next",
+        action: {
+          kind: ActionKind.SetAccountTargets,
+          domain: "dave",
+          name: "coinbase",
+          newTargets: [decodeBlockchainAddress({ blockchainId: "wonderland", address: "12345W" })],
+        },
+        description: "foo bar",
+        electionRule: {
+          id: 187723572689919,
+          version: 28,
+        },
+        electorate: {
+          id: 4785147619683003,
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+        state: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: ProposalStatus.Submitted,
+        result: ProposalResult.Undefined,
+        executorResult: ProposalExecutorResult.NotRun,
+      });
+    });
+
+    it("accountAddAccountCertificateMsg", () => {
+      const proposal: codecImpl.gov.IProposal & Keyed = {
+        _id: fromHex("001100220033aabb"),
+        metadata: { schema: 1 },
+        title: "This will happen next",
+        rawOption: codecImpl.bnsd.ProposalOptions.encode({
+          accountAddAccountCertificateMsg: {
+            metadata: { schema: 1 },
+            domain: "dave",
+            name: "coinbase",
+            certificate: fromHex("214390591e6ac697319f20887405915e9d2690fd"),
+          },
+        }).finish(),
+        description: "foo bar",
+        electionRuleRef: {
+          id: fromHex("0000aabbccddbbff"),
+          version: 28,
+        },
+        electorateRef: {
+          id: fromHex("001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: fromHex("0011223344556677889900112233445566778899"),
+        voteState: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED,
+        result: codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED,
+        executorResult: codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN,
+      };
+
+      expect(decodeProposal("tiov", proposal)).toEqual({
+        id: 4785220636355259,
+        title: "This will happen next",
+        action: {
+          kind: ActionKind.AddAccountCertificate,
+          domain: "dave",
+          name: "coinbase",
+          certificate: fromHex("214390591e6ac697319f20887405915e9d2690fd"),
+        },
+        description: "foo bar",
+        electionRule: {
+          id: 187723572689919,
+          version: 28,
+        },
+        electorate: {
+          id: 4785147619683003,
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: "tiov1qqgjyv6y24n80zyeqqgjyv6y24n80zyed9d6mt" as Address,
+        state: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: ProposalStatus.Submitted,
+        result: ProposalResult.Undefined,
+        executorResult: ProposalExecutorResult.NotRun,
+      });
+    });
+
+    it("accountDeleteAccountCertificateMsg", () => {
+      const proposal: codecImpl.gov.IProposal & Keyed = {
+        _id: fromHex("001100220033aabb"),
+        metadata: { schema: 1 },
+        title: "This will happen next",
+        rawOption: codecImpl.bnsd.ProposalOptions.encode({
+          accountDeleteAccountCertificateMsg: {
+            metadata: { schema: 1 },
+            domain: "dave",
+            name: "coinbase",
+            certificateHash: fromHex("214390591e6ac697319f20887405915e9d2690fd"),
+          },
+        }).finish(),
+        description: "foo bar",
+        electionRuleRef: {
+          id: fromHex("0000aabbccddbbff"),
+          version: 28,
+        },
+        electorateRef: {
+          id: fromHex("001100110011aabb"),
+          version: 3,
+        },
+        votingStartTime: 42424242,
+        votingEndTime: 42424243,
+        submissionTime: 3003,
+        author: fromHex("0011223344556677889900112233445566778899"),
+        voteState: {
+          totalYes: 1,
+          totalNo: 2,
+          totalAbstain: 3,
+          totalElectorateWeight: 10,
+        },
+        status: codecImpl.gov.Proposal.Status.PROPOSAL_STATUS_SUBMITTED,
+        result: codecImpl.gov.Proposal.Result.PROPOSAL_RESULT_UNDEFINED,
+        executorResult: codecImpl.gov.Proposal.ExecutorResult.PROPOSAL_EXECUTOR_RESULT_NOT_RUN,
+      };
+
+      expect(decodeProposal("tiov", proposal)).toEqual({
+        id: 4785220636355259,
+        title: "This will happen next",
+        action: {
+          kind: ActionKind.DeleteAccountCertificate,
+          domain: "dave",
+          name: "coinbase",
+          certificateHash: fromHex("214390591e6ac697319f20887405915e9d2690fd"),
         },
         description: "foo bar",
         electionRule: {
