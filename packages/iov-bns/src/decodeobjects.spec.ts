@@ -277,6 +277,27 @@ describe("decodeobjects", () => {
       ]);
       expect(decoded.accountRenew).toEqual(5678);
     });
+
+    it("works without superuser", () => {
+      const prefix = "tiov";
+      const account: codecImpl.account.IDomain & Keyed = {
+        _id: toUtf8("alice"),
+        domain: "hole",
+        admin: fromHex("0e95c039ef14ee329d0e09d84f909cf9eb5ef472"),
+        validUntil: 1234,
+        msgFees: [{ msgPath: "some-msg-path", fee: { whole: 0, fractional: 123456789, ticker: "ASH" } }],
+        accountRenew: 5678,
+      };
+      const decoded = decodeDomain(prefix, account);
+      expect(decoded.domain).toEqual("hole");
+      expect(decoded.admin).toEqual("tiov1p62uqw00znhr98gwp8vylyyul844aarjhe9duq" as Address);
+      expect(decoded.validUntil).toEqual(1234);
+      expect(decoded.hasSuperuser).toEqual(false);
+      expect(decoded.msgFees).toEqual([
+        { msgPath: "some-msg-path", fee: decodeAmount({ whole: 0, fractional: 123456789, ticker: "ASH" }) },
+      ]);
+      expect(decoded.accountRenew).toEqual(5678);
+    });
   });
 
   describe("decodeElectorate", () => {

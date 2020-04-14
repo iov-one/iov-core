@@ -167,7 +167,7 @@ export function decodeDomain(prefix: IovBech32Prefix, domain: codecImpl.account.
     domain: ensure(domain.domain, "domain"),
     admin: encodeBnsAddress(prefix, ensure(domain.admin, "admin")),
     validUntil: asIntegerNumber(ensure(domain.validUntil, "validUntil")),
-    hasSuperuser: ensure(domain.hasSuperuser, "hasSuperuser"),
+    hasSuperuser: !!domain.hasSuperuser,
     msgFees: ensure(domain.msgFees, "msgFees").map(decodeAccountMsgFee),
     accountRenew: asIntegerNumber(ensure(domain.accountRenew, "accountRenew")),
     broker: domain.broker ? encodeBnsAddress(prefix, domain.broker) : ("" as Address),
@@ -517,7 +517,7 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
       admin: encodeBnsAddress(prefix, ensure(msg.admin, "admin")),
       broker: msg.broker ? encodeBnsAddress(prefix, msg.broker) : ("" as Address),
       domain: ensure(msg.domain, "domain"),
-      hasSuperuser: ensure(msg.hasSuperuser, "hasSuperuser"),
+      hasSuperuser: !!msg.hasSuperuser,
       msgFees: ensure(msg.msgFees, "msgFees").map(decodeAccountMsgFee),
     };
   } else if (option.accountRenewDomainMsg) {
