@@ -29,12 +29,13 @@ import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 import BN from "bn.js";
 
-import { Abi, SwapContractMethod } from "./abi";
+import { Abi } from "./abi";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
 import { Erc20ApproveTransaction, Erc20TokensMap } from "./erc20";
 import { Serialization, SwapIdPrefix } from "./serialization";
+import { AtomicSwapContract, SwapContractMethod } from "./smartcontracts/atomicswapcontract";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -191,7 +192,9 @@ export class EthereumCodec implements TxCodec {
       const positionSwapIdBegin = positionMethodIdEnd;
       const positionSwapIdEnd = positionSwapIdBegin + 32;
 
-      const method = Abi.decodeMethodId(input.slice(positionMethodIdBegin, positionMethodIdEnd));
+      const method = AtomicSwapContract.abiDecodeMethodId(
+        input.slice(positionMethodIdBegin, positionMethodIdEnd),
+      );
       const swapIdWithoutPrefix = {
         data: input.slice(positionSwapIdBegin, positionSwapIdEnd) as SwapIdBytes,
       };
