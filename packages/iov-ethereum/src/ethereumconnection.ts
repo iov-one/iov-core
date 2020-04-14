@@ -55,7 +55,6 @@ import { ReadonlyDate } from "readonly-date";
 import { Producer, Stream, Subscription } from "xstream";
 
 import { Abi } from "./abi";
-import { AtomicSwapContract, SwapContractEvent } from "./smartcontracts/atomicswapcontract";
 import { pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { Erc20TokensMap } from "./erc20";
@@ -65,6 +64,7 @@ import { EthereumRpcClient } from "./ethereumrpcclient";
 import { HttpEthereumRpcClient } from "./httpethereumrpcclient";
 import { Parse } from "./parse";
 import { SwapIdPrefix } from "./serialization";
+import { AtomicSwapContract, SwapContractEvent } from "./smartcontracts/atomicswapcontract";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,

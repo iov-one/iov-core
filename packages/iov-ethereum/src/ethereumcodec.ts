@@ -30,12 +30,12 @@ import { Encoding } from "@iov/encoding";
 import BN from "bn.js";
 
 import { Abi } from "./abi";
-import { AtomicSwapContract, SwapContractMethod } from "./smartcontracts/atomicswapcontract";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
 import { Erc20ApproveTransaction, Erc20TokensMap } from "./erc20";
 import { Serialization, SwapIdPrefix } from "./serialization";
+import { AtomicSwapContract, SwapContractMethod } from "./smartcontracts/atomicswapcontract";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,

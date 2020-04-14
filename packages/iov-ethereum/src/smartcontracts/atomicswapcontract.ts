@@ -1,5 +1,6 @@
 import { SwapProcessState } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
+
 import { Abi } from "./../abi";
 
 export enum SwapContractEvent {
