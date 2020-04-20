@@ -22,9 +22,9 @@ import { Encoding } from "@iov/encoding";
 
 import { Erc20ApproveTransaction, Erc20Options } from "./erc20";
 import { EthereumCodec } from "./ethereumcodec";
+import { EthereumRpcTransactionResult } from "./ethereumrpctransactionresult";
 import { SwapIdPrefix } from "./serialization";
 import { testConfig } from "./testconfig.spec";
-import { EthereumRpcTransactionResult } from "./ethereumrpctransactionresult";
 
 const { fromHex } = Encoding;
 

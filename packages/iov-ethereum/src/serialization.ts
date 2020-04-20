@@ -1,5 +1,6 @@
 import {
   Address,
+  Amount,
   BlockHeightTimeout,
   isBlockHeightTimeout,
   isSendTransaction,
@@ -14,7 +15,6 @@ import {
   SwapOfferTransaction,
   SwapTransaction,
   UnsignedTransaction,
-  Amount,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding, Int53 } from "@iov/encoding";
@@ -28,11 +28,11 @@ import { Erc20ApproveTransaction, Erc20Options, Erc20TokensMap, isErc20ApproveTr
 import {
   EscrowAbortTransaction,
   EscrowClaimTransaction,
+  EscrowContract,
   EscrowOpenTransaction,
   isEscrowAbortTransaction,
   isEscrowClaimTransaction,
   isEscrowOpenTransaction,
-  EscrowContract,
 } from "./smartcontracts/escrowcontract";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 

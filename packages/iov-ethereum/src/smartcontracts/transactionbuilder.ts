@@ -1,11 +1,12 @@
 import { ChainId, Fee, PubkeyBundle } from "@iov/bcp";
+
 import { EthereumRpcTransactionResult } from "../ethereumrpctransactionresult";
 import { SmartContractConfig, SmartContractType } from "./definitions";
 import {
   EscrowAbortTransaction,
   EscrowClaimTransaction,
-  EscrowOpenTransaction,
   EscrowContract,
+  EscrowOpenTransaction,
 } from "./escrowcontract";
 
 export type CustomSmartContractTransaction =

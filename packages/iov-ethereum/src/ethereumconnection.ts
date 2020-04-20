@@ -65,6 +65,7 @@ import { HttpEthereumRpcClient } from "./httpethereumrpcclient";
 import { Parse } from "./parse";
 import { SwapIdPrefix } from "./serialization";
 import { AtomicSwapContract, SwapContractEvent } from "./smartcontracts/atomicswapcontract";
+import { SmartContractConfig } from "./smartcontracts/definitions";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -75,7 +76,6 @@ import {
   toEthereumHex,
 } from "./utils";
 import { WsEthereumRpcClient } from "./wsethereumrpcclient";
-import { SmartContractConfig } from "./smartcontracts/definitions";
 
 function isHttpUrl(url: string): boolean {
   return ["http://", "https://"].some(prefix => url.startsWith(prefix));
