@@ -35,11 +35,6 @@ import { EthereumRpcTransactionResult } from "./ethereumrpctransactionresult";
 import { Serialization, SwapIdPrefix } from "./serialization";
 import { SmartContractConfig } from "./smartcontracts/definitions";
 import {
-  EscrowAbortTransaction,
-  EscrowClaimTransaction,
-  EscrowOpenTransaction,
-} from "./smartcontracts/escrowcontract";
-import {
   CustomSmartContractTransaction,
   CustomSmartContractTransactionBuilder,
 } from "./smartcontracts/transactionbuilder";
