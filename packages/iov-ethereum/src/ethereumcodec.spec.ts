@@ -21,9 +21,10 @@ import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { Erc20ApproveTransaction, Erc20Options } from "./erc20";
-import { EthereumCodec, EthereumRpcTransactionResult } from "./ethereumcodec";
+import { EthereumCodec } from "./ethereumcodec";
 import { SwapIdPrefix } from "./serialization";
 import { testConfig } from "./testconfig.spec";
+import { EthereumRpcTransactionResult } from "./ethereumrpctransactionresult";
 
 const { fromHex } = Encoding;
 
@@ -754,6 +755,67 @@ describe("ethereumCodec", () => {
           },
         ],
       });
+    });
+  });
+
+  it("works for escrow smart contract open", async () => {
+    // Retrieved from local instance since we haven't deployed this to a public testnet
+    // curl - sS - X POST--data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0x224c51c8641da40fec0987972af1f6e7bf4635a2eb7366be68da1bfcea144814"],"id":1}' http://localhost:8545 | jq .result
+    const rawGetTransactionByHashResult: EthereumRpcTransactionResult = {
+      hash: "0x224c51c8641da40fec0987972af1f6e7bf4635a2eb7366be68da1bfcea144814",
+      nonce: "0x15b",
+      blockHash: "0x66b46bae1c7023c2c3c98228fabd317b096ad5a0d542677d4c3cf3f739bdddc5",
+      blockNumber: "0x178",
+      transactionIndex: "0x0",
+      from: "0x88f3b5659075d0e06bb1004be7b1a7e66f452284",
+      to: "0x9768ae2339b48643d710b11ddbdb8a7edbea15bc",
+      value: "0x0",
+      gas: "0x200b20",
+      gasPrice: "0x4a817c800",
+      input: "0x09d6ce0e144c07a765cd2435882edbc334218b1678b2c5773284bf715ba766f97ee4f2fd",
+      v: "0x2d46",
+      r: "0x367e3b3f8253f2f0f4404754b139d93362973de949ccdd5f0dc5a342f8cd2131",
+      s: "0x0f80b13350349f083f44dd507a7ae7bc783389a7b4c18853d073e0e8c59c6ce0",
+    };
+    const expectedPubkey = fromHex(
+      "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
+    ) as PubkeyBytes;
+    const expectedSwapId: SwapId = {
+      prefix: SwapIdPrefix.Erc20,
+      data: fromHex("144c07a765cd2435882edbc334218b1678b2c5773284bf715ba766f97ee4f2fd") as SwapIdBytes,
+    };
+
+    const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+
+    const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
+    expect((parsed as unknown) as SignedTransaction<SwapAbortTransaction>).toEqual({
+      transaction: {
+        kind: "bcp/swap_abort",
+        chainId: "ethereum-eip155-5777" as ChainId,
+        fee: {
+          gasLimit: "2100000",
+          gasPrice: {
+            quantity: "20000000000",
+            fractionalDigits: 18,
+            tokenTicker: "ETH" as TokenTicker,
+          },
+        },
+        swapId: expectedSwapId,
+      },
+      signatures: [
+        {
+          nonce: 347 as Nonce,
+          pubkey: {
+            algo: Algorithm.Secp256k1,
+            data: expectedPubkey,
+          },
+          signature: new ExtendedSecp256k1Signature(
+            Encoding.fromHex("367e3b3f8253f2f0f4404754b139d93362973de949ccdd5f0dc5a342f8cd2131"),
+            Encoding.fromHex("0f80b13350349f083f44dd507a7ae7bc783389a7b4c18853d073e0e8c59c6ce0"),
+            1,
+          ).toFixedLength() as SignatureBytes,
+        },
+      ],
     });
   });
 });

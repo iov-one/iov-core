@@ -19,6 +19,7 @@ export function createEthereumConnector(
       erc20Tokens: options.erc20Tokens,
       atomicSwapEtherContractAddress: options.atomicSwapEtherContractAddress,
       atomicSwapErc20ContractAddress: options.atomicSwapErc20ContractAddress,
+      customSmartContractConfig: options.customSmartContractConfig,
     }),
     expectedChainId: expectedChainId,
   };
