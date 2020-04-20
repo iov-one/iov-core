@@ -75,6 +75,7 @@ import {
   toEthereumHex,
 } from "./utils";
 import { WsEthereumRpcClient } from "./wsethereumrpcclient";
+import { SmartContractConfig } from "./smartcontracts/definitions";
 
 function isHttpUrl(url: string): boolean {
   return ["http://", "https://"].some(prefix => url.startsWith(prefix));
@@ -131,6 +132,8 @@ export interface EthereumConnectionOptions {
   readonly atomicSwapEtherContractAddress?: Address;
   /** Address of the deployed atomic swap contract for ERC20 tokens */
   readonly atomicSwapErc20ContractAddress?: Address;
+  /** Configuration for custom smart contracts */
+  readonly customSmartContractConfig?: SmartContractConfig;
   /** List of supported ERC20 tokens */
   readonly erc20Tokens?: Erc20TokensMap;
   /** Time between two polls for block, transaction and account watching in seconds */
