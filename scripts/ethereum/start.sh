@@ -4,7 +4,7 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 
 # Choose from https://hub.docker.com/r/trufflesuite/ganache-cli/tags
 VERSION="v6.4.3"
-PORT="7545"
+PORT="8545"
 
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/ganache.XXXXXXXXX")
 chmod 777 "${TMP_DIR}"
@@ -14,9 +14,9 @@ LOGFILE="$TMP_DIR/ganache.log"
 docker run --rm \
   --user="$UID" \
   --name "ganache-cli" \
-  -p "${PORT}:${PORT}" \
+  -p "${PORT}:8545" \
   "trufflesuite/ganache-cli:${VERSION}" \
-  -p ${PORT} --networkId 5777 \
+  -p 8545 --networkId 5777 \
   --account "0x5e4744cb651ef4598b5ea6183aa1a39e09699b4479bb1e73f717299a9cc84718,100000000000000000000" \
   --account "0x67f3bca40c3ec02b8c8630a09c459270bb29ad7f1c650156513a30c75a6a8a5f,1234567890987654321" \
   --account "0xcaabb4e5e22beb7f4ba936c53b3a3a29f9f4908073d8f4cfd300773581c46af8,100000000000000000000" \
