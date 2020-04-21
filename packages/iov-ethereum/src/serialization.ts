@@ -556,7 +556,7 @@ export class Serialization {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (unsigned.swapId.prefix === SwapIdPrefix.Ether) {
       // native ETH swap
-      Serialization.checkEtherAmount(unsigned.amounts);
+      Serialization.checkEtherAmount([unsigned.amount]);
       const escrowOpenCall = EscrowContract.open(
         unsigned.swapId,
         unsigned.arbiter,
@@ -569,13 +569,13 @@ export class Serialization {
         gasLimitHex,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         customSmartContractAddress!,
-        unsigned.amounts[0].quantity,
+        unsigned.amount.quantity,
         escrowOpenCall,
         chainIdHex,
       );
     } else {
       // ERC20 swap
-      Serialization.checkErc20Amount(unsigned.amounts, erc20Tokens);
+      Serialization.checkErc20Amount([unsigned.amount], erc20Tokens);
       const escrowOpenCall = EscrowContract.open(
         unsigned.swapId,
         unsigned.arbiter,
@@ -609,7 +609,7 @@ export class Serialization {
         gasLimitHex,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         customSmartContractAddress!,
-        unsigned.amounts[0].quantity,
+        unsigned.amount.quantity,
         escrowClaimCall,
         chainIdHex,
       );
@@ -642,7 +642,7 @@ export class Serialization {
         gasLimitHex,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         customSmartContractAddress!,
-        unsigned.amounts[0].quantity,
+        unsigned.amount.quantity,
         escrowAbortCall,
         chainIdHex,
       );

@@ -67,15 +67,15 @@ const env = process.env.ETHEREUM_NETWORK || "local";
 
 const local: EthereumNetworkConfig = {
   env: "local",
-  baseHttp: "http://localhost:8545",
-  baseWs: "ws://localhost:8545/ws",
+  baseHttp: "http://localhost:7545",
+  baseWs: "ws://localhost:7545/ws",
   connectionOptions: {
     // Low values to speedup test execution on the local ganache chain (using instant mine)
     pollInterval: 0.1,
     // Local scraper not used by default in CI to avoid circular dependency (@iov/ethereum <- scraper <- @iov/ethereum).
     // Comment out and set the ETHEREUM_SCRAPER environment variable for manual testing.
-    // scraperApiUrl: "http://localhost:8546/api",
-    scraperApiUrl: undefined,
+    scraperApiUrl: "http://localhost:8546/api",
+    // scraperApiUrl: undefined,
     atomicSwapEtherContractAddress: "0xE1C9Ea25A621Cf5C934a7E112ECaB640eC7D8d18" as Address,
     atomicSwapErc20ContractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
   },

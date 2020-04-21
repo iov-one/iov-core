@@ -22,7 +22,7 @@ import { decodeHexQuantityString } from "../utils";
 
 interface EscrowBaseTransaction extends UnsignedTransaction {
   readonly sender: Address;
-  readonly amounts: readonly Amount[];
+  readonly amount: Amount;
   readonly chainId: ChainId;
   readonly swapId: SwapId;
 }
@@ -111,13 +111,11 @@ export class EscrowContract {
         ...swapIdWithoutPrefix,
         prefix: config.tokenType,
       },
-      amounts: [
-        {
-          quantity: decodeHexQuantityString(json.value),
-          fractionalDigits: config.fractionalDigits,
-          tokenTicker: config.tokenTicker,
-        },
-      ],
+      amount: {
+        quantity: decodeHexQuantityString(json.value),
+        fractionalDigits: config.fractionalDigits,
+        tokenTicker: config.tokenTicker,
+      },
       fee: fee,
     };
 

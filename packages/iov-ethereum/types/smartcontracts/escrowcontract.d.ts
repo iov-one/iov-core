@@ -13,7 +13,7 @@ import { EthereumRpcTransactionResult } from "../ethereumrpctransactionresult";
 import { SmartContractConfig } from "../smartcontracts/definitions";
 interface EscrowBaseTransaction extends UnsignedTransaction {
   readonly sender: Address;
-  readonly amounts: readonly Amount[];
+  readonly amount: Amount;
   readonly chainId: ChainId;
   readonly swapId: SwapId;
 }
