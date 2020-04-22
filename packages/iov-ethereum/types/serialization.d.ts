@@ -21,11 +21,13 @@ export declare class Serialization {
     nonce: Nonce,
     erc20Tokens?: Erc20TokensMap,
     atomicSwapContractAddress?: Address,
+    customSmartContractAddress?: Address,
   ): Uint8Array;
   static serializeSignedTransaction(
     signed: SignedTransaction,
     erc20Tokens?: Erc20TokensMap,
     atomicSwapContractAddress?: Address,
+    customSmartContractAddress?: Address,
   ): Uint8Array;
   private static checkSenderPubkeyMatchesSenderAddress;
   private static checkRecipientAddress;
@@ -59,9 +61,15 @@ export declare class Serialization {
   private static serializeUnsignedSwapClaimTransaction;
   private static serializeUnsignedSwapAbortTransaction;
   private static serializeUnsignedErc20ApproveTransaction;
+  private static serializeUnsignedEscrowOpenTransaction;
+  private static serializeUnsignedEscrowClaimTransaction;
+  private static serializeUnsignedEscrowAbortTransaction;
   private static serializeSignedSendTransaction;
   private static serializeSignedSwapOfferTransaction;
   private static serializeSignedSwapClaimTransaction;
   private static serializeSignedSwapAbortTransaction;
   private static serializeSignedErc20ApproveTransaction;
+  private static serializeSignedOpenTransaction;
+  private static serializeSignedClaimTransaction;
+  private static serializeSignedAbortTransaction;
 }

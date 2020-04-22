@@ -26,6 +26,7 @@ import {
 import { Stream } from "xstream";
 import { Erc20TokensMap } from "./erc20";
 import { EthereumCodec } from "./ethereumcodec";
+import { SmartContractConfig } from "./smartcontracts/definitions";
 export interface EthereumLog {
   readonly transactionIndex: string;
   readonly data: string;
@@ -38,6 +39,8 @@ export interface EthereumConnectionOptions {
   readonly atomicSwapEtherContractAddress?: Address;
   /** Address of the deployed atomic swap contract for ERC20 tokens */
   readonly atomicSwapErc20ContractAddress?: Address;
+  /** Configuration for custom smart contracts */
+  readonly customSmartContractConfig?: SmartContractConfig;
   /** List of supported ERC20 tokens */
   readonly erc20Tokens?: Erc20TokensMap;
   /** Time between two polls for block, transaction and account watching in seconds */

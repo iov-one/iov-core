@@ -65,6 +65,7 @@ import { HttpEthereumRpcClient } from "./httpethereumrpcclient";
 import { Parse } from "./parse";
 import { SwapIdPrefix } from "./serialization";
 import { AtomicSwapContract, SwapContractEvent } from "./smartcontracts/atomicswapcontract";
+import { SmartContractConfig } from "./smartcontracts/definitions";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -131,6 +132,8 @@ export interface EthereumConnectionOptions {
   readonly atomicSwapEtherContractAddress?: Address;
   /** Address of the deployed atomic swap contract for ERC20 tokens */
   readonly atomicSwapErc20ContractAddress?: Address;
+  /** Configuration for custom smart contracts */
+  readonly customSmartContractConfig?: SmartContractConfig;
   /** List of supported ERC20 tokens */
   readonly erc20Tokens?: Erc20TokensMap;
   /** Time between two polls for block, transaction and account watching in seconds */
@@ -911,6 +914,9 @@ export class EthereumConnection implements AtomicSwapConnection {
 
   public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
     switch (transaction.kind) {
+      case "smartcontract/escrow_open":
+      case "smartcontract/escrow_abort":
+      case "smartcontract/escrow_claim":
       case "bcp/send":
       case "bcp/swap_offer":
       case "bcp/swap_claim":

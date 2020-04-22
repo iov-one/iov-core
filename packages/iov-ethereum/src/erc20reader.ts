@@ -1,4 +1,4 @@
-// Make sure this file is not importet from index.d.ts to avoid a dependency on @types/bn.js
+// Make sure this file is not imported from index.d.ts to avoid a dependency on @types/bn.js
 import { Address } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
 import BN from "bn.js";
