@@ -150,7 +150,7 @@ interface ActorSet {
   readonly arbiter: Actor;
 }
 
-describe("Full escrow", () => {
+xdescribe("Full escrow", () => {
   const TWO_ETH: Amount = {
     quantity: "2000000000000000000",
     fractionalDigits: 18,
