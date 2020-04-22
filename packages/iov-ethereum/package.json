@@ -1,6 +1,6 @@
 {
   "name": "@iov/ethereum",
-  "version": "2.2.5",
+  "version": "2.3.0",
   "description": "Transaction codec and client to communicate with the Ethereum blockchain",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",

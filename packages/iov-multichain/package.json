@@ -1,6 +1,6 @@
 {
   "name": "@iov/multichain",
-  "version": "2.2.5",
+  "version": "2.3.0",
   "description": "Functionality to work with multiple blockchains",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@iov/bns": "^2.2.5",
-    "@iov/ethereum": "^2.2.5",
+    "@iov/ethereum": "^2.3.0",
     "@iov/utils": "^2.2.0",
     "@types/bn.js": "^4.11.6",
     "bn.js": "^4.11.8"
