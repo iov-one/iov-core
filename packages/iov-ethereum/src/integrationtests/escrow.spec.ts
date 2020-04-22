@@ -71,7 +71,7 @@ class Actor {
   private readonly profile: UserProfile;
   private readonly connection: AtomicSwapConnection;
   // tslint:disable-next-line:readonly-keyword
-  private preimage?: Preimage;
+  private hash?: Preimage;
 
   public constructor(data: ActorData) {
     this.profile = data.profile;
@@ -102,16 +102,16 @@ class Actor {
     return this.sendTransaction(transaction, this.senderIdentity);
   }
 
-  public async sendEscrowOpen(sender: Address, amount: Amount): Promise<void> {
+  public async sendEscrowOpen(arbiter: Address, amount: Amount): Promise<void> {
     const transaction = await this.connection.withDefaultFee<EscrowOpenTransaction>({
       kind: "smartcontract/escrow_open",
       chainId: this.senderIdentity.chainId,
-      arbiter: testConfig.accountStates.default.address,
-      sender: sender,
-      hash: AtomicSwapHelpers.hashPreimage(this.preimage!),
+      arbiter: arbiter,
+      sender: this.sendAddress,
+      hash: AtomicSwapHelpers.hashPreimage(this.hash!),
       swapId: await EthereumConnection.createEtherSwapId(),
       timeout: {
-        height: (await this.connection.height()) + 1,
+        height: (await this.connection.height()) + 50,
       },
       amount: amount,
     });
@@ -134,37 +134,42 @@ class Actor {
 
   public async generateHash(): Promise<void> {
     // tslint:disable-next-line:no-object-mutation
-    this.preimage = await AtomicSwapHelpers.createPreimage();
+    this.hash = await AtomicSwapHelpers.createPreimage();
   }
 }
 
-describe("Full escrow escrow", () => {
+fdescribe("Full escrow escrow", () => {
   // TODO: handle different fees... right now assumes the same fee is used for all send txs
   it("works for Ether", async () => {
     pendingWithoutEthereum();
 
-    const alice = await Actor.create(testConfig.mnemonic, 0, 100);
+    const alice = await Actor.create(testConfig.mnemonic, 1, 2);
 
-    expect(alice.sendAddress).toEqual("0x88F3b5659075D0E06bB1004BE7b1a7E66F452284");
-    expect(alice.receiveAddress).toEqual("0x3DD3246a7a0D3b31D07379b0C422556637Bc0e20");
+    expect(alice.sendAddress).toEqual("0x0A65766695A712Af41B5cfECAaD217B1a11CB22A");
+    expect(alice.receiveAddress).toEqual("0x585ec8C463C8f9481f606456402cE7CACb8D2d2A"); // 0x3DD3246a7a0D3b31D07379b0C422556637Bc0e20");
 
-    const bob = await Actor.create(testConfig.mnemonic, 2, 102);
+    const bob = await Actor.create(testConfig.mnemonic, 3, 4);
 
-    expect(bob.sendAddress).toEqual("0x585ec8C463C8f9481f606456402cE7CACb8D2d2A");
-    expect(bob.receiveAddress).toEqual("0x25e50d0DF784d81edD11d4D70FbaBD3Ade0C6811");
+    expect(bob.sendAddress).toEqual("0xD095a4C96497Dd6Ab954Bc7e37658276C87bf61A");
+    expect(bob.receiveAddress).toEqual("0xfA2DFaE9ADAFA28F3b565BC3dd19f9a47D47aC88"); // 0x25e50d0DF784d81edD11d4D70FbaBD3Ade0C6811");
+
+    const arbiter = await Actor.create(testConfig.mnemonic, 5, 6);
+    expect(arbiter.sendAddress).toEqual("0x3ae7300d7A3d87821eD5cb7e610a7DD128dDc711");
+    expect(arbiter.receiveAddress).toEqual("0xdFdF9FDd9FeB1c4892c417Af6fb63458dfA157FD");
 
     // We need to send some tokens to the other ones to allow claim fees
-    const claimQuantity = "42000000000000000";
+    /* const claimQuantity = "42000000000000000";
     await alice.sendEther(alice.receiveAddress, {
       quantity: claimQuantity,
       fractionalDigits: 18,
       tokenTicker: ETH,
     });
+
     await bob.sendEther(bob.receiveAddress, {
       quantity: claimQuantity,
       fractionalDigits: 18,
       tokenTicker: ETH,
-    });
+    });*/
 
     // Alice has ETH in her sender account but not receiver account
     const aliceInitialSender = await alice.getSenderEtherBalance();
@@ -176,18 +181,19 @@ describe("Full escrow escrow", () => {
     const bobInitialReceiver = await bob.getReceiverEtherBalance();
     expect(bobInitialSender.gtn(100_000_000_000_000_000_000)).toEqual(true);
 
-    // A secret that only Alice knows
     await alice.generateHash();
 
-    await alice.sendEscrowOpen(bob.receiveAddress, {
+    await alice.sendEscrowOpen(arbiter.receiveAddress, {
       quantity: "2000000000000000000",
       fractionalDigits: 18,
       tokenTicker: ETH,
     });
 
+    await arbiter.sendAbort();
+
     // Alice's Ether are locked in the contract (also includes fee)
-    expect(
+    /*expect(
       aliceInitialSender.sub(await alice.getSenderEtherBalance()).gtn(2_000_000_000_000_000_000),
-    ).toEqual(true);
+    ).toEqual(true);*/
   }, 30_000);
 });

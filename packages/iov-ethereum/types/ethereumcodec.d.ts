@@ -45,6 +45,7 @@ export declare class EthereumCodec implements TxCodec {
   parseBytes(bytes: PostableBytes, chainId: ChainId): SignedTransaction;
   identityToAddress(identity: Identity): Address;
   isValidAddress(address: string): boolean;
+  private getCustomSmartContractAddress;
   private getAtomicSwapContractAddress;
   private parseBytesBuildTransaction;
 }

@@ -847,7 +847,7 @@ export class Serialization {
       gasLimitHex,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       customSmartContractAddress!,
-      ZERO_ETH_QUANTITY,
+      unsigned.amount.quantity,
       EscrowContract.open(unsigned.swapId, unsigned.arbiter, unsigned.hash, unsigned.timeout),
       v,
       r,

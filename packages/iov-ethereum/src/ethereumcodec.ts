@@ -106,6 +106,7 @@ export class EthereumCodec implements TxCodec {
         nonce,
         this.erc20Tokens,
         this.getAtomicSwapContractAddress(unsigned),
+        this.getCustomSmartContractAddress(),
       ) as SignableBytes,
       prehashType: PrehashType.Keccak256,
     };
@@ -116,6 +117,7 @@ export class EthereumCodec implements TxCodec {
       signed,
       this.erc20Tokens,
       this.getAtomicSwapContractAddress(signed.transaction),
+      this.getCustomSmartContractAddress(),
     ) as PostableBytes;
   }
 
@@ -180,6 +182,14 @@ export class EthereumCodec implements TxCodec {
 
   public isValidAddress(address: string): boolean {
     return isValidAddress(address);
+  }
+
+  private getCustomSmartContractAddress(): Address | undefined {
+    const config: SmartContractConfig | undefined = this.customSmartContractConfig;
+    if (config === undefined) {
+      return undefined;
+    }
+    return config.address;
   }
 
   private getAtomicSwapContractAddress(unsigned: UnsignedTransaction): Address | undefined {

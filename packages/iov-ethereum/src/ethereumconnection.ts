@@ -914,6 +914,9 @@ export class EthereumConnection implements AtomicSwapConnection {
 
   public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
     switch (transaction.kind) {
+      case "smartcontract/escrow_open":
+      case "smartcontract/escrow_abort":
+      case "smartcontract/escrow_claim":
       case "bcp/send":
       case "bcp/swap_offer":
       case "bcp/swap_claim":

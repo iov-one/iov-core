@@ -13,6 +13,7 @@ import { Encoding } from "@iov/encoding";
 
 import { Erc20Options, Erc20TokensMap } from "./erc20";
 import { EthereumConnectionOptions } from "./ethereumconnection";
+import { SmartContractTokenType, SmartContractType } from "./smartcontracts/definitions";
 
 const { fromHex } = Encoding;
 
@@ -76,8 +77,15 @@ const local: EthereumNetworkConfig = {
     // Comment out and set the ETHEREUM_SCRAPER environment variable for manual testing.
     // scraperApiUrl: "http://localhost:8546/api",
     scraperApiUrl: undefined,
-    atomicSwapEtherContractAddress: "0xE1C9Ea25A621Cf5C934a7E112ECaB640eC7D8d18" as Address,
-    atomicSwapErc20ContractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
+    // atomicSwapEtherContractAddress: "0xE1C9Ea25A621Cf5C934a7E112ECaB640eC7D8d18" as Address,
+    // atomicSwapErc20ContractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
+    customSmartContractConfig: {
+      type: SmartContractType.EscrowSmartContract,
+      address: "0x11BfB4D394cF0dfADEEf269a6852E89C333449b2" as Address,
+      fractionalDigits: 18,
+      tokenType: SmartContractTokenType.ETHER,
+      tokenTicker: "ETH" as TokenTicker,
+    },
   },
   chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
