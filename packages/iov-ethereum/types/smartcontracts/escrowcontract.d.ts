@@ -13,7 +13,6 @@ import { EthereumRpcTransactionResult } from "../ethereumrpctransactionresult";
 import { SmartContractConfig } from "../smartcontracts/definitions";
 interface EscrowBaseTransaction extends UnsignedTransaction {
   readonly sender: Address;
-  readonly amount: Amount;
   readonly chainId: ChainId;
   readonly swapId: SwapId;
 }
@@ -22,6 +21,7 @@ export interface EscrowOpenTransaction extends EscrowBaseTransaction {
   readonly arbiter: Address;
   readonly hash: Hash;
   readonly timeout: SwapTimeout;
+  readonly amount: Amount;
 }
 export interface EscrowClaimTransaction extends EscrowBaseTransaction {
   readonly kind: "smartcontract/escrow_claim";

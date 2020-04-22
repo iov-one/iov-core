@@ -609,7 +609,7 @@ export class Serialization {
         gasLimitHex,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         customSmartContractAddress!,
-        unsigned.amount.quantity,
+        ZERO_ETH_QUANTITY,
         escrowClaimCall,
         chainIdHex,
       );
@@ -642,7 +642,7 @@ export class Serialization {
         gasLimitHex,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         customSmartContractAddress!,
-        unsigned.amount.quantity,
+        ZERO_ETH_QUANTITY,
         escrowAbortCall,
         chainIdHex,
       );
