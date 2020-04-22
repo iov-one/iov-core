@@ -24,7 +24,6 @@ import {
 import { testConfig } from "../testconfig.spec";
 
 const ETH = "ETH" as TokenTicker;
-const ASH = "ASH" as TokenTicker;
 const ethereumCodec = new EthereumCodec({
   customSmartContractConfig: testConfig.connectionOptions.customSmartContractConfig,
 });
