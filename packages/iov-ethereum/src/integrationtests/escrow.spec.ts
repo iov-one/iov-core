@@ -157,12 +157,6 @@ xdescribe("Full escrow", () => {
     tokenTicker: ETH,
   };
 
-  const TWO_ASH: Amount = {
-    quantity: "2000000000000000000",
-    fractionalDigits: 18,
-    tokenTicker: ASH,
-  };
-
   const initialize = async (): Promise<ActorSet> => {
     const alice = await Actor.create(testConfig.mnemonic, 0);
     expect(alice.address).toEqual("0x88F3b5659075D0E06bB1004BE7b1a7E66F452284");
