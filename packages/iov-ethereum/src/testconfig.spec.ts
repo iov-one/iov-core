@@ -77,8 +77,8 @@ const local: EthereumNetworkConfig = {
     // Comment out and set the ETHEREUM_SCRAPER environment variable for manual testing.
     // scraperApiUrl: "http://localhost:8546/api",
     scraperApiUrl: undefined,
-    // atomicSwapEtherContractAddress: "0xE1C9Ea25A621Cf5C934a7E112ECaB640eC7D8d18" as Address,
-    // atomicSwapErc20ContractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
+    atomicSwapEtherContractAddress: "0xE1C9Ea25A621Cf5C934a7E112ECaB640eC7D8d18" as Address,
+    atomicSwapErc20ContractAddress: "0x9768ae2339B48643d710B11dDbDb8A7eDBEa15BC" as Address,
     customSmartContractConfig: {
       type: SmartContractType.EscrowSmartContract,
       address: "0x11BfB4D394cF0dfADEEf269a6852E89C333449b2" as Address,
