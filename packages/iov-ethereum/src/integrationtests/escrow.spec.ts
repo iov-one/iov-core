@@ -9,7 +9,7 @@ import {
   Preimage,
   SendTransaction,
   TokenTicker,
-  UnsignedTransaction,
+  UnsignedTransaction, SwapId,
 } from "@iov/bcp";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import BN from "bn.js";
@@ -102,6 +102,10 @@ class Actor {
     return this.sendTransaction(transaction, this.senderIdentity);
   }
 
+  /*public async sendAbort(swapId: SwapId): Promise<void> {
+
+  }*/
+
   public async sendEscrowOpen(arbiter: Address, amount: Amount): Promise<void> {
     const transaction = await this.connection.withDefaultFee<EscrowOpenTransaction>({
       kind: "smartcontract/escrow_open",
@@ -188,8 +192,6 @@ fdescribe("Full escrow escrow", () => {
       fractionalDigits: 18,
       tokenTicker: ETH,
     });
-
-    await arbiter.sendAbort();
 
     // Alice's Ether are locked in the contract (also includes fee)
     /*expect(
