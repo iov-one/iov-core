@@ -64,7 +64,7 @@ export interface EscrowContractSwap {
   readonly amount: Amount;
   readonly state: EscrowContractState;
 }
-export declare function getEscrowBySwapId(swapId: SwapIdBytes): EscrowContractSwap;
+export declare function getEscrowBySwapId(swapId: SwapIdBytes): EscrowContractSwap | null;
 export declare class EscrowContract {
   static buildTransaction(
     input: Uint8Array,

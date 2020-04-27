@@ -92,8 +92,11 @@ export interface EscrowContractSwap {
   readonly state: EscrowContractState;
 }
 
-export function getEscrowBySwapId(swapId: SwapIdBytes): EscrowContractSwap {
-  return {} as EscrowContractSwap;
+export function getEscrowBySwapId(swapId: SwapIdBytes): EscrowContractSwap | null {
+  if (swapId.length !== 32) {
+    throw new Error("Swap id must be 32 bytes");
+  }
+  return null;
 }
 
 enum EscrowContractMethod {
