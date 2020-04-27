@@ -87,7 +87,7 @@ const local: EthereumNetworkConfig = {
       tokenTicker: "ETH" as TokenTicker,
     },
   },
-  chainId: "ethereum-eip155-1" as ChainId,
+  chainId: "ethereum-eip155-5777" as ChainId,
   minHeight: 0, // ganache does not auto-generate a genesis block
   mnemonic: "oxygen fall sure lava energy veteran enroll frown question detail include maximum",
   accountStates: {
