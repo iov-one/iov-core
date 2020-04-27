@@ -1,6 +1,5 @@
 import {
   Address,
-  Amount,
   BlockHeightTimeout,
   isBlockHeightTimeout,
   isSendTransaction,
@@ -26,47 +25,35 @@ import { constants } from "./constants";
 import { BlknumForkState, Eip155ChainId, eip155V, toRlp } from "./encoding";
 import { Erc20ApproveTransaction, Erc20Options, Erc20TokensMap, isErc20ApproveTransaction } from "./erc20";
 import {
-  EscrowAbortTransaction,
-  EscrowClaimTransaction,
-  EscrowContract,
-  EscrowOpenTransaction,
-  isEscrowAbortTransaction,
-  isEscrowClaimTransaction,
-  isEscrowOpenTransaction,
-} from "./smartcontracts/escrowcontract";
+  GenericTransactionSerializerParameters,
+  SerializationCommon,
+  SignedSerializationOptions,
+  SwapIdPrefix,
+  UnsignedSerializationOptions,
+  ZERO_ETH_QUANTITY,
+} from "./serializationcommon";
+import { EscrowContract, isEscrowTransaction } from "./smartcontracts/escrowcontract";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
 const { fromHex, toUtf8 } = Encoding;
-const ZERO_ETH_QUANTITY = "0";
-
-export enum SwapIdPrefix {
-  Ether = "ether",
-  Erc20 = "erc20",
-}
-
-interface UnsignedSerializationOptions {
-  readonly chainIdHex: string;
-  readonly gasPriceHex: string;
-  readonly gasLimitHex: string;
-  readonly nonce: Nonce;
-  readonly erc20Tokens: Erc20TokensMap;
-  readonly atomicSwapContractAddress?: Address;
-  readonly customSmartContractAddress?: Address;
-}
-
-interface SignedSerializationOptions {
-  readonly v: string;
-  readonly r: Uint8Array;
-  readonly s: Uint8Array;
-  readonly gasPriceHex: string;
-  readonly gasLimitHex: string;
-  readonly nonce: Nonce;
-  readonly erc20Tokens: Erc20TokensMap;
-  readonly atomicSwapContractAddress?: Address;
-  readonly customSmartContractAddress?: Address;
-}
 
 export class Serialization {
+  public static serializeGenericTransactionObject(
+    params: GenericTransactionSerializerParameters,
+  ): Uint8Array {
+    return this.serializeGenericTransaction(
+      params.nonce,
+      params.gasPriceHex,
+      params.gasLimitHex,
+      params.recipient,
+      params.value,
+      params.data,
+      params.v,
+      params.r,
+      params.s,
+    );
+  }
+
   public static serializeGenericTransaction(
     nonce: Nonce,
     gasPriceHex: string,
@@ -123,12 +110,10 @@ export class Serialization {
       return Serialization.serializeUnsignedSwapAbortTransaction(unsigned, options);
     } else if (isErc20ApproveTransaction(unsigned)) {
       return Serialization.serializeUnsignedErc20ApproveTransaction(unsigned, options);
-    } else if (isEscrowOpenTransaction(unsigned)) {
-      return Serialization.serializeUnsignedEscrowOpenTransaction(unsigned, options);
-    } else if (isEscrowClaimTransaction(unsigned)) {
-      return Serialization.serializeUnsignedEscrowClaimTransaction(unsigned, options);
-    } else if (isEscrowAbortTransaction(unsigned)) {
-      return Serialization.serializeUnsignedEscrowAbortTransaction(unsigned, options);
+    } else if (isEscrowTransaction(unsigned)) {
+      return Serialization.serializeGenericTransactionObject(
+        EscrowContract.serializeUnsignedTransaction(unsigned, options),
+      );
     } else {
       throw new Error("Unsupported kind of transaction");
     }
@@ -174,12 +159,10 @@ export class Serialization {
       return Serialization.serializeSignedSwapAbortTransaction(unsigned, options);
     } else if (isErc20ApproveTransaction(unsigned)) {
       return Serialization.serializeSignedErc20ApproveTransaction(unsigned, options);
-    } else if (isEscrowOpenTransaction(unsigned)) {
-      return Serialization.serializeSignedOpenTransaction(unsigned, options);
-    } else if (isEscrowClaimTransaction(unsigned)) {
-      return Serialization.serializeSignedClaimTransaction(unsigned, options);
-    } else if (isEscrowAbortTransaction(unsigned)) {
-      return Serialization.serializeSignedAbortTransaction(unsigned, options);
+    } else if (isEscrowTransaction(unsigned)) {
+      return Serialization.serializeGenericTransactionObject(
+        EscrowContract.serializeSignedTransaction(unsigned, options),
+      );
     } else {
       throw new Error("Unsupported kind of transaction");
     }
@@ -230,26 +213,6 @@ export class Serialization {
   private static checkMemoNotPresent(unsigned: SendTransaction | SwapOfferTransaction): void {
     if (unsigned.memo) {
       throw new Error("Memo cannot be serialized in a smart contract-based transaction");
-    }
-  }
-
-  private static checkEtherAmount(amounts: readonly Amount[]): void {
-    if (amounts.length !== 1) {
-      throw new Error("Cannot serialize a swap offer with more than one amount");
-    }
-    const { tokenTicker } = amounts[0];
-    if (tokenTicker !== constants.primaryTokenTicker) {
-      throw new Error("Invalid amount: Ether atomic swap must specify amount in ETH");
-    }
-  }
-
-  private static checkErc20Amount(amounts: readonly Amount[], erc20Tokens: Erc20TokensMap): void {
-    if (amounts.length !== 1) {
-      throw new Error("Cannot serialize a swap offer with more than one amount");
-    }
-    const { tokenTicker } = amounts[0];
-    if (!erc20Tokens.get(tokenTicker)) {
-      throw new Error("Invalid amount: unknown ERC20 token");
     }
   }
 
@@ -441,7 +404,7 @@ export class Serialization {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (unsigned.swapId!.prefix === SwapIdPrefix.Ether) {
       // native ETH swap
-      Serialization.checkEtherAmount(unsigned.amounts);
+      SerializationCommon.checkEtherAmount(unsigned.amounts);
 
       const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferEtherCall(unsigned);
 
@@ -457,7 +420,7 @@ export class Serialization {
       );
     } else {
       // ERC20 swap
-      Serialization.checkErc20Amount(unsigned.amounts, erc20Tokens);
+      SerializationCommon.checkErc20Amount(unsigned.amounts, erc20Tokens);
 
       const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
       const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferErc20Call(
@@ -538,129 +501,6 @@ export class Serialization {
     );
   }
 
-  private static serializeUnsignedEscrowOpenTransaction(
-    unsigned: EscrowOpenTransaction,
-    {
-      chainIdHex,
-      gasPriceHex,
-      gasLimitHex,
-      nonce,
-      erc20Tokens,
-      customSmartContractAddress,
-    }: UnsignedSerializationOptions,
-  ): Uint8Array {
-    EscrowContract.checkOpenTransaction(unsigned);
-    if (!isBlockHeightTimeout(unsigned.timeout)) {
-      throw new Error("Timeout must be specified as a block height");
-    }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (unsigned.swapId.prefix === SwapIdPrefix.Ether) {
-      // native ETH swap
-      Serialization.checkEtherAmount([unsigned.amount]);
-      const escrowOpenCall = EscrowContract.open(
-        unsigned.swapId,
-        unsigned.arbiter,
-        unsigned.hash,
-        unsigned.timeout,
-      );
-      return Serialization.serializeGenericTransaction(
-        nonce,
-        gasPriceHex,
-        gasLimitHex,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        customSmartContractAddress!,
-        unsigned.amount.quantity,
-        escrowOpenCall,
-        chainIdHex,
-      );
-    } else {
-      // ERC20 swap
-      Serialization.checkErc20Amount([unsigned.amount], erc20Tokens);
-      const escrowOpenCall = EscrowContract.open(
-        unsigned.swapId,
-        unsigned.arbiter,
-        unsigned.hash,
-        unsigned.timeout,
-      );
-      return Serialization.serializeGenericTransaction(
-        nonce,
-        gasPriceHex,
-        gasLimitHex,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        customSmartContractAddress!,
-        ZERO_ETH_QUANTITY,
-        escrowOpenCall,
-        chainIdHex,
-      );
-    }
-  }
-
-  private static serializeUnsignedEscrowClaimTransaction(
-    unsigned: EscrowClaimTransaction,
-    { chainIdHex, gasPriceHex, gasLimitHex, nonce, customSmartContractAddress }: UnsignedSerializationOptions,
-  ): Uint8Array {
-    EscrowContract.checkClaimTransaction(unsigned);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (unsigned.swapId.prefix === SwapIdPrefix.Ether) {
-      const escrowClaimCall = EscrowContract.claim(unsigned.swapId, unsigned.recipient);
-      return Serialization.serializeGenericTransaction(
-        nonce,
-        gasPriceHex,
-        gasLimitHex,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        customSmartContractAddress!,
-        ZERO_ETH_QUANTITY,
-        escrowClaimCall,
-        chainIdHex,
-      );
-    } else {
-      const escrowClaimCall = EscrowContract.claim(unsigned.swapId, unsigned.recipient);
-      return Serialization.serializeGenericTransaction(
-        nonce,
-        gasPriceHex,
-        gasLimitHex,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        customSmartContractAddress!,
-        ZERO_ETH_QUANTITY,
-        escrowClaimCall,
-        chainIdHex,
-      );
-    }
-  }
-
-  private static serializeUnsignedEscrowAbortTransaction(
-    unsigned: EscrowAbortTransaction,
-    { chainIdHex, gasPriceHex, gasLimitHex, nonce, customSmartContractAddress }: UnsignedSerializationOptions,
-  ): Uint8Array {
-    EscrowContract.checkAbortTransaction(unsigned);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (unsigned.swapId.prefix === SwapIdPrefix.Ether) {
-      const escrowAbortCall = EscrowContract.abort(unsigned.swapId);
-      return Serialization.serializeGenericTransaction(
-        nonce,
-        gasPriceHex,
-        gasLimitHex,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        customSmartContractAddress!,
-        ZERO_ETH_QUANTITY,
-        escrowAbortCall,
-        chainIdHex,
-      );
-    } else {
-      const escrowAbortCall = EscrowContract.abort(unsigned.swapId);
-      return Serialization.serializeGenericTransaction(
-        nonce,
-        gasPriceHex,
-        gasLimitHex,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        customSmartContractAddress!,
-        ZERO_ETH_QUANTITY,
-        escrowAbortCall,
-        chainIdHex,
-      );
-    }
-  }
-
   private static serializeSignedSendTransaction(
     unsigned: SendTransaction,
     { v, r, s, gasPriceHex, gasLimitHex, nonce, erc20Tokens }: SignedSerializationOptions,
@@ -729,7 +569,7 @@ export class Serialization {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (unsigned.swapId!.prefix === SwapIdPrefix.Ether) {
       // native ETH swap
-      Serialization.checkEtherAmount(unsigned.amounts);
+      SerializationCommon.checkEtherAmount(unsigned.amounts);
 
       const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferEtherCall(unsigned);
 
@@ -747,7 +587,7 @@ export class Serialization {
       );
     } else {
       // ERC20 swap
-      Serialization.checkErc20Amount(unsigned.amounts, erc20Tokens);
+      SerializationCommon.checkErc20Amount(unsigned.amounts, erc20Tokens);
 
       const erc20Token = Serialization.getErc20Token(unsigned, erc20Tokens);
       const atomicSwapOfferCall = Serialization.buildAtomicSwapOfferErc20Call(
@@ -831,60 +671,6 @@ export class Serialization {
       erc20Token.contractAddress,
       ZERO_ETH_QUANTITY,
       erc20ApproveCall,
-      v,
-      r,
-      s,
-    );
-  }
-
-  private static serializeSignedOpenTransaction(
-    unsigned: EscrowOpenTransaction,
-    { v, r, s, gasPriceHex, gasLimitHex, nonce, customSmartContractAddress }: SignedSerializationOptions,
-  ): Uint8Array {
-    return Serialization.serializeGenericTransaction(
-      nonce,
-      gasPriceHex,
-      gasLimitHex,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      customSmartContractAddress!,
-      unsigned.amount.quantity,
-      EscrowContract.open(unsigned.swapId, unsigned.arbiter, unsigned.hash, unsigned.timeout),
-      v,
-      r,
-      s,
-    );
-  }
-
-  private static serializeSignedClaimTransaction(
-    unsigned: EscrowClaimTransaction,
-    { v, r, s, gasPriceHex, gasLimitHex, nonce, customSmartContractAddress }: SignedSerializationOptions,
-  ): Uint8Array {
-    return Serialization.serializeGenericTransaction(
-      nonce,
-      gasPriceHex,
-      gasLimitHex,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      customSmartContractAddress!,
-      ZERO_ETH_QUANTITY,
-      EscrowContract.claim(unsigned.swapId, unsigned.recipient),
-      v,
-      r,
-      s,
-    );
-  }
-
-  private static serializeSignedAbortTransaction(
-    unsigned: EscrowAbortTransaction,
-    { v, r, s, gasPriceHex, gasLimitHex, nonce, customSmartContractAddress }: SignedSerializationOptions,
-  ): Uint8Array {
-    return Serialization.serializeGenericTransaction(
-      nonce,
-      gasPriceHex,
-      gasLimitHex,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      customSmartContractAddress!,
-      ZERO_ETH_QUANTITY,
-      EscrowContract.abort(unsigned.swapId),
       v,
       r,
       s,

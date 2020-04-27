@@ -45,7 +45,7 @@ import { pubkeyToAddress } from "./address";
 import { Erc20ApproveTransaction } from "./erc20";
 import { EthereumCodec } from "./ethereumcodec";
 import { EthereumConnection } from "./ethereumconnection";
-import { SwapIdPrefix } from "./serialization";
+import { SwapIdPrefix } from "./serializationcommon";
 import { testConfig } from "./testconfig.spec";
 
 const ETH = "ETH" as TokenTicker;

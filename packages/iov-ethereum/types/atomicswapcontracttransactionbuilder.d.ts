@@ -8,7 +8,7 @@ import {
   SwapOfferTransaction,
 } from "@iov/bcp";
 import { Erc20TokensMap } from "types";
-import { SwapIdPrefix } from "./serialization";
+import { SwapIdPrefix } from "./serializationcommon";
 export declare class AtomicSwapContractTransactionBuilder {
   static buildTransaction(
     input: Uint8Array,

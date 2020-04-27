@@ -1,10 +1,8 @@
 import { Address, Nonce, SignedTransaction, UnsignedTransaction } from "@iov/bcp";
 import { Erc20TokensMap } from "./erc20";
-export declare enum SwapIdPrefix {
-  Ether = "ether",
-  Erc20 = "erc20",
-}
+import { GenericTransactionSerializerParameters } from "./serializationcommon";
 export declare class Serialization {
+  static serializeGenericTransactionObject(params: GenericTransactionSerializerParameters): Uint8Array;
   static serializeGenericTransaction(
     nonce: Nonce,
     gasPriceHex: string,
@@ -36,8 +34,6 @@ export declare class Serialization {
   private static checkPreimage;
   private static checkAtomicSwapContractAddress;
   private static checkMemoNotPresent;
-  private static checkEtherAmount;
-  private static checkErc20Amount;
   private static getChainIdHex;
   private static getGasPriceHex;
   private static getGasLimitHex;
@@ -61,15 +57,9 @@ export declare class Serialization {
   private static serializeUnsignedSwapClaimTransaction;
   private static serializeUnsignedSwapAbortTransaction;
   private static serializeUnsignedErc20ApproveTransaction;
-  private static serializeUnsignedEscrowOpenTransaction;
-  private static serializeUnsignedEscrowClaimTransaction;
-  private static serializeUnsignedEscrowAbortTransaction;
   private static serializeSignedSendTransaction;
   private static serializeSignedSwapOfferTransaction;
   private static serializeSignedSwapClaimTransaction;
   private static serializeSignedSwapAbortTransaction;
   private static serializeSignedErc20ApproveTransaction;
-  private static serializeSignedOpenTransaction;
-  private static serializeSignedClaimTransaction;
-  private static serializeSignedAbortTransaction;
 }

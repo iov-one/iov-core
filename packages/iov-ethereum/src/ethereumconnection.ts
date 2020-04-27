@@ -63,7 +63,7 @@ import { EthereumCodec } from "./ethereumcodec";
 import { EthereumRpcClient } from "./ethereumrpcclient";
 import { HttpEthereumRpcClient } from "./httpethereumrpcclient";
 import { Parse } from "./parse";
-import { SwapIdPrefix } from "./serialization";
+import { SwapIdPrefix } from "./serializationcommon";
 import { AtomicSwapContract, SwapContractEvent } from "./smartcontracts/atomicswapcontract";
 import { SmartContractConfig } from "./smartcontracts/definitions";
 import {

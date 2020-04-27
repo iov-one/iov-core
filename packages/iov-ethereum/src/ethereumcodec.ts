@@ -32,7 +32,8 @@ import { BlknumForkState, Eip155ChainId, getRecoveryParam } from "./encoding";
 import { Erc20ApproveTransaction, Erc20TokensMap } from "./erc20";
 import { Erc20TokenTransactionBuilder } from "./erc20tokentransactionbuilder";
 import { EthereumRpcTransactionResult } from "./ethereumrpctransactionresult";
-import { Serialization, SwapIdPrefix } from "./serialization";
+import { Serialization } from "./serialization";
+import { SwapIdPrefix } from "./serializationcommon";
 import { SmartContractConfig } from "./smartcontracts/definitions";
 import {
   CustomSmartContractTransaction,
