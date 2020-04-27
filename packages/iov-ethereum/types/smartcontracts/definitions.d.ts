@@ -1,4 +1,4 @@
-import { Address, TokenTicker } from "@iov/bcp";
+import { Address, Amount, BlockHeightTimeout, Hash, TokenTicker } from "@iov/bcp";
 export declare enum SmartContractType {
   EscrowSmartContract = 0,
 }
@@ -12,4 +12,19 @@ export interface SmartContractConfig {
   readonly fractionalDigits: number;
   readonly tokenTicker: TokenTicker;
   readonly tokenType: SmartContractTokenType;
+}
+export declare enum EscrowState {
+  NON_EXISTENT = 0,
+  OPEN = 1,
+  CLAIMED = 2,
+  ABORTED = 3,
+}
+export interface Escrow {
+  readonly sender: Address;
+  readonly recipient: Address;
+  readonly arbiter: Address;
+  readonly hash: Hash;
+  readonly timeout: BlockHeightTimeout;
+  readonly amount: Amount;
+  readonly state: EscrowState;
 }

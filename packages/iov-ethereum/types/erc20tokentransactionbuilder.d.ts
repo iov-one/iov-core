@@ -7,8 +7,7 @@ import {
   SwapClaimTransaction,
   SwapOfferTransaction,
 } from "@iov/bcp";
-import { Erc20Options } from "types";
-import { Erc20ApproveTransaction } from "./erc20";
+import { Erc20ApproveTransaction, Erc20Options } from "./erc20";
 import { EthereumRpcTransactionResult } from "./ethereumrpctransactionresult";
 export declare class Erc20TokenTransactionBuilder {
   static buildTransaction(

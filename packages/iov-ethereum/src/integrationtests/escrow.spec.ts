@@ -1,7 +1,6 @@
 import {
   Address,
   Amount,
-  AtomicSwapConnection,
   AtomicSwapHelpers,
   Identity,
   isBlockInfoPending,
@@ -13,9 +12,11 @@ import {
 } from "@iov/bcp";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 import BN from "bn.js";
+import { randomBytes } from "crypto";
 
 import { EthereumCodec } from "../ethereumcodec";
 import { EthereumConnection } from "../ethereumconnection";
+import { Escrow, EscrowState } from "../smartcontracts/definitions";
 import {
   EscrowAbortTransaction,
   EscrowClaimTransaction,
@@ -63,7 +64,7 @@ class Actor {
   }
 
   private readonly profile: UserProfile;
-  private readonly connection: AtomicSwapConnection;
+  private readonly connection: EthereumConnection;
   // tslint:disable-next-line:readonly-keyword
   private hash?: Preimage;
 
@@ -127,6 +128,10 @@ class Actor {
       amount: amount,
     });
     return this.sendTransaction(transaction, this.identity);
+  }
+
+  public async getEscrowById(id: Uint8Array): Promise<Escrow | null> {
+    return this.connection.getEscrowById(id);
   }
 
   public async getBalance(): Promise<BN> {
@@ -279,5 +284,30 @@ xdescribe("Full escrow", () => {
     // FIXME: check alice's balance was debited 2ETH
     await expectAsync(bob.sendClaim(swapId, bob.address)).toBeRejected();
     // FIXME: check alice's balance was credited 2ETH
+  }, 30_000);
+
+  it("can get a escrow by id", async () => {
+    pendingWithoutEthereum();
+    const { alice, arbiter } = await initialize();
+    const swapId: SwapId = await EthereumConnection.createEtherSwapId();
+
+    await alice.sendEscrowOpen(swapId, arbiter.address, TWO_ETH, 50);
+    const escrow: Escrow | null = await alice.getEscrowById(swapId.data);
+    expect(escrow).toBeTruthy();
+    if (escrow !== null) {
+      expect(escrow.sender).toEqual(alice.address);
+      expect(escrow.recipient).toEqual(alice.address);
+      expect(escrow.arbiter).toEqual(arbiter.address);
+      expect(escrow.amount).toEqual(TWO_ETH);
+      expect(escrow.state).toEqual(EscrowState.OPEN);
+    }
+    await expectAsync(arbiter.sendAbort(swapId)).toBeRejected();
+  }, 30_000);
+
+  it("get returns null for non existing escrow id", async () => {
+    pendingWithoutEthereum();
+    const { alice } = await initialize();
+    const escrow: Escrow | null = await alice.getEscrowById(randomBytes(32));
+    expect(escrow).toBeNull();
   }, 30_000);
 });

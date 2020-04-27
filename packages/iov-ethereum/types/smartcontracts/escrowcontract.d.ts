@@ -1,23 +1,22 @@
 import {
   Address,
   Amount,
-  BlockHeightTimeout,
   ChainId,
   Fee,
   Hash,
   PubkeyBundle,
   SwapId,
-  SwapIdBytes,
   SwapTimeout,
   UnsignedTransaction,
 } from "@iov/bcp";
+import { EthereumRpcClient } from "../ethereumrpcclient";
 import { EthereumRpcTransactionResult } from "../ethereumrpctransactionresult";
 import {
   GenericTransactionSerializerParameters,
   SignedSerializationOptions,
   UnsignedSerializationOptions,
 } from "../serializationcommon";
-import { SmartContractConfig } from "../smartcontracts/definitions";
+import { Escrow, SmartContractConfig } from "../smartcontracts/definitions";
 interface EscrowBaseTransaction extends UnsignedTransaction {
   readonly sender: Address;
   readonly chainId: ChainId;
@@ -49,22 +48,6 @@ export declare function isEscrowAbortTransaction(
 export declare function isEscrowTransaction(
   transaction: UnsignedTransaction,
 ): transaction is EscrowBaseTransaction;
-export declare enum EscrowContractState {
-  NON_EXISTENT = 0,
-  OPEN = 1,
-  CLAIMED = 2,
-  ABORTED = 3,
-}
-export interface EscrowContractSwap {
-  readonly sender: Address;
-  readonly recipient: Address;
-  readonly arbiter: Address;
-  readonly hash: Hash;
-  readonly timeout: BlockHeightTimeout;
-  readonly amount: Amount;
-  readonly state: EscrowContractState;
-}
-export declare function getEscrowBySwapId(swapId: SwapIdBytes): EscrowContractSwap | null;
 export declare class EscrowContract {
   static buildTransaction(
     input: Uint8Array,
@@ -88,6 +71,11 @@ export declare class EscrowContract {
     unsigned: EscrowBaseTransaction,
     options: SignedSerializationOptions,
   ): GenericTransactionSerializerParameters;
+  static getEscrowById(
+    swapId: Uint8Array,
+    config: SmartContractConfig,
+    client: EthereumRpcClient,
+  ): Promise<Escrow | null>;
   private static readonly OPEN_METHOD_ID;
   private static readonly CLAIM_METHOD_ID;
   private static readonly ABORT_METHOD_ID;

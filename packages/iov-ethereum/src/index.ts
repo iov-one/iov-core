@@ -6,7 +6,6 @@ export { ethereumCodec, EthereumCodec, EthereumCodecOptions } from "./ethereumco
 export { SwapIdPrefix } from "./serializationcommon";
 // Smart contract exports
 export { SmartContractType, SmartContractTokenType, SmartContractConfig } from "./smartcontracts/definitions";
-export { getEscrowBySwapId } from "./smartcontracts/escrowcontract";
 
 // Custom helper functions
 export { pubkeyToAddress, toChecksummedAddress } from "./address";
