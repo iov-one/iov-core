@@ -7,7 +7,7 @@ import {
   SwapClaimTransaction,
   SwapOfferTransaction,
 } from "@iov/bcp";
-import { Erc20TokensMap } from "types";
+import { Erc20TokensMap } from "./erc20";
 import { SwapIdPrefix } from "./serializationcommon";
 export declare class AtomicSwapContractTransactionBuilder {
   static buildTransaction(

@@ -26,7 +26,7 @@ import {
 import { Stream } from "xstream";
 import { Erc20TokensMap } from "./erc20";
 import { EthereumCodec } from "./ethereumcodec";
-import { SmartContractConfig } from "./smartcontracts/definitions";
+import { Escrow, SmartContractConfig } from "./smartcontracts/definitions";
 export interface EthereumLog {
   readonly transactionIndex: string;
   readonly data: string;
@@ -63,6 +63,7 @@ export declare class EthereumConnection implements AtomicSwapConnection {
   private readonly atomicSwapErc20ContractAddress?;
   private readonly erc20Tokens;
   private readonly erc20ContractReaders;
+  private readonly customSmartContractConfig?;
   constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions);
   disconnect(): void;
   height(): Promise<number>;
@@ -83,6 +84,13 @@ export declare class EthereumConnection implements AtomicSwapConnection {
   withDefaultFee<T extends UnsignedTransaction>(transaction: T): Promise<T>;
   getSwaps(query: AtomicSwapQuery, minHeight?: number, maxHeight?: number): Promise<readonly AtomicSwap[]>;
   watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap>;
+  /**
+   * Get a escrow entry by it's id
+   * @param id the id of the escrow entry we want to get
+   *
+   * @returns {Escrow} if the id was found or {null} if not found
+   */
+  getEscrowById(id: Uint8Array): Promise<Escrow | null>;
   private searchTransactionsById;
   /**
    * Merges search results from two different sources: scraper and logs.

@@ -13,10 +13,12 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Encoding } from "@iov/encoding";
+import { isJsonRpcErrorResponse, makeJsonRpcId } from "@iov/jsonrpc";
 import BN from "bn.js";
 
 import { Abi } from "../abi";
 import { pubkeyToAddress } from "../address";
+import { EthereumRpcClient } from "../ethereumrpcclient";
 import { EthereumRpcTransactionResult } from "../ethereumrpctransactionresult";
 import {
   GenericTransactionSerializerParameters,
@@ -26,8 +28,8 @@ import {
   UnsignedSerializationOptions,
   ZERO_ETH_QUANTITY,
 } from "../serializationcommon";
-import { SmartContractConfig } from "../smartcontracts/definitions";
-import { decodeHexQuantityString } from "../utils";
+import { Escrow, EscrowState, SmartContractConfig, SmartContractType } from "../smartcontracts/definitions";
+import { decodeHexQuantityString, normalizeHex, toEthereumHex } from "../utils";
 
 interface EscrowBaseTransaction extends UnsignedTransaction {
   readonly sender: Address;
@@ -73,30 +75,6 @@ export function isEscrowAbortTransaction(
 export function isEscrowTransaction(transaction: UnsignedTransaction): transaction is EscrowBaseTransaction {
   const { kind } = transaction;
   return kind.startsWith("smartcontract/escrow_");
-}
-
-export enum EscrowContractState {
-  NON_EXISTENT,
-  OPEN,
-  CLAIMED,
-  ABORTED,
-}
-
-export interface EscrowContractSwap {
-  readonly sender: Address;
-  readonly recipient: Address;
-  readonly arbiter: Address;
-  readonly hash: Hash;
-  readonly timeout: BlockHeightTimeout;
-  readonly amount: Amount;
-  readonly state: EscrowContractState;
-}
-
-export function getEscrowBySwapId(swapId: SwapIdBytes): EscrowContractSwap | null {
-  if (swapId.length !== 32) {
-    throw new Error("Swap id must be 32 bytes");
-  }
-  return null;
 }
 
 enum EscrowContractMethod {
@@ -245,6 +223,70 @@ export class EscrowContract {
     } else {
       throw new Error("unsupported escrow transaction kind: " + unsigned.kind);
     }
+  }
+
+  public static async getEscrowById(
+    swapId: Uint8Array,
+    config: SmartContractConfig,
+    client: EthereumRpcClient,
+  ): Promise<Escrow | null> {
+    if (swapId.length !== 32) {
+      throw new Error("Swap id must be 32 bytes");
+    }
+    if (config.type !== SmartContractType.EscrowSmartContract) {
+      throw new Error("Invalid type of smart contract configured for this connection");
+    }
+    const data: Uint8Array = Uint8Array.from([...Abi.calculateMethodId("get(bytes32)"), ...swapId]);
+    const params = [
+      {
+        to: config.address,
+        data: toEthereumHex(data),
+      },
+    ] as readonly any[];
+    const swapsResponse = await client.run({
+      jsonrpc: "2.0",
+      method: "eth_call",
+      params: params,
+      id: makeJsonRpcId(),
+    });
+    if (isJsonRpcErrorResponse(swapsResponse)) {
+      throw new Error(JSON.stringify(swapsResponse.error));
+    }
+
+    if (swapsResponse.result === null) {
+      return null;
+    }
+
+    const senderBegin = 0;
+    const senderEnd = senderBegin + 32;
+    const recipientBegin = senderEnd;
+    const recipientEnd = recipientBegin + 32;
+    const arbiterBegin = recipientEnd;
+    const arbiterEnd = arbiterBegin + 32;
+    const hashBegin = arbiterEnd;
+    const hashEnd = hashBegin + 32;
+    const timeoutBegin = hashEnd;
+    const timeoutEnd = timeoutBegin + 32;
+    const amountBegin = timeoutEnd;
+    const amountEnd = amountBegin + 32;
+    const stateBegin = amountEnd;
+    const stateEnd = stateBegin + 32;
+    const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
+    return {
+      sender: Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd)),
+      recipient: Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
+      arbiter: Abi.decodeAddress(resultArray.slice(arbiterBegin, arbiterEnd)),
+      hash: resultArray.slice(hashBegin, hashEnd) as Hash,
+      amount: {
+        quantity: new BN(resultArray.slice(amountBegin, amountEnd)).toString(),
+        fractionalDigits: config.fractionalDigits,
+        tokenTicker: config.tokenTicker,
+      },
+      timeout: {
+        height: new BN(resultArray.slice(timeoutBegin, timeoutEnd)).toNumber(),
+      },
+      state: new BN(resultArray.slice(stateBegin, stateEnd)).toNumber() as EscrowState,
+    };
   }
 
   private static readonly OPEN_METHOD_ID: string = Encoding.toHex(

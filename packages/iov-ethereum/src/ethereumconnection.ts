@@ -65,7 +65,8 @@ import { HttpEthereumRpcClient } from "./httpethereumrpcclient";
 import { Parse } from "./parse";
 import { SwapIdPrefix } from "./serializationcommon";
 import { AtomicSwapContract, SwapContractEvent } from "./smartcontracts/atomicswapcontract";
-import { SmartContractConfig } from "./smartcontracts/definitions";
+import { Escrow, SmartContractConfig } from "./smartcontracts/definitions";
+import { EscrowContract } from "./smartcontracts/escrowcontract";
 import {
   decodeHexQuantity,
   decodeHexQuantityNonce,
@@ -299,6 +300,7 @@ export class EthereumConnection implements AtomicSwapConnection {
   private readonly atomicSwapErc20ContractAddress?: Address;
   private readonly erc20Tokens: Erc20TokensMap;
   private readonly erc20ContractReaders: ReadonlyMap<TokenTicker, Erc20Reader>;
+  private readonly customSmartContractConfig?: SmartContractConfig;
 
   public constructor(baseUrl: string, chainId: ChainId, options: EthereumConnectionOptions) {
     const baseUrlIsHttp = isHttpUrl(baseUrl);
@@ -311,6 +313,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     this.pollIntervalMs = options.pollInterval ? options.pollInterval * 1000 : 4_000;
     this.chainId = chainId;
     this.scraperApiUrl = options.scraperApiUrl;
+    this.customSmartContractConfig = options.customSmartContractConfig;
 
     const ethereumClient = {
       ethCall: async (contractAddress: Address, data: Uint8Array): Promise<Uint8Array> => {
@@ -960,6 +963,23 @@ export class EthereumConnection implements AtomicSwapConnection {
 
   public watchSwaps(_: AtomicSwapQuery): Stream<AtomicSwap> {
     throw new Error("not implemented");
+  }
+
+  /**
+   * Get a escrow entry by it's id
+   * @param id the id of the escrow entry we want to get
+   *
+   * @returns {Escrow} if the id was found or {null} if not found
+   */
+  public async getEscrowById(id: Uint8Array): Promise<Escrow | null> {
+    if (!this.customSmartContractConfig) {
+      throw new Error("Connection is not configured to use a custom smart contract");
+    }
+    try {
+      return await EscrowContract.getEscrowById(id, this.customSmartContractConfig, this.rpcClient);
+    } catch (error) {
+      return null;
+    }
   }
 
   private async searchTransactionsById(

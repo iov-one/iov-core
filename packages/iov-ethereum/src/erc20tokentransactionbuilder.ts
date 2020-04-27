@@ -8,11 +8,10 @@ import {
   SwapOfferTransaction,
   TokenTicker,
 } from "@iov/bcp";
-import { Erc20Options } from "types";
 
 import { Abi } from "./abi";
 import { pubkeyToAddress } from "./address";
-import { Erc20ApproveTransaction } from "./erc20";
+import { Erc20ApproveTransaction, Erc20Options } from "./erc20";
 import { EthereumRpcTransactionResult } from "./ethereumrpctransactionresult";
 import { toEthereumHex } from "./utils";
 

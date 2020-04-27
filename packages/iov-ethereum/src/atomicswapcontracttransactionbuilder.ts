@@ -12,11 +12,11 @@ import {
   TokenTicker,
 } from "@iov/bcp";
 import BN from "bn.js";
-import { Erc20TokensMap } from "types";
 
 import { Abi } from "./abi";
 import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
+import { Erc20TokensMap } from "./erc20";
 import { SwapIdPrefix } from "./serializationcommon";
 import { AtomicSwapContract, SwapContractMethod } from "./smartcontracts/atomicswapcontract";
 
