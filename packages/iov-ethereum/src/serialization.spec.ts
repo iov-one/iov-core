@@ -21,7 +21,8 @@ import { ExtendedSecp256k1Signature } from "@iov/crypto";
 import { Encoding } from "@iov/encoding";
 
 import { Erc20ApproveTransaction, Erc20Options } from "./erc20";
-import { Serialization, SwapIdPrefix } from "./serialization";
+import { Serialization } from "./serialization";
+import { SwapIdPrefix } from "./serializationcommon";
 import { testConfig } from "./testconfig.spec";
 
 const { serializeSignedTransaction, serializeUnsignedTransaction } = Serialization;

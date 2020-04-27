@@ -17,7 +17,7 @@ import { Erc20TokensMap } from "types";
 import { Abi } from "./abi";
 import { pubkeyToAddress } from "./address";
 import { constants } from "./constants";
-import { SwapIdPrefix } from "./serialization";
+import { SwapIdPrefix } from "./serializationcommon";
 import { AtomicSwapContract, SwapContractMethod } from "./smartcontracts/atomicswapcontract";
 
 export class AtomicSwapContractTransactionBuilder {
