@@ -3,6 +3,14 @@ import * as rlp from "rlp";
  * Encode as RLP (Recursive Length Prefix)
  */
 export declare function toRlp(data: rlp.Input): Uint8Array;
+/**
+ * Decode from RLP (Recursive Length Prefix)
+ */
+export function fromRlp(data: Uint8Array): Uint8Array;
+/**
+ * IsHex returns true if the string starts with 0x
+ */
+export function isHex(data: Uint8Array): boolean;
 /** changes with each chain */
 export declare enum BlknumForkState {
   /** before height 2,675,000 for mainnet */
