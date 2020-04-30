@@ -3,7 +3,6 @@ import * as rlp from "rlp";
  * Encode as RLP (Recursive Length Prefix)
  */
 export declare function toRlp(data: rlp.Input): Uint8Array;
-
 /** changes with each chain */
 export declare enum BlknumForkState {
   /** before height 2,675,000 for mainnet */
