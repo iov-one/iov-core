@@ -26,7 +26,7 @@ export function fromRlp(data: Uint8Array): Uint8Array {
  */
 export function isHex(data: Uint8Array): boolean {
   const stringData = fromUtf8(data);
-  return stringData.length > 1 && stringData.toLocaleLowerCase().substring(0, 2) === '0x';
+  return stringData.length > 1 && stringData.toLocaleLowerCase().substring(0, 2) === "0x";
 }
 
 /** changes with each chain */
