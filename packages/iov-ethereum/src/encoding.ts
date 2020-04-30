@@ -1,5 +1,6 @@
-import { Int53 } from "@iov/encoding";
+import { Int53, Encoding } from "@iov/encoding";
 import * as rlp from "rlp";
+const { fromUtf8 } = Encoding;
 
 /**
  * Encode as RLP (Recursive Length Prefix)
@@ -12,9 +13,20 @@ export function toRlp(data: rlp.Input): Uint8Array {
 /**
  * Decode from RLP (Recursive Length Prefix)
  */
-export function fromRlp(data: Uint8Array) {
+export function fromRlp(data: Uint8Array): Uint8Array {
+  // If this isn't hex data
+  if (!isHex(data)) {
+    return data;
+  }
   const dataBuffer = rlp.decode(data);
   return new Uint8Array(Buffer.from(dataBuffer.toString()));
+}
+/**
+ * IsHex returns true if the string starts with 0x
+ */
+export function isHex(data: Uint8Array): boolean {
+  const stringData = fromUtf8(data);
+  return stringData.length > 1 && stringData.toLocaleLowerCase().substring(0, 2) === '0x';
 }
 
 /** changes with each chain */

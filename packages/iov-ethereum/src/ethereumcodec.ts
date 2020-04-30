@@ -28,7 +28,7 @@ import { Encoding } from "@iov/encoding";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { AtomicSwapContractTransactionBuilder } from "./atomicswapcontracttransactionbuilder";
 import { constants } from "./constants";
-import { BlknumForkState, Eip155ChainId, getRecoveryParam, fromRlp } from "./encoding";
+import { BlknumForkState, Eip155ChainId, getRecoveryParam, fromRlp, isHex } from "./encoding";
 import { Erc20ApproveTransaction, Erc20TokensMap } from "./erc20";
 import { Erc20TokenTransactionBuilder } from "./erc20tokentransactionbuilder";
 import { EthereumRpcTransactionResult } from "./ethereumrpctransactionresult";
@@ -80,8 +80,9 @@ type SupportedTransactionType =
 export class EthereumCodec implements TxCodec {
   private static getMemoFromInput(input: Uint8Array): string {
     try {
-      const decodedRlp = fromRlp(input);
-      return Encoding.fromUtf8(decodedRlp);
+      // RLP Decode is already a hex input
+      const memoInput = fromRlp(input);
+      return Encoding.fromUtf8(memoInput);
     } catch {
       const hexstring = Encoding.toHex(input);
       // split in space separated chunks up to 16 characters each
