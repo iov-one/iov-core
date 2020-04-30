@@ -9,6 +9,14 @@ export function toRlp(data: rlp.Input): Uint8Array {
   return Uint8Array.from(dataBuffer);
 }
 
+/**
+ * Decode from RLP (Recursive Length Prefix)
+ */
+export function fromRlp(data: Uint8Array) {
+  const dataBuffer = rlp.decode(data);
+  return new Uint8Array(Buffer.from(dataBuffer.toString()));
+}
+
 /** changes with each chain */
 export enum BlknumForkState {
   /** before height 2,675,000 for mainnet */

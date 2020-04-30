@@ -80,7 +80,8 @@ type SupportedTransactionType =
 export class EthereumCodec implements TxCodec {
   private static getMemoFromInput(input: Uint8Array): string {
     try {
-      return Encoding.fromUtf8(input);
+      const decodedRlp = Encoding.fromRlp(input);
+      return Encoding.fromUtf8(decodedRlp);
     } catch {
       const hexstring = Encoding.toHex(input);
       // split in space separated chunks up to 16 characters each

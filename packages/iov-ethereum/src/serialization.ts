@@ -35,7 +35,7 @@ import {
 import { EscrowContract, isEscrowTransaction } from "./smartcontracts/escrowcontract";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
-const { fromHex, toAscii } = Encoding;
+const { fromHex, toUtf8 } = Encoding;
 
 export class Serialization {
   public static serializeGenericTransactionObject(
@@ -367,7 +367,7 @@ export class Serialization {
       );
     } else {
       // native ETH send
-      const data = toAscii(unsigned.memo || "");
+      const data = toUtf8(unsigned.memo || "");
 
       return Serialization.serializeGenericTransaction(
         nonce,
@@ -528,7 +528,7 @@ export class Serialization {
       );
     } else {
       // native ETH send
-      const data = toAscii(unsigned.memo || "");
+      const data = toUtf8(unsigned.memo || "");
 
       return Serialization.serializeGenericTransaction(
         nonce,
