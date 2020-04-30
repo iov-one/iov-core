@@ -80,7 +80,7 @@ type SupportedTransactionType =
 export class EthereumCodec implements TxCodec {
   private static getMemoFromInput(input: Uint8Array): string {
     try {
-      // RLP Decode is already a hex input
+      // RLP Decode if already a hex input
       const memoInput = fromRlp(input);
       return Encoding.fromUtf8(memoInput);
     } catch {
