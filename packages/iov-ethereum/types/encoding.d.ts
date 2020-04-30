@@ -6,7 +6,7 @@ export declare function toRlp(data: rlp.Input): Uint8Array;
 /**
  * Dencode as RLP (Recursive Length Prefix)
  */
-export declare function fromRlp(data: rlp.Input): Uint8Array;
+export declare function fromRlp(data: Uint8Array): Uint8Array;
 /**
  * IsHex returns true if the string starts with 0x
  */

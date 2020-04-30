@@ -28,7 +28,7 @@ import { Encoding } from "@iov/encoding";
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { AtomicSwapContractTransactionBuilder } from "./atomicswapcontracttransactionbuilder";
 import { constants } from "./constants";
-import { BlknumForkState, Eip155ChainId, getRecoveryParam, fromRlp, isHex } from "./encoding";
+import { BlknumForkState, Eip155ChainId, getRecoveryParam, fromRlp } from "./encoding";
 import { Erc20ApproveTransaction, Erc20TokensMap } from "./erc20";
 import { Erc20TokenTransactionBuilder } from "./erc20tokentransactionbuilder";
 import { EthereumRpcTransactionResult } from "./ethereumrpctransactionresult";
