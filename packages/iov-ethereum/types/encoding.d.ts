@@ -4,7 +4,7 @@ import * as rlp from "rlp";
  */
 export declare function toRlp(data: rlp.Input): Uint8Array;
 /**
- * Dencode as RLP (Recursive Length Prefix)
+ * Decode from RLP (Recursive Length Prefix)
  */
 export declare function fromRlp(data: Uint8Array): Uint8Array;
 /**
