@@ -1,4 +1,4 @@
-import { Int53, Encoding } from "@iov/encoding";
+import { Encoding, Int53 } from "@iov/encoding";
 import * as rlp from "rlp";
 
 const { fromUtf8 } = Encoding;
