@@ -41,7 +41,7 @@ export class Secp256k1 {
       // - 1-byte prefix "04"
       // - 32-byte x coordinate
       // - 32-byte y coordinate
-      pubkey: Encoding.fromHex(keypair.getPublic().encode("hex")),
+      pubkey: Uint8Array.from(keypair.getPublic("array")),
     };
     return out as Secp256k1Keypair;
   }
@@ -63,11 +63,12 @@ export class Secp256k1 {
 
     const keypair = secp256k1.keyFromPrivate(privkey);
     // the `canonical` option ensures creation of lowS signature representations
-    const signature = keypair.sign(messageHash, { canonical: true });
+    const { r, s, recoveryParam } = keypair.sign(messageHash, { canonical: true });
+    if (typeof recoveryParam !== "number") throw new Error("Recovery param missing");
     return new ExtendedSecp256k1Signature(
-      Uint8Array.from((signature.r as BN).toArray()),
-      Uint8Array.from((signature.s as BN).toArray()),
-      signature.recoveryParam,
+      Uint8Array.from(r.toArray()),
+      Uint8Array.from(s.toArray()),
+      recoveryParam,
     );
   }
 
@@ -117,7 +118,7 @@ export class Secp256k1 {
       case 33:
         return pubkey;
       case 65:
-        return Uint8Array.from(secp256k1.keyFromPublic(pubkey).pub.encodeCompressed());
+        return Uint8Array.from(secp256k1.keyFromPublic(pubkey).getPublic(true, "array"));
       default:
         throw new Error("Invalid pubkey length");
     }
