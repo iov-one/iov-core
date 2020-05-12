@@ -1107,6 +1107,13 @@
   resolved "https://registry.yarnpkg.com/@types/random-js/-/random-js-1.0.31.tgz#18a8bcc075afa504421e638fcbe021f27e802941"
   integrity sha512-EAM56DrKw3VhcE4HV0/YlVKeJI07We4Mz1ra6TNtZpaMoiBVMA2bkLEcoFpYOyxoDXfVZWojxkR617LTqtRI0A==
 
+"@types/ripemd160@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/ripemd160/-/ripemd160-2.0.0.tgz#d33e49cf66edf4668828030d4aa80116bbf8ae81"
+  integrity sha512-LD6AO/+8cAa1ghXax9NG9iPDLPUEGB2WWPjd//04KYfXxTwHvlDEfL0NRjrM5z9XWBi6WbKw75Are0rDyn3PSA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/unorm@^1.3.27":
   version "1.3.27"
   resolved "https://registry.yarnpkg.com/@types/unorm/-/unorm-1.3.27.tgz#60bdb3bb2e5c9ebe6d082df3a13ca992302cca7a"
