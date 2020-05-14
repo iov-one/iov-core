@@ -1,3 +1,4 @@
+import { Hash } from "crypto";
 import shajs from "sha.js";
 
 import { HashFunction } from "./hash";
@@ -5,7 +6,7 @@ import { HashFunction } from "./hash";
 export class Sha1 implements HashFunction {
   public readonly blockSize = 512 / 8;
 
-  private readonly impl: any;
+  private readonly impl: Hash;
 
   public constructor(firstData?: Uint8Array) {
     this.impl = shajs("sha1");
@@ -28,7 +29,7 @@ export class Sha1 implements HashFunction {
 export class Sha256 implements HashFunction {
   public readonly blockSize = 512 / 8;
 
-  private readonly impl: any;
+  private readonly impl: Hash;
 
   public constructor(firstData?: Uint8Array) {
     this.impl = shajs("sha256");
@@ -51,7 +52,7 @@ export class Sha256 implements HashFunction {
 export class Sha512 implements HashFunction {
   public readonly blockSize = 1024 / 8;
 
-  private readonly impl: any;
+  private readonly impl: Hash;
 
   public constructor(firstData?: Uint8Array) {
     this.impl = shajs("sha512");
