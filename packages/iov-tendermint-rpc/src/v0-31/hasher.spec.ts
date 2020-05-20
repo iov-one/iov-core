@@ -1,11 +1,11 @@
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex } from "@iov/encoding";
 import { ReadonlyDate } from "readonly-date";
 
 import { ReadonlyDateWithNanoseconds } from "../responses";
 import { TxBytes } from "../types";
 import { hashBlock, hashTx } from "./hasher";
 
-const { fromHex, fromBase64 } = Encoding;
+const { fromBase64 } = Encoding;
 
 describe("Hasher", () => {
   it("creates transaction hash equal to local test", () => {

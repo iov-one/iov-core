@@ -12,7 +12,7 @@ import {
   TokenTicker,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { decodeMsg } from "./decodemsg";
 import { decodeAmount } from "./decodeobjects";
@@ -48,8 +48,6 @@ import {
   Participant,
   VoteOption,
 } from "./types";
-
-const { fromHex } = Encoding;
 
 /** A random user on an IOV testnet */
 const alice = {
@@ -898,9 +896,9 @@ describe("decodeMsg", () => {
             },
           }).finish(),
           description: "foo bar",
-          electionRuleId: Encoding.fromHex("000000bbccddbbff"),
+          electionRuleId: fromHex("000000bbccddbbff"),
           startTime: 42424242,
-          author: Encoding.fromHex("0011223344556677889900112233445566778899"),
+          author: fromHex("0011223344556677889900112233445566778899"),
         },
       };
       const decoded = decodeMsg(defaultBaseTx, transactionMessage);

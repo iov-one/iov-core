@@ -1,6 +1,6 @@
 import { Address } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex } from "@iov/encoding";
 import BN from "bn.js";
 
 import { isValidAddress, toChecksummedAddress } from "./address";
@@ -26,7 +26,7 @@ export class Abi {
       throw new Error("Invalid address format");
     }
 
-    const addressBytes = Encoding.fromHex(address.slice(2));
+    const addressBytes = fromHex(address.slice(2));
     return Abi.padTo32(addressBytes);
   }
 

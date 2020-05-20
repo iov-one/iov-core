@@ -1,6 +1,6 @@
 import { Address, Algorithm, PubkeyBundle } from "@iov/bcp";
 import { Ripemd160, Secp256k1, Sha256 } from "@iov/crypto";
-import { Bech32, Encoding } from "@iov/encoding";
+import { Bech32, fromHex, toHex } from "@iov/encoding";
 import equal from "fast-deep-equal";
 
 export type CosmosAddressBech32Prefix = "cosmos" | "cosmosvalcons" | "cosmosvaloper";
@@ -8,7 +8,7 @@ export type CosmosPubkeyBech32Prefix = "cosmospub" | "cosmosvalconspub" | "cosmo
 export type CosmosBech32Prefix = CosmosAddressBech32Prefix | CosmosPubkeyBech32Prefix;
 
 /** As discussed in https://github.com/binance-chain/javascript-sdk/issues/163 */
-const pubkeyAminoPrefix = Encoding.fromHex("eb5ae98721");
+const pubkeyAminoPrefix = fromHex("eb5ae98721");
 
 function isCosmosAddressBech32Prefix(prefix: string): prefix is CosmosAddressBech32Prefix {
   return ["cosmos", "cosmosvalcons", "cosmosvaloper"].includes(prefix);
@@ -45,7 +45,7 @@ export function decodeCosmosPubkey(
   }
 
   if (!equal(data.slice(0, pubkeyAminoPrefix.length), pubkeyAminoPrefix)) {
-    throw new Error("Pubkey does not have the expected amino prefix " + Encoding.toHex(pubkeyAminoPrefix));
+    throw new Error("Pubkey does not have the expected amino prefix " + toHex(pubkeyAminoPrefix));
   }
 
   const rest = data.slice(pubkeyAminoPrefix.length);

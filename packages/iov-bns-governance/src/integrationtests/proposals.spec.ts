@@ -20,7 +20,7 @@ import {
   SendAction,
   VoteOption,
 } from "@iov/bns";
-import { Encoding } from "@iov/encoding";
+import { toHex } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { sleep } from "@iov/utils";
 import BN from "bn.js";
@@ -387,7 +387,7 @@ describe("Proposals", () => {
     expect(proposal1Pre.action).toEqual({
       kind: ActionKind.SetValidators,
       validatorUpdates: {
-        [`ed25519_${Encoding.toHex(identity.pubkey.data)}`]: { power: 2 },
+        [`ed25519_${toHex(identity.pubkey.data)}`]: { power: 2 },
       },
     });
     expect(proposal1Pre.status).toEqual(ProposalStatus.Submitted);
@@ -410,7 +410,7 @@ describe("Proposals", () => {
     const validatorsAfter1 = await connection.getValidators();
     expect(validatorsAfter1.length).toEqual(numValidatorsBefore + 1);
     const addedValidator = validatorsAfter1.find(
-      validator => Encoding.toHex(validator.pubkey.data) === Encoding.toHex(identity.pubkey.data),
+      validator => toHex(validator.pubkey.data) === toHex(identity.pubkey.data),
     );
     expect(addedValidator).toBeDefined();
     expect(addedValidator!.power).toEqual(2);
@@ -442,7 +442,7 @@ describe("Proposals", () => {
     expect(proposal2Pre.action).toEqual({
       kind: ActionKind.SetValidators,
       validatorUpdates: {
-        [`ed25519_${Encoding.toHex(identity.pubkey.data)}`]: { power: 0 },
+        [`ed25519_${toHex(identity.pubkey.data)}`]: { power: 0 },
       },
     });
     expect(proposal2Pre.status).toEqual(ProposalStatus.Submitted);
@@ -465,7 +465,7 @@ describe("Proposals", () => {
     const validatorsAfter2 = await connection.getValidators();
     expect(validatorsAfter2.length).toEqual(numValidatorsBefore);
     const removedValidator = validatorsAfter2.find(
-      validator => Encoding.toHex(validator.pubkey.data) === Encoding.toHex(identity.pubkey.data),
+      validator => toHex(validator.pubkey.data) === toHex(identity.pubkey.data),
     );
     expect(removedValidator).not.toBeDefined();
 

@@ -1,9 +1,7 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { Ripemd160 } from "./ripemd";
 import ripemdVectors from "./testdata/ripemd.json";
-
-const { fromHex } = Encoding;
 
 describe("Ripemd160", () => {
   it("exists", () => {

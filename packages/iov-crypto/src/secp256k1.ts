@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex, toHex } from "@iov/encoding";
 import BN from "bn.js";
 import elliptic from "elliptic";
 import { As } from "type-tagger";
@@ -36,7 +36,7 @@ export class Secp256k1 {
     }
 
     const out: Keypair = {
-      privkey: Encoding.fromHex(keypair.getPrivate("hex")),
+      privkey: fromHex(keypair.getPrivate("hex")),
       // encodes uncompressed as
       // - 1-byte prefix "04"
       // - 32-byte x coordinate
@@ -107,10 +107,10 @@ export class Secp256k1 {
   }
 
   public static recoverPubkey(signature: ExtendedSecp256k1Signature, messageHash: Uint8Array): Uint8Array {
-    const signatureForElliptic = { r: Encoding.toHex(signature.r()), s: Encoding.toHex(signature.s()) };
+    const signatureForElliptic = { r: toHex(signature.r()), s: toHex(signature.s()) };
     const point = secp256k1.recoverPubKey(messageHash, signatureForElliptic, signature.recovery);
     const keypair = secp256k1.keyFromPublic(point);
-    return Encoding.fromHex(keypair.getPublic(false, "hex"));
+    return fromHex(keypair.getPublic(false, "hex"));
   }
 
   public static compressPubkey(pubkey: Uint8Array): Uint8Array {

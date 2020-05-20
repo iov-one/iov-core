@@ -12,7 +12,7 @@ import {
   SwapTimeout,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromHex, toHex } from "@iov/encoding";
 import { isJsonRpcErrorResponse, makeJsonRpcId } from "@iov/jsonrpc";
 import BN from "bn.js";
 
@@ -271,7 +271,7 @@ export class EscrowContract {
     const amountEnd = amountBegin + 32;
     const stateBegin = amountEnd;
     const stateEnd = stateBegin + 32;
-    const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
+    const resultArray = fromHex(normalizeHex(swapsResponse.result));
     return {
       sender: Abi.decodeAddress(resultArray.slice(senderBegin, senderEnd)),
       recipient: Abi.decodeAddress(resultArray.slice(recipientBegin, recipientEnd)),
@@ -289,15 +289,13 @@ export class EscrowContract {
     };
   }
 
-  private static readonly OPEN_METHOD_ID: string = Encoding.toHex(
+  private static readonly OPEN_METHOD_ID: string = toHex(
     Abi.calculateMethodHash("open(bytes32,address,bytes32,uint256)"),
   );
 
-  private static readonly CLAIM_METHOD_ID: string = Encoding.toHex(
-    Abi.calculateMethodHash("claim(bytes32,address)"),
-  );
+  private static readonly CLAIM_METHOD_ID: string = toHex(Abi.calculateMethodHash("claim(bytes32,address)"));
 
-  private static readonly ABORT_METHOD_ID: string = Encoding.toHex(Abi.calculateMethodHash("abort(bytes32)"));
+  private static readonly ABORT_METHOD_ID: string = toHex(Abi.calculateMethodHash("abort(bytes32)"));
 
   private static readonly METHODS: { readonly [key: string]: EscrowContractMethod } = {
     [EscrowContract.OPEN_METHOD_ID]: EscrowContractMethod.Open,
@@ -320,7 +318,7 @@ export class EscrowContract {
   }
 
   private static getMethodTypeFromInput(data: Uint8Array): EscrowContractMethod {
-    const id: string = Encoding.toHex(data);
+    const id = toHex(data);
     const method: EscrowContractMethod | undefined = EscrowContract.METHODS[id];
     if (method === undefined) {
       throw new Error("Unknown method for escrow contract");

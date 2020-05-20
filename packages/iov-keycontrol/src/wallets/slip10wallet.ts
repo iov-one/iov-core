@@ -17,7 +17,7 @@ import {
   slip10CurveFromString,
   Slip10RawIndex,
 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex, toHex } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import PseudoRandom from "random-js";
 import { As } from "type-tagger";
@@ -135,7 +135,7 @@ export class Slip10Wallet implements Wallet {
   }
 
   private static identityId(identity: Identity): IdentityId {
-    const id = [identity.chainId, identity.pubkey.algo, Encoding.toHex(identity.pubkey.data)].join("|");
+    const id = [identity.chainId, identity.pubkey.algo, toHex(identity.pubkey.data)].join("|");
     return id as IdentityId;
   }
 
@@ -222,7 +222,7 @@ export class Slip10Wallet implements Wallet {
       const identity = Slip10Wallet.buildIdentity(
         this.curve,
         record.localIdentity.chainId as ChainId,
-        Encoding.fromHex(record.localIdentity.pubkey.data) as PubkeyBytes,
+        fromHex(record.localIdentity.pubkey.data) as PubkeyBytes,
       );
 
       const privkeyPath: readonly Slip10RawIndex[] = record.privkeyPath.map(n => new Slip10RawIndex(n));
@@ -377,7 +377,7 @@ export class Slip10Wallet implements Wallet {
             chainId: identity.chainId,
             pubkey: {
               algo: identity.pubkey.algo,
-              data: Encoding.toHex(identity.pubkey.data),
+              data: toHex(identity.pubkey.data),
             },
             label: label,
           },

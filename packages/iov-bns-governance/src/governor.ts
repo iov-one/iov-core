@@ -11,13 +11,11 @@ import {
   VoteOption,
   VoteTx,
 } from "@iov/bns";
-import { Encoding } from "@iov/encoding";
+import { toHex } from "@iov/encoding";
 import BN from "bn.js";
 
 import { ProposalOptions, ProposalType } from "./proposals";
 import { groupByCallback, maxWithComparatorCallback } from "./utils";
-
-const { toHex } = Encoding;
 
 function compareByVersion<E extends { readonly version: number }>(element1: E, element2: E): number {
   return element1.version - element2.version;

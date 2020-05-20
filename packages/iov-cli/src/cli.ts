@@ -147,6 +147,8 @@ export function main(originalArgs: readonly string[]): void {
       [
         "Bech32",
         "Encoding",
+        "fromHex",
+        "toHex",
         // integers
         "Int53",
         "Uint32",
@@ -200,8 +202,6 @@ export function main(originalArgs: readonly string[]): void {
   }
   console.info(colors.yellow("  * helper functions"));
   console.info(colors.yellow("    - toAscii"));
-  console.info(colors.yellow("    - fromHex"));
-  console.info(colors.yellow("    - toHex"));
 
   let init = `
     import leveldown = require('leveldown');
@@ -214,7 +214,7 @@ export function main(originalArgs: readonly string[]): void {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     init += `import { ${imports.get(moduleName)!.join(", ")} } from "${moduleName}";\n`;
   }
-  init += `const { toAscii, fromHex, toHex } = Encoding;\n`;
+  init += `const { toAscii } = Encoding;\n`;
 
   if (args.selftest) {
     // execute some trival stuff and exit

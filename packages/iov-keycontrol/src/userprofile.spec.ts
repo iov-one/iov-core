@@ -16,7 +16,7 @@ import {
   TxCodec,
 } from "@iov/bcp";
 import { Ed25519, Slip10RawIndex } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 import levelup from "levelup";
 import MemDownConstructor from "memdown";
 import { ReadonlyDate } from "readonly-date";
@@ -27,8 +27,6 @@ import userprofileData from "./testdata/userprofile.json";
 import { UnexpectedFormatVersionError, UserProfile, UserProfileEncryptionKey } from "./userprofile";
 import { WalletId } from "./wallet";
 import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
-
-const { fromHex } = Encoding;
 
 /**
  * A possibly incomplete equality checker that tests as well as possible if two profiles contain

@@ -20,15 +20,13 @@ import {
   TokenTicker,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex, toHex } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile, WalletId } from "@iov/keycontrol";
 import { sleep } from "@iov/utils";
 
 import { bnsCodec } from "./bnscodec";
 import { BnsConnection } from "./bnsconnection";
 import { encodeBnsAddress, identityToAddress } from "./util";
-
-const { fromHex, toHex } = Encoding;
 
 export const bash = "BASH" as TokenTicker;
 export const cash = "CASH" as TokenTicker;

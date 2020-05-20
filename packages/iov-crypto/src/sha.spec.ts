@@ -1,10 +1,7 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex, toHex } from "@iov/encoding";
 
 import { Sha256 } from "./sha";
 import shaVectors from "./testdata/sha.json";
-
-const toHex = Encoding.toHex;
-const fromHex = Encoding.fromHex;
 
 describe("Sha256", () => {
   it("exists", () => {

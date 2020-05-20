@@ -16,7 +16,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding, fromHex, Int53 } from "@iov/encoding";
 import BN from "bn.js";
 
 import { Abi } from "./abi";
@@ -35,7 +35,7 @@ import {
 import { EscrowContract, isEscrowTransaction } from "./smartcontracts/escrowcontract";
 import { encodeQuantity, encodeQuantityString, fromBcpChainId, normalizeHex } from "./utils";
 
-const { fromHex, toUtf8 } = Encoding;
+const { toUtf8 } = Encoding;
 
 export class Serialization {
   public static serializeGenericTransactionObject(

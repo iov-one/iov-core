@@ -1,11 +1,9 @@
 import { Algorithm, ChainId, PrehashType, PubkeyBytes, SignableBytes } from "@iov/bcp";
 import { Sha256, Sha512, Slip10Curve, Slip10RawIndex } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex, toHex } from "@iov/encoding";
 
 import { WalletSerializationString } from "../wallet";
 import { Slip10Wallet } from "./slip10wallet";
-
-const { fromHex } = Encoding;
 
 describe("Slip10Wallet", () => {
   const defaultChain = "chain123" as ChainId;
@@ -39,7 +37,7 @@ describe("Slip10Wallet", () => {
   it("can be created from entropy", () => {
     const wallet = Slip10Wallet.fromEntropyWithCurve(
       Slip10Curve.Ed25519,
-      Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
+      fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
     );
     expect(wallet).toBeTruthy();
     expect(wallet.getIdentities().length).toEqual(0);
@@ -139,7 +137,7 @@ describe("Slip10Wallet", () => {
       new Slip10Wallet(emptyWallet),
       Slip10Wallet.fromEntropyWithCurve(
         Slip10Curve.Ed25519,
-        Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
+        fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
       ),
       Slip10Wallet.fromMnemonicWithCurve(
         Slip10Curve.Ed25519,
@@ -156,9 +154,7 @@ describe("Slip10Wallet", () => {
       ]);
 
       // all pubkeys must be different
-      const pubkeySet = new Set(
-        [newIdentity1, newIdentity2, newIdentity3].map(i => Encoding.toHex(i.pubkey.data)),
-      );
+      const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => toHex(i.pubkey.data)));
       expect(pubkeySet.size).toEqual(3);
 
       expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
@@ -219,7 +215,7 @@ describe("Slip10Wallet", () => {
       new Slip10Wallet(emptySecp256k1Wallet),
       Slip10Wallet.fromEntropyWithCurve(
         Slip10Curve.Secp256k1,
-        Encoding.fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
+        fromHex("51385c41df88cbe7c579e99de04259b1aa264d8e2416f1885228a4d069629fad"),
       ),
       Slip10Wallet.fromMnemonicWithCurve(
         Slip10Curve.Secp256k1,
@@ -236,9 +232,7 @@ describe("Slip10Wallet", () => {
       ]);
 
       // all pubkeys must be different
-      const pubkeySet = new Set(
-        [newIdentity1, newIdentity2, newIdentity3].map(i => Encoding.toHex(i.pubkey.data)),
-      );
+      const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => toHex(i.pubkey.data)));
       expect(pubkeySet.size).toEqual(3);
 
       const identities = wallet.getIdentities();
@@ -560,7 +554,7 @@ describe("Slip10Wallet", () => {
       const firstIdentity = wallet.getIdentities()[0];
       expect(firstIdentity.chainId).toEqual("xnet");
       expect(firstIdentity.pubkey.algo).toEqual("ed25519");
-      expect(firstIdentity.pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(firstIdentity.pubkey.data).toEqual(fromHex("aabbccdd"));
       expect(wallet.getIdentityLabel(firstIdentity)).toEqual("foo");
     }
 
@@ -605,11 +599,11 @@ describe("Slip10Wallet", () => {
       const secondIdentity = wallet.getIdentities()[1];
       expect(firstIdentity.chainId).toEqual("xnet");
       expect(firstIdentity.pubkey.algo).toEqual("ed25519");
-      expect(firstIdentity.pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(firstIdentity.pubkey.data).toEqual(fromHex("aabbccdd"));
       expect(wallet.getIdentityLabel(firstIdentity)).toEqual("foo");
       expect(secondIdentity.chainId).toEqual("ynet");
       expect(secondIdentity.pubkey.algo).toEqual("ed25519");
-      expect(secondIdentity.pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
+      expect(secondIdentity.pubkey.data).toEqual(fromHex("ddccbbaa"));
       expect(wallet.getIdentityLabel(secondIdentity)).toEqual("bar");
     }
   });

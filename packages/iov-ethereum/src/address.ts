@@ -1,8 +1,8 @@
 import { Address, Algorithm, PubkeyBundle } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, toHex } from "@iov/encoding";
 
-const { toAscii, toHex } = Encoding;
+const { toAscii } = Encoding;
 
 export function isValidAddress(address: string): boolean {
   if (!address.match(/^0x[a-fA-F0-9]{40}$/)) {

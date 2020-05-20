@@ -46,7 +46,7 @@ import {
   TxReadCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding, Uint53 } from "@iov/encoding";
+import { Encoding, toHex, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient, v0_31 } from "@iov/tendermint-rpc";
 import BN from "bn.js";
@@ -112,7 +112,7 @@ import {
   maxAmount,
 } from "./util";
 
-const { toAscii, toHex, toUtf8 } = Encoding;
+const { toAscii, toUtf8 } = Encoding;
 
 // https://github.com/tendermint/tendermint/blob/v0.29.0/rpc/lib/types/types.go#L229
 const tendermintInternalError = -32603;
@@ -304,7 +304,7 @@ export class BnsConnection implements AtomicSwapConnection {
     if (!broadcastTxSyncSuccess(postResponse)) {
       throw new Error(JSON.stringify(postResponse, null, 2));
     }
-    const transactionId = Encoding.toHex(postResponse.hash).toUpperCase() as TransactionId;
+    const transactionId = toHex(postResponse.hash).toUpperCase() as TransactionId;
 
     // can be undefined as we cannot guarantee it assigned before the caller unsubscribes from the stream
     let transactionSubscription: Subscription | undefined;
@@ -378,7 +378,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
     return {
       blockInfo: new ValueAndUpdates(blockInfoProducer),
-      transactionId: Encoding.toHex(postResponse.hash).toUpperCase() as TransactionId,
+      transactionId: toHex(postResponse.hash).toUpperCase() as TransactionId,
       log: postResponse.log,
     };
   }
@@ -580,7 +580,7 @@ export class BnsConnection implements AtomicSwapConnection {
       | ConfirmedAndSignedTransaction<UnsignedTransaction>
       | FailedTransaction => {
       const { tx, hash, height, result } = txResponse;
-      const transactionId = Encoding.toHex(hash).toUpperCase() as TransactionId;
+      const transactionId = toHex(hash).toUpperCase() as TransactionId;
 
       if (result.code === 0) {
         return {
@@ -613,7 +613,7 @@ export class BnsConnection implements AtomicSwapConnection {
     return this.tmClient.subscribeTx(rawQuery).map((transaction):
       | ConfirmedTransaction<UnsignedTransaction>
       | FailedTransaction => {
-      const transactionId = Encoding.toHex(transaction.hash).toUpperCase() as TransactionId;
+      const transactionId = toHex(transaction.hash).toUpperCase() as TransactionId;
 
       if (transaction.result.code === 0) {
         return {
@@ -687,7 +687,7 @@ export class BnsConnection implements AtomicSwapConnection {
       throw new Error("Received an empty list of block metas");
     }
 
-    const blockId = Encoding.toHex(blockMetas[0].blockId.hash).toUpperCase() as BlockId;
+    const blockId = toHex(blockMetas[0].blockId.hash).toUpperCase() as BlockId;
     const { header } = blockMetas[0];
     if (header.height !== height) {
       throw new Error(`Requested header ${height} but got ${header.height}`);
@@ -703,7 +703,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
   public watchBlockHeaders(): Stream<BlockHeader> {
     return this.tmClient.subscribeNewBlockHeader().map(tmHeader => {
-      const blockId = Encoding.toHex(v0_31.hashBlock(tmHeader)).toUpperCase() as BlockId;
+      const blockId = toHex(v0_31.hashBlock(tmHeader)).toUpperCase() as BlockId;
       return {
         id: blockId,
         height: tmHeader.height,

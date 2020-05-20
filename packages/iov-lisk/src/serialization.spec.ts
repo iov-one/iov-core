@@ -9,12 +9,11 @@ import {
   SignedTransaction,
   TokenTicker,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 import { ReadonlyDate } from "readonly-date";
 
 import { Serialization, TransactionSerializationOptions } from "./serialization";
 
-const { fromHex } = Encoding;
 const { serializeTransaction, toTimestamp, transactionId } = Serialization;
 
 const epochAsUnixTimestamp = 1464109200;

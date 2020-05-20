@@ -14,7 +14,7 @@ import {
 } from "@iov/bcp";
 import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
-import { Encoding, TransactionEncoder } from "@iov/encoding";
+import { fromHex, TransactionEncoder } from "@iov/encoding";
 import { createEthereumConnector } from "@iov/ethereum";
 import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
@@ -23,8 +23,6 @@ import { firstEvent } from "@iov/stream";
 import { JsonRpcSigningServer } from "./jsonrpcsigningserver";
 import { MultiChainSigner } from "./multichainsigner";
 import { GetIdentitiesAuthorization, SignAndPostAuthorization, SigningServerCore } from "./signingservercore";
-
-const { fromHex } = Encoding;
 
 function pendingWithoutBnsd(): void {
   if (!process.env.BNSD_ENABLED) {
@@ -102,7 +100,7 @@ describe("JsonRpcSigningServer", () => {
     chainId: ethereumChainId,
     pubkey: {
       algo: Algorithm.Secp256k1,
-      data: Encoding.fromHex(
+      data: fromHex(
         "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
       ) as PubkeyBytes,
     },

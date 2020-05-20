@@ -1,11 +1,9 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { AtomicSwapHelpers } from "./atomicswaphelpers";
 import { AtomicSwapMerger } from "./atomicswapmerger";
 import { ClaimedSwap, OpenSwap, Preimage, SwapClaimTransaction, SwapProcessState } from "./atomicswaptypes";
 import { Address, Amount, ChainId, SwapId, SwapIdBytes, TokenTicker } from "./transactions";
-
-const { fromHex } = Encoding;
 
 describe("AtomicSwapMerger", () => {
   const defaultAmount: Amount = {

@@ -11,7 +11,7 @@ import {
   TokenTicker,
 } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Sha512 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { buildMultisignatureCondition, conditionToWeaveAddress } from "./conditions";
 import { encodeFullSignature, encodePrivkey, encodePubkey, encodeSignedTx, encodeUnsignedTx } from "./encode";
@@ -30,8 +30,6 @@ import {
 } from "./testdata.spec";
 import { MultisignatureTx } from "./types";
 import { appendSignBytes } from "./util";
-
-const { fromHex } = Encoding;
 
 describe("encode", () => {
   describe("encodePubkey", () => {

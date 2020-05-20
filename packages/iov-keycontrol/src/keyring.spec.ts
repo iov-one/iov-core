@@ -1,12 +1,10 @@
 import { ChainId } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair, Random } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { HdPaths } from "./hdpaths";
 import { Keyring, KeyringSerializationString } from "./keyring";
 import { Ed25519HdWallet, Ed25519Wallet, Secp256k1HdWallet } from "./wallets";
-
-const { fromHex } = Encoding;
 
 async function makeRandomEd25519Keypair(): Promise<Ed25519Keypair> {
   return Ed25519.makeKeypair(Random.getBytes(32));

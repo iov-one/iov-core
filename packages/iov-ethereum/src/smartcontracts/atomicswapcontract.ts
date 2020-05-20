@@ -1,5 +1,5 @@
 import { SwapProcessState } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { toHex } from "@iov/encoding";
 
 import { Abi } from "./../abi";
 
@@ -42,7 +42,7 @@ export class AtomicSwapContract {
     if (data.length !== 4) {
       throw new Error("Input data not 32 bit long");
     }
-    const key = Encoding.toHex(data);
+    const key = toHex(data);
 
     const map: { readonly [key: string]: SwapContractMethod } = {
       [AtomicSwapContract.abiMethodIds.openEth]: SwapContractMethod.Open,
@@ -64,7 +64,7 @@ export class AtomicSwapContract {
     if (data.length !== 32) {
       throw new Error("Input data not 256 bit long");
     }
-    const key = Encoding.toHex(data);
+    const key = toHex(data);
     const map: { readonly [key: string]: SwapContractEvent } = {
       [AtomicSwapContract.abiEventSignatures.openedEth]: SwapContractEvent.Opened,
       [AtomicSwapContract.abiEventSignatures.openedErc20]: SwapContractEvent.Opened,
@@ -87,14 +87,12 @@ export class AtomicSwapContract {
     readonly claimed: string;
     readonly aborted: string;
   } = {
-    openedEth: Encoding.toHex(
-      Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256)"),
-    ),
-    openedErc20: Encoding.toHex(
+    openedEth: toHex(Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256)")),
+    openedErc20: toHex(
       Abi.calculateMethodHash("Opened(bytes32,address,address,bytes32,uint256,uint256,address)"),
     ),
-    claimed: Encoding.toHex(Abi.calculateMethodHash("Claimed(bytes32,bytes32)")),
-    aborted: Encoding.toHex(Abi.calculateMethodHash("Aborted(bytes32)")),
+    claimed: toHex(Abi.calculateMethodHash("Claimed(bytes32,bytes32)")),
+    aborted: toHex(Abi.calculateMethodHash("Aborted(bytes32)")),
   };
 
   // ABI methods previously methodIds in ABI file
@@ -105,9 +103,9 @@ export class AtomicSwapContract {
     readonly claim: string;
     readonly abort: string;
   } = {
-    openEth: Encoding.toHex(Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)")),
-    openErc20: Encoding.toHex(Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)")),
-    claim: Encoding.toHex(Abi.calculateMethodId("claim(bytes32,bytes32)")),
-    abort: Encoding.toHex(Abi.calculateMethodId("abort(bytes32)")),
+    openEth: toHex(Abi.calculateMethodId("open(bytes32,address,bytes32,uint256)")),
+    openErc20: toHex(Abi.calculateMethodId("open(bytes32,address,bytes32,uint256,address,uint256)")),
+    claim: toHex(Abi.calculateMethodId("claim(bytes32,bytes32)")),
+    abort: toHex(Abi.calculateMethodId("abort(bytes32)")),
   };
 }

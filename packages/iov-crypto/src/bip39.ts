@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex, toHex } from "@iov/encoding";
 import * as bip39 from "bip39";
 import { pbkdf2 } from "pbkdf2";
 import * as unorm from "unorm";
@@ -13,11 +13,11 @@ export class Bip39 {
       throw new Error("invalid input length");
     }
 
-    return new EnglishMnemonic(bip39.entropyToMnemonic(Encoding.toHex(entropy)));
+    return new EnglishMnemonic(bip39.entropyToMnemonic(toHex(entropy)));
   }
 
   public static decode(mnemonic: EnglishMnemonic): Uint8Array {
-    return Encoding.fromHex(bip39.mnemonicToEntropy(mnemonic.toString()));
+    return fromHex(bip39.mnemonicToEntropy(mnemonic.toString()));
   }
 
   public static async mnemonicToSeed(mnemonic: EnglishMnemonic, password?: string): Promise<Uint8Array> {

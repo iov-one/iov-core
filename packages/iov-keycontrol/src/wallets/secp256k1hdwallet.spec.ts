@@ -1,10 +1,10 @@
 import { ChainId, PrehashType, SignableBytes } from "@iov/bcp";
 import { ExtendedSecp256k1Signature, Secp256k1, Sha256, Slip10RawIndex } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex } from "@iov/encoding";
 
 import { Secp256k1HdWallet } from "./secp256k1hdwallet";
 
-const { fromHex, toAscii } = Encoding;
+const { toAscii } = Encoding;
 
 describe("Secp256k1HdWallet", () => {
   const defaultChain = "chain123" as ChainId;

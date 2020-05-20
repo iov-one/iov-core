@@ -1,9 +1,9 @@
 import { Address, Algorithm, PubkeyBytes } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex } from "@iov/encoding";
 
 import { decodeCosmosAddress, decodeCosmosPubkey, isValidAddress, pubkeyToAddress } from "./address";
 
-const { fromBase64, fromHex } = Encoding;
+const { fromBase64 } = Encoding;
 
 describe("address", () => {
   // Bech32 encoding/decoding data generated using https://github.com/bitcoinjs/bech32

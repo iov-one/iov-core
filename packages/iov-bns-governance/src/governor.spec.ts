@@ -2,7 +2,7 @@
 import { Address, Algorithm, isBlockInfoPending, PubkeyBundle, PubkeyBytes, TokenTicker } from "@iov/bcp";
 import { ActionKind, bnsCodec, BnsConnection, VoteOption } from "@iov/bns";
 import { Random } from "@iov/crypto";
-import { Bech32, Encoding } from "@iov/encoding";
+import { Bech32, toHex } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { sleep } from "@iov/utils";
 import { ReadonlyDate } from "readonly-date";
@@ -421,7 +421,7 @@ describe("Governor", () => {
       const governor = new Governor(options);
 
       const pubkey = randomBnsPubkey();
-      const pubkeyHex = Encoding.toHex(pubkey.data);
+      const pubkeyHex = toHex(pubkey.data);
       const tx = await governor.buildCreateProposalTx({
         type: ProposalType.AddValidator,
         title: `Add ${pubkeyHex} as validator`,
@@ -464,7 +464,7 @@ describe("Governor", () => {
       const governor = new Governor(options);
 
       const pubkey = randomBnsPubkey();
-      const pubkeyHex = Encoding.toHex(pubkey.data);
+      const pubkeyHex = toHex(pubkey.data);
       const tx = await governor.buildCreateProposalTx({
         type: ProposalType.RemoveValidator,
         title: `Remove validator ${pubkeyHex}`,

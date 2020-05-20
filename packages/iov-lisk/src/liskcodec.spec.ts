@@ -12,11 +12,9 @@ import {
   SignedTransaction,
   TokenTicker,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex } from "@iov/encoding";
 
 import { liskCodec } from "./liskcodec";
-
-const { fromHex } = Encoding;
 
 // use nethash as chain ID
 const liskTestnet = "lisk-da3ed6a454" as ChainId;

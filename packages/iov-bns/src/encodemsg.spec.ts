@@ -1,5 +1,5 @@
 import { Address, Amount, ChainId, Hash, SendTransaction, SwapOfferTransaction, TokenTicker } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 import Long from "long";
 
 import { decodeAmount } from "./decodeobjects";
@@ -37,8 +37,6 @@ import {
   VoteOption,
   VoteTx,
 } from "./types";
-
-const { fromHex } = Encoding;
 
 /** A random user on an IOV testnet */
 const alice = {

@@ -9,13 +9,11 @@ import {
   Token,
   TokenTicker,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { Erc20Options, Erc20TokensMap } from "./erc20";
 import { EthereumConnectionOptions } from "./ethereumconnection";
 import { SmartContractTokenType, SmartContractType } from "./smartcontracts/definitions";
-
-const { fromHex } = Encoding;
 
 export interface Erc20TransferTest {
   readonly amount: Amount;

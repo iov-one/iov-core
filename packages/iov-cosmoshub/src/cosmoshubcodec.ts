@@ -14,7 +14,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, toHex } from "@iov/encoding";
 import { marshalTx, unmarshalTx } from "@tendermint/amino-js";
 
 import { isValidAddress, pubkeyToAddress } from "./address";
@@ -22,7 +22,7 @@ import { Caip5 } from "./caip5";
 import { parseTx } from "./decode";
 import { buildSignedTx, buildUnsignedTx } from "./encode";
 
-const { toHex, toUtf8 } = Encoding;
+const { toUtf8 } = Encoding;
 
 function sortJson(json: any): any {
   if (typeof json !== "object" || json === null) {

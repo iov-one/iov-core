@@ -1,8 +1,6 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { ExtendedSecp256k1Signature, Secp256k1Signature } from "./secp256k1signature";
-
-const { fromHex } = Encoding;
 
 describe("Secp256k1Signature", () => {
   describe("fromFixedLength", () => {

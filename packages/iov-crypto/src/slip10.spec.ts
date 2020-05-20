@@ -1,8 +1,6 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { Slip10, Slip10Curve, slip10CurveFromString, Slip10RawIndex } from "./slip10";
-
-const fromHex = Encoding.fromHex;
 
 describe("Slip10", () => {
   it("has working slip10CurveFromString()", () => {

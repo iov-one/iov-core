@@ -18,15 +18,13 @@ import {
   TokenTicker,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex } from "@iov/encoding";
 
 import { Erc20ApproveTransaction, Erc20Options } from "./erc20";
 import { EthereumCodec } from "./ethereumcodec";
 import { EthereumRpcTransactionResult } from "./ethereumrpctransactionresult";
 import { SwapIdPrefix } from "./serializationcommon";
 import { testConfig } from "./testconfig.spec";
-
-const { fromHex } = Encoding;
 
 const ethereumCodec = new EthereumCodec({
   atomicSwapEtherContractAddress: testConfig.connectionOptions.atomicSwapEtherContractAddress,
@@ -88,8 +86,8 @@ describe("ethereumCodec", () => {
               data: expectedPubkey,
             },
             signature: new ExtendedSecp256k1Signature(
-              Encoding.fromHex("b9299dab50b3cddcaecd64b29bfbd5cd30fac1a1adea1b359a13c4e5171492a6"),
-              Encoding.fromHex("573059c66d894684488f92e7ce1f91b158ca57b0235485625b576a3b98c480ac"),
+              fromHex("b9299dab50b3cddcaecd64b29bfbd5cd30fac1a1adea1b359a13c4e5171492a6"),
+              fromHex("573059c66d894684488f92e7ce1f91b158ca57b0235485625b576a3b98c480ac"),
               0,
             ).toFixedLength() as SignatureBytes,
           },
@@ -163,8 +161,8 @@ describe("ethereumCodec", () => {
               data: expectedPubkey,
             },
             signature: new ExtendedSecp256k1Signature(
-              Encoding.fromHex("cbe96b38321e6ef536da5e74b558cf87acdda825be35be40627b2b3d8633b8f4"),
-              Encoding.fromHex("7fc31ca5bb3dbd02e5e8fc5093082f3f2ab3e0042d4e5b25fe09e5f7485d83b7"),
+              fromHex("cbe96b38321e6ef536da5e74b558cf87acdda825be35be40627b2b3d8633b8f4"),
+              fromHex("7fc31ca5bb3dbd02e5e8fc5093082f3f2ab3e0042d4e5b25fe09e5f7485d83b7"),
               0,
             ).toFixedLength() as SignatureBytes,
           },
@@ -234,8 +232,8 @@ describe("ethereumCodec", () => {
               data: expectedPubkey,
             },
             signature: new ExtendedSecp256k1Signature(
-              Encoding.fromHex("cbe96b38321e6ef536da5e74b558cf87acdda825be35be40627b2b3d8633b8f4"),
-              Encoding.fromHex("7fc31ca5bb3dbd02e5e8fc5093082f3f2ab3e0042d4e5b25fe09e5f7485d83b7"),
+              fromHex("cbe96b38321e6ef536da5e74b558cf87acdda825be35be40627b2b3d8633b8f4"),
+              fromHex("7fc31ca5bb3dbd02e5e8fc5093082f3f2ab3e0042d4e5b25fe09e5f7485d83b7"),
               0,
             ).toFixedLength() as SignatureBytes,
           },
@@ -307,8 +305,8 @@ describe("ethereumCodec", () => {
               data: expectedPubkey,
             },
             signature: new ExtendedSecp256k1Signature(
-              Encoding.fromHex("194013d2767d86e0aac07f5e713e52c1bafdbe20361b59257ae7e5665d504bf1"),
-              Encoding.fromHex("76deb0b778442ff69b61fa9c27333e4b2e6c184643b1ce3d60b4da2cb39266c3"),
+              fromHex("194013d2767d86e0aac07f5e713e52c1bafdbe20361b59257ae7e5665d504bf1"),
+              fromHex("76deb0b778442ff69b61fa9c27333e4b2e6c184643b1ce3d60b4da2cb39266c3"),
               0,
             ).toFixedLength() as SignatureBytes,
           },
@@ -387,8 +385,8 @@ describe("ethereumCodec", () => {
               data: expectedPubkey,
             },
             signature: new ExtendedSecp256k1Signature(
-              Encoding.fromHex("9351a7fa42078636bd36bbae0d8d5f009b92986991bcc92ae882bce8982360d5"),
-              Encoding.fromHex("706a6f90bb42b9d929150839fb9aa06207e40f8d814183e30789ac036263497f"),
+              fromHex("9351a7fa42078636bd36bbae0d8d5f009b92986991bcc92ae882bce8982360d5"),
+              fromHex("706a6f90bb42b9d929150839fb9aa06207e40f8d814183e30789ac036263497f"),
               0,
             ).toFixedLength() as SignatureBytes,
           },
@@ -453,8 +451,8 @@ describe("ethereumCodec", () => {
               data: expectedPubkey,
             },
             signature: new ExtendedSecp256k1Signature(
-              Encoding.fromHex("de9a75921207a5df2757d76408436e38f2186a0047e2955f884f0672c805282c"),
-              Encoding.fromHex("259c0f7c9a1383ef35fa5f41996dfb38744f9df6fe027a2e107d0b6d40ab1ae6"),
+              fromHex("de9a75921207a5df2757d76408436e38f2186a0047e2955f884f0672c805282c"),
+              fromHex("259c0f7c9a1383ef35fa5f41996dfb38744f9df6fe027a2e107d0b6d40ab1ae6"),
               1,
             ).toFixedLength() as SignatureBytes,
           },
@@ -514,8 +512,8 @@ describe("ethereumCodec", () => {
               data: expectedPubkey,
             },
             signature: new ExtendedSecp256k1Signature(
-              Encoding.fromHex("3449246d974d28fffae32af389ef7271c18ff6e6766ce6f54f6243764e6877d6"),
-              Encoding.fromHex("7e2280164650d4fc0c4a2fd1edfeedb70e7c8453117f9cbd6a644abd5e1ddf9b"),
+              fromHex("3449246d974d28fffae32af389ef7271c18ff6e6766ce6f54f6243764e6877d6"),
+              fromHex("7e2280164650d4fc0c4a2fd1edfeedb70e7c8453117f9cbd6a644abd5e1ddf9b"),
               0,
             ).toFixedLength() as SignatureBytes,
           },
@@ -607,8 +605,8 @@ describe("ethereumCodec", () => {
               data: expectedPubkey,
             },
             signature: new ExtendedSecp256k1Signature(
-              Encoding.fromHex("26a7e609ce83e01b8e754641fbd9315f5a558c7b279d1bbe186d8be786c6fb18"),
-              Encoding.fromHex("02555167f9584575f9740c0487dcdd2e1462a8374dd9dcc9e66cfa98eb1efd87"),
+              fromHex("26a7e609ce83e01b8e754641fbd9315f5a558c7b279d1bbe186d8be786c6fb18"),
+              fromHex("02555167f9584575f9740c0487dcdd2e1462a8374dd9dcc9e66cfa98eb1efd87"),
               1,
             ).toFixedLength() as SignatureBytes,
           },
@@ -687,8 +685,8 @@ describe("ethereumCodec", () => {
               data: expectedPubkey,
             },
             signature: new ExtendedSecp256k1Signature(
-              Encoding.fromHex("388baff61d88ff954b40e8980c42a50633d08f954a3b281513ffbd1759fa902e"),
-              Encoding.fromHex("578e59f1cfba37881d4851d0cb96eee287436fbe4a3a9ea4f6407c064f1e4f03"),
+              fromHex("388baff61d88ff954b40e8980c42a50633d08f954a3b281513ffbd1759fa902e"),
+              fromHex("578e59f1cfba37881d4851d0cb96eee287436fbe4a3a9ea4f6407c064f1e4f03"),
               0,
             ).toFixedLength() as SignatureBytes,
           },
@@ -748,8 +746,8 @@ describe("ethereumCodec", () => {
               data: expectedPubkey,
             },
             signature: new ExtendedSecp256k1Signature(
-              Encoding.fromHex("367e3b3f8253f2f0f4404754b139d93362973de949ccdd5f0dc5a342f8cd2131"),
-              Encoding.fromHex("0f80b13350349f083f44dd507a7ae7bc783389a7b4c18853d073e0e8c59c6ce0"),
+              fromHex("367e3b3f8253f2f0f4404754b139d93362973de949ccdd5f0dc5a342f8cd2131"),
+              fromHex("0f80b13350349f083f44dd507a7ae7bc783389a7b4c18853d073e0e8c59c6ce0"),
               1,
             ).toFixedLength() as SignatureBytes,
           },
