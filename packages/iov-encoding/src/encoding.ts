@@ -1,6 +1,8 @@
 import * as base64js from "base64-js";
 import { ReadonlyDate } from "readonly-date";
 
+import { fromHex, toHex } from "./hex";
+
 // Global symbols in some environments
 // https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder
 // https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder
@@ -8,29 +10,14 @@ declare const TextEncoder: any | undefined;
 declare const TextDecoder: any | undefined;
 
 export class Encoding {
+  /** @deprecated use free function toHex from @iov/encoding */
   public static toHex(data: Uint8Array): string {
-    let out = "";
-    for (const byte of data) {
-      out += ("0" + byte.toString(16)).slice(-2);
-    }
-    return out;
+    return toHex(data);
   }
 
+  /** @deprecated use free function fromHex from @iov/encoding */
   public static fromHex(hexstring: string): Uint8Array {
-    if (hexstring.length % 2 !== 0) {
-      throw new Error("hex string length must be a multiple of 2");
-    }
-
-    // tslint:disable-next-line:readonly-array
-    const listOfInts: number[] = [];
-    for (let i = 0; i < hexstring.length; i += 2) {
-      const hexByteAsString = hexstring.substr(i, 2);
-      if (!hexByteAsString.match(/[0-9a-f]{2}/i)) {
-        throw new Error("hex string contains invalid characters");
-      }
-      listOfInts.push(parseInt(hexByteAsString, 16));
-    }
-    return new Uint8Array(listOfInts);
+    return fromHex(hexstring);
   }
 
   public static toBase64(data: Uint8Array): string {

@@ -2,6 +2,9 @@
 
 ## HEAD
 
+- @iov/encoding: Pull out free functions `fromHex` and `toHex` to simplify
+  usability. `Encoding.fromHex` and `Encoding.toHex` are now deprecated.
+
 ## 2.2.5
 
 - @iov/bns: Rename `thirdPartyToken` to `broker`.
