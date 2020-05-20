@@ -1,5 +1,5 @@
 import { ChainId, Hash, SwapIdBytes } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex } from "@iov/encoding";
 
 import {
   buildCondition,
@@ -11,7 +11,7 @@ import {
   swapToAddress,
 } from "./conditions";
 
-const { fromHex, toAscii } = Encoding;
+const { toAscii } = Encoding;
 
 describe("conditions", () => {
   describe("buildCondition", () => {

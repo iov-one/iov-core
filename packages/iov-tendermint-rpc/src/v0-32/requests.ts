@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/encoding";
+import { toHex } from "@iov/encoding";
 import { JsonRpcRequest } from "@iov/jsonrpc";
 
 import { assertNotEmpty, Base64, Base64String, HexString, Integer, IntegerString, may } from "../encodings";
@@ -38,7 +38,7 @@ interface RpcAbciQueryParams {
 function encodeAbciQueryParams(params: requests.AbciQueryParams): RpcAbciQueryParams {
   return {
     path: assertNotEmpty(params.path),
-    data: Encoding.toHex(params.data) as HexString,
+    data: toHex(params.data) as HexString,
     height: may(Integer.encode, params.height),
     prove: params.prove,
   };

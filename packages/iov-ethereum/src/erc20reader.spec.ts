@@ -1,6 +1,6 @@
 import { Address, Algorithm, PubkeyBytes } from "@iov/bcp";
 import { Random, Secp256k1 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 import { isJsonRpcErrorResponse } from "@iov/jsonrpc";
 import BN from "bn.js";
 
@@ -43,7 +43,7 @@ function makeClient(baseUrl: string): EthereumRpcClient {
         throw new Error(JSON.stringify(response.error));
       }
 
-      return Encoding.fromHex(normalizeHex(response.result));
+      return fromHex(normalizeHex(response.result));
     },
   };
 }

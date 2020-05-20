@@ -1,4 +1,4 @@
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding, fromHex, Int53, toHex } from "@iov/encoding";
 import { As } from "type-tagger";
 
 import { BlockId, ReadonlyDateWithNanoseconds, Version } from "./responses";
@@ -171,11 +171,11 @@ export class DateTime {
 
 export class Hex {
   public static encode(data: Uint8Array): HexString {
-    return Encoding.toHex(data) as HexString;
+    return toHex(data) as HexString;
   }
 
   public static decode(hexString: HexString): Uint8Array {
-    return Encoding.fromHex(hexString);
+    return fromHex(hexString);
   }
 }
 

@@ -1,5 +1,5 @@
 /* tslint:disable:no-bitwise */
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex } from "@iov/encoding";
 
 import {
   Argon2id,
@@ -13,7 +13,7 @@ import {
   Xchacha20poly1305IetfNonce,
 } from "./libsodium";
 
-const { toAscii, fromHex } = Encoding;
+const { toAscii } = Encoding;
 
 describe("Libsodium", () => {
   describe("Argon2id", () => {

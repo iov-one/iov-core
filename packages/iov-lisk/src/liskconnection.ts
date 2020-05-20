@@ -27,7 +27,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding, Uint53, Uint64 } from "@iov/encoding";
+import { Encoding, fromHex, Uint53, Uint64 } from "@iov/encoding";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import axios from "axios";
 import equal from "fast-deep-equal";
@@ -189,7 +189,7 @@ export class LiskConnection implements BlockchainConnection {
           typeof itemPubkey === "string" && itemPubkey
             ? {
                 algo: Algorithm.Ed25519,
-                data: Encoding.fromHex(itemPubkey) as PubkeyBytes,
+                data: fromHex(itemPubkey) as PubkeyBytes,
               }
             : undefined;
 

@@ -1,5 +1,5 @@
 import { ChainId, Nonce } from "@iov/bcp";
-import { Encoding, Uint53 } from "@iov/encoding";
+import { toHex, Uint53 } from "@iov/encoding";
 import BN from "bn.js";
 
 const bcpChainIdPrefix = "ethereum-eip155-";
@@ -31,7 +31,7 @@ export function decodeHexQuantityNonce(hexString: string): Nonce {
  * representation with a prefix.
  */
 export function toEthereumHex(input: string | Uint8Array): string {
-  const str = typeof input === "string" ? input : Encoding.toHex(input);
+  const str = typeof input === "string" ? input : toHex(input);
   const match = str.match(/^(?:0x)?(.*)$/);
   if (!match) {
     throw new Error("Could not convert to Ethereum hex: invalid input");

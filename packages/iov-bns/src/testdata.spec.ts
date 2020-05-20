@@ -19,12 +19,10 @@ import {
   TokenTicker,
 } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import data from "./testdata/bnsd.json";
 import { PrivkeyBundle, PrivkeyBytes } from "./types";
-
-const { fromHex } = Encoding;
 
 export const pubJson: PubkeyBundle = {
   algo: Algorithm.Ed25519,

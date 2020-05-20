@@ -6,7 +6,7 @@ import {
   isAtomicSwapSenderQuery,
   QueryTag,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { toHex } from "@iov/encoding";
 
 import { bucketKey, decodeBnsAddress, indexKey } from "./util";
 
@@ -27,7 +27,7 @@ export function bnsSwapQueryTag(query: AtomicSwapQuery, set = true): QueryTag {
   }
 
   return {
-    key: Encoding.toHex(binKey).toUpperCase(),
+    key: toHex(binKey).toUpperCase(),
     // "s" for set, "d" for delete.... we need to watch both changes to be clear
     // But if we return two tags here, that would AND not OR
     value: set ? "s" : "d",

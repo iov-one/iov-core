@@ -1,4 +1,4 @@
-import { Encoding, Uint32 } from "@iov/encoding";
+import { Encoding, fromHex, Uint32 } from "@iov/encoding";
 import BN from "bn.js";
 import elliptic from "elliptic";
 
@@ -116,7 +116,7 @@ export class Slip10 {
   private static serializedPoint(curve: Slip10Curve, p: BN): Uint8Array {
     switch (curve) {
       case Slip10Curve.Secp256k1:
-        return Encoding.fromHex(secp256k1.g.mul(p).encodeCompressed("hex"));
+        return fromHex(secp256k1.g.mul(p).encodeCompressed("hex"));
       default:
         throw new Error("curve not supported");
     }

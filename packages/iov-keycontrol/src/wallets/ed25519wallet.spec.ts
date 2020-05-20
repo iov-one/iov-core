@@ -1,11 +1,9 @@
 import { Algorithm, ChainId, PrehashType, PubkeyBytes, SignableBytes } from "@iov/bcp";
 import { Ed25519Keypair, Sha256, Sha512 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex, toHex } from "@iov/encoding";
 
 import { WalletSerializationString } from "../wallet";
 import { Ed25519Wallet } from "./ed25519wallet";
-
-const { fromHex, toHex } = Encoding;
 
 describe("Ed25519Wallet", () => {
   const defaultChain = "chain123" as ChainId;
@@ -357,7 +355,7 @@ describe("Ed25519Wallet", () => {
       const firstIdentity = wallet.getIdentities()[0];
       expect(firstIdentity.chainId).toEqual("foonet");
       expect(firstIdentity.pubkey.algo).toEqual("ed25519");
-      expect(firstIdentity.pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(firstIdentity.pubkey.data).toEqual(fromHex("aabbccdd"));
       expect(wallet.getIdentityLabel(firstIdentity)).toEqual("foo");
     }
 
@@ -396,11 +394,11 @@ describe("Ed25519Wallet", () => {
       const secondIdentity = wallet.getIdentities()[1];
       expect(firstIdentity.chainId).toEqual("xnet");
       expect(firstIdentity.pubkey.algo).toEqual("ed25519");
-      expect(firstIdentity.pubkey.data).toEqual(Encoding.fromHex("aabbccdd"));
+      expect(firstIdentity.pubkey.data).toEqual(fromHex("aabbccdd"));
       expect(wallet.getIdentityLabel(firstIdentity)).toEqual("foo");
       expect(secondIdentity.chainId).toEqual("ynet");
       expect(secondIdentity.pubkey.algo).toEqual("ed25519");
-      expect(secondIdentity.pubkey.data).toEqual(Encoding.fromHex("ddccbbaa"));
+      expect(secondIdentity.pubkey.data).toEqual(fromHex("ddccbbaa"));
       expect(wallet.getIdentityLabel(secondIdentity)).toEqual("bar");
     }
   });

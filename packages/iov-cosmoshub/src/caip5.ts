@@ -1,8 +1,8 @@
 import { ChainId } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, toHex } from "@iov/encoding";
 
-const { toHex, toUtf8 } = Encoding;
+const { toUtf8 } = Encoding;
 
 const hashedPrefix = "hashed-";
 

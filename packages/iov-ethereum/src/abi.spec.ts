@@ -1,5 +1,5 @@
 import { Address, SwapProcessState } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { Abi } from "./abi";
 import {
@@ -7,8 +7,6 @@ import {
   SwapContractEvent,
   SwapContractMethod,
 } from "./smartcontracts/atomicswapcontract";
-
-const { fromHex } = Encoding;
 
 describe("Abi", () => {
   describe("calculateMethodHash", () => {

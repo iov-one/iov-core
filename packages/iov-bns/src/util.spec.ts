@@ -1,5 +1,5 @@
 import { Address, Algorithm, ChainId, PubkeyBundle, PubkeyBytes, TransactionId } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex, toHex } from "@iov/encoding";
 
 import * as testdata from "./testdata.spec";
 import {
@@ -14,7 +14,7 @@ import {
   pubkeyToAddress,
 } from "./util";
 
-const { fromHex, toAscii, toHex, toUtf8 } = Encoding;
+const { toAscii, toUtf8 } = Encoding;
 
 describe("Util", () => {
   describe("addressPrefix", () => {

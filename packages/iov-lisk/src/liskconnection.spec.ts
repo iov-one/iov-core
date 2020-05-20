@@ -24,7 +24,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Ed25519, Random, Sha256 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 import { Ed25519Wallet, UserProfile } from "@iov/keycontrol";
 import { toListPromise } from "@iov/stream";
 import { assert } from "@iov/utils";
@@ -35,7 +35,6 @@ import { Derivation } from "./derivation";
 import { liskCodec } from "./liskcodec";
 import { generateNonce, LiskConnection } from "./liskconnection";
 
-const { fromHex } = Encoding;
 const blockTime = 10_000;
 
 function pendingWithoutLiskDevnet(): void {

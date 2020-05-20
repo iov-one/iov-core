@@ -13,7 +13,7 @@ import {
 } from "@iov/bcp";
 import { bnsCodec, createBnsConnector } from "@iov/bns";
 import { Ed25519, Random } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 import { createEthereumConnector, ethereumCodec } from "@iov/ethereum";
 import { Ed25519HdWallet, HdPaths, Secp256k1HdWallet, UserProfile, WalletId } from "@iov/keycontrol";
 
@@ -172,7 +172,7 @@ describe("MultiChainSigner", () => {
         chainId: ethereumChainId,
         pubkey: {
           algo: Algorithm.Secp256k1,
-          data: Encoding.fromHex(
+          data: fromHex(
             "04965fb72aad79318cd8c8c975cf18fa8bcac0c091605d10e89cd5a9f7cff564b0cb0459a7c22903119f7a42947c32c1cc6a434a86f0e26aad00ca2b2aff6ba381",
           ) as PubkeyBytes,
         },

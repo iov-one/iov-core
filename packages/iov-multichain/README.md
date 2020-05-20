@@ -82,8 +82,7 @@ Create identies on the two wallets:
 ```ts
 import { ChainId } from "@iov/bcp";
 import { HdPaths } from "@iov/keycontrol";
-import { Encoding } from "@iov/encoding";
-const { fromHex, toHex } = Encoding;
+import { fromHex, toHex } from "@iov/encoding";
 
 const chainId = "iov-exchangenet" as ChainId;
 // this creates two different public key identities, generated from the

@@ -1,5 +1,5 @@
 import { Address, Amount, ChainId, Token, TokenTicker } from "@iov/bcp";
-import { Encoding, Uint32, Uint64 } from "@iov/encoding";
+import { Encoding, toHex, Uint32, Uint64 } from "@iov/encoding";
 import BN from "bn.js";
 
 import { weaveFractionalDigits } from "./constants";
@@ -272,7 +272,7 @@ function decodeValidators(validators: readonly codecImpl.weave.IValidatorUpdate[
     if (!validator.pubKey || !validator.pubKey.data) {
       throw new Error("Validator is missing pubKey data");
     }
-    const index = `ed25519_${Encoding.toHex(validator.pubKey.data)}`;
+    const index = `ed25519_${toHex(validator.pubKey.data)}`;
     return {
       ...result,
       [index]: { power: asIntegerNumber(validator.power) },

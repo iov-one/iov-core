@@ -1,9 +1,7 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { Hmac } from "./hmac";
 import { Sha1, Sha256, Sha512 } from "./sha";
-
-const fromHex = Encoding.fromHex;
 
 describe("HMAC", () => {
   it("can perform HMAC(SHA1) according to Botan test vectors", () => {

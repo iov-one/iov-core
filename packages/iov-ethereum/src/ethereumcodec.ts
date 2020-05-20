@@ -23,7 +23,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex, toHex } from "@iov/encoding";
 
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { AtomicSwapContractTransactionBuilder } from "./atomicswapcontracttransactionbuilder";
@@ -82,7 +82,7 @@ export class EthereumCodec implements TxCodec {
     try {
       return Encoding.fromUtf8(input);
     } catch {
-      const hexstring = Encoding.toHex(input);
+      const hexstring = toHex(input);
       // split in space separated chunks up to 16 characters each
       return (hexstring.match(/.{1,16}/g) || []).join(" ");
     }
@@ -130,13 +130,13 @@ export class EthereumCodec implements TxCodec {
     const json: EthereumRpcTransactionResult = JSON.parse(Encoding.fromUtf8(bytes));
     const nonce = decodeHexQuantityNonce(json.nonce);
     const value = decodeHexQuantityString(json.value);
-    const input = Encoding.fromHex(normalizeHex(json.input));
+    const input = fromHex(normalizeHex(json.input));
     const chain: Eip155ChainId = {
       forkState: BlknumForkState.Forked,
       chainId: fromBcpChainId(chainId),
     };
-    const r = Encoding.fromHex(normalizeHex(json.r));
-    const s = Encoding.fromHex(normalizeHex(json.s));
+    const r = fromHex(normalizeHex(json.r));
+    const s = fromHex(normalizeHex(json.s));
     const v = decodeHexQuantity(json.v);
     const recoveryParam = getRecoveryParam(chain, v);
     const signature = new ExtendedSecp256k1Signature(r, s, recoveryParam);

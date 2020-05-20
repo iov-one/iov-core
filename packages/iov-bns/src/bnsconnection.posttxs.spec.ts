@@ -12,7 +12,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 import { Ed25519HdWallet, HdPaths, UserProfile } from "@iov/keycontrol";
 import { assert, sleep } from "@iov/utils";
 import BN from "bn.js";
@@ -72,8 +72,6 @@ import {
   VoteTx,
 } from "./types";
 import { encodeBnsAddress, identityToAddress } from "./util";
-
-const { fromHex } = Encoding;
 
 describe("BnsConnection (post txs)", () => {
   describe("postTx", () => {

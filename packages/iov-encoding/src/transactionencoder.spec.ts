@@ -1,4 +1,4 @@
-import { Encoding } from "./encoding";
+import { fromHex } from "./hex";
 import { TransactionEncoder } from "./transactionencoder";
 import { isUint8Array } from "./typechecks";
 
@@ -39,7 +39,7 @@ describe("TransactionEncoder", () => {
   const defaultChainId = "testchain";
   const defaultPubkey = {
     algo: "ed25519",
-    data: Encoding.fromHex("aabbccdd"),
+    data: fromHex("aabbccdd"),
   };
   const defaultAmount = {
     quantity: "123",

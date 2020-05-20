@@ -9,7 +9,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { toHex } from "@iov/encoding";
 import { TxBytes, v0_31 } from "@iov/tendermint-rpc";
 
 import { decodeSignedTx } from "./decode";
@@ -39,7 +39,7 @@ export const bnsCodec: TxCodec = {
   identifier: (tx: SignedTransaction): TransactionId => {
     const transactionBytes = (bnsCodec.bytesToPost(tx) as unknown) as TxBytes;
     const hash = v0_31.hashTx(transactionBytes);
-    return Encoding.toHex(hash).toUpperCase() as TransactionId;
+    return toHex(hash).toUpperCase() as TransactionId;
   },
 
   // parseBytes will recover bytes from the blockchain into a format we can use

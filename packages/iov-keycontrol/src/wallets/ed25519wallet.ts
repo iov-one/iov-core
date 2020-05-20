@@ -8,7 +8,7 @@ import {
   SignatureBytes,
 } from "@iov/bcp";
 import { Ed25519, Ed25519Keypair } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { fromHex, toHex } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import PseudoRandom from "random-js";
 import { As } from "type-tagger";
@@ -88,7 +88,7 @@ export class Ed25519Wallet implements Wallet {
   }
 
   private static identityId(identity: Identity): IdentityId {
-    const id = [identity.chainId, identity.pubkey.algo, Encoding.toHex(identity.pubkey.data)].join("|");
+    const id = [identity.chainId, identity.pubkey.algo, toHex(identity.pubkey.data)].join("|");
     return id as IdentityId;
   }
 
@@ -147,8 +147,8 @@ export class Ed25519Wallet implements Wallet {
       // identities
       for (const record of decodedData.identities) {
         const keypair = new Ed25519Keypair(
-          Encoding.fromHex(record.privkey),
-          Encoding.fromHex(record.localIdentity.pubkey.data),
+          fromHex(record.privkey),
+          fromHex(record.localIdentity.pubkey.data),
         );
         if (Ed25519Wallet.algorithmFromString(record.localIdentity.pubkey.algo) !== Algorithm.Ed25519) {
           throw new Error("This keyring only supports ed25519 private keys");
@@ -244,7 +244,7 @@ export class Ed25519Wallet implements Wallet {
   public printableSecret(): string {
     const libsodiumPrivkeys = [...this.privkeys.values()].map(pair => pair.toLibsodiumPrivkey());
     const hexstringsSorted = libsodiumPrivkeys
-      .map(privkey => Encoding.toHex(privkey))
+      .map(privkey => toHex(privkey))
       .sort((a, b) => a.localeCompare(b));
     const outStrings = hexstringsSorted.map(hexstring => (hexstring.match(/.{1,16}/g) || []).join(" "));
     return outStrings.join("; ");
@@ -263,11 +263,11 @@ export class Ed25519Wallet implements Wallet {
             chainId: identity.chainId,
             pubkey: {
               algo: identity.pubkey.algo,
-              data: Encoding.toHex(identity.pubkey.data),
+              data: toHex(identity.pubkey.data),
             },
             label: label,
           },
-          privkey: Encoding.toHex(keypair.privkey),
+          privkey: toHex(keypair.privkey),
         };
       }),
     };

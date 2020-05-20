@@ -1,4 +1,4 @@
-import { Encoding } from "./encoding";
+import { fromHex, toHex } from "./hex";
 import { JsonCompatibleValue } from "./json";
 import { isUint8Array } from "./typechecks";
 
@@ -35,7 +35,7 @@ export class TransactionEncoder {
     }
 
     if (isUint8Array(data)) {
-      return `${prefixes.bytes}${Encoding.toHex(data)}`;
+      return `${prefixes.bytes}${toHex(data)}`;
     }
 
     if (Array.isArray(data)) {
@@ -83,7 +83,7 @@ export class TransactionEncoder {
       }
 
       if (data.startsWith(prefixes.bytes)) {
-        return Encoding.fromHex(data.slice(prefixes.bytes.length));
+        return fromHex(data.slice(prefixes.bytes.length));
       }
 
       throw new Error("Found string with unknown prefix");

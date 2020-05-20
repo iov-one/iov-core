@@ -1,5 +1,5 @@
 import { Address, isSendTransaction, Nonce, TokenTicker } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { decodePrivkey, decodePubkey, decodeSignedTx, decodeUserData } from "./decode";
 import * as codecImpl from "./generated/codecimpl";
@@ -14,8 +14,6 @@ import {
   signedTxBin,
 } from "./testdata.spec";
 import { isMultisignatureTx } from "./types";
-
-const { fromHex } = Encoding;
 
 describe("Decode", () => {
   it("decode pubkey", () => {

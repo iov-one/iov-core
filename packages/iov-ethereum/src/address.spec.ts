@@ -1,9 +1,7 @@
 import { Algorithm, PubkeyBundle, PubkeyBytes } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
-
-const { fromHex } = Encoding;
 
 describe("address", () => {
   describe("isValidAddress", () => {

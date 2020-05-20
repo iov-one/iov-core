@@ -1,6 +1,8 @@
 import { ReadonlyDate } from "readonly-date";
 export declare class Encoding {
+  /** @deprecated use free function toHex from @iov/encoding */
   static toHex(data: Uint8Array): string;
+  /** @deprecated use free function fromHex from @iov/encoding */
   static fromHex(hexstring: string): Uint8Array;
   static toBase64(data: Uint8Array): string;
   static fromBase64(base64String: string): Uint8Array;

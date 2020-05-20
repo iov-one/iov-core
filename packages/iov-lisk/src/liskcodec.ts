@@ -18,7 +18,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding, fromHex, Int53, toHex } from "@iov/encoding";
 import { ReadonlyDate } from "readonly-date";
 
 import { constants } from "./constants";
@@ -65,13 +65,13 @@ export const liskCodec: TxCodec = {
         type: 0,
         amount: unsigned.amount.quantity,
         recipientId: unsigned.recipient,
-        senderPublicKey: Encoding.toHex(primarySignature.pubkey.data),
+        senderPublicKey: toHex(primarySignature.pubkey.data),
         timestamp: liskTimestamp,
         fee: "10000000", // 0.1 LSK fixed
         asset: {
           data: unsigned.memo,
         },
-        signature: Encoding.toHex(primarySignature.signature),
+        signature: toHex(primarySignature.signature),
         id: id,
       };
       return Encoding.toUtf8(JSON.stringify(postableObject)) as PostableBytes;
@@ -103,7 +103,7 @@ export const liskCodec: TxCodec = {
     const json = JSON.parse(Encoding.fromUtf8(bytes));
     const senderPublicKey: PubkeyBundle = {
       algo: Algorithm.Ed25519,
-      data: Encoding.fromHex(json.senderPublicKey) as PubkeyBytes,
+      data: fromHex(json.senderPublicKey) as PubkeyBytes,
     };
 
     let unsignedTransaction: UnsignedTransaction;
@@ -142,7 +142,7 @@ export const liskCodec: TxCodec = {
         {
           nonce: Parse.timeToNonce(Parse.fromTimestamp(json.timestamp)),
           pubkey: senderPublicKey,
-          signature: Encoding.fromHex(json.signature) as SignatureBytes,
+          signature: fromHex(json.signature) as SignatureBytes,
         },
       ],
     };

@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 import { JsonRpcSuccessResponse } from "@iov/jsonrpc";
 
 import {
@@ -244,10 +244,10 @@ interface RpcBlockId {
 
 function decodeBlockId(data: RpcBlockId): responses.BlockId {
   return {
-    hash: Encoding.fromHex(assertNotEmpty(data.hash)),
+    hash: fromHex(assertNotEmpty(data.hash)),
     parts: {
       total: Integer.parse(assertNotEmpty(data.parts.total)),
-      hash: Encoding.fromHex(assertNotEmpty(data.parts.hash)),
+      hash: fromHex(assertNotEmpty(data.parts.hash)),
     },
   };
 }
@@ -298,17 +298,17 @@ function decodeHeader(data: RpcHeader): responses.Header {
 
     lastBlockId: decodeBlockId(data.last_block_id),
 
-    lastCommitHash: Encoding.fromHex(assertNotEmpty(data.last_commit_hash)),
-    dataHash: Encoding.fromHex(assertSet(data.data_hash)),
+    lastCommitHash: fromHex(assertNotEmpty(data.last_commit_hash)),
+    dataHash: fromHex(assertSet(data.data_hash)),
 
-    validatorsHash: Encoding.fromHex(assertNotEmpty(data.validators_hash)),
-    nextValidatorsHash: Encoding.fromHex(assertNotEmpty(data.next_validators_hash)),
-    consensusHash: Encoding.fromHex(assertNotEmpty(data.consensus_hash)),
-    appHash: Encoding.fromHex(assertNotEmpty(data.app_hash)),
-    lastResultsHash: Encoding.fromHex(assertSet(data.last_results_hash)),
+    validatorsHash: fromHex(assertNotEmpty(data.validators_hash)),
+    nextValidatorsHash: fromHex(assertNotEmpty(data.next_validators_hash)),
+    consensusHash: fromHex(assertNotEmpty(data.consensus_hash)),
+    appHash: fromHex(assertNotEmpty(data.app_hash)),
+    lastResultsHash: fromHex(assertSet(data.last_results_hash)),
 
-    evidenceHash: Encoding.fromHex(assertSet(data.evidence_hash)),
-    proposerAddress: Encoding.fromHex(assertNotEmpty(data.proposer_address)),
+    evidenceHash: fromHex(assertSet(data.evidence_hash)),
+    proposerAddress: fromHex(assertNotEmpty(data.proposer_address)),
   };
 }
 
@@ -343,7 +343,7 @@ interface RpcBroadcastTxSyncResponse extends RpcTxData {
 function decodeBroadcastTxSync(data: RpcBroadcastTxSyncResponse): responses.BroadcastTxSyncResponse {
   return {
     ...decodeTxData(data),
-    hash: Encoding.fromHex(assertNotEmpty(data.hash)) as TxHash,
+    hash: fromHex(assertNotEmpty(data.hash)) as TxHash,
   };
 }
 
@@ -357,7 +357,7 @@ interface RpcBroadcastTxCommitResponse {
 function decodeBroadcastTxCommit(data: RpcBroadcastTxCommitResponse): responses.BroadcastTxCommitResponse {
   return {
     height: may(Integer.parse, data.height),
-    hash: Encoding.fromHex(assertNotEmpty(data.hash)) as TxHash,
+    hash: fromHex(assertNotEmpty(data.hash)) as TxHash,
     checkTx: decodeTxData(assertObject(data.check_tx)),
     deliverTx: may(decodeTxData, data.deliver_tx),
   };
@@ -386,7 +386,7 @@ interface RpcVote {
 function decodeVote(data: RpcVote): responses.Vote {
   return {
     type: Integer.parse(assertNumber(data.type)),
-    validatorAddress: Encoding.fromHex(assertNotEmpty(data.validator_address)),
+    validatorAddress: fromHex(assertNotEmpty(data.validator_address)),
     validatorIndex: Integer.parse(assertNotEmpty(data.validator_index)),
     height: Integer.parse(assertNotEmpty(data.height)),
     round: Integer.parse(assertNotEmpty(data.round)),
@@ -457,7 +457,7 @@ function decodeGenesis(data: RpcGenesisResponse): responses.GenesisResponse {
     chainId: assertNotEmpty(data.chain_id),
     consensusParams: decodeConsensusParams(data.consensus_params),
     validators: assertArray(data.validators).map(decodeValidatorGenesis),
-    appHash: Encoding.fromHex(assertSet(data.app_hash)), // empty string in kvstore app
+    appHash: fromHex(assertSet(data.app_hash)), // empty string in kvstore app
     appState: data.app_state,
   };
 }
@@ -473,7 +473,7 @@ function decodeValidatorInfo(data: RpcValidatorInfo): responses.Validator {
   return {
     pubkey: decodePubkey(assertObject(data.pub_key)),
     votingPower: Integer.parse(assertNotEmpty(data.voting_power)),
-    address: Encoding.fromHex(assertNotEmpty(data.address)),
+    address: fromHex(assertNotEmpty(data.address)),
   };
 }
 
@@ -501,7 +501,7 @@ interface RpcNodeInfo {
 
 function decodeNodeInfo(data: RpcNodeInfo): responses.NodeInfo {
   return {
-    id: Encoding.fromHex(assertNotEmpty(data.id)),
+    id: fromHex(assertNotEmpty(data.id)),
     listenAddr: assertNotEmpty(data.listen_addr),
     network: assertNotEmpty(data.network),
     version: assertNotEmpty(data.version),
@@ -526,8 +526,8 @@ interface RpcSyncInfo {
 
 function decodeSyncInfo(data: RpcSyncInfo): responses.SyncInfo {
   return {
-    latestBlockHash: Encoding.fromHex(assertNotEmpty(data.latest_block_hash)),
-    latestAppHash: Encoding.fromHex(assertNotEmpty(data.latest_app_hash)),
+    latestBlockHash: fromHex(assertNotEmpty(data.latest_block_hash)),
+    latestAppHash: fromHex(assertNotEmpty(data.latest_app_hash)),
     latestBlockTime: DateTime.decode(assertNotEmpty(data.latest_block_time)),
     latestBlockHeight: Integer.parse(assertNotEmpty(data.latest_block_height)),
     catchingUp: assertBoolean(data.catching_up),
@@ -575,7 +575,7 @@ interface RpcTxProof {
 function decodeTxProof(data: RpcTxProof): responses.TxProof {
   return {
     data: Base64.decode(assertNotEmpty(data.Data)),
-    rootHash: Encoding.fromHex(assertNotEmpty(data.RootHash)),
+    rootHash: fromHex(assertNotEmpty(data.RootHash)),
     proof: {
       total: Integer.parse(assertNotEmpty(data.Proof.total)),
       index: Integer.parse(assertNotEmpty(data.Proof.index)),
@@ -600,7 +600,7 @@ function decodeTxResponse(data: RpcTxResponse): responses.TxResponse {
     result: decodeTxData(assertObject(data.tx_result)),
     height: Integer.parse(assertNotEmpty(data.height)),
     index: Integer.parse(assertNumber(data.index)),
-    hash: Encoding.fromHex(assertNotEmpty(data.hash)) as TxHash,
+    hash: fromHex(assertNotEmpty(data.hash)) as TxHash,
     proof: may(decodeTxProof, data.proof),
   };
 }

@@ -7,7 +7,7 @@ import {
   SwapOfferTransaction,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex } from "@iov/encoding";
 
 import { encodeAmount, encodeInt, encodeNumericId, encodeString } from "./encodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
@@ -441,7 +441,7 @@ function encodeValidators(validators: Validators): codecImpl.weave.IValidatorUpd
     }
 
     return {
-      pubKey: { data: Encoding.fromHex(matches[1]), type: "ed25519" },
+      pubKey: { data: fromHex(matches[1]), type: "ed25519" },
       power: power,
     };
   });

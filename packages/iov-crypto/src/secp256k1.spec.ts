@@ -1,11 +1,9 @@
 /* tslint:disable:no-bitwise */
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { Secp256k1 } from "./secp256k1";
 import { ExtendedSecp256k1Signature, Secp256k1Signature } from "./secp256k1signature";
 import { Sha256 } from "./sha";
-
-const { fromHex } = Encoding;
 
 describe("Secp256k1", () => {
   // How to generate Secp256k1 test vectors:

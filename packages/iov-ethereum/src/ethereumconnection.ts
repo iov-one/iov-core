@@ -44,7 +44,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
-import { Encoding, Uint53 } from "@iov/encoding";
+import { Encoding, fromHex, toHex, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, makeJsonRpcId } from "@iov/jsonrpc";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
 import { sleep } from "@iov/utils";
@@ -328,7 +328,7 @@ export class EthereumConnection implements AtomicSwapConnection {
           throw new Error(JSON.stringify(response.error));
         }
 
-        return Encoding.fromHex(normalizeHex(response.result));
+        return fromHex(normalizeHex(response.result));
       },
     };
 
@@ -1241,7 +1241,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     const erc20ContractAddressBegin = stateEnd;
     const erc20ContractAddressEnd = erc20ContractAddressBegin + 32;
 
-    const resultArray = Encoding.fromHex(normalizeHex(swapsResponse.result));
+    const resultArray = fromHex(normalizeHex(swapsResponse.result));
     const erc20ContractAddress =
       query.id.prefix === SwapIdPrefix.Erc20
         ? Abi.decodeAddress(resultArray.slice(erc20ContractAddressBegin, erc20ContractAddressEnd))
@@ -1316,10 +1316,8 @@ export class EthereumConnection implements AtomicSwapConnection {
       ...erc20Logs.map(log => ({ ...log, prefix: SwapIdPrefix.Erc20 })),
     ]
       .reduce((accumulator: readonly AtomicSwap[], log: EthereumLogWithPrefix): readonly AtomicSwap[] => {
-        const dataArray = Encoding.fromHex(normalizeHex(log.data));
-        const kind = AtomicSwapContract.abiDecodeEventSignature(
-          Encoding.fromHex(normalizeHex(log.topics[0])),
-        );
+        const dataArray = fromHex(normalizeHex(log.data));
+        const kind = AtomicSwapContract.abiDecodeEventSignature(fromHex(normalizeHex(log.topics[0])));
         switch (kind) {
           case SwapContractEvent.Opened: {
             const parsed = EthereumConnection.parseOpenedEventBytes(dataArray, log.prefix, this.erc20Tokens);
@@ -1343,7 +1341,7 @@ export class EthereumConnection implements AtomicSwapConnection {
         } else if (isAtomicSwapSenderQuery(query)) {
           return swap.data.sender === query.sender;
         } else if (isAtomicSwapHashQuery(query)) {
-          return Encoding.toHex(swap.data.hash) === Encoding.toHex(query.hash);
+          return toHex(swap.data.hash) === toHex(query.hash);
         }
         throw new Error("unsupported query type");
       });

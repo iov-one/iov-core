@@ -1,4 +1,4 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import {
   Algorithm,
@@ -18,8 +18,6 @@ import {
   SignedTransaction,
   UnsignedTransaction,
 } from "./transactions";
-
-const { fromHex } = Encoding;
 
 describe("transactions", () => {
   describe("isPubkeyBundle", () => {

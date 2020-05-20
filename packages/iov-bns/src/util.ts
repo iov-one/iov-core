@@ -26,7 +26,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
-import { Bech32, Encoding } from "@iov/encoding";
+import { Bech32, Encoding, toHex } from "@iov/encoding";
 import { QueryString } from "@iov/tendermint-rpc";
 import BN from "bn.js";
 import Long from "long";
@@ -165,14 +165,14 @@ export function isConfirmedWithSwapClaimOrAbortTransaction(
 
 function sentFromOrToTag(addr: Address): string {
   const id = Uint8Array.from([...Encoding.toAscii("cash:"), ...decodeBnsAddress(addr).data]);
-  const key = Encoding.toHex(id).toUpperCase();
+  const key = toHex(id).toUpperCase();
   const value = "s"; // "s" for "set"
   return `${key}='${value}'`;
 }
 
 function signedByTag(addr: Address): string {
   const id = Uint8Array.from([...Encoding.toAscii("sigs:"), ...decodeBnsAddress(addr).data]);
-  const key = Encoding.toHex(id).toUpperCase();
+  const key = toHex(id).toUpperCase();
   const value = "s"; // "s" for "set"
   return `${key}='${value}'`;
 }

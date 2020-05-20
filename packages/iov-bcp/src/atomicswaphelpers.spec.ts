@@ -1,9 +1,7 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex } from "@iov/encoding";
 
 import { AtomicSwapHelpers } from "./atomicswaphelpers";
 import { Preimage } from "./atomicswaptypes";
-
-const { fromHex } = Encoding;
 
 describe("AtomicSwapHelpers", () => {
   describe("createPreimage", () => {

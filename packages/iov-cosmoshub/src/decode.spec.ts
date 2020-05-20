@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Address, Algorithm, TokenTicker } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { Encoding, fromHex } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
 import {
@@ -16,7 +16,7 @@ import {
 import { chainId, nonce, signedTxJson, txId } from "./testdata.spec";
 import data from "./testdata/cosmoshub.json";
 
-const { fromBase64, fromHex } = Encoding;
+const { fromBase64 } = Encoding;
 
 describe("decode", () => {
   const defaultPubkey = {

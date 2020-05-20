@@ -2,7 +2,7 @@
 const { isBlockInfoPending, isBlockInfoSucceeded } = require("@iov/bcp");
 const { bnsCodec, BnsConnection, VoteOption } = require("@iov/bns");
 const { Governor, ProposalType } = require("@iov/bns-governance");
-const { Encoding } = require("@iov/encoding");
+const { fromHex } = require("@iov/encoding");
 const { Ed25519HdWallet, HdPaths, UserProfile } = require("@iov/keycontrol");
 const { sleep } = require("@iov/utils");
 
@@ -38,7 +38,7 @@ async function main() {
   const wallet = profile.addWallet(Ed25519HdWallet.fromMnemonic(adminMnemonic));
   const identity = await profile.createIdentity(wallet.id, chainId, adminPath);
   const senderAddress = bnsCodec.identityToAddress(identity);
-  const guaranteeFundEscrowId = Encoding.fromHex("0000000000000001");
+  const guaranteeFundEscrowId = fromHex("0000000000000001");
   const rewardFundAddress = "tiov1k0dp2fmdunscuwjjusqtk6mttx5ufk3z0mmp0z";
   const signAndPost = createSignAndPoster(connection, profile);
 

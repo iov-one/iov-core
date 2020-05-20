@@ -1,10 +1,7 @@
-import { Encoding } from "@iov/encoding";
+import { fromHex, toHex } from "@iov/encoding";
 
 import { Keccak256 } from "./keccak";
 import keccakVectors from "./testdata/keccak.json";
-
-const toHex = Encoding.toHex;
-const fromHex = Encoding.fromHex;
 
 describe("Keccak256", () => {
   it("exists", () => {
