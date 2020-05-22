@@ -280,7 +280,7 @@ export class UserProfile {
     const wallet = this.findWalletInPrimaryKeyring(walletId);
     const previewIdentity = await wallet.previewIdentity(chainId, options);
     const existingIdentities = wallet.getIdentities();
-    return existingIdentities.find(identity => identityEquals(identity, previewIdentity)) !== undefined;
+    return existingIdentities.find((identity) => identityEquals(identity, previewIdentity)) !== undefined;
   }
 
   /** Assigns a label to one of the identities in the wallet with the given ID in the primary keyring */
@@ -406,7 +406,7 @@ export class UserProfile {
       throw new Error("UserProfile is currently locked");
     }
 
-    return this.keyring.getWallets().map(wallet => ({
+    return this.keyring.getWallets().map((wallet) => ({
       id: wallet.id,
       label: wallet.label.value,
     }));

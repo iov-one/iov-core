@@ -154,7 +154,7 @@ export class LiskConnection implements BlockchainConnection {
   }
 
   public async getToken(searchTicker: TokenTicker): Promise<Token | undefined> {
-    const results = (await this.getAllTokens()).find(t => t.tokenTicker === searchTicker);
+    const results = (await this.getAllTokens()).find((t) => t.tokenTicker === searchTicker);
     return results;
   }
 
@@ -228,7 +228,7 @@ export class LiskConnection implements BlockchainConnection {
     let lastEvent: Account | {} | undefined = {};
     let pollInternal: NodeJS.Timeout | undefined;
     const producer: Producer<Account | undefined> = {
-      start: async listener => {
+      start: async (listener) => {
         const poll = async (): Promise<void> => {
           try {
             const event = await this.getAccount(query);
@@ -297,7 +297,7 @@ export class LiskConnection implements BlockchainConnection {
     let lastEvent: BlockHeader | undefined; // Ensures the stream does not contain duplicates
     let pollInternal: NodeJS.Timeout | undefined;
     const producer: Producer<BlockHeader> = {
-      start: async listener => {
+      start: async (listener) => {
         let watchHeight: number = await this.height();
         const poll = async (): Promise<void> => {
           try {
@@ -382,7 +382,7 @@ export class LiskConnection implements BlockchainConnection {
     } else if (query.sentFromOrTo) {
       let pollInternal: NodeJS.Timeout | undefined;
       const producer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
-        start: async listener => {
+        start: async (listener) => {
           let minHeight = query.minHeight || 0;
           const maxHeight = query.maxHeight || Number.MAX_SAFE_INTEGER;
 
@@ -441,7 +441,7 @@ export class LiskConnection implements BlockchainConnection {
   ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
     let pollInternal: NodeJS.Timeout | undefined;
     const producer: Producer<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> = {
-      start: listener => {
+      start: (listener) => {
         setInterval(async () => {
           try {
             const results = await this.searchTransactions({ id: id }, undefined, undefined);

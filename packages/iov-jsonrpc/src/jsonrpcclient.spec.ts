@@ -16,9 +16,9 @@ function makeSimpleMessagingConnection(
   worker: Worker,
 ): SimpleMessagingConnection<JsonRpcRequest, JsonRpcResponse> {
   const producer: Producer<JsonRpcResponse> = {
-    start: listener => {
+    start: (listener) => {
       // tslint:disable-next-line:no-object-mutation
-      worker.onmessage = event => {
+      worker.onmessage = (event) => {
         listener.next(parseJsonRpcResponse(event.data));
       };
     },
@@ -30,7 +30,7 @@ function makeSimpleMessagingConnection(
 
   return {
     responseStream: Stream.create(producer),
-    sendRequest: request => worker.postMessage(request),
+    sendRequest: (request) => worker.postMessage(request),
   };
 }
 

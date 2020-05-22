@@ -58,7 +58,7 @@ function isPath(value: unknown): value is readonly Slip10RawIndex[] {
   if (!Array.isArray(value)) {
     return false;
   }
-  return value.every(item => item instanceof Slip10RawIndex);
+  return value.every((item) => item instanceof Slip10RawIndex);
 }
 
 function deserialize(data: WalletSerializationString): Slip10WalletSerialization {
@@ -225,7 +225,7 @@ export class Slip10Wallet implements Wallet {
         fromHex(record.localIdentity.pubkey.data) as PubkeyBytes,
       );
 
-      const privkeyPath: readonly Slip10RawIndex[] = record.privkeyPath.map(n => new Slip10RawIndex(n));
+      const privkeyPath: readonly Slip10RawIndex[] = record.privkeyPath.map((n) => new Slip10RawIndex(n));
       privkeyPaths.set(Slip10Wallet.identityId(identity), privkeyPath);
       labels.set(Slip10Wallet.identityId(identity), record.localIdentity.label);
       identities.push(identity);
@@ -280,7 +280,7 @@ export class Slip10Wallet implements Wallet {
     const newIdentity = await this.previewIdentity(chainId, options);
     const newIdentityId = Slip10Wallet.identityId(newIdentity);
 
-    if (this.identities.find(i => Slip10Wallet.identityId(i) === newIdentityId)) {
+    if (this.identities.find((i) => Slip10Wallet.identityId(i) === newIdentityId)) {
       throw new Error(
         "Identity ID collision: this happens when you try to create multiple identities with the same path in the same wallet.",
       );
@@ -295,7 +295,7 @@ export class Slip10Wallet implements Wallet {
 
   public setIdentityLabel(identity: Identity, label: string | undefined): void {
     const identityId = Slip10Wallet.identityId(identity);
-    const index = this.identities.findIndex(i => Slip10Wallet.identityId(i) === identityId);
+    const index = this.identities.findIndex((i) => Slip10Wallet.identityId(i) === identityId);
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -304,7 +304,7 @@ export class Slip10Wallet implements Wallet {
 
   public getIdentityLabel(identity: Identity): string | undefined {
     const identityId = Slip10Wallet.identityId(identity);
-    const index = this.identities.findIndex(i => Slip10Wallet.identityId(i) === identityId);
+    const index = this.identities.findIndex((i) => Slip10Wallet.identityId(i) === identityId);
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -381,7 +381,7 @@ export class Slip10Wallet implements Wallet {
             },
             label: label,
           },
-          privkeyPath: privkeyPath.map(rawIndex => rawIndex.toNumber()),
+          privkeyPath: privkeyPath.map((rawIndex) => rawIndex.toNumber()),
         };
       },
     );

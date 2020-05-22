@@ -194,7 +194,7 @@ export class Ed25519Wallet implements Wallet {
     const newIdentity = Ed25519Wallet.buildIdentity(chainId, keypair.pubkey as PubkeyBytes);
     const newIdentityId = Ed25519Wallet.identityId(newIdentity);
 
-    if (this.identities.find(i => Ed25519Wallet.identityId(i) === newIdentityId)) {
+    if (this.identities.find((i) => Ed25519Wallet.identityId(i) === newIdentityId)) {
       throw new Error(
         "Identity ID collision: this happens when you try to create multiple identities with the same keypair in the same wallet.",
       );
@@ -208,7 +208,7 @@ export class Ed25519Wallet implements Wallet {
 
   public setIdentityLabel(identity: Identity, label: string | undefined): void {
     const identityId = Ed25519Wallet.identityId(identity);
-    const index = this.identities.findIndex(i => Ed25519Wallet.identityId(i) === identityId);
+    const index = this.identities.findIndex((i) => Ed25519Wallet.identityId(i) === identityId);
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -218,7 +218,7 @@ export class Ed25519Wallet implements Wallet {
 
   public getIdentityLabel(identity: Identity): string | undefined {
     const identityId = Ed25519Wallet.identityId(identity);
-    const index = this.identities.findIndex(i => Ed25519Wallet.identityId(i) === identityId);
+    const index = this.identities.findIndex((i) => Ed25519Wallet.identityId(i) === identityId);
     if (index === -1) {
       throw new Error("identity with id '" + identityId + "' not found");
     }
@@ -242,11 +242,11 @@ export class Ed25519Wallet implements Wallet {
   }
 
   public printableSecret(): string {
-    const libsodiumPrivkeys = [...this.privkeys.values()].map(pair => pair.toLibsodiumPrivkey());
+    const libsodiumPrivkeys = [...this.privkeys.values()].map((pair) => pair.toLibsodiumPrivkey());
     const hexstringsSorted = libsodiumPrivkeys
-      .map(privkey => toHex(privkey))
+      .map((privkey) => toHex(privkey))
       .sort((a, b) => a.localeCompare(b));
-    const outStrings = hexstringsSorted.map(hexstring => (hexstring.match(/.{1,16}/g) || []).join(" "));
+    const outStrings = hexstringsSorted.map((hexstring) => (hexstring.match(/.{1,16}/g) || []).join(" "));
     return outStrings.join("; ");
   }
 
@@ -255,7 +255,7 @@ export class Ed25519Wallet implements Wallet {
       formatVersion: 2,
       id: this.id,
       label: this.label.value,
-      identities: this.identities.map(identity => {
+      identities: this.identities.map((identity) => {
         const keypair = this.privateKeyForIdentity(identity);
         const label = this.getIdentityLabel(identity);
         return {

@@ -78,7 +78,7 @@ async function randomAddress(): Promise<Address> {
 }
 
 function matchId(id: SwapId): (swap: AtomicSwap) => boolean {
-  return s => swapIdEquals(id, s.data.id);
+  return (s) => swapIdEquals(id, s.data.id);
 }
 
 describe("EthereumConnection", () => {
@@ -417,7 +417,7 @@ describe("EthereumConnection", () => {
       expect(result).toBeTruthy();
       expect(result.log).toBeUndefined();
 
-      const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await result.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       connection.disconnect();
@@ -503,7 +503,7 @@ describe("EthereumConnection", () => {
       await connection
         .postTx(ethereumCodec.bytesToPost(signed))
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(testConfig.expectedErrorMessages.gasLimitTooLow));
+        .catch((error) => expect(error).toMatch(testConfig.expectedErrorMessages.gasLimitTooLow));
 
       connection.disconnect();
     }, 30_000);
@@ -541,7 +541,7 @@ describe("EthereumConnection", () => {
       await connection
         .postTx(ethereumCodec.bytesToPost(signed))
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(testConfig.expectedErrorMessages.insufficientFunds));
+        .catch((error) => expect(error).toMatch(testConfig.expectedErrorMessages.insufficientFunds));
 
       connection.disconnect();
     }, 30_000);
@@ -580,7 +580,7 @@ describe("EthereumConnection", () => {
       await connection
         .postTx(ethereumCodec.bytesToPost(signed))
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(testConfig.expectedErrorMessages.invalidSignature));
+        .catch((error) => expect(error).toMatch(testConfig.expectedErrorMessages.invalidSignature));
 
       connection.disconnect();
     }, 30_000);
@@ -620,12 +620,12 @@ describe("EthereumConnection", () => {
         expect(result).toBeTruthy();
         expect(result.log).toBeUndefined();
 
-        const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await result.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
         const recipientAccount = await connection.getAccount({ address: recipientAddress });
         const erc20Balance = recipientAccount!.balance.find(
-          entry => entry.tokenTicker === transferTest.amount.tokenTicker,
+          (entry) => entry.tokenTicker === transferTest.amount.tokenTicker,
         );
         expect(erc20Balance!.quantity).toEqual(transferTest.amount.quantity);
         expect(erc20Balance!.fractionalDigits).toEqual(transferTest.amount.fractionalDigits);
@@ -637,7 +637,7 @@ describe("EthereumConnection", () => {
   });
 
   describe("watchAccount", () => {
-    it("can watch an account", done => {
+    it("can watch an account", (done) => {
       pendingWithoutEthereum();
 
       (async () => {
@@ -651,7 +651,7 @@ describe("EthereumConnection", () => {
         // setup watching
         const events = new Array<Account | undefined>();
         const subscription = connection.watchAccount({ address: recipient }).subscribe({
-          next: event => {
+          next: (event) => {
             events.push(event);
 
             if (event) {
@@ -696,7 +696,7 @@ describe("EthereumConnection", () => {
         const nonExistentId = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" as TransactionId;
         await connection
           .getTx(nonExistentId)
-          .then(fail.bind(null, "should not resolve"), error =>
+          .then(fail.bind(null, "should not resolve"), (error) =>
             expect(error).toMatch(/transaction does not exist/i),
           );
       }
@@ -724,7 +724,7 @@ describe("EthereumConnection", () => {
 
         const resultPost = await connection.postTx(bytesToPost);
         const { transactionId, blockInfo } = resultPost;
-        await blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
         const result = await connection.getTx(transactionId);
         expect(result.height).toBeGreaterThanOrEqual(2);
@@ -769,7 +769,7 @@ describe("EthereumConnection", () => {
 
       const resultPost = await connection.postTx(bytesToPost);
       const { transactionId, blockInfo } = resultPost;
-      await blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
       const {
         transaction,
@@ -803,7 +803,7 @@ describe("EthereumConnection", () => {
       await connection
         .searchTx({ id: invalidHashLength })
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/Invalid transaction ID format/i));
+        .catch((error) => expect(error).toMatch(/Invalid transaction ID format/i));
       connection.disconnect();
     });
 
@@ -850,7 +850,7 @@ describe("EthereumConnection", () => {
 
       const resultPost = await connection.postTx(bytesToPost);
       expect(resultPost.transactionId).toMatch(/^0x[0-9a-f]{64}$/);
-      await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await resultPost.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
       const resultSearch = await connection.searchTx({ id: resultPost.transactionId });
       expect(resultSearch.length).toEqual(1);
@@ -911,7 +911,7 @@ describe("EthereumConnection", () => {
 
       const resultPost = await connection.postTx(bytesToPost);
       const transactionId = resultPost.transactionId;
-      const blockInfo = await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await resultPost.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       const transactionHeight = (blockInfo as BlockInfoSucceeded | BlockInfoFailed).height;
 
       // Random delay to give scraper a chance to receive and process the new block
@@ -1045,7 +1045,7 @@ describe("EthereumConnection", () => {
           const signed = await profile.signTransaction(mainIdentity, sendTx, codec, nonce);
           const resultPost = await connection.postTx(codec.bytesToPost(signed));
           transactionId = resultPost.transactionId;
-          await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await resultPost.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
 
         // search by recipient
@@ -1105,7 +1105,7 @@ describe("EthereumConnection", () => {
           const signed = await profile.signTransaction(mainIdentity, sendTx, codec, nonce);
           const resultPost = await connection.postTx(codec.bytesToPost(signed));
           transactionId = resultPost.transactionId;
-          await resultPost.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await resultPost.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
 
         // search by sender
@@ -1134,7 +1134,7 @@ describe("EthereumConnection", () => {
   });
 
   describe("listenTx", () => {
-    it("can listen to transactions", done => {
+    it("can listen to transactions", (done) => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
@@ -1154,7 +1154,7 @@ describe("EthereumConnection", () => {
         const transactionIds = new Set<TransactionId>();
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.listenTx({ sentFromOrTo: recipientAddress }).subscribe({
-          next: event => {
+          next: (event) => {
             if (!isConfirmedTransaction(event)) {
               throw new Error("Confirmed transaction expected");
             }
@@ -1169,7 +1169,7 @@ describe("EthereumConnection", () => {
             if (events.length === 3) {
               // The order of the events 0, 1, 2 does not necessarily correspond to the send
               // order A, B, C. However, we can at least make sure we got the right ones.
-              const receivedIds = new Set(events.map(e => e.transactionId));
+              const receivedIds = new Set(events.map((e) => e.transactionId));
               expect(receivedIds).toEqual(transactionIds);
 
               subscription.unsubscribe();
@@ -1242,9 +1242,9 @@ describe("EthereumConnection", () => {
 
         // Wait for transaction success
         await Promise.all([
-          postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info)),
-          postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info)),
-          postResultC.blockInfo.waitFor(info => !isBlockInfoPending(info)),
+          postResultA.blockInfo.waitFor((info) => !isBlockInfoPending(info)),
+          postResultB.blockInfo.waitFor((info) => !isBlockInfoPending(info)),
+          postResultC.blockInfo.waitFor((info) => !isBlockInfoPending(info)),
         ]);
       })().catch(done.fail);
     }, 90_000);
@@ -1253,7 +1253,7 @@ describe("EthereumConnection", () => {
   describe("liveTx", () => {
     const waitForAdditionalEventsMs = 3 * (testConfig.connectionOptions.pollInterval || 4) * 1000;
 
-    it("works for ETH transactions by recipient (in history and updates)", done => {
+    it("works for ETH transactions by recipient (in history and updates)", (done) => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
@@ -1330,13 +1330,13 @@ describe("EthereumConnection", () => {
         transactionIds.add(postResultB.transactionId);
 
         // Wait for a block
-        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultA.blockInfo.waitFor((info) => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
-          next: event => {
+          next: (event) => {
             if (!isConfirmedTransaction(event)) {
               throw new Error("Confirmed transaction expected");
             }
@@ -1349,7 +1349,7 @@ describe("EthereumConnection", () => {
             expect(event.transaction.recipient).toEqual(recipientAddress);
 
             if (events.length === 3) {
-              const receivedIds = new Set(events.map(e => e.transactionId));
+              const receivedIds = new Set(events.map((e) => e.transactionId));
               expect(receivedIds).toEqual(transactionIds);
 
               setTimeout(() => {
@@ -1370,7 +1370,7 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 70_000);
 
-    it("works for ETH transactions by sender (in history and updates)", done => {
+    it("works for ETH transactions by sender (in history and updates)", (done) => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
@@ -1448,15 +1448,15 @@ describe("EthereumConnection", () => {
         transactionIds.add(postResultB.transactionId);
 
         // Wait for a block
-        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultA.blockInfo.waitFor((info) => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection
           .liveTx({ sentFromOrTo: senderAddress, minHeight: minHeight })
           .subscribe({
-            next: event => {
+            next: (event) => {
               if (!isConfirmedTransaction(event)) {
                 throw new Error("Confirmed transaction expected");
               }
@@ -1469,7 +1469,7 @@ describe("EthereumConnection", () => {
               expect(event.transaction.recipient).toEqual(recipientAddress);
 
               if (events.length === 3) {
-                const receivedIds = new Set(events.map(e => e.transactionId));
+                const receivedIds = new Set(events.map((e) => e.transactionId));
                 expect(receivedIds).toEqual(transactionIds);
 
                 setTimeout(() => {
@@ -1490,7 +1490,7 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 70_000);
 
-    it("works for ERC20 transactions by recipient (in history and updates)", done => {
+    it("works for ERC20 transactions by recipient (in history and updates)", (done) => {
       pendingWithoutEthereum();
 
       (async () => {
@@ -1560,13 +1560,13 @@ describe("EthereumConnection", () => {
         const postResultB = await connection.postTx(bytesToPostB);
         transactionIds.add(postResultA.transactionId);
         transactionIds.add(postResultB.transactionId);
-        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultA.blockInfo.waitFor((info) => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
-          next: event => {
+          next: (event) => {
             if (!isConfirmedTransaction(event)) {
               throw new Error("Confirmed transaction expected");
             }
@@ -1579,7 +1579,7 @@ describe("EthereumConnection", () => {
             expect(event.transaction.recipient).toEqual(recipientAddress);
 
             if (events.length === 3) {
-              const receivedIds = new Set(events.map(e => e.transactionId));
+              const receivedIds = new Set(events.map((e) => e.transactionId));
               expect(receivedIds).toEqual(transactionIds);
 
               setTimeout(() => {
@@ -1600,7 +1600,7 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 70_000);
 
-    it("works for ERC20 transactions by sender (in history and updates)", done => {
+    it("works for ERC20 transactions by sender (in history and updates)", (done) => {
       pendingWithoutEthereum();
 
       (async () => {
@@ -1671,15 +1671,15 @@ describe("EthereumConnection", () => {
         const postResultB = await connection.postTx(bytesToPostB);
         transactionIds.add(postResultA.transactionId);
         transactionIds.add(postResultB.transactionId);
-        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultA.blockInfo.waitFor((info) => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection
           .liveTx({ sentFromOrTo: senderAddress, minHeight: minHeight })
           .subscribe({
-            next: event => {
+            next: (event) => {
               if (!isConfirmedTransaction(event)) {
                 throw new Error("Confirmed transaction expected");
               }
@@ -1692,7 +1692,7 @@ describe("EthereumConnection", () => {
               expect(event.transaction.recipient).toEqual(recipientAddress);
 
               if (events.length === 3) {
-                const receivedIds = new Set(events.map(e => e.transactionId));
+                const receivedIds = new Set(events.map((e) => e.transactionId));
                 expect(receivedIds).toEqual(transactionIds);
 
                 setTimeout(() => {
@@ -1713,7 +1713,7 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 70_000);
 
-    it("works for ETH and ERC20 transactions by recipient (in history and updates)", done => {
+    it("works for ETH and ERC20 transactions by recipient (in history and updates)", (done) => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
@@ -1800,13 +1800,13 @@ describe("EthereumConnection", () => {
         ]);
         transactionIds.add(postResultA.transactionId);
         transactionIds.add(postResultB.transactionId);
-        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultA.blockInfo.waitFor((info) => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
-          next: event => {
+          next: (event) => {
             if (!isConfirmedTransaction(event)) {
               throw new Error("Confirmed transaction expected");
             }
@@ -1819,7 +1819,7 @@ describe("EthereumConnection", () => {
             expect(event.transaction.recipient).toEqual(recipientAddress);
 
             if (events.length === 4) {
-              const receivedIds = new Set(events.map(e => e.transactionId));
+              const receivedIds = new Set(events.map((e) => e.transactionId));
               expect(receivedIds).toEqual(transactionIds);
 
               setTimeout(() => {
@@ -1844,7 +1844,7 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 80_000);
 
-    it("works for transactions by ID (in history)", done => {
+    it("works for transactions by ID (in history)", (done) => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
@@ -1880,12 +1880,12 @@ describe("EthereumConnection", () => {
         const transactionId = postResult.transactionId;
 
         // Wait for a block
-        await postResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResult.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
         // setup listener after transaction is in block
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
-          next: event => {
+          next: (event) => {
             if (!isConfirmedTransaction(event)) {
               throw new Error("Confirmed transaction expected");
             }
@@ -1906,7 +1906,7 @@ describe("EthereumConnection", () => {
       })().catch(done.fail);
     }, 30_000);
 
-    it("works for transactions by ID (in updates)", done => {
+    it("works for transactions by ID (in updates)", (done) => {
       pendingWithoutEthereum();
       pendingWithoutEthereumScraper();
 
@@ -1947,7 +1947,7 @@ describe("EthereumConnection", () => {
         // setup listener before transaction is in block
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
-          next: event => {
+          next: (event) => {
             if (!isConfirmedTransaction(event)) {
               throw new Error("Confirmed transaction expected");
             }
@@ -1992,13 +1992,13 @@ describe("EthereumConnection", () => {
       await connection
         .getBlockHeader(99999999999999)
         .then(() => fail("promise must be rejected"))
-        .catch(err => expect(err).toMatch(/Header 99999999999999 doesn't exist yet/));
+        .catch((err) => expect(err).toMatch(/Header 99999999999999 doesn't exist yet/));
       connection.disconnect();
     });
   });
 
   describe("watchBlockHeaders", () => {
-    it("watches headers with same data as getBlockHeader", done => {
+    it("watches headers with same data as getBlockHeader", (done) => {
       pendingWithoutEthereum();
 
       (async () => {
@@ -2009,7 +2009,7 @@ describe("EthereumConnection", () => {
         const events = new Array<BlockHeader>();
 
         const subscription = connection.watchBlockHeaders().subscribe({
-          next: async event => {
+          next: async (event) => {
             try {
               // check this event
               const header = await connection.getBlockHeader(event.height);
@@ -2089,7 +2089,7 @@ describe("EthereumConnection", () => {
       await connection
         .getFeeQuote(otherTransaction)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/transaction of unsupported kind/i));
+        .catch((error) => expect(error).toMatch(/transaction of unsupported kind/i));
 
       connection.disconnect();
     });
@@ -2145,7 +2145,7 @@ describe("EthereumConnection", () => {
         const { transactionId } = result;
         expect(transactionId).toMatch(/^0x[0-9a-f]{64}$/i);
 
-        const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await result.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo.state}`);
         }
@@ -2201,7 +2201,7 @@ describe("EthereumConnection", () => {
 
         // we can also get it by the sender
         const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
-          s => s.kind === SwapProcessState.Open,
+          (s) => s.kind === SwapProcessState.Open,
         );
         expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
         expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
@@ -2316,13 +2316,13 @@ describe("EthereumConnection", () => {
 
         // make two offers
         const post1 = await openSwap(connection, profile, faucet, recipientAddress, hash1, swapId1);
-        const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo1 = await post1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo1)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
         }
 
         const post2 = await openSwap(connection, profile, faucet, recipientAddress, hash2, swapId2);
-        const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo2 = await post2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo2)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
         }
@@ -2340,18 +2340,18 @@ describe("EthereumConnection", () => {
         // then claim, offer, claim - 2 closed, 1 open
         {
           const post = await claimSwap(connection, profile, faucet, swapId2, preimage2);
-          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
 
         const post3 = await openSwap(connection, profile, faucet, recipientAddress, hash3, swapId3);
-        const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo3 = await post3.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo3)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
         }
 
         {
           const post = await claimSwap(connection, profile, faucet, swapId1, preimage1);
-          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
 
         // make sure we find two claims, one open
@@ -2398,13 +2398,13 @@ describe("EthereumConnection", () => {
 
         // make two offers
         const post1 = await openSwap(connection, profile, faucet, recipientAddress, hash1, swapId1, 1);
-        const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo1 = await post1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo1)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
         }
 
         const post2 = await openSwap(connection, profile, faucet, recipientAddress, hash2, swapId2, 1);
-        const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo2 = await post2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo2)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
         }
@@ -2422,18 +2422,18 @@ describe("EthereumConnection", () => {
         // then abort, offer, abort - 2 aborted, 1 open
         {
           const post = await abortSwap(connection, profile, faucet, swapId2);
-          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
 
         const post3 = await openSwap(connection, profile, faucet, recipientAddress, hash3, swapId3, 1);
-        const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo3 = await post3.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo3)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
         }
 
         {
           const post = await abortSwap(connection, profile, faucet, swapId1);
-          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
 
         // make sure we find two claims, one open
@@ -2497,7 +2497,7 @@ describe("EthereumConnection", () => {
           approvalNonce,
         );
         const approvalResult = await connection.postTx(ethereumCodec.bytesToPost(signedApproval));
-        const approvalBlockInfo = await approvalResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const approvalBlockInfo = await approvalResult.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(approvalBlockInfo)) {
           throw new Error(`Expected transaction state success but got state: ${approvalBlockInfo.state}`);
         }
@@ -2521,7 +2521,7 @@ describe("EthereumConnection", () => {
         const { transactionId } = result;
         expect(transactionId).toMatch(/^0x[0-9a-f]{64}$/i);
 
-        const blockInfo = await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await result.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo.state}`);
         }
@@ -2577,7 +2577,7 @@ describe("EthereumConnection", () => {
 
         // we can also get it by the sender
         const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
-          s => s.kind === SwapProcessState.Open,
+          (s) => s.kind === SwapProcessState.Open,
         );
         expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
         expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
@@ -2618,7 +2618,7 @@ describe("EthereumConnection", () => {
           approvalNonce,
         );
         const approvalResult = await connection.postTx(ethereumCodec.bytesToPost(signedApproval));
-        const approvalBlockInfo = await approvalResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const approvalBlockInfo = await approvalResult.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(approvalBlockInfo)) {
           throw new Error(`Expected transaction state success but got state: ${approvalBlockInfo.state}`);
         }
@@ -2709,13 +2709,13 @@ describe("EthereumConnection", () => {
 
         // make two offers
         const post1 = await openSwap(connection, profile, faucet, recipientAddress, hash1, swapId1);
-        const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo1 = await post1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo1)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
         }
 
         const post2 = await openSwap(connection, profile, faucet, recipientAddress, hash2, swapId2);
-        const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo2 = await post2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo2)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
         }
@@ -2733,18 +2733,18 @@ describe("EthereumConnection", () => {
         // then claim, offer, claim - 2 closed, 1 open
         {
           const post = await claimSwap(connection, profile, faucet, swapId2, preimage2);
-          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
 
         const post3 = await openSwap(connection, profile, faucet, recipientAddress, hash3, swapId3);
-        const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo3 = await post3.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo3)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
         }
 
         {
           const post = await claimSwap(connection, profile, faucet, swapId1, preimage1);
-          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
 
         // make sure we find two claims, one open
@@ -2791,13 +2791,13 @@ describe("EthereumConnection", () => {
 
         // make two offers
         const post1 = await openSwap(connection, profile, faucet, recipientAddress, hash1, swapId1, 1);
-        const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo1 = await post1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo1)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo1.state}`);
         }
 
         const post2 = await openSwap(connection, profile, faucet, recipientAddress, hash2, swapId2, 1);
-        const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo2 = await post2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo2)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo2.state}`);
         }
@@ -2805,18 +2805,18 @@ describe("EthereumConnection", () => {
         // then abort, offer, abort - 2 aborted, 1 open
         {
           const post = await abortSwap(connection, profile, faucet, swapId2);
-          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
 
         const post3 = await openSwap(connection, profile, faucet, recipientAddress, hash3, swapId3, 1);
-        const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo3 = await post3.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         if (!isBlockInfoSucceeded(blockInfo3)) {
           throw new Error(`Expected transaction state success but got state: ${blockInfo3.state}`);
         }
 
         {
           const post = await abortSwap(connection, profile, faucet, swapId1);
-          await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
 
         // make sure we find two claims, one open

@@ -29,8 +29,8 @@ export function dropDuplicates<T>(valueToKey: (x: T) => string): SameTypeStreamO
     const emittedKeys = new Set<string>();
 
     const deduplicatedStream = instream
-      .filter(value => !emittedKeys.has(valueToKey(value)))
-      .debug(value => emittedKeys.add(valueToKey(value)));
+      .filter((value) => !emittedKeys.has(valueToKey(value)))
+      .debug((value) => emittedKeys.add(valueToKey(value)));
 
     return deduplicatedStream;
   };

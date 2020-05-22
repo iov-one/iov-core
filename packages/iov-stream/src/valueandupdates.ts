@@ -35,7 +35,7 @@ export class ValueAndUpdates<T> {
 
     return new Promise((resolve, reject) => {
       const subscription = this.updates.subscribe({
-        next: newValue => {
+        next: (newValue) => {
           if (searchImplementation(newValue)) {
             resolve(newValue);
 
@@ -48,7 +48,7 @@ export class ValueAndUpdates<T> {
           subscription.unsubscribe();
           reject("Update stream completed without expected value");
         },
-        error: error => {
+        error: (error) => {
           reject(error);
         },
       });

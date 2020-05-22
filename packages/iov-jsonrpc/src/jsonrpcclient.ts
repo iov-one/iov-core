@@ -22,7 +22,7 @@ export class JsonRpcClient {
   }
 
   public async run(request: JsonRpcRequest): Promise<JsonRpcSuccessResponse> {
-    const filteredStream = this.connection.responseStream.filter(r => r.id === request.id);
+    const filteredStream = this.connection.responseStream.filter((r) => r.id === request.id);
     const pendingResponses = firstEvent(filteredStream);
     this.connection.sendRequest(request);
 

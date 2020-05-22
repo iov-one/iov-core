@@ -172,7 +172,7 @@ export interface BuildQueryComponents {
 
 export function buildQuery(components: BuildQueryComponents): QueryString {
   const tags = components.tags ? components.tags : [];
-  const tagComponents = tags.map(tag => `${tag.key}='${tag.value}'`);
+  const tagComponents = tags.map((tag) => `${tag.key}='${tag.value}'`);
   const rawComponents = components.raw ? [components.raw] : [];
 
   return [...tagComponents, ...rawComponents].join(" AND ") as QueryString;

@@ -35,7 +35,7 @@ class MethodNotFoundError extends Error {
 }
 
 function isArrayOfStrings(array: readonly any[]): array is readonly string[] {
-  return array.every(element => typeof element === "string");
+  return array.every((element) => typeof element === "string");
 }
 
 function parseRpcCall(data: JsonRpcRequest): RpcCall {

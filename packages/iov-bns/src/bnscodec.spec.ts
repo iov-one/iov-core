@@ -62,9 +62,7 @@ describe("bnscodec", () => {
     for (const trial of transactionsToBeVerified) {
       const encoded = bnsCodec.bytesToPost(trial);
       const decoded = bnsCodec.parseBytes(encoded, trial.transaction.chainId);
-      expect(decoded)
-        .withContext(trial.transaction.kind)
-        .toEqual(trial);
+      expect(decoded).withContext(trial.transaction.kind).toEqual(trial);
     }
   });
 });

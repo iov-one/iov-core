@@ -154,7 +154,7 @@ describe("Slip10Wallet", () => {
       ]);
 
       // all pubkeys must be different
-      const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => toHex(i.pubkey.data)));
+      const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3].map((i) => toHex(i.pubkey.data)));
       expect(pubkeySet.size).toEqual(3);
 
       expect(newIdentity1.pubkey.data).not.toEqual(newIdentity2.pubkey.data);
@@ -205,7 +205,7 @@ describe("Slip10Wallet", () => {
       await wallet
         .createIdentity(defaultChain, defaultPath)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/ID collision/i));
+        .catch((error) => expect(error).toMatch(/ID collision/i));
     }
   });
 
@@ -232,7 +232,7 @@ describe("Slip10Wallet", () => {
       ]);
 
       // all pubkeys must be different
-      const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3].map(i => toHex(i.pubkey.data)));
+      const pubkeySet = new Set([newIdentity1, newIdentity2, newIdentity3].map((i) => toHex(i.pubkey.data)));
       expect(pubkeySet.size).toEqual(3);
 
       const identities = wallet.getIdentities();

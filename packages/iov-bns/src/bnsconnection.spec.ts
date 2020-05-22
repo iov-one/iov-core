@@ -304,11 +304,11 @@ describe("BnsConnection (basic class methods)", () => {
       await connection
         .getBlockHeader(-3)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/height must be a non-negative safe integer/i));
+        .catch((error) => expect(error).toMatch(/height must be a non-negative safe integer/i));
       await connection
         .getBlockHeader(123_000000)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/header 123000000 doesn't exist yet/i));
+        .catch((error) => expect(error).toMatch(/header 123000000 doesn't exist yet/i));
 
       connection.disconnect();
     });
@@ -485,13 +485,13 @@ describe("BnsConnection (basic class methods)", () => {
       const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
       {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       }
 
       const proposals = await connection.getProposals();
       expect(proposals.length).toBeGreaterThanOrEqual(1);
 
-      const myProposal = proposals.find(p => p.author === authorAddress && p.votingStartTime === startTime);
+      const myProposal = proposals.find((p) => p.author === authorAddress && p.votingStartTime === startTime);
       expect(myProposal).toBeDefined();
       expect(myProposal!.title).toEqual(title);
       expect(myProposal!.description).toEqual(description);
@@ -529,7 +529,7 @@ describe("BnsConnection (basic class methods)", () => {
       const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       }
 
       // Query by existing name
@@ -579,7 +579,7 @@ describe("BnsConnection (basic class methods)", () => {
       const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       }
 
       // Query by existing owner
@@ -638,7 +638,7 @@ describe("BnsConnection (basic class methods)", () => {
       const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       }
     });
 
@@ -675,12 +675,12 @@ describe("BnsConnection (basic class methods)", () => {
       const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       {
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       }
       const results = await connection.getAccounts({ owner: identityAddress });
       expect(results.length).toEqual(2);
       // First account
-      const firstAccount = results.find(acc => acc.name === name);
+      const firstAccount = results.find((acc) => acc.name === name);
       expect(firstAccount).toBeDefined();
       expect(firstAccount!.domain).toEqual(domain);
       expect(firstAccount!.owner).toEqual(identityAddress);
@@ -688,7 +688,7 @@ describe("BnsConnection (basic class methods)", () => {
       expect(firstAccount!.certificates).toEqual([]);
 
       // Second account
-      const secondAccount = results.find(acc => acc.name === name2);
+      const secondAccount = results.find((acc) => acc.name === name2);
       expect(secondAccount).toBeDefined();
       expect(secondAccount!.domain).toEqual(domain);
       expect(secondAccount!.name).toEqual(name2);
@@ -700,7 +700,7 @@ describe("BnsConnection (basic class methods)", () => {
     it("can query accounts by domain", async () => {
       const results = await connection.getAccounts({ domain: domain });
       expect(results.length).toBeGreaterThan(0);
-      const lastDomain = results.find(acc => acc.name === name);
+      const lastDomain = results.find((acc) => acc.name === name);
       expect(lastDomain).toBeDefined();
       expect(lastDomain!.domain).toEqual(domain);
       expect(lastDomain!.name).toEqual(name);
@@ -754,7 +754,7 @@ describe("BnsConnection (basic class methods)", () => {
         const signed = await profile.signTransaction(adminIdentity, registration, bnsCodec, nonce);
         {
           const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-          await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
       }
 
@@ -776,7 +776,7 @@ describe("BnsConnection (basic class methods)", () => {
         const signed = await profile.signTransaction(adminIdentity, transfer, bnsCodec, nonce);
         {
           const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-          await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
       }
     });
@@ -1003,7 +1003,7 @@ describe("BnsConnection (basic class methods)", () => {
       await connection
         .getFeeQuote(otherTransaction)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/transaction of unsupported kind/i));
+        .catch((error) => expect(error).toMatch(/transaction of unsupported kind/i));
 
       connection.disconnect();
     });

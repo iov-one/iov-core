@@ -31,7 +31,7 @@ async function http(method: "POST", url: string, request?: any): Promise<any> {
       .then(filterBadStatus)
       .then((res: any) => res.json());
   } else {
-    return axios.request({ url: url, method: method, data: request }).then(res => res.data);
+    return axios.request({ url: url, method: method, data: request }).then((res) => res.data);
   }
 }
 

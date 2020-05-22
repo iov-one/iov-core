@@ -21,7 +21,7 @@ export class WsEthereumRpcClient implements EthereumRpcClient {
   public async run(request: JsonRpcRequest): Promise<JsonRpcResponse> {
     const response = new Promise<JsonRpcResponse>((resolve, reject) => {
       this.socket.events
-        .map(event => {
+        .map((event) => {
           try {
             return parseJsonRpcResponse(JSON.parse(event.data));
           } catch (error) {
@@ -29,7 +29,7 @@ export class WsEthereumRpcClient implements EthereumRpcClient {
           }
         })
         .filter(isNonNull)
-        .filter(data => data.id === request.id)
+        .filter((data) => data.id === request.id)
         .take(1)
         .addListener({
           next: resolve,

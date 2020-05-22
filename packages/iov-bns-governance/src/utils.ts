@@ -6,7 +6,7 @@ export function groupByCallback<T, K>(
   return values.reduce(
     (grouped, value) => {
       const key = callback(value);
-      const existing = grouped.find(group => group.key === key);
+      const existing = grouped.find((group) => group.key === key);
       if (existing) {
         existing.values.push(value);
       } else {

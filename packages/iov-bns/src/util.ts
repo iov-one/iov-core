@@ -180,7 +180,7 @@ function signedByTag(addr: Address): string {
 export function buildQueryString(query: TransactionQuery): QueryString {
   const sentComponents = query.sentFromOrTo !== undefined ? [sentFromOrToTag(query.sentFromOrTo)] : [];
   const signedByComponents = query.signedBy !== undefined ? [signedByTag(query.signedBy)] : [];
-  const tagComponents = query.tags !== undefined ? query.tags.map(tag => `${tag.key}='${tag.value}'`) : [];
+  const tagComponents = query.tags !== undefined ? query.tags.map((tag) => `${tag.key}='${tag.value}'`) : [];
   // In Tendermint, hash can be lower case for search queries but must be upper case for subscribe queries
   const hashComponents = query.id !== undefined ? [`tx.hash='${query.id}'`] : [];
   const heightComponents = query.height !== undefined ? [`tx.height=${query.height}`] : [];

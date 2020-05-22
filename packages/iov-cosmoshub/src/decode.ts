@@ -107,7 +107,7 @@ export function parseTx(tx: amino.Tx, chainId: ChainId, nonce: Nonce): SignedTra
     throw new Error("Only single-message transactions currently supported");
   }
 
-  const [primarySignature] = txValue.signatures.map(signature => decodeFullSignature(signature, nonce));
+  const [primarySignature] = txValue.signatures.map((signature) => decodeFullSignature(signature, nonce));
   const msg = parseMsg(txValue.msg[0], chainId);
   const fee = parseFee(txValue.fee);
 

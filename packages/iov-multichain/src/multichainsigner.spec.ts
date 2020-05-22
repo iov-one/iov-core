@@ -116,7 +116,7 @@ describe("MultiChainSigner", () => {
         faucetAddress,
       );
       const postResponse = await signer.signAndPost(faucet, sendTx);
-      await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await postResponse.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
       // we should be a little bit richer
       const updatedAccount = await connection.getAccount({ address: recipient });
@@ -230,7 +230,7 @@ describe("MultiChainSigner", () => {
           bnsFaucetAddress,
         );
         const postResponse = await signer.signAndPost(bnsFaucet, sendOnBns);
-        const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await postResponse.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
@@ -258,7 +258,7 @@ describe("MultiChainSigner", () => {
           },
         };
         const postResponse = await signer.signAndPost(ganacheMainIdentity, sendOnEthereum);
-        const blockInfo = await postResponse.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await postResponse.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
@@ -278,7 +278,7 @@ describe("MultiChainSigner", () => {
     await signer
       .addChain(connector)
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/is already registered/i));
+      .catch((error) => expect(error).toMatch(/is already registered/i));
 
     // success if adding with proper expectedChainId
     const signer2 = new MultiChainSigner(new UserProfile());
@@ -291,7 +291,7 @@ describe("MultiChainSigner", () => {
     await signer3
       .addChain(invalidConnector)
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/connected chain ID does not match/i));
+      .catch((error) => expect(error).toMatch(/connected chain ID does not match/i));
 
     signer.shutdown();
     signer2.shutdown();

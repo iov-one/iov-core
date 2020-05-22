@@ -72,7 +72,7 @@ describe("UserProfile", () => {
     it("throws when trying to call with unsupported version", async () => {
       await UserProfile.deriveEncryptionKey("foobar", 42).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/unsupported format version/i),
+        (error) => expect(error).toMatch(/unsupported format version/i),
       );
     });
   });
@@ -122,7 +122,7 @@ describe("UserProfile", () => {
       const otherEncryptionPassword = "something wrong";
       await UserProfile.loadFrom(db, otherEncryptionPassword).then(
         () => fail("loading must not succeed"),
-        error => expect(error).toMatch(/ciphertext cannot be decrypted using that key/i),
+        (error) => expect(error).toMatch(/ciphertext cannot be decrypted using that key/i),
       );
 
       await db.close();
@@ -133,7 +133,7 @@ describe("UserProfile", () => {
 
       await UserProfile.loadFrom(db, defaultEncryptionPassword)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/key not found in database/i));
+        .catch((error) => expect(error).toMatch(/key not found in database/i));
     });
 
     it("throws when loading a profile with unsupported format version", async () => {
@@ -142,7 +142,7 @@ describe("UserProfile", () => {
 
       await UserProfile.loadFrom(db, defaultEncryptionPassword)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/unsupported format version/i));
+        .catch((error) => expect(error).toMatch(/unsupported format version/i));
     });
 
     it("works for password and encryption key", async () => {
@@ -185,7 +185,7 @@ describe("UserProfile", () => {
         "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
       );
       expect(loaded.getAllIdentities().length).toEqual(2);
-      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+      expect(loaded.getAllIdentities().map((identity) => identity.chainId)).toEqual([
         "test-chain-GGzjc2" as ChainId,
         "test-chain-GGzjc2" as ChainId,
       ]);
@@ -228,7 +228,7 @@ describe("UserProfile", () => {
         "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
       );
       expect(loaded.getAllIdentities().length).toEqual(2);
-      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+      expect(loaded.getAllIdentities().map((identity) => identity.chainId)).toEqual([
         "test-chain-GGzjc2" as ChainId,
         "test-chain-GGzjc2" as ChainId,
       ]);
@@ -257,7 +257,7 @@ describe("UserProfile", () => {
         "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
       );
       expect(loaded.getAllIdentities().length).toEqual(2);
-      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+      expect(loaded.getAllIdentities().map((identity) => identity.chainId)).toEqual([
         "test-chain-GGzjc2" as ChainId,
         "test-chain-GGzjc2" as ChainId,
       ]);
@@ -300,7 +300,7 @@ describe("UserProfile", () => {
         "organ wheat manage mirror wish truly tool trumpet since equip flight bracket",
       );
       expect(loaded.getAllIdentities().length).toEqual(2);
-      expect(loaded.getAllIdentities().map(identity => identity.chainId)).toEqual([
+      expect(loaded.getAllIdentities().map((identity) => identity.chainId)).toEqual([
         "test-chain-GGzjc2" as ChainId,
         "test-chain-GGzjc2" as ChainId,
       ]);
@@ -323,7 +323,7 @@ describe("UserProfile", () => {
       };
       await UserProfile.loadFrom(db, encryptionKey)
         .then(() => fail("must not resolve"))
-        .catch(error => {
+        .catch((error) => {
           if (!(error instanceof UnexpectedFormatVersionError)) {
             throw new Error("Expected an UnexpectedFormatVersionError");
           }
@@ -392,7 +392,7 @@ describe("UserProfile", () => {
   it("initial wallet labels work", () => {
     {
       const profile = new UserProfile();
-      expect(profile.wallets.value.map(i => i.label)).toEqual([]);
+      expect(profile.wallets.value.map((i) => i.label)).toEqual([]);
     }
 
     {
@@ -402,7 +402,7 @@ describe("UserProfile", () => {
       const keyring = new Keyring();
       keyring.add(wallet);
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
-      expect(profile.wallets.value.map(i => i.label)).toEqual(["label 1"]);
+      expect(profile.wallets.value.map((i) => i.label)).toEqual(["label 1"]);
     }
 
     {
@@ -418,7 +418,7 @@ describe("UserProfile", () => {
       keyring.add(wallet2);
       keyring.add(wallet3);
       const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
-      expect(profile.wallets.value.map(i => i.label)).toEqual(["label 1", "", undefined]);
+      expect(profile.wallets.value.map((i) => i.label)).toEqual(["label 1", "", undefined]);
     }
   });
 
@@ -428,15 +428,15 @@ describe("UserProfile", () => {
     const wallet2 = Secp256k1HdWallet.fromMnemonic(defaultMnemonic2);
     const wallet3 = new Ed25519Wallet();
     expect(profile.wallets.value.length).toEqual(0);
-    expect(profile.wallets.value.map(i => i.label)).toEqual([]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual([]);
     profile.addWallet(wallet1);
     expect(profile.wallets.value.length).toEqual(1);
-    expect(profile.wallets.value.map(i => i.label)).toEqual([undefined]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual([undefined]);
     expect(profile.getIdentities(wallet1.id)).toEqual([]);
     profile.addWallet(wallet2);
     profile.addWallet(wallet3);
     expect(profile.wallets.value.length).toEqual(3);
-    expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined, undefined]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual([undefined, undefined, undefined]);
     expect(profile.getIdentities(wallet1.id)).toEqual([]);
     expect(profile.getIdentities(wallet2.id)).toEqual([]);
     expect(profile.getIdentities(wallet3.id)).toEqual([]);
@@ -464,27 +464,27 @@ describe("UserProfile", () => {
     keyring.add(wallet1);
     keyring.add(wallet2);
     const profile = new UserProfile({ createdAt: new ReadonlyDate(ReadonlyDate.now()), keyring: keyring });
-    expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual([undefined, undefined]);
 
     profile.setWalletLabel(wallet1.id, "foo1");
-    expect(profile.wallets.value.map(i => i.label)).toEqual(["foo1", undefined]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual(["foo1", undefined]);
 
     profile.setWalletLabel(wallet2.id, "foo2");
-    expect(profile.wallets.value.map(i => i.label)).toEqual(["foo1", "foo2"]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual(["foo1", "foo2"]);
 
     profile.setWalletLabel(wallet1.id, "bar1");
     profile.setWalletLabel(wallet2.id, "bar2");
-    expect(profile.wallets.value.map(i => i.label)).toEqual(["bar1", "bar2"]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual(["bar1", "bar2"]);
 
     profile.setWalletLabel(wallet2.id, "");
-    expect(profile.wallets.value.map(i => i.label)).toEqual(["bar1", ""]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual(["bar1", ""]);
 
     profile.setWalletLabel(wallet1.id, "");
-    expect(profile.wallets.value.map(i => i.label)).toEqual(["", ""]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual(["", ""]);
 
     profile.setWalletLabel(wallet1.id, undefined);
     profile.setWalletLabel(wallet2.id, undefined);
-    expect(profile.wallets.value.map(i => i.label)).toEqual([undefined, undefined]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual([undefined, undefined]);
   });
 
   it("accessors also work with id instead of number", async () => {
@@ -494,18 +494,18 @@ describe("UserProfile", () => {
     profile.addWallet(wallet1);
 
     // make sure we can query the ids if we didn't save them from creation
-    expect(profile.wallets.value.map(i => i.id)).toEqual([wallet1.id]);
+    expect(profile.wallets.value.map((i) => i.id)).toEqual([wallet1.id]);
 
     const wallet2 = Ed25519HdWallet.fromMnemonic(defaultMnemonic3);
     profile.addWallet(wallet2);
 
     // make sure we can query the ids if we didn't save them from creation
-    expect(profile.wallets.value.map(i => i.id)).toEqual([wallet1.id, wallet2.id]);
+    expect(profile.wallets.value.map((i) => i.id)).toEqual([wallet1.id, wallet2.id]);
 
     // set the labels
     profile.setWalletLabel(wallet1.id, "first");
     profile.setWalletLabel(wallet2.id, "second");
-    expect(profile.wallets.value.map(i => i.label)).toEqual(["first", "second"]);
+    expect(profile.wallets.value.map((i) => i.label)).toEqual(["first", "second"]);
 
     // make some new ids
     await profile.createIdentity(wallet1.id, defaultChain, HdPaths.iov(0));
@@ -516,7 +516,7 @@ describe("UserProfile", () => {
 
     // set an identity label
     profile.setIdentityLabel(key, "foobar");
-    const labels = profile.getIdentities(wallet2.id).map(identity => {
+    const labels = profile.getIdentities(wallet2.id).map((identity) => {
       return profile.getIdentityLabel(identity);
     });
     expect(labels).toEqual(["foobar", undefined]);
@@ -639,7 +639,7 @@ describe("UserProfile", () => {
 
       await profile.identityExists(wallet.id, defaultChain, somePath).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/wallet of id '.+' does not exist in keyring/i),
+        (error) => expect(error).toMatch(/wallet of id '.+' does not exist in keyring/i),
       );
     });
   });
@@ -741,7 +741,7 @@ describe("UserProfile", () => {
       await profile
         .storeIn(db, encryptionKey)
         .then(() => fail("must not resolve"))
-        .catch(error => {
+        .catch((error) => {
           if (!(error instanceof UnexpectedFormatVersionError)) {
             throw new Error("Expected an UnexpectedFormatVersionError");
           }
@@ -764,7 +764,7 @@ describe("UserProfile", () => {
       await db
         .get("foo")
         .then(() => fail("get 'foo' promise must not resolve"))
-        .catch(error => expect(error.notFound).toBeTruthy());
+        .catch((error) => expect(error.notFound).toBeTruthy());
 
       await db.close();
     });
@@ -835,11 +835,11 @@ describe("UserProfile", () => {
     await profile
       .createIdentity(walletId, defaultChain, HdPaths.iov(0))
       .then(() => fail("Promise must not resolve"))
-      .catch(error => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
+      .catch((error) => expect(error).toMatch(/wallet of id 'bar' does not exist in keyring/i));
     await profile
       .signTransaction(fakeIdentity, fakeTransaction, fakeCodec, 12 as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error =>
+      .catch((error) =>
         expect(error).toMatch(
           /No wallet for identity '{"chainId":"ethereum","pubkey":{"algo":"ed25519","data":{"0":170}}}' found in keyring/,
         ),
@@ -847,7 +847,7 @@ describe("UserProfile", () => {
     await profile
       .appendSignature(fakeIdentity, fakeSignedTransaction, fakeCodec, 12 as Nonce)
       .then(() => fail("Promise must not resolve"))
-      .catch(error =>
+      .catch((error) =>
         expect(error).toMatch(
           /No wallet for identity '{"chainId":"ethereum","pubkey":{"algo":"ed25519","data":{"0":170}}}' found in keyring/,
         ),

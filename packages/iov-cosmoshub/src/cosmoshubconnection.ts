@@ -55,7 +55,7 @@ function buildQueryString({
   signedBy,
   tags,
 }: TransactionQuery): string {
-  if ([maxHeight, minHeight, signedBy, tags].some(component => component !== undefined)) {
+  if ([maxHeight, minHeight, signedBy, tags].some((component) => component !== undefined)) {
     throw new Error("Transaction query by maxHeight, minHeight, signedBy or tags not yet supported");
   }
   const heightComponent = height !== undefined ? `tx.height=${height}` : null;
@@ -230,7 +230,7 @@ export class CosmosHubConnection implements BlockchainConnection {
   ): Promise<readonly (ConfirmedTransaction<UnsignedTransaction> | FailedTransaction)[]> {
     const queryString = buildQueryString(query);
     const { txs: responses } = await this.restClient.txs(queryString);
-    return Promise.all(responses.map(response => this.parseAndPopulateTxResponse(response, this.chainId)));
+    return Promise.all(responses.map((response) => this.parseAndPopulateTxResponse(response, this.chainId)));
   }
 
   public listenTx(

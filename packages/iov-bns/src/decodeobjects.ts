@@ -349,7 +349,7 @@ function decodeQualityScoreConfiguration(
 function decodeTermDepositStandardRates(
   rates: readonly codecImpl.termdeposit.IDepositBonus[],
 ): readonly TermDepositStandardRate[] {
-  return rates.map(rate => {
+  return rates.map((rate) => {
     const renamed: TermDepositStandardRate = {
       lockinPeriod: ensure(rate.lockinPeriod, "lockinPeriod"),
       rate: decodeFraction(ensure(rate.bonus, "bonus")),
@@ -362,7 +362,7 @@ function decodeTermDepositCustomRates(
   prefix: IovBech32Prefix,
   rates: readonly codecImpl.termdeposit.ICustomRate[],
 ): readonly TermDepositCustomRate[] {
-  return rates.map(rate => {
+  return rates.map((rate) => {
     const renamed: TermDepositCustomRate = {
       address: encodeBnsAddress(prefix, ensure(rate.address, "address")),
       rate: decodeFraction(ensure(rate.rate, "rate")),
@@ -399,7 +399,7 @@ export function decodeRawProposalOption(prefix: IovBech32Prefix, rawOption: Uint
   } else if (option.executeProposalBatchMsg) {
     return {
       kind: ActionKind.ExecuteProposalBatch,
-      messages: ensure(option.executeProposalBatchMsg.messages, "messages").map(message => {
+      messages: ensure(option.executeProposalBatchMsg.messages, "messages").map((message) => {
         if (!message.sendMsg) {
           throw new Error("Only send actions are currently supported in proposal batch");
         }

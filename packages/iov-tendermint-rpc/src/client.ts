@@ -246,7 +246,7 @@ export class Client {
 
     const req = this.p.encodeSubscribe(request);
     const eventStream = this.client.listen(req);
-    return eventStream.map<T>(event => {
+    return eventStream.map<T>((event) => {
       return decode(event);
     });
   }

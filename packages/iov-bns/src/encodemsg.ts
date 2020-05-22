@@ -460,7 +460,7 @@ function encodeCreateProposalTx(tx: CreateProposalTx): BnsdTxMsg {
   } else if (isExecuteProposalBatchAction(action)) {
     option = {
       executeProposalBatchMsg: {
-        messages: action.messages.map(message => {
+        messages: action.messages.map((message) => {
           if (!isSendAction(message)) {
             throw new Error("Only send actions are currently supported in proposal batch");
           }

@@ -32,12 +32,12 @@ describe("WebsocketClient", () => {
     await client
       .execute(createJsonRpcRequest("no-such-method"))
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toBeTruthy());
+      .catch((error) => expect(error).toBeTruthy());
 
     client.disconnect();
   });
 
-  it("can listen to events", done => {
+  it("can listen to events", (done) => {
     pendingWithoutTendermint();
 
     const client = new WebsocketClient(tendermintUrl);
@@ -89,7 +89,7 @@ describe("WebsocketClient", () => {
     const stream2 = client.listen(request2);
 
     const eventHeights = await toListPromise(
-      Stream.merge(stream1, stream2).map(event => {
+      Stream.merge(stream1, stream2).map((event) => {
         // height is string or number, depending on Tendermint version. But we don't care in this case
         return event.data.value.header.height;
       }),
@@ -100,7 +100,7 @@ describe("WebsocketClient", () => {
     client.disconnect();
   });
 
-  it("can execute commands while listening to events", done => {
+  it("can execute commands while listening to events", (done) => {
     pendingWithoutTendermint();
 
     const client = new WebsocketClient(tendermintUrl);
@@ -135,11 +135,11 @@ describe("WebsocketClient", () => {
 
     client
       .execute(createJsonRpcRequest(Method.Status))
-      .then(startusResponse => expect(startusResponse).toBeTruthy())
+      .then((startusResponse) => expect(startusResponse).toBeTruthy())
       .catch(done.fail);
   });
 
-  it("can end event listening by disconnecting", done => {
+  it("can end event listening by disconnecting", (done) => {
     pendingWithoutTendermint();
 
     const client = new WebsocketClient(tendermintUrl);
@@ -175,10 +175,10 @@ describe("WebsocketClient", () => {
     await client
       .execute(createJsonRpcRequest(Method.Health))
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/socket has disconnected/i));
+      .catch((error) => expect(error).toMatch(/socket has disconnected/i));
   });
 
-  it("fails when listening to a disconnected client", done => {
+  it("fails when listening to a disconnected client", (done) => {
     pendingWithoutTendermint();
 
     // async and done does not work together with pending() in Jasmine 2.8

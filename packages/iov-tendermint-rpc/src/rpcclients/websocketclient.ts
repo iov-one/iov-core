@@ -80,9 +80,9 @@ class RpcEventProducer implements Producer<SubscriptionEvent> {
 
     // this should unsubscribe itself, so doesn't need to be removed explicitly
     const idSubscription = responseStream
-      .filter(response => response.id === this.request.id)
+      .filter((response) => response.id === this.request.id)
       .subscribe({
-        next: response => {
+        next: (response) => {
           if (isJsonRpcErrorResponse(response)) {
             this.closeSubscriptions();
             listener.error(JSON.stringify(response.error));
@@ -95,9 +95,9 @@ class RpcEventProducer implements Producer<SubscriptionEvent> {
     // Tendermint adds an "#event" suffix for events that follow a previous subscription
     // https://github.com/tendermint/tendermint/blob/v0.23.0/rpc/core/events.go#L107
     const idEventSubscription = responseStream
-      .filter(response => response.id === `${this.request.id}#event`)
+      .filter((response) => response.id === `${this.request.id}#event`)
       .subscribe({
-        next: response => {
+        next: (response) => {
           if (isJsonRpcErrorResponse(response)) {
             this.closeSubscriptions();
             listener.error(JSON.stringify(response.error));
@@ -109,7 +109,7 @@ class RpcEventProducer implements Producer<SubscriptionEvent> {
 
     // this will fire in case the websocket disconnects cleanly
     const nonResponseSubscription = responseStream.subscribe({
-      error: error => {
+      error: (error) => {
         this.closeSubscriptions();
         listener.error(error);
       },
@@ -153,7 +153,7 @@ export class WebsocketClient implements RpcStreamingClient {
     this.socket = new ReconnectingSocket(this.url);
 
     const errorSubscription = this.socket.events.subscribe({
-      error: error => {
+      error: (error) => {
         onError(error);
         errorSubscription.unsubscribe();
       },
@@ -207,6 +207,6 @@ export class WebsocketClient implements RpcStreamingClient {
   }
 
   protected async responseForRequestId(id: JsonRpcId): Promise<JsonRpcResponse> {
-    return firstEvent(this.jsonRpcResponseStream.filter(r => r.id === id));
+    return firstEvent(this.jsonRpcResponseStream.filter((r) => r.id === id));
   }
 }

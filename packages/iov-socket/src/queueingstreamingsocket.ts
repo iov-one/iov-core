@@ -34,7 +34,7 @@ export class QueueingStreamingSocket {
     this.reconnectedHandler = reconnectedHandler;
 
     const eventProducer: Producer<any> = {
-      start: listener => (this.eventProducerListener = listener),
+      start: (listener) => (this.eventProducerListener = listener),
       stop: () => (this.eventProducerListener = undefined),
     };
     this.events = Stream.create(eventProducer);
@@ -43,7 +43,7 @@ export class QueueingStreamingSocket {
 
     this.socket = new StreamingSocket(this.url, this.timeout);
     this.socket.events.subscribe({
-      next: event => {
+      next: (event) => {
         if (!this.eventProducerListener) throw new Error("No event producer listener set");
         this.eventProducerListener.next(event);
       },
@@ -71,7 +71,7 @@ export class QueueingStreamingSocket {
   public reconnect(): void {
     this.socket = new StreamingSocket(this.url, this.timeout);
     this.socket.events.subscribe({
-      next: event => {
+      next: (event) => {
         if (!this.eventProducerListener) throw new Error("No event producer listener set");
         this.eventProducerListener.next(event);
       },

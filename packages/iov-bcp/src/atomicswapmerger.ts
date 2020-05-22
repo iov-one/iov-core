@@ -34,18 +34,18 @@ export class AtomicSwapMerger {
     switch (event.kind) {
       case SwapProcessState.Open: {
         const eventId = event.data.id;
-        const matchingSettlingElement = this.settling.find(s => swapIdEquals(s.swapId, eventId));
+        const matchingSettlingElement = this.settling.find((s) => swapIdEquals(s.swapId, eventId));
         if (matchingSettlingElement) {
           // we can settle
           const settled = settleAtomicSwap(event, matchingSettlingElement);
           this.settling.splice(
-            this.settling.findIndex(s => swapIdEquals(s.swapId, eventId)),
+            this.settling.findIndex((s) => swapIdEquals(s.swapId, eventId)),
             1,
           );
           return settled;
         } else {
           // store for later
-          if (this.open.find(o => swapIdEquals(o.data.id, eventId))) {
+          if (this.open.find((o) => swapIdEquals(o.data.id, eventId))) {
             throw new Error("Swap ID already in open swaps pool");
           }
           this.open.push(event);
@@ -55,17 +55,17 @@ export class AtomicSwapMerger {
       default: {
         // event is a swap claim/abort, resolve an open swap and return new state
         const eventId = event.swapId;
-        const matchingOpenElement = this.open.find(o => swapIdEquals(o.data.id, eventId));
+        const matchingOpenElement = this.open.find((o) => swapIdEquals(o.data.id, eventId));
         if (matchingOpenElement) {
           const settled = settleAtomicSwap(matchingOpenElement, event);
           this.open.splice(
-            this.open.findIndex(o => swapIdEquals(o.data.id, eventId)),
+            this.open.findIndex((o) => swapIdEquals(o.data.id, eventId)),
             1,
           );
           return settled;
         } else {
           // store swap claim/abort in case a matching open comes in delayed
-          if (this.settling.find(s => swapIdEquals(s.swapId, eventId))) {
+          if (this.settling.find((s) => swapIdEquals(s.swapId, eventId))) {
             throw new Error("Swap ID already in closing swaps pool");
           }
           this.settling.push(event);

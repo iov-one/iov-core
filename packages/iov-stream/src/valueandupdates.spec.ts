@@ -73,57 +73,57 @@ describe("ValueAndUpdates", () => {
     }
   });
 
-  it("emits initial value to new listeners", done => {
+  it("emits initial value to new listeners", (done) => {
     const vau = new ValueAndUpdates(new DefaultValueProducer(123));
 
     const listener2: Listener<number> = {
-      next: value => {
+      next: (value) => {
         expect(value).toEqual(123);
         done();
       },
       complete: () => done.fail(".updates stream must not complete"),
-      error: e => done.fail(e),
+      error: (e) => done.fail(e),
     };
 
     const listener1: Listener<number> = {
-      next: value => {
+      next: (value) => {
         expect(value).toEqual(123);
         vau.updates.addListener(listener2);
       },
       complete: () => done.fail(".updates stream must not complete"),
-      error: e => done.fail(e),
+      error: (e) => done.fail(e),
     };
 
     vau.updates.addListener(listener1);
   });
 
-  it("emits current value to new listeners", done => {
+  it("emits current value to new listeners", (done) => {
     const producer = new DefaultValueProducer(123);
     const vau = new ValueAndUpdates(producer);
     producer.update(99);
 
     const listener2: Listener<number> = {
-      next: value => {
+      next: (value) => {
         expect(value).toEqual(99);
         done();
       },
       complete: () => done.fail(".updates stream must not complete"),
-      error: e => done.fail(e),
+      error: (e) => done.fail(e),
     };
 
     const listener1: Listener<number> = {
-      next: value => {
+      next: (value) => {
         expect(value).toEqual(99);
         vau.updates.addListener(listener2);
       },
       complete: () => done.fail(".updates stream must not complete"),
-      error: e => done.fail(e),
+      error: (e) => done.fail(e),
     };
 
     vau.updates.addListener(listener1);
   });
 
-  it("emits updates to listener", done => {
+  it("emits updates to listener", (done) => {
     const producer = new DefaultValueProducer(11);
     const vau = new ValueAndUpdates(producer);
 
@@ -131,7 +131,7 @@ describe("ValueAndUpdates", () => {
     const emittedValues = new Array<number>();
 
     vau.updates.addListener({
-      next: value => {
+      next: (value) => {
         eventsCount++;
         emittedValues.push(value);
 
@@ -141,7 +141,7 @@ describe("ValueAndUpdates", () => {
         }
       },
       complete: () => done.fail(".updates stream must not complete"),
-      error: e => done.fail(e),
+      error: (e) => done.fail(e),
     });
 
     setTimeout(() => producer.update(22), 10);
@@ -172,10 +172,10 @@ describe("ValueAndUpdates", () => {
     setTimeout(() => producer.update(33), 20);
     setTimeout(() => producer.update(44), 30);
 
-    await vau.waitFor(v => v > 30);
+    await vau.waitFor((v) => v > 30);
     expect(vau.value).toEqual(33);
 
-    await vau.waitFor(v => v > 40);
+    await vau.waitFor((v) => v > 40);
     expect(vau.value).toEqual(44);
   });
 
@@ -192,7 +192,7 @@ describe("ValueAndUpdates", () => {
     }
 
     {
-      const result = await vau.waitFor(v => v > 30);
+      const result = await vau.waitFor((v) => v > 30);
       expect(result).toEqual(33);
     }
   });
@@ -204,7 +204,7 @@ describe("ValueAndUpdates", () => {
       setTimeout(() => producer.error(new Error("something went wrong")), 10);
       await vau.waitFor(3).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/something went wrong/),
+        (error) => expect(error).toMatch(/something went wrong/),
       );
     });
   });
