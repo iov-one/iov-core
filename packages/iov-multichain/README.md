@@ -71,7 +71,7 @@ console.log(profile.wallets.value);
 
 // listen to the profile (stream of updates, good for reactive UI)
 const sub = profile.wallets.updates.subscribe({
-  next: wallets => console.log(wallets),
+  next: (wallets) => console.log(wallets),
 });
 profile.setWalletLabel(wallet1.id, "12 words");
 profile.setWalletLabel(wallet2.id, "24 words");
@@ -278,7 +278,7 @@ into a reducer to capture their value.
 import { asArray, lastValue } from "@iov/stream";
 
 const liveHeight = lastValue(
-  client.watchBlockHeaders().map(header => header.height),
+  client.watchBlockHeaders().map((header) => header.height),
 );
 // if you wait a few seconds, you should see the block-height increase
 console.log(liveHeight.value());
