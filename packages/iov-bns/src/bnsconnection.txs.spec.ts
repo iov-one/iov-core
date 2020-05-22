@@ -43,7 +43,7 @@ describe("BnsConnection (txs)", () => {
         const nonExistentId = "abcd" as TransactionId;
         await connection
           .getTx(nonExistentId)
-          .then(fail.bind(null, "should not resolve"), error =>
+          .then(fail.bind(null, "should not resolve"), (error) =>
             expect(error).toMatch(/transaction does not exist/i),
           );
       }
@@ -69,7 +69,7 @@ describe("BnsConnection (txs)", () => {
         const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
         const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         const transactionId = response.transactionId;
 
         await tendermintSearchIndexUpdated();
@@ -110,7 +110,7 @@ describe("BnsConnection (txs)", () => {
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       const transactionId = response.transactionId;
 
       await tendermintSearchIndexUpdated();
@@ -159,7 +159,7 @@ describe("BnsConnection (txs)", () => {
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -202,7 +202,7 @@ describe("BnsConnection (txs)", () => {
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toBe(TransactionState.Succeeded);
       const txHeight = (blockInfo as BlockInfoSucceeded | BlockInfoFailed).height;
 
@@ -244,7 +244,7 @@ describe("BnsConnection (txs)", () => {
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       const transactionIdToSearch = response.transactionId;
 
       await tendermintSearchIndexUpdated();
@@ -291,7 +291,7 @@ describe("BnsConnection (txs)", () => {
       const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
       const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
       await tendermintSearchIndexUpdated();
 
@@ -381,7 +381,7 @@ describe("BnsConnection (txs)", () => {
       const signed = await profile.signTransaction(brokeIdentity, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const transactionIdToSearch = response.transactionId;
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
       await tendermintSearchIndexUpdated();
 
@@ -400,7 +400,7 @@ describe("BnsConnection (txs)", () => {
   });
 
   describe("listenTx", () => {
-    it("can listen to transactions by hash", done => {
+    it("can listen to transactions by hash", (done) => {
       pendingWithoutBnsd();
 
       (async () => {
@@ -430,7 +430,7 @@ describe("BnsConnection (txs)", () => {
 
         // start listening
         const subscription = connection.listenTx({ id: transactionId }).subscribe({
-          next: event => {
+          next: (event) => {
             if (!isConfirmedTransaction(event)) {
               done.fail("Confirmed transaction expected");
               return;
@@ -479,7 +479,7 @@ describe("BnsConnection (txs)", () => {
       const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const transactionIdToSearch = response.transactionId;
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
       await tendermintSearchIndexUpdated();
 
@@ -562,7 +562,7 @@ describe("BnsConnection (txs)", () => {
       const signed = await profile.signTransaction(brokeIdentity, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
       const transactionIdToSearch = response.transactionId;
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
       await tendermintSearchIndexUpdated();
 
@@ -645,7 +645,7 @@ describe("BnsConnection (txs)", () => {
 
     // send some cash
     const post = await sendCash(connection, profile, faucet, recipientAddr);
-    await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
     // give it a chance to get updates before checking and proceeding
     await sleep(100);

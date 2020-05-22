@@ -18,12 +18,12 @@ export class StreamingSocket {
   public constructor(url: string, timeout = 10_000) {
     this.socket = new SocketWrapper(
       url,
-      event => {
+      (event) => {
         if (this.eventProducerListener) {
           this.eventProducerListener.next(event);
         }
       },
-      errorEvent => {
+      (errorEvent) => {
         if (this.eventProducerListener) {
           this.eventProducerListener.error(errorEvent);
         }
@@ -31,7 +31,7 @@ export class StreamingSocket {
       () => {
         // socket opened
       },
-      closeEvent => {
+      (closeEvent) => {
         if (this.eventProducerListener) {
           if (closeEvent.wasClean) {
             this.eventProducerListener.complete();
@@ -45,7 +45,7 @@ export class StreamingSocket {
     this.connected = this.socket.connected;
 
     const eventProducer: Producer<any> = {
-      start: listener => (this.eventProducerListener = listener),
+      start: (listener) => (this.eventProducerListener = listener),
       stop: () => (this.eventProducerListener = undefined),
     };
     this.events = Stream.create(eventProducer);

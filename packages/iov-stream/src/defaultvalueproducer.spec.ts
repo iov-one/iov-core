@@ -3,7 +3,7 @@ import { Stream } from "xstream";
 import { DefaultValueProducer } from "./defaultvalueproducer";
 
 async function oneTickLater(): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, 0));
+  return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 describe("DefaultValueProducer", () => {
@@ -12,11 +12,11 @@ describe("DefaultValueProducer", () => {
     expect(producer.value).toEqual(1);
   });
 
-  it("can be used as a stream backend", done => {
+  it("can be used as a stream backend", (done) => {
     const producer = new DefaultValueProducer(42);
     const stream = Stream.createWithMemory(producer);
     stream.addListener({
-      next: value => {
+      next: (value) => {
         expect(value).toEqual(42);
         done();
       },
@@ -25,14 +25,14 @@ describe("DefaultValueProducer", () => {
     });
   });
 
-  it("can send updates", done => {
+  it("can send updates", (done) => {
     const producer = new DefaultValueProducer(42);
     const stream = Stream.createWithMemory(producer);
 
     // tslint:disable-next-line:readonly-array
     const events: number[] = [];
     stream.addListener({
-      next: value => {
+      next: (value) => {
         events.push(value);
 
         if (events.length === 4) {
@@ -49,12 +49,12 @@ describe("DefaultValueProducer", () => {
     producer.update(45);
   });
 
-  it("can send errors", done => {
+  it("can send errors", (done) => {
     const producer = new DefaultValueProducer(42);
     const stream = Stream.createWithMemory(producer);
 
     stream.addListener({
-      error: error => {
+      error: (error) => {
         expect(error).toEqual("oh no :(");
         done();
       },

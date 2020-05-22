@@ -165,7 +165,7 @@ describe("Keyring", () => {
       await keyring
         .createIdentity(wallet2.id, defaultChain, HdPaths.iov(0))
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/identity collision/i));
+        .catch((error) => expect(error).toMatch(/identity collision/i));
     });
   });
 

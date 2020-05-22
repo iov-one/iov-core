@@ -38,7 +38,7 @@ describe("ReconnectingSocket", () => {
   });
 
   describe("connect", () => {
-    it("cannot connect after being connected", done => {
+    it("cannot connect after being connected", (done) => {
       pendingWithoutSocketServer();
       const socket = new ReconnectingSocket(socketServerUrl);
       // Necessary otherwise the producer doesn’t start
@@ -54,7 +54,7 @@ describe("ReconnectingSocket", () => {
   });
 
   describe("disconnect", () => {
-    it("ends the events stream", done => {
+    it("ends the events stream", (done) => {
       pendingWithoutSocketServer();
       const socket = new ReconnectingSocket(socketServerUrl);
       socket.events.subscribe({
@@ -66,7 +66,7 @@ describe("ReconnectingSocket", () => {
       setTimeout(() => socket.disconnect(), 1000);
     });
 
-    it("cannot connect after being disconnected", done => {
+    it("cannot connect after being disconnected", (done) => {
       pendingWithoutSocketServer();
       const socket = new ReconnectingSocket(socketServerUrl);
       // Necessary otherwise the producer doesn’t start
@@ -97,11 +97,11 @@ describe("ReconnectingSocket", () => {
     const startServerCmd = `${dirPath}/start.sh`;
     const stopServerCmd = `${dirPath}/stop.sh`;
 
-    it("automatically reconnects if no connection can be established at init", done => {
+    it("automatically reconnects if no connection can be established at init", (done) => {
       pendingWithoutChildProcess();
       pendingWithoutSocketServer();
 
-      exec!(stopServerCmd, stopError => {
+      exec!(stopServerCmd, (stopError) => {
         if (stopError && stopError.code !== PKILL_NO_PROCESSES_MATCHED) {
           done.fail(stopError);
         }
@@ -124,11 +124,11 @@ describe("ReconnectingSocket", () => {
         });
 
         socket.connect();
-        requests.forEach(request => socket.queueRequest(request));
+        requests.forEach((request) => socket.queueRequest(request));
 
         setTimeout(
           () =>
-            exec!(startServerCmd, startError => {
+            exec!(startServerCmd, (startError) => {
               if (startError) {
                 done.fail(startError);
               }
@@ -138,7 +138,7 @@ describe("ReconnectingSocket", () => {
       });
     });
 
-    it("automatically reconnects if the connection is broken off", done => {
+    it("automatically reconnects if the connection is broken off", (done) => {
       pendingWithoutChildProcess();
       pendingWithoutSocketServer();
 
@@ -164,7 +164,7 @@ describe("ReconnectingSocket", () => {
 
       setTimeout(
         () =>
-          exec!(stopServerCmd, stopError => {
+          exec!(stopServerCmd, (stopError) => {
             if (stopError && stopError.code !== PKILL_NO_PROCESSES_MATCHED) {
               done.fail(stopError);
             }
@@ -175,11 +175,11 @@ describe("ReconnectingSocket", () => {
             // Ideally we would have a way to cover this edge case and the timeout
             // would not be necessary for this test to pass.
             setTimeout(() => {
-              requests.slice(1).forEach(request => socket.queueRequest(request));
+              requests.slice(1).forEach((request) => socket.queueRequest(request));
 
               setTimeout(
                 () =>
-                  exec!(startServerCmd, startError => {
+                  exec!(startServerCmd, (startError) => {
                     if (startError) {
                       done.fail(startError);
                     }

@@ -14,7 +14,7 @@ describe("utils", () => {
         { id: 1, version: 3 },
         { id: 2, version: 2 },
       ];
-      const grouped = groupByCallback(values, value => value.id);
+      const grouped = groupByCallback(values, (value) => value.id);
       expect(grouped).toEqual([
         {
           key: 1,

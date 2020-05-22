@@ -35,7 +35,7 @@ function handleRequest(event: MessageEvent): JsonRpcResponse {
     paramsString = JSON.stringify(request.params);
   } else {
     paramsString = request.params
-      .map(p => {
+      .map((p) => {
         if (typeof p === "number") {
           return p;
         } else if (p === null) {
@@ -57,7 +57,7 @@ function handleRequest(event: MessageEvent): JsonRpcResponse {
   return response;
 }
 
-onmessage = event => {
+onmessage = (event) => {
   // filter out empty {"isTrusted":true} events
   if (!event.data) {
     return;

@@ -88,8 +88,8 @@ export class SigningServerCore {
     chainIds: readonly ChainId[],
     meta?: any,
   ): Promise<readonly Identity[]> {
-    const matchingIdentities = this.profile.getAllIdentities().filter(identity => {
-      return chainIds.some(chainId => identity.chainId === chainId);
+    const matchingIdentities = this.profile.getAllIdentities().filter((identity) => {
+      return chainIds.some((chainId) => identity.chainId === chainId);
     });
 
     let authorizedIdentities: readonly Identity[];

@@ -52,20 +52,20 @@ export class Governor {
   public async getElectorates(skipFiltering = false): Promise<readonly Electorate[]> {
     const filterFunction = skipFiltering
       ? () => true
-      : ({ electors }: Electorate) => Object.keys(electors).some(key => key === this.address);
+      : ({ electors }: Electorate) => Object.keys(electors).some((key) => key === this.address);
 
     const all = await this.connection.getElectorates();
     const filtered = all.filter(filterFunction);
-    const groupedById = groupByCallback(filtered, rule => rule.id);
-    const maxVersion = groupedById.map(group => maxWithComparatorCallback(group.values, compareByVersion));
+    const groupedById = groupByCallback(filtered, (rule) => rule.id);
+    const maxVersion = groupedById.map((group) => maxWithComparatorCallback(group.values, compareByVersion));
     return maxVersion;
   }
 
   public async getElectionRules(electorateId: number): Promise<readonly ElectionRule[]> {
     const electionRules = await this.connection.getElectionRules();
-    const filteredRules = electionRules.filter(rule => rule.electorateId === electorateId);
-    const groupedRules = groupByCallback(filteredRules, rule => rule.id);
-    return groupedRules.map(group => maxWithComparatorCallback(group.values, compareByVersion));
+    const filteredRules = electionRules.filter((rule) => rule.electorateId === electorateId);
+    const groupedRules = groupByCallback(filteredRules, (rule) => rule.id);
+    return groupedRules.map((group) => maxWithComparatorCallback(group.values, compareByVersion));
   }
 
   public async getElectionRuleById(electionRuleId: number): Promise<ElectionRule> {
@@ -219,7 +219,7 @@ export class Governor {
         const totalWeight = options.recipients.reduce((total, { weight }) => total + weight, 0);
 
         const messages = rewardFund.balance
-          .map(amount => {
+          .map((amount) => {
             const quantity = new BN(amount.quantity);
             return options.recipients.map(({ address, weight }) => ({
               kind: ActionKind.Send as ActionKind.Send,
@@ -227,10 +227,7 @@ export class Governor {
               recipient: address,
               amount: {
                 ...amount,
-                quantity: quantity
-                  .muln(weight)
-                  .divn(totalWeight)
-                  .toString(),
+                quantity: quantity.muln(weight).divn(totalWeight).toString(),
               },
             }));
           })

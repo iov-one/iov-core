@@ -26,19 +26,19 @@ export class ReconnectingSocket {
 
   public constructor(url: string, timeout = 10_000, reconnectedHandler?: () => void) {
     const eventProducer: Producer<any> = {
-      start: listener => (this.eventProducerListener = listener),
+      start: (listener) => (this.eventProducerListener = listener),
       stop: () => (this.eventProducerListener = undefined),
     };
     this.events = Stream.create(eventProducer);
 
     this.socket = new QueueingStreamingSocket(url, timeout, reconnectedHandler);
     this.socket.events.subscribe({
-      next: event => {
+      next: (event) => {
         if (this.eventProducerListener) {
           this.eventProducerListener.next(event);
         }
       },
-      error: error => {
+      error: (error) => {
         if (this.eventProducerListener) {
           this.eventProducerListener.error(error);
         }
@@ -47,7 +47,7 @@ export class ReconnectingSocket {
 
     this.connectionStatus = this.socket.connectionStatus;
     this.connectionStatus.updates.subscribe({
-      next: status => {
+      next: (status) => {
         if (status === ConnectionStatus.Connected) {
           this.timeoutIndex = 0;
         }

@@ -48,7 +48,7 @@ describe("IovFaucet", () => {
     await faucet
       .credit(address, "ETH" as TokenTicker)
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/token is not available/i));
+      .catch((error) => expect(error).toMatch(/token is not available/i));
   });
 
   it("throws for invalid address", async () => {
@@ -59,7 +59,7 @@ describe("IovFaucet", () => {
       await faucet
         .credit(address, primaryToken)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/address is not in the expected format for this chain/i));
+        .catch((error) => expect(error).toMatch(/address is not in the expected format for this chain/i));
     }
   });
 });

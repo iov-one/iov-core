@@ -15,13 +15,13 @@ describe("QueueingStreamingSocket", () => {
   });
 
   describe("queueRequest", () => {
-    it("can queue and process requests with a connection", done => {
+    it("can queue and process requests with a connection", (done) => {
       pendingWithoutSocketServer();
       const socket = new QueueingStreamingSocket(socketServerUrl);
       const requests = ["request 1", "request 2", "request 3"] as const;
       let eventsSeen = 0;
       socket.events.subscribe({
-        next: event => {
+        next: (event) => {
           expect(event.data).toEqual(requests[eventsSeen++]);
           if (eventsSeen === requests.length) {
             expect(socket.getQueueLength()).toEqual(0);
@@ -32,16 +32,16 @@ describe("QueueingStreamingSocket", () => {
       });
 
       socket.connect();
-      requests.forEach(request => socket.queueRequest(request));
+      requests.forEach((request) => socket.queueRequest(request));
     });
 
-    it("can queue requests without a connection and process them later", done => {
+    it("can queue requests without a connection and process them later", (done) => {
       pendingWithoutSocketServer();
       const socket = new QueueingStreamingSocket(socketServerUrl);
       const requests = ["request 1", "request 2", "request 3"] as const;
       let eventsSeen = 0;
       socket.events.subscribe({
-        next: event => {
+        next: (event) => {
           expect(event.data).toEqual(requests[eventsSeen++]);
           if (eventsSeen === requests.length) {
             expect(socket.getQueueLength()).toEqual(0);
@@ -51,7 +51,7 @@ describe("QueueingStreamingSocket", () => {
         },
       });
 
-      requests.forEach(request => socket.queueRequest(request));
+      requests.forEach((request) => socket.queueRequest(request));
       setTimeout(() => {
         expect(socket.getQueueLength()).toEqual(3);
         socket.connect();
@@ -60,7 +60,7 @@ describe("QueueingStreamingSocket", () => {
   });
 
   describe("reconnect", () => {
-    it("does not emit a completed event when disconnected", done => {
+    it("does not emit a completed event when disconnected", (done) => {
       pendingWithoutSocketServer();
       const request = "request";
       const socket = new QueueingStreamingSocket(socketServerUrl);
@@ -80,7 +80,7 @@ describe("QueueingStreamingSocket", () => {
       socket.queueRequest(request);
     });
 
-    it("can reconnect and process remaining queue", done => {
+    it("can reconnect and process remaining queue", (done) => {
       pendingWithoutSocketServer();
       const socket = new QueueingStreamingSocket(socketServerUrl);
       const requests = ["request 1", "request 2", "request 3"] as const;
@@ -89,10 +89,10 @@ describe("QueueingStreamingSocket", () => {
       socket.connect();
       socket.disconnect();
 
-      requests.forEach(request => socket.queueRequest(request));
+      requests.forEach((request) => socket.queueRequest(request));
 
       socket.events.subscribe({
-        next: event => {
+        next: (event) => {
           expect(event.data).toEqual(requests[eventsSeen++]);
           if (eventsSeen === requests.length) {
             expect(socket.getQueueLength()).toEqual(0);
@@ -104,7 +104,7 @@ describe("QueueingStreamingSocket", () => {
       socket.reconnect();
     });
 
-    it("notifies on reconnection via a callback", done => {
+    it("notifies on reconnection via a callback", (done) => {
       pendingWithoutSocketServer();
       const socket = new QueueingStreamingSocket(socketServerUrl, undefined, done);
 
@@ -113,12 +113,12 @@ describe("QueueingStreamingSocket", () => {
   });
 
   describe("connectionStatus", () => {
-    it("exposes connection status", done => {
+    it("exposes connection status", (done) => {
       pendingWithoutSocketServer();
       const socket = new QueueingStreamingSocket(socketServerUrl);
       let statusChangesSeen = 0;
       socket.connectionStatus.updates.subscribe({
-        next: status => {
+        next: (status) => {
           switch (statusChangesSeen++) {
             case 0:
               expect(status).toEqual(ConnectionStatus.Unconnected);

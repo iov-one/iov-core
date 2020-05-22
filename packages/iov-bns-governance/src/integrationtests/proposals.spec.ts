@@ -74,7 +74,7 @@ async function signAndPost(
   const signed = await profile.signTransaction(identity, tx, bnsCodec, nonce);
   const createProposalTxBytes = bnsCodec.bytesToPost(signed);
   const post = await connection.postTx(createProposalTxBytes);
-  const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+  const blockInfo = await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
   if (!isBlockInfoSucceeded(blockInfo)) {
     throw new Error("Transaction failed");
   }
@@ -410,7 +410,7 @@ describe("Proposals", () => {
     const validatorsAfter1 = await connection.getValidators();
     expect(validatorsAfter1.length).toEqual(numValidatorsBefore + 1);
     const addedValidator = validatorsAfter1.find(
-      validator => toHex(validator.pubkey.data) === toHex(identity.pubkey.data),
+      (validator) => toHex(validator.pubkey.data) === toHex(identity.pubkey.data),
     );
     expect(addedValidator).toBeDefined();
     expect(addedValidator!.power).toEqual(2);
@@ -465,7 +465,7 @@ describe("Proposals", () => {
     const validatorsAfter2 = await connection.getValidators();
     expect(validatorsAfter2.length).toEqual(numValidatorsBefore);
     const removedValidator = validatorsAfter2.find(
-      validator => toHex(validator.pubkey.data) === toHex(identity.pubkey.data),
+      (validator) => toHex(validator.pubkey.data) === toHex(identity.pubkey.data),
     );
     expect(removedValidator).not.toBeDefined();
 

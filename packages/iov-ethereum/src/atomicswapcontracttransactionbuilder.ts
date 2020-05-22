@@ -66,7 +66,7 @@ export class AtomicSwapContractTransactionBuilder {
         );
         const token = erc20ContractAddressBytes.length
           ? [...erc20Tokens.values()].find(
-              t =>
+              (t) =>
                 t.contractAddress.toLowerCase() ===
                 Abi.decodeAddress(erc20ContractAddressBytes).toLowerCase(),
             )

@@ -97,7 +97,7 @@ class Actor {
     const signed = await this.profile.signTransaction(identity, transaction, ethereumCodec, nonce);
     const postable = ethereumCodec.bytesToPost(signed);
     const post = await this.connection.postTx(postable);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    const blockInfo = await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");
     }
@@ -127,28 +127,28 @@ class Actor {
   public async getSenderEtherBalance(): Promise<BN> {
     const account = await this.connection.getAccount({ pubkey: this.senderIdentity.pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === ETH);
+    const amount = balance.find((row) => row.tokenTicker === ETH);
     return new BN(amount ? amount.quantity : 0);
   }
 
   public async getReceiverEtherBalance(): Promise<BN> {
     const account = await this.connection.getAccount({ pubkey: this.receiverIdentity.pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === ETH);
+    const amount = balance.find((row) => row.tokenTicker === ETH);
     return new BN(amount ? amount.quantity : 0);
   }
 
   public async getSenderErc20Balance(): Promise<BN> {
     const account = await this.connection.getAccount({ pubkey: this.senderIdentity.pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === ASH);
+    const amount = balance.find((row) => row.tokenTicker === ASH);
     return new BN(amount ? amount.quantity : 0);
   }
 
   public async getReceiverErc20Balance(): Promise<BN> {
     const account = await this.connection.getAccount({ pubkey: this.receiverIdentity.pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === ASH);
+    const amount = balance.find((row) => row.tokenTicker === ASH);
     return new BN(amount ? amount.quantity : 0);
   }
 
@@ -278,7 +278,7 @@ describe("Full atomic swap", () => {
 
     // review offer
     const bobReceiverSwaps = (await bob.getReceiverSwaps()).filter(
-      swap => swap.data.id.prefix === SwapIdPrefix.Ether,
+      (swap) => swap.data.id.prefix === SwapIdPrefix.Ether,
     );
     const aliceOffer = bobReceiverSwaps[bobReceiverSwaps.length - 1];
     expect(aliceOffer.kind).toEqual(SwapProcessState.Open);
@@ -307,7 +307,7 @@ describe("Full atomic swap", () => {
 
     // review counteroffer
     const aliceReceiverSwaps = (await alice.getReceiverSwaps()).filter(
-      swap => swap.data.id.prefix === SwapIdPrefix.Ether,
+      (swap) => swap.data.id.prefix === SwapIdPrefix.Ether,
     );
     const counter = aliceReceiverSwaps[aliceReceiverSwaps.length - 1];
     expect(counter.kind).toEqual(SwapProcessState.Open);
@@ -328,7 +328,7 @@ describe("Full atomic swap", () => {
 
     // find claim
     const bobSenderSwaps = (await bob.getSenderSwaps()).filter(
-      swap => swap.data.id.prefix === SwapIdPrefix.Ether,
+      (swap) => swap.data.id.prefix === SwapIdPrefix.Ether,
     );
     const aliceClaimed = bobSenderSwaps[bobSenderSwaps.length - 1];
     if (!isClaimedSwap(aliceClaimed)) {
@@ -336,7 +336,7 @@ describe("Full atomic swap", () => {
     }
 
     const bobReceiverSwaps2 = (await bob.getReceiverSwaps()).filter(
-      swap => swap.data.id.prefix === SwapIdPrefix.Ether,
+      (swap) => swap.data.id.prefix === SwapIdPrefix.Ether,
     );
     const aliceOffer2 = bobReceiverSwaps2[bobReceiverSwaps2.length - 1];
     if (!isOpenSwap(aliceOffer2)) {
@@ -409,7 +409,7 @@ describe("Full atomic swap", () => {
 
     // review offer
     const bobReceiverSwaps = (await bob.getReceiverSwaps()).filter(
-      swap => swap.data.id.prefix === SwapIdPrefix.Erc20,
+      (swap) => swap.data.id.prefix === SwapIdPrefix.Erc20,
     );
     const aliceOffer = bobReceiverSwaps[bobReceiverSwaps.length - 1];
     expect(aliceOffer.kind).toEqual(SwapProcessState.Open);
@@ -434,7 +434,7 @@ describe("Full atomic swap", () => {
 
     // review counteroffer
     const aliceReceiverSwaps = (await alice.getReceiverSwaps()).filter(
-      swap => swap.data.id.prefix === SwapIdPrefix.Erc20,
+      (swap) => swap.data.id.prefix === SwapIdPrefix.Erc20,
     );
     const counter = aliceReceiverSwaps[aliceReceiverSwaps.length - 1];
     expect(counter.kind).toEqual(SwapProcessState.Open);
@@ -455,7 +455,7 @@ describe("Full atomic swap", () => {
 
     // find claim
     const bobSenderSwaps = (await bob.getSenderSwaps()).filter(
-      swap => swap.data.id.prefix === SwapIdPrefix.Erc20,
+      (swap) => swap.data.id.prefix === SwapIdPrefix.Erc20,
     );
     const aliceClaimed = bobSenderSwaps[bobSenderSwaps.length - 1];
     if (!isClaimedSwap(aliceClaimed)) {
@@ -463,7 +463,7 @@ describe("Full atomic swap", () => {
     }
 
     const bobReceiverSwaps2 = (await bob.getReceiverSwaps()).filter(
-      swap => swap.data.id.prefix === SwapIdPrefix.Erc20,
+      (swap) => swap.data.id.prefix === SwapIdPrefix.Erc20,
     );
     const aliceOffer2 = bobReceiverSwaps2[bobReceiverSwaps2.length - 1];
     if (!isOpenSwap(aliceOffer2)) {

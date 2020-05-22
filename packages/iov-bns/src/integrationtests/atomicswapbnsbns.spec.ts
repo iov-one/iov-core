@@ -84,7 +84,7 @@ class Actor {
   public async getCashBalance(): Promise<BN> {
     const account = await this.bnsConnection.getAccount({ pubkey: this.bnsIdentity.pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === CASH);
+    const amount = balance.find((row) => row.tokenTicker === CASH);
     return new BN(amount ? amount.quantity : 0);
   }
 
@@ -92,7 +92,7 @@ class Actor {
   public async getBashBalance(): Promise<BN> {
     const account = await this.bnsConnection.getAccount({ pubkey: this.bnsIdentity.pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === BASH);
+    const amount = balance.find((row) => row.tokenTicker === BASH);
     return new BN(amount ? amount.quantity : 0);
   }
 
@@ -119,7 +119,7 @@ class Actor {
     transaction: UnsignedTransaction,
   ): Promise<Uint8Array | undefined> {
     const post = await this.signAndPost(identity, transaction);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    const blockInfo = await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");
     }

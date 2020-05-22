@@ -49,7 +49,7 @@ describe("StreamingSocket", () => {
 
     await socket.connected
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/connection attempt timed out/i));
+      .catch((error) => expect(error).toMatch(/connection attempt timed out/i));
   });
 
   it("can send events when connected", async () => {
@@ -72,7 +72,7 @@ describe("StreamingSocket", () => {
     socket.disconnect();
   });
 
-  it("completes stream when disconnected", done => {
+  it("completes stream when disconnected", (done) => {
     pendingWithoutSocketServer();
 
     const socket = new StreamingSocket(socketServerUrl);

@@ -94,7 +94,7 @@ describe("SigningServerCore", () => {
     const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
     const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
     const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-    await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
   }
 
   it("can be constructed", () => {
@@ -241,7 +241,7 @@ describe("SigningServerCore", () => {
       await core
         .getIdentities("Login to XY service", [defaultChainId])
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/internal server error/i));
+        .catch((error) => expect(error).toMatch(/internal server error/i));
 
       core.shutdown();
     });
@@ -268,7 +268,7 @@ describe("SigningServerCore", () => {
       await core
         .getIdentities("Login to XY service", [defaultChainId])
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/internal server error/i));
+        .catch((error) => expect(error).toMatch(/internal server error/i));
 
       expect(logger.log).toHaveBeenCalledTimes(1);
       expect(logger.log).toHaveBeenCalledWith(
@@ -424,7 +424,7 @@ describe("SigningServerCore", () => {
       await core
         .signAndPost(signingIdentity, "Please sign now", send)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/internal server error/i));
+        .catch((error) => expect(error).toMatch(/internal server error/i));
 
       core.shutdown();
     });
@@ -471,7 +471,7 @@ describe("SigningServerCore", () => {
       await core
         .signAndPost(signingIdentity, "Please sign now", send)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/internal server error/i));
+        .catch((error) => expect(error).toMatch(/internal server error/i));
 
       expect(logger.log).toHaveBeenCalledTimes(1);
       expect(logger.log).toHaveBeenCalledWith(

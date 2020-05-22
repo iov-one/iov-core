@@ -77,19 +77,19 @@ export class SocketWrapper {
   public connect(): void {
     const socket = new WebSocket(this.url);
 
-    socket.onerror = error => {
+    socket.onerror = (error) => {
       this.clearTimeout();
       if (this.errorHandler) {
         this.errorHandler(error);
       }
     };
-    socket.onmessage = messageEvent => {
+    socket.onmessage = (messageEvent) => {
       this.messageHandler({
         type: messageEvent.type,
         data: messageEvent.data as string,
       });
     };
-    socket.onopen = _ => {
+    socket.onopen = (_) => {
       this.clearTimeout();
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.connectedResolver!();
@@ -98,7 +98,7 @@ export class SocketWrapper {
         this.openHandler();
       }
     };
-    socket.onclose = closeEvent => {
+    socket.onclose = (closeEvent) => {
       this.closed = true;
       if (this.closeHandler) {
         this.closeHandler(closeEvent);
@@ -175,7 +175,7 @@ export class SocketWrapper {
       }
 
       if (environmentIsNodeJs()) {
-        this.socket.send(data, err => (err ? reject(err) : resolve()));
+        this.socket.send(data, (err) => (err ? reject(err) : resolve()));
       } else {
         // Browser websocket send method does not accept a callback
         this.socket.send(data);

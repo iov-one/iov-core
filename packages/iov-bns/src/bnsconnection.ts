@@ -315,7 +315,7 @@ export class BnsConnection implements AtomicSwapConnection {
     const blockInfoProducer = new DefaultValueProducer<BlockInfo>(firstEvent, {
       onStarted: () => {
         transactionSubscription = this.liveTx({ id: transactionId }).subscribe({
-          next: searchResult => {
+          next: (searchResult) => {
             if (isFailedTransaction(searchResult)) {
               const errorEvent: BlockInfoFailed = {
                 state: TransactionState.Failed,
@@ -346,7 +346,7 @@ export class BnsConnection implements AtomicSwapConnection {
             }
 
             blockHeadersSubscription = this.watchBlockHeaders().subscribe({
-              next: async blockHeader => {
+              next: async (blockHeader) => {
                 const event: BlockInfo = {
                   state: TransactionState.Succeeded,
                   height: transactionHeight,
@@ -360,10 +360,10 @@ export class BnsConnection implements AtomicSwapConnection {
                 }
               },
               complete: () => blockInfoProducer.error("Block header stream stopped. This must not happen."),
-              error: error => blockInfoProducer.error(error),
+              error: (error) => blockInfoProducer.error(error),
             });
           },
-          error: error => blockInfoProducer.error(error),
+          error: (error) => blockInfoProducer.error(error),
         });
       },
       onStop: () => {
@@ -384,7 +384,7 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public async getToken(ticker: TokenTicker): Promise<Token | undefined> {
-    return (await this.getAllTokens()).find(t => t.tokenTicker === ticker);
+    return (await this.getAllTokens()).find((t) => t.tokenTicker === ticker);
   }
 
   public async getAllTokens(): Promise<readonly Token[]> {
@@ -407,7 +407,7 @@ export class BnsConnection implements AtomicSwapConnection {
 
     const response = await this.query("/wallets", decodeBnsAddress(address).data);
     const parser = createParser(codecImpl.cash.Set, "cash:");
-    const walletDatas = response.results.map(parser).map(iwallet => this.context.wallet(iwallet));
+    const walletDatas = response.results.map(parser).map((iwallet) => this.context.wallet(iwallet));
 
     if (walletDatas.length === 0) {
       return undefined;
@@ -422,7 +422,7 @@ export class BnsConnection implements AtomicSwapConnection {
     } else {
       const res = await this.query("/auth", decodeBnsAddress(walletAddress).data);
       const userDataParser = createParser(codecImpl.sigs.UserData, "sigs:");
-      const ipubkeys = res.results.map(userDataParser).map(ud => ud.pubkey);
+      const ipubkeys = res.results.map(userDataParser).map((ud) => ud.pubkey);
       const ipubkey = ipubkeys.length >= 1 ? ipubkeys[0] : undefined;
       pubkey = ipubkey ? decodePubkey(ipubkey) : undefined;
     }
@@ -442,7 +442,7 @@ export class BnsConnection implements AtomicSwapConnection {
     const nonces = response.results
       .map(parser)
       .map(decodeUserData)
-      .map(user => user.nonce);
+      .map((user) => user.nonce);
 
     switch (nonces.length) {
       case 0:
@@ -492,8 +492,8 @@ export class BnsConnection implements AtomicSwapConnection {
 
     const res = await doQuery();
     const parser = createParser(codecImpl.aswap.Swap, "swap:");
-    const data = res.results.map(parser).map(escrow => this.context.decodeOpenSwap(escrow));
-    const withBalance = await Promise.all(data.map(s => this.updateSwapAmounts(s)));
+    const data = res.results.map(parser).map((escrow) => this.context.decodeOpenSwap(escrow));
+    const withBalance = await Promise.all(data.map((s) => this.updateSwapAmounts(s)));
     return withBalance;
   }
 
@@ -513,19 +513,19 @@ export class BnsConnection implements AtomicSwapConnection {
 
     const offers: readonly OpenSwap[] = setTxs
       .filter(isConfirmedWithSwapOfferTransaction)
-      .map(tx => this.context.swapOfferFromTx(tx));
+      .map((tx) => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/abort, delTxs must be a claim/abort
     const releases: readonly (SwapClaimTransaction | SwapAbortTransaction)[] = [...setTxs, ...delTxs]
       .filter(isConfirmedWithSwapClaimOrAbortTransaction)
-      .map(x => x.transaction);
+      .map((x) => x.transaction);
 
     const merger = new AtomicSwapMerger();
     for (const offer of offers) {
       merger.process(offer);
     }
 
-    const settled = releases.map(release => merger.process(release)).filter(isDefined);
+    const settled = releases.map((release) => merger.process(release)).filter(isDefined);
     const open = merger.openSwaps();
     return [...open, ...settled];
   }
@@ -542,16 +542,16 @@ export class BnsConnection implements AtomicSwapConnection {
 
     const offers: Stream<OpenSwap> = setTxs
       .filter(isConfirmedWithSwapOfferTransaction)
-      .map(tx => this.context.swapOfferFromTx(tx));
+      .map((tx) => this.context.swapOfferFromTx(tx));
 
     // setTxs (esp on secondary index) may be a claim/abort, delTxs must be a claim/abort
     const releases: Stream<SwapClaimTransaction | SwapAbortTransaction> = Stream.merge(setTxs, delTxs)
       .filter(isConfirmedWithSwapClaimOrAbortTransaction)
-      .map(confirmed => confirmed.transaction);
+      .map((confirmed) => confirmed.transaction);
 
     const merger = new AtomicSwapMerger();
     return Stream.merge(offers, releases)
-      .map(event => merger.process(event))
+      .map((event) => merger.process(event))
       .filter(isDefined);
   }
 
@@ -645,13 +645,13 @@ export class BnsConnection implements AtomicSwapConnection {
   public liveTx(
     query: TransactionQuery,
   ): Stream<ConfirmedTransaction<UnsignedTransaction> | FailedTransaction> {
-    const pendingSearchResults = this.searchTx(query).then(results =>
+    const pendingSearchResults = this.searchTx(query).then((results) =>
       results.map((tx): ConfirmedTransaction<UnsignedTransaction> | FailedTransaction => tx),
     );
     const historyStream = fromListPromise(pendingSearchResults);
     const updatesStream = this.listenTx(query);
     const combinedStream = concat(historyStream, updatesStream);
-    const deduplicatedStream = combinedStream.compose(dropDuplicates(ct => ct.transactionId));
+    const deduplicatedStream = combinedStream.compose(dropDuplicates((ct) => ct.transactionId));
     return deduplicatedStream;
   }
 
@@ -663,7 +663,7 @@ export class BnsConnection implements AtomicSwapConnection {
       throw new Error("Height must be a non-negative safe integer");
     }
 
-    const { blockMetas } = await this.tmClient.blockchain(height, height).catch(originalError => {
+    const { blockMetas } = await this.tmClient.blockchain(height, height).catch((originalError) => {
       let parsedError: TendermintRpcError;
       try {
         parsedError = parseTendermintRpcError(originalError.message);
@@ -702,7 +702,7 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public watchBlockHeaders(): Stream<BlockHeader> {
-    return this.tmClient.subscribeNewBlockHeader().map(tmHeader => {
+    return this.tmClient.subscribeNewBlockHeader().map((tmHeader) => {
       const blockId = toHex(v0_31.hashBlock(tmHeader)).toUpperCase() as BlockId;
       return {
         id: blockId,
@@ -750,21 +750,21 @@ export class BnsConnection implements AtomicSwapConnection {
   public async getElectorates(): Promise<readonly Electorate[]> {
     const results = (await this.query("/electorates?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.Electorate, "electorate:");
-    const electorates = results.map(parser).map(electorate => decodeElectorate(this.prefix, electorate));
+    const electorates = results.map(parser).map((electorate) => decodeElectorate(this.prefix, electorate));
     return electorates;
   }
 
   public async getElectionRules(): Promise<readonly ElectionRule[]> {
     const results = (await this.query("/electionrules?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.ElectionRule, "electnrule:");
-    const rules = results.map(parser).map(rule => decodeElectionRule(this.prefix, rule));
+    const rules = results.map(parser).map((rule) => decodeElectionRule(this.prefix, rule));
     return rules;
   }
 
   public async getProposals(): Promise<readonly Proposal[]> {
     const results = (await this.query("/proposals?prefix", new Uint8Array([]))).results;
     const parser = createParser(codecImpl.gov.Proposal, "proposal:");
-    const proposals = results.map(parser).map(proposal => decodeProposal(this.prefix, proposal));
+    const proposals = results.map(parser).map((proposal) => decodeProposal(this.prefix, proposal));
     return proposals;
   }
 
@@ -772,7 +772,7 @@ export class BnsConnection implements AtomicSwapConnection {
     const { data } = decodeBnsAddress(voter);
     const { results } = await this.query("/votes/electors?prefix", data);
     const parser = createParser(codecImpl.gov.Vote, "vote:");
-    const votes = results.map(parser).map(vote => decodeVote(this.prefix, vote));
+    const votes = results.map(parser).map((vote) => decodeVote(this.prefix, vote));
     return votes;
   }
 
@@ -788,7 +788,7 @@ export class BnsConnection implements AtomicSwapConnection {
     }
 
     const parser = createParser(codecImpl.username.Token, "tokens:");
-    const nfts = results.map(parser).map(nft => decodeUsernameNft(nft, this.chainId));
+    const nfts = results.map(parser).map((nft) => decodeUsernameNft(nft, this.chainId));
     return nfts;
   }
 
@@ -810,7 +810,7 @@ export class BnsConnection implements AtomicSwapConnection {
     }
 
     const parser = createParser(codecImpl.account.Account, keyPrefix);
-    const nfts = results.map(parser).map(nft => decodeAccount(this.prefix, nft));
+    const nfts = results.map(parser).map((nft) => decodeAccount(this.prefix, nft));
     return nfts;
   }
 
@@ -829,7 +829,7 @@ export class BnsConnection implements AtomicSwapConnection {
     }
 
     const parser = createParser(codecImpl.account.Domain, keyPrefix);
-    const nfts = results.map(parser).map(nft => decodeDomain(this.prefix, nft));
+    const nfts = results.map(parser).map((nft) => decodeDomain(this.prefix, nft));
     return nfts;
   }
 
@@ -970,8 +970,8 @@ export class BnsConnection implements AtomicSwapConnection {
     const parser = createParser(codecImpl.msgfee.MsgFee, "msgfee:");
     const fees = results
       .map(parser)
-      .map(msg => msg.fee)
-      .map(x => {
+      .map((msg) => msg.fee)
+      .map((x) => {
         if (x === null || x === undefined) {
           throw new Error("Could not decode missing fee");
         }

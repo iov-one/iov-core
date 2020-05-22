@@ -135,7 +135,7 @@ export async function sendTokensFromFaucet(
   const nonce = await connection.getNonce({ pubkey: faucet.pubkey });
   const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
   const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-  await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+  await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 }
 
 export async function sendCash(
@@ -185,11 +185,11 @@ export async function ensureNonceNonZero(
   const nonce = await connection.getNonce({ pubkey: identity.pubkey });
   const signed = await profile.signTransaction(identity, sendTx, bnsCodec, nonce);
   const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-  await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+  await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 }
 
 export function matchId(id: SwapId): (swap: AtomicSwap) => boolean {
-  return s => swapIdEquals(id, s.data.id);
+  return (s) => swapIdEquals(id, s.data.id);
 }
 
 export function serializeBnsSwapId(id: SwapId): string {

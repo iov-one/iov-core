@@ -5,16 +5,16 @@ import { Producer, Stream } from "xstream";
  */
 export function fromListPromise<T>(promise: Promise<Iterable<T>>): Stream<T> {
   const producer: Producer<T> = {
-    start: listener => {
+    start: (listener) => {
       // the code in `start` runs as soon as anyone listens to the stream
       promise
-        .then(iterable => {
+        .then((iterable) => {
           for (const element of iterable) {
             listener.next(element);
           }
           listener.complete();
         })
-        .catch(error => listener.error(error));
+        .catch((error) => listener.error(error));
     },
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     stop: () => {},
@@ -39,7 +39,7 @@ export async function toListPromise<T>(stream: Stream<T>, count: number): Promis
     const events = new Array<T>();
     // take() unsubscribes from source stream automatically
     stream.take(count).subscribe({
-      next: event => {
+      next: (event) => {
         events.push(event);
 
         if (events.length === count) {
@@ -52,7 +52,7 @@ export async function toListPromise<T>(stream: Stream<T>, count: number): Promis
             `Collected ${events.length}, expected ${count}`,
         );
       },
-      error: error => reject(error),
+      error: (error) => reject(error),
     });
   });
 }

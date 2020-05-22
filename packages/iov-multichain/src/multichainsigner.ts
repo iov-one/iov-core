@@ -68,7 +68,7 @@ export class MultiChainSigner {
   }
 
   public chainIds(): readonly ChainId[] {
-    return Array.from(this.knownChains.keys()).map(key => key as ChainId);
+    return Array.from(this.knownChains.keys()).map((key) => key as ChainId);
   }
 
   public connection(chainId: ChainId): BlockchainConnection {

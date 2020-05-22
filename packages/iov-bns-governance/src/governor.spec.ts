@@ -137,7 +137,7 @@ describe("Governor", () => {
 
       const electorates = await governor.getElectorates(true);
 
-      const uniqueIds = new Set(electorates.map(electorate => electorate.id));
+      const uniqueIds = new Set(electorates.map((electorate) => electorate.id));
       expect(uniqueIds.size).toEqual(electorates.length);
 
       options.connection.disconnect();
@@ -574,7 +574,7 @@ describe("Governor", () => {
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(identity, sendTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
       const recipient1 = randomBnsAddress();
       const recipient2 = randomBnsAddress();
@@ -727,7 +727,7 @@ describe("Governor", () => {
       const nonce1 = await connection.getNonce({ pubkey: identity.pubkey });
       const signed1 = await profile.signTransaction(identity, createProposalTx, bnsCodec, nonce1);
       const response1 = await connection.postTx(bnsCodec.bytesToPost(signed1));
-      await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await response1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
       await sleep(7000);
 
@@ -739,7 +739,7 @@ describe("Governor", () => {
       const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
       const signed2 = await profile.signTransaction(identity, voteTx, bnsCodec, nonce2);
       const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
-      await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await response2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
       const votesPost = await governor.getVotes();
       expect(votesPost.length).toEqual(votesPre.length + 1);

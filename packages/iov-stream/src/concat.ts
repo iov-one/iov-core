@@ -38,8 +38,8 @@ export function concat<T>(...streams: Stream<T>[]): Stream<T> {
   }
 
   const producer: Producer<T> = {
-    start: listener => {
-      streams.forEach(_ => queues.push([]));
+    start: (listener) => {
+      streams.forEach((_) => queues.push([]));
 
       function emitAllQueuesEvents(streamIndex: number): void {
         // eslint-disable-next-line no-constant-condition
@@ -64,7 +64,7 @@ export function concat<T>(...streams: Stream<T>[]): Stream<T> {
       streams.forEach((stream, index) => {
         subscriptions.push(
           stream.subscribe({
-            next: value => {
+            next: (value) => {
               if (index === activeStreamIndex) {
                 listener.next(value);
               } else {
@@ -87,7 +87,7 @@ export function concat<T>(...streams: Stream<T>[]): Stream<T> {
                 emitAllQueuesEvents(activeStreamIndex);
               }
             },
-            error: error => {
+            error: (error) => {
               listener.error(error);
               reset();
             },

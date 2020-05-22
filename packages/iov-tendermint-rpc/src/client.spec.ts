@@ -237,7 +237,7 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
 }
 
 function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCreator: string): void {
-  it("can subscribe to block header events", done => {
+  it("can subscribe to block header events", (done) => {
     pendingWithoutTendermint();
 
     const testStart = ReadonlyDate.now();
@@ -248,7 +248,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
       const stream = client.subscribeNewBlockHeader();
       expect(stream).toBeTruthy();
       const subscription = stream.subscribe({
-        next: event => {
+        next: (event) => {
           expect(event.chainId).toMatch(/^[-a-zA-Z0-9]{3,30}$/);
           expect(event.height).toBeGreaterThan(0);
           // seems that tendermint just guarantees within the last second for timestamp
@@ -308,7 +308,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
     const client = new Client(rpcFactory(), adaptor);
     const stream = client.subscribeNewBlock();
     const subscription = stream.subscribe({
-      next: event => {
+      next: (event) => {
         expect(event.header.chainId).toMatch(/^[-a-zA-Z0-9]{3,30}$/);
         expect(event.header.height).toBeGreaterThan(0);
         // seems that tendermint just guarantees within the last second for timestamp
@@ -367,7 +367,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
     const client = new Client(rpcFactory(), adaptor);
     const stream = client.subscribeTx();
     const subscription = stream.subscribe({
-      next: event => {
+      next: (event) => {
         expect(event.height).toBeGreaterThan(0);
         expect(event.index).toEqual(0);
         expect(event.result).toBeTruthy();
@@ -418,7 +418,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
     const stream = client.subscribeTx(query);
     expect(stream).toBeTruthy();
     const subscription = stream.subscribe({
-      next: event => {
+      next: (event) => {
         expect(event.height).toBeGreaterThan(0);
         expect(event.index).toEqual(0);
         expect(event.result).toBeTruthy();
@@ -495,7 +495,7 @@ function websocketTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor, appCr
 
     const events = await toListPromise(Stream.merge(stream1, stream2), 4);
 
-    expect(new Set(events.map(e => e.height)).size).toEqual(2);
+    expect(new Set(events.map((e) => e.height)).size).toEqual(2);
 
     client.disconnect();
   });

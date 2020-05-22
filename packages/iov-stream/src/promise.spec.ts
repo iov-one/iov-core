@@ -6,7 +6,7 @@ import { firstEvent, fromListPromise, toListPromise } from "./promise";
 import { asArray, countStream } from "./reducer";
 
 async function oneTickLater(): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, 0));
+  return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 describe("promise", () => {
@@ -33,7 +33,7 @@ describe("promise", () => {
     });
 
     it("works for delayed resolution", async () => {
-      const inputPromise = new Promise<number[]>(resolve => {
+      const inputPromise = new Promise<number[]>((resolve) => {
         // resolve after 50 ms
         setTimeout(() => resolve([1, 2, 3]), 50);
       });
@@ -80,14 +80,14 @@ describe("promise", () => {
     it("rejects for simple stream with less events than count", async () => {
       await toListPromise(Stream.fromArray([1, 6, 92]), 5)
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/stream completed before all events could be collected/i));
+        .catch((error) => expect(error).toMatch(/stream completed before all events could be collected/i));
     });
 
     it("works for async stream", async () => {
       let interval: NodeJS.Timeout;
       let producerRunning = false;
       const producer: Producer<number> = {
-        start: listener => {
+        start: (listener) => {
           producerRunning = true;
           let nextElement = 0;
           interval = setInterval(() => {
@@ -116,14 +116,14 @@ describe("promise", () => {
     it("rejects for stream with no events", async () => {
       await firstEvent(Stream.fromArray([]))
         .then(() => fail("must not resolve"))
-        .catch(error => expect(error).toMatch(/stream completed before all events could be collected/i));
+        .catch((error) => expect(error).toMatch(/stream completed before all events could be collected/i));
     });
 
     it("works for async stream", async () => {
       let interval: NodeJS.Timeout;
       let producerRunning = false;
       const producer: Producer<number> = {
-        start: listener => {
+        start: (listener) => {
           producerRunning = true;
           let nextElement = 0;
           interval = setInterval(() => {

@@ -16,13 +16,13 @@ describe("SocketWrapper", () => {
     expect(socket).toBeTruthy();
   });
 
-  it("can connect", done => {
+  it("can connect", (done) => {
     pendingWithoutSocketServer();
 
     const socket = new SocketWrapper(
       socketServerUrl,
       () => done.fail("Got unexpected message event"),
-      error => done.fail(error.message || "Unknown socket error"),
+      (error) => done.fail(error.message || "Unknown socket error"),
       () => {
         socket.disconnect();
         done();
@@ -32,13 +32,13 @@ describe("SocketWrapper", () => {
     socket.connect();
   });
 
-  it("fails to connect to non-existing server", done => {
+  it("fails to connect to non-existing server", (done) => {
     pendingWithoutSocketServer();
 
     const socket = new SocketWrapper(
       socketServerUrlNonExisting,
       () => done.fail("Got unexpected message event"),
-      error => {
+      (error) => {
         if (error.message) {
           // error message only available in nodejs
           expect(error.message).toMatch(/ECONNREFUSED/i);
@@ -51,14 +51,14 @@ describe("SocketWrapper", () => {
     socket.connect();
   });
 
-  it("fails to connect to non-existing server but timeout is not triggered", done => {
+  it("fails to connect to non-existing server but timeout is not triggered", (done) => {
     pendingWithoutSocketServer();
     const timeout = 1200; // ms
 
     const socket = new SocketWrapper(
       socketServerUrlNonExisting,
       () => done.fail("Got unexpected message event"),
-      error => {
+      (error) => {
         expect(error).toBeTruthy();
 
         // All done. Delay test end to ensure the timeout is not triggered
@@ -72,13 +72,13 @@ describe("SocketWrapper", () => {
     socket.connect();
   });
 
-  it("can connect to slow server", done => {
+  it("can connect to slow server", (done) => {
     pendingWithoutSocketServer();
 
     const socket = new SocketWrapper(
       socketServerUrlSlow,
       () => done.fail("Got unexpected message event"),
-      error => done.fail(error.message || "Unknown socket error"),
+      (error) => done.fail(error.message || "Unknown socket error"),
       () => {
         socket.disconnect();
         done();
@@ -94,7 +94,7 @@ describe("SocketWrapper", () => {
     const socket = new SocketWrapper(
       socketServerUrlSlow,
       () => fail("Got unexpected message event"),
-      error => fail(error.message || "Unknown socket error"),
+      (error) => fail(error.message || "Unknown socket error"),
       () => fail("Got unexpected opened event"),
       () => fail("Got unexpected closed event"),
       2_000,
@@ -103,10 +103,10 @@ describe("SocketWrapper", () => {
 
     await socket.connected
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/connection attempt timed out/i));
+      .catch((error) => expect(error).toMatch(/connection attempt timed out/i));
   });
 
-  it("can connect and disconnect", done => {
+  it("can connect and disconnect", (done) => {
     pendingWithoutSocketServer();
 
     let opened = 0;
@@ -114,12 +114,12 @@ describe("SocketWrapper", () => {
     const socket = new SocketWrapper(
       socketServerUrl,
       () => done.fail("Got unexpected message event"),
-      error => done.fail(error.message || "Unknown socket error"),
+      (error) => done.fail(error.message || "Unknown socket error"),
       () => {
         opened += 1;
         socket.disconnect();
       },
-      closeEvent => {
+      (closeEvent) => {
         expect(closeEvent.wasClean).toEqual(true);
         expect(closeEvent.code).toEqual(1000 /* Normal Closure */);
 
@@ -130,15 +130,15 @@ describe("SocketWrapper", () => {
     socket.connect();
   });
 
-  it("can disconnect before waiting for open", done => {
+  it("can disconnect before waiting for open", (done) => {
     pendingWithoutSocketServer();
 
     const socket = new SocketWrapper(
       socketServerUrl,
       () => done.fail("Got unexpected message event"),
-      error => done.fail(error.message || "Unknown socket error"),
+      (error) => done.fail(error.message || "Unknown socket error"),
       () => done.fail("Got unexpected open event"),
-      closeEvent => {
+      (closeEvent) => {
         expect(closeEvent.wasClean).toEqual(false);
         expect(closeEvent.code).toEqual(4001);
         done();
@@ -148,16 +148,16 @@ describe("SocketWrapper", () => {
     socket.disconnect();
   });
 
-  it("can disconnect before waiting for open and timeout will not be triggered", done => {
+  it("can disconnect before waiting for open and timeout will not be triggered", (done) => {
     pendingWithoutSocketServer();
     const timeout = 500; // ms
 
     const socket = new SocketWrapper(
       socketServerUrl,
       () => done.fail("Got unexpected message event"),
-      error => done.fail(error.message || "Unknown socket error"),
+      (error) => done.fail(error.message || "Unknown socket error"),
       () => done.fail("Got unexpected open event"),
-      closeEvent => {
+      (closeEvent) => {
         expect(closeEvent.wasClean).toEqual(false);
         expect(closeEvent.code).toEqual(4001);
 
@@ -170,14 +170,14 @@ describe("SocketWrapper", () => {
     socket.disconnect();
   });
 
-  it("can send events when connected", done => {
+  it("can send events when connected", (done) => {
     pendingWithoutSocketServer();
 
     const responseMessages = new Array<string>();
 
     const socket = new SocketWrapper(
       socketServerUrl,
-      response => {
+      (response) => {
         expect(response.type).toEqual("message");
         responseMessages.push(response.data);
 
@@ -185,7 +185,7 @@ describe("SocketWrapper", () => {
           socket.disconnect();
         }
       },
-      error => done.fail(error.message || "Unknown socket error"),
+      (error) => done.fail(error.message || "Unknown socket error"),
       async () => {
         await socket.send("aabbccdd");
         await socket.send("whatever");
@@ -199,7 +199,7 @@ describe("SocketWrapper", () => {
     socket.connect();
   });
 
-  it("can send events after timeout period", done => {
+  it("can send events after timeout period", (done) => {
     pendingWithoutSocketServer();
 
     // The "timeout period" is the period in which a timeout could potentially be triggered
@@ -208,12 +208,12 @@ describe("SocketWrapper", () => {
 
     const socket = new SocketWrapper(
       socketServerUrl,
-      response => {
+      (response) => {
         expect(response.type).toEqual("message");
         expect(response.data).toEqual("Hello world");
         socket.disconnect();
       },
-      error => done.fail(error.message || "Unknown socket error"),
+      (error) => done.fail(error.message || "Unknown socket error"),
       undefined,
       () => done(),
       timeoutPeriodLength,
@@ -223,13 +223,13 @@ describe("SocketWrapper", () => {
     setTimeout(() => socket.send("Hello world"), 2 * timeoutPeriodLength);
   });
 
-  it("cannot send on a disconnect socket (it will never come back)", done => {
+  it("cannot send on a disconnect socket (it will never come back)", (done) => {
     pendingWithoutSocketServer();
 
     const socket = new SocketWrapper(
       socketServerUrl,
       () => done.fail("Got unexpected message event"),
-      error => done.fail(error.message || "Unknown socket error"),
+      (error) => done.fail(error.message || "Unknown socket error"),
       () => {
         socket.disconnect();
       },
@@ -237,7 +237,7 @@ describe("SocketWrapper", () => {
         socket
           .send("la li lu")
           .then(() => done.fail("must not resolve"))
-          .catch(error => {
+          .catch((error) => {
             expect(error).toMatch(/socket was closed/i);
             done();
           });

@@ -173,7 +173,7 @@ describe("CosmosHubConnection", () => {
       const postableBytes = cosmosHubCodec.bytesToPost(signed);
       const response = await connection.postTx(postableBytes);
       const { transactionId } = response;
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       const getResponse = await connection.getTx(transactionId);
@@ -232,7 +232,7 @@ describe("CosmosHubConnection", () => {
       const postableBytes = cosmosHubCodec.bytesToPost(signed);
       const response = await connection.postTx(postableBytes);
       const { transactionId } = response;
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       // search by id

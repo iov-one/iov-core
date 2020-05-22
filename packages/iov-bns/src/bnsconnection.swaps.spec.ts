@@ -79,7 +79,7 @@ describe("BnsConnection (swaps)", () => {
     const transactionId = post.transactionId;
     expect(transactionId).toMatch(/^[0-9A-F]{64}$/);
 
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    const blockInfo = await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
     assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
     const txHeight = blockInfo.height;
     const txResult = blockInfo.result! as SwapIdBytes;
@@ -169,7 +169,7 @@ describe("BnsConnection (swaps)", () => {
 
     // we can also get it by the sender
     const sendOpenSwapData = (await connection.getSwaps(querySwapSender)).filter(
-      s => s.kind === SwapProcessState.Open,
+      (s) => s.kind === SwapProcessState.Open,
     );
     expect(sendOpenSwapData.length).toBeGreaterThanOrEqual(1);
     expect(sendOpenSwapData[sendOpenSwapData.length - 1]).toEqual(swap);
@@ -212,7 +212,7 @@ describe("BnsConnection (swaps)", () => {
       const signed = await profile.signTransaction(faucet, swapOfferTx, bnsCodec, nonce);
       const post = await connection.postTx(bnsCodec.bytesToPost(signed));
 
-      const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
       const txResult = blockInfo.result! as SwapIdBytes;
 
@@ -281,7 +281,7 @@ describe("BnsConnection (swaps)", () => {
 
     // make two offers
     const post1 = await openSwap(connection, profile, faucet, recipientAddr, hash1);
-    const blockInfo1 = await post1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    const blockInfo1 = await post1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
     assert(isBlockInfoSucceeded(blockInfo1), `Expected success but got state: ${blockInfo1.state}`);
     const id1: SwapId = {
       data: blockInfo1.result! as SwapIdBytes,
@@ -289,7 +289,7 @@ describe("BnsConnection (swaps)", () => {
     expect(id1.data.length).toEqual(8);
 
     const post2 = await openSwap(connection, profile, faucet, recipientAddr, hash2);
-    const blockInfo2 = await post2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    const blockInfo2 = await post2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
     assert(isBlockInfoSucceeded(blockInfo2), `Expected success but got state: ${blockInfo2.state}`);
     const id2: SwapId = {
       data: blockInfo2.result! as SwapIdBytes,
@@ -309,14 +309,14 @@ describe("BnsConnection (swaps)", () => {
     // then claim, offer, claim - 2 closed, 1 open
     {
       const post = await claimSwap(connection, profile, faucet, id2, preimage2);
-      await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
     }
 
     // start to watch
     const liveView = asArray(connection.watchSwaps(rcptQuery));
 
     const post3 = await openSwap(connection, profile, faucet, recipientAddr, hash3);
-    const blockInfo3 = await post3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    const blockInfo3 = await post3.blockInfo.waitFor((info) => !isBlockInfoPending(info));
     assert(isBlockInfoSucceeded(blockInfo3), `Expected success but got state: ${blockInfo3.state}`);
     const id3: SwapId = {
       data: blockInfo3.result! as SwapIdBytes,
@@ -325,7 +325,7 @@ describe("BnsConnection (swaps)", () => {
 
     {
       const post = await claimSwap(connection, profile, faucet, id1, preimage1);
-      await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
     }
 
     // make sure we find two claims, one open

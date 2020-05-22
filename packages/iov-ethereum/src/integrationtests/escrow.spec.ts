@@ -79,7 +79,7 @@ class Actor {
     const signed = await this.profile.signTransaction(identity, transaction, ethereumCodec, nonce);
     const postable = ethereumCodec.bytesToPost(signed);
     const post = await this.connection.postTx(postable);
-    const blockInfo = await post.blockInfo.waitFor(info => !isBlockInfoPending(info));
+    const blockInfo = await post.blockInfo.waitFor((info) => !isBlockInfoPending(info));
     if (!isBlockInfoSucceeded(blockInfo)) {
       throw new Error("Transaction failed");
     }
@@ -138,7 +138,7 @@ class Actor {
     const { pubkey } = this.identity;
     const account = await this.connection.getAccount({ pubkey: pubkey });
     const balance = account ? account.balance : [];
-    const amount = balance.find(row => row.tokenTicker === ETH);
+    const amount = balance.find((row) => row.tokenTicker === ETH);
     return new BN(amount ? amount.quantity : 0);
   }
 

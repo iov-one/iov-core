@@ -34,6 +34,6 @@ describe("KeyringEncryptor", () => {
 
     await KeyringEncryptor.decrypt(manipulatedVersion, key)
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/unsupported format version/i));
+      .catch((error) => expect(error).toMatch(/unsupported format version/i));
   });
 });

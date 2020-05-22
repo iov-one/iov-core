@@ -356,7 +356,7 @@ describe("LiskConnection", () => {
   });
 
   describe("watchAccount", () => {
-    it("can watch account by address", done => {
+    it("can watch account by address", (done) => {
       pendingWithoutLiskDevnet();
 
       (async () => {
@@ -366,7 +366,7 @@ describe("LiskConnection", () => {
 
         const events = new Array<Account | undefined>();
         const subscription = connection.watchAccount({ address: recipient }).subscribe({
-          next: event => {
+          next: (event) => {
             events.push(event);
 
             if (events.length === 3) {
@@ -386,9 +386,7 @@ describe("LiskConnection", () => {
               expect(event3.pubkey).toBeUndefined();
               expect(event3.balance.length).toEqual(1);
               expect(event3.balance[0].quantity).toEqual(
-                Long.fromString(devnetDefaultAmount.quantity)
-                  .multiply(2)
-                  .toString(),
+                Long.fromString(devnetDefaultAmount.quantity).multiply(2).toString(),
               );
               expect(event3.balance[0].tokenTicker).toEqual(devnetDefaultAmount.tokenTicker);
 
@@ -427,7 +425,7 @@ describe("LiskConnection", () => {
           );
 
           const result = await connection.postTx(liskCodec.bytesToPost(signedTransaction));
-          await result.blockInfo.waitFor(info => !isBlockInfoPending(info));
+          await result.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         }
       })().catch(done.fail);
     }, 30_000);
@@ -441,31 +439,31 @@ describe("LiskConnection", () => {
       // not an integer
       await connection.getBlockHeader(NaN).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+        (error) => expect(error).toMatch(/height must be a non-negative safe integer/i),
       );
       await connection.getBlockHeader(NaN).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+        (error) => expect(error).toMatch(/height must be a non-negative safe integer/i),
       );
       await connection.getBlockHeader(1.1).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+        (error) => expect(error).toMatch(/height must be a non-negative safe integer/i),
       );
       await connection.getBlockHeader(Number.POSITIVE_INFINITY).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+        (error) => expect(error).toMatch(/height must be a non-negative safe integer/i),
       );
 
       // out of range
       await connection.getBlockHeader(Number.MAX_SAFE_INTEGER + 1).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+        (error) => expect(error).toMatch(/height must be a non-negative safe integer/i),
       );
 
       // negative
       await connection.getBlockHeader(-1).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/height must be a non-negative safe integer/i),
+        (error) => expect(error).toMatch(/height must be a non-negative safe integer/i),
       );
 
       connection.disconnect();
@@ -490,7 +488,7 @@ describe("LiskConnection", () => {
 
       await connection.getBlockHeader(20_000_000).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/block does not exist/i),
+        (error) => expect(error).toMatch(/block does not exist/i),
       );
 
       connection.disconnect();
@@ -553,7 +551,7 @@ describe("LiskConnection", () => {
       expect(result).toBeTruthy();
     });
 
-    it("can post transaction and watch confirmations", done => {
+    it("can post transaction and watch confirmations", (done) => {
       pendingWithoutLiskDevnet();
 
       (async () => {
@@ -591,7 +589,7 @@ describe("LiskConnection", () => {
 
         const events = new Array<BlockInfo>();
         const subscription = result.blockInfo.updates.subscribe({
-          next: info => {
+          next: (info) => {
             events.push(info);
 
             if (events.length === 2) {
@@ -640,7 +638,7 @@ describe("LiskConnection", () => {
       const heightBeforeTransaction = await connection.height();
       const result = await connection.postTx(bytesToPost);
       await result.blockInfo.waitFor(
-        info => info.state === TransactionState.Succeeded && info.confirmations === 4,
+        (info) => info.state === TransactionState.Succeeded && info.confirmations === 4,
       );
 
       expect(result.blockInfo.value).toEqual({
@@ -694,7 +692,7 @@ describe("LiskConnection", () => {
       const connection = await LiskConnection.establish(devnetBase);
       await connection.postTx(bytesToPost).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/failed with status code 409/i),
+        (error) => expect(error).toMatch(/failed with status code 409/i),
       );
     });
   });
@@ -709,7 +707,7 @@ describe("LiskConnection", () => {
         const nonExistentId = "98568736528934587" as TransactionId;
         await connection.getTx(nonExistentId).then(
           () => fail("should not resolve"),
-          error => expect(error).toMatch(/transaction does not exist/i),
+          (error) => expect(error).toMatch(/transaction does not exist/i),
         );
       }
 
@@ -958,7 +956,7 @@ describe("LiskConnection", () => {
   });
 
   describe("liveTx", () => {
-    it("can listen to transactions by recipient address (transactions in history and updates)", done => {
+    it("can listen to transactions by recipient address (transactions in history and updates)", (done) => {
       pendingWithoutLiskDevnet();
 
       (async () => {
@@ -1017,13 +1015,13 @@ describe("LiskConnection", () => {
         ]);
 
         // Wait for a block
-        await postResultA.blockInfo.waitFor(info => !isBlockInfoPending(info));
-        await postResultB.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResultA.blockInfo.waitFor((info) => !isBlockInfoPending(info));
+        await postResultB.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
         // setup listener after A and B are in block
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ sentFromOrTo: recipientAddress }).subscribe({
-          next: event => {
+          next: (event) => {
             assert(isConfirmedTransaction(event), "Confirmed transaction expected");
             events.push(event);
 
@@ -1048,7 +1046,7 @@ describe("LiskConnection", () => {
       })().catch(done.fail);
     }, 60_000);
 
-    it("can listen to transactions by ID (transaction in history)", done => {
+    it("can listen to transactions by ID (transaction in history)", (done) => {
       pendingWithoutLiskDevnet();
 
       (async () => {
@@ -1077,12 +1075,12 @@ describe("LiskConnection", () => {
         const transactionId = postResult.transactionId;
 
         // Wait for a block
-        await postResult.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await postResult.blockInfo.waitFor((info) => !isBlockInfoPending(info));
 
         // setup listener after transaction is in block
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
-          next: event => {
+          next: (event) => {
             assert(isConfirmedTransaction(event), "Confirmed transaction expected");
             events.push(event);
 
@@ -1098,7 +1096,7 @@ describe("LiskConnection", () => {
       })().catch(done.fail);
     }, 30_000);
 
-    it("can listen to transactions by ID (transaction in updates)", done => {
+    it("can listen to transactions by ID (transaction in updates)", (done) => {
       pendingWithoutLiskDevnet();
 
       (async () => {
@@ -1132,7 +1130,7 @@ describe("LiskConnection", () => {
         // setup listener before transaction is in block
         const events = new Array<ConfirmedTransaction<UnsignedTransaction>>();
         const subscription = connection.liveTx({ id: transactionId }).subscribe({
-          next: event => {
+          next: (event) => {
             assert(isConfirmedTransaction(event), "Confirmed transaction expected");
             events.push(event);
 
@@ -1188,7 +1186,7 @@ describe("LiskConnection", () => {
       };
       await connection.getFeeQuote(otherTransaction).then(
         () => fail("must not resolve"),
-        error => expect(error).toMatch(/transaction of unsupported kind/i),
+        (error) => expect(error).toMatch(/transaction of unsupported kind/i),
       );
     });
   });

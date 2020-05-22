@@ -32,7 +32,7 @@ export class Context {
   public wallet(acct: codecImpl.cash.ISet & Keyed): WalletData {
     return {
       address: encodeBnsAddress(addressPrefix(this.chainId), acct._id),
-      balance: ensure(acct.coins).map(c => decodeAmount(c)),
+      balance: ensure(acct.coins).map((c) => decodeAmount(c)),
     };
   }
 

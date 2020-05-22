@@ -105,7 +105,7 @@ describe("BnsConnection (post txs)", () => {
       const signed = await profile.signTransaction(faucet, sendTx, bnsCodec, nonce);
       const txBytes = bnsCodec.bytesToPost(signed);
       const response = await connection.postTx(txBytes);
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       // we should be a little bit richer
@@ -206,13 +206,13 @@ describe("BnsConnection (post txs)", () => {
 
       await connection.postTx(bnsCodec.bytesToPost(signed)).then(
         () => fail("promise must be rejected"),
-        error => expect(error).toMatch(/field \\"Amount\\": invalid currency: UNKNOWN/i),
+        (error) => expect(error).toMatch(/field \\"Amount\\": invalid currency: UNKNOWN/i),
       );
 
       connection.disconnect();
     });
 
-    it("can post transaction and watch confirmations", done => {
+    it("can post transaction and watch confirmations", (done) => {
       pendingWithoutBnsd();
 
       (async () => {
@@ -247,7 +247,7 @@ describe("BnsConnection (post txs)", () => {
 
         const events = new Array<BlockInfo>();
         const subscription = result.blockInfo.updates.subscribe({
-          next: info => {
+          next: (info) => {
             events.push(info);
 
             if (events.length === 3) {
@@ -305,7 +305,7 @@ describe("BnsConnection (post txs)", () => {
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -350,7 +350,7 @@ describe("BnsConnection (post txs)", () => {
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(identity, registration, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -405,7 +405,7 @@ describe("BnsConnection (post txs)", () => {
             ),
           ),
         );
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
@@ -430,7 +430,7 @@ describe("BnsConnection (post txs)", () => {
             ),
           ),
         );
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
@@ -455,7 +455,7 @@ describe("BnsConnection (post txs)", () => {
             ),
           ),
         );
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
@@ -498,7 +498,7 @@ describe("BnsConnection (post txs)", () => {
             ),
           ),
         );
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
@@ -522,7 +522,7 @@ describe("BnsConnection (post txs)", () => {
             ),
           ),
         );
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
 
@@ -570,7 +570,7 @@ describe("BnsConnection (post txs)", () => {
       const doubleSigned1 = await profile.appendSignature(faucet, signed1, bnsCodec, nonceFaucet1);
       const txBytes1 = bnsCodec.bytesToPost(doubleSigned1);
       const response1 = await connection.postTx(txBytes1);
-      const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo1 = await response1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo1.state).toEqual(TransactionState.Succeeded);
 
       const retrieved1 = await connection.getUsernames({ username: username });
@@ -599,7 +599,7 @@ describe("BnsConnection (post txs)", () => {
       const doubleSigned2 = await profile.appendSignature(user, signed3, bnsCodec, nonce4);
       const txBytes3 = bnsCodec.bytesToPost(doubleSigned2);
       const response3 = await connection.postTx(txBytes3);
-      const blockInfo3 = await response3.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo3 = await response3.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo3.state).toEqual(TransactionState.Succeeded);
 
       const retrieved2 = await connection.getUsernames({ username: username });
@@ -640,7 +640,7 @@ describe("BnsConnection (post txs)", () => {
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -687,7 +687,7 @@ describe("BnsConnection (post txs)", () => {
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -716,7 +716,7 @@ describe("BnsConnection (post txs)", () => {
       const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
       const signed2 = await profile.signTransaction(identity, transferDomainTx, bnsCodec, nonce2);
       const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
-      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo2 = await response2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -763,7 +763,7 @@ describe("BnsConnection (post txs)", () => {
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -790,7 +790,7 @@ describe("BnsConnection (post txs)", () => {
       const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
       const signed2 = await profile.signTransaction(identity, renewDomainTx, bnsCodec, nonce2);
       const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
-      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo2 = await response2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -836,7 +836,7 @@ describe("BnsConnection (post txs)", () => {
       const nonce = await connection.getNonce({ pubkey: identity.pubkey });
       const signed = await profile.signTransaction(identity, registerDomainTx, bnsCodec, nonce);
       const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-      const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -863,7 +863,7 @@ describe("BnsConnection (post txs)", () => {
       const nonce2 = await connection.getNonce({ pubkey: identity.pubkey });
       const signed2 = await profile.signTransaction(identity, deleteDomainTx, bnsCodec, nonce2);
       const response2 = await connection.postTx(bnsCodec.bytesToPost(signed2));
-      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo2 = await response2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -894,7 +894,7 @@ describe("BnsConnection (post txs)", () => {
 
       // Create multisignature
       const otherIdentities = await Promise.all(
-        [10, 11, 12, 13, 14].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+        [10, 11, 12, 13, 14].map((i) => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       );
       const participants: readonly Participant[] = [identity, ...otherIdentities].map((id, i) => ({
         address: identityToAddress(id),
@@ -914,7 +914,7 @@ describe("BnsConnection (post txs)", () => {
       const signed1 = await profile.signTransaction(identity, tx1, bnsCodec, nonce1);
       const txBytes1 = bnsCodec.bytesToPost(signed1);
       const response1 = await connection.postTx(txBytes1);
-      const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo1 = await response1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo1.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -941,9 +941,9 @@ describe("BnsConnection (post txs)", () => {
       // Update multisignature
       const participantsUpdated: readonly Participant[] = (
         await Promise.all(
-          [15, 16, 17].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+          [15, 16, 17].map((i) => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
         )
-      ).map(id => ({
+      ).map((id) => ({
         address: identityToAddress(id),
         weight: 6,
       }));
@@ -962,7 +962,7 @@ describe("BnsConnection (post txs)", () => {
       const signed2 = await profile.signTransaction(identity, tx2, bnsCodec, nonce2);
       const txBytes2 = bnsCodec.bytesToPost(signed2);
       const response2 = await connection.postTx(txBytes2);
-      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo2 = await response2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -994,7 +994,7 @@ describe("BnsConnection (post txs)", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const [sender, recipient, arbiter] = await Promise.all(
-        [0, 10, 20].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+        [0, 10, 20].map((i) => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       );
       const [senderAddress, recipientAddress, arbiterAddress] = [sender, recipient, arbiter].map(
         identityToAddress,
@@ -1026,7 +1026,7 @@ describe("BnsConnection (post txs)", () => {
       const signed1 = await profile.signTransaction(sender, tx1, bnsCodec, nonce1);
       const txBytes1 = bnsCodec.bytesToPost(signed1);
       const response1 = await connection.postTx(txBytes1);
-      const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo1 = await response1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo1.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -1062,7 +1062,7 @@ describe("BnsConnection (post txs)", () => {
       const signed2 = await profile.signTransaction(arbiter, tx2, bnsCodec, nonce2);
       const txBytes2 = bnsCodec.bytesToPost(signed2);
       const response2 = await connection.postTx(txBytes2);
-      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo2 = await response2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -1112,7 +1112,7 @@ describe("BnsConnection (post txs)", () => {
         const nonce = await connection.getNonce({ pubkey: sender.pubkey });
         const signed = await profile.signTransaction(sender, createEscrowTx, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         escrowId = blockInfo.result || fromHex("");
       }
@@ -1138,7 +1138,7 @@ describe("BnsConnection (post txs)", () => {
         const nonce = await connection.getNonce({ pubkey: helperIdentity.pubkey });
         const signed = await profile.signTransaction(helperIdentity, returnEscrowTx, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         expect(blockInfo.state).toEqual(TransactionState.Succeeded);
       }
     });
@@ -1151,7 +1151,7 @@ describe("BnsConnection (post txs)", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const [sender, recipient, arbiter] = await Promise.all(
-        [0, 10, 20].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+        [0, 10, 20].map((i) => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       );
       const [senderAddress, recipientAddress, arbiterAddress] = [sender, recipient, arbiter].map(
         identityToAddress,
@@ -1183,7 +1183,7 @@ describe("BnsConnection (post txs)", () => {
       const signed1 = await profile.signTransaction(sender, tx1, bnsCodec, nonce1);
       const txBytes1 = bnsCodec.bytesToPost(signed1);
       const response1 = await connection.postTx(txBytes1);
-      const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo1 = await response1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo1.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -1221,7 +1221,7 @@ describe("BnsConnection (post txs)", () => {
       const signed2 = await profile.signTransaction(arbiter, tx2, bnsCodec, nonce2);
       const txBytes2 = bnsCodec.bytesToPost(signed2);
       const response2 = await connection.postTx(txBytes2);
-      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo2 = await response2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -1246,7 +1246,7 @@ describe("BnsConnection (post txs)", () => {
       const profile = new UserProfile();
       const wallet = profile.addWallet(Ed25519HdWallet.fromEntropy(Random.getBytes(32)));
       const [sender, recipient, arbiter, newArbiter] = await Promise.all(
-        [0, 10, 20, 21].map(i => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
+        [0, 10, 20, 21].map((i) => profile.createIdentity(wallet.id, registryChainId, HdPaths.iov(i))),
       );
       const [senderAddress, recipientAddress, arbiterAddress, newArbiterAddress] = [
         sender,
@@ -1281,7 +1281,7 @@ describe("BnsConnection (post txs)", () => {
       const signed1 = await profile.signTransaction(sender, tx1, bnsCodec, nonce1);
       const txBytes1 = bnsCodec.bytesToPost(signed1);
       const response1 = await connection.postTx(txBytes1);
-      const blockInfo1 = await response1.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo1 = await response1.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo1.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -1317,7 +1317,7 @@ describe("BnsConnection (post txs)", () => {
       const signed2 = await profile.signTransaction(arbiter, tx2, bnsCodec, nonce2);
       const txBytes2 = bnsCodec.bytesToPost(signed2);
       const response2 = await connection.postTx(txBytes2);
-      const blockInfo2 = await response2.blockInfo.waitFor(info => !isBlockInfoPending(info));
+      const blockInfo2 = await response2.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       expect(blockInfo2.state).toEqual(TransactionState.Succeeded);
 
       await tendermintSearchIndexUpdated();
@@ -1377,7 +1377,7 @@ describe("BnsConnection (post txs)", () => {
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
         const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         if (!blockInfo.result) {
           throw new Error("Transaction result missing");
@@ -1387,7 +1387,7 @@ describe("BnsConnection (post txs)", () => {
 
       {
         // Election submitted, voting period not yet started
-        const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
+        const proposal = (await connection.getProposals()).find((p) => p.id === proposalId)!;
         expect(proposal.votingStartTime).toBeGreaterThan(Date.now() / 1000);
         expect(proposal.state.totalYes).toEqual(0);
         expect(proposal.state.totalNo).toEqual(0);
@@ -1401,7 +1401,7 @@ describe("BnsConnection (post txs)", () => {
 
       {
         // Election submitted, voting period started
-        const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
+        const proposal = (await connection.getProposals()).find((p) => p.id === proposalId)!;
         expect(proposal.votingStartTime).toBeLessThan(Date.now() / 1000);
         expect(proposal.votingEndTime).toBeGreaterThan(Date.now() / 1000);
         expect(proposal.state.totalYes).toEqual(0);
@@ -1426,14 +1426,14 @@ describe("BnsConnection (post txs)", () => {
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
         const signed = await profile.signTransaction(author, voteForProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
       }
 
       await sleep(15_000);
 
       {
         // Election ended, was tallied automatically and is accepted
-        const proposal = (await connection.getProposals()).find(p => p.id === proposalId)!;
+        const proposal = (await connection.getProposals()).find((p) => p.id === proposalId)!;
         expect(proposal.state.totalYes).toEqual(10);
         expect(proposal.state.totalNo).toEqual(0);
         expect(proposal.state.totalAbstain).toEqual(0);
@@ -1493,7 +1493,7 @@ describe("BnsConnection (post txs)", () => {
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
         const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         if (!blockInfo.result) {
           throw new Error("Transaction result missing");
@@ -1517,7 +1517,7 @@ describe("BnsConnection (post txs)", () => {
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
         const signed = await profile.signTransaction(author, voteForProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
       }
 
@@ -1564,7 +1564,7 @@ describe("BnsConnection (post txs)", () => {
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
         const signed = await profile.signTransaction(author, createProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
         if (!blockInfo.result) {
           throw new Error("Transaction result missing");
@@ -1588,7 +1588,7 @@ describe("BnsConnection (post txs)", () => {
         const nonce = await connection.getNonce({ pubkey: author.pubkey });
         const signed = await profile.signTransaction(author, voteForProposal, bnsCodec, nonce);
         const response = await connection.postTx(bnsCodec.bytesToPost(signed));
-        const blockInfo = await response.blockInfo.waitFor(info => !isBlockInfoPending(info));
+        const blockInfo = await response.blockInfo.waitFor((info) => !isBlockInfoPending(info));
         assert(isBlockInfoSucceeded(blockInfo), `Expected success but got state: ${blockInfo.state}`);
       }
 

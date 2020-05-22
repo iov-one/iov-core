@@ -223,12 +223,12 @@ export class EthereumCodec implements TxCodec {
       this.atomicSwapEtherContractAddress,
       this.atomicSwapErc20ContractAddress,
     ].find(
-      address =>
+      (address) =>
         address !== undefined && toChecksummedAddress(json.to).toLowerCase() === address.toLowerCase(),
     );
 
     const erc20Token = [...this.erc20Tokens.values()].find(
-      options => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
+      (options) => options.contractAddress.toLowerCase() === toChecksummedAddress(json.to).toLowerCase(),
     );
 
     if (this.customSmartContractConfig) {

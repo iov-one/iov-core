@@ -132,7 +132,7 @@ export class Keyring {
    * @returns a wallet if ID is found, undefined otherwise
    */
   public getWallet(id: WalletId): ReadonlyWallet | undefined {
-    return this.wallets.find(wallet => wallet.id === id);
+    return this.wallets.find((wallet) => wallet.id === id);
   }
 
   /**
@@ -141,7 +141,7 @@ export class Keyring {
    * @returns a wallet if ID is found, undefined otherwise
    */
   public getWalletByIdentity(identity: Identity): ReadonlyWallet | undefined {
-    return this.wallets.find(wallet => wallet.getIdentities().some(identityEquals.bind(null, identity)));
+    return this.wallets.find((wallet) => wallet.getIdentities().some(identityEquals.bind(null, identity)));
   }
 
   /** Sets the label of the wallet with the given ID in the primary keyring  */
@@ -222,7 +222,7 @@ export class Keyring {
    * @returns a wallet if ID is found, undefined otherwise
    */
   private getMutableWallet(id: WalletId): Wallet | undefined {
-    return this.wallets.find(wallet => wallet.id === id);
+    return this.wallets.find((wallet) => wallet.id === id);
   }
 
   /**
@@ -232,7 +232,7 @@ export class Keyring {
    * @returns a wallet if ID is found, undefined otherwise
    */
   private getMutableWalletByIdentity(identity: Identity): Wallet | undefined {
-    return this.wallets.find(wallet => wallet.getIdentities().some(identityEquals.bind(null, identity)));
+    return this.wallets.find((wallet) => wallet.getIdentities().some(identityEquals.bind(null, identity)));
   }
 
   /**

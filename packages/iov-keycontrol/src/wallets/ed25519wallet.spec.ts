@@ -86,7 +86,7 @@ describe("Ed25519Wallet", () => {
 
     // all pubkeys must be different
     const pubkeySet = new Set(
-      [newIdentity1, newIdentity2, newIdentity3, newIdentity4].map(i => toHex(i.pubkey.data)),
+      [newIdentity1, newIdentity2, newIdentity3, newIdentity4].map((i) => toHex(i.pubkey.data)),
     );
     expect(pubkeySet.size).toEqual(4);
 
@@ -124,7 +124,7 @@ describe("Ed25519Wallet", () => {
     await wallet
       .createIdentity(defaultChain, defaultKeypair)
       .then(() => fail("must not resolve"))
-      .catch(error => expect(error).toMatch(/ID collision/i));
+      .catch((error) => expect(error).toMatch(/ID collision/i));
   });
 
   it("can set, change and unset an identity label", async () => {
