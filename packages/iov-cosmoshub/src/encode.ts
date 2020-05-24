@@ -10,12 +10,10 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Secp256k1 } from "@iov/crypto";
-import { Encoding } from "@iov/encoding";
+import { toBase64 } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
 import { AminoTx } from "./types";
-
-const { toBase64 } = Encoding;
 
 export function encodePubkey(pubkey: PubkeyBundle): amino.PubKey {
   switch (pubkey.algo) {

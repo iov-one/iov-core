@@ -1,4 +1,4 @@
-import { Encoding, fromHex, Int53, toHex } from "@iov/encoding";
+import { Encoding, fromBase64, fromHex, Int53, toBase64, toHex } from "@iov/encoding";
 import { As } from "type-tagger";
 
 import { BlockId, ReadonlyDateWithNanoseconds, Version } from "./responses";
@@ -150,11 +150,11 @@ export class Integer {
 
 export class Base64 {
   public static encode(data: Uint8Array): Base64String {
-    return Encoding.toBase64(data) as Base64String;
+    return toBase64(data) as Base64String;
   }
 
   public static decode(base64String: Base64String): Uint8Array {
-    return Encoding.fromBase64(base64String);
+    return fromBase64(base64String);
   }
 }
 

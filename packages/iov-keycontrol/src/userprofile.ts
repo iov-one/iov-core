@@ -10,7 +10,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Argon2id, Argon2idOptions, Ed25519Keypair, Slip10RawIndex } from "@iov/crypto";
-import { Encoding, Int53 } from "@iov/encoding";
+import { Encoding, fromBase64, Int53, toBase64 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import { AbstractLevelDOWN } from "abstract-leveldown";
 import { LevelUp } from "levelup";
@@ -21,7 +21,7 @@ import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
 import { DatabaseUtils } from "./utils";
 import { ReadonlyWallet, WalletId } from "./wallet";
 
-const { toAscii, fromBase64, toBase64, toRfc3339, fromRfc3339 } = Encoding;
+const { toAscii, toRfc3339, fromRfc3339 } = Encoding;
 
 const storageKeyFormatVersion = "format_version";
 const storageKeyCreatedAt = "created_at";

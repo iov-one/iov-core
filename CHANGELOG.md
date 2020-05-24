@@ -2,8 +2,9 @@
 
 ## HEAD
 
-- @iov/encoding: Pull out free functions `fromHex` and `toHex` to simplify
-  usability. `Encoding.fromHex` and `Encoding.toHex` are now deprecated.
+- @iov/encoding: Pull out free functions `fromHex`, `toHex`, `fromBase64` and
+  `toBase64` to simplify usability. `Encoding.fromHex`, `Encoding.toHex`,
+  `Encoding.fromBase64` and `Encoding.toBase64` are now deprecated.
 
 ## 2.2.5
 

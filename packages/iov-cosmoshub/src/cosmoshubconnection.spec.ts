@@ -11,13 +11,11 @@ import {
   TransactionState,
 } from "@iov/bcp";
 import { Secp256k1 } from "@iov/crypto";
-import { Encoding, toHex } from "@iov/encoding";
+import { fromBase64, toHex } from "@iov/encoding";
 import { HdPaths, Secp256k1HdWallet, UserProfile } from "@iov/keycontrol";
 
 import { cosmosHubCodec } from "./cosmoshubcodec";
 import { CosmosHubConnection } from "./cosmoshubconnection";
-
-const { fromBase64 } = Encoding;
 
 function pendingWithoutCosmosHub(): void {
   if (!process.env.COSMOSHUB_ENABLED) {

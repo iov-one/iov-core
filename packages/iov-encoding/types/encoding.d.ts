@@ -4,7 +4,9 @@ export declare class Encoding {
   static toHex(data: Uint8Array): string;
   /** @deprecated use free function fromHex from @iov/encoding */
   static fromHex(hexstring: string): Uint8Array;
+  /** @deprecated use free function toBase64 from @iov/encoding */
   static toBase64(data: Uint8Array): string;
+  /** @deprecated use free function fromBase64 from @iov/encoding */
   static fromBase64(base64String: string): Uint8Array;
   static toAscii(input: string): Uint8Array;
   static fromAscii(data: Uint8Array): string;

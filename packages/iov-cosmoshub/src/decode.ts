@@ -16,13 +16,11 @@ import {
   TransactionId,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromBase64 } from "@iov/encoding";
 import amino from "@tendermint/amino-js";
 
 import { TxsResponse } from "./restclient";
 import { isAminoStdTx } from "./types";
-
-const { fromBase64 } = Encoding;
 
 const atom = "ATOM" as TokenTicker;
 

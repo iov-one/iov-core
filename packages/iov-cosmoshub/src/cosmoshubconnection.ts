@@ -29,7 +29,7 @@ import {
   TxReadCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding, Uint53 } from "@iov/encoding";
+import { fromBase64, Uint53 } from "@iov/encoding";
 import { DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import equal from "fast-deep-equal";
 import { ReadonlyDate } from "readonly-date";
@@ -40,8 +40,6 @@ import { Caip5 } from "./caip5";
 import { cosmosHubCodec } from "./cosmoshubcodec";
 import { decodeAmount, parseTxsResponse } from "./decode";
 import { RestClient, TxsResponse } from "./restclient";
-
-const { fromBase64 } = Encoding;
 
 // poll every 0.5 seconds (block time 1s)
 const defaultPollInterval = 500;

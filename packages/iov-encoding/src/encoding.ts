@@ -1,6 +1,6 @@
-import * as base64js from "base64-js";
 import { ReadonlyDate } from "readonly-date";
 
+import { fromBase64, toBase64 } from "./base64";
 import { fromHex, toHex } from "./hex";
 
 // Global symbols in some environments
@@ -20,15 +20,14 @@ export class Encoding {
     return fromHex(hexstring);
   }
 
+  /** @deprecated use free function toBase64 from @iov/encoding */
   public static toBase64(data: Uint8Array): string {
-    return base64js.fromByteArray(data);
+    return toBase64(data);
   }
 
+  /** @deprecated use free function fromBase64 from @iov/encoding */
   public static fromBase64(base64String: string): Uint8Array {
-    if (!base64String.match(/^[a-zA-Z0-9+/]*={0,2}$/)) {
-      throw new Error("Invalid base64 string format");
-    }
-    return base64js.toByteArray(base64String);
+    return fromBase64(base64String);
   }
 
   public static toAscii(input: string): Uint8Array {
