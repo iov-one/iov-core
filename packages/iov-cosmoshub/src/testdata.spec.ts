@@ -12,11 +12,9 @@ import {
   TokenTicker,
   TransactionId,
 } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromBase64 } from "@iov/encoding";
 
 import data from "./testdata/cosmoshub.json";
-
-const { fromBase64 } = Encoding;
 
 export const pubJson: PubkeyBundle = {
   algo: Algorithm.Secp256k1,

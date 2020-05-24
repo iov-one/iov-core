@@ -149,6 +149,8 @@ export function main(originalArgs: readonly string[]): void {
         "Encoding",
         "fromHex",
         "toHex",
+        "fromBase64",
+        "toBase64",
         // integers
         "Int53",
         "Uint32",

@@ -1,10 +1,10 @@
-import { Encoding, fromHex } from "@iov/encoding";
+import { Encoding, fromBase64, fromHex } from "@iov/encoding";
 
 import { EnglishMnemonic } from "./englishmnemonic";
 import { Sha256 } from "./sha";
 import wordlists from "./testdata/bip39_wordlists.json";
 
-const { fromAscii, fromBase64 } = Encoding;
+const { fromAscii } = Encoding;
 
 describe("EnglishMnemonic", () => {
   describe("wordlist", () => {
