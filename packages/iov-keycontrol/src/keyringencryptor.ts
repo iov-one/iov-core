@@ -6,12 +6,10 @@ import {
   Xchacha20poly1305IetfMessage,
   Xchacha20poly1305IetfNonce,
 } from "@iov/crypto";
-import { Encoding, Uint32 } from "@iov/encoding";
+import { fromUtf8, toUtf8, Uint32 } from "@iov/encoding";
 import { As } from "type-tagger";
 
 import { KeyringSerializationString } from "./keyring";
-
-const { toUtf8 } = Encoding;
 
 export type EncryptedKeyring = Uint8Array & As<"encrypted-keyring">;
 
@@ -62,7 +60,7 @@ export class KeyringEncryptor {
           encryptionKey as Xchacha20poly1305IetfKey,
           nonce,
         );
-        return Encoding.fromUtf8(decrypted) as KeyringSerializationString;
+        return fromUtf8(decrypted) as KeyringSerializationString;
       }
       default:
         throw new Error(`Unsupported format version: ${formatVersion.toNumber()}`);

@@ -1,5 +1,5 @@
 import { Address, Amount, ChainId, Token, TokenTicker } from "@iov/bcp";
-import { Encoding, fromAscii, toHex, Uint32, Uint64 } from "@iov/encoding";
+import { fromAscii, fromUtf8, toHex, Uint32, Uint64 } from "@iov/encoding";
 import BN from "bn.js";
 
 import { weaveFractionalDigits } from "./constants";
@@ -115,7 +115,7 @@ export function decodeUsernameNft(
 ): BnsUsernameNft {
   const rawOwnerAddress = ensure(nft.owner, "owner");
   return {
-    id: Encoding.fromUtf8(nft._id),
+    id: fromUtf8(nft._id),
     owner: encodeBnsAddress(addressPrefix(registryChainId), rawOwnerAddress),
     targets: ensure(nft.targets, "targets").map(decodeChainAddressPair),
   };

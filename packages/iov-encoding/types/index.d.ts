@@ -15,3 +15,4 @@ export {
 } from "./json";
 export { TransactionEncoder } from "./transactionencoder";
 export { isNonNullObject, isUint8Array } from "./typechecks";
+export { fromUtf8, toUtf8 } from "./utf8";

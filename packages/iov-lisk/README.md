@@ -114,7 +114,7 @@ const signedTransaction = {
 
 // Signed transacion you can POST to
 // https://testnet.lisk.io/api/transactions
-const bytesToPost = Encoding.fromUtf8(liskCodec.bytesToPost(signedTransaction));
+const bytesToPost = fromUtf8(liskCodec.bytesToPost(signedTransaction));
 console.log(bytesToPost);
 ```
 

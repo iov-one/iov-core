@@ -1,10 +1,8 @@
 import { PostableBytes, PrehashType } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { toUtf8 } from "@iov/encoding";
 
 import { cosmosHubCodec } from "./cosmoshubcodec";
 import { chainId, nonce, sendTxJson, signedTxBin, signedTxJson, txId } from "./testdata.spec";
-
-const { toUtf8 } = Encoding;
 
 describe("cosmosHubCodec", () => {
   it("properly generates bytes to sign", () => {

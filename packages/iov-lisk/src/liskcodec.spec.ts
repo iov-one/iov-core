@@ -12,7 +12,7 @@ import {
   SignedTransaction,
   TokenTicker,
 } from "@iov/bcp";
-import { Encoding, fromHex } from "@iov/encoding";
+import { fromHex, fromUtf8, toUtf8 } from "@iov/encoding";
 
 import { liskCodec } from "./liskcodec";
 
@@ -97,7 +97,7 @@ describe("liskCodec", () => {
     const bytes = liskCodec.bytesToPost(signed);
     expect(bytes).toBeTruthy();
 
-    expect(JSON.parse(Encoding.fromUtf8(bytes))).toEqual({
+    expect(JSON.parse(fromUtf8(bytes))).toEqual({
       type: 0,
       timestamp: 865708731,
       amount: "123456789",
@@ -112,7 +112,7 @@ describe("liskCodec", () => {
 
   it("can parse transaction", () => {
     // curl -s 'https://testnet.lisk.io/api/transactions?id=9181508057602672832' | jq '.data[0]'
-    const serialized = Encoding.toUtf8(`
+    const serialized = toUtf8(`
       {
         "id": "9181508057602672832",
         "height": 6309471,

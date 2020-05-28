@@ -12,9 +12,10 @@ export declare class Encoding {
   static toAscii(input: string): Uint8Array;
   /** @deprecated use free function fromAscii from @iov/encoding */
   static fromAscii(data: Uint8Array): string;
+  /** @deprecated use free function toUtf8 from @iov/encoding */
   static toUtf8(str: string): Uint8Array;
+  /** @deprecated use free function fromUtf8 from @iov/encoding */
   static fromUtf8(data: Uint8Array): string;
   static fromRfc3339(str: string): ReadonlyDate;
   static toRfc3339(date: Date | ReadonlyDate): string;
-  private static isValidUtf8;
 }

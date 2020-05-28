@@ -1,4 +1,4 @@
-import { Encoding, fromHex } from "@iov/encoding";
+import { fromHex, toUtf8 } from "@iov/encoding";
 
 import { Keyring } from "./keyring";
 import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
@@ -6,7 +6,7 @@ import { EncryptedKeyring, KeyringEncryptor } from "./keyringencryptor";
 describe("KeyringEncryptor", () => {
   it("can encrypt", async () => {
     const keyringSerialization = new Keyring().serialize();
-    const serializationLength = Encoding.toUtf8(keyringSerialization).length;
+    const serializationLength = toUtf8(keyringSerialization).length;
     const key = fromHex("0000000000000000000000000000000000000000000000000000000000000000");
     const encrypted = await KeyringEncryptor.encrypt(keyringSerialization, key);
 

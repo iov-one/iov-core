@@ -27,7 +27,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding, fromHex, Uint53, Uint64 } from "@iov/encoding";
+import { fromHex, fromUtf8, toUtf8, Uint53, Uint64 } from "@iov/encoding";
 import { concat, DefaultValueProducer, ValueAndUpdates } from "@iov/stream";
 import axios from "axios";
 import equal from "fast-deep-equal";
@@ -38,8 +38,6 @@ import { constants } from "./constants";
 import { Derivation } from "./derivation";
 import { liskCodec } from "./liskcodec";
 import { Parse } from "./parse";
-
-const { toUtf8 } = Encoding;
 
 // poll every 3 seconds (block time 10s)
 const defaultPollInterval = 3_000;
@@ -103,7 +101,7 @@ export class LiskConnection implements BlockchainConnection {
   }
 
   public async postTx(bytes: PostableBytes): Promise<PostTxResponse> {
-    const transactionId = JSON.parse(Encoding.fromUtf8(bytes)).id as TransactionId;
+    const transactionId = JSON.parse(fromUtf8(bytes)).id as TransactionId;
     if (!transactionId.match(/^[0-9]+$/)) {
       throw new Error("Invalid transaction ID");
     }

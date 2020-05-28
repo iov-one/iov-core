@@ -149,6 +149,8 @@ export function main(originalArgs: readonly string[]): void {
         "Encoding",
         "toAscii",
         "fromAscii",
+        "fromUtf8",
+        "toUtf8",
         "fromHex",
         "toHex",
         "fromBase64",

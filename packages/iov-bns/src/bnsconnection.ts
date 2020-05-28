@@ -46,7 +46,7 @@ import {
   TxReadCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding, toAscii, toHex, Uint53 } from "@iov/encoding";
+import { toAscii, toHex, toUtf8, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient, v0_31 } from "@iov/tendermint-rpc";
 import BN from "bn.js";
@@ -111,8 +111,6 @@ import {
   isConfirmedWithSwapOfferTransaction,
   maxAmount,
 } from "./util";
-
-const { toUtf8 } = Encoding;
 
 // https://github.com/tendermint/tendermint/blob/v0.29.0/rpc/lib/types/types.go#L229
 const tendermintInternalError = -32603;
