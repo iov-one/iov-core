@@ -1,6 +1,6 @@
 import { Address } from "@iov/bcp";
 import { Keccak256 } from "@iov/crypto";
-import { Encoding, fromHex } from "@iov/encoding";
+import { fromHex, toAscii } from "@iov/encoding";
 import BN from "bn.js";
 
 import { isValidAddress, toChecksummedAddress } from "./address";
@@ -14,7 +14,7 @@ export interface HeadTail {
 
 export class Abi {
   public static calculateMethodHash(signature: string): Uint8Array {
-    return new Keccak256(Encoding.toAscii(signature)).digest();
+    return new Keccak256(toAscii(signature)).digest();
   }
 
   public static calculateMethodId(signature: string): Uint8Array {

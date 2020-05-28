@@ -1,3 +1,4 @@
+export { fromAscii, toAscii } from "./ascii";
 export { fromBase64, toBase64 } from "./base64";
 export { Bech32 } from "./bech32";
 export { Decimal } from "./decimal";

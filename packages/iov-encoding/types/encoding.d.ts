@@ -8,7 +8,9 @@ export declare class Encoding {
   static toBase64(data: Uint8Array): string;
   /** @deprecated use free function fromBase64 from @iov/encoding */
   static fromBase64(base64String: string): Uint8Array;
+  /** @deprecated use free function toAscii from @iov/encoding */
   static toAscii(input: string): Uint8Array;
+  /** @deprecated use free function fromAscii from @iov/encoding */
   static fromAscii(data: Uint8Array): string;
   static toUtf8(str: string): Uint8Array;
   static fromUtf8(data: Uint8Array): string;

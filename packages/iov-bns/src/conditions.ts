@@ -1,6 +1,6 @@
 import { Address, ChainId, Hash, SwapId } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
-import { Encoding, Uint64 } from "@iov/encoding";
+import { toAscii, Uint64 } from "@iov/encoding";
 import { As } from "type-tagger";
 
 import { addressPrefix, encodeBnsAddress } from "./util";
@@ -10,7 +10,7 @@ export type Condition = Uint8Array & As<"Condition">;
 
 export function buildCondition(extension: string, type: string, data: Uint8Array): Condition {
   // https://github.com/iov-one/weave/blob/v0.21.0/conditions.go#L35-L38
-  const out = Uint8Array.from([...Encoding.toAscii(`${extension}/${type}/`), ...data]);
+  const out = Uint8Array.from([...toAscii(`${extension}/${type}/`), ...data]);
   return out as Condition;
 }
 

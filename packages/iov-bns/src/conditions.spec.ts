@@ -1,5 +1,5 @@
 import { ChainId, Hash, SwapIdBytes } from "@iov/bcp";
-import { Encoding, fromHex } from "@iov/encoding";
+import { fromHex, toAscii } from "@iov/encoding";
 
 import {
   buildCondition,
@@ -10,8 +10,6 @@ import {
   multisignatureIdToAddress,
   swapToAddress,
 } from "./conditions";
-
-const { toAscii } = Encoding;
 
 describe("conditions", () => {
   describe("buildCondition", () => {

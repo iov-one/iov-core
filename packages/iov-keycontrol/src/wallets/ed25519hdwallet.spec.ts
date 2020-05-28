@@ -1,10 +1,8 @@
 import { ChainId, PrehashType, SignableBytes } from "@iov/bcp";
 import { Ed25519, Slip10RawIndex } from "@iov/crypto";
-import { Encoding, fromHex } from "@iov/encoding";
+import { fromHex, toAscii } from "@iov/encoding";
 
 import { Ed25519HdWallet } from "./ed25519hdwallet";
-
-const { toAscii } = Encoding;
 
 describe("Ed25519HdWallet", () => {
   const defaultChain = "chain123" as ChainId;

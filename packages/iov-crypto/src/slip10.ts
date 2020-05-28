@@ -1,4 +1,4 @@
-import { Encoding, fromHex, Uint32 } from "@iov/encoding";
+import { fromHex, toAscii, Uint32 } from "@iov/encoding";
 import BN from "bn.js";
 import elliptic from "elliptic";
 
@@ -66,7 +66,7 @@ export class Slip10 {
   }
 
   private static master(curve: Slip10Curve, seed: Uint8Array): Slip10Result {
-    const i = new Hmac(Sha512, Encoding.toAscii(curve)).update(seed).digest();
+    const i = new Hmac(Sha512, toAscii(curve)).update(seed).digest();
     const il = i.slice(0, 32);
     const ir = i.slice(32, 64);
 

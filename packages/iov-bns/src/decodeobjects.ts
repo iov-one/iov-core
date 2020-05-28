@@ -1,5 +1,5 @@
 import { Address, Amount, ChainId, Token, TokenTicker } from "@iov/bcp";
-import { Encoding, toHex, Uint32, Uint64 } from "@iov/encoding";
+import { Encoding, fromAscii, toHex, Uint32, Uint64 } from "@iov/encoding";
 import BN from "bn.js";
 
 import { weaveFractionalDigits } from "./constants";
@@ -44,7 +44,7 @@ import { addressPrefix, encodeBnsAddress, IovBech32Prefix } from "./util";
 
 export function decodeToken(data: codecImpl.currency.ITokenInfo & Keyed): Token {
   return {
-    tokenTicker: Encoding.fromAscii(data._id) as TokenTicker,
+    tokenTicker: fromAscii(data._id) as TokenTicker,
     tokenName: ensure(data.name),
     fractionalDigits: weaveFractionalDigits,
   };

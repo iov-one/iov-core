@@ -147,6 +147,8 @@ export function main(originalArgs: readonly string[]): void {
       [
         "Bech32",
         "Encoding",
+        "toAscii",
+        "fromAscii",
         "fromHex",
         "toHex",
         "fromBase64",
@@ -202,8 +204,6 @@ export function main(originalArgs: readonly string[]): void {
       console.info(colors.yellow(`    - ${symbol}`));
     }
   }
-  console.info(colors.yellow("  * helper functions"));
-  console.info(colors.yellow("    - toAscii"));
 
   let init = `
     import leveldown = require('leveldown');
@@ -216,7 +216,6 @@ export function main(originalArgs: readonly string[]): void {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     init += `import { ${imports.get(moduleName)!.join(", ")} } from "${moduleName}";\n`;
   }
-  init += `const { toAscii } = Encoding;\n`;
 
   if (args.selftest) {
     // execute some trival stuff and exit
