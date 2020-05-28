@@ -1,5 +1,5 @@
 import { Address, ChainId, TokenTicker } from "@iov/bcp";
-import { Bech32, Encoding, fromHex } from "@iov/encoding";
+import { Bech32, fromHex, toUtf8 } from "@iov/encoding";
 
 import {
   decodeAccount,
@@ -18,8 +18,6 @@ import {
 import * as codecImpl from "./generated/codecimpl";
 import { coinBin, coinJson } from "./testdata.spec";
 import { ActionKind, Keyed, ProposalExecutorResult, ProposalResult, ProposalStatus } from "./types";
-
-const { toUtf8 } = Encoding;
 
 describe("decodeobjects", () => {
   describe("decodeToken", () => {

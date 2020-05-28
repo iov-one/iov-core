@@ -23,7 +23,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature, Keccak256, Secp256k1 } from "@iov/crypto";
-import { Encoding, fromHex, toHex } from "@iov/encoding";
+import { fromHex, fromUtf8, toHex } from "@iov/encoding";
 
 import { isValidAddress, pubkeyToAddress, toChecksummedAddress } from "./address";
 import { AtomicSwapContractTransactionBuilder } from "./atomicswapcontracttransactionbuilder";
@@ -80,7 +80,7 @@ type SupportedTransactionType =
 export class EthereumCodec implements TxCodec {
   private static getMemoFromInput(input: Uint8Array): string {
     try {
-      return Encoding.fromUtf8(input);
+      return fromUtf8(input);
     } catch {
       const hexstring = toHex(input);
       // split in space separated chunks up to 16 characters each
@@ -127,7 +127,7 @@ export class EthereumCodec implements TxCodec {
   }
 
   public parseBytes(bytes: PostableBytes, chainId: ChainId): SignedTransaction {
-    const json: EthereumRpcTransactionResult = JSON.parse(Encoding.fromUtf8(bytes));
+    const json: EthereumRpcTransactionResult = JSON.parse(fromUtf8(bytes));
     const nonce = decodeHexQuantityNonce(json.nonce);
     const value = decodeHexQuantityString(json.value);
     const input = fromHex(normalizeHex(json.input));

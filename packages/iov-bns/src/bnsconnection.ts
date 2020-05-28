@@ -46,7 +46,7 @@ import {
   TxReadCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding, toHex, Uint53 } from "@iov/encoding";
+import { toAscii, toHex, toUtf8, Uint53 } from "@iov/encoding";
 import { concat, DefaultValueProducer, dropDuplicates, fromListPromise, ValueAndUpdates } from "@iov/stream";
 import { broadcastTxSyncSuccess, Client as TendermintClient, v0_31 } from "@iov/tendermint-rpc";
 import BN from "bn.js";
@@ -111,8 +111,6 @@ import {
   isConfirmedWithSwapOfferTransaction,
   maxAmount,
 } from "./util";
-
-const { toAscii, toUtf8 } = Encoding;
 
 // https://github.com/tendermint/tendermint/blob/v0.29.0/rpc/lib/types/types.go#L229
 const tendermintInternalError = -32603;
@@ -853,7 +851,7 @@ export class BnsConnection implements AtomicSwapConnection {
   }
 
   public async getTxFeeConfiguration(): Promise<TxFeeConfiguration | undefined> {
-    const { results } = await this.query("/", Encoding.toAscii("_c:txfee"));
+    const { results } = await this.query("/", toAscii("_c:txfee"));
     if (results.length > 1) {
       throw new Error(
         `Unexpected number of results for tx fee configuration. Expected: 0/1 Got: ${results.length}`,
@@ -918,7 +916,7 @@ export class BnsConnection implements AtomicSwapConnection {
    * Queries the blockchain for the enforced anti-spam fee
    */
   protected async getDefaultFee(): Promise<Amount | undefined> {
-    const { results } = await this.query("/", Encoding.toAscii("_c:cash"));
+    const { results } = await this.query("/", toAscii("_c:cash"));
     if (results.length !== 1) {
       throw new Error(`Unexpected number of results for minimal fee. Expected: 1 Got: ${results.length}`);
     }
@@ -959,7 +957,7 @@ export class BnsConnection implements AtomicSwapConnection {
     const path = mapKindToBnsPath(transaction);
 
     // TODO: add query handler to msgfee
-    const { results } = await this.query("/", Encoding.toAscii(`msgfee:${path}`));
+    const { results } = await this.query("/", toAscii(`msgfee:${path}`));
     if (results.length > 1) {
       throw new Error(`Unexpected number of results for product fee. Expected: 0/1 Got: ${results.length}`);
     }

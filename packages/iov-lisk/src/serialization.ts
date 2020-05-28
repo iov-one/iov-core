@@ -1,7 +1,7 @@
 // tslint:disable:no-bitwise
 import { FullSignature, isSendTransaction, TransactionId, UnsignedTransaction } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
-import { Encoding, Uint64 } from "@iov/encoding";
+import { toUtf8, Uint64 } from "@iov/encoding";
 import Long from "long";
 import { ReadonlyDate } from "readonly-date";
 
@@ -85,7 +85,7 @@ export class Serialization {
 
       const recipient = Long.fromString(recipientNumberString, true, 10);
 
-      const memoBytes = unsigned.memo !== undefined ? Encoding.toUtf8(unsigned.memo) : new Uint8Array([]);
+      const memoBytes = unsigned.memo !== undefined ? toUtf8(unsigned.memo) : new Uint8Array([]);
       if (memoBytes.length > options.maxMemoLength) {
         throw new Error(`Memo length exceeds limit. Allowed: ${options.maxMemoLength} bytes`);
       }

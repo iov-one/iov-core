@@ -1,5 +1,5 @@
 // tslint:disable:readonly-array
-import { Encoding } from "@iov/encoding";
+import { toAscii } from "@iov/encoding";
 import { firstEvent, toListPromise } from "@iov/stream";
 import { sleep } from "@iov/utils";
 import { ReadonlyDate } from "readonly-date";
@@ -26,7 +26,7 @@ async function tendermintSearchIndexUpdated(): Promise<void> {
 }
 
 function buildKvTx(k: string, v: string): TxBytes {
-  return Encoding.toAscii(`${k}=${v}`) as TxBytes;
+  return toAscii(`${k}=${v}`) as TxBytes;
 }
 
 function randomString(): string {
@@ -90,8 +90,8 @@ function defaultTestSuite(rpcFactory: () => RpcClient, adaptor: Adaptor): void {
     const value = randomString();
     await client.broadcastTxCommit({ tx: buildKvTx(key, value) });
 
-    const binKey = Encoding.toAscii(key);
-    const binValue = Encoding.toAscii(value);
+    const binKey = toAscii(key);
+    const binValue = toAscii(value);
     const queryParams = { path: "/key", data: binKey, prove: true };
     const response = await client.abciQuery(queryParams);
     expect(response.key).toEqual(binKey);

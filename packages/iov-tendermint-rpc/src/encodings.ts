@@ -1,9 +1,7 @@
-import { Encoding, fromBase64, fromHex, Int53, toBase64, toHex } from "@iov/encoding";
+import { Encoding, fromBase64, fromHex, Int53, toBase64, toHex, toUtf8 } from "@iov/encoding";
 import { As } from "type-tagger";
 
 import { BlockId, ReadonlyDateWithNanoseconds, Version } from "./responses";
-
-const { toUtf8 } = Encoding;
 
 export type Base64String = string & As<"base64">;
 export type HexString = string & As<"hex">;

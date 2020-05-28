@@ -1,13 +1,9 @@
 import { ReadonlyDate } from "readonly-date";
 
+import { fromAscii, toAscii } from "./ascii";
 import { fromBase64, toBase64 } from "./base64";
 import { fromHex, toHex } from "./hex";
-
-// Global symbols in some environments
-// https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder
-// https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder
-declare const TextEncoder: any | undefined;
-declare const TextDecoder: any | undefined;
+import { fromUtf8, toUtf8 } from "./utf8";
 
 export class Encoding {
   /** @deprecated use free function toHex from @iov/encoding */
@@ -30,62 +26,24 @@ export class Encoding {
     return fromBase64(base64String);
   }
 
+  /** @deprecated use free function toAscii from @iov/encoding */
   public static toAscii(input: string): Uint8Array {
-    const toNums = (str: string): readonly number[] =>
-      str.split("").map((x: string) => {
-        const charCode = x.charCodeAt(0);
-        // 0x00–0x1F control characters
-        // 0x20–0x7E printable characters
-        // 0x7F delete character
-        // 0x80–0xFF out of 7 bit ascii range
-        if (charCode < 0x20 || charCode > 0x7e) {
-          throw new Error("Cannot encode character that is out of printable ASCII range: " + charCode);
-        }
-        return charCode;
-      });
-    return Uint8Array.from(toNums(input));
+    return toAscii(input);
   }
 
+  /** @deprecated use free function fromAscii from @iov/encoding */
   public static fromAscii(data: Uint8Array): string {
-    const fromNums = (listOfNumbers: readonly number[]): readonly string[] =>
-      listOfNumbers.map((x: number): string => {
-        // 0x00–0x1F control characters
-        // 0x20–0x7E printable characters
-        // 0x7F delete character
-        // 0x80–0xFF out of 7 bit ascii range
-        if (x < 0x20 || x > 0x7e) {
-          throw new Error("Cannot decode character that is out of printable ASCII range: " + x);
-        }
-        return String.fromCharCode(x);
-      });
-
-    return fromNums(Array.from(data)).join("");
+    return fromAscii(data);
   }
 
+  /** @deprecated use free function toUtf8 from @iov/encoding */
   public static toUtf8(str: string): Uint8Array {
-    // Browser and future nodejs (https://github.com/nodejs/node/issues/20365)
-    if (typeof TextEncoder !== "undefined") {
-      return new TextEncoder().encode(str);
-    }
-
-    // Use Buffer hack instead of nodejs util.TextEncoder to ensure
-    // webpack does not bundle the util module for browsers.
-    return new Uint8Array(Buffer.from(str, "utf8"));
+    return toUtf8(str);
   }
 
+  /** @deprecated use free function fromUtf8 from @iov/encoding */
   public static fromUtf8(data: Uint8Array): string {
-    // Browser and future nodejs (https://github.com/nodejs/node/issues/20365)
-    if (typeof TextDecoder !== "undefined") {
-      return new TextDecoder("utf-8", { fatal: true }).decode(data);
-    }
-
-    // Use Buffer hack instead of nodejs util.TextDecoder to ensure
-    // webpack does not bundle the util module for browsers.
-    // Buffer.toString has no fatal option
-    if (!Encoding.isValidUtf8(data)) {
-      throw new Error("Invalid UTF8 data");
-    }
-    return Buffer.from(data).toString("utf8");
+    return fromUtf8(data);
   }
 
   public static fromRfc3339(str: string): ReadonlyDate {
@@ -143,10 +101,5 @@ export class Encoding {
     const ms = padded(date.getUTCMilliseconds(), 3);
 
     return `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}Z`;
-  }
-
-  private static isValidUtf8(data: Uint8Array): boolean {
-    const toStringAndBack = Buffer.from(Buffer.from(data).toString("utf8"), "utf8");
-    return Buffer.compare(Buffer.from(data), toStringAndBack) === 0;
   }
 }

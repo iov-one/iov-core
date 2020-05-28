@@ -18,7 +18,7 @@ import {
   TokenTicker,
 } from "@iov/bcp";
 import { ExtendedSecp256k1Signature } from "@iov/crypto";
-import { Encoding, fromHex } from "@iov/encoding";
+import { fromHex, toUtf8 } from "@iov/encoding";
 
 import { Erc20ApproveTransaction, Erc20Options } from "./erc20";
 import { EthereumCodec } from "./ethereumcodec";
@@ -55,7 +55,7 @@ describe("ethereumCodec", () => {
         "041d4c015b00cbd914e280b871d3c6ae2a047ca650d3ecea4b5246bb3036d4d74960b7feb09068164d2b82f1c7df9e95839b29ae38e90d60578b2318a54e108cf8",
       ) as PubkeyBytes;
 
-      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const postableBytes = toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
       const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId);
       expect((parsed as unknown) as SignedTransaction<SendTransaction>).toEqual({
         transaction: {
@@ -118,7 +118,7 @@ describe("ethereumCodec", () => {
         "040b8b6f82e7226d21991dd6b1a7de357cebfc42ccb95678404d8e2b54cc3be187b17a50ef833884df318aa7def070585c92a185272b8cb8b61ba916d993435c87",
       ) as PubkeyBytes;
 
-      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const postableBytes = toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const erc20Tokens = new Map<TokenTicker, Erc20Options>([
         [
@@ -197,7 +197,7 @@ describe("ethereumCodec", () => {
         "040b8b6f82e7226d21991dd6b1a7de357cebfc42ccb95678404d8e2b54cc3be187b17a50ef833884df318aa7def070585c92a185272b8cb8b61ba916d993435c87",
       ) as PubkeyBytes;
 
-      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const postableBytes = toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const codec = new EthereumCodec({ erc20Tokens: new Map<TokenTicker, Erc20Options>() });
       const parsed = codec.parseBytes(postableBytes, "ethereum-eip155-4" as ChainId);
@@ -264,7 +264,7 @@ describe("ethereumCodec", () => {
         "043e82ebc5dd773720677229f4eedcb61dbb131533ce0a4206e3788a92b70224505ef120ca98418d3657c891d0cd74cb15dca10f94a3ffd7a7f65bc99e1138b5c2",
       ) as PubkeyBytes;
 
-      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const postableBytes = toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const erc20Tokens = new Map<TokenTicker, Erc20Options>([
         [
@@ -347,7 +347,7 @@ describe("ethereumCodec", () => {
         "015d55677261fb5deb1e94dac1ffb6dc0de51eb3b6c0631f7f9f2e4f41eca085",
       ) as Hash;
 
-      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const postableBytes = toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
       expect((parsed as unknown) as SignedTransaction<SwapOfferTransaction>).toEqual({
@@ -425,7 +425,7 @@ describe("ethereumCodec", () => {
         "c863ca8b63351354c4dafbf585a28095bf9ef5c6719fd7eacc7a1ce0ad27a298",
       ) as Preimage;
 
-      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const postableBytes = toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
       expect((parsed as unknown) as SignedTransaction<SwapClaimTransaction>).toEqual({
@@ -487,7 +487,7 @@ describe("ethereumCodec", () => {
         data: fromHex("a7679de779f2df7fde7617a9cdd013c8dbf5701aa158173d9c615766a212d243") as SwapIdBytes,
       };
 
-      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const postableBytes = toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
       expect((parsed as unknown) as SignedTransaction<SwapAbortTransaction>).toEqual({
@@ -563,7 +563,7 @@ describe("ethereumCodec", () => {
           },
         ],
       ]);
-      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const postableBytes = toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
       const codec = new EthereumCodec({
         atomicSwapErc20ContractAddress: testConfig.connectionOptions.atomicSwapErc20ContractAddress,
         erc20Tokens: erc20Tokens,
@@ -655,7 +655,7 @@ describe("ethereumCodec", () => {
         ],
       ]);
 
-      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const postableBytes = toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
       const codec = new EthereumCodec({
         atomicSwapErc20ContractAddress: testConfig.connectionOptions.atomicSwapErc20ContractAddress,
         erc20Tokens: erc20Tokens,
@@ -721,7 +721,7 @@ describe("ethereumCodec", () => {
         data: fromHex("144c07a765cd2435882edbc334218b1678b2c5773284bf715ba766f97ee4f2fd") as SwapIdBytes,
       };
 
-      const postableBytes = Encoding.toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
+      const postableBytes = toUtf8(JSON.stringify(rawGetTransactionByHashResult)) as PostableBytes;
 
       const parsed = ethereumCodec.parseBytes(postableBytes, "ethereum-eip155-5777" as ChainId);
       expect((parsed as unknown) as SignedTransaction<SwapAbortTransaction>).toEqual({

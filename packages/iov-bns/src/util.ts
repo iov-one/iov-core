@@ -26,7 +26,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Sha256 } from "@iov/crypto";
-import { Bech32, Encoding, toHex } from "@iov/encoding";
+import { Bech32, toAscii, toHex } from "@iov/encoding";
 import { QueryString } from "@iov/tendermint-rpc";
 import BN from "bn.js";
 import Long from "long";
@@ -62,9 +62,9 @@ export function decodeBnsAddress(
 function algoToPrefix(algo: Algorithm): Uint8Array {
   switch (algo) {
     case Algorithm.Ed25519:
-      return Encoding.toAscii("sigs/ed25519/");
+      return toAscii("sigs/ed25519/");
     case Algorithm.Secp256k1:
-      return Encoding.toAscii("sigs/secp256k1/");
+      return toAscii("sigs/secp256k1/");
     default:
       throw new Error("Unsupported algorithm: " + algo);
   }
@@ -111,7 +111,7 @@ export function appendSignBytes(bz: Uint8Array, chainId: ChainId, nonce: Nonce):
   return Uint8Array.from([
     ...signCodev1,
     chainId.length,
-    ...Encoding.toAscii(chainId),
+    ...toAscii(chainId),
     ...Long.fromNumber(nonce).toBytesBE(),
     ...bz,
   ]) as SignableBytes;
@@ -124,7 +124,7 @@ export function arraysEqual(a: Uint8Array, b: Uint8Array): boolean {
 /** Type to differentiate between a raw hash of the data and the id used internally in weave */
 export type HashId = Uint8Array & As<"hashid">;
 
-const hashIdentifierPrefix = Encoding.toAscii("hash/sha256/");
+const hashIdentifierPrefix = toAscii("hash/sha256/");
 
 export function hashIdentifier(hash: Hash): HashId {
   return Uint8Array.from([...hashIdentifierPrefix, ...hash]) as HashId;
@@ -142,11 +142,11 @@ export function hashFromIdentifier(ident: HashId): Hash {
 
 // calculate keys for query tags
 export function bucketKey(bucket: string): Uint8Array {
-  return Encoding.toAscii(`${bucket}:`);
+  return toAscii(`${bucket}:`);
 }
 
 export function indexKey(bucket: string, index: string): Uint8Array {
-  return Encoding.toAscii(`_i.${bucket}_${index}:`);
+  return toAscii(`_i.${bucket}_${index}:`);
 }
 
 export function isConfirmedWithSwapOfferTransaction(
@@ -164,14 +164,14 @@ export function isConfirmedWithSwapClaimOrAbortTransaction(
 }
 
 function sentFromOrToTag(addr: Address): string {
-  const id = Uint8Array.from([...Encoding.toAscii("cash:"), ...decodeBnsAddress(addr).data]);
+  const id = Uint8Array.from([...toAscii("cash:"), ...decodeBnsAddress(addr).data]);
   const key = toHex(id).toUpperCase();
   const value = "s"; // "s" for "set"
   return `${key}='${value}'`;
 }
 
 function signedByTag(addr: Address): string {
-  const id = Uint8Array.from([...Encoding.toAscii("sigs:"), ...decodeBnsAddress(addr).data]);
+  const id = Uint8Array.from([...toAscii("sigs:"), ...decodeBnsAddress(addr).data]);
   const key = toHex(id).toUpperCase();
   const value = "s"; // "s" for "set"
   return `${key}='${value}'`;

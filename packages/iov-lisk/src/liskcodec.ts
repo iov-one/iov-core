@@ -18,7 +18,7 @@ import {
   TxCodec,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding, fromHex, Int53, toHex } from "@iov/encoding";
+import { fromHex, fromUtf8, Int53, toHex, toUtf8 } from "@iov/encoding";
 import { ReadonlyDate } from "readonly-date";
 
 import { constants } from "./constants";
@@ -74,7 +74,7 @@ export const liskCodec: TxCodec = {
         signature: toHex(primarySignature.signature),
         id: id,
       };
-      return Encoding.toUtf8(JSON.stringify(postableObject)) as PostableBytes;
+      return toUtf8(JSON.stringify(postableObject)) as PostableBytes;
     } else {
       throw new Error("Unsupported kind of transaction");
     }
@@ -100,7 +100,7 @@ export const liskCodec: TxCodec = {
    * Recovers bytes (UTF-8 encoded JSON) from the blockchain into a format we can use
    */
   parseBytes: (bytes: PostableBytes, chainId: ChainId): SignedTransaction => {
-    const json = JSON.parse(Encoding.fromUtf8(bytes));
+    const json = JSON.parse(fromUtf8(bytes));
     const senderPublicKey: PubkeyBundle = {
       algo: Algorithm.Ed25519,
       data: fromHex(json.senderPublicKey) as PubkeyBytes,

@@ -44,7 +44,7 @@ import {
   UnsignedTransaction,
 } from "@iov/bcp";
 import { Random } from "@iov/crypto";
-import { Encoding, fromHex, toHex, Uint53 } from "@iov/encoding";
+import { fromHex, toHex, toUtf8, Uint53 } from "@iov/encoding";
 import { isJsonRpcErrorResponse, makeJsonRpcId } from "@iov/jsonrpc";
 import { concat, DefaultValueProducer, dropDuplicates, ValueAndUpdates } from "@iov/stream";
 import { sleep } from "@iov/utils";
@@ -1009,7 +1009,7 @@ export class EthereumConnection implements AtomicSwapConnection {
     const currentHeight = await this.height();
     const confirmations = currentHeight - transactionHeight + 1;
     const transaction = this.codec.parseBytes(
-      Encoding.toUtf8(JSON.stringify(transactionsResponse.result)) as PostableBytes,
+      toUtf8(JSON.stringify(transactionsResponse.result)) as PostableBytes,
       this.chainId,
     );
     const transactionId = Parse.transactionId(transactionsResponse.result.hash);

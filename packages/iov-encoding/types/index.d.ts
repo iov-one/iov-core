@@ -1,3 +1,4 @@
+export { fromAscii, toAscii } from "./ascii";
 export { fromBase64, toBase64 } from "./base64";
 export { Bech32 } from "./bech32";
 export { Decimal } from "./decimal";
@@ -14,3 +15,4 @@ export {
 } from "./json";
 export { TransactionEncoder } from "./transactionencoder";
 export { isNonNullObject, isUint8Array } from "./typechecks";
+export { fromUtf8, toUtf8 } from "./utf8";

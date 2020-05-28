@@ -7,7 +7,7 @@ import {
   SwapOfferTransaction,
   UnsignedTransaction,
 } from "@iov/bcp";
-import { Encoding, fromHex } from "@iov/encoding";
+import { fromHex, toUtf8 } from "@iov/encoding";
 
 import { encodeAmount, encodeInt, encodeNumericId, encodeString } from "./encodinghelpers";
 import * as codecImpl from "./generated/codecimpl";
@@ -60,7 +60,7 @@ import { decodeBnsAddress } from "./util";
 const maxMemoLength = 128;
 
 function encodeMemo(data: string | undefined): string | null {
-  if (data && Encoding.toUtf8(data).length > maxMemoLength) {
+  if (data && toUtf8(data).length > maxMemoLength) {
     throw new Error(`Invalid memo length: maximum ${maxMemoLength} bytes`);
   }
   return encodeString(data);

@@ -1,6 +1,6 @@
 // Make sure this file is not imported from index.d.ts to avoid a dependency on @types/bn.js
 import { Address } from "@iov/bcp";
-import { Encoding } from "@iov/encoding";
+import { fromUtf8 } from "@iov/encoding";
 import BN from "bn.js";
 
 import { Abi } from "./abi";
@@ -48,7 +48,7 @@ export class Erc20Reader {
       const data = Abi.calculateMethodId("name()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
       const [nameBinary] = Abi.decodeHeadTail(result).tail;
-      return Encoding.fromUtf8(Abi.decodeVariableLength(nameBinary));
+      return fromUtf8(Abi.decodeVariableLength(nameBinary));
     }
   }
 
@@ -66,7 +66,7 @@ export class Erc20Reader {
       const data = Abi.calculateMethodId("symbol()");
       const result = await this.client.ethCall(this.options.contractAddress, data);
       const [symbolBinary] = Abi.decodeHeadTail(result).tail;
-      return Encoding.fromUtf8(Abi.decodeVariableLength(symbolBinary));
+      return fromUtf8(Abi.decodeVariableLength(symbolBinary));
     }
   }
 
