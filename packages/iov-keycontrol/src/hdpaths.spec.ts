@@ -38,6 +38,27 @@ describe("HdPaths", () => {
     ]);
   });
 
+  describe("iovSecondGen", () => {
+    it("works", () => {
+      // m/44'/234'/0'/0/0
+      expect(HdPaths.iovSecondGen(0)).toEqual([
+        Slip10RawIndex.hardened(44),
+        Slip10RawIndex.hardened(234),
+        Slip10RawIndex.hardened(0),
+        Slip10RawIndex.normal(0),
+        Slip10RawIndex.normal(0),
+      ]);
+      // m/44'/234'/0'/0/123
+      expect(HdPaths.iovSecondGen(123)).toEqual([
+        Slip10RawIndex.hardened(44),
+        Slip10RawIndex.hardened(234),
+        Slip10RawIndex.hardened(0),
+        Slip10RawIndex.normal(0),
+        Slip10RawIndex.normal(123),
+      ]);
+    });
+  });
+
   describe("iovFaucet", () => {
     it("returns token holder account for instance 0 when called with no arguments", () => {
       // m/1229936198'/1'/0'/0'

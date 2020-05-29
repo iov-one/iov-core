@@ -34,6 +34,13 @@ export declare class HdPaths {
    */
   static iov(account: number): readonly Slip10RawIndex[];
   /**
+   * A second generation IOV HD path in the form m/44'/234'/0'/0/a.
+   * This is used on the Cosmos SDK based chain starting from summer 2020.
+   *
+   * @param account The account index `a` starting at 0
+   */
+  static iovSecondGen(account: number): readonly Slip10RawIndex[];
+  /**
    * An IOV faucet HD path in the form m/1229936198'/coinType'/instanceIndex'/accountIndex'
    * which was used in the IOV faucet < 0.10.0.
    *
