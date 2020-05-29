@@ -64,7 +64,7 @@ export class HdPaths {
    *
    * @param account The account index `a` starting at 0
    */
-  public static iovSecondGen(account: number): readonly Slip10RawIndex[] {
+  public static iovCosmosSdk(account: number): readonly Slip10RawIndex[] {
     return HdPaths.bip44(HdPaths.coinTypes.iov, 0, 0, account);
   }
 

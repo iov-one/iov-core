@@ -44,10 +44,10 @@ describe("HdPaths", () => {
     });
   });
 
-  describe("iovSecondGen", () => {
+  describe("iovCosmosSdk", () => {
     it("works", () => {
       // m/44'/234'/0'/0/0
-      expect(HdPaths.iovSecondGen(0)).toEqual([
+      expect(HdPaths.iovCosmosSdk(0)).toEqual([
         Slip10RawIndex.hardened(44),
         Slip10RawIndex.hardened(234),
         Slip10RawIndex.hardened(0),
@@ -55,7 +55,7 @@ describe("HdPaths", () => {
         Slip10RawIndex.normal(0),
       ]);
       // m/44'/234'/0'/0/123
-      expect(HdPaths.iovSecondGen(123)).toEqual([
+      expect(HdPaths.iovCosmosSdk(123)).toEqual([
         Slip10RawIndex.hardened(44),
         Slip10RawIndex.hardened(234),
         Slip10RawIndex.hardened(0),

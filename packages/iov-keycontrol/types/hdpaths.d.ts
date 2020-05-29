@@ -39,7 +39,7 @@ export declare class HdPaths {
    *
    * @param account The account index `a` starting at 0
    */
-  static iovSecondGen(account: number): readonly Slip10RawIndex[];
+  static iovCosmosSdk(account: number): readonly Slip10RawIndex[];
   /**
    * An IOV faucet HD path in the form m/1229936198'/coinType'/instanceIndex'/accountIndex'
    * which was used in the IOV faucet < 0.10.0.
