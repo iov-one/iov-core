@@ -1,4 +1,4 @@
-import { Encoding, fromBase64, fromHex, Int53, toBase64, toHex, toUtf8 } from "@iov/encoding";
+import { fromBase64, fromHex, fromRfc3339, Int53, toBase64, toHex, toUtf8 } from "@iov/encoding";
 import { As } from "type-tagger";
 
 import { BlockId, ReadonlyDateWithNanoseconds, Version } from "./responses";
@@ -158,7 +158,7 @@ export class Base64 {
 
 export class DateTime {
   public static decode(dateTimeString: DateTimeString): ReadonlyDateWithNanoseconds {
-    const readonlyDate = Encoding.fromRfc3339(dateTimeString);
+    const readonlyDate = fromRfc3339(dateTimeString);
     const nanosecondsMatch = dateTimeString.match(/\.(\d+)Z$/);
     const nanoseconds = nanosecondsMatch ? nanosecondsMatch[1].slice(3) : "";
     // tslint:disable-next-line:no-object-mutation
