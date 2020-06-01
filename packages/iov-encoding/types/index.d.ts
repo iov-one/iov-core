@@ -13,6 +13,7 @@ export {
   JsonCompatibleArray,
   isJsonCompatibleArray,
 } from "./json";
+export { fromRfc3339, toRfc3339 } from "./rfc3339";
 export { TransactionEncoder } from "./transactionencoder";
 export { isNonNullObject, isUint8Array } from "./typechecks";
 export { fromUtf8, toUtf8 } from "./utf8";

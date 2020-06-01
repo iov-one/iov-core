@@ -2,11 +2,10 @@
 
 ## HEAD
 
-- @iov/encoding: Pull out free functions `fromAscii`, `toAscii`, `fromUtf8`,
-  `toUtf8`, `fromHex`, `toHex`, `fromBase64` and `toBase64` to simplify
-  usability. `Encoding.fromAscii`, `Encoding.toAscii`, `Encoding.fromUtf8`,
-  `Encoding.toUtf8`, `Encoding.fromHex`, `Encoding.toHex`, `Encoding.fromBase64`
-  and `Encoding.toBase64` are now deprecated.
+- @iov/encoding: Pull out free functions `fromRfc3339`, `toRfc3339`,
+  `fromAscii`, `toAscii`, `fromUtf8`, `toUtf8`, `fromHex`, `toHex`, `fromBase64`
+  and `toBase64` to simplify usability. The namespacing class `Encoding` and all
+  its members are now deprecated.
 
 ## 2.2.5
 
