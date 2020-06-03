@@ -21,6 +21,7 @@ export { ExtendedSecp256k1Signature, Secp256k1Signature } from "./secp256k1signa
 export { Sha1, Sha256, Sha512 } from "./sha";
 export {
   pathToString,
+  stringToPath,
   Slip10,
   Slip10Curve,
   Slip10RawIndex,
