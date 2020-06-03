@@ -2,6 +2,8 @@
 
 ## HEAD
 
+- @iov/crypto: Add `pathToString` which creates a printable representation of a
+  SLIP-0010 HD path.
 - @iov/encoding: Pull out free functions `fromRfc3339`, `toRfc3339`,
   `fromAscii`, `toAscii`, `fromUtf8`, `toUtf8`, `fromHex`, `toHex`, `fromBase64`
   and `toBase64` to simplify usability. The namespacing class `Encoding` and all

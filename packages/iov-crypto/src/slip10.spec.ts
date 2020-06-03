@@ -1,6 +1,6 @@
 import { fromHex } from "@iov/encoding";
 
-import { Slip10, Slip10Curve, slip10CurveFromString, Slip10RawIndex } from "./slip10";
+import { pathToString, Slip10, Slip10Curve, slip10CurveFromString, Slip10RawIndex } from "./slip10";
 
 describe("Slip10", () => {
   it("has working slip10CurveFromString()", () => {
@@ -358,6 +358,45 @@ describe("Slip10", () => {
       expect(derived.privkey).toEqual(
         fromHex("551d333177df541ad876a60ea71f00447931c0a9da16f227c11ea080d7391b8d"),
       );
+    });
+  });
+
+  describe("pathToString", () => {
+    it("works for no component", () => {
+      // See https://github.com/bitcoin/bips/blob/master/bip-0032/derivation.png from BIP32
+      expect(pathToString([])).toEqual("m");
+    });
+
+    it("works for normal components", () => {
+      const one = Slip10RawIndex.normal(1);
+      expect(pathToString([one])).toEqual("m/1");
+      expect(pathToString([one, one])).toEqual("m/1/1");
+      expect(pathToString([one, one, one])).toEqual("m/1/1/1");
+
+      const min = Slip10RawIndex.normal(0);
+      expect(pathToString([min])).toEqual("m/0");
+
+      const max = Slip10RawIndex.normal(2 ** 31 - 1);
+      expect(pathToString([max])).toEqual("m/2147483647");
+    });
+
+    it("works for hardened components", () => {
+      const one = Slip10RawIndex.hardened(1);
+      expect(pathToString([one])).toEqual("m/1'");
+      expect(pathToString([one, one])).toEqual("m/1'/1'");
+      expect(pathToString([one, one, one])).toEqual("m/1'/1'/1'");
+
+      const min = Slip10RawIndex.hardened(0);
+      expect(pathToString([min])).toEqual("m/0'");
+
+      const max = Slip10RawIndex.hardened(2 ** 31 - 1);
+      expect(pathToString([max])).toEqual("m/2147483647'");
+    });
+
+    it("works for mixed components", () => {
+      const one = Slip10RawIndex.normal(1);
+      const two = Slip10RawIndex.hardened(2);
+      expect(pathToString([one, two, two, one])).toEqual("m/1/2'/2'/1");
     });
   });
 });
