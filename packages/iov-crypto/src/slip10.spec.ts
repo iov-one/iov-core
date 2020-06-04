@@ -1,6 +1,13 @@
 import { fromHex } from "@iov/encoding";
 
-import { Slip10, Slip10Curve, slip10CurveFromString, Slip10RawIndex } from "./slip10";
+import {
+  pathToString,
+  Slip10,
+  Slip10Curve,
+  slip10CurveFromString,
+  Slip10RawIndex,
+  stringToPath,
+} from "./slip10";
 
 describe("Slip10", () => {
   it("has working slip10CurveFromString()", () => {
@@ -358,6 +365,108 @@ describe("Slip10", () => {
       expect(derived.privkey).toEqual(
         fromHex("551d333177df541ad876a60ea71f00447931c0a9da16f227c11ea080d7391b8d"),
       );
+    });
+  });
+
+  describe("pathToString", () => {
+    it("works for no component", () => {
+      // See https://github.com/bitcoin/bips/blob/master/bip-0032/derivation.png from BIP32
+      expect(pathToString([])).toEqual("m");
+    });
+
+    it("works for normal components", () => {
+      const one = Slip10RawIndex.normal(1);
+      expect(pathToString([one])).toEqual("m/1");
+      expect(pathToString([one, one])).toEqual("m/1/1");
+      expect(pathToString([one, one, one])).toEqual("m/1/1/1");
+
+      const min = Slip10RawIndex.normal(0);
+      expect(pathToString([min])).toEqual("m/0");
+
+      const max = Slip10RawIndex.normal(2 ** 31 - 1);
+      expect(pathToString([max])).toEqual("m/2147483647");
+    });
+
+    it("works for hardened components", () => {
+      const one = Slip10RawIndex.hardened(1);
+      expect(pathToString([one])).toEqual("m/1'");
+      expect(pathToString([one, one])).toEqual("m/1'/1'");
+      expect(pathToString([one, one, one])).toEqual("m/1'/1'/1'");
+
+      const min = Slip10RawIndex.hardened(0);
+      expect(pathToString([min])).toEqual("m/0'");
+
+      const max = Slip10RawIndex.hardened(2 ** 31 - 1);
+      expect(pathToString([max])).toEqual("m/2147483647'");
+    });
+
+    it("works for mixed components", () => {
+      const one = Slip10RawIndex.normal(1);
+      const two = Slip10RawIndex.hardened(2);
+      expect(pathToString([one, two, two, one])).toEqual("m/1/2'/2'/1");
+    });
+  });
+
+  describe("stringToPath", () => {
+    it("works for no component", () => {
+      // See https://github.com/bitcoin/bips/blob/master/bip-0032/derivation.png from BIP32
+      expect(stringToPath("m")).toEqual([]);
+    });
+
+    it("throws for broken start", () => {
+      expect(() => stringToPath("")).toThrowError(/must start with 'm'/);
+      expect(() => stringToPath("M")).toThrowError(/must start with 'm'/);
+      expect(() => stringToPath("/1/1")).toThrowError(/must start with 'm'/);
+    });
+
+    it("works for normal components", () => {
+      const one = Slip10RawIndex.normal(1);
+      expect(stringToPath("m/1")).toEqual([one]);
+      expect(stringToPath("m/1/1")).toEqual([one, one]);
+      expect(stringToPath("m/1/1/1")).toEqual([one, one, one]);
+
+      const min = Slip10RawIndex.normal(0);
+      expect(stringToPath("m/0")).toEqual([min]);
+
+      const max = Slip10RawIndex.normal(2 ** 31 - 1);
+      expect(stringToPath("m/2147483647")).toEqual([max]);
+    });
+
+    it("errors for syntax error in component", () => {
+      expect(() => stringToPath("m/ 1/1/1")).toThrowError(/syntax error/i);
+      expect(() => stringToPath("m/-1/1/1")).toThrowError(/syntax error/i);
+      expect(() => stringToPath("m//1/1")).toThrowError(/syntax error/i);
+      expect(() => stringToPath("m/1*/1/1")).toThrowError(/syntax error/i);
+      expect(() => stringToPath("m/1/1/1 ")).toThrowError(/syntax error/i);
+      expect(() => stringToPath("m/1''/1/1")).toThrowError(/syntax error/i);
+      expect(() => stringToPath("m/1 '/1/1")).toThrowError(/syntax error/i);
+      expect(() => stringToPath("m/'/1/1")).toThrowError(/syntax error/i);
+      expect(() => stringToPath('m/1"/1/1')).toThrowError(/syntax error/i);
+    });
+
+    it("errors for value too high", () => {
+      expect(() => stringToPath("m/2147483648/1/1")).toThrowError(/value too high/i);
+      expect(() => stringToPath("m/1/9007199254740991/1")).toThrowError(/value too high/i);
+      expect(() => stringToPath("m/1/1/9007199254740992")).toThrowError(/not in int53 range/i);
+    });
+
+    it("works for hardened components", () => {
+      const one = Slip10RawIndex.hardened(1);
+      expect(stringToPath("m/1'")).toEqual([one]);
+      expect(stringToPath("m/1'/1'")).toEqual([one, one]);
+      expect(stringToPath("m/1'/1'/1'")).toEqual([one, one, one]);
+
+      const min = Slip10RawIndex.hardened(0);
+      expect(stringToPath("m/0'")).toEqual([min]);
+
+      const max = Slip10RawIndex.hardened(2 ** 31 - 1);
+      expect(stringToPath("m/2147483647'")).toEqual([max]);
+    });
+
+    it("works for mixed components", () => {
+      const one = Slip10RawIndex.normal(1);
+      const two = Slip10RawIndex.hardened(2);
+      expect(stringToPath("m/1/2'/2'/1")).toEqual([one, two, two, one]);
     });
   });
 });

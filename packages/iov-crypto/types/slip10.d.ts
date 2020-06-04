@@ -36,3 +36,5 @@ export declare class Slip10 {
   private static isGteN;
   private static n;
 }
+export declare function pathToString(path: readonly Slip10RawIndex[]): string;
+export declare function stringToPath(input: string): readonly Slip10RawIndex[];

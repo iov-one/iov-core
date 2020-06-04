@@ -1,4 +1,4 @@
-import { fromHex, toAscii, Uint32 } from "@iov/encoding";
+import { fromHex, toAscii, Uint32, Uint53 } from "@iov/encoding";
 import BN from "bn.js";
 import elliptic from "elliptic";
 
@@ -182,4 +182,31 @@ export class Slip10 {
         throw new Error("curve not supported");
     }
   }
+}
+
+export function pathToString(path: readonly Slip10RawIndex[]): string {
+  return path.reduce((current, component): string => {
+    const componentString = component.isHardened()
+      ? `${component.toNumber() - 2 ** 31}'`
+      : component.toString();
+    return current + "/" + componentString;
+  }, "m");
+}
+
+export function stringToPath(input: string): readonly Slip10RawIndex[] {
+  if (!input.startsWith("m")) throw new Error("Path string must start with 'm'");
+  let rest = input.slice(1);
+
+  const out = new Array<Slip10RawIndex>();
+  while (rest) {
+    const match = rest.match(/^\/([0-9]+)('?)/);
+    if (!match) throw new Error("Syntax error while reading path component");
+    const [fullMatch, numberString, apostrophe] = match;
+    const value = Uint53.fromString(numberString).toNumber();
+    if (value >= 2 ** 31) throw new Error("Component value too high. Must not exceed 2**31-1.");
+    if (apostrophe) out.push(Slip10RawIndex.hardened(value));
+    else out.push(Slip10RawIndex.normal(value));
+    rest = rest.slice(fullMatch.length);
+  }
+  return out;
 }
