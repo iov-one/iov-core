@@ -1,8 +1,11 @@
 {
   "name": "@iov/keycontrol",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Keyrings and Keycontroller for safe cryptography",
-  "contributors": ["IOV SAS <admin@iov.one>", "Simon Warta"],
+  "contributors": [
+    "IOV SAS <admin@iov.one>",
+    "Simon Warta"
+  ],
   "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "types/index.d.ts",
@@ -38,10 +41,10 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp": "^2.3.1",
-    "@iov/crypto": "^2.3.1",
-    "@iov/encoding": "^2.3.1",
-    "@iov/stream": "^2.3.1",
+    "@iov/bcp": "^2.3.2",
+    "@iov/crypto": "^2.3.2",
+    "@iov/encoding": "^2.3.2",
+    "@iov/stream": "^2.3.2",
     "@types/abstract-leveldown": "^5.0.1",
     "@types/levelup": "^3.1.0",
     "@types/node": "^10.12.18",
