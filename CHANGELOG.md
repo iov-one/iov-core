@@ -9,6 +9,8 @@
   `fromAscii`, `toAscii`, `fromUtf8`, `toUtf8`, `fromHex`, `toHex`, `fromBase64`
   and `toBase64` to simplify usability. The namespacing class `Encoding` and all
   its members are now deprecated.
+- @iov/keycontrol: Add new HD path helper for the upcoming IOV blockchain
+  `HdPaths.iovCosmosSdk`.
 
 ## 2.2.5
 
