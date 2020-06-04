@@ -2,6 +2,8 @@
 
 ## HEAD
 
+## 2.3.0
+
 - @iov/crypto: Add `pathToString` which creates a printable representation of a
   SLIP-0010 HD path.
 - @iov/crypto: Add `stringToPath` which parses a SLIP-0010 HD path.
