@@ -20,7 +20,9 @@
     "type": "git",
     "url": "https://github.com/iov-one/iov-core/tree/master/packages/iov-cosmos-sdk"
   },
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "docs": "shx rm -rf docs && typedoc --options typedoc.js",
     "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
