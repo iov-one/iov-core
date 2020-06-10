@@ -231,7 +231,8 @@ describe("CosmosConnection", () => {
       connection.disconnect();
     });
 
-    it("has a pubkey when getting account with transactions", async () => {
+    // reactivate when there is an account that has a pubkey on chain
+    xit("has a pubkey when getting account with transactions", async () => {
       pendingWithoutWasmd();
       const connection = await CosmosConnection.establish(httpUrl, defaultAddressPrefix, defaultConfig);
       const account = await connection.getAccount({ address: alice.address0 });
