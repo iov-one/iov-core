@@ -2,6 +2,9 @@
 
 ## HEAD
 
+- @iov/cosmos-sdk: New packages added that contains a BCP implementation for
+  Cosmos SDK 0.38 blockchains.
+
 ## 2.3.2
 
 - @iov/crypto: Add `pathToString` which creates a printable representation of a
