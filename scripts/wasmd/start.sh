@@ -59,7 +59,7 @@ if [ -n "${CI:-}" ]; then
   sleep 0.5
 
   # Follow the logs in CI's background job
-  tail -f "$WASMD_LOGFILE"
+  # tail -f "$WASMD_LOGFILE"
 fi
 
 # Debug rest server start
