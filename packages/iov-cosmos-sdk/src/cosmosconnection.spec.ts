@@ -63,7 +63,7 @@ const bob = {
 
 describe("CosmosConnection", () => {
   const cosm = "COSM" as TokenTicker;
-  const httpUrl = "http://localhost:1317";
+  const httpUrl = "http://localhost:1318";
   const defaultChainId = "cosmos:testing" as ChainId;
   const defaultEmptyAddress = "cosmos1h806c7khnvmjlywdrkdgk2vrayy2mmvf9rxk2r" as Address;
   const defaultRecipient = "cosmos1t70qnpr0az8tf7py83m4ue5y89w58lkjmx0yq2" as Address;

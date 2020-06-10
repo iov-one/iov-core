@@ -29,10 +29,10 @@ wasmcli rest-server \
   --home "$TMP_DIR/.wasmcli" \
   --node tcp://localhost:26657 \
   --trust-node \
-  --laddr tcp://0.0.0.0:1317 \
+  --laddr tcp://0.0.0.0:1318 \
   > "$REST_SERVER_LOGFILE" &
 
-echo "rest server running on http://localhost:1317 and logging into $REST_SERVER_LOGFILE"
+echo "rest server running on http://localhost:1318 and logging into $REST_SERVER_LOGFILE"
 
 # Debug rest server start
 sleep 3
