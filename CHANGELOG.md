@@ -2,7 +2,10 @@
 
 ## HEAD
 
-## 2.3.0
+- @iov/cosmos-sdk: New packages added that contains a BCP implementation for
+  Cosmos SDK 0.38 blockchains.
+
+## 2.3.2
 
 - @iov/crypto: Add `pathToString` which creates a printable representation of a
   SLIP-0010 HD path.
@@ -13,6 +16,10 @@
   its members are now deprecated.
 - @iov/keycontrol: Add new HD path helper for the upcoming IOV blockchain
   `HdPaths.iovCosmosSdk`.
+
+## 2.3.1
+
+## 2.3.0
 
 ## 2.2.5
 

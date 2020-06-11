@@ -46,6 +46,11 @@ if command -v docker > /dev/null ; then
   export COSMOSHUB_ENABLED=1
   fold_end
 
+  fold_start "wasmd-start"
+  ./scripts/wasmd/start.sh
+  export WASMD_ENABLED=1
+  fold_end
+
   fold_start "ethereum-start"
   ./scripts/ethereum/start.sh
   export ETHEREUM_ENABLED=1
@@ -73,6 +78,7 @@ echo "use IOV faucet? ${FAUCET_ENABLED:-no}"
 echo "use ethereum? ${ETHEREUM_ENABLED:-no}"
 echo "use Lisk? ${LISK_ENABLED:-no}"
 echo "use cosmoshub? ${COSMOSHUB_ENABLED:-no}"
+echo "use wasmd? ${WASMD_ENABLED:-no}"
 
 #
 # Build
@@ -174,6 +180,13 @@ if [[ -n ${COSMOSHUB_ENABLED:-} ]]; then
   fold_start "cosmoshub-stop"
   unset COSMOSHUB_ENABLED
   ./scripts/cosmoshub/stop.sh
+  fold_end
+fi
+
+if [[ -n ${WASMD_ENABLED:-} ]]; then
+  fold_start "wasmd-stop"
+  unset WASMD_ENABLED
+  ./scripts/wasmd/stop.sh
   fold_end
 fi
 
