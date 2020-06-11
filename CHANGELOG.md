@@ -2,6 +2,8 @@
 
 ## HEAD
 
+## 2.4.0
+
 - @iov/cosmos-sdk: New packages added that contains a BCP implementation for
   Cosmos SDK 0.38 blockchains.
 
