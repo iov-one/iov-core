@@ -1,10 +1,16 @@
+import {
+  fromAscii,
+  fromBase64,
+  fromHex,
+  fromRfc3339,
+  fromUtf8,
+  toAscii,
+  toBase64,
+  toHex,
+  toRfc3339,
+  toUtf8,
+} from "@cosmjs/encoding";
 import { ReadonlyDate } from "readonly-date";
-
-import { fromAscii, toAscii } from "./ascii";
-import { fromBase64, toBase64 } from "./base64";
-import { fromHex, toHex } from "./hex";
-import { fromRfc3339, toRfc3339 } from "./rfc3339";
-import { fromUtf8, toUtf8 } from "./utf8";
 
 /**
  * @deprecated All members of this namespacing class have been

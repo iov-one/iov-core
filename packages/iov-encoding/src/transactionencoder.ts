@@ -1,6 +1,7 @@
-import { fromHex, toHex } from "./hex";
+import { fromHex, toHex } from "@cosmjs/encoding";
+import { isUint8Array } from "@cosmjs/utils";
+
 import { JsonCompatibleValue } from "./json";
-import { isUint8Array } from "./typechecks";
 
 const prefixes = {
   string: "string:",

@@ -1,10 +1,18 @@
-export { fromAscii, toAscii } from "./ascii";
-export { fromBase64, toBase64 } from "./base64";
-export { Bech32 } from "./bech32";
-export { Decimal } from "./decimal";
-export { Encoding } from "./encoding";
-export { fromHex, toHex } from "./hex";
-export { Int53, Uint32, Uint53, Uint64 } from "./integers";
+export { Int53, Uint32, Uint53, Uint64, Decimal } from "@cosmjs/math";
+export {
+  fromHex,
+  toHex,
+  fromAscii,
+  toAscii,
+  fromBase64,
+  toBase64,
+  fromRfc3339,
+  toRfc3339,
+  fromUtf8,
+  toUtf8,
+  Bech32,
+} from "@cosmjs/encoding";
+export { isNonNullObject, isUint8Array } from "@cosmjs/utils";
 export {
   JsonCompatibleValue,
   isJsonCompatibleValue,
@@ -13,7 +21,5 @@ export {
   JsonCompatibleArray,
   isJsonCompatibleArray,
 } from "./json";
-export { fromRfc3339, toRfc3339 } from "./rfc3339";
 export { TransactionEncoder } from "./transactionencoder";
-export { isNonNullObject, isUint8Array } from "./typechecks";
-export { fromUtf8, toUtf8 } from "./utf8";
+export { Encoding } from "./encoding";

@@ -2,6 +2,14 @@
 
 ## HEAD
 
+- @iov/encoding: Use implementations of `fromHex`, `toHex`, `fromAscii`,
+  `toAscii`, `fromBase64`, `toBase64`, `fromRfc3339`, `toRfc3339`, `fromUtf8`,
+  `toUtf8`, `Bech32`, `isNonNullObject`, `isUint8Array`, `Int53`, `Uint32`,
+  `Uint53`, `Uint64`, `Decimal` from
+  [CosmJS](https://github.com/CosmWasm/cosmjs) in a backwards-compatible way.
+  Users of `@iov/encoding` should use them directly from `@cosmjs/encoding`,
+  `@cosmjs/math` and `@cosmjs/utils`.
+
 ## 2.4.0
 
 - @iov/cosmos-sdk: New packages added that contains a BCP implementation for
