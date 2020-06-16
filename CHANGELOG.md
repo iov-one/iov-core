@@ -20,6 +20,9 @@
   `Xchacha20poly1305IetfNonce` from [CosmJS](https://github.com/CosmWasm/cosmjs)
   in a backwards-compatible way. Users of `@iov/crypto` should use them directly
   from `@cosmjs/crypto`.
+- @iov/utils: Use implementations of `assert` and `sleep` from
+  [CosmJS](https://github.com/CosmWasm/cosmjs) in a backwards-compatible way.
+  Users of `@iov/utils` should use them directly from `@cosmjs/utils`.
 
 ## 2.4.0
 

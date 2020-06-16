@@ -36,5 +36,8 @@
     "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
     "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
     "test-safari": "yarn pack-web && karma start --single-run --browsers Safari"
+  },
+  "dependencies": {
+    "@cosmjs/utils": "^0.20.0"
   }
 }
