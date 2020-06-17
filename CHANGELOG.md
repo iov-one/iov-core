@@ -2,6 +2,8 @@
 
 ## HEAD
 
+## 2.5.0
+
 - @iov/encoding: Use implementations of `fromHex`, `toHex`, `fromAscii`,
   `toAscii`, `fromBase64`, `toBase64`, `fromRfc3339`, `toRfc3339`, `fromUtf8`,
   `toUtf8`, `Bech32`, `isNonNullObject`, `isUint8Array`, `Int53`, `Uint32`,
