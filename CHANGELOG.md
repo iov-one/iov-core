@@ -2,6 +2,28 @@
 
 ## HEAD
 
+- @iov/encoding: Use implementations of `fromHex`, `toHex`, `fromAscii`,
+  `toAscii`, `fromBase64`, `toBase64`, `fromRfc3339`, `toRfc3339`, `fromUtf8`,
+  `toUtf8`, `Bech32`, `isNonNullObject`, `isUint8Array`, `Int53`, `Uint32`,
+  `Uint53`, `Uint64`, `Decimal` from
+  [CosmJS](https://github.com/CosmWasm/cosmjs) in a backwards-compatible way.
+  Users of `@iov/encoding` should use them directly from `@cosmjs/encoding`,
+  `@cosmjs/math` and `@cosmjs/utils`.
+- @iov/crypto: Use implementations of `Bip39`, `EnglishMnemonic`,
+  `HashFunction`, `Hmac`, `Keccak256`, `Argon2id`, `Argon2idOptions`, `Ed25519`,
+  `Ed25519Keypair`, `Random`, `Ripemd160`, `Secp256k1`, `Secp256k1Keypair`,
+  `ExtendedSecp256k1Signature`, `Secp256k1Signature`, `Sha1`, `Sha256`,
+  `Sha512`, `pathToString`, `stringToPath`, `Slip10`, `Slip10Curve`,
+  `Slip10RawIndex`, `Slip10Result`, `slip10CurveFromString`,
+  `Xchacha20poly1305Ietf`, `Xchacha20poly1305IetfCiphertext`,
+  `Xchacha20poly1305IetfKey`, `Xchacha20poly1305IetfMessage`,
+  `Xchacha20poly1305IetfNonce` from [CosmJS](https://github.com/CosmWasm/cosmjs)
+  in a backwards-compatible way. Users of `@iov/crypto` should use them directly
+  from `@cosmjs/crypto`.
+- @iov/utils: Use implementations of `assert` and `sleep` from
+  [CosmJS](https://github.com/CosmWasm/cosmjs) in a backwards-compatible way.
+  Users of `@iov/utils` should use them directly from `@cosmjs/utils`.
+
 ## 2.4.0
 
 - @iov/cosmos-sdk: New packages added that contains a BCP implementation for

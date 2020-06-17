@@ -1,2 +1,1 @@
-export { assert } from "./assert";
-export { sleep } from "./sleep";
+export { assert, sleep } from "@cosmjs/utils";

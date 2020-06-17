@@ -1,6 +1,7 @@
-import { fromHex } from "./hex";
+import { fromHex } from "@cosmjs/encoding";
+import { isUint8Array } from "@cosmjs/utils";
+
 import { TransactionEncoder } from "./transactionencoder";
-import { isUint8Array } from "./typechecks";
 
 const { fromJson, toJson } = TransactionEncoder;
 

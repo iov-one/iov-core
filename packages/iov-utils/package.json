@@ -28,13 +28,9 @@
     "move-types": "shx rm -r ./types/* && shx mv build/types/* ./types && rm -rf ./types/testdata && shx rm -f ./types/*.spec.d.ts",
     "format-types": "prettier --write --loglevel warn \"./types/**/*.d.ts\"",
     "build": "shx rm -rf ./build && tsc && yarn move-types && yarn format-types",
-    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build",
-    "test-node": "node jasmine-testrunner.js",
-    "test": "yarn build-or-skip && yarn test-node",
-    "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js",
-    "test-edge": "yarn pack-web && karma start --single-run --browsers Edge",
-    "test-firefox": "yarn pack-web && karma start --single-run --browsers Firefox",
-    "test-chrome": "yarn pack-web && karma start --single-run --browsers ChromeHeadless",
-    "test-safari": "yarn pack-web && karma start --single-run --browsers Safari"
+    "build-or-skip": "[ -n \"$SKIP_BUILD\" ] || yarn build"
+  },
+  "dependencies": {
+    "@cosmjs/utils": "^0.20.0"
   }
 }
