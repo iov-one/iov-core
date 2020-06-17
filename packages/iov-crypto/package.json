@@ -1,6 +1,6 @@
 {
   "name": "@iov/crypto",
-  "version": "2.3.2",
+  "version": "2.5.0",
   "description": "Cryptography resources for IOV projects",
   "contributors": [
     "IOV SAS <admin@iov.one>",
@@ -35,6 +35,5 @@
   },
   "dependencies": {
     "@cosmjs/crypto": "^0.20.0"
-  },
-  "devDependencies": {}
+  }
 }

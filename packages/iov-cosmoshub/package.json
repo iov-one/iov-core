@@ -1,6 +1,6 @@
 {
   "name": "@iov/cosmoshub",
-  "version": "2.3.2",
+  "version": "2.5.0",
   "description": "Transaction codec and client to communicate with the Cosmos Hub blockchain.",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -37,9 +37,9 @@
     "pack-web": "yarn build-or-skip && webpack --mode development --config webpack.web.config.js"
   },
   "dependencies": {
-    "@iov/bcp": "^2.3.2",
-    "@iov/crypto": "^2.3.2",
-    "@iov/encoding": "^2.3.2",
+    "@iov/bcp": "^2.5.0",
+    "@iov/crypto": "^2.5.0",
+    "@iov/encoding": "^2.5.0",
     "@iov/stream": "^2.3.2",
     "@tendermint/amino-js": "^0.7.0-alpha.1",
     "@types/jasmine": "^3.3.7",
@@ -65,6 +65,6 @@
     "xstream": "^11.11.0"
   },
   "devDependencies": {
-    "@iov/keycontrol": "^2.3.2"
+    "@iov/keycontrol": "^2.5.0"
   }
 }

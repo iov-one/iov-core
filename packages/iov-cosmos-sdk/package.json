@@ -1,6 +1,6 @@
 {
   "name": "@iov/cosmos-sdk",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Transaction codec and client to communicate with a Cosmos SDK 0.38 blockchain",
   "contributors": [
     "Ethan Frey <ethanfrey@users.noreply.github.com>",
@@ -44,7 +44,7 @@
     "@cosmjs/math": "^0.20.0",
     "@cosmjs/sdk38": "^0.20.0",
     "@cosmjs/utils": "^0.20.0",
-    "@iov/bcp": "^2.3.2",
+    "@iov/bcp": "^2.5.0",
     "@iov/stream": "^2.3.2",
     "bn.js": "^5.1.1",
     "fast-deep-equal": "^3.1.1",
@@ -52,7 +52,7 @@
     "xstream": "^11.11.0"
   },
   "devDependencies": {
-    "@iov/keycontrol": "^2.3.2",
+    "@iov/keycontrol": "^2.5.0",
     "@types/bn.js": "^4.11.6"
   }
 }

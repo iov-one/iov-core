@@ -1,6 +1,6 @@
 {
   "name": "@iov/encoding",
-  "version": "2.3.2",
+  "version": "2.5.0",
   "description": "Encoding helpers for IOV projects",
   "author": "IOV SAS <admin@iov.one>",
   "license": "Apache-2.0",
@@ -41,6 +41,5 @@
     "@cosmjs/math": "^0.20.0",
     "@cosmjs/utils": "^0.20.0",
     "readonly-date": "^1.0.0"
-  },
-  "devDependencies": {}
+  }
 }
