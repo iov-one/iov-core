@@ -83,7 +83,7 @@ $ iov-cli
 > .editor
 const sendTx = await connection.withDefaultFee<SendTransaction>({
   kind: "bcp/send",
-  chainId: faucet.chainId,
+  chainId: chainId,
   sender: faucetAddress,
   recipient: recipientAddress,
   memo: "My first transaction",
