@@ -917,10 +917,19 @@ export class EthereumConnection implements AtomicSwapConnection {
 
   public async getFeeQuote(transaction: UnsignedTransaction): Promise<Fee> {
     switch (transaction.kind) {
+      case "bcp/send":
+        return {
+          gasPrice: {
+            // TODO: calculate dynamically from previous blocks or external API
+            quantity: "10000000000", // 10 gwei
+            fractionalDigits: constants.primaryTokenFractionalDigits,
+            tokenTicker: constants.primaryTokenTicker,
+          },
+          gasLimit: "21000",
+        };
       case "smartcontract/escrow_open":
       case "smartcontract/escrow_abort":
       case "smartcontract/escrow_claim":
-      case "bcp/send":
       case "bcp/swap_offer":
       case "bcp/swap_claim":
       case "bcp/swap_abort":
@@ -928,11 +937,11 @@ export class EthereumConnection implements AtomicSwapConnection {
         return {
           gasPrice: {
             // TODO: calculate dynamically from previous blocks or external API
-            quantity: "20000000000", // 20 gwei
+            quantity: "10000000000", // 10 gwei
             fractionalDigits: constants.primaryTokenFractionalDigits,
             tokenTicker: constants.primaryTokenTicker,
           },
-          gasLimit: "2100000",
+          gasLimit: "210000",
         };
       default:
         throw new Error("Received transaction of unsupported kind.");

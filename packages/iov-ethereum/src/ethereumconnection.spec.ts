@@ -2066,11 +2066,11 @@ describe("EthereumConnection", () => {
       expect(result.tokens).toBeUndefined();
       expect(result.gasPrice).toEqual({
         // 20 gwei
-        quantity: "20000000000",
+        quantity: "10000000000",
         fractionalDigits: 18,
         tokenTicker: "ETH" as TokenTicker,
       });
-      expect(result.gasLimit).toEqual("2100000");
+      expect(result.gasLimit).toEqual("21000");
 
       connection.disconnect();
     });
