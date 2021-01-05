@@ -45,7 +45,7 @@
     "@types/jasmine": "^3.3.7",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.2.0",
     "eslint-plugin-import": "^2.18.2",
